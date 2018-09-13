@@ -236,7 +236,7 @@ bool VCP::close() {
 }
 
 void VCP::readTask() {
-	constexpr size_t READ_BUFFER_SIZE = 8;
+	constexpr size_t READ_BUFFER_SIZE = 10240;
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	IOTaskState state = LAUNCH;
 	DWORD bytesRead = 0;
