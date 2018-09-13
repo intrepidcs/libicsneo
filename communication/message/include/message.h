@@ -11,6 +11,7 @@ public:
 	virtual ~Message() {}
 	Network network;
 	std::vector<uint8_t> data;
+	uint64_t timestamp;
 };
 
 };

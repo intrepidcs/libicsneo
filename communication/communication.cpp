@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <cstring>
 #include "communication/include/messagedecoder.h"
+#include "communication/include/packetizer.h"
 
 using namespace icsneo;
 
@@ -86,13 +87,15 @@ bool Communication::removeMessageCallback(int id) {
 
 void Communication::readTask() {
 	std::vector<uint8_t> readBytes;
+	Packetizer packetizer;
 	MessageDecoder decoder;
 
 	while(!closing) {
 		readBytes.clear();
 		if(impl->readWait(readBytes)) {
-			if(decoder.input(readBytes)) {
-				for(auto& msg : decoder.output()) {
+			if(packetizer.input(readBytes)) {
+				for(auto& packet : packetizer.output()) {
+					auto msg = decoder.decodePacket(packet);
 					for(auto& cb : messageCallbacks) { // We might have closed while reading or processing
 						if(!closing) {
 							cb.second.callIfMatch(msg);

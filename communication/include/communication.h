@@ -40,6 +40,12 @@ public:
 
 	void setAlign16Bit(bool enable) { align16bit = enable; }
 
+	class Packet {
+	public:
+		Network network;
+		std::vector<uint8_t> data;
+	};
+
 protected:
 	std::shared_ptr<ICommunication> impl;
 	static int messageCallbackIDCounter;

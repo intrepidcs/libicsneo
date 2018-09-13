@@ -1,5 +1,6 @@
 #include "communication/include/multichannelcommunication.h"
 #include "communication/include/messagedecoder.h"
+#include "communication/include/packetizer.h"
 #include <iostream>
 #include <iomanip>
 
@@ -30,6 +31,7 @@ void MultiChannelCommunication::readTask() {
 	std::deque<uint8_t> usbReadFifo;
 	std::vector<uint8_t> readBytes;
 	std::vector<uint8_t> payloadBytes;
+	Packetizer packetizer;
 	MessageDecoder decoder;
 
 	while(!closing) {
@@ -95,25 +97,21 @@ void MultiChannelCommunication::readTask() {
 						continue;
 					}
 
-					//std::cout << std::dec << "Got a multichannel message! Size: " << currentCommandLength << std::hex << std::setfill('0') << std::setw(2) << " Cmd: 0x" << (int)currentCommandType << std::endl;
 					for(auto i = 0; i < currentReadIndex; i++)
 						usbReadFifo.pop_front();
 
 					payloadBytes.clear();
-					payloadBytes.reserve(currentCommandLength);
+					payloadBytes.resize(currentCommandLength);
 					for(auto i = 0; i < currentCommandLength; i++) {
-						//std::cout << (int)usbReadFifo[0] << ' ';
-						payloadBytes.push_back(usbReadFifo[0]);
-						// if(i % 16 == 15)
-						// 	std::cout << std::endl;
+						payloadBytes[i] = usbReadFifo[0];
 						usbReadFifo.pop_front();
 					}
-					//std::cout << std::dec << std::endl;
 					
-					if(decoder.input(payloadBytes)) {
-						for(auto& msg : decoder.output()) {
-							for(auto& cb : messageCallbacks) {
-								if(!closing) { // We might have closed while reading or processing
+					if(packetizer.input(payloadBytes)) {
+						for(auto& packet : packetizer.output()) {
+							auto msg = decoder.decodePacket(packet);
+							for(auto& cb : messageCallbacks) { // We might have closed while reading or processing
+								if(!closing) {
 									cb.second.callIfMatch(msg);
 								}
 							}
