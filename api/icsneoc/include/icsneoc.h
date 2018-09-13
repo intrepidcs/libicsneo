@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include "device/include/neodevice.h" // For neodevice_t
+#include "communication/message/include/neomessage.h" // For neomessage_t and friends
 #include "platform/include/dynamiclib.h" // Dynamic library loading and exporting
 
 #ifndef ICSNEOC_DYNAMICLOAD
@@ -30,6 +31,16 @@ extern bool DLLExport icsneoGoOnline(const neodevice_t* device);
 extern bool DLLExport icsneoGoOffline(const neodevice_t* device);
 
 extern bool DLLExport icsneoIsOnline(const neodevice_t* device);
+
+extern bool DLLExport icsneoEnableMessagePolling(const neodevice_t* device);
+
+extern bool DLLExport icsneoDisableMessagePolling(const neodevice_t* device);
+
+extern bool DLLExport icsneoGetMessages(const neodevice_t* device, neomessage_t* messages, size_t* items);
+
+extern size_t DLLExport icsneoGetPollingMessageLimit(const neodevice_t* device);
+
+extern bool DLLExport icsneoSetPollingMessageLimit(const neodevice_t* device, size_t newLimit);
 
 #ifdef __cplusplus
 }
@@ -67,6 +78,21 @@ fn_icsneoGoOffline icsneoGoOffline;
 typedef bool(*fn_icsneoIsOnline)(const neodevice_t* device);
 fn_icsneoIsOnline icsneoIsOnline;
 
+typedef bool(*fn_icsneoEnableMessagePolling)(const neodevice_t* device);
+fn_icsneoEnableMessagePolling icsneoEnableMessagePolling;
+
+typedef bool(*fn_icsneoDisableMessagePolling)(const neodevice_t* device);
+fn_icsneoDisableMessagePolling icsneoDisableMessagePolling;
+
+typedef bool(*fn_icsneoGetMessages)(const neodevice_t* device, neomessage_t* messages, size_t* items);
+fn_icsneoGetMessages icsneoGetMessages;
+
+typedef size_t(*fn_icsneoGetPollingMessageLimit)(const neodevice_t* device);
+fn_icsneoGetPollingMessageLimit icsneoGetPollingMessageLimit;
+
+typedef bool(*fn_icsneoSetPollingMessageLimit)(const neodevice_t* device, size_t newLimit);
+fn_icsneoSetPollingMessageLimit icsneoSetPollingMessageLimit;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneoDynamicLibraryGetFunction(icsneoLibraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneoLibraryHandle = NULL;
@@ -91,6 +117,11 @@ int icsneoInit() {
 	ICSNEO_IMPORTASSERT(icsneoGoOnline);
 	ICSNEO_IMPORTASSERT(icsneoGoOffline);
 	ICSNEO_IMPORTASSERT(icsneoIsOnline);
+	ICSNEO_IMPORTASSERT(icsneoEnableMessagePolling);
+	ICSNEO_IMPORTASSERT(icsneoDisableMessagePolling);
+	ICSNEO_IMPORTASSERT(icsneoGetMessages);
+	ICSNEO_IMPORTASSERT(icsneoGetPollingMessageLimit);
+	ICSNEO_IMPORTASSERT(icsneoSetPollingMessageLimit);
 
 	icsneoInitialized = true;
 	return 0;

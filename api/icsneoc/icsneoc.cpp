@@ -12,6 +12,7 @@
 #include <memory>
 #include <algorithm>
 #include <cstring>
+#include <map>
 
 using namespace icsneo;
 
@@ -20,6 +21,9 @@ static std::vector<std::shared_ptr<Device>> connectableFoundDevices, connectedDe
 
 // Any shared_ptrs we've let go should be placed here so they're not accessed
 static std::vector<Device*> freedDevices;
+
+// We store an array of shared_ptr messages per device (by serial), this means we own the memory of the data pointer
+static std::map<std::string, std::vector<std::shared_ptr<Message>>> polledMessageStorage;
 
 void icsneoFindAllDevices(neodevice_t* devices, size_t* count) {
 	icsneoFreeUnconnectedDevices(); // Mark previous results as freed so they can no longer be connected to
@@ -127,4 +131,64 @@ bool icsneoIsOnline(const neodevice_t* device) {
 		return false;
 
 	return device->device->isOnline();
+}
+
+bool icsneoEnableMessagePolling(const neodevice_t* device) {
+	if(!icsneoIsValidNeoDevice(device))
+		return false;
+
+	device->device->enableMessagePolling();
+	return true;
+}
+
+bool icsneoDisableMessagePolling(const neodevice_t* device) {
+	if(!icsneoIsValidNeoDevice(device))
+		return false;
+
+	return device->device->disableMessagePolling();
+}
+
+bool icsneoGetMessages(const neodevice_t* device, neomessage_t* messages, size_t* items) {
+	if(!icsneoIsValidNeoDevice(device))
+		return false;
+
+	if(items == nullptr)
+		return false;
+
+	if(messages == nullptr) {
+		// A NULL value for messages means the user wants the current size of the buffer into items
+		*items = device->device->getCurrentMessageCount();
+		return true;
+	}
+
+	std::vector<std::shared_ptr<Message>>& storage = polledMessageStorage[device->serial];
+
+	if(!device->device->getMessages(storage, *items))
+		return false;
+
+	*items = storage.size();
+
+	for(size_t i = 0; i < *items; i++) {
+		// For each message, copy into neomessage_t buffer given
+		messages[i] = CreateNeoMessage(*(storage[i]));
+	}
+
+	// The user now has until the next call of icsneoGetMessages (for this device) to use the data, after which point it's freed
+	// The user should copy the data out if they want it
+	return true;
+}
+
+size_t icsneoGetPollingMessageLimit(const neodevice_t* device) {
+	if(!icsneoIsValidNeoDevice(device))
+		return 0;
+
+	return device->device->getPollingMessageLimit();
+}
+
+bool icsneoSetPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
+	if(!icsneoIsValidNeoDevice(device))
+		return false;
+
+	device->device->setPollingMessageLimit(newLimit);
+	return true;
 }

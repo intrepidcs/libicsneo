@@ -94,7 +94,6 @@ std::vector<std::shared_ptr<Message>> Device::getMessages() {
 
 bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit) {
 	// A limit of zero indicates no limit
-	auto oglimit = limit;
 	if(limit == 0)
 		limit = (size_t)-1;
 
@@ -108,7 +107,7 @@ bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_
 
 	container.resize(actuallyRead);
 
-	return actuallyRead <= oglimit;
+	return true;
 }
 
 void Device::enforcePollingMessageLimit() {
@@ -139,14 +138,6 @@ bool Device::goOnline() {
 
 	if(!com->sendCommand(Communication::Command::RequestSerialNumber))
 		return false;
-
-	com->addMessageCallback(CANMessageCallback([](std::shared_ptr<Message> message) {
-		std::shared_ptr<CANMessage> canMessage = std::static_pointer_cast<CANMessage>(message);
-		std::cout << "CAN 0x" << std::hex << canMessage->arbid << std::dec << " [" << canMessage->data.size() << "] " << std::hex;
-		for(const auto& b : canMessage->data)
-			std::cout << (int)b << ' ';
-		std::cout << std::dec << std::endl;
-	}));
 
 	return online = true;
 }
