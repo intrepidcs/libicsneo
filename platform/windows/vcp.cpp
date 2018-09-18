@@ -142,6 +142,10 @@ bool VCP::open(bool fromAsync) {
 		return false;
 	}
 
+	// See https://docs.microsoft.com/en-us/windows/desktop/api/winbase/ns-winbase-_commtimeouts#remarks
+	timeouts.ReadIntervalTimeout = MAXDWORD;
+	timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
+	timeouts.ReadTotalTimeoutConstant = 100;
 	timeouts.WriteTotalTimeoutConstant = 10000;
 	timeouts.WriteTotalTimeoutMultiplier = 0;
 
