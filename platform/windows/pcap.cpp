@@ -149,9 +149,12 @@ std::vector<neodevice_t> PCAP::FindByProduct(int product) {
 
 				std::string serialFromMAC = GetEthDevSerialFromMacAddress(packet.srcMAC[3], ((packet.srcMAC[4] << 8) | packet.srcMAC[5]));
 				neodevice_t neodevice;
+				#pragma warning(push)
+				#pragma warning(disable:4996)
 				strncpy(neodevice.serial, serialFromMAC.c_str(), sizeof(neodevice.serial));
 				neodevice.serial[sizeof(neodevice.serial) - 1] = 0;
-				neodevice.handle = (i << 24) | (packet.srcMAC[3] << 16) | (packet.srcMAC[4] << 8) | (packet.srcMAC[5]);
+				#pragma warning(pop)
+				neodevice.handle = (neodevice_handle_t)((i << 24) | (packet.srcMAC[3] << 16) | (packet.srcMAC[4] << 8) | (packet.srcMAC[5]));
 				bool alreadyExists = false;
 				for(auto& dev : foundDevices)
 					if(dev.handle == neodevice.handle)
@@ -262,8 +265,6 @@ bool PCAP::close() {
 }
 
 void PCAP::readTask() {
-	constexpr size_t READ_BUFFER_SIZE = 10240;
-	uint8_t readbuf[READ_BUFFER_SIZE];
 	struct pcap_pkthdr* header;
 	const uint8_t* data;
 	while(!closing) {
