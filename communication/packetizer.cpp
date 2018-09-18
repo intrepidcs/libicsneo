@@ -85,9 +85,8 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 					// Got a good packet
 					gotGoodPackets = true;
 					processedPackets.push_back(std::make_shared<Communication::Packet>(packet));
-					for (auto i = 0; i < packetLength; i++)
+					for (auto a = 0; a < packetLength; a++)
 						bytes.pop_front();
-					
 				} else {
 					if(gotGoodPackets) // Don't complain unless we've already gotten a good packet, in case we started in the middle of a stream
 						std::cout << "Dropping packet due to bad checksum" << std::endl;
