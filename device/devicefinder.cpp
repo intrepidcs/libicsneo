@@ -1,4 +1,5 @@
 #include "device/include/devicefinder.h"
+#include "device/neoobd2pro/include/neoobd2pro.h"
 #include "device/neovifire/include/neovifire.h"
 #include "device/neovifire2/include/neovifire2.h"
 #include "device/plasion/include/neoviion.h"
@@ -15,6 +16,7 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	std::vector<std::shared_ptr<Device>> foundDevices;
 	std::vector<std::vector<std::shared_ptr<Device>>> findResults;
 	
+	findResults.push_back(NeoOBD2PRO::Find());
 	findResults.push_back(NeoVIFIRE::Find());
 	findResults.push_back(NeoVIFIRE2::Find());
 	findResults.push_back(NeoVIION::Find());

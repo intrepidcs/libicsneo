@@ -4,6 +4,8 @@ Hardware
 STM32 devices
 	ValueCAN 4
 		CAN 2.0 works
+	neoOBD2 PRO
+		CAN 2.0 works
 
 FTDI devices
 	neoVI FIRE
