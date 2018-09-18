@@ -10,17 +10,17 @@ class NeoOBD2PRO : public Device {
 public:
 	// Serial numbers are NP****
 	static constexpr const char* PRODUCT_NAME = "neoOBD2 PRO";
-	static constexpr const uint16_t USB_PRODUCT_ID = 0x1103;
+	static constexpr const uint16_t PRODUCT_ID = 0x1103;
 	NeoOBD2PRO(neodevice_t neodevice) : Device(neodevice) {
 		com = std::make_shared<Communication>(std::make_shared<STM32>(getWritableNeoDevice()));
 		setProductName(PRODUCT_NAME);
-		usbProductId = USB_PRODUCT_ID;
+		productId = PRODUCT_ID;
 	}
 
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
-		for(auto neodevice : STM32::FindByProduct(USB_PRODUCT_ID))
+		for(auto neodevice : STM32::FindByProduct(PRODUCT_ID))
 			found.push_back(std::make_shared<NeoOBD2PRO>(neodevice));
 
 		return found;

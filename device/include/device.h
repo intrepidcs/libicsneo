@@ -27,7 +27,7 @@ public:
 	static bool SerialStringIsNumeric(const std::string& serial);
 
 	std::string getProductName() const { return data.type; }
-	uint16_t getUSBProductId() const { return usbProductId; }
+	uint16_t getProductId() const { return productId; }
 	std::string getSerial() const { return data.serial; }
 	uint32_t getSerialNumber() const { return Device::SerialStringToNum(getSerial()); }
 	const neodevice_t& getNeoDevice() const { return data; }
@@ -51,7 +51,7 @@ public:
 	}
 
 protected:
-	uint16_t usbProductId = 0;
+	uint16_t productId = 0;
 	bool online = false;
 	int messagePollingCallbackID = 0;
 	std::shared_ptr<Communication> com;
