@@ -23,8 +23,16 @@ if(NOT WIN32)
 	add_subdirectory(third-party/libftdi)
 endif(NOT WIN32)
 
+# winpcap
 if(WIN32)
-	file(GLOB PLATFORM_SRC ${CMAKE_SOURCE_DIR}/platform/windows/*.cpp)
+	include_directories(AFTER third-party/winpcap/include)
+	add_compile_definitions(WPCAP HAVE_REMOTE WIN32_LEAN_AND_MEAN)
+endif(WIN32)
+
+if(WIN32)
+	file(GLOB PLATFORM_SRC_EXTERNAL ${CMAKE_SOURCE_DIR}/platform/windows/*.cpp)
+	file(GLOB PLATFORM_SRC_INTERNAL ${CMAKE_SOURCE_DIR}/platform/windows/internal/*.cpp)
+	set(PLATFORM_SRC ${PLATFORM_SRC_EXTERNAL} ${PLATFORM_SRC_INTERNAL})
 else()
 	file(GLOB PLATFORM_SRC ${CMAKE_SOURCE_DIR}/platform/linux/*.cpp)
 endif()

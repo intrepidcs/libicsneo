@@ -1,9 +1,11 @@
 #include "device/include/devicefinder.h"
 #include "device/neoobd2pro/include/neoobd2pro.h"
 #include "device/neovifire/include/neovifire.h"
-#include "device/neovifire2/include/neovifire2.h"
+#include "device/neovifire2/include/neovifire2eth.h"
+#include "device/neovifire2/include/neovifire2usb.h"
 #include "device/plasion/include/neoviion.h"
 #include "device/plasion/include/neoviplasma.h"
+#include "device/radgalaxy/include/radgalaxy.h"
 #include "device/radstar2/include/radstar2.h"
 #include "device/radsupermoon/include/radsupermoon.h"
 #include "device/valuecan3/include/valuecan3.h"
@@ -18,9 +20,11 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	
 	findResults.push_back(NeoOBD2PRO::Find());
 	findResults.push_back(NeoVIFIRE::Find());
-	findResults.push_back(NeoVIFIRE2::Find());
+	findResults.push_back(NeoVIFIRE2ETH::Find());
+	findResults.push_back(NeoVIFIRE2USB::Find());
 	findResults.push_back(NeoVIION::Find());
 	findResults.push_back(NeoVIPLASMA::Find());
+	findResults.push_back(RADGalaxy::Find());
 	findResults.push_back(RADStar2::Find());
 	findResults.push_back(RADSupermoon::Find());
 	findResults.push_back(ValueCAN3::Find());
