@@ -113,20 +113,6 @@ std::vector<neodevice_t> PCAP::FindByProduct(int product) {
 		requestPacket.payload.push_back(Communication::ICSChecksum(requestPacket.payload));
 		requestPacket.payload.insert(requestPacket.payload.begin(), 0xAA);
 
-		// Test cases
-		// std::cout << std::endl << "We would send:" << std::endl << std::hex;
-		// for(auto byte : requestPacket.getBytestream()) {
-		// 	std::cout << (int)byte << ' ';
-		// }
-		// std::cout << std::dec << std::endl;
-
-		// EthernetPacket bsPacket(requestPacket.getBytestream());
-		// std::cout << std::endl << "We would rx:" << std::endl << std::hex;
-		// for(auto byte : bsPacket.getBytestream()) {
-		// 	std::cout << (int)byte << ' ';
-		// }
-		// std::cout << std::dec << std::endl;
-
 		auto bs = requestPacket.getBytestream();
 		pcap.sendpacket(interface.fp, bs.data(), (int)bs.size());
 
