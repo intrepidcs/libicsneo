@@ -10,7 +10,6 @@ class NeoVIFIRE2 : public Device {
 public:
 	static constexpr const char* PRODUCT_NAME = "neoVI FIRE 2";
 	NeoVIFIRE2(neodevice_t neodevice) : Device(neodevice) {
-		com = std::make_shared<Communication>(std::make_shared<FTDI>(getWritableNeoDevice()));
 		setProductName(PRODUCT_NAME);
 	}
 };
