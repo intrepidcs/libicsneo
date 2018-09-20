@@ -206,8 +206,6 @@ bool STM32::open() {
 		return false;
 	}
 
-	cfsetspeed(&tty, B500000); // Set speed to 500kbaud
-
 	tty.c_cflag |= (CLOCAL | CREAD); // Ignore modem controls
 	tty.c_cflag &= ~CSIZE;
 	tty.c_cflag |= CS8; // 8-bit characters
