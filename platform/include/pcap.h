@@ -3,8 +3,8 @@
 
 #if defined _WIN32
 #include "platform/windows/include/pcap.h"
-// #elif defined __linux__
-// #include "platform/linux/include/ftdi.h"
+// #elif defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+// #include "platform/posix/include/ftdi.h"
 #else
 #warning "This platform is not supported by the PCAP driver"
 #endif

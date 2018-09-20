@@ -1,5 +1,5 @@
-#ifndef __STM32_LINUX_H_
-#define __STM32_LINUX_H_
+#ifndef __STM32_POSIX_H_
+#define __STM32_POSIX_H_
 
 #include "communication/include/icommunication.h"
 #include "device/include/neodevice.h"

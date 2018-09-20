@@ -1,5 +1,5 @@
-#ifndef __VCP_H_WINDOWS_
-#define __VCP_H_WINDOWS_
+#ifndef __VCP_WINDOWS_H_
+#define __VCP_WINDOWS_H_
 
 #include <vector>
 #include <string>

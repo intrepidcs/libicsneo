@@ -1,4 +1,3 @@
-#include "platform/linux/include/ftdi.h"
 #include "platform/include/ftdi.h"
 #include <iostream>
 #include <stdio.h>

@@ -1,5 +1,5 @@
-#ifndef __DEVICES_LINUX_H_
-#define __DEVICES_LINUX_H_
+#ifndef __DEVICES_POSIX_H_
+#define __DEVICES_POSIX_H_
 
 #include "device/neoobd2pro/include/neoobd2pro.h"
 #include "device/neovifire/include/neovifire.h"

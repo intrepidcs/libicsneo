@@ -1,5 +1,5 @@
-#ifndef __DYNAMICLIB_H_WINDOWS_
-#define __DYNAMICLIB_H_WINDOWS_
+#ifndef __DYNAMICLIB_WINDOWS_H_
+#define __DYNAMICLIB_WINDOWS_H_
 
 #include <Windows.h>
 

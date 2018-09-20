@@ -34,7 +34,7 @@ if(WIN32)
 	file(GLOB PLATFORM_SRC_INTERNAL ${CMAKE_SOURCE_DIR}/platform/windows/internal/*.cpp)
 	set(PLATFORM_SRC ${PLATFORM_SRC_EXTERNAL} ${PLATFORM_SRC_INTERNAL})
 else()
-	file(GLOB PLATFORM_SRC ${CMAKE_SOURCE_DIR}/platform/linux/*.cpp)
+	file(GLOB PLATFORM_SRC ${CMAKE_SOURCE_DIR}/platform/posix/*.cpp)
 endif()
 
 set(COMMON_SRC

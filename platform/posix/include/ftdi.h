@@ -1,5 +1,5 @@
-#ifndef __FTDI_H_LINUX_
-#define __FTDI_H_LINUX_
+#ifndef __FTDI_POSIX_H_
+#define __FTDI_POSIX_H_
 
 #include <vector>
 #include <memory>

@@ -1,7 +1,13 @@
-#ifndef __DYNAMICLIB_H_LINUX_
-#define __DYNAMICLIB_H_LINUX_
+#ifndef __DYNAMICLIB_POSIX_H_
+#define __DYNAMICLIB_POSIX_H_
 
 #include <dlfcn.h>
+
+#ifdef __APPLE__
+#include "platform/posix/darwin/include/dynamiclib.h"
+#else
+#include "platform/posix/linux/include/dynamiclib.h"
+#endif
 
 // Nothing special is needed to export
 #define DLLExport
@@ -12,7 +18,6 @@
 #define ICSNEO_DESTRUCTOR
 // #endif
 
-#define icsneoDynamicLibraryLoad() dlopen("/media/paulywog/Windows 10/Users/phollinsky/Code/icsneonext/build/libicsneoc.so", RTLD_LAZY)
 #define icsneoDynamicLibraryGetFunction(handle, func) dlsym(handle, func)
 #define icsneoDynamicLibraryClose(handle) (dlclose(handle) == 0)
 

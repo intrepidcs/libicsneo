@@ -1,5 +1,5 @@
-#ifndef __REGISTRY_H_WINDOWS_
-#define __REGISTRY_H_WINDOWS_
+#ifndef __REGISTRY_WINDOWS_H_
+#define __REGISTRY_WINDOWS_H_
 
 #include <Windows.h>
 #include <string>
