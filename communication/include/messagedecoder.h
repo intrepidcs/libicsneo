@@ -9,6 +9,9 @@
 #include <vector>
 #include <memory>
 
+#pragma pack(push)
+#pragma pack(1)
+
 namespace icsneo {
 
 class MessageDecoder {
@@ -268,5 +271,7 @@ private:
 };
 
 }
+
+#pragma pack(pop)
 
 #endif

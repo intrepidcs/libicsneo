@@ -4,25 +4,30 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#pragma pack(push)
+#pragma pack(1)
+
 typedef struct {
-	uint16_t netid;
-	uint8_t type;
-	char header[4];
+	uint64_t timestamp;
 	const uint8_t* data;
 	size_t length;
-	uint64_t timestamp;
-	char reserved[8];
+	char header[4];
+	uint16_t netid;
+	uint8_t type;
+	char reserved[9];
 } neomessage_t;
 
 typedef struct {
-	uint16_t netid;
-	uint8_t type;
-	uint32_t arbid;
+	uint64_t timestamp;
 	const uint8_t* data;
 	size_t length;
-	uint64_t timestamp;
-	char reserved[8];
+	uint32_t arbid;
+	uint16_t netid;
+	uint8_t type;
+	char reserved[9];
 } neomessage_can_t;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 #include "communication/message/include/message.h"
