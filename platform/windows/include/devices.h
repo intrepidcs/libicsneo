@@ -2,6 +2,7 @@
 #define __DEVICES_WINDOWS_H_
 
 #include "device/neoobd2pro/include/neoobd2pro.h"
+#include "device/neoobd2sim/include/neoobd2sim.h"
 #include "device/neovifire/include/neovifire.h"
 #include "device/neovifire2/include/neovifire2eth.h"
 #include "device/neovifire2/include/neovifire2usb.h"

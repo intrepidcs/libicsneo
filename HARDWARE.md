@@ -12,6 +12,8 @@ STM32 devices
 		CAN 2.0 works
 	neoOBD2 PRO
 		CAN 2.0 works
+	neoOBD2-SIM
+		Connects
 
 FTDI devices
 	neoVI FIRE

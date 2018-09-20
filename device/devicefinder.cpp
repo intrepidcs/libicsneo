@@ -11,6 +11,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	findResults.push_back(NeoOBD2PRO::Find());
 	#endif
 
+	#ifdef __NEOOBD2SIM_H_
+	findResults.push_back(NeoOBD2SIM::Find());
+	#endif
+
 	#ifdef __NEOVIFIRE_H_
 	findResults.push_back(NeoVIFIRE::Find());
 	#endif
