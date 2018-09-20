@@ -18,6 +18,9 @@ neomessage_t icsneo::CreateNeoMessage(const Message& message) {
 		case Network::Type::CAN:
 			((neomessage_can_t*)&neomsg)->arbid = ((const CANMessage*)&message)->arbid;
 			break;
+		default:
+			// TODO Implement others
+			break;
 	}
 
 	return neomsg;

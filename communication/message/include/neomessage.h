@@ -2,6 +2,7 @@
 #define __NEOMESSAGE_H_
 
 #include <stdint.h>
+#include <stddef.h>
 
 typedef struct {
 	uint16_t netid;

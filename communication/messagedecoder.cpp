@@ -23,6 +23,9 @@ std::shared_ptr<Message> MessageDecoder::decodePacket(const std::shared_ptr<Comm
 				msg->data.push_back(data->data[i]);
 			return msg;
 		}
+		default:
+			// TODO Implement others
+			break;
 	}
 
 	auto msg = std::make_shared<Message>();
