@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(icsneonext VERSION 0.1.0)
 
+set(CMAKE_CXX_STANDARD 11)
+
 include(GNUInstallDirs)
 
 include_directories(${CMAKE_SOURCE_DIR})
@@ -26,7 +28,7 @@ endif(NOT WIN32)
 # winpcap
 if(WIN32)
 	include_directories(AFTER third-party/winpcap/include)
-	add_compile_definitions(WPCAP HAVE_REMOTE WIN32_LEAN_AND_MEAN)
+	add_definitions(-DWPCAP -DHAVE_REMOTE -DWIN32_LEAN_AND_MEAN)
 endif(WIN32)
 
 if(WIN32)
@@ -60,6 +62,9 @@ add_library(icsneoc SHARED
 	api/icsneocpp/icsneocpp.cpp
 	${SRC_FILES}
 )
+
+target_compile_features(icsneocpp PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 
 # libftdi
 if(NOT WIN32)

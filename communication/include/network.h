@@ -97,7 +97,7 @@ public:
 		Other,
 		Invalid
 	};
-	static constexpr const char* GetTypeString(Type type) {
+	static const char* GetTypeString(Type type) {
 		switch(type) {
 			case Type::CAN:
 				return "CAN";
@@ -114,7 +114,7 @@ public:
 				return "Invalid Type";
 		}
 	}
-	static constexpr Type GetTypeOfNetID(NetID netid) {
+	static Type GetTypeOfNetID(NetID netid) {
 		switch(netid) {
 			case NetID::HSCAN:
 			case NetID::MSCAN:
@@ -154,7 +154,7 @@ public:
 				return Type::Other;
 		}
 	}
-	static constexpr const char* GetNetIDString(NetID netid) {
+	static const char* GetNetIDString(NetID netid) {
 		switch(netid) {
 			case NetID::Device:
 				return "Device";
