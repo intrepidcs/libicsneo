@@ -5,6 +5,7 @@
 #include <memory>
 #include <cstring>
 #include "device/include/neodevice.h"
+#include "device/include/idevicesettings.h"
 #include "communication/include/communication.h"
 #include "third-party/concurrentqueue/concurrentqueue.h"
 
@@ -50,6 +51,8 @@ public:
 		enforcePollingMessageLimit();
 	}
 
+	std::shared_ptr<IDeviceSettings> settings;
+
 protected:
 	uint16_t productId = 0;
 	bool online = false;
@@ -65,7 +68,7 @@ protected:
 
 private:
 	neodevice_t data;
-
+	
 	size_t pollingMessageLimit = 20000;
 	moodycamel::ConcurrentQueue<std::shared_ptr<Message>> pollingContainer;
 	void enforcePollingMessageLimit();

@@ -4,6 +4,8 @@
 #include <queue>
 #include <iomanip>
 #include <cstring>
+#include <mutex>
+#include <condition_variable>
 #include "communication/include/messagedecoder.h"
 #include "communication/include/packetizer.h"
 
@@ -67,8 +69,32 @@ bool Communication::sendCommand(Communication::Command cmd, std::vector<uint8_t>
 	bytes.push_back((uint8_t)cmd);
 	for(auto& b : arguments)
 		bytes.push_back(b);
-	bytes.insert(bytes.begin(), 0xB | ((uint8_t)bytes.size() << 4));
+	bytes.insert(bytes.begin(), (uint8_t)Network::NetID::Main51 | ((uint8_t)bytes.size() << 4));
 	return sendPacket(bytes);
+}
+
+bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout) {
+	sendCommand(Command::GetSettings);
+	std::shared_ptr<Message> msg = waitForMessageSync(MessageFilter(Network::NetID::RED_READ_BAUD_SETTINGS), timeout);
+	if(!msg)
+		return false;
+	
+	data = std::move(msg->data);
+	return true;
+}
+
+bool Communication::getSerialNumberSync(std::string& serial, std::chrono::milliseconds timeout) {
+	sendCommand(Command::RequestSerialNumber);
+	std::shared_ptr<Message> msg = waitForMessageSync(MessageFilter(Network::NetID::Main51), timeout);
+	if(!msg)
+		return false;
+
+	std::cout << "Got " << msg->data.size() << " bytes" << std::endl;
+	for(size_t i = 0; i < msg->data.size(); i++) {
+		std::cout << std::hex << (int)msg->data[i] << ' ' << std::dec;
+		if(i % 16 == 15)
+			std::cout << std::endl;
+	}
 }
 
 int Communication::addMessageCallback(const MessageCallback& cb) {
@@ -83,6 +109,29 @@ bool Communication::removeMessageCallback(int id) {
 	} catch(...) {
 		return false;
 	}
+}
+
+std::shared_ptr<Message> Communication::waitForMessageSync(MessageFilter f, std::chrono::milliseconds timeout) {
+	std::mutex m;
+	std::condition_variable cv;
+	std::shared_ptr<Message> returnedMessage;
+	int cb = addMessageCallback(MessageCallback([&m, &returnedMessage, &cv](std::shared_ptr<Message> message) {
+		{
+			std::lock_guard<std::mutex> lk(m);
+			returnedMessage = message;
+		}
+		cv.notify_one();
+	}, f));
+
+	// We have now added the callback, wait for it to return from the other thread
+	std::unique_lock<std::mutex> lk(m);
+	cv.wait_for(lk, timeout, [&returnedMessage]{ return !!returnedMessage; }); // `!!shared_ptr` checks if the ptr has a value
+
+	// We don't actually check that we got a message, because either way we want to remove the callback (since it should only happen once)
+	removeMessageCallback(cb);
+
+	// Then we either will return the message we got or we will return the empty shared_ptr, caller responsible for checking
+	return returnedMessage;
 }
 
 void Communication::readTask() {

@@ -133,11 +133,16 @@ bool Device::close() {
 }
 
 bool Device::goOnline() {
+	std::string serial;
+	while(!com->getSerialNumberSync(serial, std::chrono::milliseconds(500))) {
+		std::cout << "Serial number not here yet" << std::endl;
+	}
+
 	if(!com->sendCommand(Communication::Command::EnableNetworkCommunication, true))
 		return false;
-
-	if(!com->sendCommand(Communication::Command::RequestSerialNumber))
-		return false;
+	
+	// if(!com->sendCommand(Communication::Command::RequestSerialNumber))
+	// 	return false;
 
 	return online = true;
 }

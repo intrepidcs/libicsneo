@@ -46,6 +46,7 @@ set(COMMON_SRC
 	communication/multichannelcommunication.cpp
 	communication/communication.cpp
 	communication/icommunication.cpp
+	device/idevicesettings.cpp
 	device/devicefinder.cpp
 	device/device.cpp
 )

@@ -29,6 +29,32 @@ public:
 		OP_Ethernet1 = 17,
 		OP_Ethernet2 = 18,
 		OP_Ethernet3 = 19,
+
+		// START Device Command Returns
+		// When we send a command, the device returns on one of these, depending on command
+		RED_EXT_MEMORYREAD = 20,
+		RED_INT_MEMORYREAD = 21,
+		RED_DFLASH_READ = 22,
+		RED_SDCARD_READ = 23,
+		CAN_ERRBITS = 24,
+		RED_DFLASH_WRITE_DONE = 25,
+		RED_WAVE_CAN1_LOGICAL = 26,
+		RED_WAVE_CAN2_LOGICAL = 27,
+		RED_WAVE_LIN1_LOGICAL = 28,
+		RED_WAVE_LIN2_LOGICAL = 29,
+		RED_WAVE_LIN1_ANALOG = 30,
+		RED_WAVE_LIN2_ANALOG = 31,
+		RED_WAVE_MISC_ANALOG = 32,
+		RED_WAVE_MISCDIO2_LOGICAL = 33,
+		RED_NETWORK_COM_ENABLE_EX = 34,
+		RED_NEOVI_NETWORK = 35,
+		RED_READ_BAUD_SETTINGS = 36,
+		RED_OLDFORMAT = 37,
+		RED_SCOPE_CAPTURE = 38,
+		RED_HARDWARE_EXCEP = 39,
+		RED_GET_RTC = 40,
+		// END Device Command Returns
+
 		ISO3 = 41,
 		HSCAN2 = 42,
 		HSCAN3 = 44,
@@ -38,8 +64,8 @@ public:
 		LIN2 = 48,
 		LIN3 = 49,
 		LIN4 = 50,
-		MOST = 51,
-		Red_App_Error = 52,
+		// MOST = 51, Old and unused
+		RED_App_Error = 52,
 		CGI = 53,
 		Reset_Status = 54,
 		FB_Status = 55,
@@ -143,7 +169,6 @@ public:
 			case NetID::FlexRay2a:
 			case NetID::FlexRay2b:
 				return Type::FlexRay;
-			case NetID::MOST:
 			case NetID::MOST25:
 			case NetID::MOST50:
 			case NetID::MOST150:
@@ -196,6 +221,48 @@ public:
 				return "Ethernet 2";
 			case NetID::OP_Ethernet3:
 				return "Ethernet 3";
+			case NetID::RED_EXT_MEMORYREAD:
+				return "RED_EXT_MEMORYREAD";
+			case NetID::RED_INT_MEMORYREAD:
+				return "RED_INT_MEMORYREAD";
+			case NetID::RED_DFLASH_READ:
+				return "RED_DFLASH_READ";
+			case NetID::RED_SDCARD_READ:
+				return "RED_SDCARD_READ";
+			case NetID::CAN_ERRBITS:
+				return "CAN_ERRBITS";
+			case NetID::RED_DFLASH_WRITE_DONE:
+				return "RED_DFLASH_WRITE_DONE";
+			case NetID::RED_WAVE_CAN1_LOGICAL:
+				return "RED_WAVE_CAN1_LOGICAL";
+			case NetID::RED_WAVE_CAN2_LOGICAL:
+				return "RED_WAVE_CAN2_LOGICAL";
+			case NetID::RED_WAVE_LIN1_LOGICAL:
+				return "RED_WAVE_LIN1_LOGICAL";
+			case NetID::RED_WAVE_LIN2_LOGICAL:
+				return "RED_WAVE_LIN2_LOGICAL";
+			case NetID::RED_WAVE_LIN1_ANALOG:
+				return "RED_WAVE_LIN1_ANALOG";
+			case NetID::RED_WAVE_LIN2_ANALOG:
+				return "RED_WAVE_LIN2_ANALOG";
+			case NetID::RED_WAVE_MISC_ANALOG:
+				return "RED_WAVE_MISC_ANALOG";
+			case NetID::RED_WAVE_MISCDIO2_LOGICAL:
+				return "RED_WAVE_MISCDIO2_LOGICAL";
+			case NetID::RED_NETWORK_COM_ENABLE_EX:
+				return "RED_NETWORK_COM_ENABLE_EX";
+			case NetID::RED_NEOVI_NETWORK:
+				return "RED_NEOVI_NETWORK";
+			case NetID::RED_READ_BAUD_SETTINGS:
+				return "RED_READ_BAUD_SETTINGS";
+			case NetID::RED_OLDFORMAT:
+				return "RED_OLDFORMAT";
+			case NetID::RED_SCOPE_CAPTURE:
+				return "RED_SCOPE_CAPTURE";
+			case NetID::RED_HARDWARE_EXCEP:
+				return "RED_HARDWARE_EXCEP";
+			case NetID::RED_GET_RTC:
+				return "RED_GET_RTC";
 			case NetID::ISO3:
 				return "ISO 3";
 			case NetID::HSCAN2:
@@ -214,10 +281,8 @@ public:
 				return "LIN 3";
 			case NetID::LIN4:
 				return "LIN 4";
-			case NetID::MOST:
-				return "MOST";
-			case NetID::Red_App_Error:
-				return "Red App Error";
+			case NetID::RED_App_Error:
+				return "App Error";
 			case NetID::CGI:
 				return "CGI";
 			case NetID::Reset_Status:
