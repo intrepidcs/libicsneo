@@ -60,6 +60,6 @@ private:
 	void readTask();
 };
 
-};
+}
 
 #endif

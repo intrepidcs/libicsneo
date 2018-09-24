@@ -273,8 +273,8 @@ void STM32::writeTask() {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
-		const auto writeSize = writeOp.bytes.size();
-		int actualWritten = ::write(fd, writeOp.bytes.data(), writeSize);
+		const ssize_t writeSize = (ssize_t)writeOp.bytes.size();
+		ssize_t actualWritten = ::write(fd, writeOp.bytes.data(), writeSize);
 		if(actualWritten != writeSize)
 			std::cout << "Failure to write " << writeSize << " bytes, wrote " << actualWritten << std::endl;
 	}

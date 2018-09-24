@@ -11,6 +11,6 @@ public:
 	static std::vector<neodevice_t> FindByProduct(int product) { return VCP::FindByProduct(product, L"serenum"); }
 };
 
-};
+}
 
 #endif

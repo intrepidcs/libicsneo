@@ -335,6 +335,6 @@ private:
 	}
 };
 
-};
+}
 
 #endif

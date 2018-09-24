@@ -71,6 +71,6 @@ private:
 	void enforcePollingMessageLimit();
 };
 
-};
+}
 
 #endif

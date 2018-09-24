@@ -41,6 +41,6 @@ public:
 	CANMessageCallback(CANMessageFilter f, fn_messageCallback cb) : MessageCallback(cb, std::make_shared<CANMessageFilter>(f)) {}
 };
 
-};
+}
 
 #endif

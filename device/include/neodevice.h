@@ -6,8 +6,10 @@
 #ifdef __cplusplus
 // A forward declaration is needed as there is a circular dependency
 namespace icsneo {
-	class Device;
-};
+
+class Device;
+
+}
 typedef icsneo::Device* devicehandle_t;
 #else
 typedef void* devicehandle_t;
