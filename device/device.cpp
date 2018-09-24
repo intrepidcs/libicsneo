@@ -122,6 +122,9 @@ bool Device::open() {
 	if(!com)
 		return false;
 
+	if(settings)
+		settings->refresh();
+
 	return com->open();
 }
 
@@ -129,12 +132,14 @@ bool Device::close() {
 	if(!com)
 		return false;
 
+	settings = nullptr;
+
 	return com->close();
 }
 
 bool Device::goOnline() {
 	std::string serial;
-	while(!com->getSerialNumberSync(serial, std::chrono::milliseconds(500))) {
+	while(!com->getSerialNumberSync(serial)) {
 		std::cout << "Serial number not here yet" << std::endl;
 	}
 

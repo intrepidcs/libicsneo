@@ -37,12 +37,12 @@ public:
 	};
 	virtual bool sendCommand(Command cmd, bool boolean) { return sendCommand(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
 	virtual bool sendCommand(Command cmd, std::vector<uint8_t> arguments = {});
-	bool getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout = std::chrono::milliseconds(10));
-	bool getSerialNumberSync(std::string& serial, std::chrono::milliseconds timeout = std::chrono::milliseconds(10));
+	bool getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
+	bool getSerialNumberSync(std::string& serial, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	
 	int addMessageCallback(const MessageCallback& cb);
 	bool removeMessageCallback(int id);
-	std::shared_ptr<Message> waitForMessageSync(MessageFilter f = MessageFilter(), std::chrono::milliseconds timeout = std::chrono::milliseconds(10));
+	std::shared_ptr<Message> waitForMessageSync(MessageFilter f = MessageFilter(), std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	void setAlign16Bit(bool enable) { align16bit = enable; }
 

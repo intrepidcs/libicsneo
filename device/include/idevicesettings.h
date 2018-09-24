@@ -13,13 +13,11 @@ class IDeviceSettings {
 public:
 	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
 
-	IDeviceSettings(std::shared_ptr<Communication> com) : com(com) {
-		refresh();
-	}
+	IDeviceSettings(std::shared_ptr<Communication> com) : com(com) {}
 	virtual void refresh();
-	virtual void commit() = 0;
+	//virtual void commit() = 0;
 	virtual void* getStructure() { return settings.data(); }
-	virtual bool setBaudrate(int baud) = 0;
+	//virtual bool setBaudrate(int baud) = 0;
 protected:
 	bool settingsLoaded = false;
 	std::vector<uint8_t> settings;

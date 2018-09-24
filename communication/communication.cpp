@@ -85,7 +85,7 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 
 bool Communication::getSerialNumberSync(std::string& serial, std::chrono::milliseconds timeout) {
 	sendCommand(Command::RequestSerialNumber);
-	std::shared_ptr<Message> msg = waitForMessageSync(MessageFilter(Network::NetID::Main51), timeout);
+	std::shared_ptr<Message> msg = waitForMessageSync(MessageFilter(Network::NetID::RED_OLDFORMAT), timeout);
 	if(!msg)
 		return false;
 
@@ -95,6 +95,7 @@ bool Communication::getSerialNumberSync(std::string& serial, std::chrono::millis
 		if(i % 16 == 15)
 			std::cout << std::endl;
 	}
+	return true;
 }
 
 int Communication::addMessageCallback(const MessageCallback& cb) {
