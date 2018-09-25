@@ -19,11 +19,8 @@ using namespace icsneo;
 // Holds references for the shared_ptrs so they do not get freed until we're ready
 static std::vector<std::shared_ptr<Device>> connectableFoundDevices, connectedDevices;
 
-// Any shared_ptrs we've let go should be placed here so they're not accessed
-static std::vector<Device*> freedDevices;
-
-// We store an array of shared_ptr messages per device (by serial), this means we own the memory of the data pointer
-static std::map<std::string, std::vector<std::shared_ptr<Message>>> polledMessageStorage;
+// We store an array of shared_ptr messages per device, this is the owner of the shared_ptr on behalf of the C interface
+static std::map<devicehandle_t, std::vector<std::shared_ptr<Message>>> polledMessageStorage;
 
 void icsneoFindAllDevices(neodevice_t* devices, size_t* count) {
 	icsneoFreeUnconnectedDevices(); // Mark previous results as freed so they can no longer be connected to
@@ -44,9 +41,6 @@ void icsneoFindAllDevices(neodevice_t* devices, size_t* count) {
 }
 
 void icsneoFreeUnconnectedDevices() {
-	for(auto& devptr : connectableFoundDevices) {
-		freedDevices.push_back(devptr.get());
-	}
 	connectableFoundDevices.clear();
 }
 
@@ -68,7 +62,15 @@ uint32_t icsneoSerialStringToNum(const char* str) {
 
 bool icsneoIsValidNeoDevice(const neodevice_t* device) {
 	// If this neodevice_t was returned by a previous search, it will no longer be valid (as the underlying icsneo::Device is freed)
-	return std::find(freedDevices.begin(), freedDevices.end(), device->device) == freedDevices.end();
+	for(auto& dev : connectedDevices) {
+		if(dev.get() == device->device)
+			return true;
+	}
+	for(auto& dev : connectableFoundDevices) {
+		if(dev.get() == device->device)
+			return true;
+	}
+	return false;
 }
 
 bool icsneoOpenDevice(const neodevice_t* device) {
@@ -99,7 +101,7 @@ bool icsneoCloseDevice(const neodevice_t* device) {
 	if(!device->device->close())
 		return false;
 
-	// We disconnected successfully, free the device and mark it as freed
+	// We disconnected successfully, free the device
 	std::vector<std::vector<std::shared_ptr<Device>>::iterator> itemsToDelete;
 	for(auto it = connectedDevices.begin(); it < connectedDevices.end(); it++) {
 		if((*it).get() == device->device)
@@ -107,8 +109,6 @@ bool icsneoCloseDevice(const neodevice_t* device) {
 	}
 	for(auto it : itemsToDelete)
 		connectedDevices.erase(it);
-	
-	freedDevices.push_back(device->device);
 
 	return true;
 }
@@ -162,7 +162,7 @@ bool icsneoGetMessages(const neodevice_t* device, neomessage_t* messages, size_t
 		return true;
 	}
 
-	std::vector<std::shared_ptr<Message>>& storage = polledMessageStorage[device->serial];
+	std::vector<std::shared_ptr<Message>>& storage = polledMessageStorage[device->device];
 
 	if(!device->device->getMessages(storage, *items))
 		return false;
