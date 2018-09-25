@@ -54,7 +54,7 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 					headerSize = 6;
 				} else {
 					state = ReadState::GetData;
-					checksum = true;
+					checksum = true; // Even if checksum is not explicitly disallowed, we enable it here, as this goes into length calculation
 					headerSize = 2;
 					packetLength += 2; // The packet length given in short packets does not include header
 				}
@@ -99,10 +99,10 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 				while(currentIndex < packetLength)
 					packet.data[i++] = bytes[currentIndex++];
 
-				if(!checksum || bytes[currentIndex] == Communication::ICSChecksum(packet.data)) {
+				if(disableChecksum || !checksum || bytes[currentIndex] == ICSChecksum(packet.data)) {
 					// Got a good packet
 					gotGoodPackets = true;
-					processedPackets.push_back(std::make_shared<Communication::Packet>(packet));
+					processedPackets.push_back(std::make_shared<Packet>(packet));
 					for (auto a = 0; a < packetLength; a++)
 						bytes.pop_front();
 				} else {

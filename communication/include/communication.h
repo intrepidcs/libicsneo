@@ -33,13 +33,14 @@ public:
 	virtual bool sendCommand(Command cmd, bool boolean) { return sendCommand(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
 	virtual bool sendCommand(Command cmd, std::vector<uint8_t> arguments = {});
 	bool getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
-	bool getSerialNumberSync(std::string& serial, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
+	std::shared_ptr<SerialNumberMessage> getSerialNumberSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	
 	int addMessageCallback(const MessageCallback& cb);
 	bool removeMessageCallback(int id);
-	std::shared_ptr<Message> waitForMessageSync(MessageFilter f = MessageFilter(), std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
-
-	void setAlign16Bit(bool enable) { align16bit = enable; }
+	std::shared_ptr<Message> waitForMessageSync(MessageFilter f = MessageFilter(), std::chrono::milliseconds timeout = std::chrono::milliseconds(50)) {
+		return waitForMessageSync(std::make_shared<MessageFilter>(f), timeout);
+	}
+	std::shared_ptr<Message> waitForMessageSync(std::shared_ptr<MessageFilter> f, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	std::shared_ptr<Packetizer> packetizer;
 	std::shared_ptr<MessageDecoder> decoder;
@@ -52,7 +53,6 @@ protected:
 
 private:
 	bool isOpen = false;
-	bool align16bit = true; // Not needed for Gigalog, Galaxy, etc and newer
 
 	std::thread readTaskThread;
 	void readTask();

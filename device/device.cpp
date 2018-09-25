@@ -123,10 +123,37 @@ bool Device::open() {
 	if(!com)
 		return false;
 
+	if(!com->open())
+		return false;
+
+	auto serial = com->getSerialNumberSync();
+	int i = 0;
+	while(!serial) {
+		serial = com->getSerialNumberSync();
+		if(i++ > 5)
+			break;
+	}
+	if(!serial) {
+		std::cout << "Failed to get serial number in " << i << " tries" << std::endl;
+		return false;
+	}
+	
+	if(i != 0)
+		std::cout << "Took " << i << " tries to get the serial number" << std::endl;
+	
+	std::string currentSerial = getNeoDevice().serial;
+	if(currentSerial == SERIAL_FIND_ON_OPEN) {
+		strncpy(getWritableNeoDevice().serial, serial->deviceSerial.c_str(), sizeof(getNeoDevice().serial));
+		getWritableNeoDevice().serial[sizeof(getWritableNeoDevice().serial) - 1] = '\0';
+	} else if(currentSerial != serial->deviceSerial) {
+		std::cout << "NeoDevice has serial " << getNeoDevice().serial << " but device has serial " << serial->deviceSerial.c_str() << "!" << std::endl;
+		return false;
+	}
+	
 	if(settings)
 		settings->refresh();
 
-	return com->open();
+	return true;
 }
 
 bool Device::close() {
@@ -141,7 +168,7 @@ bool Device::close() {
 bool Device::goOnline() {
 	if(!com->sendCommand(Command::EnableNetworkCommunication, true))
 		return false;
-	
+
 	online = true;
 	return true;
 }

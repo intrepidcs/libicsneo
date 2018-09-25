@@ -68,19 +68,20 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 	return true;
 }
 
-bool Communication::getSerialNumberSync(std::string& serial, std::chrono::milliseconds timeout) {
+std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chrono::milliseconds timeout) {
 	sendCommand(Command::RequestSerialNumber);
-	std::shared_ptr<Message> msg = waitForMessageSync(MessageFilter(Network::NetID::RED_OLDFORMAT), timeout);
-	if(!msg)
-		return false;
-
-	std::cout << "Got " << msg->data.size() << " bytes" << std::endl;
-	for(size_t i = 0; i < msg->data.size(); i++) {
-		std::cout << std::hex << (int)msg->data[i] << ' ' << std::dec;
-		if(i % 16 == 15)
-			std::cout << std::endl;
+	std::shared_ptr<Message> msg = waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::RequestSerialNumber), timeout);
+	if(!msg) {
+		std::cout << "Didn't get a message in time" << std::endl;
+		return std::shared_ptr<SerialNumberMessage>();
 	}
-	return true;
+	auto m51 = std::dynamic_pointer_cast<Main51Message>(msg);
+	if(!m51) {
+		std::cout << "msg could not be cast to main51 " << msg->network << std::endl;
+		return std::shared_ptr<SerialNumberMessage>();
+	}
+	
+	return std::dynamic_pointer_cast<SerialNumberMessage>(m51);
 }
 
 int Communication::addMessageCallback(const MessageCallback& cb) {
@@ -97,7 +98,7 @@ bool Communication::removeMessageCallback(int id) {
 	}
 }
 
-std::shared_ptr<Message> Communication::waitForMessageSync(MessageFilter f, std::chrono::milliseconds timeout) {
+std::shared_ptr<Message> Communication::waitForMessageSync(std::shared_ptr<MessageFilter> f, std::chrono::milliseconds timeout) {
 	std::mutex m;
 	std::condition_variable cv;
 	std::shared_ptr<Message> returnedMessage;

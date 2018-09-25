@@ -134,13 +134,15 @@ std::vector<neodevice_t> PCAP::FindByProduct(int product) {
 				if(product != packet.srcMAC[3]) // This is where the PID is stored in the MAC
 					continue; // This is not a product we're currently looking for
 
-				std::string serialFromMAC = GetEthDevSerialFromMacAddress(packet.srcMAC[3], ((packet.srcMAC[4] << 8) | packet.srcMAC[5]));
 				neodevice_t neodevice;
-				#pragma warning(push)
-				#pragma warning(disable:4996)
-				strncpy(neodevice.serial, serialFromMAC.c_str(), sizeof(neodevice.serial));
-				neodevice.serial[sizeof(neodevice.serial) - 1] = 0;
-				#pragma warning(pop)
+				/* Unlike other transport layers, we can't get the serial number here as we
+				 * actually need to open the device in the find method and then request it
+				 * over a working communication layer. We could technically create a communication
+				 * layer to parse the packet we have in `data` at this point, but we'd need to
+				 * know information about the device to correctly instantiate a packetizer and
+				 * decoder. I'm intentionally avoiding passing that information down here for
+				 * code quality's sake.
+				 */
 				neodevice.handle = (neodevice_handle_t)((i << 24) | (packet.srcMAC[3] << 16) | (packet.srcMAC[4] << 8) | (packet.srcMAC[5]));
 				bool alreadyExists = false;
 				for(auto& dev : foundDevices)

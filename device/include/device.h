@@ -15,6 +15,8 @@ namespace icsneo {
 
 class Device {
 public:
+	static constexpr char* SERIAL_FIND_ON_OPEN = "xxxxxx";
+
 	Device(neodevice_t neodevice = {}) {
 		data = neodevice;
 		data.device = this;
