@@ -14,7 +14,7 @@ public:
 	NeoOBD2SIM(neodevice_t neodevice) : Device(neodevice) {
 		auto transport = std::make_shared<STM32>(getWritableNeoDevice());
 		auto packetizer = std::make_shared<Packetizer>();
-		auto decoder = std::make_shared<MessageDecoder>();
+		auto decoder = std::make_shared<Decoder>();
 		com = std::make_shared<Communication>(transport, packetizer, decoder);
 		setProductName(PRODUCT_NAME);
 		productId = PRODUCT_ID;

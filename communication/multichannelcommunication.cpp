@@ -1,6 +1,6 @@
 #include "communication/include/multichannelcommunication.h"
 #include "communication/include/command.h"
-#include "communication/include/messagedecoder.h"
+#include "communication/include/decoder.h"
 #include "communication/include/packetizer.h"
 #include <iostream>
 #include <iomanip>

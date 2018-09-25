@@ -1,4 +1,4 @@
-#include "communication/include/messagedecoder.h"
+#include "communication/include/decoder.h"
 #include "communication/include/communication.h"
 #include "communication/message/include/serialnumbermessage.h"
 #include "communication/include/command.h"
@@ -7,14 +7,14 @@
 
 using namespace icsneo;
 
-uint64_t MessageDecoder::GetUInt64FromLEBytes(uint8_t* bytes) {
+uint64_t Decoder::GetUInt64FromLEBytes(uint8_t* bytes) {
 	uint64_t ret = 0;
 	for(int i = 0; i < 8; i++)
 		ret |= (bytes[i] << (i * 8));
 	return ret;
 }
 
-std::shared_ptr<Message> MessageDecoder::decodePacket(const std::shared_ptr<Packet>& packet) {
+std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& packet) {
 	switch(packet->network.getType()) {
 		case Network::Type::CAN: {
 			if(packet->data.size() < 24)

@@ -9,7 +9,7 @@ namespace icsneo {
 
 class MultiChannelCommunication : public Communication {
 public:
-	MultiChannelCommunication(std::shared_ptr<ICommunication> com, std::shared_ptr<Packetizer> p, std::shared_ptr<MessageDecoder> md) : Communication(com, p, md) {}
+	MultiChannelCommunication(std::shared_ptr<ICommunication> com, std::shared_ptr<Packetizer> p, std::shared_ptr<Decoder> md) : Communication(com, p, md) {}
 	void spawnThreads();
 	void joinThreads();
 	bool sendCommand(Command cmd, std::vector<uint8_t> arguments);

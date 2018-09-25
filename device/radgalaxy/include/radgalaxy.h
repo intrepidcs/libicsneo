@@ -4,7 +4,7 @@
 #include "device/include/device.h"
 #include "platform/include/pcap.h"
 #include "communication/include/packetizer.h"
-#include "communication/include/messagedecoder.h"
+#include "communication/include/decoder.h"
 
 namespace icsneo {
 
@@ -18,7 +18,7 @@ public:
 		auto packetizer = std::make_shared<Packetizer>();
 		packetizer->disableChecksum = true;
 		packetizer->align16bit = false;
-		auto decoder = std::make_shared<MessageDecoder>();
+		auto decoder = std::make_shared<Decoder>();
 		com = std::make_shared<Communication>(transport, packetizer, decoder);
 		setProductName(PRODUCT_NAME);
 		productId = PRODUCT_ID;

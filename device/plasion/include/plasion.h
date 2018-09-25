@@ -12,7 +12,7 @@ public:
 	Plasion(neodevice_t neodevice) : Device(neodevice) {
 		auto transport = std::make_shared<FTDI>(getWritableNeoDevice());
 		auto packetizer = std::make_shared<Packetizer>();
-		auto decoder = std::make_shared<MessageDecoder>();
+		auto decoder = std::make_shared<Decoder>();
 		com = std::make_shared<MultiChannelCommunication>(transport, packetizer, decoder);
 	}
 };

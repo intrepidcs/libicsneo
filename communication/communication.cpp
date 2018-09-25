@@ -7,7 +7,7 @@
 #include <mutex>
 #include <condition_variable>
 #include "communication/include/command.h"
-#include "communication/include/messagedecoder.h"
+#include "communication/include/decoder.h"
 #include "communication/include/packetizer.h"
 #include "communication/message/include/serialnumbermessage.h"
 #include "communication/message/filter/include/main51messagefilter.h"
