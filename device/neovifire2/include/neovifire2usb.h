@@ -3,6 +3,7 @@
 
 #include "device/neovifire2/include/neovifire2.h"
 #include "platform/include/ftdi.h"
+#include "device/neovifire2/include/neovifire2settings.h"
 
 namespace icsneo {
 
@@ -14,6 +15,7 @@ public:
 		auto packetizer = std::make_shared<Packetizer>();
 		auto decoder = std::make_shared<Decoder>();
 		com = std::make_shared<Communication>(transport, packetizer, decoder);
+		settings = std::make_shared<NeoVIFIRE2Settings>(com);
 		productId = PRODUCT_ID;
 	}
 

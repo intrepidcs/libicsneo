@@ -4,8 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#pragma pack(push)
-#pragma pack(1)
+#pragma pack(push, 1)
 
 typedef struct {
 	uint64_t timestamp;

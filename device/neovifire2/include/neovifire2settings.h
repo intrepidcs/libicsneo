@@ -4,6 +4,12 @@
 #include <stdint.h>
 #include "device/include/idevicesettings.h"
 
+#ifdef __cplusplus
+
+namespace icsneo {
+
+#endif
+
 #pragma pack(push, 2)
 typedef struct {
 	uint16_t perf_en;
@@ -105,10 +111,9 @@ typedef struct {
 
 #include <iostream>
 
-namespace icsneo {
-
 class NeoVIFIRE2Settings : public IDeviceSettings {
 public:
+	NeoVIFIRE2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com) {}
 	void refresh() {
 		IDeviceSettings::refresh();
 		if(settingsLoaded) {

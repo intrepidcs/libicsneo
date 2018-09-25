@@ -26,6 +26,8 @@ protected:
 
 #endif
 
+#pragma pack(push, 2)
+
 /* SetBaudrate in CAN_SETTINGS */
 enum
 {
@@ -105,6 +107,77 @@ typedef struct _CANFD_SETTINGS
 	uint8_t reserved;
 } CANFD_SETTINGS;
 #define CANFD_SETTINGS_SIZE 10
+
+typedef struct ETHERNET_SETTINGS_t
+{
+	uint8_t duplex; /* 0 = half, 1 = full */
+	uint8_t link_speed;
+	uint8_t auto_neg;
+	uint8_t led_mode;
+	uint8_t rsvd[4];
+} ETHERNET_SETTINGS;
+#define ETHERNET_SETTINGS_SIZE 8
+
+typedef struct
+{
+	uint8_t MasterEnable;
+	uint8_t SlaveEnable;
+	uint8_t MasterNetwork;
+	uint8_t SlaveNetwork;
+} TIMESYNC_ICSHARDWARE_SETTINGS;
+#define TIMESYNC_ICSHARDWARE_SETTINGS_SIZE 4
+
+typedef struct _STextAPISettings
+{
+	uint32_t can1_tx_id;
+	uint32_t can1_rx_id;
+	union {
+		struct sCAN1Options
+		{
+			unsigned bExtended : 1;
+			unsigned : 15;
+		};
+		uint32_t DWord;
+	} can1_options;
+	uint32_t can2_tx_id;
+	uint32_t can2_rx_id;
+	union {
+		struct sCAN2Options
+		{
+			unsigned bExtended : 1;
+			unsigned : 15;
+		};
+		uint32_t DWord;
+	} can2_options;
+
+	uint32_t network_enables;
+
+	uint32_t can3_tx_id;
+	uint32_t can3_rx_id;
+	union {
+		struct sCAN3Options
+		{
+			unsigned bExtended : 1;
+			unsigned : 15;
+		};
+		uint32_t DWord;
+	} can3_options;
+
+	uint32_t can4_tx_id;
+	uint32_t can4_rx_id;
+	union {
+		struct sCAN4Options
+		{
+			unsigned bExtended : 1;
+			unsigned : 15;
+		};
+		uint32_t DWord;
+	} can4_options;
+
+	uint32_t reserved[5];
+
+} STextAPISettings;
+#define STextAPISettings_SIZE 72
 
 /* high_speed_auto_switch in SWCAN_SETTINGS */
 enum
@@ -217,6 +290,8 @@ typedef struct _UART_SETTINGS
 	};
 } UART_SETTINGS;
 #define UART_SETTINGS_SIZE 16
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 } // End of the namespace
