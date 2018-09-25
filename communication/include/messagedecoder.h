@@ -1,9 +1,9 @@
 #ifndef __MESSAGEDECODER_H_
 #define __MESSAGEDECODER_H_
 
-#include "communication/include/communication.h"
 #include "communication/message/include/message.h"
 #include "communication/message/include/canmessage.h"
+#include "communication/include/packet.h"
 #include "communication/include/network.h"
 #include <queue>
 #include <vector>
@@ -16,7 +16,8 @@ namespace icsneo {
 
 class MessageDecoder {
 public:
-	std::shared_ptr<Message> decodePacket(const std::shared_ptr<Communication::Packet>& message);
+	static uint64_t GetUInt64FromLEBytes(uint8_t* bytes);
+	std::shared_ptr<Message> decodePacket(const std::shared_ptr<Packet>& message);
 	
 private:
 	typedef uint16_t icscm_bitfield;

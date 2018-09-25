@@ -11,7 +11,7 @@ namespace icsneo {
 class Packetizer {
 public:
 	bool input(const std::vector<uint8_t>& bytes);
-	std::vector<std::shared_ptr<Communication::Packet>> output();
+	std::vector<std::shared_ptr<Packet>> output();
 	
 private:
 	enum class ReadState {
@@ -27,10 +27,10 @@ private:
 	int headerSize = 0;
 	bool checksum = false;
 	bool gotGoodPackets = false; // Tracks whether we've ever gotten a good packet
-	Communication::Packet packet;
+	Packet packet;
 	std::deque<uint8_t> bytes;
 
-	std::vector<std::shared_ptr<Communication::Packet>> processedPackets;
+	std::vector<std::shared_ptr<Packet>> processedPackets;
 };
 
 }

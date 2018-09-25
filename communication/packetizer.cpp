@@ -103,8 +103,8 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 	return processedPackets.size() > 0;
 }
 
-std::vector<std::shared_ptr<Communication::Packet>> Packetizer::output() {
+std::vector<std::shared_ptr<Packet>> Packetizer::output() {
 	auto ret = std::move(processedPackets);
-	processedPackets = std::vector<std::shared_ptr<Communication::Packet>>(); // Reset the vector
+	processedPackets = std::vector<std::shared_ptr<Packet>>(); // Reset the vector
 	return ret;
 }
