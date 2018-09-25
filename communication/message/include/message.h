@@ -8,7 +8,7 @@ namespace icsneo {
 
 class Message {
 public:
-	virtual ~Message() {}
+	virtual ~Message() = default;
 	Network network;
 	std::vector<uint8_t> data;
 	uint64_t timestamp;

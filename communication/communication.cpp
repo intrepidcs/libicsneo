@@ -9,6 +9,8 @@
 #include "communication/include/command.h"
 #include "communication/include/messagedecoder.h"
 #include "communication/include/packetizer.h"
+#include "communication/message/include/serialnumbermessage.h"
+#include "communication/message/filter/include/main51messagefilter.h"
 
 using namespace icsneo;
 

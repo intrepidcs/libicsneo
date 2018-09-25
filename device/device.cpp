@@ -1,4 +1,5 @@
 #include "include/device.h"
+#include "communication/message/callback/include/messagecallback.h"
 #include "communication/include/command.h"
 #include <string.h>
 #include <iostream>

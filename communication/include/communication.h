@@ -5,6 +5,8 @@
 #include "communication/include/command.h"
 #include "communication/include/network.h"
 #include "communication/include/packet.h"
+#include "communication/message/callback/include/messagecallback.h"
+#include "communication/message/include/serialnumbermessage.h"
 #include "communication/include/packetizer.h"
 #include "communication/include/messagedecoder.h"
 #include <memory>
