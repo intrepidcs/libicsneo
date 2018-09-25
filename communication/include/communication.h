@@ -2,6 +2,7 @@
 #define __COMMUNICATION_H_
 
 #include "communication/include/icommunication.h"
+#include "communication/include/command.h"
 #include "communication/include/network.h"
 #include "communication/include/messagecallback.h"
 #include <memory>
@@ -28,13 +29,6 @@ public:
 	std::vector<uint8_t>& packetWrap(std::vector<uint8_t>& data, bool addChecksum = true);
 	bool sendPacket(std::vector<uint8_t>& bytes);
 
-	enum class Command : uint8_t {
-		EnableNetworkCommunication = 0x07,
-		RequestSerialNumber = 0xA1,
-		SetSettings = 0xA4, // Previously known as RED_CMD_SET_BAUD_REQ, follow up with SaveSettings to write to EEPROM
-		GetSettings = 0xA5, // Previously known as RED_CMD_READ_BAUD_REQ
-		SaveSettings = 0xA6
-	};
 	virtual bool sendCommand(Command cmd, bool boolean) { return sendCommand(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
 	virtual bool sendCommand(Command cmd, std::vector<uint8_t> arguments = {});
 	bool getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));

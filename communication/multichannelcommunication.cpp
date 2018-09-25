@@ -1,4 +1,5 @@
 #include "communication/include/multichannelcommunication.h"
+#include "communication/include/command.h"
 #include "communication/include/messagedecoder.h"
 #include "communication/include/packetizer.h"
 #include <iostream>
@@ -15,7 +16,7 @@ void MultiChannelCommunication::joinThreads() {
 		mainChannelReadThread.join();
 }
 
-bool MultiChannelCommunication::sendCommand(Communication::Command cmd, std::vector<uint8_t> arguments) {
+bool MultiChannelCommunication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 	std::vector<uint8_t> bytes;
 	bytes.push_back((uint8_t)cmd);
 	for(auto& b : arguments)

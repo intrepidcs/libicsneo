@@ -6,6 +6,7 @@
 #include <cstring>
 #include <mutex>
 #include <condition_variable>
+#include "communication/include/command.h"
 #include "communication/include/messagedecoder.h"
 #include "communication/include/packetizer.h"
 
@@ -64,7 +65,7 @@ bool Communication::sendPacket(std::vector<uint8_t>& bytes) {
 	return impl->write(Communication::packetWrap(bytes));
 }
 
-bool Communication::sendCommand(Communication::Command cmd, std::vector<uint8_t> arguments) {
+bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 	std::vector<uint8_t> bytes;
 	bytes.push_back((uint8_t)cmd);
 	for(auto& b : arguments)

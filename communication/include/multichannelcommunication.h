@@ -3,6 +3,7 @@
 
 #include "communication/include/communication.h"
 #include "communication/include/icommunication.h"
+#include "communication/include/command.h"
 
 namespace icsneo {
 
@@ -11,7 +12,7 @@ public:
 	MultiChannelCommunication(std::shared_ptr<ICommunication> com) : Communication(com) {}
 	void spawnThreads();
 	void joinThreads();
-	bool sendCommand(Communication::Command cmd, std::vector<uint8_t> arguments);
+	bool sendCommand(Command cmd, std::vector<uint8_t> arguments);
 
 protected:
 	bool preprocessPacket(std::deque<uint8_t>& usbReadFifo);

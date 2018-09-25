@@ -1,5 +1,5 @@
 #include "include/device.h"
-#include "communication/include/messagecallback.h"
+#include "communication/include/command.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -138,20 +138,17 @@ bool Device::close() {
 }
 
 bool Device::goOnline() {
-	std::string serial;
-	while(!com->getSerialNumberSync(serial)) {
-		std::cout << "Serial number not here yet" << std::endl;
-	}
-
-	if(!com->sendCommand(Communication::Command::EnableNetworkCommunication, true))
+	if(!com->sendCommand(Command::EnableNetworkCommunication, true))
 		return false;
 	
-	// if(!com->sendCommand(Communication::Command::RequestSerialNumber))
-	// 	return false;
-
-	return online = true;
+	online = true;
+	return true;
 }
 
 bool Device::goOffline() {
-	return com->sendCommand(Communication::Command::EnableNetworkCommunication, false);
+	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
+		return false;
+
+	online = false;
+	return true;
 }
