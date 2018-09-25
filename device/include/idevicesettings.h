@@ -206,7 +206,7 @@ typedef struct _UART_SETTINGS
 	uint8_t reserved_1;
 	union {
 		uint32_t bOptions;
-		struct
+		struct sOptions
 		{
 			unsigned invert_tx : 1;
 			unsigned invert_rx : 1;
