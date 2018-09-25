@@ -2,7 +2,15 @@
 
 using namespace icsneo;
 
+std::shared_ptr<PCAPDLL> PCAPDLL::lazyLoadHolder;
+bool PCAPDLL::lazyLoaded = false;
+
 PCAPDLL::PCAPDLL() {
+	if(!lazyLoaded) {
+		lazyLoaded = true;
+		lazyLoadHolder = std::make_shared<PCAPDLL>();
+	}
+	
 	dll = LoadLibrary("wpcap.dll");
 
 	if(dll == NULL) {
