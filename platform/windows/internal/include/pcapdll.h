@@ -53,6 +53,6 @@ private:
 	void closeDLL();
 };
 
-};
+}
 
 #endif

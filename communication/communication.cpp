@@ -13,7 +13,7 @@ int Communication::messageCallbackIDCounter = 1;
 
 uint8_t Communication::ICSChecksum(const std::vector<uint8_t>& data) {
 	uint32_t checksum = 0;
-	for(auto i = 0; i < data.size(); i++)
+	for(size_t i = 0; i < data.size(); i++)
 		checksum += data[i];
 	checksum = ~checksum;
 	checksum++;

@@ -12,6 +12,6 @@ public:
 	static std::vector<std::shared_ptr<Device>> FindAll();
 };
 
-};
+}
 
 #endif

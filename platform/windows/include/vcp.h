@@ -43,6 +43,6 @@ private:
 	void writeTask();
 };
 
-};
+}
 
 #endif

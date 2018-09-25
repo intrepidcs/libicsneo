@@ -97,6 +97,6 @@ private:
 	void readTask();
 };
 
-};
+}
 
 #endif

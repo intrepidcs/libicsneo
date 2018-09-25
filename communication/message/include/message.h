@@ -14,6 +14,6 @@ public:
 	uint64_t timestamp;
 };
 
-};
+}
 
 #endif

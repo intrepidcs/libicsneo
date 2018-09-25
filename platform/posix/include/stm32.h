@@ -26,6 +26,6 @@ private:
 	void writeTask();
 };
 
-};
+}
 
 #endif

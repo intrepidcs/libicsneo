@@ -7,7 +7,9 @@
 #include "device/include/device.h"
 
 namespace icsneo {
-	std::vector<std::shared_ptr<Device>> FindAllDevices();
-};
+
+std::vector<std::shared_ptr<Device>> FindAllDevices();
+
+}
 
 #endif
