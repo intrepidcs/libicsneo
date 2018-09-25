@@ -56,7 +56,8 @@ bool icsneoSerialNumToString(uint32_t num, char* str, size_t* count) {
 		*count = result.length() + 1; // This is how big of a buffer we need
 		return false;
 	}
-	strcpy(str, result.c_str()); // TODO bad
+	strncpy(str, result.c_str(), *count);
+	str[*count - 1] = '\0';
 	*count = result.length();
 	return true;
 }
