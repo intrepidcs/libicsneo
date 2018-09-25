@@ -3,6 +3,24 @@
 
 using namespace icsneo;
 
+uint8_t Packetizer::ICSChecksum(const std::vector<uint8_t>& data) {
+	uint32_t checksum = 0;
+	for(auto i = 0; i < data.size(); i++)
+		checksum += data[i];
+	checksum = ~checksum;
+	checksum++;
+	return (uint8_t)checksum;
+}
+
+std::vector<uint8_t>& Packetizer::packetWrap(std::vector<uint8_t>& data) {
+	if(!disableChecksum)
+		data.push_back(ICSChecksum(data));
+	data.insert(data.begin(), 0xAA);
+	if(align16bit && data.size() % 2 == 1)
+		data.push_back('A');
+	return data;
+}
+
 bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 	bool haveEnoughData = true;
 	bytes.insert(bytes.end(), inputBytes.begin(), inputBytes.end());

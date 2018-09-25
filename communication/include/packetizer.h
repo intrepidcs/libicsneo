@@ -1,7 +1,7 @@
 #ifndef __PACKETIZER_H_
 #define __PACKETIZER_H_
 
-#include "communication/include/communication.h"
+#include "communication/include/packet.h"
 #include <queue>
 #include <vector>
 #include <memory>
@@ -10,8 +10,14 @@ namespace icsneo {
 
 class Packetizer {
 public:
+	static uint8_t ICSChecksum(const std::vector<uint8_t>& data);
+	std::vector<uint8_t>& packetWrap(std::vector<uint8_t>& data);
+
 	bool input(const std::vector<uint8_t>& bytes);
 	std::vector<std::shared_ptr<Packet>> output();
+
+	bool disableChecksum = false; // Even for short packets
+	bool align16bit = true; // Not needed for Gigalog, Galaxy, etc and newer
 	
 private:
 	enum class ReadState {

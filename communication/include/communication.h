@@ -5,6 +5,8 @@
 #include "communication/include/command.h"
 #include "communication/include/network.h"
 #include "communication/include/packet.h"
+#include "communication/include/packetizer.h"
+#include "communication/include/messagedecoder.h"
 #include <memory>
 #include <vector>
 #include <atomic>
@@ -16,8 +18,6 @@ namespace icsneo {
 
 class Communication {
 public:
-	static uint8_t ICSChecksum(const std::vector<uint8_t>& data);
-
 	Communication(std::shared_ptr<ICommunication> com, std::shared_ptr<Packetizer> p, std::shared_ptr<MessageDecoder> md) : impl(com), packetizer(p), decoder(md) {}
 	virtual ~Communication() { close(); }
 
@@ -26,7 +26,6 @@ public:
 	virtual void spawnThreads();
 	virtual void joinThreads();
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return impl->write(bytes); }
-	std::vector<uint8_t>& packetWrap(std::vector<uint8_t>& data, bool addChecksum = true);
 	bool sendPacket(std::vector<uint8_t>& bytes);
 
 	virtual bool sendCommand(Command cmd, bool boolean) { return sendCommand(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }

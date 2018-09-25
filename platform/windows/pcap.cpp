@@ -1,6 +1,7 @@
 #include "platform/windows/include/pcap.h"
 #include "communication/include/network.h"
 #include "communication/include/communication.h"
+#include "communication/include/packetizer.h"
 #include <pcap.h>
 #include <iphlpapi.h>
 #pragma comment(lib, "IPHLPAPI.lib")
@@ -108,9 +109,9 @@ std::vector<neodevice_t> PCAP::FindByProduct(int product) {
 		requestPacket.payload.reserve(4);
 		requestPacket.payload = {
 			((1 << 4) | (uint8_t)Network::NetID::Main51), // Packet size of 1 on NETID_MAIN51
-			(uint8_t)Communication::Command::RequestSerialNumber
+			(uint8_t)Command::RequestSerialNumber
 		};
-		requestPacket.payload.push_back(Communication::ICSChecksum(requestPacket.payload));
+		requestPacket.payload.push_back(Packetizer::ICSChecksum(requestPacket.payload));
 		requestPacket.payload.insert(requestPacket.payload.begin(), 0xAA);
 
 		auto bs = requestPacket.getBytestream();

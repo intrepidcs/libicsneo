@@ -14,24 +14,6 @@ using namespace icsneo;
 
 int Communication::messageCallbackIDCounter = 1;
 
-uint8_t Communication::ICSChecksum(const std::vector<uint8_t>& data) {
-	uint32_t checksum = 0;
-	for(auto i = 0; i < data.size(); i++)
-		checksum += data[i];
-	checksum = ~checksum;
-	checksum++;
-	return (uint8_t)checksum;
-}
-
-std::vector<uint8_t>& Communication::packetWrap(std::vector<uint8_t>& data, bool addChecksum) {
-	if(addChecksum)
-		data.push_back(ICSChecksum(data));
-	data.insert(data.begin(), 0xAA);
-	if(align16bit && data.size() % 2 == 1)
-		data.push_back('A');
-	return data;
-}
-
 bool Communication::open() {
 	if(isOpen)
 		return true;
@@ -62,7 +44,7 @@ bool Communication::close() {
 }
 
 bool Communication::sendPacket(std::vector<uint8_t>& bytes) {
-	return impl->write(Communication::packetWrap(bytes));
+	return impl->write(packetizer->packetWrap(bytes));
 }
 
 bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
