@@ -32,8 +32,6 @@ void MultiChannelCommunication::readTask() {
 	std::deque<uint8_t> usbReadFifo;
 	std::vector<uint8_t> readBytes;
 	std::vector<uint8_t> payloadBytes;
-	Packetizer packetizer;
-	MessageDecoder decoder;
 
 	while(!closing) {
 		if(readMore) {
@@ -108,9 +106,9 @@ void MultiChannelCommunication::readTask() {
 						usbReadFifo.pop_front();
 					}
 					
-					if(packetizer.input(payloadBytes)) {
-						for(auto& packet : packetizer.output()) {
-							auto msg = decoder.decodePacket(packet);
+					if(packetizer->input(payloadBytes)) {
+						for(auto& packet : packetizer->output()) {
+							auto msg = decoder->decodePacket(packet);
 							for(auto& cb : messageCallbacks) { // We might have closed while reading or processing
 								if(!closing) {
 									cb.second.callIfMatch(msg);

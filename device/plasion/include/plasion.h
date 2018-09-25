@@ -10,7 +10,10 @@ namespace icsneo {
 class Plasion : public Device {
 public:
 	Plasion(neodevice_t neodevice) : Device(neodevice) {
-		com = std::make_shared<MultiChannelCommunication>(std::make_shared<FTDI>(getWritableNeoDevice()));
+		auto transport = std::make_shared<FTDI>(getWritableNeoDevice());
+		auto packetizer = std::make_shared<Packetizer>();
+		auto decoder = std::make_shared<MessageDecoder>();
+		com = std::make_shared<MultiChannelCommunication>(transport, packetizer, decoder);
 	}
 };
 

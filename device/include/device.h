@@ -7,6 +7,8 @@
 #include "device/include/neodevice.h"
 #include "device/include/idevicesettings.h"
 #include "communication/include/communication.h"
+#include "communication/include/packetizer.h"
+#include "communication/include/messagedecoder.h"
 #include "third-party/concurrentqueue/concurrentqueue.h"
 
 namespace icsneo {

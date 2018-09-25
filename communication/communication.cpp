@@ -138,15 +138,13 @@ std::shared_ptr<Message> Communication::waitForMessageSync(MessageFilter f, std:
 
 void Communication::readTask() {
 	std::vector<uint8_t> readBytes;
-	Packetizer packetizer;
-	MessageDecoder decoder;
 
 	while(!closing) {
 		readBytes.clear();
 		if(impl->readWait(readBytes)) {
-			if(packetizer.input(readBytes)) {
-				for(auto& packet : packetizer.output()) {
-					auto msg = decoder.decodePacket(packet);
+			if(packetizer->input(readBytes)) {
+				for(auto& packet : packetizer->output()) {
+					auto msg = decoder->decodePacket(packet);
 					for(auto& cb : messageCallbacks) { // We might have closed while reading or processing
 						if(!closing) {
 							cb.second.callIfMatch(msg);

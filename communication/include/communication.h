@@ -18,7 +18,7 @@ class Communication {
 public:
 	static uint8_t ICSChecksum(const std::vector<uint8_t>& data);
 
-	Communication(std::shared_ptr<ICommunication> com) : impl(com) {}
+	Communication(std::shared_ptr<ICommunication> com, std::shared_ptr<Packetizer> p, std::shared_ptr<MessageDecoder> md) : impl(com), packetizer(p), decoder(md) {}
 	virtual ~Communication() { close(); }
 
 	bool open();
@@ -40,6 +40,8 @@ public:
 
 	void setAlign16Bit(bool enable) { align16bit = enable; }
 
+	std::shared_ptr<Packetizer> packetizer;
+	std::shared_ptr<MessageDecoder> decoder;
 
 protected:
 	std::shared_ptr<ICommunication> impl;

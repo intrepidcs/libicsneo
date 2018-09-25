@@ -10,7 +10,10 @@ class NeoVIFIRE2USB : public NeoVIFIRE2 {
 public:
 	static constexpr const uint16_t PRODUCT_ID = 0x1000;
 	NeoVIFIRE2USB(neodevice_t neodevice) : NeoVIFIRE2(neodevice) {
-		com = std::make_shared<Communication>(std::make_shared<FTDI>(getWritableNeoDevice()));
+		auto transport = std::make_shared<FTDI>(getWritableNeoDevice());
+		auto packetizer = std::make_shared<Packetizer>();
+		auto decoder = std::make_shared<MessageDecoder>();
+		com = std::make_shared<Communication>(transport, packetizer, decoder);
 		productId = PRODUCT_ID;
 	}
 

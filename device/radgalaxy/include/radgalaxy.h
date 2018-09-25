@@ -3,6 +3,8 @@
 
 #include "device/include/device.h"
 #include "platform/include/pcap.h"
+#include "communication/include/packetizer.h"
+#include "communication/include/messagedecoder.h"
 
 namespace icsneo {
 
@@ -12,7 +14,12 @@ public:
 	static constexpr const char* PRODUCT_NAME = "RADGalaxy";
 	static constexpr const uint16_t PRODUCT_ID = 0x0003;
 	RADGalaxy(neodevice_t neodevice) : Device(neodevice) {
-		com = std::make_shared<Communication>(std::make_shared<PCAP>(getWritableNeoDevice()));
+		auto transport = std::make_shared<PCAP>(getWritableNeoDevice());
+		auto packetizer = std::make_shared<Packetizer>();
+		packetizer->disableChecksum = true;
+		packetizer->align16bit = false;
+		auto decoder = std::make_shared<MessageDecoder>();
+		com = std::make_shared<Communication>(transport, packetizer, decoder);
 		setProductName(PRODUCT_NAME);
 		productId = PRODUCT_ID;
 	}
@@ -20,8 +27,14 @@ public:
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
-		for(auto neodevice : PCAP::FindByProduct(PRODUCT_ID))
-			found.push_back(std::make_shared<RADGalaxy>(neodevice));
+		for(auto neodevice : PCAP::FindByProduct(PRODUCT_ID)) {
+			strncpy(neodevice.serial, SERIAL_FIND_ON_OPEN, sizeof(neodevice.serial));
+			neodevice.serial[sizeof(neodevice.serial) - 1] = '\0';
+			auto device = std::make_shared<RADGalaxy>(neodevice);
+			if(!device->open()) // We will get the serial number on open
+				continue; // If the open failed, we won't display the device as an option to connect to
+			found.push_back(device);
+		}
 
 		return found;
 	}

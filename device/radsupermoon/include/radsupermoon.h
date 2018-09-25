@@ -12,8 +12,12 @@ public:
 	static constexpr const char* PRODUCT_NAME = "RADSupermoon";
 	static constexpr const uint16_t PRODUCT_ID = 0x1201;
 	RADSupermoon(neodevice_t neodevice) : Device(neodevice) {
-		com = std::make_shared<Communication>(std::make_shared<FTDI>(getWritableNeoDevice()));
-		com->setAlign16Bit(false);
+		auto transport = std::make_shared<FTDI>(getWritableNeoDevice());
+		auto packetizer = std::make_shared<Packetizer>();
+		packetizer->disableChecksum = true;
+		packetizer->align16bit = false;
+		auto decoder = std::make_shared<MessageDecoder>();
+		com = std::make_shared<Communication>(transport, packetizer, decoder);
 		setProductName(PRODUCT_NAME);
 		productId = PRODUCT_ID;
 	}

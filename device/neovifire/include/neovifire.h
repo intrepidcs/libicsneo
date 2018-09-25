@@ -11,7 +11,10 @@ public:
 	static constexpr const char* PRODUCT_NAME = "neoVI FIRE";
 	static constexpr const uint16_t PRODUCT_ID = 0x0701;
 	NeoVIFIRE(neodevice_t neodevice) : Device(neodevice) {
-		com = std::make_shared<Communication>(std::make_shared<FTDI>(getWritableNeoDevice()));
+		auto transport = std::make_shared<FTDI>(getWritableNeoDevice());
+		auto packetizer = std::make_shared<Packetizer>();
+		auto decoder = std::make_shared<MessageDecoder>();
+		com = std::make_shared<Communication>(transport, packetizer, decoder);
 		setProductName(PRODUCT_NAME);
 		productId = PRODUCT_ID;
 	}
