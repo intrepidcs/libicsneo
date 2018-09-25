@@ -22,12 +22,16 @@ public:
 		std::vector<std::shared_ptr<Device>> found;
 
 		for(auto neodevice : PCAP::FindByProduct(PRODUCT_ID)) {
-			strncpy(neodevice.serial, SERIAL_FIND_ON_OPEN, sizeof(neodevice.serial));
-			neodevice.serial[sizeof(neodevice.serial) - 1] = '\0';
-			auto device = std::make_shared<NeoVIFIRE2ETH>(neodevice);
-			if(!device->open()) // We will get the serial number on open
-				continue; // If the open failed, we won't display the device as an option to connect to
-			found.push_back(device);
+			{
+				strncpy(neodevice.serial, SERIAL_FIND_ON_OPEN, sizeof(neodevice.serial));
+				neodevice.serial[sizeof(neodevice.serial) - 1] = '\0';
+				auto device = std::make_shared<NeoVIFIRE2ETH>(neodevice);
+				if(!device->open()) // We will get the serial number on open
+					continue; // If the open failed, we won't display the device as an option to connect to
+				strncpy(neodevice.serial, device->getNeoDevice().serial, sizeof(neodevice.serial));
+				neodevice.serial[sizeof(neodevice.serial) - 1] = '\0';
+			}
+			found.push_back(std::make_shared<NeoVIFIRE2ETH>(neodevice));
 		}
 
 		return found;
