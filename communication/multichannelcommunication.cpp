@@ -96,7 +96,7 @@ void MultiChannelCommunication::readTask() {
 						continue;
 					}
 
-					for(auto i = 0; i < currentReadIndex; i++)
+					for(size_t i = 0; i < currentReadIndex; i++)
 						usbReadFifo.pop_front();
 
 					payloadBytes.clear();

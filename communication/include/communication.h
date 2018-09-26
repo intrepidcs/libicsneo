@@ -20,7 +20,7 @@ namespace icsneo {
 
 class Communication {
 public:
-	Communication(std::shared_ptr<ICommunication> com, std::shared_ptr<Packetizer> p, std::shared_ptr<Decoder> md) : impl(com), packetizer(p), decoder(md) {}
+	Communication(std::shared_ptr<ICommunication> com, std::shared_ptr<Packetizer> p, std::shared_ptr<Decoder> md) : packetizer(p), decoder(md), impl(com) {}
 	virtual ~Communication() { close(); }
 
 	bool open();

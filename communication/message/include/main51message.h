@@ -12,6 +12,6 @@ public:
 	Command command;
 };
 
-};
+}
 
 #endif

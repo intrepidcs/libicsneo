@@ -19,6 +19,6 @@ public:
 	bool hasPCBSerial = false;
 };
 
-};
+}
 
 #endif
