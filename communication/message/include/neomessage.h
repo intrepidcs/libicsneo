@@ -32,8 +32,10 @@ typedef struct {
 #include "communication/message/include/message.h"
 
 namespace icsneo {
-	neomessage_t CreateNeoMessage(const Message& message);
-};
+
+neomessage_t CreateNeoMessage(const Message& message);
+
+}
 #endif
 
 #endif

@@ -28,6 +28,6 @@ private:
 	};
 };
 
-};
+}
 
 #endif

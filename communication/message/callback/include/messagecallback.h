@@ -32,6 +32,6 @@ protected:
 	std::shared_ptr<MessageFilter> filter;
 };
 
-};
+}
 
 #endif

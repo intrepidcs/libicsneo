@@ -38,6 +38,6 @@ protected:
 	std::atomic<bool> closing{false};
 };
 
-};
+}
 
 #endif

@@ -10,6 +10,6 @@ public:
 	uint32_t arbid;
 };
 
-};
+}
 
 #endif

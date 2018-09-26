@@ -30,6 +30,6 @@ public:
 	}
 };
 
-};
+}
 
 #endif

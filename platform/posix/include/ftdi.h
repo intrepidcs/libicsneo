@@ -46,6 +46,6 @@ private:
 	FTDIDevice ftdiDevice;
 };
 
-};
+}
 
 #endif

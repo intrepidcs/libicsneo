@@ -4,12 +4,17 @@
 #include <Windows.h>
 #include <winsock2.h>
 #include <pcap.h>
+#include <memory>
 
 namespace icsneo {
 
 // Helper loader for the PCAP DLL
 class PCAPDLL {
 public:
+	// The first time we use the DLL we keep it in here and it won't get freed until the user unloads us (for speed reasons)
+	static std::shared_ptr<PCAPDLL> lazyLoadHolder;
+	static bool lazyLoaded;
+
 	// Functions
 	typedef int(__cdecl* PCAPFINDDEVICE)(char* source, struct pcap_rmtauth* auth, pcap_if_t** alldevs, char* errbuf);
 	typedef pcap_t*(__cdecl* PCAPOPEN)(const char* source, int snaplen, int flags, int read_timeout, struct pcap_rmtauth* auth, char* errbuf);
@@ -48,6 +53,6 @@ private:
 	void closeDLL();
 };
 
-};
+}
 
 #endif

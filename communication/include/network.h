@@ -400,6 +400,6 @@ private:
 	}
 };
 
-};
+}
 
 #endif

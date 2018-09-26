@@ -86,7 +86,7 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 				break;
 			case ReadState::GetData:
 				// We do not include the checksum in packetLength so it doesn't get copied into the payload buffer
-				if(bytes.size() < packetLength + (checksum ? 1 : 0)) { // Read until we have the rest of the packet
+				if(bytes.size() < (size_t)(packetLength + (checksum ? 1 : 0))) { // Read until we have the rest of the packet
 					haveEnoughData = false;
 					break;
 				}
