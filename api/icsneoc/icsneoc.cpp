@@ -22,13 +22,22 @@ static std::vector<std::shared_ptr<Device>> connectableFoundDevices, connectedDe
 // We store an array of shared_ptr messages per device, this is the owner of the shared_ptr on behalf of the C interface
 static std::map<devicehandle_t, std::vector<std::shared_ptr<Message>>> polledMessageStorage;
 
-void icsneoFindAllDevices(neodevice_t* devices, size_t* count) {
-	icsneoFreeUnconnectedDevices(); // Mark previous results as freed so they can no longer be connected to
-	auto foundDevices = icsneo::FindAllDevices();
+void icsneo_findAllDevices(neodevice_t* devices, size_t* count) {
+	std::vector<std::shared_ptr<Device>> foundDevices = icsneo::FindAllDevices();
+	
+	if(count == nullptr)
+		return;
 
-	auto inputSize = *count;
+	if(devices == nullptr) {
+		*count = foundDevices.size();
+		return;
+	}
+
+	icsneo_freeUnconnectedDevices(); // Mark previous results as freed so they can no longer be connected to
+
+	size_t inputSize = *count;
 	*count = foundDevices.size();
-	auto outputSize = *count;
+	size_t outputSize = *count;
 	if(outputSize > inputSize) {
 		// TODO an error should be returned that the data was truncated
 		outputSize = inputSize;
@@ -40,11 +49,11 @@ void icsneoFindAllDevices(neodevice_t* devices, size_t* count) {
 	}
 }
 
-void icsneoFreeUnconnectedDevices() {
+void icsneo_freeUnconnectedDevices() {
 	connectableFoundDevices.clear();
 }
 
-bool icsneoSerialNumToString(uint32_t num, char* str, size_t* count) {
+bool icsneo_serialNumToString(uint32_t num, char* str, size_t* count) {
 	auto result = Device::SerialNumToString(num);
 	if(*count <= result.length()) {
 		*count = result.length() + 1; // This is how big of a buffer we need
@@ -56,11 +65,11 @@ bool icsneoSerialNumToString(uint32_t num, char* str, size_t* count) {
 	return true;
 }
 
-uint32_t icsneoSerialStringToNum(const char* str) {
+uint32_t icsneo_serialStringToNum(const char* str) {
 	return Device::SerialStringToNum(str);
 }
 
-bool icsneoIsValidNeoDevice(const neodevice_t* device) {
+bool icsneo_isValidNeoDevice(const neodevice_t* device) {
 	// If this neodevice_t was returned by a previous search, it will no longer be valid (as the underlying icsneo::Device is freed)
 	for(auto& dev : connectedDevices) {
 		if(dev.get() == device->device)
@@ -73,8 +82,8 @@ bool icsneoIsValidNeoDevice(const neodevice_t* device) {
 	return false;
 }
 
-bool icsneoOpenDevice(const neodevice_t* device) {
-	if(!icsneoIsValidNeoDevice(device))
+bool icsneo_openDevice(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	if(!device->device->open())
@@ -94,8 +103,8 @@ bool icsneoOpenDevice(const neodevice_t* device) {
 	return true;
 }
 
-bool icsneoCloseDevice(const neodevice_t* device) {
-	if(!icsneoIsValidNeoDevice(device))
+bool icsneo_closeDevice(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
 	
 	if(!device->device->close())
@@ -113,44 +122,44 @@ bool icsneoCloseDevice(const neodevice_t* device) {
 	return true;
 }
 
-bool icsneoGoOnline(const neodevice_t* device) {
-	if(!icsneoIsValidNeoDevice(device))
+bool icsneo_goOnline(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->goOnline();
 }
 
-bool icsneoGoOffline(const neodevice_t* device) {
-	if(!icsneoIsValidNeoDevice(device))
+bool icsneo_goOffline(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->goOffline();
 }
 
-bool icsneoIsOnline(const neodevice_t* device) {
-	if(!icsneoIsValidNeoDevice(device))
+bool icsneo_isOnline(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->isOnline();
 }
 
-bool icsneoEnableMessagePolling(const neodevice_t* device) {
-	if(!icsneoIsValidNeoDevice(device))
+bool icsneo_enableMessagePolling(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	device->device->enableMessagePolling();
 	return true;
 }
 
-bool icsneoDisableMessagePolling(const neodevice_t* device) {
-	if(!icsneoIsValidNeoDevice(device))
+bool icsneo_disableMessagePolling(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->disableMessagePolling();
 }
 
-bool icsneoGetMessages(const neodevice_t* device, neomessage_t* messages, size_t* items) {
-	if(!icsneoIsValidNeoDevice(device))
+bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	if(items == nullptr)
@@ -174,20 +183,20 @@ bool icsneoGetMessages(const neodevice_t* device, neomessage_t* messages, size_t
 		messages[i] = CreateNeoMessage(*(storage[i]));
 	}
 
-	// The user now has until the next call of icsneoGetMessages (for this device) to use the data, after which point it's freed
+	// The user now has until the next call of icsneo_getMessages (for this device) to use the data, after which point it's freed
 	// The user should copy the data out if they want it
 	return true;
 }
 
-size_t icsneoGetPollingMessageLimit(const neodevice_t* device) {
-	if(!icsneoIsValidNeoDevice(device))
+size_t icsneo_getPollingMessageLimit(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
 		return 0;
 
 	return device->device->getPollingMessageLimit();
 }
 
-bool icsneoSetPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
-	if(!icsneoIsValidNeoDevice(device))
+bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	device->device->setPollingMessageLimit(newLimit);

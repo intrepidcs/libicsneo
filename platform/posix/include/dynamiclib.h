@@ -18,7 +18,7 @@
 #define ICSNEO_DESTRUCTOR
 // #endif
 
-#define icsneoDynamicLibraryGetFunction(handle, func) dlsym(handle, func)
-#define icsneoDynamicLibraryClose(handle) (dlclose(handle) == 0)
+#define icsneo_dynamicLibraryGetFunction(handle, func) dlsym(handle, func)
+#define icsneo_dynamicLibraryClose(handle) (dlclose(handle) == 0)
 
 #endif

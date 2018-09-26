@@ -12,127 +12,128 @@
 extern "C" {
 #endif
 
-extern void DLLExport icsneoFindAllDevices(neodevice_t* devices, size_t* count);
 
-extern void DLLExport icsneoFreeUnconnectedDevices();
+extern void DLLExport icsneo_findAllDevices(neodevice_t* devices, size_t* count);
 
-extern bool DLLExport icsneoSerialNumToString(uint32_t num, char* str, size_t* count);
+extern void DLLExport icsneo_freeUnconnectedDevices();
 
-extern uint32_t DLLExport icsneoSerialStringToNum(const char* str);
+extern bool DLLExport icsneo_serialNumToString(uint32_t num, char* str, size_t* count);
 
-extern bool DLLExport icsneoIsValidNeoDevice(const neodevice_t* device);
+extern uint32_t DLLExport icsneo_serialStringToNum(const char* str);
 
-extern bool DLLExport icsneoOpenDevice(const neodevice_t* device);
+extern bool DLLExport icsneo_isValidNeoDevice(const neodevice_t* device);
 
-extern bool DLLExport icsneoCloseDevice(const neodevice_t* device);
+extern bool DLLExport icsneo_openDevice(const neodevice_t* device);
 
-extern bool DLLExport icsneoGoOnline(const neodevice_t* device);
+extern bool DLLExport icsneo_closeDevice(const neodevice_t* device);
 
-extern bool DLLExport icsneoGoOffline(const neodevice_t* device);
+extern bool DLLExport icsneo_goOnline(const neodevice_t* device);
 
-extern bool DLLExport icsneoIsOnline(const neodevice_t* device);
+extern bool DLLExport icsneo_goOffline(const neodevice_t* device);
 
-extern bool DLLExport icsneoEnableMessagePolling(const neodevice_t* device);
+extern bool DLLExport icsneo_isOnline(const neodevice_t* device);
 
-extern bool DLLExport icsneoDisableMessagePolling(const neodevice_t* device);
+extern bool DLLExport icsneo_enableMessagePolling(const neodevice_t* device);
 
-extern bool DLLExport icsneoGetMessages(const neodevice_t* device, neomessage_t* messages, size_t* items);
+extern bool DLLExport icsneo_disableMessagePolling(const neodevice_t* device);
 
-extern size_t DLLExport icsneoGetPollingMessageLimit(const neodevice_t* device);
+extern bool DLLExport icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items);
 
-extern bool DLLExport icsneoSetPollingMessageLimit(const neodevice_t* device, size_t newLimit);
+extern size_t DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device);
+
+extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit);
 
 #ifdef __cplusplus
-}
+} // extern "C"
 #endif
 
 #else // ICSNEOC_DYNAMICLOAD
 
-typedef void(*fn_icsneoFindAllDevices)(neodevice_t* devices, size_t* count);
-fn_icsneoFindAllDevices icsneoFindAllDevices;
+typedef void(*fn_icsneo_findAllDevices)(neodevice_t* devices, size_t* count);
+fn_icsneo_findAllDevices icsneo_findAllDevices;
 
-typedef void(*fn_icsneoFreeUnconnectedDevices)();
-fn_icsneoFreeUnconnectedDevices icsneoFreeUnconnectedDevices;
+typedef void(*fn_icsneo_freeUnconnectedDevices)();
+fn_icsneo_freeUnconnectedDevices icsneo_freeUnconnectedDevices;
 
-typedef bool(*fn_icsneoSerialNumToString)(uint32_t num, char* str, size_t* count);
-fn_icsneoSerialNumToString icsneoSerialNumToString;
+typedef bool(*fn_icsneo_serialNumToString)(uint32_t num, char* str, size_t* count);
+fn_icsneo_serialNumToString icsneo_serialNumToString;
 
-typedef uint32_t(*fn_icsneoSerialStringToNum)(const char* str);
-fn_icsneoSerialStringToNum icsneoSerialStringToNum;
+typedef uint32_t(*fn_icsneo_serialStringToNum)(const char* str);
+fn_icsneo_serialStringToNum icsneo_serialStringToNum;
 
-typedef bool(*fn_icsneoIsValidNeoDevice)(const neodevice_t* device);
-fn_icsneoIsValidNeoDevice icsneoIsValidNeoDevice;
+typedef bool(*fn_icsneo_isValidNeoDevice)(const neodevice_t* device);
+fn_icsneo_isValidNeoDevice icsneo_isValidNeoDevice;
 
-typedef bool(*fn_icsneoOpenDevice)(const neodevice_t* device);
-fn_icsneoOpenDevice icsneoOpenDevice;
+typedef bool(*fn_icsneo_openDevice)(const neodevice_t* device);
+fn_icsneo_openDevice icsneo_openDevice;
 
-typedef bool(*fn_icsneoCloseDevice)(const neodevice_t* device);
-fn_icsneoCloseDevice icsneoCloseDevice;
+typedef bool(*fn_icsneo_closeDevice)(const neodevice_t* device);
+fn_icsneo_closeDevice icsneo_closeDevice;
 
-typedef bool(*fn_icsneoGoOnline)(const neodevice_t* device);
-fn_icsneoGoOnline icsneoGoOnline;
+typedef bool(*fn_icsneo_goOnline)(const neodevice_t* device);
+fn_icsneo_goOnline icsneo_goOnline;
 
-typedef bool(*fn_icsneoGoOffline)(const neodevice_t* device);
-fn_icsneoGoOffline icsneoGoOffline;
+typedef bool(*fn_icsneo_goOffline)(const neodevice_t* device);
+fn_icsneo_goOffline icsneo_goOffline;
 
-typedef bool(*fn_icsneoIsOnline)(const neodevice_t* device);
-fn_icsneoIsOnline icsneoIsOnline;
+typedef bool(*fn_icsneo_isOnline)(const neodevice_t* device);
+fn_icsneo_isOnline icsneo_isOnline;
 
-typedef bool(*fn_icsneoEnableMessagePolling)(const neodevice_t* device);
-fn_icsneoEnableMessagePolling icsneoEnableMessagePolling;
+typedef bool(*fn_icsneo_enableMessagePolling)(const neodevice_t* device);
+fn_icsneo_enableMessagePolling icsneo_enableMessagePolling;
 
-typedef bool(*fn_icsneoDisableMessagePolling)(const neodevice_t* device);
-fn_icsneoDisableMessagePolling icsneoDisableMessagePolling;
+typedef bool(*fn_icsneo_disableMessagePolling)(const neodevice_t* device);
+fn_icsneo_disableMessagePolling icsneo_disableMessagePolling;
 
-typedef bool(*fn_icsneoGetMessages)(const neodevice_t* device, neomessage_t* messages, size_t* items);
-fn_icsneoGetMessages icsneoGetMessages;
+typedef bool(*fn_icsneo_getMessages)(const neodevice_t* device, neomessage_t* messages, size_t* items);
+fn_icsneo_getMessages icsneo_getMessages;
 
-typedef size_t(*fn_icsneoGetPollingMessageLimit)(const neodevice_t* device);
-fn_icsneoGetPollingMessageLimit icsneoGetPollingMessageLimit;
+typedef size_t(*fn_icsneo_getPollingMessageLimit)(const neodevice_t* device);
+fn_icsneo_getPollingMessageLimit icsneo_getPollingMessageLimit;
 
-typedef bool(*fn_icsneoSetPollingMessageLimit)(const neodevice_t* device, size_t newLimit);
-fn_icsneoSetPollingMessageLimit icsneoSetPollingMessageLimit;
+typedef bool(*fn_icsneo_setPollingMessageLimit)(const neodevice_t* device, size_t newLimit);
+fn_icsneo_setPollingMessageLimit icsneo_setPollingMessageLimit;
 
-#define ICSNEO_IMPORT(func) func = (fn_##func)icsneoDynamicLibraryGetFunction(icsneoLibraryHandle, #func)
+#define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
-void* icsneoLibraryHandle = NULL;
-bool icsneoInitialized = false;
-bool icsneoDestroyed = false;
-int icsneoInit() {
-	icsneoDestroyed = false;
-	if(icsneoInitialized)
+void* icsneo_libraryHandle = NULL;
+bool icsneo_initialized = false;
+bool icsneo_destroyed = false;
+int icsneo_init() {
+	icsneo_destroyed = false;
+	if(icsneo_initialized)
 		return 1;
 
-	icsneoLibraryHandle = icsneoDynamicLibraryLoad();
-	if(icsneoLibraryHandle == NULL)
+	icsneo_libraryHandle = icsneo_dynamicLibraryLoad();
+	if(icsneo_libraryHandle == NULL)
 		return 2;
 
-	ICSNEO_IMPORTASSERT(icsneoFindAllDevices);
-	ICSNEO_IMPORTASSERT(icsneoFreeUnconnectedDevices);
-	ICSNEO_IMPORTASSERT(icsneoSerialNumToString);
-	ICSNEO_IMPORTASSERT(icsneoSerialStringToNum);
-	ICSNEO_IMPORTASSERT(icsneoIsValidNeoDevice);
-	ICSNEO_IMPORTASSERT(icsneoOpenDevice);
-	ICSNEO_IMPORTASSERT(icsneoCloseDevice);
-	ICSNEO_IMPORTASSERT(icsneoGoOnline);
-	ICSNEO_IMPORTASSERT(icsneoGoOffline);
-	ICSNEO_IMPORTASSERT(icsneoIsOnline);
-	ICSNEO_IMPORTASSERT(icsneoEnableMessagePolling);
-	ICSNEO_IMPORTASSERT(icsneoDisableMessagePolling);
-	ICSNEO_IMPORTASSERT(icsneoGetMessages);
-	ICSNEO_IMPORTASSERT(icsneoGetPollingMessageLimit);
-	ICSNEO_IMPORTASSERT(icsneoSetPollingMessageLimit);
+	ICSNEO_IMPORTASSERT(icsneo_findAllDevices);
+	ICSNEO_IMPORTASSERT(icsneo_freeUnconnectedDevices);
+	ICSNEO_IMPORTASSERT(icsneo_serialNumToString);
+	ICSNEO_IMPORTASSERT(icsneo_serialStringToNum);
+	ICSNEO_IMPORTASSERT(icsneo_isValidNeoDevice);
+	ICSNEO_IMPORTASSERT(icsneo_openDevice);
+	ICSNEO_IMPORTASSERT(icsneo_closeDevice);
+	ICSNEO_IMPORTASSERT(icsneo_goOnline);
+	ICSNEO_IMPORTASSERT(icsneo_goOffline);
+	ICSNEO_IMPORTASSERT(icsneo_isOnline);
+	ICSNEO_IMPORTASSERT(icsneo_enableMessagePolling);
+	ICSNEO_IMPORTASSERT(icsneo_disableMessagePolling);
+	ICSNEO_IMPORTASSERT(icsneo_getMessages);
+	ICSNEO_IMPORTASSERT(icsneo_getPollingMessageLimit);
+	ICSNEO_IMPORTASSERT(icsneo_setPollingMessageLimit);
 
-	icsneoInitialized = true;
+	icsneo_initialized = true;
 	return 0;
 }
 
-bool icsneoClose() ICSNEO_DESTRUCTOR {
-	icsneoInitialized = false;
-	if(icsneoDestroyed)
+bool icsneo_close() ICSNEO_DESTRUCTOR {
+	icsneo_initialized = false;
+	if(icsneo_destroyed)
 		return true;
 
-	return icsneoDestroyed = icsneoDynamicLibraryClose(icsneoLibraryHandle);
+	return icsneo_destroyed = icsneo_dynamicLibraryClose(icsneo_libraryHandle);
 }
 
 #endif // ICSNEOC_DYNAMICLOAD
