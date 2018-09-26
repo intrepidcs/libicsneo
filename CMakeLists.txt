@@ -64,8 +64,16 @@ add_library(icsneoc SHARED
 	${SRC_FILES}
 )
 
+add_library(icsneolegacy SHARED
+	api/icsneolegacy/icsneolegacy.cpp
+	api/icsneoc/icsneoc.cpp
+	api/icsneocpp/icsneocpp.cpp
+	${SRC_FILES}
+)
+
 target_compile_features(icsneocpp PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+target_compile_features(icsneolegacy PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 
 # libftdi
 if(NOT WIN32)
@@ -74,10 +82,13 @@ if(NOT WIN32)
 	set_property(TARGET ftdipp1-static PROPERTY POSITION_INDEPENDENT_CODE ON)
 	target_link_libraries(icsneocpp ftdipp1-static)
 	target_link_libraries(icsneoc ftdipp1-static)
+	target_link_libraries(icsneolegacy ftdipp1-static)
 	target_link_libraries(icsneocpp ftdi1-static)
 	target_link_libraries(icsneoc ftdi1-static)
+	target_link_libraries(icsneolegacy ftdi1-static)
 	target_link_libraries(icsneocpp ${CMAKE_THREAD_LIBS_INIT})
 	target_link_libraries(icsneoc ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(icsneolegacy ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
