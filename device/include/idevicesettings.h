@@ -277,16 +277,16 @@ typedef struct _UART_SETTINGS
 	uint16_t stop_bits;
 	uint8_t flow_control; /* 0- off, 1 - Simple CTS RTS */
 	uint8_t reserved_1;
-	union {
+	union abcd {
 		uint32_t bOptions;
-		struct sOptions
+		struct _sOptions
 		{
 			unsigned invert_tx : 1;
 			unsigned invert_rx : 1;
 			unsigned half_duplex : 1;
 			unsigned reserved_bits : 13;
 			unsigned reserved_bits2 : 16;
-		};
+		} sOptions;
 	};
 } UART_SETTINGS;
 #define UART_SETTINGS_SIZE 16

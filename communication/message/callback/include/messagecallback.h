@@ -4,6 +4,7 @@
 #include "communication/message/include/message.h"
 #include "communication/message/filter/include/messagefilter.h"
 #include <memory>
+#include <functional>
 
 namespace icsneo {
 
