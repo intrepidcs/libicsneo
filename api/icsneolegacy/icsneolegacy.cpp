@@ -6,11 +6,12 @@
 
 static NeoDevice OldNeoDeviceFromNew(const neodevice_t* newnd) {
 	NeoDevice oldnd = { 0 };
+	oldnd.DeviceType = newnd->type;
 	oldnd.SerialNumber = icsneo_serialStringToNum(newnd->serial);
 	oldnd.NumberOfClients = 0;
 	oldnd.MaxAllowedClients = 1;
-	static_assert(sizeof(neodevice_handle_t) <= sizeof(oldnd.Handle), "neodevice_handle_t size must be at least sizeof(int) for compatibility reasons");
-	*(neodevice_handle_t*)(&oldnd.Handle) = newnd->handle;
+	static_assert(sizeof(neodevice_handle_t) == sizeof(oldnd.Handle), "neodevice_handle_t size must be sizeof(int) for compatibility reasons");
+	oldnd.Handle = newnd->handle;
 	return oldnd;
 }
 

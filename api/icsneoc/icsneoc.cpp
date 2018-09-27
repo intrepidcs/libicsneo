@@ -55,13 +55,13 @@ void icsneo_freeUnconnectedDevices() {
 
 bool icsneo_serialNumToString(uint32_t num, char* str, size_t* count) {
 	auto result = Device::SerialNumToString(num);
-	if(*count <= result.length()) {
+	if(*count < result.length()) {
 		*count = result.length() + 1; // This is how big of a buffer we need
 		return false;
 	}
-	strncpy(str, result.c_str(), *count);
-	str[*count - 1] = '\0';
-	*count = result.length();
+
+	*count = result.copy(str, *count);
+	str[*count] = '\0';
 	return true;
 }
 
@@ -208,6 +208,6 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 		return false;
 
 	*maxLength = device->device->getType().toString().copy(str, *maxLength);
-	str[*maxLength + 1] = '\0';
+	str[*maxLength] = '\0';
 	return true;
 }

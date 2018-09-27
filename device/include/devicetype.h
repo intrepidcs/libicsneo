@@ -1,17 +1,18 @@
 #ifndef __DEVICETYPE_H_
 #define __DEVICETYPE_H_
 
-typedef uint32_t devicetype_t;
-
 // Hold the length of the longest name, so that C applications can allocate memory accordingly
 // Currently the longest is "Intrepid Ethernet Evaluation Board"
 #define DEVICE_TYPE_LONGEST_NAME (35 + 1) // Add 1 so that if someone forgets, they still have space for null terminator
 
 #ifndef __cplusplus
 #include <stdint.h>
+typedef uint32_t devicetype_t;
 #else
 #include <ostream>
 #include <cstdint>
+
+typedef uint32_t devicetype_t;
 
 namespace icsneo {
 
@@ -147,8 +148,8 @@ public:
 	DeviceType(DeviceType::Enum netid) { value = netid; }
 	DeviceType::Enum getDeviceType() const { return value; }
 	std::string toString() const { return GetDeviceTypeString(getDeviceType()); }
-	friend std::ostream& operator<<(std::ostream& os, const DeviceType& DeviceType) {
-		os << DeviceType.toString();
+	friend std::ostream& operator<<(std::ostream& os, const DeviceType& type) {
+		os << type.toString().c_str();
 		return os;
 	}
 
