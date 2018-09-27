@@ -2,16 +2,17 @@
 #define __NEOVIION_H_
 
 #include "device/plasion/include/plasion.h"
+#include "device/include/devicetype.h"
 #include "platform/include/ftdi.h"
 
 namespace icsneo {
 
 class NeoVIION : public Plasion {
 public:
-	static constexpr const char* PRODUCT_NAME = "neoVI ION";
+	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::ION;
 	static constexpr const uint16_t PRODUCT_ID = 0x0901;
 	NeoVIION(neodevice_t neodevice) : Plasion(neodevice) {
-		setProductName(PRODUCT_NAME);
+		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
 

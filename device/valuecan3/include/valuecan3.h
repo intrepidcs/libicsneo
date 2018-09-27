@@ -2,20 +2,21 @@
 #define __VALUECAN3_H_
 
 #include "device/include/device.h"
+#include "device/include/devicetype.h"
 #include "platform/include/ftdi.h"
 
 namespace icsneo {
 
 class ValueCAN3 : public Device {
 public:
-	static constexpr const char* PRODUCT_NAME = "ValueCAN 3";
+	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN3;
 	static constexpr const uint16_t PRODUCT_ID = 0x0601;
 	ValueCAN3(neodevice_t neodevice) : Device(neodevice) {
 		auto transport = std::make_shared<FTDI>(getWritableNeoDevice());
 		auto packetizer = std::make_shared<Packetizer>();
 		auto decoder = std::make_shared<Decoder>();
 		com = std::make_shared<Communication>(transport, packetizer, decoder);
-		setProductName(PRODUCT_NAME);
+		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
 

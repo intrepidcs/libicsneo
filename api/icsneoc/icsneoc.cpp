@@ -202,3 +202,12 @@ bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
 	device->device->setPollingMessageLimit(newLimit);
 	return true;
 }
+
+bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	*maxLength = device->device->getType().toString().copy(str, *maxLength);
+	str[*maxLength + 1] = '\0';
+	return true;
+}

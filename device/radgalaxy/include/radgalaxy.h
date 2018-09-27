@@ -2,6 +2,7 @@
 #define __RADGALAXY_H_
 
 #include "device/include/device.h"
+#include "device/include/devicetype.h"
 #include "platform/include/pcap.h"
 #include "communication/include/packetizer.h"
 #include "communication/include/decoder.h"
@@ -11,7 +12,7 @@ namespace icsneo {
 class RADGalaxy : public Device {
 public:
 	// Serial numbers start with RG
-	static constexpr const char* PRODUCT_NAME = "RADGalaxy";
+	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADGalaxy;
 	static constexpr const uint16_t PRODUCT_ID = 0x0003;
 	RADGalaxy(neodevice_t neodevice) : Device(neodevice) {
 		auto transport = std::make_shared<PCAP>(getWritableNeoDevice());
@@ -20,7 +21,7 @@ public:
 		packetizer->align16bit = false;
 		auto decoder = std::make_shared<Decoder>();
 		com = std::make_shared<Communication>(transport, packetizer, decoder);
-		setProductName(PRODUCT_NAME);
+		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
 

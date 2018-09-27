@@ -12,7 +12,6 @@
 extern "C" {
 #endif
 
-
 extern void DLLExport icsneo_findAllDevices(neodevice_t* devices, size_t* count);
 
 extern void DLLExport icsneo_freeUnconnectedDevices();
@@ -42,6 +41,8 @@ extern bool DLLExport icsneo_getMessages(const neodevice_t* device, neomessage_t
 extern size_t DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device);
 
 extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit);
+
+extern bool DLLExport icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength);
 
 #ifdef __cplusplus
 } // extern "C"
@@ -94,6 +95,9 @@ fn_icsneo_getPollingMessageLimit icsneo_getPollingMessageLimit;
 typedef bool(*fn_icsneo_setPollingMessageLimit)(const neodevice_t* device, size_t newLimit);
 fn_icsneo_setPollingMessageLimit icsneo_setPollingMessageLimit;
 
+typedef size_t(*fn_icsneo_getProductName)(const neodevice_t* device, char* str, size_t* maxLength);
+fn_icsneo_getProductName icsneo_getProductName;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneo_libraryHandle = NULL;
@@ -123,6 +127,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_getMessages);
 	ICSNEO_IMPORTASSERT(icsneo_getPollingMessageLimit);
 	ICSNEO_IMPORTASSERT(icsneo_setPollingMessageLimit);
+	ICSNEO_IMPORTASSERT(icsneo_getProductName);
 
 	icsneo_initialized = true;
 	return 0;

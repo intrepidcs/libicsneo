@@ -1,15 +1,24 @@
 #ifndef __DEVICETYPE_H_
 #define __DEVICETYPE_H_
 
-#include <cstdint>
+typedef uint32_t devicetype_t;
+
+// Hold the length of the longest name, so that C applications can allocate memory accordingly
+// Currently the longest is "Intrepid Ethernet Evaluation Board"
+#define DEVICE_TYPE_LONGEST_NAME (35 + 1) // Add 1 so that if someone forgets, they still have space for null terminator
+
+#ifndef __cplusplus
+#include <stdint.h>
+#else
 #include <ostream>
+#include <cstdint>
 
 namespace icsneo {
 
 class DeviceType {
 public:
 	// This enum used to be a bitfield, but has since become an enum as we have more than 32 devices
-	enum Enum : uint32_t {
+	enum Enum : devicetype_t {
 		Unknown = (0x00000000),
 		BLUE = (0x00000001),
 		ECU_AVB = (0x00000002),
@@ -51,6 +60,7 @@ public:
 		OBD2_SIM = (0x80000000)
 	};
 	static const char* GetDeviceTypeString(DeviceType::Enum type) {
+		// Adding something? Make sure you update DEVICE_TYPE_LONGEST_NAME at the top!
 		switch(type) {
 			case Unknown:
 				return "Unknown";
@@ -63,7 +73,7 @@ public:
 			case DW_VCAN:
 				return "DW_VCAN";
 			case RADMoon2:
-				return "RADMoon2";
+				return "RADMoon 2";
 			case RADGigalog:
 				return "RADGigalog";
 			case VCAN4_1:
@@ -87,7 +97,7 @@ public:
 			case Pendant:
 				return "Pendant";
 			case OBD2_PRO:
-				return "neoOBD2-PRO";
+				return "neoOBD2 PRO";
 			case ECUChip_UART:
 				return "neoECU Chip UART";
 			case PLASMA:
@@ -97,7 +107,7 @@ public:
 			case CT_OBD:
 				return "CT_OBD";
 			case ION:
-				return "ION";
+				return "neoVI ION";
 			case RADStar:
 				return "RADStar";
 			case VCAN4_4:
@@ -117,7 +127,7 @@ public:
 			case RADGalaxy:
 				return "RADGalaxy";
 			case RADStar2:
-				return "RADStar2";
+				return "RADStar 2";
 			case VividCAN:
 				return "VividCAN";
 			case OBD2_SIM:
@@ -129,14 +139,16 @@ public:
 				// Intentionally don't use default so that the compiler throws a warning when something is added
 				return "Unknown neoVI";
 		}
+		return "Unknown neoVI";
 	}
 
 	DeviceType() { value = DeviceType::Enum::Unknown; }
-	DeviceType(uint32_t netid) { value = (DeviceType::Enum)netid; }
+	DeviceType(devicetype_t netid) { value = (DeviceType::Enum)netid; }
 	DeviceType(DeviceType::Enum netid) { value = netid; }
 	DeviceType::Enum getDeviceType() const { return value; }
+	std::string toString() const { return GetDeviceTypeString(getDeviceType()); }
 	friend std::ostream& operator<<(std::ostream& os, const DeviceType& DeviceType) {
-		os << GetDeviceTypeString(DeviceType.getDeviceType());
+		os << DeviceType.toString();
 		return os;
 	}
 
@@ -144,6 +156,8 @@ private:
 	DeviceType::Enum value;
 };
 
-};
+}
+
+#endif // __cplusplus
 
 #endif

@@ -6,6 +6,7 @@
 #include <cstring>
 #include "device/include/neodevice.h"
 #include "device/include/idevicesettings.h"
+#include "device/include/devicetype.h"
 #include "communication/include/communication.h"
 #include "communication/include/packetizer.h"
 #include "communication/include/decoder.h"
@@ -17,10 +18,9 @@ class Device {
 public:
 	static constexpr const char* SERIAL_FIND_ON_OPEN = "xxxxxx";
 
-	Device(neodevice_t neodevice = {}) {
+	Device(neodevice_t neodevice = { 0 }) {
 		data = neodevice;
 		data.device = this;
-		setProductName("undefined");
 	}
 	virtual ~Device() {
 		disableMessagePolling();
@@ -31,7 +31,7 @@ public:
 	static uint32_t SerialStringToNum(const std::string& serial);
 	static bool SerialStringIsNumeric(const std::string& serial);
 
-	std::string getProductName() const { return data.type; }
+	DeviceType getType() const { return DeviceType(data.type); }
 	uint16_t getProductId() const { return productId; }
 	std::string getSerial() const { return data.serial; }
 	uint32_t getSerialNumber() const { return Device::SerialStringToNum(getSerial()); }
@@ -64,11 +64,6 @@ protected:
 	std::shared_ptr<Communication> com;
 
 	neodevice_t& getWritableNeoDevice() { return data; }
-	void setProductName(const std::string& newName) {
-		#pragma warning( disable : 4996 )
-		auto copied = newName.copy(data.type, sizeof(data.type) - 1);
-		data.type[copied] = '\0';
-	}
 
 private:
 	neodevice_t data;

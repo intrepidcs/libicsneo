@@ -2,6 +2,7 @@
 #define __VALUECAN4_H_
 
 #include "device/include/device.h"
+#include "device/include/devicetype.h"
 #include "platform/include/stm32.h"
 
 namespace icsneo {
@@ -9,14 +10,14 @@ namespace icsneo {
 class ValueCAN4 : public Device {
 public:
 	// Serial numbers are V0 for 4-4, VE for 4-2EL, V2 for 4-2, and V1 for 4-1
-	static constexpr const char* PRODUCT_NAME = "ValueCAN 4";
+	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_2; // TODO Split headers and determine the correct type
 	static constexpr const uint16_t PRODUCT_ID = 0x1101;
 	ValueCAN4(neodevice_t neodevice) : Device(neodevice) {
 		auto transport = std::make_shared<STM32>(getWritableNeoDevice());
 		auto packetizer = std::make_shared<Packetizer>();
 		auto decoder = std::make_shared<Decoder>();
 		com = std::make_shared<Communication>(transport, packetizer, decoder);
-		setProductName(PRODUCT_NAME);
+		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
 

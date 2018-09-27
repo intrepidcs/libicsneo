@@ -2,6 +2,7 @@
 #define __NEODEVICE_H_
 
 #include <stdint.h>
+#include "device/include/devicetype.h"
 
 #ifdef __cplusplus
 // A forward declaration is needed as there is a circular dependency
@@ -17,11 +18,15 @@ typedef void* devicehandle_t;
 
 typedef int32_t neodevice_handle_t;
 
+#pragma pack(push, 1)
+
 typedef struct {
 	devicehandle_t device;
 	neodevice_handle_t handle;
+	devicetype_t type; 
 	char serial[7];
-	char type[64];
 } neodevice_t;
+
+#pragma pack(pop)
 
 #endif
