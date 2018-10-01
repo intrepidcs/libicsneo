@@ -3,30 +3,6 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-#include "communication/include/communication.h"
-#include <iostream>
-
-namespace icsneo {
-
-class IDeviceSettings {
-public:
-	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
-
-	IDeviceSettings(std::shared_ptr<Communication> com) : com(com) {}
-	virtual ~IDeviceSettings() {}
-	virtual void refresh();
-	//virtual void commit() = 0;
-	virtual void* getStructure() { return settings.data(); }
-	//virtual bool setBaudrate(int baud) = 0;
-protected:
-	bool settingsLoaded = false;
-	std::vector<uint8_t> settings;
-	std::shared_ptr<Communication> com;
-};
-
-#endif
-
 #pragma pack(push, 2)
 
 /* SetBaudrate in CAN_SETTINGS */
@@ -295,7 +271,42 @@ typedef struct _UART_SETTINGS
 #pragma pack(pop)
 
 #ifdef __cplusplus
-} // End of the namespace
-#endif
+#include "communication/include/communication.h"
+#include <iostream>
+
+namespace icsneo {
+
+class IDeviceSettings {
+public:
+	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
+
+	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), structSize(size) {}
+	virtual ~IDeviceSettings() {}
+	
+	void refresh(); // Get from device
+	bool send(); // Send to device, device keeps settings in volatile RAM until power cycle
+	bool commit(); // Send to device, device keeps settings in EEPROM until next commit
+
+	virtual bool setBaudrateFor(Network net, uint32_t baudrate);
+
+	virtual CAN_SETTINGS* getCANSettingsFor(Network net) { return nullptr; }
+	virtual CANFD_SETTINGS* getCANFDSettingsFor(Network net) { return nullptr; }
+
+	void* getRawStructurePointer() { return settings.data(); }
+	template<typename T> T* getStructurePointer() { return static_cast<T*>((void*)settings.data()); }
+	template<typename T> T getStructureCopy() { return *getStructurePointer<T>(); }
+	template<typename T> bool setStructure(const T& newStructure);
+
+	uint8_t getEnumValueForBaudrate(uint32_t baudrate);
+protected:
+	std::shared_ptr<Communication> com;
+	size_t structSize;
+	bool settingsLoaded = false;
+	std::vector<uint8_t> settings;
+};
+
+}
+
+#endif // __cplusplus
 
 #endif

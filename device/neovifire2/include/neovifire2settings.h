@@ -113,18 +113,31 @@ typedef struct {
 
 class NeoVIFIRE2Settings : public IDeviceSettings {
 public:
-	NeoVIFIRE2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com) {}
-	void refresh() {
-		IDeviceSettings::refresh();
-		if(settingsLoaded) {
-			if(settings.size() != sizeof(neovifire2_settings_t)) {
-				std::cout << "Settings size was " << settings.size() << " but for a FIRE2 it should be " << sizeof(neovifire2_settings_t) << std::endl;
-				settingsLoaded = false;
-			}
+	NeoVIFIRE2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire2_settings_t)) {}
+	CAN_SETTINGS* getCANSettingsFor(Network net) override {
+		auto cfg = getStructurePointer<neovifire2_settings_t>();
+		switch(net.getNetID()) {
+			case Network::NetID::HSCAN:
+				return &(cfg->can1);
+			case Network::NetID::MSCAN:
+				return &(cfg->can2);
+			case Network::NetID::HSCAN2:
+				return &(cfg->can3);
+			case Network::NetID::HSCAN3:
+				return &(cfg->can4);
+			case Network::NetID::HSCAN4:
+				return &(cfg->can5);
+			case Network::NetID::HSCAN5:
+				return &(cfg->can6);
+			case Network::NetID::HSCAN6:
+				return &(cfg->can7);
+			case Network::NetID::HSCAN7:
+				return &(cfg->can8);
+			default:
+				return nullptr;
 		}
 	}
-private:
-	neovifire2_settings_t* settingsStruct = (neovifire2_settings_t*)settings.data();
+	CANFD_SETTINGS* getCANFDSettingsFor(Network net) override { return nullptr; }
 };
 
 }

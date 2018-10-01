@@ -211,3 +211,33 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 	str[*maxLength] = '\0';
 	return true;
 }
+
+bool icsneo_settingsSend(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	if(!device->device->settings) // Settings are not available for this device
+		return false;
+
+	return device->device->settings->send();
+}
+
+bool icsneo_settingsCommit(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	if(!device->device->settings) // Settings are not available for this device
+		return false;
+
+	return device->device->settings->commit();
+}
+
+bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	if(!device->device->settings) // Settings are not available for this device
+		return false;
+
+	return device->device->settings->setBaudrateFor(netid, newBaudrate);
+}
