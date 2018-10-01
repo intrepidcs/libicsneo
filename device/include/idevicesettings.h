@@ -14,6 +14,7 @@ public:
 	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
 
 	IDeviceSettings(std::shared_ptr<Communication> com) : com(com) {}
+	virtual ~IDeviceSettings() {}
 	virtual void refresh();
 	//virtual void commit() = 0;
 	virtual void* getStructure() { return settings.data(); }

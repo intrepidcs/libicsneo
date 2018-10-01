@@ -2,6 +2,7 @@
 #define __ICSNEOLEGACY_H_
 
 #include "platform/include/dynamiclib.h" // Dynamic library loading and exporting
+#include "platform/include/tchar.h"
 
 #include <stdint.h>
 typedef uint8_t byte; // Typedef helper for the following include

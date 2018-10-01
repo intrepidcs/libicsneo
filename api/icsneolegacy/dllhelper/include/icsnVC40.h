@@ -3,6 +3,14 @@
 #include <string>
 #include <cstdint>
 
+#if defined(_MSC_VER)
+#define ALIGNED_(x) __declspec(align(x))
+#else
+#if defined(__GNUC__)
+#define ALIGNED_(x) __attribute__ ((aligned(x)))
+#endif
+#endif
+
 // OpenPort "OpenType" Argument Constants
 #define	NEOVI_COMMTYPE_RS232  0
 #define	NEOVI_COMMTYPE_USB_BULK	1
@@ -305,7 +313,7 @@ const int ISO15765_2_NETWORK_SWCAN2 = 0x24;
 #pragma pack(1)
 //One byte aligned
 
-typedef struct __declspec(align(1))
+typedef struct ALIGNED_(1)
 {
         int iType;// 1,2,3 for Generation of HW
 
@@ -342,7 +350,7 @@ typedef struct __declspec(align(1))
 #pragma pack(2)
 //two byte aligned
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
     unsigned char Mode;
     unsigned char SetBaudrate;
@@ -357,7 +365,7 @@ typedef struct __declspec(align(2))
 	unsigned char innerFrameDelay25us;
 } CAN_SETTINGS;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
     unsigned char FDMode;     /* mode, secondary baudrate for canfd */
     unsigned char FDBaudrate;
@@ -370,7 +378,7 @@ typedef struct __declspec(align(2))
     unsigned char reserved;
 }   CANFD_SETTINGS;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
     unsigned char Mode;
     unsigned char SetBaudrate;
@@ -386,7 +394,7 @@ typedef struct __declspec(align(2))
 	unsigned char Reserved; //leave as 0
 } SWCAN_SETTINGS;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
     unsigned int Baudrate;
     unsigned short spbrg;
@@ -396,7 +404,7 @@ typedef struct __declspec(align(2))
     unsigned char Mode;
 } LIN_SETTINGS;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
 	uint16_t monkey;
     unsigned char duplex; /* 0 = half, 1 = full */
@@ -406,7 +414,7 @@ typedef struct __declspec(align(2))
     unsigned char rsvd[4];
 }   ETHERNET_SETTINGS;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
 	//CAN
 	unsigned int can1_tx_id;
@@ -463,14 +471,14 @@ typedef struct __declspec(align(2))
 	
 }STextAPISettings;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
     unsigned short time_500us;
     unsigned short k;
     unsigned short l;
 }ISO9141_KEYWORD2000__INIT_STEP;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
     unsigned int Baudrate;
     unsigned short spbrg;
@@ -483,7 +491,7 @@ typedef struct __declspec(align(2))
     unsigned short chksum_enabled;
 } ISO9141_KEYWORD2000_SETTINGS;
 
-typedef struct __declspec (align(2))
+typedef struct ALIGNED_(2)
 {    
 	uint8_t ucInterfaceType;
     uint8_t reserved0;
@@ -499,14 +507,14 @@ typedef struct __declspec (align(2))
     uint32_t uFlags;
 }OP_ETH_GENERAL_SETTINGS; 
 
-typedef struct __declspec (align(2))
+typedef struct ALIGNED_(2)
 {
    uint8_t ucConfigMode;
    uint8_t preemption_en;
    uint8_t reserved0[14];
 }OP_ETH_SETTINGS;
 
-typedef struct __declspec (align(2))
+typedef struct ALIGNED_(2)
 {
     uint32_t ecu_id;
     CAN_SETTINGS can1;
@@ -522,7 +530,7 @@ typedef struct __declspec (align(2))
     uint16_t rsvd;
 }SVividCANSettings; 
 
-typedef struct __declspec (align(2))
+typedef struct ALIGNED_(2)
 {
 	CAN_SETTINGS can1;
 	CAN_SETTINGS can2;
@@ -554,7 +562,7 @@ typedef struct __declspec (align(2))
 	STextAPISettings text_api;
 } SOBD2SimSettings;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
         unsigned short perf_en;
 
@@ -623,7 +631,7 @@ typedef struct __declspec(align(2))
         STextAPISettings text_api;
 }SRADGalaxySettings;
 
-typedef struct __declspec (align(2))
+typedef struct ALIGNED_(2)
 {
 	/* Performance Test */
 	uint16_t perf_en;
@@ -654,7 +662,7 @@ typedef struct __declspec (align(2))
 } SVCAN412Settings;
 
 
-typedef struct __declspec (align(2))
+typedef struct ALIGNED_(2)
 {
     uint16_t perf_en;
     OP_ETH_GENERAL_SETTINGS opEthGen;
@@ -691,7 +699,7 @@ typedef struct __declspec (align(2))
 }SRADStar2Settings;
 
     //_stChipVersions
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
         unsigned char mpic_maj;
         unsigned char mpic_min;
@@ -703,7 +711,7 @@ typedef struct __declspec(align(2))
         unsigned char jpic_min;
 }fire_versions;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
         unsigned char mpic_maj;
         unsigned char mpic_min;
@@ -715,7 +723,7 @@ typedef struct __declspec(align(2))
         unsigned char hid_min;
 }plasma_fire_vnet;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
         unsigned char mpic_maj;
         unsigned char mpic_min;
@@ -723,7 +731,7 @@ typedef struct __declspec(align(2))
         unsigned short Reserve2;
 }vcan3_versions;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
         CAN_SETTINGS can1;
         CAN_SETTINGS can2;
@@ -773,7 +781,7 @@ typedef struct __declspec(align(2))
         unsigned short reservedZero;
 }SVCANRFSettings;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
         unsigned int ecu_id;
         CAN_SETTINGS can1;
@@ -795,14 +803,14 @@ typedef struct __declspec(align(2))
 }SEEVBSettings;
 
 // --- J1708 Settings
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
 	unsigned short enable_convert_mode;
 } J1708_SETTINGS;
 
 
 // --- UART Settings
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
 	unsigned short Baudrate;
 	unsigned short spbrg;
@@ -826,7 +834,7 @@ typedef struct __declspec(align(2))
 	};
 } UART_SETTINGS;
 
- typedef struct __declspec(align(2))
+ typedef struct ALIGNED_(2)
  {
         unsigned short netId; // Netid of CAN network to use.
         unsigned char zero0;
@@ -837,7 +845,7 @@ typedef struct __declspec(align(2))
         //Bit 5-7: Reserve
  } SNeoMostGatewaySettings;
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 { 
         CAN_SETTINGS can1;
         CAN_SETTINGS can2;
@@ -914,7 +922,7 @@ typedef struct __declspec(align(2))
     unsigned short vnetBits;  //First bit enables Android Messages
 }SFireSettings; 
 
-typedef struct __declspec (align(2))
+typedef struct ALIGNED_(2)
 {
     uint16_t perf_en;
     CAN_SETTINGS can1;
@@ -984,7 +992,7 @@ typedef struct __declspec (align(2))
     uint16_t digitalIoThresholdEnable;
 }SFire2Settings; 
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
     CAN_SETTINGS can1;
     CAN_SETTINGS can2;
@@ -999,7 +1007,7 @@ typedef struct __declspec(align(2))
 } SVCAN3Settings;
 
 
-typedef struct __declspec(align(2))  _stCM_ISO157652_TxMessage
+typedef struct ALIGNED_(2)  _stCM_ISO157652_TxMessage
 {
 	//transmit message
 	unsigned short vs_netid;	///< The netid of the message (determines which network to transmit on),  not supported
@@ -1053,7 +1061,7 @@ typedef struct __declspec(align(2))  _stCM_ISO157652_TxMessage
 
 
 
-typedef struct __declspec(align(2))
+typedef struct ALIGNED_(2)
 {
 	//transmit message
 	unsigned short vs_netid;	///< The netid of the message (determines which network to decode receives),  not supported
