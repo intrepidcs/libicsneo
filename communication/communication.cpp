@@ -46,7 +46,7 @@ bool Communication::close() {
 }
 
 bool Communication::sendPacket(std::vector<uint8_t>& bytes) {
-	return impl->write(packetizer->packetWrap(bytes));
+	return rawWrite(packetizer->packetWrap(bytes));
 }
 
 bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {

@@ -12,8 +12,8 @@ uint8_t Packetizer::ICSChecksum(const std::vector<uint8_t>& data) {
 	return (uint8_t)checksum;
 }
 
-std::vector<uint8_t>& Packetizer::packetWrap(std::vector<uint8_t>& data) {
-	if(!disableChecksum)
+std::vector<uint8_t>& Packetizer::packetWrap(std::vector<uint8_t>& data, bool checksum) {
+	if(!disableChecksum && checksum)
 		data.push_back(ICSChecksum(data));
 	data.insert(data.begin(), 0xAA);
 	if(align16bit && data.size() % 2 == 1)

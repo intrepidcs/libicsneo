@@ -16,13 +16,7 @@ void MultiChannelCommunication::joinThreads() {
 		mainChannelReadThread.join();
 }
 
-bool MultiChannelCommunication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
-	std::vector<uint8_t> bytes;
-	bytes.push_back((uint8_t)cmd);
-	for(auto& b : arguments)
-		bytes.push_back(b);
-	bytes.insert(bytes.begin(), 0xB | ((uint8_t)bytes.size() << 4));
-	bytes = packetizer->packetWrap(bytes);
+bool MultiChannelCommunication::sendPacket(std::vector<uint8_t>& bytes) {
 	bytes.insert(bytes.begin(), {(uint8_t)CommandType::HostPC_to_Vnet1, (uint8_t)bytes.size(), (uint8_t)(bytes.size() >> 8)});
 	return rawWrite(bytes);
 }

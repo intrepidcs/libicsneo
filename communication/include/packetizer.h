@@ -11,7 +11,7 @@ namespace icsneo {
 class Packetizer {
 public:
 	static uint8_t ICSChecksum(const std::vector<uint8_t>& data);
-	std::vector<uint8_t>& packetWrap(std::vector<uint8_t>& data);
+	std::vector<uint8_t>& packetWrap(std::vector<uint8_t>& data, bool checksum = true);
 
 	bool input(const std::vector<uint8_t>& bytes);
 	std::vector<std::shared_ptr<Packet>> output();

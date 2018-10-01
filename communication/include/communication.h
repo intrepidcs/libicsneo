@@ -28,7 +28,7 @@ public:
 	virtual void spawnThreads();
 	virtual void joinThreads();
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return impl->write(bytes); }
-	bool sendPacket(std::vector<uint8_t>& bytes);
+	virtual bool sendPacket(std::vector<uint8_t>& bytes);
 
 	virtual bool sendCommand(Command cmd, bool boolean) { return sendCommand(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
 	virtual bool sendCommand(Command cmd, std::vector<uint8_t> arguments = {});
