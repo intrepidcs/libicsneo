@@ -88,24 +88,20 @@ bool IDeviceSettings::send() {
 	bytestream.resize(6 + structSize);
 	bytestream[0] = GS_VERSION;
 	bytestream[1] = GS_VERSION >> 8;
-	bytestream[2] = structSize;
-	bytestream[3] = structSize >> 8;
+	bytestream[2] = (uint8_t)structSize;
+	bytestream[3] = (uint8_t)(structSize >> 8);
 	uint16_t gs_checksum = CalculateGSChecksum(settings);
-	bytestream[4] = gs_checksum;
-	bytestream[5] = gs_checksum >> 8;
+	bytestream[4] = (uint8_t)gs_checksum;
+	bytestream[5] = (uint8_t)(gs_checksum >> 8);
 	memcpy(bytestream.data() + 6, getRawStructurePointer(), structSize);
+
 	com->sendCommand(Command::SetSettings, bytestream);
-	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(), std::chrono::milliseconds(3000));
-	if(!msg)
-		std::cout << "No response from device for set settings" << std::endl;
-	if(msg && msg->data[1] != 1)
-		std::cout << "Response was incorrect for set settings: " << (int)msg->data[1] << std::endl;
-	if(!msg || msg->data[1] != 1) { // The second byte of the response carries the result, 1 being success
-		refresh(); // Refresh our buffer with what the device has
-		return false;
-	}
-	
-	return true;
+	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
+
+	if(!msg || msg->data[0] != 1)
+		refresh(); // Refr
+
+	return (msg && msg->data[0] == 1); // Device sends 0x01 for success
 }
 
 bool IDeviceSettings::commit() {
@@ -113,13 +109,12 @@ bool IDeviceSettings::commit() {
 		return false;
 
 	com->sendCommand(Command::SaveSettings);
-	std::shared_ptr<Message> msg = com->waitForMessageSync(Main51MessageFilter(Command::SaveSettings), std::chrono::milliseconds(500));
-	if(!msg || msg->data[1] != 1) { // The second byte of the response carries the result, 1 being success
-		refresh(); // Refresh our buffer with what the device has
-		return false;
-	}
+	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000));
+
+	if(!msg || msg->data[0] != 1)
+		refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 	
-	return true;
+	return (msg && msg->data[0] == 1); // Device sends 0x01 for success
 }
 
 bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {

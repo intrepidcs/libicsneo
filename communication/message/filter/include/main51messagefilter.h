@@ -17,7 +17,7 @@ public:
 
 	bool match(const std::shared_ptr<Message>& message) const {
 		if(!MessageFilter::match(message)) {
-			std::cout << "message filter did not match base for " << message->network << std::endl;
+			//std::cout << "message filter did not match base for " << message->network << std::endl;
 			return false;
 		}
 		const auto main51Message = std::dynamic_pointer_cast<Main51Message>(message);

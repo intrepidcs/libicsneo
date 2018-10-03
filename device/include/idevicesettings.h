@@ -282,6 +282,7 @@ public:
 
 	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), structSize(size) {}
 	virtual ~IDeviceSettings() {}
+	bool ok() { return settingsLoaded; }
 	
 	void refresh(); // Get from device
 	bool send(); // Send to device, device keeps settings in volatile RAM until power cycle

@@ -51,6 +51,13 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 								memcpy(msg->pcbSerial, packet->data.data() + 15, sizeof(msg->pcbSerial));
 							return msg;
 						}
+						break;
+						default:
+							auto msg = std::make_shared<Main51Message>();
+							msg->network = packet->network;
+							msg->command = Command(packet->data[0]);
+							msg->data.insert(msg->data.begin(), packet->data.begin() + 1, packet->data.end());
+							return msg;
 					}
 					break;
 				}
@@ -64,7 +71,7 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 					 */
 					uint16_t length = packet->data[0] | (packet->data[1] << 8);
 					packet->network = Network(packet->data[2] & 0xF);
-					std::cout << "Got an old format packet, decoding against " << packet->network << std::endl;
+					//std::cout << "Got an old format packet, decoding against " << packet->network << std::endl;
 					packet->data.erase(packet->data.begin(), packet->data.begin() + 3);
 					if(packet->data.size() != length)
 						packet->data.resize(length);

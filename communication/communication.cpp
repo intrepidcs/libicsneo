@@ -46,10 +46,10 @@ bool Communication::close() {
 }
 
 bool Communication::sendPacket(std::vector<uint8_t>& bytes) {
-	std::cout << "\nWriting " << bytes.size() << " bytes\n" << std::hex;
-	for(size_t i = 0; i < bytes.size(); i++)
-		std::cout << std::setw(2) << std::setfill('0') << (int)bytes[i] << (i % 16 == 15 ? '\n' : ' ');
-	std::cout << '\n' << std::endl << std::dec;
+	// std::cout << "\nWriting " << bytes.size() << " bytes\n" << std::hex;
+	// for(size_t i = 0; i < bytes.size(); i++)
+	// 	std::cout << std::setw(2) << std::setfill('0') << (int)bytes[i] << (i % 16 == 15 ? '\n' : ' ');
+	// std::cout << '\n' << std::endl << std::dec;
 	return rawWrite(bytes);
 }
 
@@ -57,7 +57,7 @@ bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 	auto msg = std::make_shared<Message>();
 	msg->network = Network::NetID::Main51;
 	msg->data = std::move(arguments);
-	msg->data.insert(msg->data.begin(), (uint8_t)cmd);
+	msg->data.insert(msg->data.begin(), {(uint8_t)cmd, (uint8_t)(uint16_t(cmd) >> 8)});
 	auto packet = encoder->encode(msg);
 	return sendPacket(packet);
 }
@@ -134,7 +134,7 @@ void Communication::readTask() {
 			if(packetizer->input(readBytes)) {
 				for(auto& packet : packetizer->output()) {
 					auto msg = decoder->decodePacket(packet);
-					std::cout << "Got packet for " << msg->network << ", calling " << messageCallbacks.size() << " callbacks" << std::endl;
+					//std::cout << "Got packet for " << msg->network << ", calling " << messageCallbacks.size() << " callbacks" << std::endl;
 					for(auto& cb : messageCallbacks) { // We might have closed while reading or processing
 						if(!closing) {
 							cb.second.callIfMatch(msg);

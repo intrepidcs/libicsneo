@@ -150,8 +150,12 @@ bool Device::open() {
 		return false;
 	}
 	
-	if(settings)
+	bool settingsNecessary = bool(settings); // Check if the shared_ptr exists
+	if(settingsNecessary) {
 		settings->refresh();
+		if(!settings || !settings->ok())
+			return false;
+	}
 
 	return true;
 }

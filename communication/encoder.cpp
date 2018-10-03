@@ -25,13 +25,26 @@ std::vector<uint8_t> Encoder::encode(const std::shared_ptr<Message>& message) {
 		default:
 			switch(message->network.getNetID()) {
 				case Network::NetID::Main51:
-					if(message->data.size() <= 0xF)
+					if(message->data.size() > 0xF) {
+						// Main51 can be sent as a long message without setting the NetID to RED first
+						// Size in long format is the size of the entire packet
+						// So +1 for AA header, +1 for short format header, and +2 for long format size
+						uint16_t size = uint16_t(message->data.size()) + 1 + 1 + 2;
+						size += 1; // Even though we are not including the NetID bytes, the device expects them to be counted in the length
+						message->data.insert(message->data.begin(), {
+							(uint8_t)Network::NetID::Main51, // 0x0B for long message
+							(uint8_t)size, // Size, little endian 16-bit
+							(uint8_t)(size >> 8)
+						});
+						return packetizer->packetWrap(message->data, shortFormat);
+					} else {
 						shortFormat = true;
+					}
 					break;
 				case Network::NetID::RED_OLDFORMAT: {
 					// See the decoder for an explanation
 					// We expect the network byte to be populated already in data, but not the length
-					uint16_t length = message->data.size() - 1;
+					uint16_t length = uint16_t(message->data.size()) - 1;
 					message->data.insert(message->data.begin(), {(uint8_t)length, (uint8_t)(length >> 8)});
 				}
 				default:
