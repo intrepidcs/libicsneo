@@ -9,6 +9,7 @@
 #include "device/include/devicetype.h"
 #include "communication/include/communication.h"
 #include "communication/include/packetizer.h"
+#include "communication/include/encoder.h"
 #include "communication/include/decoder.h"
 #include "third-party/concurrentqueue/concurrentqueue.h"
 

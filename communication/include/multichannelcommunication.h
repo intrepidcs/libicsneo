@@ -4,12 +4,17 @@
 #include "communication/include/communication.h"
 #include "communication/include/icommunication.h"
 #include "communication/include/command.h"
+#include "communication/include/encoder.h"
 
 namespace icsneo {
 
 class MultiChannelCommunication : public Communication {
 public:
-	MultiChannelCommunication(std::shared_ptr<ICommunication> com, std::shared_ptr<Packetizer> p, std::shared_ptr<Decoder> md) : Communication(com, p, md) {}
+	MultiChannelCommunication(
+		std::shared_ptr<ICommunication> com,
+		std::shared_ptr<Packetizer> p,
+		std::shared_ptr<Encoder> e,
+		std::shared_ptr<Decoder> md) : Communication(com, p, e, md) {}
 	void spawnThreads() override;
 	void joinThreads() override;
 	bool sendPacket(std::vector<uint8_t>& bytes) override;

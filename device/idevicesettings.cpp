@@ -95,7 +95,11 @@ bool IDeviceSettings::send() {
 	bytestream[5] = gs_checksum >> 8;
 	memcpy(bytestream.data() + 6, getRawStructurePointer(), structSize);
 	com->sendCommand(Command::SetSettings, bytestream);
-	std::shared_ptr<Message> msg = com->waitForMessageSync(Main51MessageFilter(Command::SetSettings), std::chrono::milliseconds(500));
+	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(), std::chrono::milliseconds(3000));
+	if(!msg)
+		std::cout << "No response from device for set settings" << std::endl;
+	if(msg && msg->data[1] != 1)
+		std::cout << "Response was incorrect for set settings: " << (int)msg->data[1] << std::endl;
 	if(!msg || msg->data[1] != 1) { // The second byte of the response carries the result, 1 being success
 		refresh(); // Refresh our buffer with what the device has
 		return false;

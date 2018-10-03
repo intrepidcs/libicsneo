@@ -42,6 +42,7 @@ endif()
 set(COMMON_SRC
 	communication/message/neomessage.cpp
 	communication/decoder.cpp
+	communication/encoder.cpp
 	communication/packetizer.cpp
 	communication/multichannelcommunication.cpp
 	communication/communication.cpp

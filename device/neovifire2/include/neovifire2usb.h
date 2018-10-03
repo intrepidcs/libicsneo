@@ -13,8 +13,9 @@ public:
 	NeoVIFIRE2USB(neodevice_t neodevice) : NeoVIFIRE2(neodevice) {
 		auto transport = std::make_shared<FTDI>(getWritableNeoDevice());
 		auto packetizer = std::make_shared<Packetizer>();
+		auto encoder = std::make_shared<Encoder>(packetizer);
 		auto decoder = std::make_shared<Decoder>();
-		com = std::make_shared<Communication>(transport, packetizer, decoder);
+		com = std::make_shared<Communication>(transport, packetizer, encoder, decoder);
 		settings = std::make_shared<NeoVIFIRE2Settings>(com);
 		productId = PRODUCT_ID;
 	}

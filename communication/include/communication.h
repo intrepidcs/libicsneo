@@ -8,6 +8,7 @@
 #include "communication/message/callback/include/messagecallback.h"
 #include "communication/message/include/serialnumbermessage.h"
 #include "communication/include/packetizer.h"
+#include "communication/include/encoder.h"
 #include "communication/include/decoder.h"
 #include <memory>
 #include <vector>
@@ -20,7 +21,11 @@ namespace icsneo {
 
 class Communication {
 public:
-	Communication(std::shared_ptr<ICommunication> com, std::shared_ptr<Packetizer> p, std::shared_ptr<Decoder> md) : packetizer(p), decoder(md), impl(com) {}
+	Communication(
+		std::shared_ptr<ICommunication> com,
+		std::shared_ptr<Packetizer> p,
+		std::shared_ptr<Encoder> e,
+		std::shared_ptr<Decoder> md) : packetizer(p), encoder(e), decoder(md), impl(com) {}
 	virtual ~Communication() { close(); }
 
 	bool open();
@@ -43,6 +48,7 @@ public:
 	std::shared_ptr<Message> waitForMessageSync(std::shared_ptr<MessageFilter> f, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	std::shared_ptr<Packetizer> packetizer;
+	std::shared_ptr<Encoder> encoder;
 	std::shared_ptr<Decoder> decoder;
 
 protected:

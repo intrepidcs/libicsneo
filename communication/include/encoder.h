@@ -4,7 +4,9 @@
 #include "communication/message/include/message.h"
 #include "communication/message/include/canmessage.h"
 #include "communication/include/packet.h"
+#include "communication/include/command.h"
 #include "communication/include/network.h"
+#include "communication/include/packetizer.h"
 #include <queue>
 #include <vector>
 #include <memory>
@@ -15,11 +17,14 @@ namespace icsneo {
 
 class Encoder {
 public:
+	Encoder(std::shared_ptr<Packetizer> packetizerInstance) : packetizer(packetizerInstance) {}
 	std::vector<uint8_t> encode(const std::shared_ptr<Message>& message);
 	std::vector<uint8_t> encode(Command cmd, bool boolean) { return encode(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
 	std::vector<uint8_t> encode(Command cmd, std::vector<uint8_t> arguments = {});
 	
 private:
+	std::shared_ptr<Packetizer> packetizer;
+
 	typedef uint16_t icscm_bitfield;
 	struct HardwareCANPacket {
 		struct {

@@ -64,6 +64,7 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 					 */
 					uint16_t length = packet->data[0] | (packet->data[1] << 8);
 					packet->network = Network(packet->data[2] & 0xF);
+					std::cout << "Got an old format packet, decoding against " << packet->network << std::endl;
 					packet->data.erase(packet->data.begin(), packet->data.begin() + 3);
 					if(packet->data.size() != length)
 						packet->data.resize(length);

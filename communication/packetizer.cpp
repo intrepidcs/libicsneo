@@ -1,5 +1,6 @@
 #include "communication/include/packetizer.h"
 #include <iostream>
+#include <iomanip>
 
 using namespace icsneo;
 
@@ -12,12 +13,15 @@ uint8_t Packetizer::ICSChecksum(const std::vector<uint8_t>& data) {
 	return (uint8_t)checksum;
 }
 
-std::vector<uint8_t>& Packetizer::packetWrap(std::vector<uint8_t>& data, bool checksum) {
-	if(!disableChecksum && checksum)
-		data.push_back(ICSChecksum(data));
+std::vector<uint8_t>& Packetizer::packetWrap(std::vector<uint8_t>& data, bool shortFormat) {
+	if(shortFormat) {
+		// Some devices don't use the checksum, so might as well not calculate it if that's the case
+		// Either way the byte is still expected to be present in the bytestream for short messages
+		data.push_back(disableChecksum ? 0x00 : ICSChecksum(data)); 
+	}
 	data.insert(data.begin(), 0xAA);
-	if(align16bit && data.size() % 2 == 1)
-		data.push_back('A');
+	if(align16bit && data.size() % 2 == 1) // Some devices always expect 16-bit aligned data
+		data.push_back('A'); // Used as padding character, ignored by the firmware
 	return data;
 }
 
