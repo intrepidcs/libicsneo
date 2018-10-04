@@ -137,7 +137,7 @@ public:
 				return nullptr;
 		}
 	}
-	CANFD_SETTINGS* getCANFDSettingsFor(Network net) override { return nullptr; }
+	// CANFD_SETTINGS* getCANFDSettingsFor(Network net) override { return nullptr; }
 };
 
 }

@@ -290,8 +290,8 @@ public:
 
 	virtual bool setBaudrateFor(Network net, uint32_t baudrate);
 
-	virtual CAN_SETTINGS* getCANSettingsFor(Network net) { return nullptr; }
-	virtual CANFD_SETTINGS* getCANFDSettingsFor(Network net) { return nullptr; }
+	virtual CAN_SETTINGS* getCANSettingsFor(Network net) { (void)net; return nullptr; }
+	virtual CANFD_SETTINGS* getCANFDSettingsFor(Network net) { (void)net; return nullptr; }
 
 	void* getRawStructurePointer() { return settings.data(); }
 	template<typename T> T* getStructurePointer() { return static_cast<T*>((void*)settings.data()); }

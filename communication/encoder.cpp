@@ -54,11 +54,11 @@ std::vector<uint8_t> Encoder::encode(const std::shared_ptr<Message>& message) {
 	}
 
 	if(shortFormat) {
-		message->data.insert(message->data.begin(), (message->data.size() << 4) | (uint8_t)message->network.getNetID());
+		message->data.insert(message->data.begin(), (uint8_t(message->data.size()) << 4) | uint8_t(message->network.getNetID()));
 	} else {
 		// Size in long format is the size of the entire packet
 		// So +1 for AA header, +1 for short format header, +2 for long format size, and +2 for long format NetID
-		uint16_t size = message->data.size() + 1 + 1 + 2 + 2;
+		uint16_t size = uint16_t(message->data.size()) + 1 + 1 + 2 + 2;
 		message->data.insert(message->data.begin(), {
 			(uint8_t)Network::NetID::RED, // 0x0C for long message
 			(uint8_t)size, // Size, little endian 16-bit

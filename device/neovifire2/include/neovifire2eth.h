@@ -25,7 +25,7 @@ public:
 		std::vector<std::shared_ptr<Device>> found;
 
 		for(auto neodevice : PCAP::FindByProduct(PRODUCT_ID)) {
-			{
+			{ // Scope created so that we don't have two of the same device at once
 				strncpy(neodevice.serial, SERIAL_FIND_ON_OPEN, sizeof(neodevice.serial));
 				neodevice.serial[sizeof(neodevice.serial) - 1] = '\0';
 				auto device = std::make_shared<NeoVIFIRE2ETH>(neodevice);

@@ -71,7 +71,7 @@ void IDeviceSettings::refresh(bool ignoreChecksum) {
 			std::cout << "Checksum mismatch while reading settings" << std::endl;
 			return;
 		}
-		
+
 		settings = std::move(rxSettings);
 		settingsLoaded = true;
 
@@ -126,7 +126,7 @@ bool IDeviceSettings::commit() {
 	com->sendCommand(Command::SaveSettings);
 	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000));
 
-		refresh(); // Refresh our buffer with what the device has, whether we were successful or not
+	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 	
 	return (msg && msg->data[0] == 1); // Device sends 0x01 for success
 }
@@ -134,16 +134,16 @@ bool IDeviceSettings::commit() {
 bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
 	switch(net.getType()) {
 		case Network::Type::CAN: {
-			CAN_SETTINGS* settings = getCANSettingsFor(net);
-			if(settings == nullptr)
+			CAN_SETTINGS* cfg = getCANSettingsFor(net);
+			if(cfg == nullptr)
 				return false;
 				
 			uint8_t newBaud = getEnumValueForBaudrate(baudrate);
 			if(newBaud == 0xFF)
 				return false;
-			settings->Baudrate = newBaud;
-			settings->auto_baud = false;
-			settings->SetBaudrate = AUTO; // Use the baudrate values instead of the TQ values
+			cfg->Baudrate = newBaud;
+			cfg->auto_baud = false;
+			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
 			return true;
 		}
 		default:
