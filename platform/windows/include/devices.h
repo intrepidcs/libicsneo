@@ -8,7 +8,7 @@
 #include "device/neovifire2/include/neovifire2usb.h"
 // #include "device/plasion/include/neoviion.h"
 // #include "device/plasion/include/neoviplasma.h"
-// #include "device/radgalaxy/include/radgalaxy.h"
+#include "device/radgalaxy/include/radgalaxy.h"
 // #include "device/radstar2/include/radstar2.h"
 // #include "device/radsupermoon/include/radsupermoon.h"
 // #include "device/valuecan3/include/valuecan3.h"

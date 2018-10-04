@@ -131,8 +131,10 @@ std::vector<neodevice_t> PCAP::FindByProduct(int product) {
 			
 			EthernetPacket packet(data, header->caplen);
 			if(packet.etherType == 0xCAB2 && packet.srcMAC[0] == 0x00 && packet.srcMAC[1] == 0xFC && packet.srcMAC[2] == 0x70) {
-				if(product != packet.srcMAC[3]) // This is where the PID is stored in the MAC
-					continue; // This is not a product we're currently looking for
+				/* Here we could check packet.srcMAC[3] against the PID, however for some devices
+				 * this is not correct. For this reason, we don't check the product here and instead
+				 * check the serial number that comes back later.
+				 */
 
 				neodevice_t neodevice;
 				/* Unlike other transport layers, we can't get the serial number here as we

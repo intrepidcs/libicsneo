@@ -31,6 +31,9 @@ public:
 				auto device = std::make_shared<NeoVIFIRE2ETH>(neodevice);
 				if(!device->open()) // We will get the serial number on open
 					continue; // If the open failed, we won't display the device as an option to connect to
+				const char* serial = device->getNeoDevice().serial;
+				if(serial[0] != 'C' || serial[1] != 'Y')
+					continue; // The device is not a FIRE 2
 				strncpy(neodevice.serial, device->getNeoDevice().serial, sizeof(neodevice.serial));
 				neodevice.serial[sizeof(neodevice.serial) - 1] = '\0';
 			}
