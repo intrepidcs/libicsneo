@@ -85,15 +85,16 @@ void IDeviceSettings::refresh(bool ignoreChecksum) {
 bool IDeviceSettings::send() {
 	constexpr uint16_t GS_VERSION = 5;
 	std::vector<uint8_t> bytestream;
-	bytestream.resize(6 + structSize);
-	bytestream[0] = GS_VERSION;
-	bytestream[1] = GS_VERSION >> 8;
-	bytestream[2] = (uint8_t)structSize;
-	bytestream[3] = (uint8_t)(structSize >> 8);
+	bytestream.resize(7 + structSize);
+	bytestream[0] = 0x00;
+	bytestream[1] = GS_VERSION;
+	bytestream[2] = GS_VERSION >> 8;
+	bytestream[3] = (uint8_t)structSize;
+	bytestream[4] = (uint8_t)(structSize >> 8);
 	uint16_t gs_checksum = CalculateGSChecksum(settings);
-	bytestream[4] = (uint8_t)gs_checksum;
-	bytestream[5] = (uint8_t)(gs_checksum >> 8);
-	memcpy(bytestream.data() + 6, getRawStructurePointer(), structSize);
+	bytestream[5] = (uint8_t)gs_checksum;
+	bytestream[6] = (uint8_t)(gs_checksum >> 8);
+	memcpy(bytestream.data() + 7, getRawStructurePointer(), structSize);
 
 	com->sendCommand(Command::SetSettings, bytestream);
 	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
@@ -107,9 +108,9 @@ bool IDeviceSettings::send() {
 	// The device might modify the settings once they are applied, however in this case it does not update the checksum
 	// We refresh to get these updates, update the checksum, and send it back so it's all in sync
 	gs_checksum = CalculateGSChecksum(settings);
-	bytestream[4] = (uint8_t)gs_checksum;
-	bytestream[5] = (uint8_t)(gs_checksum >> 8);
-	memcpy(bytestream.data() + 6, getRawStructurePointer(), structSize);
+	bytestream[5] = (uint8_t)gs_checksum;
+	bytestream[6] = (uint8_t)(gs_checksum >> 8);
+	memcpy(bytestream.data() + 7, getRawStructurePointer(), structSize);
 
 	com->sendCommand(Command::SetSettings, bytestream);
 	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));

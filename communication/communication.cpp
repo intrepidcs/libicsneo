@@ -57,7 +57,7 @@ bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 	auto msg = std::make_shared<Message>();
 	msg->network = Network::NetID::Main51;
 	msg->data = std::move(arguments);
-	msg->data.insert(msg->data.begin(), {(uint8_t)cmd, (uint8_t)(uint16_t(cmd) >> 8)});
+	msg->data.insert(msg->data.begin(), (uint8_t)cmd);
 	auto packet = encoder->encode(msg);
 	return sendPacket(packet);
 }
