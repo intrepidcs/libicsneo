@@ -56,7 +56,7 @@ public:
 		enforcePollingMessageLimit();
 	}
 
-	std::shared_ptr<IDeviceSettings> settings;
+	std::unique_ptr<IDeviceSettings> settings;
 
 protected:
 	uint16_t productId = 0;
