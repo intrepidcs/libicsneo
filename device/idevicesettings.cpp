@@ -42,7 +42,7 @@ uint16_t IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settin
 	return gs_crc;
 }
 
-void IDeviceSettings::refresh() {
+void IDeviceSettings::refresh(bool ignoreChecksum) {
 	std::vector<uint8_t> rxSettings;
 	bool ret = com->getSettingsSync(rxSettings);
 	if(ret) {
@@ -67,7 +67,7 @@ void IDeviceSettings::refresh() {
 			return;
 		}
 
-		if(gs_chksum != CalculateGSChecksum(rxSettings)) {
+		if(!ignoreChecksum && gs_chksum != CalculateGSChecksum(rxSettings)) {
 			std::cout << "Checksum mismatch while reading settings" << std::endl;
 			return;
 		}
@@ -98,8 +98,23 @@ bool IDeviceSettings::send() {
 	com->sendCommand(Command::SetSettings, bytestream);
 	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
 
-	if(!msg || msg->data[0] != 1)
-		refresh(); // Refr
+	if(!msg || msg->data[0] != 1) { // We did not receive a response
+		refresh(); // Attempt to get the settings from the device so we're up to date if possible
+		return false;
+	}
+
+	refresh(true); // Refresh ignoring checksum
+	// The device might modify the settings once they are applied, however in this case it does not update the checksum
+	// We refresh to get these updates, update the checksum, and send it back so it's all in sync
+	gs_checksum = CalculateGSChecksum(settings);
+	bytestream[4] = (uint8_t)gs_checksum;
+	bytestream[5] = (uint8_t)(gs_checksum >> 8);
+	memcpy(bytestream.data() + 6, getRawStructurePointer(), structSize);
+
+	com->sendCommand(Command::SetSettings, bytestream);
+	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
+
+	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 
 	return (msg && msg->data[0] == 1); // Device sends 0x01 for success
 }
@@ -111,7 +126,6 @@ bool IDeviceSettings::commit() {
 	com->sendCommand(Command::SaveSettings);
 	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000));
 
-	if(!msg || msg->data[0] != 1)
 		refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 	
 	return (msg && msg->data[0] == 1); // Device sends 0x01 for success

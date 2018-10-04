@@ -284,7 +284,7 @@ public:
 	virtual ~IDeviceSettings() {}
 	bool ok() { return settingsLoaded; }
 	
-	void refresh(); // Get from device
+	void refresh(bool ignoreChecksum = false); // Get from device
 	bool send(); // Send to device, device keeps settings in volatile RAM until power cycle
 	bool commit(); // Send to device, device keeps settings in EEPROM until next commit
 
