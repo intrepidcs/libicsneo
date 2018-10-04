@@ -22,10 +22,10 @@ namespace icsneo {
 class Communication {
 public:
 	Communication(
-		std::shared_ptr<ICommunication> com,
+		std::unique_ptr<ICommunication> com,
 		std::shared_ptr<Packetizer> p,
-		std::shared_ptr<Encoder> e,
-		std::shared_ptr<Decoder> md) : packetizer(p), encoder(e), decoder(md), impl(com) {}
+		std::unique_ptr<Encoder> e,
+		std::unique_ptr<Decoder> md) : packetizer(p), encoder(std::move(e)), decoder(std::move(md)), impl(std::move(com)) {}
 	virtual ~Communication() { close(); }
 
 	bool open();
@@ -47,12 +47,12 @@ public:
 	}
 	std::shared_ptr<Message> waitForMessageSync(std::shared_ptr<MessageFilter> f, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
-	std::shared_ptr<Packetizer> packetizer;
-	std::shared_ptr<Encoder> encoder;
-	std::shared_ptr<Decoder> decoder;
+	std::shared_ptr<Packetizer> packetizer; // Ownership is shared with the encoder
+	std::unique_ptr<Encoder> encoder;
+	std::unique_ptr<Decoder> decoder;
 
 protected:
-	std::shared_ptr<ICommunication> impl;
+	std::unique_ptr<ICommunication> impl;
 	static int messageCallbackIDCounter;
 	std::map<int, MessageCallback> messageCallbacks;
 	std::atomic<bool> closing{false};

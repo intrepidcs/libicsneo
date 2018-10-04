@@ -11,10 +11,10 @@ namespace icsneo {
 class MultiChannelCommunication : public Communication {
 public:
 	MultiChannelCommunication(
-		std::shared_ptr<ICommunication> com,
+		std::unique_ptr<ICommunication> com,
 		std::shared_ptr<Packetizer> p,
-		std::shared_ptr<Encoder> e,
-		std::shared_ptr<Decoder> md) : Communication(com, p, e, md) {}
+		std::unique_ptr<Encoder> e,
+		std::unique_ptr<Decoder> md) : Communication(std::move(com), p, std::move(e), std::move(md)) {}
 	void spawnThreads() override;
 	void joinThreads() override;
 	bool sendPacket(std::vector<uint8_t>& bytes) override;
