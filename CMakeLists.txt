@@ -59,18 +59,14 @@ add_library(icsneocpp
 	${SRC_FILES}
 )
 
-add_library(icsneoc SHARED
-	api/icsneoc/icsneoc.cpp
-	api/icsneocpp/icsneocpp.cpp
-	${SRC_FILES}
-)
+add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp)
+target_link_libraries(icsneoc icsneocpp)
 
 add_library(icsneolegacy SHARED
 	api/icsneolegacy/icsneolegacy.cpp
 	api/icsneoc/icsneoc.cpp
-	api/icsneocpp/icsneocpp.cpp
-	${SRC_FILES}
 )
+target_link_libraries(icsneolegacy icsneocpp)
 
 target_compile_features(icsneocpp PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
