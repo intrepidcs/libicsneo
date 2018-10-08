@@ -212,24 +212,44 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 	return true;
 }
 
-bool icsneo_settingsSend(const neodevice_t* device) {
+bool icsneo_settingsApply(const neodevice_t* device) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	if(!device->device->settings) // Settings are not available for this device
 		return false;
 
-	return device->device->settings->send();
+	return device->device->settings->apply();
 }
 
-bool icsneo_settingsCommit(const neodevice_t* device) {
+bool icsneo_settingsApplyTemporary(const neodevice_t* device) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	if(!device->device->settings) // Settings are not available for this device
 		return false;
 
-	return device->device->settings->commit();
+	return device->device->settings->apply(true);
+}
+
+bool icsneo_settingsApplyDefaults(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	if(!device->device->settings) // Settings are not available for this device
+		return false;
+
+	return device->device->settings->applyDefaults();
+}
+
+bool icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	if(!device->device->settings) // Settings are not available for this device
+		return false;
+
+	return device->device->settings->applyDefaults(true);
 }
 
 bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate) {

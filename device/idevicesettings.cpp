@@ -82,8 +82,7 @@ void IDeviceSettings::refresh(bool ignoreChecksum) {
 	}
 }
 
-bool IDeviceSettings::send() {
-	constexpr uint16_t GS_VERSION = 5;
+bool IDeviceSettings::apply(bool temporary) {
 	std::vector<uint8_t> bytestream;
 	bytestream.resize(7 + structSize);
 	bytestream[0] = 0x00;
@@ -114,21 +113,58 @@ bool IDeviceSettings::send() {
 
 	com->sendCommand(Command::SetSettings, bytestream);
 	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
+	if(!msg || msg->data[0] != 1) {
+		refresh();
+		return false;
+	}
 
+	if(!temporary) {
+		com->sendCommand(Command::SaveSettings);
+		msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000));
+	}
+	
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 
 	return (msg && msg->data[0] == 1); // Device sends 0x01 for success
 }
 
-bool IDeviceSettings::commit() {
-	if(!send())
+bool IDeviceSettings::applyDefaults(bool temporary) {
+	com->sendCommand(Command::SetDefaultSettings);
+	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetDefaultSettings), std::chrono::milliseconds(1000));
+	if(!msg || msg->data[0] != 1) {
+		refresh();
 		return false;
+	}
 
-	com->sendCommand(Command::SaveSettings);
-	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000));
+	refresh(true); // Refresh ignoring checksum
+	// The device might modify the settings once they are applied, however in this case it does not update the checksum
+	// We refresh to get these updates, update the checksum, and send it back so it's all in sync
+	std::vector<uint8_t> bytestream;
+	bytestream.resize(7 + structSize);
+	bytestream[0] = 0x00;
+	bytestream[1] = GS_VERSION;
+	bytestream[2] = GS_VERSION >> 8;
+	bytestream[3] = (uint8_t)structSize;
+	bytestream[4] = (uint8_t)(structSize >> 8);
+	uint16_t gs_checksum = CalculateGSChecksum(settings);
+	bytestream[5] = (uint8_t)gs_checksum;
+	bytestream[6] = (uint8_t)(gs_checksum >> 8);
+	memcpy(bytestream.data() + 7, getRawStructurePointer(), structSize);
 
-	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
+	com->sendCommand(Command::SetSettings, bytestream);
+	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
+	if(!msg || msg->data[0] != 1) {
+		refresh();
+		return false;
+	}
+
+	if(!temporary) {
+		com->sendCommand(Command::SaveSettings);
+		msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000));
+	}
 	
+	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
+
 	return (msg && msg->data[0] == 1); // Device sends 0x01 for success
 }
 

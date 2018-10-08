@@ -278,6 +278,7 @@ namespace icsneo {
 
 class IDeviceSettings {
 public:
+	static constexpr uint16_t GS_VERSION = 5;
 	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
 
 	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), structSize(size) {}
@@ -285,8 +286,10 @@ public:
 	bool ok() { return settingsLoaded; }
 	
 	void refresh(bool ignoreChecksum = false); // Get from device
-	bool send(); // Send to device, device keeps settings in volatile RAM until power cycle
-	bool commit(); // Send to device, device keeps settings in EEPROM until next commit
+
+	// Send to device, if temporary device keeps settings in volatile RAM until power cycle, otherwise saved to EEPROM
+	bool apply(bool temporary = false);
+	bool applyDefaults(bool temporary = false);
 
 	virtual bool setBaudrateFor(Network net, uint32_t baudrate);
 

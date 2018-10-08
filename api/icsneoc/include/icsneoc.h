@@ -44,9 +44,13 @@ extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, s
 
 extern bool DLLExport icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength);
 
-extern bool DLLExport icsneo_settingsSend(const neodevice_t* device);
+extern bool DLLExport icsneo_settingsApply(const neodevice_t* device);
 
-extern bool DLLExport icsneo_settingsCommit(const neodevice_t* device);
+extern bool DLLExport icsneo_settingsApplyTemporary(const neodevice_t* device);
+
+extern bool DLLExport icsneo_settingsApplyDefaults(const neodevice_t* device);
+
+extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device);
 
 extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
 
@@ -101,16 +105,22 @@ fn_icsneo_getPollingMessageLimit icsneo_getPollingMessageLimit;
 typedef bool(*fn_icsneo_setPollingMessageLimit)(const neodevice_t* device, size_t newLimit);
 fn_icsneo_setPollingMessageLimit icsneo_setPollingMessageLimit;
 
-typedef size_t(*fn_icsneo_getProductName)(const neodevice_t* device, char* str, size_t* maxLength);
+typedef bool(*fn_icsneo_getProductName)(const neodevice_t* device, char* str, size_t* maxLength);
 fn_icsneo_getProductName icsneo_getProductName;
 
-typedef size_t(*fn_icsneo_settingsSend)(const neodevice_t* device);
-fn_icsneo_settingsSend icsneo_settingsSend;
+typedef bool(*fn_icsneo_settingsApply)(const neodevice_t* device);
+fn_icsneo_settingsApply icsneo_settingsApply;
 
-typedef size_t(*fn_icsneo_settingsCommit)(const neodevice_t* device);
-fn_icsneo_settingsCommit icsneo_settingsCommit;
+typedef bool(*fn_icsneo_settingsApplyTemporary)(const neodevice_t* device);
+fn_icsneo_settingsApplyTemporary icsneo_settingsApplyTemporary;
 
-typedef size_t(*fn_icsneo_setBaudrate)(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
+typedef bool(*fn_icsneo_settingsApplyDefaults)(const neodevice_t* device);
+fn_icsneo_settingsApplyDefaults icsneo_settingsApplyDefaults;
+
+typedef bool(*fn_icsneo_settingsApplyDefaultsTemporary)(const neodevice_t* device);
+fn_icsneo_settingsApplyDefaultsTemporary icsneo_settingsApplyDefaultsTemporary;
+
+typedef bool(*fn_icsneo_setBaudrate)(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
 fn_icsneo_setBaudrate icsneo_setBaudrate;
 
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
@@ -143,8 +153,10 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_getPollingMessageLimit);
 	ICSNEO_IMPORTASSERT(icsneo_setPollingMessageLimit);
 	ICSNEO_IMPORTASSERT(icsneo_getProductName);
-	ICSNEO_IMPORTASSERT(icsneo_settingsSend);
-	ICSNEO_IMPORTASSERT(icsneo_settingsCommit);
+	ICSNEO_IMPORTASSERT(icsneo_settingsApply);
+	ICSNEO_IMPORTASSERT(icsneo_settingsApplyTemporary);
+	ICSNEO_IMPORTASSERT(icsneo_settingsApplyDefaults);
+	ICSNEO_IMPORTASSERT(icsneo_settingsApplyDefaultsTemporary);
 	ICSNEO_IMPORTASSERT(icsneo_setBaudrate);
 
 	icsneo_initialized = true;
