@@ -23,21 +23,29 @@ public:
 
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
-
-		for(auto neodevice : PCAP::FindByProduct(PRODUCT_ID)) {
-			{ // Scope created so that we don't have two of the same device at once
-				strncpy(neodevice.serial, SERIAL_FIND_ON_OPEN, sizeof(neodevice.serial));
-				neodevice.serial[sizeof(neodevice.serial) - 1] = '\0';
-				auto device = std::make_shared<NeoVIFIRE2ETH>(neodevice);
-				if(!device->open()) // We will get the serial number on open
-					continue; // If the open failed, we won't display the device as an option to connect to
-				const char* serial = device->getNeoDevice().serial;
-				if(serial[0] != 'C' || serial[1] != 'Y')
-					continue; // The device is not a FIRE 2
-				strncpy(neodevice.serial, device->getNeoDevice().serial, sizeof(neodevice.serial));
-				neodevice.serial[sizeof(neodevice.serial) - 1] = '\0';
+		
+		for(auto& foundDev : PCAP::FindAll()) {
+			auto packetizer = std::make_shared<Packetizer>();
+			auto decoder = std::unique_ptr<Decoder>(new Decoder());
+			for(auto& payload : foundDev.discoveryPackets)
+				packetizer->input(payload);
+			for(auto& packet : packetizer->output()) {
+				auto msg = decoder->decodePacket(packet);
+				if(!msg || msg->network.getNetID() != Network::NetID::Main51)
+					continue; // Not a message we care about
+				auto sn = std::dynamic_pointer_cast<SerialNumberMessage>(msg);
+				if(!sn)
+					continue; // Not a serial number message
+				
+				if(sn->deviceSerial.length() < 2)
+					continue;
+				if(sn->deviceSerial.substr(0, 2) != SERIAL_START)
+					continue; // Not a FIRE 2
+				
+				foundDev.device.serial[sn->deviceSerial.copy(foundDev.device.serial, sizeof(foundDev.device.serial))] = '\0';
+				found.push_back(std::make_shared<NeoVIFIRE2ETH>(foundDev.device));
+				break;
 			}
-			found.push_back(std::make_shared<NeoVIFIRE2ETH>(neodevice));
 		}
 
 		return found;

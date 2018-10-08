@@ -1,21 +1,15 @@
-#ifndef __RADGALAXY_H_
-#define __RADGALAXY_H_
+#ifndef __RADSTAR2ETH_H_
+#define __RADSTAR2ETH_H_
 
-#include "device/include/device.h"
-#include "device/include/devicetype.h"
+#include "device/radstar2/include/radstar2.h"
+#include "communication/include/network.h"
+#include "communication/message/include/serialnumbermessage.h"
 #include "platform/include/pcap.h"
-#include "communication/include/packetizer.h"
-#include "communication/include/decoder.h"
 
 namespace icsneo {
 
-class RADGalaxy : public Device {
+class RADStar2ETH : public RADStar2 {
 public:
-	// Serial numbers start with RG
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADGalaxy;
-	static constexpr const uint16_t PRODUCT_ID = 0x0003;
-	static constexpr const char* SERIAL_START = "RG";
-
 	static std::shared_ptr<Packetizer> MakePacketizer() {
 		auto packetizer = std::make_shared<Packetizer>();
 		packetizer->disableChecksum = true;
@@ -23,14 +17,13 @@ public:
 		return packetizer;
 	}
 
-	RADGalaxy(neodevice_t neodevice) : Device(neodevice) {
+	// Serial numbers start with RS
+	RADStar2ETH(neodevice_t neodevice) : RADStar2(neodevice) {
 		auto transport = std::unique_ptr<ICommunication>(new PCAP(getWritableNeoDevice()));
 		auto packetizer = MakePacketizer();
 		auto encoder = std::unique_ptr<Encoder>(new Encoder(packetizer));
 		auto decoder = std::unique_ptr<Decoder>(new Decoder());
 		com = std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
-		getWritableNeoDevice().type = DEVICE_TYPE;
-		productId = PRODUCT_ID;
 	}
 
 	static std::vector<std::shared_ptr<Device>> Find() {
@@ -52,10 +45,10 @@ public:
 				if(sn->deviceSerial.length() < 2)
 					continue;
 				if(sn->deviceSerial.substr(0, 2) != SERIAL_START)
-					continue; // Not a RADGalaxy
+					continue; // Not a RADStar2
 				
 				foundDev.device.serial[sn->deviceSerial.copy(foundDev.device.serial, sizeof(foundDev.device.serial))] = '\0';
-				found.push_back(std::make_shared<RADGalaxy>(foundDev.device));
+				found.push_back(std::make_shared<RADStar2ETH>(foundDev.device));
 				break;
 			}
 		}

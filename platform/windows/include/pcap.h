@@ -10,7 +10,13 @@ namespace icsneo {
 
 class PCAP : public ICommunication {
 public:
-	static std::vector<neodevice_t> FindByProduct(int product);
+	class PCAPFoundDevice {
+	public:
+		neodevice_t device;
+		std::vector<std::vector<uint8_t>> discoveryPackets;
+	};
+
+	static std::vector<PCAPFoundDevice> FindAll();
 	static std::string GetEthDevSerialFromMacAddress(uint8_t product, uint16_t macSerial);
 	static bool IsHandleValid(neodevice_handle_t handle);
 

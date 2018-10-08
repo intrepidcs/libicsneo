@@ -39,8 +39,12 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	findResults.push_back(RADGalaxy::Find());
 	#endif
 
-	#ifdef __RADSTAR2_H_
-	findResults.push_back(RADStar2::Find());
+	#ifdef __RADSTAR2ETH_H_
+	findResults.push_back(RADStar2ETH::Find());
+	#endif
+
+	#ifdef __RADSTAR2USB_H_
+	findResults.push_back(RADStar2USB::Find());
 	#endif
 
 	#ifdef __RADSUPERMOON_H_

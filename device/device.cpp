@@ -139,11 +139,8 @@ bool Device::open() {
 	}
 	
 	std::string currentSerial = getNeoDevice().serial;
-	if(currentSerial == SERIAL_FIND_ON_OPEN) {
-		strncpy(getWritableNeoDevice().serial, serial->deviceSerial.c_str(), sizeof(getNeoDevice().serial));
-		getWritableNeoDevice().serial[sizeof(getWritableNeoDevice().serial) - 1] = '\0';
-	} else if(currentSerial != serial->deviceSerial) {
-		std::cout << "NeoDevice has serial " << getNeoDevice().serial << " but device has serial " << serial->deviceSerial.c_str() << "!" << std::endl;
+	if(currentSerial != serial->deviceSerial) {
+		std::cout << "Found device had serial " << getNeoDevice().serial << " but connected device has serial " << serial->deviceSerial.c_str() << "!" << std::endl;
 		return false;
 	}
 	

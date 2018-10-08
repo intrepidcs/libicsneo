@@ -16,12 +16,12 @@ static const uint8_t BROADCAST_MAC[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 std::vector<PCAP::NetworkInterface> PCAP::knownInterfaces;
 
-std::vector<neodevice_t> PCAP::FindByProduct(int product) {
-	std::vector<neodevice_t> foundDevices;
+std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
+	std::vector<PCAPFoundDevice> foundDevices;
 	PCAPDLL pcap;
 	if(!pcap.ok()) {
 		std::cout << "PCAP not okay" << std::endl;
-		return std::vector<neodevice_t>();
+		return std::vector<PCAPFoundDevice>();
 	}
 
 	// First we ask WinPCAP to give us all of the devices
@@ -39,7 +39,7 @@ std::vector<neodevice_t> PCAP::FindByProduct(int product) {
 
 	if(!success) {
 		std::cout << "PCAP FindAllDevs_Ex not okay " << errbuf << std::endl;
-		return std::vector<neodevice_t>();
+		return std::vector<PCAPFoundDevice>();
 	}
 
 	std::vector<NetworkInterface> interfaces;
@@ -56,13 +56,13 @@ std::vector<neodevice_t> PCAP::FindByProduct(int product) {
 	ULONG size = 0;
 	if(GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr, nullptr, &size) != ERROR_BUFFER_OVERFLOW) {
 		std::cout << "GetAdaptersAddresses size query not okay" << std::endl;
-		return std::vector<neodevice_t>();
+		return std::vector<PCAPFoundDevice>();
 	}
 	std::vector<uint8_t> adapterAddressBuffer;
 	adapterAddressBuffer.resize(size);
 	if(GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr, (IP_ADAPTER_ADDRESSES*)adapterAddressBuffer.data(), &size) != ERROR_SUCCESS) {
 		std::cout << "GetAdaptersAddresses not okay" << std::endl;
-		return std::vector<neodevice_t>();
+		return std::vector<PCAPFoundDevice>();
 	}
 	
 	// aa->AdapterName constains a unique name of the interface like "{3B1D2791-435A-456F-8A7B-9CB0EEE5DAB3}"
@@ -131,28 +131,37 @@ std::vector<neodevice_t> PCAP::FindByProduct(int product) {
 				continue; // Keep waiting for that packet
 			
 			EthernetPacket packet(data, header->caplen);
-			if(packet.etherType == 0xCAB2 && packet.srcMAC[0] == 0x00 && packet.srcMAC[1] == 0xFC && packet.srcMAC[2] == 0x70) {
-				/* Here we could check packet.srcMAC[3] against the PID, however for some devices
-				 * this is not correct. For this reason, we don't check the product here and instead
-				 * check the serial number that comes back later.
+			// Is this an ICS response packet (0xCAB2) from an ICS MAC, either to broadcast or directly to us?
+			if(packet.etherType == 0xCAB2 && packet.srcMAC[0] == 0x00 && packet.srcMAC[1] == 0xFC && packet.srcMAC[2] == 0x70 && (
+				memcmp(packet.destMAC, interface.macAddress, sizeof(packet.destMAC)) == 0 ||
+				memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) == 0
+			)) {
+				/* We have received a packet from a device. We don't know if this is the device we're
+				 * looking for, we don't know if it's actually a response to our RequestSerialNumber
+				 * or not, we just know we got something.
+				 *
+				 * Unlike most transport layers, we can't get the serial number here as we actually
+				 * need to parse this message that has been returned. Some devices parse messages
+				 * differently, so we need to use their communication layer. We could technically
+				 * create a communication layer to parse the packet we have in `payload` here, but
+				 * we'd need to be given a packetizer and decoder for the device. I'm intentionally
+				 * avoiding passing that information down here for code quality's sake. Instead, pass
+				 * the packet we received back up so the device can handle it.
 				 */
-
-				neodevice_t neodevice;
-				/* Unlike other transport layers, we can't get the serial number here as we
-				 * actually need to open the device in the find method and then request it
-				 * over a working communication layer. We could technically create a communication
-				 * layer to parse the packet we have in `data` at this point, but we'd need to
-				 * know information about the device to correctly instantiate a packetizer and
-				 * decoder. I'm intentionally avoiding passing that information down here for
-				 * code quality's sake.
-				 */
-				neodevice.handle = (neodevice_handle_t)((i << 24) | (packet.srcMAC[3] << 16) | (packet.srcMAC[4] << 8) | (packet.srcMAC[5]));
-				bool alreadyExists = false;
+				neodevice_handle_t handle = (neodevice_handle_t)((i << 24) | (packet.srcMAC[3] << 16) | (packet.srcMAC[4] << 8) | (packet.srcMAC[5]));
+				PCAPFoundDevice* alreadyExists = nullptr;
 				for(auto& dev : foundDevices)
-					if(dev.handle == neodevice.handle)
-						alreadyExists = true;
-				if(!alreadyExists)
-					foundDevices.push_back(neodevice);
+					if(dev.device.handle == handle)
+						alreadyExists = &dev;
+
+				if(alreadyExists == nullptr) {
+					PCAPFoundDevice foundDevice;
+					foundDevice.device.handle = handle;
+					foundDevice.discoveryPackets.push_back(std::move(packet.payload));
+					foundDevices.push_back(foundDevice);
+				} else {
+					alreadyExists->discoveryPackets.push_back(std::move(packet.payload));
+				}
 			}
 		}
 
@@ -161,36 +170,6 @@ std::vector<neodevice_t> PCAP::FindByProduct(int product) {
 	}
 
 	return foundDevices;
-}
-
-std::string PCAP::GetEthDevSerialFromMacAddress(uint8_t product, uint16_t macSerial) {
-	constexpr uint16_t serialOffset = 0x30;
-	std::string serial;
-	switch(product) {
-		case 0x01: // cmProbe
-			serial += "CM";
-			break;
-		case 0x03: // RADGalaxy
-			serial += "RG";
-			break;
-		case 0x04: // FIRE 2
-			serial += "CY";
-			break;
-		case 0x05: // RADStar 2
-			serial += "RS";
-			break;
-		case 0x06: // RADGigalog
-			serial += "GL";
-			break;
-		default: // Should never happen
-			serial += "XX";
-			break;
-	}
-	for(int i = 1000; i > 0; i /= 10) {
-		serial += (char)(macSerial / i + serialOffset);
-		macSerial %= i;
-	}
-	return serial;
 }
 
 bool PCAP::IsHandleValid(neodevice_handle_t handle) {
