@@ -12,6 +12,7 @@
 using namespace icsneo;
 
 static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+static const uint8_t BROADCAST_MAC[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 std::vector<PCAP::NetworkInterface> PCAP::knownInterfaces;
 
@@ -272,6 +273,10 @@ void PCAP::readTask() {
 		if(packet.etherType != 0xCAB2)
 			continue; // Not a packet to host
 
+		if(memcmp(packet.destMAC, interface.macAddress, sizeof(packet.destMAC)) != 0 &&
+			memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) != 0)
+			continue; // Packet is not addressed to us or broadcast
+
 		if(memcmp(packet.srcMAC, deviceMAC, sizeof(deviceMAC)) != 0)
 			continue; // Not a packet from the device we're concerned with
 
@@ -285,6 +290,7 @@ void PCAP::writeTask() {
 	EthernetPacket sendPacket;
 	
 	// Set MAC address of packet
+	memcpy(sendPacket.srcMAC, interface.macAddress, sizeof(sendPacket.srcMAC));
 	memcpy(sendPacket.destMAC, deviceMAC, sizeof(deviceMAC));
 
 	while(!closing) {
