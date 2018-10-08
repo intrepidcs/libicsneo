@@ -75,15 +75,12 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chrono::milliseconds timeout) {
 	sendCommand(Command::RequestSerialNumber);
 	std::shared_ptr<Message> msg = waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::RequestSerialNumber), timeout);
-	if(!msg) {
-		std::cout << "Didn't get a message in time" << std::endl;
+	if(!msg) // Did not receive a message
 		return std::shared_ptr<SerialNumberMessage>();
-	}
+
 	auto m51 = std::dynamic_pointer_cast<Main51Message>(msg);
-	if(!m51) {
-		std::cout << "msg could not be cast to main51 " << msg->network << std::endl;
+	if(!m51) // Could not upcast for some reason
 		return std::shared_ptr<SerialNumberMessage>();
-	}
 	
 	return std::dynamic_pointer_cast<SerialNumberMessage>(m51);
 }

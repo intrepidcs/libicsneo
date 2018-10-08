@@ -138,9 +138,6 @@ bool Device::open() {
 		return false;
 	}
 	
-	if(i != 0)
-		std::cout << "Took " << i << " tries to get the serial number" << std::endl;
-	
 	std::string currentSerial = getNeoDevice().serial;
 	if(currentSerial == SERIAL_FIND_ON_OPEN) {
 		strncpy(getWritableNeoDevice().serial, serial->deviceSerial.c_str(), sizeof(getNeoDevice().serial));
