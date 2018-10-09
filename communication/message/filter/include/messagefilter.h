@@ -9,14 +9,14 @@ namespace icsneo {
 
 class MessageFilter {
 public:
-	MessageFilter() : matchAny(true) {}
+	MessageFilter() {}
 	MessageFilter(Network::Type type) : type(type) {}
 	MessageFilter(Network::NetID netid) : netid(netid) {}
 	virtual ~MessageFilter() {}
+	// When getting "all" types of messages, include the ones marked as "internal only"
+	bool includeInternalInAny = false;
 
 	virtual bool match(const std::shared_ptr<Message>& message) const {
-		if(matchAny)
-			return true;
 		if(!matchType(message->network.getType()))
 			return false;
 		if(!matchNetID(message->network.getNetID()))
@@ -25,18 +25,16 @@ public:
 	}
 
 private:
-	bool matchAny = false;
-
-	Network::Type type = Network::Type::Invalid; // Matching a type of invalid will match any
+	Network::Type type = Network::Type::Any;
 	bool matchType(Network::Type mtype) const {
-		if(type == Network::Type::Invalid)
+		if(type == Network::Type::Any && (mtype != Network::Type::Internal || includeInternalInAny))
 			return true;
 		return type == mtype;
 	}
 
-	Network::NetID netid = Network::NetID::Invalid; // Matching a netid of invalid will match any
+	Network::NetID netid = Network::NetID::Any;
 	bool matchNetID(Network::NetID mnetid) const {
-		if(netid == Network::NetID::Invalid)
+		if(netid == Network::NetID::Any)
 			return true;
 		return netid == mnetid;
 	}

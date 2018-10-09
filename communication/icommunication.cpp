@@ -15,7 +15,8 @@ bool ICommunication::read(std::vector<uint8_t>& bytes, size_t limit) {
 
 	size_t actuallyRead = readQueue.try_dequeue_bulk(bytes.data(), limit);
 
-	bytes.resize(actuallyRead);
+	if(bytes.size() > actuallyRead)
+		bytes.resize(actuallyRead);
 
 	return true;
 }

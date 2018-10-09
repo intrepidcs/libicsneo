@@ -285,7 +285,7 @@ public:
 	virtual ~IDeviceSettings() {}
 	bool ok() { return settingsLoaded; }
 	
-	void refresh(bool ignoreChecksum = false); // Get from device
+	bool refresh(bool ignoreChecksum = false); // Get from device
 
 	// Send to device, if temporary device keeps settings in volatile RAM until power cycle, otherwise saved to EEPROM
 	bool apply(bool temporary = false);

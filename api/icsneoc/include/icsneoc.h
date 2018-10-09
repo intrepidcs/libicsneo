@@ -44,6 +44,8 @@ extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, s
 
 extern bool DLLExport icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength);
 
+extern bool DLLExport icsneo_settingsRefresh(const neodevice_t* device);
+
 extern bool DLLExport icsneo_settingsApply(const neodevice_t* device);
 
 extern bool DLLExport icsneo_settingsApplyTemporary(const neodevice_t* device);
@@ -108,6 +110,9 @@ fn_icsneo_setPollingMessageLimit icsneo_setPollingMessageLimit;
 typedef bool(*fn_icsneo_getProductName)(const neodevice_t* device, char* str, size_t* maxLength);
 fn_icsneo_getProductName icsneo_getProductName;
 
+typedef bool(*fn_icsneo_settingsRefresh)(const neodevice_t* device);
+fn_icsneo_settingsRefresh icsneo_settingsRefresh;
+
 typedef bool(*fn_icsneo_settingsApply)(const neodevice_t* device);
 fn_icsneo_settingsApply icsneo_settingsApply;
 
@@ -153,6 +158,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_getPollingMessageLimit);
 	ICSNEO_IMPORTASSERT(icsneo_setPollingMessageLimit);
 	ICSNEO_IMPORTASSERT(icsneo_getProductName);
+	ICSNEO_IMPORTASSERT(icsneo_settingsRefresh);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApply);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyTemporary);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyDefaults);

@@ -112,16 +112,19 @@ public:
 		LSFTCAN2 = 99,
 		HW_COM_Latency_Test = 512,
 		Device_Status = 513,
+		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};
 	enum class Type {
+		Invalid,
+		Internal, // Used for statuses that don't actually need to be transferred to the client application
 		CAN,
 		LIN,
 		FlexRay,
 		MOST,
 		Ethernet,
 		Other,
-		Invalid
+		Any // Never actually set as type, but used as flag for filtering
 	};
 	static const char* GetTypeString(Type type) {
 		switch(type) {
@@ -135,6 +138,8 @@ public:
 				return "MOST";
 			case Type::Other:
 				return "Other";
+			case Type::Internal:
+				return "Internal";
 			case Type::Invalid:
 			default:
 				return "Invalid Type";
@@ -173,7 +178,12 @@ public:
 			case NetID::MOST50:
 			case NetID::MOST150:
 				return Type::MOST;
+			case NetID::RED:
+			case NetID::Reset_Status:
+			case NetID::Device_Status:
+				return Type::Internal;
 			case NetID::Invalid:
+			case NetID::Any:
 				return Type::Invalid;
 			default:
 				return Type::Other;

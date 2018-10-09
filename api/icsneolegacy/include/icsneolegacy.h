@@ -14,10 +14,10 @@ extern "C" {
 
 //Basic Functions
 extern int DLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* pNumDevices);
-extern int DLLExport icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void* hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC);
+extern int DLLExport icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC);
 extern int DLLExport icsneoClosePort(void* hObject, int* pNumberOfErrors);
 extern void DLLExport icsneoFreeObject(void* hObject);
-extern int DLLExport icsneoSerialNumberToString(unsigned long serial, char*data,unsigned long data_size);
+extern int DLLExport icsneoSerialNumberToString(unsigned long serial, char* data, unsigned long data_size);
 
 //Message Functions
 extern int DLLExport icsneoGetMessages(void* hObject, icsSpyMessage* pMsg, int* pNumberOfMessages, int* pNumberOfErrors);

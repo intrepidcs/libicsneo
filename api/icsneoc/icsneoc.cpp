@@ -212,6 +212,16 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 	return true;
 }
 
+bool icsneo_settingsRefresh(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	if(!device->device->settings) // Settings are not available for this device
+		return false;
+
+	return device->device->settings->refresh();
+}
+
 bool icsneo_settingsApply(const neodevice_t* device) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;

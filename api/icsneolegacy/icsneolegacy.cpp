@@ -1,8 +1,20 @@
+#ifndef __cplusplus
+#error "icsneoc.cpp must be compiled with a C++ compiler!"
+#endif
+
 #define ICSNEOC_MAKEDLL
 #include "api/icsneolegacy/include/icsneolegacy.h"
 
 #undef ICSNEOC_MAKEDLL
 #include "api/icsneoc/include/icsneoc.h"
+
+#include "communication/include/network.h"
+#include <map>
+
+using namespace icsneo;
+
+typedef uint64_t legacymaphandle_t;
+static std::map<legacymaphandle_t, neodevice_t> neodevices;
 
 static NeoDevice OldNeoDeviceFromNew(const neodevice_t* newnd) {
 	NeoDevice oldnd = { 0 };
@@ -39,26 +51,43 @@ int icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* 
 		count = bufferSize;
 	*pNumDevices = (int)count;
 
-	for(int i = 0; i < count; i++)
-		pNeoDevice[i] = OldNeoDeviceFromNew(&devices[i]);
+	for(int i = 0; i < count; i++) {
+		pNeoDevice[i] = OldNeoDeviceFromNew(&devices[i]); // Write out into user memory
+		neodevices[uint64_t(devices[i].handle) << 32 | icsneo_serialStringToNum(devices[i].serial)] = devices[i]; // Fill the look up table
+	}
 	
 	return 1;
 }
 
-int icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void* hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC) {
-	// TODO Implement
-	return false;
+int icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC) {
+	if(pNeoDevice == nullptr || hObject == nullptr)
+		return false;
+
+	neodevice_t* device;
+	try {
+		device = &neodevices.at(uint64_t(pNeoDevice->Handle) << 32 | pNeoDevice->SerialNumber);
+	} catch(std::out_of_range& e) {
+		return false;
+	}
+
+	*hObject = device;
+	if(!icsneo_openDevice(device))
+		return false;
+	icsneo_setPollingMessageLimit(device, 20000);
+	icsneo_enableMessagePolling(device);
+	return icsneo_goOnline(device);
 }
 
 int icsneoClosePort(void* hObject, int* pNumberOfErrors) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+
+	return icsneo_closeDevice(device);
 }
 
-void icsneoFreeObject(void* hObject) {
-	// TODO Implement
-	return;
-}
+// Memory is now managed automatically, this function is unneeded
+void icsneoFreeObject(void* hObject) { (void)hObject; return; }
 
 int icsneoSerialNumberToString(unsigned long serial, char* data, unsigned long data_size) {
 	size_t length = (size_t)data_size;
@@ -67,8 +96,38 @@ int icsneoSerialNumberToString(unsigned long serial, char* data, unsigned long d
 
 //Message Functions
 int icsneoGetMessages(void* hObject, icsSpyMessage* pMsg, int* pNumberOfMessages, int* pNumberOfErrors) {
-	// TODO Implement
-	return false;
+	static neomessage_t messages[20000];
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+
+	size_t messageCount = 20000;
+	if(!icsneo_getMessages(device, messages, &messageCount))
+		return false;
+	
+	*pNumberOfMessages = (int)messageCount;
+	*pNumberOfErrors = 0;
+
+	memset(pMsg, 0, sizeof(icsSpyMessage) * messageCount);
+	for(size_t i = 0; i < messageCount; i++) {
+		icsSpyMessage& oldmsg = pMsg[i];
+		neomessage_t& newmsg = messages[i];
+		oldmsg.NumberBytesData = (uint8_t)min(newmsg.length, 255);
+		oldmsg.NumberBytesHeader = 4;
+		oldmsg.ExtraDataPtr = (void*)newmsg.data;
+		memcpy(oldmsg.Data, newmsg.data, min(newmsg.length, 8));
+		oldmsg.ArbIDOrHeader = *(uint32_t*)newmsg.header;
+		oldmsg.ExtraDataPtrEnabled = newmsg.length > 8;
+		oldmsg.NetworkID = newmsg.netid;
+		switch(Network::Type(newmsg.type)) {
+			case Network::Type::CAN:
+				oldmsg.Protocol = SPY_PROTOCOL_CAN;
+				break;
+			// TODO Handle this better
+		}
+	}
+
+	return true;
 }
 
 int icsneoTxMessages(void* hObject, icsSpyMessage* pMsg, int lNetworkID, int lNumMessages) {
@@ -76,7 +135,7 @@ int icsneoTxMessages(void* hObject, icsSpyMessage* pMsg, int lNetworkID, int lNu
 	return false;
 }
 
-int icsneoTxMessagesEx(void* hObject,icsSpyMessage* pMsg, unsigned int lNetworkID, unsigned int lNumMessages, unsigned int* NumTxed, unsigned int zero2) {
+int icsneoTxMessagesEx(void* hObject, icsSpyMessage* pMsg, unsigned int lNetworkID, unsigned int lNumMessages, unsigned int* NumTxed, unsigned int zero2) {
 	// TODO Implement
 	return false;
 }
@@ -214,7 +273,7 @@ int icsneoGetErrorMessages(void* hObject, int* pErrorMsgs, int* pNumberOfErrors)
 	return false;
 }
 
-int icsneoGetErrorInfo(int lErrorNumber, TCHAR*szErrorDescriptionShort, TCHAR*szErrorDescriptionLong, int* lMaxLengthShort, int* lMaxLengthLong,int* lErrorSeverity,int* lRestartNeeded) {
+int icsneoGetErrorInfo(int lErrorNumber, TCHAR* szErrorDescriptionShort, TCHAR* szErrorDescriptionLong, int* lMaxLengthShort, int* lMaxLengthLong, int* lErrorSeverity, int* lRestartNeeded) {
 	// TODO Implement
 	return false;
 }
@@ -235,14 +294,21 @@ int icsneoISO15765_TransmitMessage(void* hObject, unsigned long ulNetworkID, stC
 	return false;
 }
 
-int icsneoISO15765_ReceiveMessage(void* hObject,int ulNetworkID, stCM_ISO157652_RxMessage* pMsg) {
+int icsneoISO15765_ReceiveMessage(void* hObject, int ulNetworkID, stCM_ISO157652_RxMessage* pMsg) {
 	// TODO Implement
 	return false;
 }
 
 //General Utility Functions
 int icsneoValidateHObject(void* hObject) {
-	// TODO Implement
+	for(auto it = neodevices.begin(); it != neodevices.end(); it++) {
+		if(&it->second == hObject) {
+			neodevice_t* device = (neodevice_t*)hObject;
+			if(icsneo_isValidNeoDevice(device))
+				return true;
+		}
+	}
+	
 	return false;
 }
 
@@ -329,8 +395,14 @@ int icsneoOpenPort(int lPortNumber, int lPortType, int lDriverType, unsigned cha
 }
 
 int icsneoEnableNetworkCom(void* hObject, int Enable) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+
+	if(Enable)
+		return icsneo_goOnline(device);
+	else
+		return icsneo_goOffline(device);
 }
 
 int icsneoFindAllCOMDevices(int lDriverType, int lGetSerialNumbers, int lStopAtFirst, int lUSBCommOnly, int* p_lDeviceTypes, int* p_lComPorts, int* p_lSerialNumbers, int*lNumDevices) {
