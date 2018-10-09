@@ -16,7 +16,8 @@ public:
 	MessageCallback(fn_messageCallback cb, MessageFilter f = MessageFilter()) : callback(cb), filter(std::make_shared<MessageFilter>(f)) {}
 	
 	// Allow the filter to be placed first if the user wants (maybe in the case of a lambda)
-	MessageCallback(MessageFilter f, fn_messageCallback cb) { MessageCallback(cb, f); }
+	MessageCallback(std::shared_ptr<MessageFilter> f, fn_messageCallback cb) : callback(cb), filter(f) {}
+	MessageCallback(MessageFilter f, fn_messageCallback cb) : callback(cb), filter(std::make_shared<MessageFilter>(f)) {}
 	
 	virtual bool callIfMatch(const std::shared_ptr<Message>& message) const {
 		bool ret = filter->match(message);
