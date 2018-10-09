@@ -11,6 +11,7 @@
 #include "communication/include/packetizer.h"
 #include "communication/include/encoder.h"
 #include "communication/include/decoder.h"
+#include "communication/message/include/resetstatusmessage.h"
 #include "third-party/concurrentqueue/concurrentqueue.h"
 
 namespace icsneo {
@@ -54,18 +55,22 @@ public:
 		enforcePollingMessageLimit();
 	}
 
+	void handleInternalMessage(std::shared_ptr<Message> message);
+
 	std::unique_ptr<IDeviceSettings> settings;
 
 protected:
 	uint16_t productId = 0;
 	bool online = false;
 	int messagePollingCallbackID = 0;
+	int internalHandlerCallbackID = 0;
 	std::shared_ptr<Communication> com;
 
 	neodevice_t& getWritableNeoDevice() { return data; }
 
 private:
 	neodevice_t data;
+	std::shared_ptr<ResetStatusMessage> latestResetStatus;
 	
 	size_t pollingMessageLimit = 20000;
 	moodycamel::ConcurrentQueue<std::shared_ptr<Message>> pollingContainer;

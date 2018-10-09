@@ -152,6 +152,10 @@ bool Device::open() {
 			return false;
 	}
 
+	internalHandlerCallbackID = com->addMessageCallback(MessageCallback(MessageFilter(Network::Type::Internal), [this](std::shared_ptr<Message> message) {
+		handleInternalMessage(message);
+	}));
+
 	return true;
 }
 
@@ -159,7 +163,8 @@ bool Device::close() {
 	if(!com)
 		return false;
 
-	settings = nullptr;
+	if(internalHandlerCallbackID)
+		com->removeMessageCallback(internalHandlerCallbackID);
 
 	return com->close();
 }
@@ -178,4 +183,14 @@ bool Device::goOffline() {
 
 	online = false;
 	return true;
+}
+
+void Device::handleInternalMessage(std::shared_ptr<Message> message) {
+	switch(message->network.getNetID()) {
+		case Network::NetID::Reset_Status:
+			latestResetStatus = std::dynamic_pointer_cast<ResetStatusMessage>(message);
+			break;
+		default:
+			break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;
+	}
 }

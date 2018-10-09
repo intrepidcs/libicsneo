@@ -1,6 +1,7 @@
 #include "communication/include/decoder.h"
 #include "communication/include/communication.h"
 #include "communication/message/include/serialnumbermessage.h"
+#include "communication/message/include/resetstatusmessage.h"
 #include "communication/include/command.h"
 #include "device/include/device.h"
 #include <iostream>
@@ -32,6 +33,38 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 			for(auto i = 0; i < data->dlc.DLC; i++)
 				msg->data.push_back(data->data[i]);
 			return msg;
+		}
+		case Network::Type::Internal: {
+			switch(packet->network.getNetID()) {
+				case Network::NetID::Reset_Status: {
+					if(packet->data.size() < sizeof(HardwareResetStatusPacket))
+						break;
+
+					HardwareResetStatusPacket* data = (HardwareResetStatusPacket*)packet->data.data();
+					auto msg = std::make_shared<ResetStatusMessage>();
+					msg->network = packet->network;
+					msg->mainLoopTime = data->main_loop_time_25ns * 25;
+					msg->maxMainLoopTime = data->max_main_loop_time_25ns * 25;
+					msg->busVoltage = data->busVoltage;
+					msg->deviceTemperature = data->deviceTemperature;
+					msg->justReset = data->status.just_reset;
+					msg->comEnabled = data->status.com_enabled;
+					msg->cmRunning = data->status.cm_is_running;
+					msg->cmChecksumFailed = data->status.cm_checksum_failed;
+					msg->cmLicenseFailed = data->status.cm_license_failed;
+					msg->cmVersionMismatch = data->status.cm_version_mismatch;
+					msg->cmBootOff = data->status.cm_boot_off;
+					msg->hardwareFailure = data->status.hardware_failure;
+					msg->usbComEnabled = data->status.usbComEnabled;
+					msg->linuxComEnabled = data->status.linuxComEnabled;
+					msg->cmTooBig = data->status.cm_too_big;
+					msg->hidUsbState = data->status.hidUsbState;
+					msg->fpgaUsbState = data->status.fpgaUsbState;
+					return msg;
+				}
+				default:
+					break;
+			}
 		}
 		default:
 			switch(packet->network.getNetID()) {
