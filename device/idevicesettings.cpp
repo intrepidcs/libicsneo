@@ -85,6 +85,9 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 }
 
 bool IDeviceSettings::apply(bool temporary) {
+	if(readonly)
+		return false;
+
 	std::vector<uint8_t> bytestream;
 	bytestream.resize(7 + structSize);
 	bytestream[0] = 0x00;
@@ -131,6 +134,9 @@ bool IDeviceSettings::apply(bool temporary) {
 }
 
 bool IDeviceSettings::applyDefaults(bool temporary) {
+	if(readonly)
+		return false;
+
 	com->sendCommand(Command::SetDefaultSettings);
 	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetDefaultSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
@@ -171,6 +177,9 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 }
 
 bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
+	if(readonly)
+		return false;
+
 	switch(net.getType()) {
 		case Network::Type::CAN: {
 			CAN_SETTINGS* cfg = getCANSettingsFor(net);
@@ -191,6 +200,9 @@ bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
 }
 
 template<typename T> bool IDeviceSettings::setStructure(const T& newStructure) {
+	if(readonly)
+		return false;
+		
 	if(sizeof(T) != structSize)
 		return false; // The wrong structure was passed in for the current device
 	

@@ -302,6 +302,8 @@ public:
 	template<typename T> bool setStructure(const T& newStructure);
 
 	uint8_t getEnumValueForBaudrate(uint32_t baudrate);
+
+	bool readonly = false;
 protected:
 	std::shared_ptr<Communication> com;
 	size_t structSize;

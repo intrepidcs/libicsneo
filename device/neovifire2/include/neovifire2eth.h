@@ -18,6 +18,7 @@ public:
 		auto decoder = std::unique_ptr<Decoder>(new Decoder());
 		com = std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
 		settings = std::unique_ptr<IDeviceSettings>(new NeoVIFIRE2Settings(com));
+		settings->readonly = true;
 		productId = PRODUCT_ID;
 	}
 
