@@ -8,6 +8,10 @@ namespace icsneo {
 class CANMessage : public Message {
 public:
 	uint32_t arbid;
+	bool isRemote = false;
+	bool isExtended = false;
+	bool isCANFD = false;
+	bool baudrateSwitch = false; // CAN FD only
 };
 
 }

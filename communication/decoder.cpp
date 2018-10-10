@@ -24,14 +24,79 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 			HardwareCANPacket* data = (HardwareCANPacket*)packet->data.data();
 			auto msg = std::make_shared<CANMessage>();
 			msg->network = packet->network;
-			msg->arbid = data->header.SID;
-			msg->data.reserve(data->dlc.DLC);
 
 			// Timestamp calculation
 			msg->timestamp = data->timestamp.TS * 25; // Timestamps are in 25ns increments since 1/1/2007 GMT 00:00:00.0000
 
-			for(auto i = 0; i < data->dlc.DLC; i++)
-				msg->data.push_back(data->data[i]);
+			// Arb ID
+			if(data->header.IDE) { // Extended 29-bit ID
+				msg->arbid = (data->header.SID & 0x7ff) << 18;
+				msg->arbid |= (data->eid.EID & 0xfff) << 6;
+				msg->arbid |= (data->dlc.EID2 & 0x3f);
+				msg->isExtended = true;
+			} else { // Standard 11-bit ID
+				msg->arbid = data->header.SID;
+			}
+
+			// DLC
+			uint8_t length = data->dlc.DLC;
+			if(data->header.EDL && data->timestamp.IsExtended) { // CAN FD
+				msg->isCANFD = true;
+				msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
+				switch(length) { // CAN FD Length Decoding
+					case 0x0:
+					case 0x1:
+					case 0x2:
+					case 0x3:
+					case 0x4:
+					case 0x5:
+					case 0x6:
+					case 0x7:
+					case 0x8:
+						break; // The length is already correct
+					case 0x9:
+						length = 12;
+						break;
+					case 0xa:
+						length = 16;
+						break;
+					case 0xb:
+						length = 20;
+						break;
+					case 0xc:
+						length = 24;
+						break;
+					case 0xd:
+						length = 32;
+						break;
+					case 0xe:
+						length = 48;
+						break;
+					case 0xf:
+						length = 64;
+						break;
+					default:
+						length = 0;
+						// TODO Flag an error
+						break;
+				}
+			}
+			
+			// Data
+			// The first 8 bytes are always in the standard place
+			if(data->dlc.RTR) { // Remote Request Frame
+				msg->data.resize(length); // This data will be all zeros, but the length will be set
+				msg->isRemote = true;
+			} else {
+				msg->data.reserve(length);
+				msg->data.insert(msg->data.end(), data->data, data->data + (length > 8 ? 8 : length));
+				if(length > 8) { // If there are more than 8 bytes, they come at the end of the message
+					// Messages with extra data are formatted as message, then uint16_t netid, then uint16_t length, then extra data
+					uint8_t* extraDataStart = packet->data.data() + sizeof(HardwareCANPacket) + 2 + 2;
+					msg->data.insert(msg->data.end(), extraDataStart, extraDataStart + (length - 8));
+				}
+			}
+
 			return msg;
 		}
 		case Network::Type::Internal: {

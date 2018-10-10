@@ -15,9 +15,17 @@ neomessage_t icsneo::CreateNeoMessage(const Message& message) {
 	neomsg.timestamp = message.timestamp;
 
 	switch(type) {
-		case Network::Type::CAN:
-			((neomessage_can_t*)&neomsg)->arbid = ((const CANMessage*)&message)->arbid;
+		case Network::Type::CAN: {
+			neomessage_can_t& can = *(neomessage_can_t*)&neomsg;
+			const CANMessage& canmsg = *(const CANMessage*)&message;
+			can.arbid = canmsg.arbid;
+			can.status.extendedFrame = canmsg.isExtended;
+			can.status.remoteFrame = canmsg.isRemote;
+			can.status.canfdRTR = canmsg.isRemote;
+			can.status.canfdFDF = canmsg.isCANFD;
+			can.status.canfdBRS = canmsg.baudrateSwitch;
 			break;
+		}
 		default:
 			// TODO Implement others
 			break;
