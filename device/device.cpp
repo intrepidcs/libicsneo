@@ -173,6 +173,9 @@ bool Device::goOnline() {
 	if(!com->sendCommand(Command::EnableNetworkCommunication, true))
 		return false;
 
+	ledState = LEDState::Online;
+	updateLEDState();
+
 	online = true;
 	return true;
 }
@@ -180,6 +183,9 @@ bool Device::goOnline() {
 bool Device::goOffline() {
 	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
 		return false;
+
+	ledState = latestResetStatus->cmRunning ? LEDState::CoreMiniRunning : LEDState::Offline;
+	updateLEDState();
 
 	online = false;
 	return true;
@@ -193,4 +199,17 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 		default:
 			break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;
 	}
+}
+
+void Device::updateLEDState() {
+	auto msg = std::make_shared<Message>();
+	msg->network = Network::NetID::Device;
+	/* NetID::Device is a super old command type.
+	 * It has a leading 0x00 byte, a byte for command, and a byte for an argument.
+	 * In this case, command 0x06 is SetLEDState.
+	 * This old command type is not really used anywhere else.
+	 */
+	msg->data = {0x00, 0x06, uint8_t(ledState)};
+	auto packet = com->encoder->encode(msg);
+	com->sendPacket(packet);
 }

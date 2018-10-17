@@ -24,6 +24,9 @@ std::vector<uint8_t> Encoder::encode(const std::shared_ptr<Message>& message) {
 		// }
 		default:
 			switch(message->network.getNetID()) {
+				case Network::NetID::Device:
+					shortFormat = true;
+					break;
 				case Network::NetID::Main51:
 					if(message->data.size() > 0xF) {
 						// Main51 can be sent as a long message without setting the NetID to RED first

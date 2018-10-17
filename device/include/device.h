@@ -72,6 +72,14 @@ private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
 	
+	enum class LEDState : uint8_t {
+		Offline = 0x04,
+		CoreMiniRunning = 0x08, // This should override "offline" if the CoreMini is running
+		Online = 0x10
+	};
+	LEDState ledState;
+	void updateLEDState();
+	
 	size_t pollingMessageLimit = 20000;
 	moodycamel::ConcurrentQueue<std::shared_ptr<Message>> pollingContainer;
 	void enforcePollingMessageLimit();
