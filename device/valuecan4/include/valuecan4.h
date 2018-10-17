@@ -13,10 +13,11 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_2; // TODO Split headers and determine the correct type
 	static constexpr const uint16_t PRODUCT_ID = 0x1101;
 	ValueCAN4(neodevice_t neodevice) : Device(neodevice) {
-		auto transport = std::make_shared<STM32>(getWritableNeoDevice());
+		auto transport = std::unique_ptr<ICommunication>(new STM32(getWritableNeoDevice()));
 		auto packetizer = std::make_shared<Packetizer>();
-		auto decoder = std::make_shared<Decoder>();
-		com = std::make_shared<Communication>(transport, packetizer, decoder);
+		auto encoder = std::unique_ptr<Encoder>(new Encoder(packetizer));
+		auto decoder = std::unique_ptr<Decoder>(new Decoder());
+		com = std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
