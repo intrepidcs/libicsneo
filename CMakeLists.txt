@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 include(GNUInstallDirs)
 
-include_directories(${CMAKE_SOURCE_DIR})
+message(STATUS "icsneo source dir ${CMAKE_CURRENT_SOURCE_DIR}")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Enable Warnings
 if(MSVC)
@@ -21,7 +22,7 @@ endif()
 
 # libftdi
 if(NOT WIN32)
-	include_directories(${CMAKE_SOURCE_DIR} third-party/libftdi/src third-party/libftdi/ftdipp)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR} third-party/libftdi/src third-party/libftdi/ftdipp)
 	add_subdirectory(third-party/libftdi)
 endif(NOT WIN32)
 
@@ -32,11 +33,11 @@ if(WIN32)
 endif(WIN32)
 
 if(WIN32)
-	file(GLOB PLATFORM_SRC_EXTERNAL ${CMAKE_SOURCE_DIR}/platform/windows/*.cpp)
-	file(GLOB PLATFORM_SRC_INTERNAL ${CMAKE_SOURCE_DIR}/platform/windows/internal/*.cpp)
+	file(GLOB PLATFORM_SRC_EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/*.cpp)
+	file(GLOB PLATFORM_SRC_INTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/internal/*.cpp)
 	set(PLATFORM_SRC ${PLATFORM_SRC_EXTERNAL} ${PLATFORM_SRC_INTERNAL})
 else()
-	file(GLOB PLATFORM_SRC ${CMAKE_SOURCE_DIR}/platform/posix/*.cpp)
+	file(GLOB PLATFORM_SRC ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/*.cpp)
 endif()
 
 set(COMMON_SRC
@@ -59,6 +60,12 @@ add_library(icsneocpp
 	${SRC_FILES}
 )
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+target_include_directories(icsneocpp 
+	INTERFACE 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> 
+		$<INSTALL_INTERFACE:>
+)
 
 add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp)
 target_link_libraries(icsneoc icsneocpp)

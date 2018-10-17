@@ -12,6 +12,11 @@
 #include <map>
 #include <algorithm>
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4100) // unreferenced formal parameter
+#endif
+
+
 using namespace icsneo;
 
 typedef uint64_t legacymaphandle_t;
