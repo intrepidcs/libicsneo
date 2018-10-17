@@ -102,6 +102,7 @@ typedef struct {
 	uint8_t type;
 	uint8_t reserved[9];
 } neomessage_t;
+// Any time you add another neomessage_*_t type, make sure to add it to the static_asserts below!
 
 typedef struct {
 	neomessage_statusbitfield_t status;
@@ -113,12 +114,13 @@ typedef struct {
 	uint8_t type;
 	char reserved[9];
 } neomessage_can_t;
-static_assert(sizeof(neomessage_can_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size!");
 
 #pragma pack(pop)
 
 #ifdef __cplusplus
 #include "communication/message/include/message.h"
+
+static_assert(sizeof(neomessage_can_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size!");
 
 namespace icsneo {
 

@@ -10,6 +10,7 @@
 
 #include "communication/include/network.h"
 #include <map>
+#include <algorithm>
 
 using namespace icsneo;
 
@@ -112,10 +113,10 @@ int icsneoGetMessages(void* hObject, icsSpyMessage* pMsg, int* pNumberOfMessages
 	for(size_t i = 0; i < messageCount; i++) {
 		icsSpyMessage& oldmsg = pMsg[i];
 		neomessage_t& newmsg = messages[i];
-		oldmsg.NumberBytesData = (uint8_t)min(newmsg.length, 255);
+		oldmsg.NumberBytesData = (uint8_t)std::min(newmsg.length, (size_t)255);
 		oldmsg.NumberBytesHeader = 4;
 		oldmsg.ExtraDataPtr = (void*)newmsg.data;
-		memcpy(oldmsg.Data, newmsg.data, min(newmsg.length, 8));
+		memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
 		oldmsg.ArbIDOrHeader = *(uint32_t*)newmsg.header;
 		oldmsg.ExtraDataPtrEnabled = newmsg.length > 8;
 		oldmsg.NetworkID = newmsg.netid;

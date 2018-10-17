@@ -58,6 +58,7 @@ add_library(icsneocpp
 	api/icsneocpp/icsneocpp.cpp
 	${SRC_FILES}
 )
+set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp)
 target_link_libraries(icsneoc icsneocpp)

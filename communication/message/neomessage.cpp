@@ -7,7 +7,7 @@ neomessage_t icsneo::CreateNeoMessage(const Message& message) {
 	// This function is not responsible for storing the message!
 	// Keep the shared_ptr around for the lifetime of the data access
 	const auto type = message.network.getType();
-	neomessage_t neomsg = { 0 }; // Clear out the memory
+	neomessage_t neomsg = {}; // Clear out the memory
 	neomsg.netid = (uint32_t)message.network.getNetID();
 	neomsg.type = (uint8_t)type;
 	neomsg.length = message.data.size();
