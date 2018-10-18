@@ -2,8 +2,10 @@
 
 using namespace icsneo;
 
-std::vector<uint8_t> Encoder::encode(const std::shared_ptr<Message>& message) {
+bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message>& message) {
 	bool shortFormat = false;
+	result.clear();
+
 	switch(message->network.getType()) {
 		// case Network::Type::CAN: {
 		// 	if(message->data.size() < 24)
@@ -39,7 +41,8 @@ std::vector<uint8_t> Encoder::encode(const std::shared_ptr<Message>& message) {
 							(uint8_t)size, // Size, little endian 16-bit
 							(uint8_t)(size >> 8)
 						});
-						return packetizer->packetWrap(message->data, shortFormat);
+						result = packetizer->packetWrap(message->data, shortFormat);
+						return true;
 					} else {
 						shortFormat = true;
 					}
@@ -49,11 +52,11 @@ std::vector<uint8_t> Encoder::encode(const std::shared_ptr<Message>& message) {
 					// We expect the network byte to be populated already in data, but not the length
 					uint16_t length = uint16_t(message->data.size()) - 1;
 					message->data.insert(message->data.begin(), {(uint8_t)length, (uint8_t)(length >> 8)});
+					break;
 				}
 				default:
-					break;
+					return false;
 			}
-			break;
 	}
 
 	if(shortFormat) {
@@ -71,14 +74,15 @@ std::vector<uint8_t> Encoder::encode(const std::shared_ptr<Message>& message) {
 		});
 	}
 
-	return packetizer->packetWrap(message->data, shortFormat);
+	result = packetizer->packetWrap(message->data, shortFormat);
+	return true;
 }
 
-std::vector<uint8_t> Encoder::encode(Command cmd, std::vector<uint8_t> arguments) {
+bool Encoder::encode(std::vector<uint8_t>& result, Command cmd, std::vector<uint8_t> arguments) {
 	auto msg = std::make_shared<Message>();
 	msg->network = Network::NetID::Main51;
-	msg->data.resize(arguments.size() + 1);
+	msg->data.reserve(arguments.size() + 1);
 	msg->data.push_back((uint8_t)cmd);
 	msg->data.insert(msg->data.end(), std::make_move_iterator(arguments.begin()), std::make_move_iterator(arguments.end()));
-	return encode(msg);
+	return encode(result, msg);
 }

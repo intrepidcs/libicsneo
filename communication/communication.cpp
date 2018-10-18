@@ -46,19 +46,15 @@ bool Communication::close() {
 }
 
 bool Communication::sendPacket(std::vector<uint8_t>& bytes) {
-	// std::cout << "\nWriting " << bytes.size() << " bytes\n" << std::hex;
-	// for(size_t i = 0; i < bytes.size(); i++)
-	// 	std::cout << std::setw(2) << std::setfill('0') << (int)bytes[i] << (i % 16 == 15 ? '\n' : ' ');
-	// std::cout << '\n' << std::endl << std::dec;
+	// This is here so that other communication types (like multichannel) can override it
 	return rawWrite(bytes);
 }
 
 bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
-	auto msg = std::make_shared<Message>();
-	msg->network = Network::NetID::Main51;
-	msg->data = std::move(arguments);
-	msg->data.insert(msg->data.begin(), (uint8_t)cmd);
-	auto packet = encoder->encode(msg);
+	std::vector<uint8_t> packet;
+	if(!encoder->encode(packet, cmd, arguments))
+		return false;
+		
 	return sendPacket(packet);
 }
 

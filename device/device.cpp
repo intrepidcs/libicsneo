@@ -210,6 +210,9 @@ void Device::updateLEDState() {
 	 * This old command type is not really used anywhere else.
 	 */
 	msg->data = {0x00, 0x06, uint8_t(ledState)};
-	auto packet = com->encoder->encode(msg);
+	std::vector<uint8_t> packet;
+	if(!com->encoder->encode(packet, msg))
+		return;
+		
 	com->sendPacket(packet);
 }

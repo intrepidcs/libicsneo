@@ -18,9 +18,9 @@ namespace icsneo {
 class Encoder {
 public:
 	Encoder(std::shared_ptr<Packetizer> packetizerInstance) : packetizer(packetizerInstance) {}
-	std::vector<uint8_t> encode(const std::shared_ptr<Message>& message);
-	std::vector<uint8_t> encode(Command cmd, bool boolean) { return encode(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
-	std::vector<uint8_t> encode(Command cmd, std::vector<uint8_t> arguments = {});
+	bool encode(std::vector<uint8_t>& result, const std::shared_ptr<Message>& message);
+	bool encode(std::vector<uint8_t>& result, Command cmd, bool boolean) { return encode(result, cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
+	bool encode(std::vector<uint8_t>& result, Command cmd, std::vector<uint8_t> arguments = {});
 	
 private:
 	std::shared_ptr<Packetizer> packetizer;
