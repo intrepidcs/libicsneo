@@ -55,6 +55,9 @@ public:
 		enforcePollingMessageLimit();
 	}
 
+	bool transmit(std::shared_ptr<Message> message);
+	bool transmit(std::vector<std::shared_ptr<Message>> messages);
+
 	void handleInternalMessage(std::shared_ptr<Message> message);
 
 	std::unique_ptr<IDeviceSettings> settings;

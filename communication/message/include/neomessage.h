@@ -119,12 +119,14 @@ typedef struct {
 
 #ifdef __cplusplus
 #include "communication/message/include/message.h"
+#include <memory>
 
 static_assert(sizeof(neomessage_can_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size!");
 
 namespace icsneo {
 
-neomessage_t CreateNeoMessage(const Message& message);
+neomessage_t CreateNeoMessage(const std::shared_ptr<Message> message);
+std::shared_ptr<Message> CreateMessageFromNeoMessage(const neomessage_t* neomessage);
 
 }
 #endif

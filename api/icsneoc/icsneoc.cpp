@@ -180,7 +180,7 @@ bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_
 
 	for(size_t i = 0; i < *items; i++) {
 		// For each message, copy into neomessage_t buffer given
-		messages[i] = CreateNeoMessage(*(storage[i]));
+		messages[i] = CreateNeoMessage(storage[i]);
 	}
 
 	// The user now has until the next call of icsneo_getMessages (for this device) to use the data, after which point it's freed
@@ -270,4 +270,20 @@ bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newB
 		return false;
 
 	return device->device->settings->setBaudrateFor(netid, newBaudrate);
+}
+
+bool icsneo_transmit(const neodevice_t* device, const neomessage_t* message) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	return device->device->transmit(CreateMessageFromNeoMessage(message));
+}
+
+bool icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* messages, size_t count) {
+	// TODO This can be implemented faster
+	for(size_t i = 0; i < count; i++) {
+		if(!icsneo_transmit(device, messages + i))
+			return false;
+	}
+	return true;
 }

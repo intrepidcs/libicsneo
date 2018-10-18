@@ -43,40 +43,32 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			if(data->header.EDL && data->timestamp.IsExtended) { // CAN FD
 				msg->isCANFD = true;
 				msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
-				switch(length) { // CAN FD Length Decoding
-					case 0x0:
-					case 0x1:
-					case 0x2:
-					case 0x3:
-					case 0x4:
-					case 0x5:
-					case 0x6:
-					case 0x7:
-					case 0x8:
-						break; // The length is already correct
-					case 0x9:
-						length = 12;
-						break;
-					case 0xa:
-						length = 16;
-						break;
-					case 0xb:
-						length = 20;
-						break;
-					case 0xc:
-						length = 24;
-						break;
-					case 0xd:
-						length = 32;
-						break;
-					case 0xe:
-						length = 48;
-						break;
-					case 0xf:
-						length = 64;
-						break;
-					default:
-						return false;
+				if(length > 8) {
+					switch(length) { // CAN FD Length Decoding
+						case 0x9:
+							length = 12;
+							break;
+						case 0xa:
+							length = 16;
+							break;
+						case 0xb:
+							length = 20;
+							break;
+						case 0xc:
+							length = 24;
+							break;
+						case 0xd:
+							length = 32;
+							break;
+						case 0xe:
+							length = 48;
+							break;
+						case 0xf:
+							length = 64;
+							break;
+						default:
+							return false;
+					}
 				}
 			}
 			
@@ -128,7 +120,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					return true;
 				}
 				default:
-					return false;
+					break;//return false;
 			}
 		}
 		default:
@@ -177,11 +169,10 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			}
 	}
 
-	return false;
-
-	// auto msg = std::make_shared<Message>();
-	// msg->network = packet->network;
-	// msg->data = packet->data;
-	// result = msg;
-	// return true;
+	// For the moment other types of messages will automatically be decoded as raw messages
+	auto msg = std::make_shared<Message>();
+	msg->network = packet->network;
+	msg->data = packet->data;
+	result = msg;
+	return true;
 }
