@@ -57,7 +57,7 @@ int icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* 
 		count = bufferSize;
 	*pNumDevices = (int)count;
 
-	for(int i = 0; i < count; i++) {
+	for(size_t i = 0; i < count; i++) {
 		pNeoDevice[i] = OldNeoDeviceFromNew(&devices[i]); // Write out into user memory
 		neodevices[uint64_t(devices[i].handle) << 32 | icsneo_serialStringToNum(devices[i].serial)] = devices[i]; // Fill the look up table
 	}

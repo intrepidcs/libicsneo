@@ -87,7 +87,7 @@ private:
 		uint16_t cpuMipsL;
 		uint16_t busVoltage;
 		uint16_t deviceTemperature;
-	} CoreMiniMsgResetStatus;
+	};
 };
 
 }
