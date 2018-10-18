@@ -42,7 +42,10 @@ public:
 			for(auto& payload : foundDev.discoveryPackets)
 				packetizer->input(payload);
 			for(auto& packet : packetizer->output()) {
-				auto msg = decoder->decodePacket(packet);
+				std::shared_ptr<Message> msg;
+				if(!decoder->decode(msg, packet))
+					continue; // We failed to decode this packet
+
 				if(!msg || msg->network.getNetID() != Network::NetID::Main51)
 					continue; // Not a message we care about
 				auto sn = std::dynamic_pointer_cast<SerialNumberMessage>(msg);

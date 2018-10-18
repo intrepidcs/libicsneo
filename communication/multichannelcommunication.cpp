@@ -102,7 +102,10 @@ void MultiChannelCommunication::readTask() {
 					
 					if(packetizer->input(payloadBytes)) {
 						for(auto& packet : packetizer->output()) {
-							auto msg = decoder->decodePacket(packet);
+							std::shared_ptr<Message> msg;
+							if(!decoder->decode(msg, packet))
+								continue; // TODO Report an error to the user, we failed to decode this packet
+
 							for(auto& cb : messageCallbacks) { // We might have closed while reading or processing
 								if(!closing) {
 									cb.second.callIfMatch(msg);

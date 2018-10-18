@@ -16,7 +16,7 @@ namespace icsneo {
 class Decoder {
 public:
 	static uint64_t GetUInt64FromLEBytes(uint8_t* bytes);
-	std::shared_ptr<Message> decodePacket(const std::shared_ptr<Packet>& message);
+	bool decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet);
 	
 private:
 	typedef uint16_t icscm_bitfield;

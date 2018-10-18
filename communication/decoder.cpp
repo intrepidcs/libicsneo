@@ -15,11 +15,11 @@ uint64_t Decoder::GetUInt64FromLEBytes(uint8_t* bytes) {
 	return ret;
 }
 
-std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& packet) {
+bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet) {
 	switch(packet->network.getType()) {
 		case Network::Type::CAN: {
 			if(packet->data.size() < 24)
-				break; // We would read garbage when interpereting the data
+				return false;
 
 			HardwareCANPacket* data = (HardwareCANPacket*)packet->data.data();
 			auto msg = std::make_shared<CANMessage>();
@@ -76,9 +76,7 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 						length = 64;
 						break;
 					default:
-						length = 0;
-						// TODO Flag an error
-						break;
+						return false;
 				}
 			}
 			
@@ -97,13 +95,14 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 				}
 			}
 
-			return msg;
+			result = msg;
+			return true;
 		}
 		case Network::Type::Internal: {
 			switch(packet->network.getNetID()) {
 				case Network::NetID::Reset_Status: {
 					if(packet->data.size() < sizeof(HardwareResetStatusPacket))
-						break;
+						return false;
 
 					HardwareResetStatusPacket* data = (HardwareResetStatusPacket*)packet->data.data();
 					auto msg = std::make_shared<ResetStatusMessage>();
@@ -125,10 +124,11 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 					msg->cmTooBig = data->status.cm_too_big;
 					msg->hidUsbState = data->status.hidUsbState;
 					msg->fpgaUsbState = data->status.fpgaUsbState;
-					return msg;
+					result = msg;
+					return true;
 				}
 				default:
-					break;
+					return false;
 			}
 		}
 		default:
@@ -147,17 +147,17 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 							msg->hasPCBSerial = packet->data.size() >= 31;
 							if(msg->hasPCBSerial)
 								memcpy(msg->pcbSerial, packet->data.data() + 15, sizeof(msg->pcbSerial));
-							return msg;
+							result = msg;
+							return true;
 						}
-						break;
 						default:
 							auto msg = std::make_shared<Main51Message>();
 							msg->network = packet->network;
 							msg->command = Command(packet->data[0]);
 							msg->data.insert(msg->data.begin(), packet->data.begin() + 1, packet->data.end());
-							return msg;
+							result = msg;
+							return true;
 					}
-					break;
 				}
 				case Network::NetID::RED_OLDFORMAT: {
 					/* So-called "old format" messages are a "new style, long format" wrapper around the old short messages.
@@ -169,18 +169,19 @@ std::shared_ptr<Message> Decoder::decodePacket(const std::shared_ptr<Packet>& pa
 					 */
 					uint16_t length = packet->data[0] | (packet->data[1] << 8);
 					packet->network = Network(packet->data[2] & 0xF);
-					//std::cout << "Got an old format packet, decoding against " << packet->network << std::endl;
 					packet->data.erase(packet->data.begin(), packet->data.begin() + 3);
 					if(packet->data.size() != length)
 						packet->data.resize(length);
-					return decodePacket(packet);
+					return decode(result, packet);
 				}
 			}
-			break;
 	}
 
-	auto msg = std::make_shared<Message>();
-	msg->network = packet->network;
-	msg->data = packet->data;
-	return msg;
+	return false;
+
+	// auto msg = std::make_shared<Message>();
+	// msg->network = packet->network;
+	// msg->data = packet->data;
+	// result = msg;
+	// return true;
 }

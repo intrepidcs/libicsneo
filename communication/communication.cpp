@@ -54,7 +54,7 @@ bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 	std::vector<uint8_t> packet;
 	if(!encoder->encode(packet, cmd, arguments))
 		return false;
-		
+
 	return sendPacket(packet);
 }
 
@@ -126,10 +126,12 @@ void Communication::readTask() {
 		if(impl->readWait(readBytes)) {
 			if(packetizer->input(readBytes)) {
 				for(auto& packet : packetizer->output()) {
-					auto msg = decoder->decodePacket(packet);
-					//std::cout << "Got packet for " << msg->network << ", calling " << messageCallbacks.size() << " callbacks" << std::endl;
-					for(auto& cb : messageCallbacks) { // We might have closed while reading or processing
-						if(!closing) {
+					std::shared_ptr<Message> msg;
+					if(!decoder->decode(msg, packet))
+						continue; // TODO Report an error to the user, we failed to decode this packet
+					
+					for(auto& cb : messageCallbacks) {
+						if(!closing) { // We might have closed while reading or processing
 							cb.second.callIfMatch(msg);
 						}
 					}
