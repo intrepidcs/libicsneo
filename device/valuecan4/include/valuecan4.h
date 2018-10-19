@@ -9,26 +9,18 @@ namespace icsneo {
 
 class ValueCAN4 : public Device {
 public:
-	// Serial numbers are V0 for 4-4, VE for 4-2EL, V2 for 4-2, and V1 for 4-1
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_2; // TODO Split headers and determine the correct type
 	static constexpr const uint16_t PRODUCT_ID = 0x1101;
 	ValueCAN4(neodevice_t neodevice) : Device(neodevice) {
-		auto transport = std::unique_ptr<ICommunication>(new STM32(getWritableNeoDevice()));
-		auto packetizer = std::make_shared<Packetizer>();
-		auto encoder = std::unique_ptr<Encoder>(new Encoder(packetizer));
-		auto decoder = std::unique_ptr<Decoder>(new Decoder());
-		com = std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
-		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
 
-	static std::vector<std::shared_ptr<Device>> Find() {
-		std::vector<std::shared_ptr<Device>> found;
-
-		for(auto neodevice : STM32::FindByProduct(PRODUCT_ID))
-			found.push_back(std::make_shared<ValueCAN4>(neodevice));
-
-		return found;
+protected:
+	static std::shared_ptr<Communication> MakeCommunication(neodevice_t& nd) {
+		auto transport = std::unique_ptr<ICommunication>(new STM32(nd));
+		auto packetizer = std::make_shared<Packetizer>();
+		auto encoder = std::unique_ptr<Encoder>(new Encoder(packetizer));
+		auto decoder = std::unique_ptr<Decoder>(new Decoder());
+		return std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
 	}
 };
 

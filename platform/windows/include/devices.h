@@ -13,7 +13,10 @@
 #include "device/radstar2/include/radstar2usb.h"
 #include "device/radsupermoon/include/radsupermoon.h"
 #include "device/valuecan3/include/valuecan3.h"
-#include "device/valuecan4/include/valuecan4.h"
+#include "device/valuecan4/include/valuecan4-1.h"
+#include "device/valuecan4/include/valuecan4-2.h"
+#include "device/valuecan4/include/valuecan4-2el.h"
+#include "device/valuecan4/include/valuecan4-4.h"
 #include "device/vividcan/include/vividcan.h"
 
 #endif

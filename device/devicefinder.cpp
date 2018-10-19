@@ -55,8 +55,20 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	findResults.push_back(ValueCAN3::Find());
 	#endif
 
-	#ifdef __VALUECAN4_H_
-	findResults.push_back(ValueCAN4::Find());
+	#ifdef __VALUECAN4_1_H_
+	findResults.push_back(ValueCAN4_1::Find());
+	#endif
+
+	#ifdef __VALUECAN4_2_H_
+	findResults.push_back(ValueCAN4_2::Find());
+	#endif
+
+	#ifdef __VALUECAN4_2EL_H_
+	findResults.push_back(ValueCAN4_2EL::Find());
+	#endif
+
+	#ifdef __VALUECAN4_4_H_
+	findResults.push_back(ValueCAN4_4::Find());
 	#endif
 
 	#ifdef __VIVIDCAN_H_
