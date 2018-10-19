@@ -51,6 +51,9 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 				}
 			}
 
+			// Pre-allocate as much memory as we will possibly need for speed
+			result.reserve(17 + dataSize);
+
 			result.push_back(0 /* byte count here later */ << 4 | (uint8_t(canmsg->network.getNetID()) & 0xF));
 			result.insert(result.end(), {0,0}); // Two bytes for Description ID, big endian, not used in API currently
 
@@ -95,7 +98,7 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 			// Fill in the length byte from earlier
 			result[0] |= result.size() << 4;
 			break;
-		}
+		} // End of Network::Type::CAN
 		default:
 			switch(message->network.getNetID()) {
 				case Network::NetID::Device:
