@@ -13,6 +13,7 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_1;
 	ValueCAN4_1(neodevice_t neodevice) : ValueCAN4(neodevice) {
 		com = MakeCommunication(getWritableNeoDevice());
+		com->encoder->supportCANFD = false; // VCAN 4-1 does not support CAN FD
 		settings = std::unique_ptr<IDeviceSettings>(new ValueCAN4_1Settings(com));
 		getWritableNeoDevice().type = DEVICE_TYPE;
 	}

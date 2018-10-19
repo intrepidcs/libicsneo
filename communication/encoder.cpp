@@ -15,6 +15,9 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 			if(!canmsg)
 				return false; // The message was not a properly formed CANMessage
 
+			if(!supportCANFD && canmsg->isCANFD)
+				return false; // This device does not support CAN FD
+
 			if(canmsg->isCANFD && canmsg->isRemote)
 				return false; // RTR frames can not be used with CAN FD
 

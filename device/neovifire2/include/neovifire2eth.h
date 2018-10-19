@@ -12,11 +12,7 @@ class NeoVIFIRE2ETH : public NeoVIFIRE2 {
 public:
 	static constexpr const uint16_t PRODUCT_ID = 0x0004;
 	NeoVIFIRE2ETH(neodevice_t neodevice) : NeoVIFIRE2(neodevice) {
-		auto transport = std::unique_ptr<ICommunication>(new PCAP(getWritableNeoDevice()));
-		auto packetizer = std::make_shared<Packetizer>();
-		auto encoder = std::unique_ptr<Encoder>(new Encoder(packetizer));
-		auto decoder = std::unique_ptr<Decoder>(new Decoder());
-		com = std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
+		com = MakeCommunicaiton(std::unique_ptr<ICommunication>(new PCAP(getWritableNeoDevice())));
 		settings = std::unique_ptr<IDeviceSettings>(new NeoVIFIRE2Settings(com));
 		settings->readonly = true;
 		productId = PRODUCT_ID;

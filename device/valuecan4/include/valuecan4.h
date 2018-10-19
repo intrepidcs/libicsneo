@@ -19,6 +19,7 @@ protected:
 		auto transport = std::unique_ptr<ICommunication>(new STM32(nd));
 		auto packetizer = std::make_shared<Packetizer>();
 		auto encoder = std::unique_ptr<Encoder>(new Encoder(packetizer));
+		encoder->supportCANFD = true;
 		auto decoder = std::unique_ptr<Decoder>(new Decoder());
 		return std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
 	}
