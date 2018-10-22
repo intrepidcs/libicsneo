@@ -11,8 +11,6 @@
 #include <vector>
 #include <memory>
 
-#pragma pack(push, 1)
-
 namespace icsneo {
 
 class Encoder {
@@ -28,7 +26,5 @@ private:
 };
 
 }
-
-#pragma pack(pop)
 
 #endif

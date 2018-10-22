@@ -2,6 +2,8 @@
 #error "icsneoc.cpp must be compiled with a C++ compiler!"
 #endif
 
+#define NOMINMAX
+
 #define ICSNEOC_MAKEDLL
 #include "icsneo/icsneolegacy.h"
 
@@ -73,6 +75,7 @@ int icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bN
 	try {
 		device = &neodevices.at(uint64_t(pNeoDevice->Handle) << 32 | pNeoDevice->SerialNumber);
 	} catch(std::out_of_range& e) {
+		(void)e; // Unused
 		return false;
 	}
 
@@ -124,7 +127,7 @@ int icsneoGetMessages(void* hObject, icsSpyMessage* pMsg, int* pNumberOfMessages
 		memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
 		oldmsg.ArbIDOrHeader = *(uint32_t*)newmsg.header;
 		oldmsg.ExtraDataPtrEnabled = newmsg.length > 8;
-		oldmsg.NetworkID = newmsg.netid;
+		oldmsg.NetworkID = (uint8_t)newmsg.netid; // TODO Handling for this?
 		switch(Network::Type(newmsg.type)) {
 			case Network::Type::CAN:
 				oldmsg.Protocol = SPY_PROTOCOL_CAN;

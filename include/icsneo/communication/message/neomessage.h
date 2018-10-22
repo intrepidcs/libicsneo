@@ -6,6 +6,10 @@
 
 #pragma pack(push, 1)
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
 typedef union {
 	struct {
 		uint32_t globalError : 1;
@@ -91,6 +95,9 @@ typedef union {
 	};
 	uint32_t statusBitfield[4];
 } neomessage_statusbitfield_t;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 typedef struct {
 	neomessage_statusbitfield_t status;

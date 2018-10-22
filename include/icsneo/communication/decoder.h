@@ -55,6 +55,10 @@ private:
 		} timestamp;
 	};
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
 	union CoreMiniStatusBits_t {
 		struct {
 			unsigned just_reset : 1;
@@ -75,6 +79,9 @@ private:
 		};
 		uint32_t dword;
 	};
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 	struct HardwareResetStatusPacket {
 		uint16_t main_loop_time_25ns;

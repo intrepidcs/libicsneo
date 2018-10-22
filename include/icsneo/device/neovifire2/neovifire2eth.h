@@ -12,7 +12,7 @@ class NeoVIFIRE2ETH : public NeoVIFIRE2 {
 public:
 	static constexpr const uint16_t PRODUCT_ID = 0x0004;
 	NeoVIFIRE2ETH(neodevice_t neodevice) : NeoVIFIRE2(neodevice) {
-		com = MakeCommunicaiton(std::unique_ptr<ICommunication>(new PCAP(getWritableNeoDevice())));
+		com = MakeCommunication(std::unique_ptr<ICommunication>(new PCAP(getWritableNeoDevice())));
 		settings = std::unique_ptr<IDeviceSettings>(new NeoVIFIRE2Settings(com));
 		settings->readonly = true;
 		productId = PRODUCT_ID;

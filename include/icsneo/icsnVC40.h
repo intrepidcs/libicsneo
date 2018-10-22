@@ -3,6 +3,11 @@
 #include <string>
 #include <cstdint>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
+
 #if defined(_MSC_VER)
 #define ALIGNED_(x) __declspec(align(x))
 #else
@@ -817,8 +822,8 @@ typedef struct ALIGNED_(2)
 	unsigned short brgh;
 	unsigned short parity;
 	unsigned short stop_bits;   
-	byte flow_control; // 0- off, 1 - Simple CTS RTS,
-	byte reserved_1;
+	unsigned char flow_control; // 0- off, 1 - Simple CTS RTS,
+	unsigned char reserved_1;
 
 	union
 	{
@@ -1060,7 +1065,10 @@ typedef struct ALIGNED_(2)  _stCM_ISO157652_TxMessage
 }stCM_ISO157652_TxMessage;
 
 
-
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4324) // nameless struct/union
+#endif
 typedef struct ALIGNED_(2)
 {
 	//transmit message
@@ -1102,6 +1110,9 @@ typedef struct ALIGNED_(2)
 	unsigned char reserved[16];
         
 }stCM_ISO157652_RxMessage;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 
 
@@ -1194,3 +1205,6 @@ typedef struct // matching C structure
 	unsigned char MiscData;
     }  icsSpyMessageJ1850;
 
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
