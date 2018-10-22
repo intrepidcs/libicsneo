@@ -79,7 +79,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			
 			// Data
 			// The first 8 bytes are always in the standard place
-			if(data->dlc.RTR) { // Remote Request Frame
+			if((data->dlc.RTR && data->header.IDE) || (!data->header.IDE && data->header.SRR)) { // Remote Request Frame
 				msg->data.resize(length); // This data will be all zeros, but the length will be set
 				msg->isRemote = true;
 			} else {
