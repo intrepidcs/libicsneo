@@ -67,7 +67,7 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 
 				result.insert(result.end(), {
 					(uint8_t)(canmsg->arbid >> 21),
-					(uint8_t)((((canmsg->arbid & 0x001C0000) >> 13) & 0xFF) + (((canmsg->arbid & 0x00030000) >> 16) & 0xFF) | 8),
+					(uint8_t)(((((canmsg->arbid & 0x001C0000) >> 13) & 0xFF) + (((canmsg->arbid & 0x00030000) >> 16) & 0xFF)) | 8),
 					(uint8_t)(canmsg->arbid >> 8),
 					(uint8_t)canmsg->arbid
 				});
