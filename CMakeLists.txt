@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 11)
 
 include(GNUInstallDirs)
 
+# macOS Homebrew Boost Fix
+if(NOT MSVC)
+	include_directories(AFTER /usr/local/include)
+endif()
+
 # Enable Warnings
 if(MSVC)
 	# Force to always compile with W4
