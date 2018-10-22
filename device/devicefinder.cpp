@@ -1,5 +1,5 @@
-#include "device/include/devicefinder.h"
-#include "platform/include/devices.h"
+#include "icsneo/device/devicefinder.h"
+#include "icsneo/platform/devices.h"
 
 using namespace icsneo;
 

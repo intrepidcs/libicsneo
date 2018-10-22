@@ -1,6 +1,6 @@
-#include "include/device.h"
-#include "communication/message/callback/include/messagecallback.h"
-#include "communication/include/command.h"
+#include "icsneo/device/device.h"
+#include "icsneo/communication/message/callback/messagecallback.h"
+#include "icsneo/communication/command.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>

@@ -1,4 +1,4 @@
-#include "communication/include/communication.h"
+#include "icsneo/communication/communication.h"
 #include <chrono>
 #include <iostream>
 #include <queue>
@@ -6,11 +6,11 @@
 #include <cstring>
 #include <mutex>
 #include <condition_variable>
-#include "communication/include/command.h"
-#include "communication/include/decoder.h"
-#include "communication/include/packetizer.h"
-#include "communication/message/include/serialnumbermessage.h"
-#include "communication/message/filter/include/main51messagefilter.h"
+#include "icsneo/communication/command.h"
+#include "icsneo/communication/decoder.h"
+#include "icsneo/communication/packetizer.h"
+#include "icsneo/communication/message/serialnumbermessage.h"
+#include "icsneo/communication/message/filter/main51messagefilter.h"
 
 using namespace icsneo;
 

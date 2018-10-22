@@ -1,5 +1,5 @@
-#include "communication/message/include/neomessage.h"
-#include "communication/message/include/canmessage.h"
+#include "icsneo/communication/message/neomessage.h"
+#include "icsneo/communication/message/canmessage.h"
 
 using namespace icsneo;
 

@@ -4,9 +4,7 @@ project(icsneonext VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 11)
 
 include(GNUInstallDirs)
-
-message(STATUS "icsneo source dir ${CMAKE_CURRENT_SOURCE_DIR}")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Enable Warnings
 if(MSVC)

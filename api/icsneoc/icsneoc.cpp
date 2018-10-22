@@ -4,9 +4,9 @@
 
 #define ICSNEOC_MAKEDLL
 
-#include "include/icsneoc.h"
-#include "api/icsneocpp/include/icsneocpp.h"
-#include "platform/include/dynamiclib.h"
+#include "icsneo/icsneoc.h"
+#include "icsneo/icsneocpp.h"
+#include "icsneo/platform/dynamiclib.h"
 #include <string>
 #include <vector>
 #include <memory>

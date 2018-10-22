@@ -1,8 +1,8 @@
 #include <iterator>
 #include <iostream>
 
-#include "include/icsneocpp.h"
-#include "device/include/devicefinder.h"
+#include "icsneo/icsneocpp.h"
+#include "icsneo/device/devicefinder.h"
 
 using namespace icsneo;
 

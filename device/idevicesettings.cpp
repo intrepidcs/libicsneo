@@ -1,5 +1,5 @@
-#include "device/include/idevicesettings.h"
-#include "communication/message/filter/include/main51messagefilter.h"
+#include "icsneo/device/idevicesettings.h"
+#include "icsneo/communication/message/filter/main51messagefilter.h"
 #include <cstring>
 
 using namespace icsneo;

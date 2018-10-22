@@ -1,4 +1,4 @@
-#include "platform/windows/include/registry.h"
+#include "icsneo/platform/windows/registry.h"
 #include <codecvt>
 #include <vector>
 

@@ -1,4 +1,4 @@
-#include "communication/include/icommunication.h"
+#include "icsneo/communication/icommunication.h"
 
 using namespace icsneo;
 

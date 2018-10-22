@@ -3,12 +3,12 @@
 #endif
 
 #define ICSNEOC_MAKEDLL
-#include "api/icsneolegacy/include/icsneolegacy.h"
+#include "icsneo/icsneolegacy.h"
 
 #undef ICSNEOC_MAKEDLL
-#include "api/icsneoc/include/icsneoc.h"
+#include "icsneo/icsneoc.h"
 
-#include "communication/include/network.h"
+#include "icsneo/communication/network.h"
 #include <map>
 #include <algorithm>
 

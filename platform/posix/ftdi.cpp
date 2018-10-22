@@ -1,4 +1,4 @@
-#include "platform/include/ftdi.h"
+#include "icsneo/platform/ftdi.h"
 #include <iostream>
 #include <stdio.h>
 #include <cstring>

@@ -1,7 +1,7 @@
-#include "platform/windows/include/pcap.h"
-#include "communication/include/network.h"
-#include "communication/include/communication.h"
-#include "communication/include/packetizer.h"
+#include "icsneo/platform/windows/pcap.h"
+#include "icsneo/communication/network.h"
+#include "icsneo/communication/communication.h"
+#include "icsneo/communication/packetizer.h"
 #include <pcap.h>
 #include <iphlpapi.h>
 #pragma comment(lib, "IPHLPAPI.lib")

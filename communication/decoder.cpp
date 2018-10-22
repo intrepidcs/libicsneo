@@ -1,9 +1,9 @@
-#include "communication/include/decoder.h"
-#include "communication/include/communication.h"
-#include "communication/message/include/serialnumbermessage.h"
-#include "communication/message/include/resetstatusmessage.h"
-#include "communication/include/command.h"
-#include "device/include/device.h"
+#include "icsneo/communication/decoder.h"
+#include "icsneo/communication/communication.h"
+#include "icsneo/communication/message/serialnumbermessage.h"
+#include "icsneo/communication/message/resetstatusmessage.h"
+#include "icsneo/communication/command.h"
+#include "icsneo/device/device.h"
 #include <iostream>
 
 using namespace icsneo;

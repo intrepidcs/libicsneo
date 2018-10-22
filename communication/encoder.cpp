@@ -1,4 +1,4 @@
-#include "communication/include/encoder.h"
+#include "icsneo/communication/encoder.h"
 
 using namespace icsneo;
 

@@ -1,6 +1,6 @@
-#include "platform/windows/include/ftdi.h"
-#include "platform/include/ftdi.h"
-#include "platform/include/registry.h"
+#include "icsneo/platform/windows/ftdi.h"
+#include "icsneo/platform/ftdi.h"
+#include "icsneo/platform/registry.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>

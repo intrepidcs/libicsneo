@@ -1,7 +1,7 @@
-#include "communication/include/multichannelcommunication.h"
-#include "communication/include/command.h"
-#include "communication/include/decoder.h"
-#include "communication/include/packetizer.h"
+#include "icsneo/communication/multichannelcommunication.h"
+#include "icsneo/communication/command.h"
+#include "icsneo/communication/decoder.h"
+#include "icsneo/communication/packetizer.h"
 #include <iostream>
 #include <iomanip>
 
