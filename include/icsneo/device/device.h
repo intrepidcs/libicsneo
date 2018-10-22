@@ -55,6 +55,9 @@ public:
 		enforcePollingMessageLimit();
 	}
 
+	int addMessageCallback(const MessageCallback& cb) { return com->addMessageCallback(cb); }
+	bool removeMessageCallback(int id) { return com->removeMessageCallback(id); }
+
 	bool transmit(std::shared_ptr<Message> message);
 	bool transmit(std::vector<std::shared_ptr<Message>> messages);
 
