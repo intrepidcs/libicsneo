@@ -1,6 +1,3 @@
-#include <iterator>
-#include <iostream>
-
 #include "icsneo/icsneocpp.h"
 #include "icsneo/device/devicefinder.h"
 
