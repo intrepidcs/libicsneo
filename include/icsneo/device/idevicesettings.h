@@ -60,6 +60,7 @@ typedef struct
 	uint8_t innerFrameDelay25us;
 } CAN_SETTINGS;
 #define CAN_SETTINGS_SIZE 12
+static_assert(sizeof(CAN_SETTINGS) == CAN_SETTINGS_SIZE, "CAN_SETTINGS is the wrong size!");
 
 /* FDMode in CANFD_SETTINGS */
 enum
@@ -244,6 +245,7 @@ typedef struct
 	uint16_t chksum_enabled;
 } ISO9141_KEYWORD2000_SETTINGS;
 #define ISO9141_KEYWORD2000_SETTINGS_SIZE 114
+static_assert(sizeof(ISO9141_KEYWORD2000_SETTINGS) == ISO9141_KEYWORD2000_SETTINGS_SIZE, "ISO9141_KEYWORD2000_SETTINGS is the wrong size!");
 
 typedef struct _UART_SETTINGS
 {
@@ -254,19 +256,19 @@ typedef struct _UART_SETTINGS
 	uint16_t stop_bits;
 	uint8_t flow_control; /* 0- off, 1 - Simple CTS RTS */
 	uint8_t reserved_1;
-	union abcd {
+	union {
 		uint32_t bOptions;
-		struct _sOptions
-		{
-			unsigned invert_tx : 1;
-			unsigned invert_rx : 1;
-			unsigned half_duplex : 1;
-			unsigned reserved_bits : 13;
-			unsigned reserved_bits2 : 16;
+		struct {
+			uint32_t invert_tx : 1;
+			uint32_t invert_rx : 1;
+			uint32_t half_duplex : 1;
+			uint32_t reserved_bits : 13;
+			uint32_t reserved_bits2 : 16;
 		} sOptions;
 	};
 } UART_SETTINGS;
 #define UART_SETTINGS_SIZE 16
+static_assert(sizeof(UART_SETTINGS) == UART_SETTINGS_SIZE, "UART_SETTINGS is the wrong size!");
 
 #pragma pack(pop)
 
