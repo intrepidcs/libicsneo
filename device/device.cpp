@@ -101,7 +101,7 @@ bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_
 	if(limit > (pollingContainer.size_approx() + 4))
 		limit = (pollingContainer.size_approx() + 4);
 
-	if(container.capacity() < limit)
+	if(container.size() < limit)
 		container.resize(limit);
 
 	size_t actuallyRead = pollingContainer.try_dequeue_bulk(container.data(), limit);
