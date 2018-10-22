@@ -281,9 +281,13 @@ public:
 	static constexpr uint16_t GS_VERSION = 5;
 	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
 
+	// Parameter createInoperableSettings exists because it is serving as a warning that you probably don't want to do this
+	typedef void* warn_t;
+	IDeviceSettings(warn_t createInoperableSettings) : disabled(true), readonly(true), structSize(0) { (void)createInoperableSettings; }
+
 	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), structSize(size) {}
 	virtual ~IDeviceSettings() {}
-	bool ok() { return settingsLoaded; }
+	bool ok() { return !disabled && settingsLoaded; }
 	
 	bool refresh(bool ignoreChecksum = false); // Get from device
 
@@ -303,6 +307,7 @@ public:
 
 	uint8_t getEnumValueForBaudrate(uint32_t baudrate);
 
+	bool disabled = false;
 	bool readonly = false;
 protected:
 	std::shared_ptr<Communication> com;

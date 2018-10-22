@@ -43,6 +43,9 @@ uint16_t IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settin
 }
 
 bool IDeviceSettings::refresh(bool ignoreChecksum) {
+	if(disabled)
+		return false;
+
 	std::vector<uint8_t> rxSettings;
 	bool ret = com->getSettingsSync(rxSettings);
 	if(!ret)
@@ -86,7 +89,7 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 }
 
 bool IDeviceSettings::apply(bool temporary) {
-	if(readonly)
+	if(disabled || readonly)
 		return false;
 
 	std::vector<uint8_t> bytestream;
@@ -135,7 +138,7 @@ bool IDeviceSettings::apply(bool temporary) {
 }
 
 bool IDeviceSettings::applyDefaults(bool temporary) {
-	if(readonly)
+	if(disabled || readonly)
 		return false;
 
 	com->sendCommand(Command::SetDefaultSettings);
@@ -178,7 +181,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 }
 
 bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
-	if(readonly)
+	if(disabled || readonly)
 		return false;
 
 	switch(net.getType()) {
@@ -201,7 +204,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
 }
 
 template<typename T> bool IDeviceSettings::setStructure(const T& newStructure) {
-	if(readonly)
+	if(disabled || readonly)
 		return false;
 		
 	if(sizeof(T) != structSize)

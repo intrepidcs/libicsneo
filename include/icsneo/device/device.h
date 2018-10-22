@@ -21,6 +21,7 @@ public:
 	Device(neodevice_t neodevice = { 0 }) {
 		data = neodevice;
 		data.device = this;
+		settings = std::unique_ptr<IDeviceSettings>(new IDeviceSettings(nullptr));
 	}
 	virtual ~Device() {
 		disableMessagePolling();
