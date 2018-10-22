@@ -28,16 +28,22 @@ public:
 		Bootloader = 'B'
 	};
 
-	bool goOnline() {
-		// Enter mode is only needed on very old FIRE devices, will be ignored by newer devices
+	bool open() {
+		if(!com)
+			return false;
+
+		if(!com->open())
+			return false;
+
+		// Enter mode is only needed on very old FIRE devices (white board), will be ignored by newer devices
 		if(!enterMode(Mode::Application))
 			return false;
 
-		return Device::goOnline();
+		return Device::open();
 	}
 
 	bool enterMode(Mode mode) {
-		// Included for compatibility with bootloaders on very old FIRE devices
+		// Included for compatibility with bootloaders on very old FIRE devices (white board)
 		// Mode will be a uppercase char like 'A'
 		if(!com->rawWrite({ (uint8_t)mode }))
 			return false;
