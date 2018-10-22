@@ -40,6 +40,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 
 			// DLC
 			uint8_t length = data->dlc.DLC;
+			msg->dlcOnWire = length; // This will hold the real DLC on wire 0x0 - 0xF
 			if(data->header.EDL && data->timestamp.IsExtended) { // CAN FD
 				msg->isCANFD = true;
 				msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
@@ -70,6 +71,10 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							return false;
 					}
 				}
+			} else if(length > 8) { // This is a standard CAN frame with a length of more than 8
+				// Yes, this is possible. On the wire, the length field is a nibble, and we do want to return an accurate value
+				// We don't want to overread our buffer, though, so make sure we cap the length
+				length = 8;
 			}
 			
 			// Data

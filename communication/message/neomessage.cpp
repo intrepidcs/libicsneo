@@ -19,6 +19,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 			neomessage_can_t& can = *(neomessage_can_t*)&neomsg;
 			auto canmsg = std::static_pointer_cast<CANMessage>(message);
 			can.arbid = canmsg->arbid;
+			can.dlcOnWire = canmsg->dlcOnWire;
 			can.status.extendedFrame = canmsg->isExtended;
 			can.status.remoteFrame = canmsg->isRemote;
 			can.status.canfdRTR = canmsg->isRemote;
