@@ -184,7 +184,7 @@ bool Device::goOffline() {
 	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
 		return false;
 
-	ledState = latestResetStatus->cmRunning ? LEDState::CoreMiniRunning : LEDState::Offline;
+	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
 	updateLEDState();
 
 	online = false;
