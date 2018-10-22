@@ -4,6 +4,7 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/ftdi.h"
+#include "icsneo/device/neovifire/neovifiresettings.h"
 
 namespace icsneo {
 
@@ -17,6 +18,7 @@ public:
 		auto encoder = std::unique_ptr<Encoder>(new Encoder(packetizer));
 		auto decoder = std::unique_ptr<Decoder>(new Decoder());
 		com = std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
+		settings = std::unique_ptr<IDeviceSettings>(new NeoVIFIRESettings(com));
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
