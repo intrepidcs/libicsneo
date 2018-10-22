@@ -4,7 +4,6 @@ project(icsneonext VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 11)
 
 include(GNUInstallDirs)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Enable Warnings
 if(MSVC)
@@ -57,20 +56,37 @@ add_library(icsneocpp
 	api/icsneocpp/icsneocpp.cpp
 	${SRC_FILES}
 )
+target_include_directories(icsneocpp 
+	PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+		$<INSTALL_INTERFACE:>
+	PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(icsneocpp 
-	INTERFACE 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> 
-		$<INSTALL_INTERFACE:>
-)
+
 
 add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp)
+target_include_directories(icsneoc 
+	PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+		$<INSTALL_INTERFACE:>
+	PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 target_link_libraries(icsneoc icsneocpp)
 
 add_library(icsneolegacy SHARED
 	api/icsneolegacy/icsneolegacy.cpp
 	api/icsneoc/icsneoc.cpp
+)
+target_include_directories(icsneolegacy 
+	PUBLIC 
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+		$<INSTALL_INTERFACE:>
+	PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_link_libraries(icsneolegacy icsneocpp)
 
