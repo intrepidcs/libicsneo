@@ -5,6 +5,7 @@
 #include "icsneo/device/neodevice.h" // For neodevice_t
 #include "icsneo/communication/message/neomessage.h" // For neomessage_t and friends
 #include "icsneo/platform/dynamiclib.h" // Dynamic library loading and exporting
+#include "icsneo/communication/network.h" // Network type and netID defines
 
 #ifndef ICSNEOC_DYNAMICLOAD
 
