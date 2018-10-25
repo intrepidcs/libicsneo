@@ -3,14 +3,20 @@
 
 // Hold the length of the longest name, so that C applications can allocate memory accordingly
 // Currently the longest is "Intrepid Ethernet Evaluation Board"
-#define DEVICE_TYPE_LONGEST_NAME (35 + 1) // Add 1 so that if someone forgets, they still have space for null terminator
+#define ICSNEO_DEVICETYPE_LONGEST_NAME (35 + 1) // Add 1 so that if someone forgets, they still have space for null terminator
+#define ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION (ICSNEO_DEVICETYPE_LONGEST_NAME + 7) // 6 character serial, plus space
 
 #ifndef __cplusplus
 #include <stdint.h>
+
+#define CONSTEXPR const
+
 typedef uint32_t devicetype_t;
 #else
 #include <ostream>
 #include <cstdint>
+
+#define CONSTEXPR constexpr
 
 typedef uint32_t devicetype_t;
 
@@ -19,6 +25,7 @@ namespace icsneo {
 class DeviceType {
 public:
 	// This enum used to be a bitfield, but has since become an enum as we have more than 32 devices
+	// Adding something? Make sure you update the type string and C-compatible defines below!
 	enum Enum : devicetype_t {
 		Unknown = (0x00000000),
 		BLUE = (0x00000001),
@@ -160,5 +167,47 @@ private:
 }
 
 #endif // __cplusplus
+
+#ifdef __ICSNEOC_H_ // We are using the C API, so we want C-compatible defines
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_UNKNOWN = 0x00000000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_BLUE = 0x00000001;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_ECU_AVB = 0x00000002;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_RADSUPERMOON = 0x00000003;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_DW_VCAN = 0x00000004;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_RADMOON2 = 0x00000005;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_RADGIGALOG = 0x00000006;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_VCAN4_1 = 0x00000007;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_FIRE = 0x00000008;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_RADPLUTO = 0x00000009;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_VCAN4_2EL = 0x0000000a;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_RADIO_CANHUB = 0x0000000b;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_VCAN3 = 0x00000010;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_RED = 0x00000040;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_ECU = 0x00000080;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_IEVB = 0x00000100;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_PENDANT = 0x00000200;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_OBD2_PRO = 0x00000400;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_ECUCHIP_UART = 0x00000800;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_PLASMA = 0x00001000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_DONT_REUSE0 = 0x00002000; // Previously FIRE_VNET
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_NEOANALOG = 0x00004000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_CT_OBD = 0x00008000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_DONT_REUSE1 = 0x00010000; // Previously PLASMA_1_12
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_DONT_REUSE2 = 0x00020000; // Previously PLASMA_1_13
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_ION = 0x00040000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_RADSTAR = 0x00080000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_DONT_REUSE3 = 0x00100000; // Previously ION3
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_VCAN4_4 = 0x00200000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_VCAN4_2 = 0x00400000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_CMPROBE = 0x00800000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_EEVB = 0x01000000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_VCANRF = 0x02000000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_FIRE2 = 0x04000000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_FLEX = 0x08000000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_RADGALAXY = 0x10000000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_RADSTAR2 = 0x20000000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_VIVIDCAN = 0x40000000;
+CONSTEXPR devicetype_t ICSNEO_DEVICETYPE_OBD2_SIM = 0x80000000;
+#endif
 
 #endif

@@ -5,6 +5,7 @@
 #include "icsneo/device/neodevice.h" // For neodevice_t
 #include "icsneo/communication/message/neomessage.h" // For neomessage_t and friends
 #include "icsneo/platform/dynamiclib.h" // Dynamic library loading and exporting
+#include "icsneo/communication/network.h" // Network type and netID defines
 
 #ifndef ICSNEOC_DYNAMICLOAD
 
@@ -59,6 +60,8 @@ extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t net
 extern bool DLLExport icsneo_transmit(const neodevice_t* device, const neomessage_t* message);
 
 extern bool DLLExport icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* messages, size_t count);
+
+extern bool DLLExport icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLength);
 
 #ifdef __cplusplus
 } // extern "C"
@@ -138,6 +141,9 @@ fn_icsneo_transmit icsneo_transmit;
 typedef bool(*fn_icsneo_transmitMessages)(const neodevice_t* device, const neomessage_t* messages, size_t count);
 fn_icsneo_transmitMessages icsneo_transmitMessages;
 
+typedef bool(*fn_icsneo_describeDevice)(const neodevice_t* device, char* str, size_t* maxLength);
+fn_icsneo_describeDevice icsneo_describeDevice;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneo_libraryHandle = NULL;
@@ -176,6 +182,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_setBaudrate);
 	ICSNEO_IMPORTASSERT(icsneo_transmit);
 	ICSNEO_IMPORTASSERT(icsneo_transmitMessages);
+	ICSNEO_IMPORTASSERT(icsneo_describeDevice);
 
 	icsneo_initialized = true;
 	return 0;

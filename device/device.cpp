@@ -67,6 +67,12 @@ bool Device::SerialStringIsNumeric(const std::string& serial) {
 	return isdigit(serial[0]) && isdigit(serial[1]);
 }
 
+std::string Device::describe() const {
+	std::stringstream ss;
+	ss << getType() << ' ' << getSerial();
+	return ss.str();
+}
+
 void Device::enableMessagePolling() {
 	if(messagePollingCallbackID != 0) // We are already polling
 		return;

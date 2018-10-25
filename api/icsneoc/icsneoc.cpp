@@ -269,3 +269,12 @@ bool icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* mess
 	}
 	return true;
 }
+
+bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLength) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	*maxLength = device->device->describe().copy(str, *maxLength);
+	str[*maxLength] = '\0';
+	return true;
+}
