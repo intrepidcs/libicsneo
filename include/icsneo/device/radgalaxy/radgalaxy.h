@@ -15,35 +15,16 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADGalaxy;
 	static constexpr const uint16_t PRODUCT_ID = 0x0003;
 	static constexpr const char* SERIAL_START = "RG";
-
-	static std::shared_ptr<Packetizer> MakePacketizer() {
-		auto packetizer = std::make_shared<Packetizer>();
-		packetizer->disableChecksum = true;
-		packetizer->align16bit = false;
-		return packetizer;
-	}
-
-	RADGalaxy(neodevice_t neodevice) : Device(neodevice) {
-		auto transport = std::unique_ptr<ICommunication>(new PCAP(getWritableNeoDevice()));
-		auto packetizer = MakePacketizer();
-		auto encoder = std::unique_ptr<Encoder>(new Encoder(packetizer));
-		auto decoder = std::unique_ptr<Decoder>(new Decoder());
-		com = std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
-		getWritableNeoDevice().type = DEVICE_TYPE;
-		productId = PRODUCT_ID;
-	}
-
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 		
 		for(auto& foundDev : PCAP::FindAll()) {
-			auto packetizer = MakePacketizer();
-			auto decoder = std::unique_ptr<Decoder>(new Decoder());
+			auto fakedev = std::shared_ptr<RADGalaxy>(new RADGalaxy({}));
 			for(auto& payload : foundDev.discoveryPackets)
-				packetizer->input(payload);
-			for(auto& packet : packetizer->output()) {
+				fakedev->com->packetizer->input(payload);
+			for(auto& packet : fakedev->com->packetizer->output()) {
 				std::shared_ptr<Message> msg;
-				if(!decoder->decode(msg, packet))
+				if(!fakedev->com->decoder->decode(msg, packet))
 					continue; // We failed to decode this packet
 
 				if(!msg || msg->network.getNetID() != Network::NetID::Main51)
@@ -58,12 +39,25 @@ public:
 					continue; // Not a RADGalaxy
 				
 				foundDev.device.serial[sn->deviceSerial.copy(foundDev.device.serial, sizeof(foundDev.device.serial))] = '\0';
-				found.push_back(std::make_shared<RADGalaxy>(foundDev.device));
+				found.emplace_back(new RADGalaxy(foundDev.device));
 				break;
 			}
 		}
 
 		return found;
+	}
+
+protected:
+	void setupPacketizer(Packetizer* packetizer) override {
+		packetizer->disableChecksum = true;
+		packetizer->align16bit = false;
+	}
+
+private:
+	RADGalaxy(neodevice_t neodevice) : Device(neodevice) {
+		initialize<PCAP>();
+		getWritableNeoDevice().type = DEVICE_TYPE;
+		productId = PRODUCT_ID;
 	}
 };
 

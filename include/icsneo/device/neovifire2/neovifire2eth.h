@@ -11,13 +11,6 @@ namespace icsneo {
 class NeoVIFIRE2ETH : public NeoVIFIRE2 {
 public:
 	static constexpr const uint16_t PRODUCT_ID = 0x0004;
-	NeoVIFIRE2ETH(neodevice_t neodevice) : NeoVIFIRE2(neodevice) {
-		com = MakeCommunication(std::unique_ptr<ICommunication>(new PCAP(getWritableNeoDevice())));
-		settings = std::unique_ptr<IDeviceSettings>(new NeoVIFIRE2Settings(com));
-		settings->readonly = true;
-		productId = PRODUCT_ID;
-	}
-
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 		
@@ -49,6 +42,18 @@ public:
 		}
 
 		return found;
+	}
+
+protected:
+	virtual void setupSettings(IDeviceSettings* settings) {
+		// TODO Check firmware version, old firmwares will reset Ethernet settings on settings send
+		settings->readonly = true;
+	}
+
+private:
+	NeoVIFIRE2ETH(neodevice_t neodevice) : NeoVIFIRE2(neodevice) {
+		initialize<PCAP, NeoVIFIRE2Settings>();
+		productId = PRODUCT_ID;
 	}
 };
 

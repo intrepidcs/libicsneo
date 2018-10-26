@@ -213,6 +213,22 @@ bool Device::transmit(std::vector<std::shared_ptr<Message>> messages) {
 	return true;
 }
 
+template<typename Transport, typename Settings>
+void Device::initialize() {
+	auto transport = makeTransport<Transport>();
+	setupTransport(transport.get());
+	auto packetizer = makePacketizer();
+	setupPacketizer(packetizer.get());
+	auto encoder = makeEncoder(packetizer);
+	setupEncoder(encoder.get());
+	auto decoder = makeDecoder();
+	setupDecoder(decoder.get());
+	com = makeCommunication(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
+	setupCommunication(com.get());
+	settings = makeSettings<Settings>(com);
+	setupSettings(settings.get());
+}
+
 void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 	switch(message->network.getNetID()) {
 		case Network::NetID::Reset_Status:

@@ -11,21 +11,21 @@ class ValueCAN4_2EL : public ValueCAN4 {
 public:
 	// Serial numbers start with VE for 4-2EL
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_2EL;
-	ValueCAN4_2EL(neodevice_t neodevice) : ValueCAN4(neodevice) {
-		com = MakeCommunication(getWritableNeoDevice());
-		settings = std::unique_ptr<IDeviceSettings>(new ValueCAN4_2ELSettings(com));
-		getWritableNeoDevice().type = DEVICE_TYPE;
-	}
-
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
 		for(auto neodevice : STM32::FindByProduct(PRODUCT_ID)) {
 			if(std::string(neodevice.serial).substr(0, 2) == "VE")
-				found.push_back(std::make_shared<ValueCAN4_2EL>(neodevice));
+				found.emplace_back(new ValueCAN4_2EL(neodevice));
 		}
 
 		return found;
+	}
+
+private:
+	ValueCAN4_2EL(neodevice_t neodevice) : ValueCAN4(neodevice) {
+		initialize<STM32, ValueCAN4_2ELSettings>();
+		getWritableNeoDevice().type = DEVICE_TYPE;
 	}
 };
 

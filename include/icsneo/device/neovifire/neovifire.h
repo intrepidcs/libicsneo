@@ -12,15 +12,13 @@ class NeoVIFIRE : public Device {
 public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::FIRE;
 	static constexpr const uint16_t PRODUCT_ID = 0x0701;
-	NeoVIFIRE(neodevice_t neodevice) : Device(neodevice) {
-		auto transport = std::unique_ptr<ICommunication>(new FTDI(getWritableNeoDevice()));
-		auto packetizer = std::make_shared<Packetizer>();
-		auto encoder = std::unique_ptr<Encoder>(new Encoder(packetizer));
-		auto decoder = std::unique_ptr<Decoder>(new Decoder());
-		com = std::make_shared<Communication>(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
-		settings = std::unique_ptr<IDeviceSettings>(new NeoVIFIRESettings(com));
-		getWritableNeoDevice().type = DEVICE_TYPE;
-		productId = PRODUCT_ID;
+	static std::vector<std::shared_ptr<Device>> Find() {
+		std::vector<std::shared_ptr<Device>> found;
+
+		for(auto neodevice : FTDI::FindByProduct(PRODUCT_ID))
+			found.emplace_back(new NeoVIFIRE(neodevice)); // Creation of the shared_ptr
+
+		return found;
 	}
 
 	enum class Mode : char {
@@ -28,7 +26,7 @@ public:
 		Bootloader = 'B'
 	};
 
-	bool open() {
+	bool open() override {
 		if(!com)
 			return false;
 
@@ -53,13 +51,11 @@ public:
 		return true;
 	}
 
-	static std::vector<std::shared_ptr<Device>> Find() {
-		std::vector<std::shared_ptr<Device>> found;
-
-		for(auto neodevice : FTDI::FindByProduct(PRODUCT_ID))
-			found.push_back(std::make_shared<NeoVIFIRE>(neodevice));
-
-		return found;
+private:
+	NeoVIFIRE(neodevice_t neodevice) : Device(neodevice) {
+		initialize<FTDI, NeoVIFIRESettings>();
+		getWritableNeoDevice().type = DEVICE_TYPE;
+		productId = PRODUCT_ID;
 	}
 };
 

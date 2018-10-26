@@ -12,6 +12,13 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADStar2;
 	static constexpr const uint16_t PRODUCT_ID = 0x0005;
 	static constexpr const char* SERIAL_START = "RS";
+
+protected:
+	virtual void setupPacketizer(Packetizer* packetizer) override {
+		packetizer->disableChecksum = true;
+		packetizer->align16bit = false;
+	}
+	
 	RADStar2(neodevice_t neodevice) : Device(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
