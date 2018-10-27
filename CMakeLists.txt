@@ -63,21 +63,19 @@ add_library(icsneocpp
 	api/icsneocpp/errormanager.cpp
 	${SRC_FILES}
 )
-target_include_directories(icsneocpp 
-	PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+target_include_directories(icsneocpp
+	PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:>
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-
-
 add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp)
-target_include_directories(icsneoc 
-	PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+target_include_directories(icsneoc
+	PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:>
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -88,9 +86,9 @@ add_library(icsneolegacy SHARED
 	api/icsneolegacy/icsneolegacy.cpp
 	api/icsneoc/icsneoc.cpp
 )
-target_include_directories(icsneolegacy 
-	PUBLIC 
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+target_include_directories(icsneolegacy
+	PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:>
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/include
