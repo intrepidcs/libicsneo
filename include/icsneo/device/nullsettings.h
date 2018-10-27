@@ -9,8 +9,8 @@ namespace icsneo {
 
 class NullSettings : public IDeviceSettings {
 public:
-	// Calls the base constructor with "createInoperableSettings"
-	NullSettings(std::shared_ptr<Communication> com = std::shared_ptr<Communication>()) : IDeviceSettings(nullptr) { (void)com; }
+	// Calls the protected base constructor with "createInoperableSettings"
+	NullSettings(std::shared_ptr<Communication> com) : IDeviceSettings(nullptr, com) {}
 };
 
 }

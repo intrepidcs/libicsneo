@@ -122,13 +122,15 @@ void Device::enforcePollingMessageLimit() {
 	while(pollingContainer.size_approx() > pollingMessageLimit) {
 		std::shared_ptr<Message> throwAway;
 		pollingContainer.try_dequeue(throwAway);
-		// TODO Flag an error for the user!
+		err(APIError::PollingMessageOverflow);
 	}
 }
 
 bool Device::open() {
-	if(!com)
+	if(!com) {
+		err(APIError::Unknown);
 		return false;
+	}
 
 	if(!com->open())
 		return false;
@@ -141,13 +143,13 @@ bool Device::open() {
 			break;
 	}
 	if(!serial) {
-		std::cout << "Failed to get serial number in " << i << " tries" << std::endl;
+		err(APIError::NoSerialNumber);
 		return false;
 	}
 	
 	std::string currentSerial = getNeoDevice().serial;
 	if(currentSerial != serial->deviceSerial) {
-		std::cout << "Found device had serial " << getNeoDevice().serial << " but connected device has serial " << serial->deviceSerial.c_str() << "!" << std::endl;
+		err(APIError::IncorrectSerialNumber);
 		return false;
 	}
 	
@@ -166,8 +168,10 @@ bool Device::open() {
 }
 
 bool Device::close() {
-	if(!com)
+	if(!com) {
+		err(APIError::Unknown);
 		return false;
+	}
 
 	if(internalHandlerCallbackID)
 		com->removeMessageCallback(internalHandlerCallbackID);
@@ -211,22 +215,6 @@ bool Device::transmit(std::vector<std::shared_ptr<Message>> messages) {
 			return false;
 	}
 	return true;
-}
-
-template<typename Transport, typename Settings>
-void Device::initialize() {
-	auto transport = makeTransport<Transport>();
-	setupTransport(transport.get());
-	auto packetizer = makePacketizer();
-	setupPacketizer(packetizer.get());
-	auto encoder = makeEncoder(packetizer);
-	setupEncoder(encoder.get());
-	auto decoder = makeDecoder();
-	setupDecoder(decoder.get());
-	com = makeCommunication(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
-	setupCommunication(com.get());
-	settings = makeSettings<Settings>(com);
-	setupSettings(settings.get());
 }
 
 void Device::handleInternalMessage(std::shared_ptr<Message> message) {

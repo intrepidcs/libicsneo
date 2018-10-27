@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <cstring>
+#include "icsneo/api/errormanager.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/device/nullsettings.h"
@@ -71,6 +72,7 @@ protected:
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
 	std::shared_ptr<Communication> com;
+	device_errorhandler_t err;
 
 	// START Initialization Functions
 	Device(neodevice_t neodevice = { 0 }) {
@@ -79,26 +81,44 @@ protected:
 	}
 	
 	template<typename Transport, typename Settings = NullSettings>
-	void initialize();
+	void initialize() {
+		err = makeErrorHandler();
+		auto transport = makeTransport<Transport>();
+		setupTransport(transport.get());
+		auto packetizer = makePacketizer();
+		setupPacketizer(packetizer.get());
+		auto encoder = makeEncoder(packetizer);
+		setupEncoder(encoder.get());
+		auto decoder = makeDecoder();
+		setupDecoder(decoder.get());
+		com = makeCommunication(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
+		setupCommunication(com.get());
+		settings = makeSettings<Settings>(com);
+		setupSettings(settings.get());
+	}
+
+	virtual device_errorhandler_t makeErrorHandler() {
+		return [this](APIError::ErrorType type) { ErrorManager::GetInstance().add(type, this); };
+	}
 
 	template<typename Transport>
 	std::unique_ptr<ICommunication> makeTransport() { return std::unique_ptr<ICommunication>(new Transport(getWritableNeoDevice())); }
 	virtual void setupTransport(ICommunication* transport) {}
 
-	virtual std::shared_ptr<Packetizer> makePacketizer() { return std::make_shared<Packetizer>(); }
+	virtual std::shared_ptr<Packetizer> makePacketizer() { return std::make_shared<Packetizer>(err); }
 	virtual void setupPacketizer(Packetizer* packetizer) {}
 
-	virtual std::unique_ptr<Encoder> makeEncoder(std::shared_ptr<Packetizer> p) { return std::unique_ptr<Encoder>(new Encoder(p)); }
+	virtual std::unique_ptr<Encoder> makeEncoder(std::shared_ptr<Packetizer> p) { return std::unique_ptr<Encoder>(new Encoder(err, p)); }
 	virtual void setupEncoder(Encoder* encoder) {}
 
-	virtual std::unique_ptr<Decoder> makeDecoder() { return std::unique_ptr<Decoder>(new Decoder()); }
+	virtual std::unique_ptr<Decoder> makeDecoder() { return std::unique_ptr<Decoder>(new Decoder(err)); }
 	virtual void setupDecoder(Decoder* decoder) {}
 
 	virtual std::shared_ptr<Communication> makeCommunication(
 		std::unique_ptr<ICommunication> t,
 		std::shared_ptr<Packetizer> p, 
 		std::unique_ptr<Encoder> e,
-		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(std::move(t), p, std::move(e), std::move(d)); }
+		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(err, std::move(t), p, std::move(e), std::move(d)); }
 	virtual void setupCommunication(Communication* com) {}
 
 	template<typename Settings>

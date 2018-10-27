@@ -7,6 +7,7 @@
 #include "icsneo/communication/packet.h"
 #include "icsneo/communication/message/callback/messagecallback.h"
 #include "icsneo/communication/message/serialnumbermessage.h"
+#include "icsneo/api/errormanager.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
 #include "icsneo/communication/decoder.h"
@@ -22,10 +23,11 @@ namespace icsneo {
 class Communication {
 public:
 	Communication(
+		device_errorhandler_t err,
 		std::unique_ptr<ICommunication> com,
 		std::shared_ptr<Packetizer> p,
 		std::unique_ptr<Encoder> e,
-		std::unique_ptr<Decoder> md) : packetizer(p), encoder(std::move(e)), decoder(std::move(md)), impl(std::move(com)) {}
+		std::unique_ptr<Decoder> md) : packetizer(p), encoder(std::move(e)), decoder(std::move(md)), err(err), impl(std::move(com)) {}
 	virtual ~Communication() { close(); }
 
 	bool open();
@@ -50,6 +52,7 @@ public:
 	std::shared_ptr<Packetizer> packetizer; // Ownership is shared with the encoder
 	std::unique_ptr<Encoder> encoder;
 	std::unique_ptr<Decoder> decoder;
+	device_errorhandler_t err;
 
 protected:
 	std::unique_ptr<ICommunication> impl;

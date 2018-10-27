@@ -59,6 +59,8 @@ set(SRC_FILES ${COMMON_SRC} ${PLATFORM_SRC})
 
 add_library(icsneocpp
 	api/icsneocpp/icsneocpp.cpp
+	api/icsneocpp/error.cpp
+	api/icsneocpp/errormanager.cpp
 	${SRC_FILES}
 )
 target_include_directories(icsneocpp 

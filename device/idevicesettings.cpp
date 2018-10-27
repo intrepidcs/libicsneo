@@ -43,16 +43,22 @@ uint16_t IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settin
 }
 
 bool IDeviceSettings::refresh(bool ignoreChecksum) {
-	if(disabled)
+	if(disabled) {
+		err(APIError::SettingsNotAvailable);
 		return false;
+	}
 
 	std::vector<uint8_t> rxSettings;
 	bool ret = com->getSettingsSync(rxSettings);
-	if(!ret)
+	if(!ret) {
+		err(APIError::SettingsReadError);
 		return false;
+	}
 
-	if(rxSettings.size() < 6) // We need to at least have the header of GLOBAL_SETTINGS
+	if(rxSettings.size() < 6) { // We need to at least have the header of GLOBAL_SETTINGS
+		err(APIError::SettingsReadError);
 		return false;
+	}
 
 	constexpr size_t gs_size = 3 * sizeof(uint16_t);
 	size_t rxLen = rxSettings.size() - gs_size;
@@ -63,17 +69,17 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 	rxSettings.erase(rxSettings.begin(), rxSettings.begin() + gs_size);
 
 	if(gs_version != 5) {
-		std::cout << "gs_version was " << gs_version << " instead of 5.\nPlease update your firmware." << std::endl;
+		err(APIError::SettingsVersionError);
 		return false;
 	}
 
 	if(rxLen != gs_len) {
-		std::cout << "rxLen was " << rxLen << " and gs_len was " << gs_len << " while reading settings" << std::endl;
+		err(APIError::SettingsLengthError);
 		return false;
 	}
 
 	if(!ignoreChecksum && gs_chksum != CalculateGSChecksum(rxSettings)) {
-		std::cout << "Checksum mismatch while reading settings" << std::endl;
+		err(APIError::SettingsChecksumError);
 		return false;
 	}
 
@@ -81,7 +87,7 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 	settingsLoaded = true;
 
 	if(settings.size() != structSize) {
-		std::cout << "Settings size was " << settings.size() << " bytes but it should be " << structSize << " bytes for this device" << std::endl;
+		err(APIError::SettingsLengthError);
 		settingsLoaded = false;
 	}
 

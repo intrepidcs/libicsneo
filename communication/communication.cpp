@@ -127,8 +127,10 @@ void Communication::readTask() {
 			if(packetizer->input(readBytes)) {
 				for(auto& packet : packetizer->output()) {
 					std::shared_ptr<Message> msg;
-					if(!decoder->decode(msg, packet))
-						continue; // TODO Report an error to the user, we failed to decode this packet
+					if(!decoder->decode(msg, packet)) {
+						err(APIError::Unknown); // TODO Use specific error
+						continue;
+					}
 					
 					for(auto& cb : messageCallbacks) {
 						if(!closing) { // We might have closed while reading or processing

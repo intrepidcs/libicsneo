@@ -7,6 +7,7 @@
 #include "icsneo/icsneoc.h"
 #include "icsneo/icsneocpp.h"
 #include "icsneo/platform/dynamiclib.h"
+#include "icsneo/api/errormanager.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -25,8 +26,10 @@ static std::map<devicehandle_t, std::vector<std::shared_ptr<Message>>> polledMes
 void icsneo_findAllDevices(neodevice_t* devices, size_t* count) {
 	std::vector<std::shared_ptr<Device>> foundDevices = icsneo::FindAllDevices();
 	
-	if(count == nullptr)
+	if(count == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
 		return;
+	}
 
 	if(devices == nullptr) {
 		*count = foundDevices.size();
@@ -39,7 +42,7 @@ void icsneo_findAllDevices(neodevice_t* devices, size_t* count) {
 	*count = foundDevices.size();
 	size_t outputSize = *count;
 	if(outputSize > inputSize) {
-		// TODO an error should be returned that the data was truncated
+		ErrorManager::GetInstance().add(APIError::OutputTruncated);
 		outputSize = inputSize;
 	}
 
@@ -54,9 +57,22 @@ void icsneo_freeUnconnectedDevices() {
 }
 
 bool icsneo_serialNumToString(uint32_t num, char* str, size_t* count) {
+	// TAG String copy function
+	if(count == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		return false;
+	}
+
 	auto result = Device::SerialNumToString(num);
+
+	if(str == nullptr) {
+		*count = result.length() + 1;
+		return false;
+	}
+
 	if(*count < result.length()) {
 		*count = result.length() + 1; // This is how big of a buffer we need
+		ErrorManager::GetInstance().add(APIError::BufferInsufficient);
 		return false;
 	}
 
@@ -83,8 +99,10 @@ bool icsneo_isValidNeoDevice(const neodevice_t* device) {
 }
 
 bool icsneo_openDevice(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	if(!device->device->open())
 		return false;
@@ -104,8 +122,10 @@ bool icsneo_openDevice(const neodevice_t* device) {
 }
 
 bool icsneo_closeDevice(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 	
 	if(!device->device->close())
 		return false;
@@ -123,47 +143,61 @@ bool icsneo_closeDevice(const neodevice_t* device) {
 }
 
 bool icsneo_goOnline(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->goOnline();
 }
 
 bool icsneo_goOffline(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->goOffline();
 }
 
 bool icsneo_isOnline(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->isOnline();
 }
 
 bool icsneo_enableMessagePolling(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	device->device->enableMessagePolling();
 	return true;
 }
 
 bool icsneo_disableMessagePolling(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->disableMessagePolling();
 }
 
 bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
-	if(items == nullptr)
+	if(items == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
 		return false;
+	}
 
 	if(messages == nullptr) {
 		// A NULL value for messages means the user wants the current size of the buffer into items
@@ -189,79 +223,117 @@ bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_
 }
 
 size_t icsneo_getPollingMessageLimit(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return 0;
+	}
 
 	return device->device->getPollingMessageLimit();
 }
 
 bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	device->device->setPollingMessageLimit(newLimit);
 	return true;
 }
 
 bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength) {
-	if(!icsneo_isValidNeoDevice(device))
+	// TAG String copy function
+	if(maxLength == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
 		return false;
+	}
 
-	*maxLength = device->device->getType().toString().copy(str, *maxLength);
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return false;
+	}
+
+	std::string output = device->device->getType().toString();
+
+	if(str == nullptr) {
+		*maxLength = output.length();
+		return false;
+	}
+
+	*maxLength = output.copy(str, *maxLength);
 	str[*maxLength] = '\0';
+
+	if(output.length() > *maxLength)
+		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+
 	return true;
 }
 
 bool icsneo_settingsRefresh(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->settings->refresh();
 }
 
 bool icsneo_settingsApply(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->settings->apply();
 }
 
 bool icsneo_settingsApplyTemporary(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->settings->apply(true);
 }
 
 bool icsneo_settingsApplyDefaults(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->settings->applyDefaults();
 }
 
 bool icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->settings->applyDefaults(true);
 }
 
 bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->settings->setBaudrateFor(netid, newBaudrate);
 }
 
 bool icsneo_transmit(const neodevice_t* device, const neomessage_t* message) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
+	}
 
 	return device->device->transmit(CreateMessageFromNeoMessage(message));
 }
 
 bool icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* messages, size_t count) {
+	// Transmit implements neodevice_t check so it is not needed here
 	// TODO This can be implemented faster
 	for(size_t i = 0; i < count; i++) {
 		if(!icsneo_transmit(device, messages + i))
@@ -271,10 +343,24 @@ bool icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* mess
 }
 
 bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLength) {
-	if(!icsneo_isValidNeoDevice(device))
+	// TAG String copy function
+	if(maxLength == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
 		return false;
+	}
 
-	*maxLength = device->device->describe().copy(str, *maxLength);
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return false;
+	}
+
+	std::string output = device->device->describe();
+
+	*maxLength = output.copy(str, *maxLength);
 	str[*maxLength] = '\0';
+
+	if(output.length() > *maxLength)
+		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+
 	return true;
 }

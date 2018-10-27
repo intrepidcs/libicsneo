@@ -5,6 +5,7 @@
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/packet.h"
 #include "icsneo/communication/network.h"
+#include "icsneo/api/errormanager.h"
 #include <queue>
 #include <vector>
 #include <memory>
@@ -16,9 +17,12 @@ namespace icsneo {
 class Decoder {
 public:
 	static uint64_t GetUInt64FromLEBytes(uint8_t* bytes);
+
+	Decoder(device_errorhandler_t err) : err(err) {}
 	bool decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet);
 	
 private:
+	device_errorhandler_t err;
 	typedef uint16_t icscm_bitfield;
 	struct HardwareCANPacket {
 		struct {

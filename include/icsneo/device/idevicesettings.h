@@ -283,11 +283,7 @@ public:
 	static constexpr uint16_t GS_VERSION = 5;
 	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
 
-	// Parameter createInoperableSettings exists because it is serving as a warning that you probably don't want to do this
-	typedef void* warn_t;
-	IDeviceSettings(warn_t createInoperableSettings) : disabled(true), readonly(true), structSize(0) { (void)createInoperableSettings; }
-
-	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), structSize(size) {}
+	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), err(com->err), structSize(size) {}
 	virtual ~IDeviceSettings() {}
 	bool ok() { return !disabled && settingsLoaded; }
 	
@@ -313,9 +309,15 @@ public:
 	bool readonly = false;
 protected:
 	std::shared_ptr<Communication> com;
+	device_errorhandler_t err;
 	size_t structSize;
 	bool settingsLoaded = false;
 	std::vector<uint8_t> settings;
+
+	// Parameter createInoperableSettings exists because it is serving as a warning that you probably don't want to do this
+	typedef void* warn_t;
+	IDeviceSettings(warn_t createInoperableSettings, std::shared_ptr<Communication> com)
+		: disabled(true), readonly(true), err(com->err), structSize(0) { (void)createInoperableSettings; }
 };
 
 }
