@@ -364,3 +364,7 @@ bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLeng
 
 	return true;
 }
+
+neoversion_t icsneo_getVersion(void) {
+	return icsneo::GetVersion();
+}

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "icsneo/device/device.h"
+#include "icsneo/api/version.h"
 
 namespace icsneo {
 

@@ -6,6 +6,7 @@
 #include "icsneo/communication/message/neomessage.h" // For neomessage_t and friends
 #include "icsneo/platform/dynamiclib.h" // Dynamic library loading and exporting
 #include "icsneo/communication/network.h" // Network type and netID defines
+#include "icsneo/api/version.h" // For version info
 
 #ifndef ICSNEOC_DYNAMICLOAD
 
@@ -62,6 +63,8 @@ extern bool DLLExport icsneo_transmit(const neodevice_t* device, const neomessag
 extern bool DLLExport icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* messages, size_t count);
 
 extern bool DLLExport icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLength);
+
+extern neoversion_t DLLExport icsneo_getVersion(void);
 
 #ifdef __cplusplus
 } // extern "C"
@@ -144,6 +147,9 @@ fn_icsneo_transmitMessages icsneo_transmitMessages;
 typedef bool(*fn_icsneo_describeDevice)(const neodevice_t* device, char* str, size_t* maxLength);
 fn_icsneo_describeDevice icsneo_describeDevice;
 
+typedef neoversion_t(*fn_icsneo_getVersion)(void);
+fn_icsneo_getVersion icsneo_getVersion;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneo_libraryHandle = NULL;
@@ -183,6 +189,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_transmit);
 	ICSNEO_IMPORTASSERT(icsneo_transmitMessages);
 	ICSNEO_IMPORTASSERT(icsneo_describeDevice);
+	ICSNEO_IMPORTASSERT(icsneo_getVersion);
 
 	icsneo_initialized = true;
 	return 0;

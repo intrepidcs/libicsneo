@@ -322,8 +322,7 @@ int icsneoValidateHObject(void* hObject) {
 }
 
 int icsneoGetDLLVersion(void) {
-	// TODO Implement
-	return false;
+	return 804;
 }
 
 int icsneoGetSerialNumber(void* hObject, unsigned int*iSerialNumber) {

@@ -1,0 +1,11 @@
+#ifndef __ICSNEO_API_BUILDINFO_H_
+#define __ICSNEO_API_BUILDINFO_H_
+
+const char* GIT_BRANCH = "@GIT_BRANCH@";
+const char* GIT_DESCRIBE = "@GIT_DESCRIBE@";
+const uint16_t BUILD_MAJOR = (@PROJECT_VERSION_MAJOR@);
+const uint16_t BUILD_MINOR = (@PROJECT_VERSION_MINOR@);
+const uint16_t BUILD_PATCH = (@PROJECT_VERSION_PATCH@);
+const char* BUILD_METADATA = "@BUILD_METADATA@";
+
+#endif
