@@ -111,7 +111,7 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 						bytes.pop_front();
 				} else {
 					if(gotGoodPackets) // Don't complain unless we've already gotten a good packet, in case we started in the middle of a stream
-						std::cout << "Dropping packet due to bad checksum" << std::endl;
+						err(APIError::PacketChecksumError);
 					bytes.pop_front(); // Drop the first byte so it doesn't get picked up again
 				}
 				

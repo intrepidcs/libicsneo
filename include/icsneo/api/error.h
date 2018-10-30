@@ -50,6 +50,14 @@ public:
 		SettingsChecksumError = 0x2006,
 		SettingsNotAvailable = 0x2007,
 
+		// Transport Errors
+		FailedToRead = 0x3000,
+		FailedToWrite = 0x3001,
+		DriverFailedToOpen = 0x3002,
+		PacketChecksumError = 0x3003,
+		PCAPCouldNotStart = 0x3102,
+		PCAPCouldNotFindDevices = 0x3103,
+
 		TooManyErrors = 0xFFFFFFFE,
 		Unknown = 0xFFFFFFFF
 	};

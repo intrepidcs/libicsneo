@@ -9,6 +9,7 @@
 #include "icsneo/device/neodevice.h"
 #include "icsneo/communication/icommunication.h"
 #include "icsneo/third-party/concurrentqueue/blockingconcurrentqueue.h"
+#include "icsneo/api/errormanager.h"
 
 namespace icsneo {
 
@@ -18,7 +19,7 @@ public:
 	static std::vector<neodevice_t> FindByProduct(int product);
 	static bool IsHandleValid(neodevice_handle_t handle);
 
-	FTDI(neodevice_t& forDevice);
+	FTDI(device_errorhandler_t err, neodevice_t& forDevice);
 	~FTDI() { close(); }
 	bool open();
 	bool close();
@@ -43,6 +44,7 @@ private:
 	bool openable; // Set to false in the constructor if the object has not been found in searchResultDevices
 
 	neodevice_t& device;
+	device_errorhandler_t err;
 	FTDIDevice ftdiDevice;
 };
 

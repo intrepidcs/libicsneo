@@ -58,6 +58,14 @@ static constexpr const char* ERROR_SETTINGS_LENGTH = "The settings length is inc
 static constexpr const char* ERROR_SETTINGS_CHECKSUM = "The settings checksum is incorrect, attempting to set defaults may remedy this issue.";
 static constexpr const char* ERROR_SETTINGS_NOT_AVAILABLE = "Settings are not available for this device.";
 
+// Transport Errors
+static constexpr const char* ERROR_FAILED_TO_READ = "A read operation failed.";
+static constexpr const char* ERROR_FAILED_TO_WRITE = "A write operation failed.";
+static constexpr const char* ERROR_DRIVER_FAILED_TO_OPEN = "The device driver encountered a low-level error while opening the device.";
+static constexpr const char* ERROR_PACKET_CHECKSUM_ERROR = "There was a checksum error while decoding a packet. The packet was dropped.";
+static constexpr const char* ERROR_PCAP_COULD_NOT_START = "The PCAP driver could not be started. Ethernet devices will not be found.";
+static constexpr const char* ERROR_PCAP_COULD_NOT_FIND_DEVICES = "The PCAP driver failed to find devices. Ethernet devices will not be found.";
+
 static constexpr const char* ERROR_TOO_MANY_ERRORS = "Too many errors have occurred. The list has been truncated.";
 static constexpr const char* ERROR_UNKNOWN = "An unknown internal error occurred.";
 static constexpr const char* ERROR_INVALID = "An invalid internal error occurred.";
@@ -92,6 +100,20 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_SETTINGS_CHECKSUM;
 		case SettingsNotAvailable:
 			return ERROR_SETTINGS_NOT_AVAILABLE;
+
+		// Transport Errors
+		case FailedToRead:
+			return ERROR_FAILED_TO_READ;
+		case FailedToWrite:
+			return ERROR_FAILED_TO_WRITE;
+		case DriverFailedToOpen:
+			return ERROR_DRIVER_FAILED_TO_OPEN;
+		case PacketChecksumError:
+			return ERROR_PACKET_CHECKSUM_ERROR;
+		case PCAPCouldNotStart:
+			return ERROR_PCAP_COULD_NOT_START;
+		case PCAPCouldNotFindDevices:
+			return ERROR_PCAP_COULD_NOT_FIND_DEVICES;
 		
 		// Other Errors
 		case TooManyErrors:
@@ -109,6 +131,9 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case OutputTruncated:
 		// Device Warnings
 		case PollingMessageOverflow:
+		// Transport Warnings
+		case PCAPCouldNotStart:
+		case PCAPCouldNotFindDevices:
 			return Severity::Warning;
 
 		// API Errors
@@ -124,6 +149,11 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case SettingsLengthError:
 		case SettingsChecksumError:
 		case SettingsNotAvailable:
+		// Transport Errors
+		case FailedToRead:
+		case FailedToWrite:
+		case DriverFailedToOpen:
+		case PacketChecksumError:
 		// Other Errors
 		case TooManyErrors:
 		case Unknown:

@@ -21,14 +21,7 @@ public:
 			return false;
 		}
 		const auto main51Message = std::dynamic_pointer_cast<Main51Message>(message);
-		if(!main51Message)
-			std::cout << "could not upcast " << message->network << std::endl;
-		if(main51Message == nullptr || !matchCommand(main51Message->command)) {
-			if(main51Message)
-				std::cout << "Could not match command " << (int)(command) << " to " << (int)(main51Message->command) << std::endl;
-			return false;
-		}
-		return true;
+		return main51Message && matchCommand(main51Message->command);
 	}
 
 private:

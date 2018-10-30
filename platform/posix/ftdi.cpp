@@ -58,7 +58,7 @@ bool FTDI::GetDeviceForHandle(neodevice_handle_t handle, FTDIDevice& device) {
 	return false;
 }
 
-FTDI::FTDI(neodevice_t& forDevice) : device(forDevice) {
+FTDI::FTDI(device_errorhandler_t err, neodevice_t& forDevice) : device(forDevice), err(err) {
 	openable = GetDeviceForHandle(forDevice.handle, ftdiDevice);
 }
 

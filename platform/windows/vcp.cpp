@@ -249,28 +249,22 @@ void VCP::readTask() {
 			case LAUNCH: {
 				COMSTAT comStatus;
 				unsigned long errorCodes;
-				if(!ClearCommError(handle, &errorCodes, &comStatus))
-					std::cout << "Error clearing com err" << std::endl;
+				ClearCommError(handle, &errorCodes, &comStatus);
 
 				bytesRead = 0;
 				if(ReadFile(handle, readbuf, READ_BUFFER_SIZE, nullptr, &overlappedRead)) {
 					if(GetOverlappedResult(handle, &overlappedRead, &bytesRead, FALSE)) {
 						if(bytesRead)
 							readQueue.enqueue_bulk(readbuf, bytesRead);
-					} else {
-						std::cout <<"Readfile succeeded but not enqueued " << GetLastError() << std::endl;
 					}
 					continue;
 				}
 
-				auto err = GetLastError();
-				if(err == ERROR_SUCCESS)
-					std::cout << "Error was success?" << std::endl;
-
-				if(err == ERROR_IO_PENDING)
+				auto lastError = GetLastError();
+				if(lastError == ERROR_IO_PENDING)
 					state = WAIT;
-				else
-					std::cout << "ReadFile failed " << err << std::endl;
+				else if(lastError != ERROR_SUCCESS)
+					err(APIError::FailedToRead);
 			}
 			break;
 			case WAIT: {
@@ -281,11 +275,11 @@ void VCP::readTask() {
 						readQueue.enqueue_bulk(readbuf, bytesRead);
 						state = LAUNCH;
 					} else
-						std::cout << "ReadFile deferred failed " << err << std::endl;
+						err(APIError::FailedToRead);
 				}
 				if(ret == WAIT_ABANDONED) {
 					state = LAUNCH;
-					std::cout << "Readfile abandoned" << std::endl;
+					err(APIError::FailedToRead);
 				}
 			}
 		}
@@ -311,20 +305,19 @@ void VCP::writeTask() {
 					state = WAIT;
 				}
 				else
-					std::cout << "Writefile failed " << err << std::endl;
+					err(APIError::FailedToWrite);
 			}
 			break;
 			case WAIT: {
 				auto ret = WaitForSingleObject(overlappedWrite.hEvent, 50);
 				if(ret == WAIT_OBJECT_0) {
-					if(!GetOverlappedResult(handle, &overlappedWrite, &bytesWritten, FALSE)) {
-						std::cout << "Writefile deferred failed " << GetLastError() << std::endl;
-					}
+					if(!GetOverlappedResult(handle, &overlappedWrite, &bytesWritten, FALSE))
+						err(APIError::FailedToWrite);
 					state = LAUNCH;
 				}
 				
 				if(ret == WAIT_ABANDONED) {
-					std::cout << "Writefile deferred abandoned" << std::endl;
+					err(APIError::FailedToWrite);
 					state = LAUNCH;
 				}
 			}

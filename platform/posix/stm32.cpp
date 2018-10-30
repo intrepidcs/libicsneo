@@ -195,7 +195,8 @@ bool STM32::open() {
 	ss << "/dev/ttyACM" << (int)(device.handle - HANDLE_OFFSET);
 	fd = ::open(ss.str().c_str(), O_RDWR | O_NOCTTY | O_SYNC);
 	if(!isOpen()) {
-		std::cout << "Open of " << ss.str().c_str() << " failed with " << strerror(errno) << ' ';
+		//std::cout << "Open of " << ss.str().c_str() << " failed with " << strerror(errno) << ' ';
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
@@ -276,6 +277,6 @@ void STM32::writeTask() {
 		const ssize_t writeSize = (ssize_t)writeOp.bytes.size();
 		ssize_t actualWritten = ::write(fd, writeOp.bytes.data(), writeSize);
 		if(actualWritten != writeSize)
-			std::cout << "Failure to write " << writeSize << " bytes, wrote " << actualWritten << std::endl;
+			err(APIError::FailedToWrite);
 	}
 }

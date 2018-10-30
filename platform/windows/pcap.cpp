@@ -20,7 +20,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	std::vector<PCAPFoundDevice> foundDevices;
 	PCAPDLL pcap;
 	if(!pcap.ok()) {
-		std::cout << "PCAP not okay" << std::endl;
+		ErrorManager::GetInstance().add(APIError::PCAPCouldNotStart);
 		return std::vector<PCAPFoundDevice>();
 	}
 
@@ -38,7 +38,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	}
 
 	if(!success) {
-		std::cout << "PCAP FindAllDevs_Ex not okay " << errbuf << std::endl;
+		ErrorManager::GetInstance().add(APIError::PCAPCouldNotFindDevices);
 		return std::vector<PCAPFoundDevice>();
 	}
 
@@ -55,13 +55,13 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	// Now we're going to ask Win32 for the information as well
 	ULONG size = 0;
 	if(GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr, nullptr, &size) != ERROR_BUFFER_OVERFLOW) {
-		std::cout << "GetAdaptersAddresses size query not okay" << std::endl;
+		ErrorManager::GetInstance().add(APIError::PCAPCouldNotFindDevices);
 		return std::vector<PCAPFoundDevice>();
 	}
 	std::vector<uint8_t> adapterAddressBuffer;
 	adapterAddressBuffer.resize(size);
 	if(GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr, (IP_ADAPTER_ADDRESSES*)adapterAddressBuffer.data(), &size) != ERROR_SUCCESS) {
-		std::cout << "GetAdaptersAddresses not okay" << std::endl;
+		ErrorManager::GetInstance().add(APIError::PCAPCouldNotFindDevices);
 		return std::vector<PCAPFoundDevice>();
 	}
 	
@@ -124,7 +124,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 			const uint8_t* data;
 			auto res = pcap.next_ex(interface.fp, &header, &data);
 			if(res < 0) {
-				std::cout << "pcapnextex failed with " << res << std::endl;
+				//std::cout << "pcapnextex failed with " << res << std::endl;
 				break;
 			}
 			if(res == 0)
@@ -177,7 +177,7 @@ bool PCAP::IsHandleValid(neodevice_handle_t handle) {
 	return (netifIndex < knownInterfaces.size());
 }
 
-PCAP::PCAP(neodevice_t& forDevice) : device(forDevice) {
+PCAP::PCAP(device_errorhandler_t err, neodevice_t& forDevice) : device(forDevice), err(err) {
 	if(IsHandleValid(device.handle)) {
 		interface = knownInterfaces[(device.handle >> 24) & 0xFF];
 		interface.fp = nullptr; // We're going to open our own connection to the interface. This should already be nullptr but just in case.
@@ -206,7 +206,7 @@ bool PCAP::open() {
 	// Open the interface
 	interface.fp = pcap.open(interface.nameFromWinPCAP.c_str(), 100, PCAP_OPENFLAG_PROMISCUOUS | PCAP_OPENFLAG_MAX_RESPONSIVENESS, 1, nullptr, errbuf);
 	if(interface.fp == nullptr) {
-		std::cout << "Open device " << device.serial << " failed with " << errbuf << std::endl;
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
@@ -241,7 +241,7 @@ void PCAP::readTask() {
 	while(!closing) {
 		auto readBytes = pcap.next_ex(interface.fp, &header, &data);
 		if(readBytes < 0) {
-			std::cout << "pcapnextex failed in read task with " << readBytes << std::endl;
+			err(APIError::FailedToRead);
 			break;
 		}
 		if(readBytes == 0)

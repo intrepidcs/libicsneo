@@ -45,7 +45,8 @@ void MultiChannelCommunication::readTask() {
 					currentCommandType = (CommandType)usbReadFifo[0];
 
 					if(!CommandTypeIsValid(currentCommandType)) {
-						std::cout << "cnv" << std::hex << (int)currentCommandType << ' ' << std::dec;
+						// TODO Flag error? Device to host bytes discarded
+						//std::cout << "cnv" << std::hex << (int)currentCommandType << ' ' << std::dec;
 						usbReadFifo.pop_front();
 						continue;
 					}

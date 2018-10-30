@@ -102,7 +102,7 @@ protected:
 	}
 
 	template<typename Transport>
-	std::unique_ptr<ICommunication> makeTransport() { return std::unique_ptr<ICommunication>(new Transport(getWritableNeoDevice())); }
+	std::unique_ptr<ICommunication> makeTransport() { return std::unique_ptr<ICommunication>(new Transport(err, getWritableNeoDevice())); }
 	virtual void setupTransport(ICommunication* transport) {}
 
 	virtual std::shared_ptr<Packetizer> makePacketizer() { return std::make_shared<Packetizer>(err); }
