@@ -95,8 +95,6 @@ bool FTDI::close() {
 	if(writeThread.joinable())
 		writeThread.join();
 
-	ftdiDevice.set_dtr(false);
-
 	if(ftdiDevice.close())
 		return false;
 
