@@ -79,7 +79,7 @@ public:
 		Read_Datalink_Cm_Tx_Msg = 57,
 		Read_Datalink_Cm_Rx_Msg = 58,
 		Logging_Overflow = 59,
-		Read_Settings_Ex = 60,
+		ReadSettings = 60,
 		HSCAN4 = 61,
 		HSCAN5 = 62,
 		RS232 = 63,
@@ -313,8 +313,8 @@ public:
 				return "Read Datalink Cm Rx Msg";
 			case NetID::Logging_Overflow:
 				return "Logging Overflow";
-			case NetID::Read_Settings_Ex:
-				return "Read Settings Ex";
+			case NetID::ReadSettings:
+				return "Read Settings";
 			case NetID::HSCAN4:
 				return "HSCAN 4";
 			case NetID::HSCAN5:
@@ -485,7 +485,7 @@ CONSTEXPR uint16_t ICSNEO_NETID_APP_SIGNAL_STATUS = 56;
 CONSTEXPR uint16_t ICSNEO_NETID_READ_DATALINK_CM_TX_MSG = 57;
 CONSTEXPR uint16_t ICSNEO_NETID_READ_DATALINK_CM_RX_MSG = 58;
 CONSTEXPR uint16_t ICSNEO_NETID_LOGGING_OVERFLOW = 59;
-CONSTEXPR uint16_t ICSNEO_NETID_READ_SETTINGS_EX = 60;
+CONSTEXPR uint16_t ICSNEO_NETID_READ_SETTINGS = 60;
 CONSTEXPR uint16_t ICSNEO_NETID_HSCAN4 = 61;
 CONSTEXPR uint16_t ICSNEO_NETID_HSCAN5 = 62;
 CONSTEXPR uint16_t ICSNEO_NETID_RS232 = 63;

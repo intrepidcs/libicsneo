@@ -11,6 +11,7 @@
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/message/serialnumbermessage.h"
 #include "icsneo/communication/message/filter/main51messagefilter.h"
+#include "icsneo/communication/message/readsettingsmessage.h"
 
 using namespace icsneo;
 
@@ -59,9 +60,16 @@ bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 }
 
 bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout) {
-	sendCommand(Command::GetSettings);
-	std::shared_ptr<Message> msg = waitForMessageSync(MessageFilter(Network::NetID::RED_READ_BAUD_SETTINGS), timeout);
+	sendCommand(Command::ReadSettings, { 0, 0, 0, 1 /* Get Global Settings */, 0, 1 /* Subversion 1 */ });
+	std::shared_ptr<Message> msg = waitForMessageSync(MessageFilter(Network::NetID::ReadSettings), timeout);
 	if(!msg)
+		return false;
+
+	std::shared_ptr<ReadSettingsMessage> gsmsg = std::dynamic_pointer_cast<ReadSettingsMessage>(msg);
+	if(!gsmsg)
+		return false;
+
+	if(gsmsg->response != ReadSettingsMessage::Response::OK)
 		return false;
 	
 	data = std::move(msg->data);

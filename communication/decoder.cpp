@@ -2,6 +2,7 @@
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/message/serialnumbermessage.h"
 #include "icsneo/communication/message/resetstatusmessage.h"
+#include "icsneo/communication/message/readsettingsmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include <iostream>
@@ -170,6 +171,26 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					if(packet->data.size() != length)
 						packet->data.resize(length);
 					return decode(result, packet);
+				}
+				case Network::NetID::ReadSettings: {
+					auto msg = std::make_shared<ReadSettingsMessage>();
+					msg->network = packet->network;
+					msg->response = ReadSettingsMessage::Response(packet->data[0]);
+					
+					if(msg->response == ReadSettingsMessage::Response::OK) {
+						// The global settings structure is the payload of the message in this case
+						msg->data.insert(msg->data.begin(), packet->data.begin() + 10, packet->data.end());
+						uint16_t resp_len = msg->data[8] | (msg->data[9] << 8);
+						if(msg->data.size() - 1 == resp_len) // There is a padding byte at the end
+							msg->data.pop_back();
+						result = msg;
+						return true;
+					}
+
+					// We did not get a successful response, so the payload is all of the data
+					msg->data.insert(msg->data.begin(), packet->data.begin(), packet->data.end());
+					result = msg;
+					return true;
 				}
 			}
 	}
