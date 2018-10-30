@@ -398,7 +398,7 @@ bool icsneo_getErrors(neoerror_t* errors, size_t* size) {
 }
 
 bool icsneo_getDeviceErrors(const neodevice_t* device, neoerror_t* errors, size_t* size) {
-	if(!icsneo_isValidNeoDevice(device)) {
+	if(device != nullptr && !icsneo_isValidNeoDevice(device)) {
 		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
 	}
@@ -408,7 +408,8 @@ bool icsneo_getDeviceErrors(const neodevice_t* device, neoerror_t* errors, size_
 		return false;
 	}
 
-	ErrorFilter filter = (icsneo::Device*)device->device;
+	// Creating the filter will nullptr is okay! It will find any errors not associated with a device.
+	ErrorFilter filter = (device != nullptr ? device->device : nullptr);
 
 	if(errors == nullptr) {
 		*size = icsneo::ErrorCount(filter);
@@ -441,12 +442,15 @@ void icsneo_discardAllErrors(void) {
 }
 
 void icsneo_discardDeviceErrors(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
+	if(device != nullptr && !icsneo_isValidNeoDevice(device)) {
 		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return;
 	}
 
-	icsneo::DiscardErrors(icsneo::ErrorFilter((icsneo::Device*)device->device));
+	if(device == nullptr)
+		icsneo::DiscardErrors(nullptr); // Discard errors not associated with a device
+	else
+		icsneo::DiscardErrors(device->device);
 }
 
 void icsneo_setErrorLimit(size_t newLimit) {
