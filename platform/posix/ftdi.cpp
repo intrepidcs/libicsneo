@@ -66,8 +66,10 @@ bool FTDI::open() {
 	if(isOpen() || !openable)
 		return false;
 
-	if(ftdiDevice.open())
+	if(ftdiDevice.open()) {
+		err(APIError::DriverFailedToOpen);
 		return false;
+	}
 
 	ftdiDevice.set_usb_read_timeout(100);
 	ftdiDevice.set_usb_write_timeout(1000);
