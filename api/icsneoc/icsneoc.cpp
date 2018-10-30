@@ -377,3 +377,82 @@ bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLeng
 neoversion_t icsneo_getVersion(void) {
 	return icsneo::GetVersion();
 }
+
+bool icsneo_getErrors(neoerror_t* errors, size_t* size) {
+	if(size == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		return false;
+	}
+
+	if(errors == nullptr) {
+		*size = icsneo::ErrorCount();
+		return false;
+	}
+
+	auto cppErrors = icsneo::GetErrors(*size);
+	for(size_t i = 0; i < cppErrors.size(); i++)
+		memcpy(&errors[i], cppErrors[i].getNeoError(), sizeof(neoerror_t));
+	*size = cppErrors.size();
+
+	return true;
+}
+
+bool icsneo_getDeviceErrors(const neodevice_t* device, neoerror_t* errors, size_t* size) {
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return false;
+	}
+
+	if(size == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		return false;
+	}
+
+	ErrorFilter filter = (icsneo::Device*)device->device;
+
+	if(errors == nullptr) {
+		*size = icsneo::ErrorCount(filter);
+		return false;
+	}
+
+	auto cppErrors = icsneo::GetErrors(*size, filter);
+	for(size_t i = 0; i < cppErrors.size(); i++)
+		memcpy(&errors[i], cppErrors[i].getNeoError(), sizeof(neoerror_t));
+	*size = cppErrors.size();
+
+	return true;
+}
+
+bool icsneo_getLastError(neoerror_t* error) {
+	if(error == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		return false;
+	}
+
+	APIError cppErr;
+	if(!icsneo::GetLastError(cppErr))
+		return false;
+	memcpy(error, cppErr.getNeoError(), sizeof(neoerror_t));
+	return true;
+}
+
+void icsneo_discardAllErrors(void) {
+	icsneo::DiscardErrors();
+}
+
+void icsneo_discardDeviceErrors(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return;
+	}
+
+	icsneo::DiscardErrors(icsneo::ErrorFilter((icsneo::Device*)device->device));
+}
+
+void icsneo_setErrorLimit(size_t newLimit) {
+	icsneo::SetErrorLimit(newLimit);
+}
+
+size_t icsneo_getErrorLimit(void) {
+	return icsneo::GetErrorLimit();
+}

@@ -19,6 +19,8 @@ typedef struct {
 	uint8_t reserved[16];
 } neoerror_t;
 
+#ifdef __cplusplus
+
 #include <vector>
 #include <chrono>
 #include <string>
@@ -68,16 +70,18 @@ public:
 		Error = 0x30
 	};
 
+	APIError() : errorStruct({}), device(nullptr) {}
 	APIError(ErrorType error);
 	APIError(ErrorType error, const Device* device);
 
+	const neoerror_t* getNeoError() const noexcept { return &errorStruct; }
 	ErrorType getType() const noexcept { return ErrorType(errorStruct.errorNumber); }
 	Severity getSeverity() const noexcept { return Severity(errorStruct.severity); }
 	std::string getDescription() const noexcept { return std::string(errorStruct.description); }
 	const Device* getDevice() const noexcept { return device; } // Will return nullptr if this is an API-wide error
 	std::chrono::time_point<std::chrono::high_resolution_clock> getTimestamp() const noexcept { return timepoint; }
 
-	bool isForDevice(Device* forDevice) const noexcept { return forDevice == device; }
+	bool isForDevice(const Device* forDevice) const noexcept { return forDevice == device; }
 	bool isForDevice(std::string serial) const noexcept;
 	
 	// As opposed to getDescription, this will also add text such as "neoVI FIRE 2 CY2468 Error: " to fully describe the problem
@@ -104,20 +108,22 @@ public:
 	ErrorFilter() {} // Empty filter matches anything
 	ErrorFilter(APIError::ErrorType error) : type(error) {}
 	ErrorFilter(APIError::Severity severity) : severity(severity) {}
-	ErrorFilter(Device* device, APIError::ErrorType error = APIError::Any) : type(error), matchOnDevicePtr(true), device(device) {}
-	ErrorFilter(Device* device, APIError::Severity severity = APIError::Severity::Any) : severity(severity), matchOnDevicePtr(true), device(device) {}
+	ErrorFilter(const Device* device, APIError::ErrorType error = APIError::Any) : type(error), matchOnDevicePtr(true), device(device) {}
+	ErrorFilter(const Device* device, APIError::Severity severity) : severity(severity), matchOnDevicePtr(true), device(device) {}
 	ErrorFilter(std::string serial, APIError::ErrorType error = APIError::Any) : type(error), serial(serial) {}
-	ErrorFilter(std::string serial, APIError::Severity severity = APIError::Severity::Any) : severity(severity), serial(serial) {}
+	ErrorFilter(std::string serial, APIError::Severity severity) : severity(severity), serial(serial) {}
 
 	bool match(const APIError& error) const noexcept;
 
 	APIError::Severity severity = APIError::Severity::Any;
 	APIError::ErrorType type = APIError::Any;
 	bool matchOnDevicePtr = false;
-	Device* device = nullptr; // nullptr will match on "no device, generic API error"
+	const Device* device = nullptr; // nullptr will match on "no device, generic API error"
 	std::string serial; // Empty serial will match any, including no device. Not affected by matchOnDevicePtr
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

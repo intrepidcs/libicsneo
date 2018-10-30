@@ -7,6 +7,7 @@
 #include "icsneo/platform/dynamiclib.h" // Dynamic library loading and exporting
 #include "icsneo/communication/network.h" // Network type and netID defines
 #include "icsneo/api/version.h" // For version info
+#include "icsneo/api/error.h" // For error info
 
 #ifndef ICSNEOC_DYNAMICLOAD
 
@@ -67,6 +68,20 @@ extern bool DLLExport icsneo_transmitMessages(const neodevice_t* device, const n
 extern bool DLLExport icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLength);
 
 extern neoversion_t DLLExport icsneo_getVersion(void);
+
+extern bool DLLExport icsneo_getErrors(neoerror_t* errors, size_t* size);
+
+extern bool DLLExport icsneo_getDeviceErrors(const neodevice_t* device, neoerror_t* errors, size_t* size);
+
+extern bool DLLExport icsneo_getLastError(neoerror_t* error);
+
+extern void DLLExport icsneo_discardAllErrors(void);
+
+extern void DLLExport icsneo_discardDeviceErrors(const neodevice_t* device);
+
+extern void DLLExport icsneo_setErrorLimit(size_t newLimit);
+
+extern size_t DLLExport icsneo_getErrorLimit(void);
 
 #ifdef __cplusplus
 } // extern "C"
@@ -155,6 +170,27 @@ fn_icsneo_describeDevice icsneo_describeDevice;
 typedef neoversion_t(*fn_icsneo_getVersion)(void);
 fn_icsneo_getVersion icsneo_getVersion;
 
+typedef bool(*fn_icsneo_getErrors)(neoerror_t* errors, size_t* size);
+fn_icsneo_getErrors icsneo_getErrors;
+
+typedef bool(*fn_icsneo_getDeviceErrors)(const neodevice_t* device, neoerror_t* errors, size_t* size);
+fn_icsneo_getDeviceErrors icsneo_getDeviceErrors;
+
+typedef bool(*fn_icsneo_getLastError)(neoerror_t* error);
+fn_icsneo_getLastError icsneo_getLastError;
+
+typedef void(*fn_icsneo_discardAllErrors)(void);
+fn_icsneo_discardAllErrors icsneo_discardAllErrors;
+
+typedef void(*fn_icsneo_discardDeviceErrors)(const neodevice_t* device);
+fn_icsneo_discardDeviceErrors icsneo_discardDeviceErrors;
+
+typedef void(*fn_icsneo_setErrorLimit)(size_t newLimit);
+fn_icsneo_setErrorLimit icsneo_setErrorLimit;
+
+typedef size_t(*fn_icsneo_getErrorLimit)(void);
+fn_icsneo_getErrorLimit icsneo_getErrorLimit;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneo_libraryHandle = NULL;
@@ -196,6 +232,13 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_transmitMessages);
 	ICSNEO_IMPORTASSERT(icsneo_describeDevice);
 	ICSNEO_IMPORTASSERT(icsneo_getVersion);
+	ICSNEO_IMPORTASSERT(icsneo_getErrors);
+	ICSNEO_IMPORTASSERT(icsneo_getDeviceErrors);
+	ICSNEO_IMPORTASSERT(icsneo_getLastError);
+	ICSNEO_IMPORTASSERT(icsneo_discardAllErrors);
+	ICSNEO_IMPORTASSERT(icsneo_discardDeviceErrors);
+	ICSNEO_IMPORTASSERT(icsneo_setErrorLimit);
+	ICSNEO_IMPORTASSERT(icsneo_getErrorLimit);
 
 	icsneo_initialized = true;
 	return 0;

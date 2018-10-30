@@ -28,7 +28,7 @@ public:
 	}
 	void get(std::vector<APIError>& errors, ErrorFilter filter, size_t max = 0) { get(errors, max, filter); }
 	void get(std::vector<APIError>& errors, size_t max = 0, ErrorFilter filter = ErrorFilter());
-	bool getOne(APIError& error, ErrorFilter filter = ErrorFilter());
+	bool getLastError(APIError& error, ErrorFilter filter = ErrorFilter());
 
 	void add(APIError error) {
 		std::lock_guard<std::mutex> lk(mutex);

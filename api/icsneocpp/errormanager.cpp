@@ -27,20 +27,25 @@ void ErrorManager::get(std::vector<APIError>& errorOutput, size_t max, ErrorFilt
 			if(count++ >= max)
 				break; // We now have as many written to output as we can
 		} else {
-			it++;
+			std::advance(it, 1);
 		}
 	}
 }
 
-bool ErrorManager::getOne(APIError& errorOutput, ErrorFilter filter) {
-	std::vector<APIError> output;
-	get(output, filter, 1);
+bool ErrorManager::getLastError(APIError& errorOutput, ErrorFilter filter) {
+	std::lock_guard<std::mutex> lk(mutex);
 	
-	if(output.size() == 0)
-		return false;
-	
-	errorOutput = output[0];
-	return true;
+	auto it = errors.rbegin();
+	while(it != errors.rend()) {
+		if(filter.match(*it)) {
+			errorOutput = *it;
+			errors.erase(std::next(it).base());
+			return true;
+		}
+		std::advance(it, 1);
+	}
+
+	return false;
 }
 
 void ErrorManager::discard(ErrorFilter filter) {
