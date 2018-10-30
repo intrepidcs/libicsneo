@@ -4,6 +4,7 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/ftdi.h"
+#include "icsneo/device/valuecan3/valuecan3settings.h"
 
 namespace icsneo {
 
@@ -22,7 +23,7 @@ public:
 
 private:
 	ValueCAN3(neodevice_t neodevice) : Device(neodevice) {
-		initialize<FTDI>();
+		initialize<FTDI, ValueCAN3Settings>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
