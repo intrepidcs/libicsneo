@@ -70,7 +70,7 @@ execute_process(
 	OUTPUT_VARIABLE GIT_DESCRIBE
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-configure_file(api/icsneocpp/buildinfo.h.template ${CMAKE_BINARY_DIR}/generated/buildinfo.h)
+configure_file(api/icsneocpp/buildinfo.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated/buildinfo.h)
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(icsneocpp
