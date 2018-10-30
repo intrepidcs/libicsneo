@@ -294,6 +294,7 @@ public:
 	bool applyDefaults(bool temporary = false);
 
 	virtual bool setBaudrateFor(Network net, uint32_t baudrate);
+	virtual bool setFDBaudrateFor(Network net, uint32_t baudrate);
 
 	virtual CAN_SETTINGS* getCANSettingsFor(Network net) { (void)net; return nullptr; }
 	virtual CANFD_SETTINGS* getCANFDSettingsFor(Network net) { (void)net; return nullptr; }

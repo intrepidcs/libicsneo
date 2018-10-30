@@ -26,7 +26,21 @@ public:
 				return nullptr;
 		}
 	}
-	// CANFD_SETTINGS* getCANFDSettingsFor(Network net) override { return nullptr; }
+	CANFD_SETTINGS* getCANFDSettingsFor(Network net) override {
+		auto cfg = getStructurePointer<valuecan4_4_2el_settings_t>();
+		switch(net.getNetID()) {
+			case Network::NetID::HSCAN:
+				return &(cfg->canfd1);
+			case Network::NetID::HSCAN2:
+				return &(cfg->canfd2);
+			case Network::NetID::HSCAN3:
+				return &(cfg->canfd3);
+			case Network::NetID::HSCAN4:
+				return &(cfg->canfd4);
+			default:
+				return nullptr;
+		}
+	}
 };
 
 }

@@ -192,6 +192,9 @@ bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
 
 	switch(net.getType()) {
 		case Network::Type::CAN: {
+			if(baudrate > 1000000) // This is an FD baudrate. Use setFDBaudrateFor instead.
+				return false;
+
 			CAN_SETTINGS* cfg = getCANSettingsFor(net);
 			if(cfg == nullptr)
 				return false;
@@ -202,6 +205,27 @@ bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
 			cfg->Baudrate = newBaud;
 			cfg->auto_baud = false;
 			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
+			return true;
+		}
+		default:
+			return false;
+	}
+}
+
+bool IDeviceSettings::setFDBaudrateFor(Network net, uint32_t baudrate) {
+	if(disabled || readonly)
+		return false;
+
+	switch(net.getType()) {
+		case Network::Type::CAN: {
+			CANFD_SETTINGS* cfg = getCANFDSettingsFor(net);
+			if(cfg == nullptr)
+				return false;
+
+			uint8_t newBaud = getEnumValueForBaudrate(baudrate);
+			if(newBaud == 0xFF)
+				return false;
+			cfg->FDBaudrate = newBaud;
 			return true;
 		}
 		default:

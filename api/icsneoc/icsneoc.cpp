@@ -323,6 +323,15 @@ bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newB
 	return device->device->settings->setBaudrateFor(netid, newBaudrate);
 }
 
+bool icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate) {
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return false;
+	}
+
+	return device->device->settings->setFDBaudrateFor(netid, newBaudrate);
+}
+
 bool icsneo_transmit(const neodevice_t* device, const neomessage_t* message) {
 	if(!icsneo_isValidNeoDevice(device)) {
 		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);

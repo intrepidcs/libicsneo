@@ -58,6 +58,8 @@ extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* d
 
 extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
 
+extern bool DLLExport icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
+
 extern bool DLLExport icsneo_transmit(const neodevice_t* device, const neomessage_t* message);
 
 extern bool DLLExport icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* messages, size_t count);
@@ -138,6 +140,9 @@ fn_icsneo_settingsApplyDefaultsTemporary icsneo_settingsApplyDefaultsTemporary;
 typedef bool(*fn_icsneo_setBaudrate)(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
 fn_icsneo_setBaudrate icsneo_setBaudrate;
 
+typedef bool(*fn_icsneo_setFDBaudrate)(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
+fn_icsneo_setFDBaudrate icsneo_setFDBaudrate;
+
 typedef bool(*fn_icsneo_transmit)(const neodevice_t* device, const neomessage_t* message);
 fn_icsneo_transmit icsneo_transmit;
 
@@ -186,6 +191,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyDefaults);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyDefaultsTemporary);
 	ICSNEO_IMPORTASSERT(icsneo_setBaudrate);
+	ICSNEO_IMPORTASSERT(icsneo_setFDBaudrate);
 	ICSNEO_IMPORTASSERT(icsneo_transmit);
 	ICSNEO_IMPORTASSERT(icsneo_transmitMessages);
 	ICSNEO_IMPORTASSERT(icsneo_describeDevice);
