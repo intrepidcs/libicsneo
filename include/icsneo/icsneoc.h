@@ -224,6 +224,7 @@ extern bool DLLExport icsneo_disableMessagePolling(const neodevice_t* device);
  * 		}
  * 	}
  * }
+ * free(messages);
  * ```
  */
 extern bool DLLExport icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items);
