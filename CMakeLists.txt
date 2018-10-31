@@ -39,7 +39,7 @@ find_package(Doxygen)
 if (DOXYGEN_FOUND)
 	set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/generated/Doxyfile)
 
-	configure_file(api/icsneocpp/doxyfile.template ${DOXYGEN_OUT} @ONLY)
+	configure_file(api/icsneocpp/Doxyfile.template ${DOXYGEN_OUT} @ONLY)
 	message("Doxygen build started")
 	
 	add_custom_target(libicsneo_doxygen ALL
