@@ -286,7 +286,7 @@ extern bool DLLExport icsneo_settingsRefresh(const neodevice_t* device);
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if the settings were applied.
  * 
- * When modifications are made to the device settings, this function (or icsneo_settingsApplyTemoporary()) must be called to send the changes to the device and make them active.
+ * When modifications are made to the device settings, this function (or icsneo_settingsApplyTemporary()) must be called to send the changes to the device and make them active.
  * 
  * This function sets the settings such that they will survive device power cycles.
  * 
