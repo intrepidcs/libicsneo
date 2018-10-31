@@ -34,6 +34,22 @@ if(WIN32)
 	add_definitions(-DWPCAP -DHAVE_REMOTE -DWIN32_LEAN_AND_MEAN)
 endif(WIN32)
 
+# doxygen
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+	set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/generated/Doxyfile)
+
+	configure_file(api/icsneocpp/doxyfile.template ${DOXYGEN_OUT} @ONLY)
+	message("Doxygen build started")
+	
+	add_custom_target(libicsneo_doxygen ALL
+		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMENT "Generating API documentation with Doxygen"
+		VERBATIM
+		DEPENDS icsneocpp icsneoc icsneolegacy)
+endif()
+
 if(WIN32)
 	file(GLOB PLATFORM_SRC_EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/*.cpp)
 	file(GLOB PLATFORM_SRC_INTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/internal/*.cpp)
