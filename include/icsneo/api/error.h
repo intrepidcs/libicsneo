@@ -4,12 +4,6 @@
 #include <stdint.h>
 #include <time.h>
 
-#ifdef __cplusplus
-#define CONSTEXPR constexpr
-#else
-#define CONSTEXPR const
-#endif
-
 typedef struct {
 	const char* description;
 	time_t timestamp;
