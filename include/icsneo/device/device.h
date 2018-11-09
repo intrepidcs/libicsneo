@@ -50,7 +50,7 @@ public:
 	void enableMessagePolling();
 	bool disableMessagePolling();
 	std::vector<std::shared_ptr<Message>> getMessages();
-	bool getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit = 0);
+	bool getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit = 0, std::chrono::milliseconds timeout = std::chrono::milliseconds(0));
 	size_t getCurrentMessageCount() { return pollingContainer.size_approx(); }
 	size_t getPollingMessageLimit() { return pollingMessageLimit; }
 	void setPollingMessageLimit(size_t newSize) {
@@ -145,7 +145,7 @@ private:
 	void updateLEDState();
 	
 	size_t pollingMessageLimit = 20000;
-	moodycamel::ConcurrentQueue<std::shared_ptr<Message>> pollingContainer;
+	moodycamel::BlockingConcurrentQueue<std::shared_ptr<Message>> pollingContainer;
 	void enforcePollingMessageLimit();
 };
 

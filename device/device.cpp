@@ -99,7 +99,7 @@ std::vector<std::shared_ptr<Message>> Device::getMessages() {
 	return ret;
 }
 
-bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit) {
+bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit, std::chrono::milliseconds timeout) {
 	// A limit of zero indicates no limit
 	if(limit == 0)
 		limit = (size_t)-1;
@@ -110,7 +110,11 @@ bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_
 	if(container.size() < limit)
 		container.resize(limit);
 
-	size_t actuallyRead = pollingContainer.try_dequeue_bulk(container.data(), limit);
+	size_t actuallyRead;
+	if(timeout != std::chrono::milliseconds(0))
+		actuallyRead = pollingContainer.wait_dequeue_bulk_timed(container.data(), limit, timeout);
+	else
+		actuallyRead = pollingContainer.try_dequeue_bulk(container.data(), limit);
 
 	if(container.size() > actuallyRead)
 		container.resize(actuallyRead);

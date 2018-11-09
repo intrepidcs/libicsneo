@@ -188,7 +188,7 @@ bool icsneo_disableMessagePolling(const neodevice_t* device) {
 	return device->device->disableMessagePolling();
 }
 
-bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items) {
+bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items, uint64_t timeout) {
 	if(!icsneo_isValidNeoDevice(device)) {
 		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
@@ -207,7 +207,7 @@ bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_
 
 	std::vector<std::shared_ptr<Message>>& storage = polledMessageStorage[device->device];
 
-	if(!device->device->getMessages(storage, *items))
+	if(!device->device->getMessages(storage, *items, std::chrono::milliseconds(timeout)))
 		return false;
 
 	*items = storage.size();

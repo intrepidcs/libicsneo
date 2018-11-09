@@ -188,6 +188,8 @@ extern bool DLLExport icsneo_disableMessagePolling(const neodevice_t* device);
  * \param[out] messages A pointer to a buffer which neomessage_t structures will be written to. NULL can be passed, which will write the current message count to size.
  * \param[inout] items A pointer to a size_t which, prior to the call,
  * holds the maximum number of messages to be written, and after the call holds the number of messages written.
+ * \param[in] timeout The number of milliseconds to wait for a message to arrive. A value of 0 indicates a non-blocking call.
+ * Querying for the current message count is always asynchronous and ignores this value.
  * \returns True if the messages were read out successfully (even if there were no messages to read) or if the count was read successfully.
  * 
  * Messages are available using this function if icsneo_goOnline() and icsneo_enableMessagePolling() have been called.
@@ -202,12 +204,15 @@ extern bool DLLExport icsneo_disableMessagePolling(const neodevice_t* device);
  * The memory for the data pointer within the neomessage_t is managed by the API. Do *not* attempt to free the data pointer.
  * The memory will become invalid the next time icsneo_getMessages() is called for this device.
  * 
+ * \warning Do not call icsneo_close() while another thread is waiting on icsneo_getMessages().
+ * Always allow the other thread to timeout first!
+ * 
  * ``` C
  * size_t messageCount;
- * bool result = icsneo_getMessages(device, NULL, &messageCount); // Reading the message count
+ * bool result = icsneo_getMessages(device, NULL, &messageCount, 0); // Reading the message count
  * // Handle errors here
  * neomessage_t* messages = malloc(messageCount * sizeof(neomessage_t)); // It is also possible and encouraged to use a static buffer
- * result = icsneo_getMessages(device, messages, &messageCount);
+ * result = icsneo_getMessages(device, messages, &messageCount, 0); // Non-blocking
  * // Handle errors here
  * for(size_t i = 0; i < messageCount; i++) {
  * 	switch(messages[i].type) {
@@ -227,7 +232,7 @@ extern bool DLLExport icsneo_disableMessagePolling(const neodevice_t* device);
  * free(messages);
  * ```
  */
-extern bool DLLExport icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items);
+extern bool DLLExport icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items, uint64_t timeout);
 
 /**
  * \brief Get the maximum number of messages which will be held in the API managed buffer for the specified hardware.
@@ -335,7 +340,8 @@ extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* d
  * \param[in] newBaudrate The requested baudrate, with no multipliers. (i.e. 500K CAN should be represented as 500000)
  * \returns True if the baudrate could be set.
  * 
- * In the case of CAN, this function sets the standard CAN baudrate. See icsneo_setFDBaudrate() to set the baudrate for (the baudrate-switched portion of) CAN FD.
+ * In the case of CAN, this function sets the standard CAN baudrate.
+ * See icsneo_setFDBaudrate() to set the baudrate for (the baudrate-switched portion of) CAN FD.
  * 
  * Call icsneo_settingsApply() or similar to make the changes active on the device.
  */
@@ -550,7 +556,7 @@ fn_icsneo_enableMessagePolling icsneo_enableMessagePolling;
 typedef bool(*fn_icsneo_disableMessagePolling)(const neodevice_t* device);
 fn_icsneo_disableMessagePolling icsneo_disableMessagePolling;
 
-typedef bool(*fn_icsneo_getMessages)(const neodevice_t* device, neomessage_t* messages, size_t* items);
+typedef bool(*fn_icsneo_getMessages)(const neodevice_t* device, neomessage_t* messages, size_t* items, uint64_t timeout);
 fn_icsneo_getMessages icsneo_getMessages;
 
 typedef size_t(*fn_icsneo_getPollingMessageLimit)(const neodevice_t* device);

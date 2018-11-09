@@ -111,7 +111,7 @@ int icsneoGetMessages(void* hObject, icsSpyMessage* pMsg, int* pNumberOfMessages
 	neodevice_t* device = (neodevice_t*)hObject;
 
 	size_t messageCount = 20000;
-	if(!icsneo_getMessages(device, messages, &messageCount))
+	if(!icsneo_getMessages(device, messages, &messageCount, 0))
 		return false;
 	
 	*pNumberOfMessages = (int)messageCount;
