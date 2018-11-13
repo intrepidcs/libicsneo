@@ -270,7 +270,6 @@ void VCP::readTask() {
 			case WAIT: {
 				auto ret = WaitForSingleObject(overlappedRead.hEvent, 100);
 				if(ret == WAIT_OBJECT_0) {
-					auto err = GetLastError();
 					if(GetOverlappedResult(handle, &overlappedRead, &bytesRead, FALSE)) {
 						readQueue.enqueue_bulk(readbuf, bytesRead);
 						state = LAUNCH;
@@ -300,8 +299,8 @@ void VCP::writeTask() {
 				if(WriteFile(handle, writeOp.bytes.data(), (DWORD)writeOp.bytes.size(), nullptr, &overlappedWrite))
 					continue;
 				
-				auto err = GetLastError();
-				if(err == ERROR_IO_PENDING) {
+				auto winerr = GetLastError();
+				if(winerr == ERROR_IO_PENDING) {
 					state = WAIT;
 				}
 				else

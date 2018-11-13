@@ -26,6 +26,9 @@ class Device;
 
 class APIError {
 public:
+	typedef std::chrono::system_clock ErrorClock;
+	typedef std::chrono::time_point<ErrorClock> ErrorTimePoint;
+
 	enum ErrorType : uint32_t {
 		Any = 0, // Used for filtering, should not appear in data
 
@@ -73,7 +76,7 @@ public:
 	Severity getSeverity() const noexcept { return Severity(errorStruct.severity); }
 	std::string getDescription() const noexcept { return std::string(errorStruct.description); }
 	const Device* getDevice() const noexcept { return device; } // Will return nullptr if this is an API-wide error
-	std::chrono::time_point<std::chrono::high_resolution_clock> getTimestamp() const noexcept { return timepoint; }
+	ErrorTimePoint getTimestamp() const noexcept { return timepoint; }
 
 	bool isForDevice(const Device* forDevice) const noexcept { return forDevice == device; }
 	bool isForDevice(std::string serial) const noexcept;
@@ -91,7 +94,7 @@ public:
 private:
 	neoerror_t errorStruct;
 	std::string serial;
-	std::chrono::time_point<std::chrono::high_resolution_clock> timepoint;
+	ErrorTimePoint timepoint;
 	const Device* device;
 
 	void init(ErrorType error);

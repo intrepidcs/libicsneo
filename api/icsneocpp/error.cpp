@@ -17,11 +17,11 @@ APIError::APIError(ErrorType error, const Device* forDevice) : errorStruct({}) {
 }
 
 void APIError::init(ErrorType error) {
-	timepoint = std::chrono::high_resolution_clock::now();
+	timepoint = ErrorClock::now();
 	errorStruct.description = DescriptionForType(error);
 	errorStruct.errorNumber = (uint32_t)error;
 	errorStruct.severity = (uint8_t)SeverityForType(error);
-	errorStruct.timestamp = std::chrono::high_resolution_clock::to_time_t(timepoint);
+	errorStruct.timestamp = ErrorClock::to_time_t(timepoint);
 }
 
 std::string APIError::describe() const noexcept {
@@ -35,10 +35,10 @@ std::string APIError::describe() const noexcept {
 	return ss.str();
 }
 
-bool APIError::isForDevice(std::string serial) const noexcept {
-	if(!device || serial.length() == 0)
+bool APIError::isForDevice(std::string filterSerial) const noexcept {
+	if(!device || filterSerial.length() == 0)
 		return false;
-	return device->getSerial() == serial;
+	return device->getSerial() == filterSerial;
 }
 
 // API Errors

@@ -27,6 +27,7 @@ public:
 	bool close();
 private:
 	PCAPDLL pcap;
+	device_errorhandler_t err;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
 	neodevice_t& device;
 	uint8_t deviceMAC[6];

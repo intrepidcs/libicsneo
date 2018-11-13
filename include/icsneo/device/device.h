@@ -103,29 +103,29 @@ protected:
 
 	template<typename Transport>
 	std::unique_ptr<ICommunication> makeTransport() { return std::unique_ptr<ICommunication>(new Transport(err, getWritableNeoDevice())); }
-	virtual void setupTransport(ICommunication* transport) {}
+	virtual void setupTransport(ICommunication* stransport) { (void)stransport; }
 
 	virtual std::shared_ptr<Packetizer> makePacketizer() { return std::make_shared<Packetizer>(err); }
-	virtual void setupPacketizer(Packetizer* packetizer) {}
+	virtual void setupPacketizer(Packetizer* spacketizer) { (void)spacketizer; }
 
 	virtual std::unique_ptr<Encoder> makeEncoder(std::shared_ptr<Packetizer> p) { return std::unique_ptr<Encoder>(new Encoder(err, p)); }
-	virtual void setupEncoder(Encoder* encoder) {}
+	virtual void setupEncoder(Encoder* sencoder) { (void)sencoder; }
 
 	virtual std::unique_ptr<Decoder> makeDecoder() { return std::unique_ptr<Decoder>(new Decoder(err)); }
-	virtual void setupDecoder(Decoder* decoder) {}
+	virtual void setupDecoder(Decoder* sdecoder) { (void)sdecoder; }
 
 	virtual std::shared_ptr<Communication> makeCommunication(
 		std::unique_ptr<ICommunication> t,
 		std::shared_ptr<Packetizer> p, 
 		std::unique_ptr<Encoder> e,
 		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(err, std::move(t), p, std::move(e), std::move(d)); }
-	virtual void setupCommunication(Communication* com) {}
+	virtual void setupCommunication(Communication* scom) { (void)scom; }
 
 	template<typename Settings>
 	std::unique_ptr<IDeviceSettings> makeSettings(std::shared_ptr<Communication> com) {
 		return std::unique_ptr<IDeviceSettings>(new Settings(com));
 	}
-	virtual void setupSettings(IDeviceSettings* settings) {}
+	virtual void setupSettings(IDeviceSettings* ssettings) { (void)ssettings; }
 	// END Initialization Functions
 
 	void handleInternalMessage(std::shared_ptr<Message> message);

@@ -43,7 +43,6 @@ public:
 		return found;
 	}
 
-private:
 	RADStar2ETH(neodevice_t neodevice) : RADStar2(neodevice) {
 		initialize<PCAP>();
 	}
