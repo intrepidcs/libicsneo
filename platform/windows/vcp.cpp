@@ -18,82 +18,99 @@ static const std::wstring ALL_ENUM_REG_KEY = L"SYSTEM\\CurrentControlSet\\Enum\\
 static constexpr unsigned int RETRY_TIMES = 5;
 static constexpr unsigned int RETRY_DELAY = 50;
 
-std::vector<neodevice_t> VCP::FindByProduct(int product, wchar_t* driverName) {
+std::vector<neodevice_t> VCP::FindByProduct(int product, std::vector<std::wstring> driverNames) {
 	std::vector<neodevice_t> found;
 
-	std::wstringstream regss;
-	regss << DRIVER_SERVICES_REG_KEY << driverName << L"\\Enum\\";
-	std::wstring driverEnumRegKey = regss.str();
+	for(auto& driverName : driverNames) {
+		std::wstringstream regss;
+		regss << DRIVER_SERVICES_REG_KEY << driverName << L"\\Enum\\";
+		std::wstring driverEnumRegKey = regss.str();
 
-	uint32_t deviceCount = 0;
-	if(!Registry::Get(driverEnumRegKey, L"Count", deviceCount)) {
-		return found;
-	}
-
-	for(uint32_t i = 0; i < deviceCount; i++) {
-		neodevice_t device = {};
-
-		// First we want to look at what devices FTDI is enumerating (inside driverEnumRegKey)
-		// The entry for a ValueCAN 3 with SN 138635 looks like "FTDIBUS\VID_093C+PID_0601+138635A\0000"
-		// The entry for a ValueCAN 4 with SN V20227 looks like "USB\VID_093C&PID_1101\V20227"
-		std::wstringstream ss;
-		ss << i;
-		std::wstring entry;
-		if(!Registry::Get(driverEnumRegKey, ss.str(), entry))
-			continue;
-
-		std::transform(entry.begin(), entry.end(), entry.begin(), std::towupper);
-		
-		std::wstringstream vss;
-		vss << "VID_" << std::setfill(L'0') << std::setw(4) << std::uppercase << std::hex << INTREPID_USB_VENDOR_ID; // Intrepid Vendor ID
-		if(entry.find(vss.str()) == std::wstring::npos)
-			continue;
-
-		std::wstringstream pss;
-		pss << "PID_" << std::setfill(L'0') << std::setw(4) << std::uppercase << std::hex << product;
-		auto pidpos = entry.find(pss.str());
-		if(pidpos == std::wstring::npos)
-			continue;
-
-		// Okay, this is a device we want
-		// Get the serial number
-		auto startchar = entry.find(L"+", pidpos + 1);
-		if(startchar == std::wstring::npos)
-			startchar = entry.find(L"\\", pidpos + 1);
-		bool conversionError = false;
-		int sn = 0;
-		try {
-			sn = std::stoi(entry.substr(startchar + 1));
-		} catch(...) {
-			conversionError = true;
+		uint32_t deviceCount = 0;
+		if(!Registry::Get(driverEnumRegKey, L"Count", deviceCount)) {
+			return found;
 		}
 
-		std::wstringstream oss;
-		if(!sn || conversionError) {
-			// This is a device with characters in the serial number
-			oss << entry.substr(startchar + 1, 6);
-		} else {
-			oss << sn;
-		}
+		for(uint32_t i = 0; i < deviceCount; i++) {
+			neodevice_t device = {};
 
-		strcpy_s(device.serial, sizeof(device.serial), converter.to_bytes(oss.str()).c_str());
+			// First we want to look at what devices FTDI is enumerating (inside driverEnumRegKey)
+			// The entry for a ValueCAN 3 with SN 138635 looks like "FTDIBUS\VID_093C+PID_0601+138635A\0000"
+			// The entry for a ValueCAN 4 with SN V20227 looks like "USB\VID_093C&PID_1101\V20227"
+			std::wstringstream ss;
+			ss << i;
+			std::wstring entry;
+			if(!Registry::Get(driverEnumRegKey, ss.str(), entry))
+				continue;
 
-		// Serial number is saved, we want the COM port number now
-		// This will be stored under ALL_ENUM_REG_KEY\entry\Device Parameters\PortName (entry from the FTDI_ENUM)
-		std::wstringstream dpss;
-		dpss << ALL_ENUM_REG_KEY << entry << L"\\Device Parameters";
-		std::wstring port;
-		Registry::Get(dpss.str(), L"PortName", port); // TODO If error do something else (Plasma maybe?)
-		std::transform(port.begin(), port.end(), port.begin(), std::towupper);
-		auto compos = port.find(L"COM");
-		device.handle = 0;
-		if(compos != std::wstring::npos) {
+			std::transform(entry.begin(), entry.end(), entry.begin(), std::towupper);
+
+			std::wstringstream vss;
+			vss << "VID_" << std::setfill(L'0') << std::setw(4) << std::uppercase << std::hex << INTREPID_USB_VENDOR_ID; // Intrepid Vendor ID
+			if(entry.find(vss.str()) == std::wstring::npos)
+				continue;
+
+			std::wstringstream pss;
+			pss << "PID_" << std::setfill(L'0') << std::setw(4) << std::uppercase << std::hex << product;
+			auto pidpos = entry.find(pss.str());
+			if(pidpos == std::wstring::npos)
+				continue;
+
+			// Okay, this is a device we want
+			// Get the serial number
+			auto startchar = entry.find(L"+", pidpos + 1);
+			if(startchar == std::wstring::npos)
+				startchar = entry.find(L"\\", pidpos + 1);
+			bool conversionError = false;
+			int sn = 0;
 			try {
-				device.handle = std::stoi(port.substr(compos + 3));
-			} catch(...) {} // In case of this, or any other error, handle has already been initialized to 0
-		}
+				sn = std::stoi(entry.substr(startchar + 1));
+			}
+			catch(...) {
+				conversionError = true;
+			}
 
-		found.push_back(device);
+			std::wstringstream oss;
+			if(!sn || conversionError) {
+				// This is a device with characters in the serial number
+				oss << entry.substr(startchar + 1, 6);
+			}
+			else {
+				oss << sn;
+			}
+
+			std::string serial = converter.to_bytes(oss.str());
+			if(serial.find_first_of('\\') != std::string::npos)
+				continue; // Not sure how this happened but a slash is not valid in the serial
+			strcpy_s(device.serial, sizeof(device.serial), serial.c_str());
+
+			// Serial number is saved, we want the COM port number now
+			// This will be stored under ALL_ENUM_REG_KEY\entry\Device Parameters\PortName (entry from the FTDI_ENUM)
+			std::wstringstream dpss;
+			dpss << ALL_ENUM_REG_KEY << entry << L"\\Device Parameters";
+			std::wstring port;
+			Registry::Get(dpss.str(), L"PortName", port); // TODO If error do something else (Plasma maybe?)
+			std::transform(port.begin(), port.end(), port.begin(), std::towupper);
+			auto compos = port.find(L"COM");
+			device.handle = 0;
+			if(compos != std::wstring::npos) {
+				try {
+					device.handle = std::stoi(port.substr(compos + 3));
+				}
+				catch(...) {} // In case of this, or any other error, handle has already been initialized to 0
+			}
+
+			bool alreadyFound = false;
+			for(auto& foundDev : found) {
+				if(foundDev.handle == device.handle && serial == foundDev.serial) {
+					alreadyFound = true;
+					break;
+				}
+			}
+
+			if(!alreadyFound)
+				found.push_back(device);
+		}
 	}
 
 	return found;
@@ -113,8 +130,10 @@ bool VCP::open(bool fromAsync) {
 	if(isOpen() || (!fromAsync && opening))
 		return false;
 
-	if(!IsHandleValid(device.handle))
+	if(!IsHandleValid(device.handle)) {
+		err(APIError::DriverFailedToOpen);
 		return false;
+	}
 
 	opening = true;
 
@@ -132,8 +151,10 @@ bool VCP::open(bool fromAsync) {
 
 	opening = false;
 
-	if(!isOpen())
+	if(!isOpen()) {
+		err(APIError::DriverFailedToOpen);
 		return false;
+	}
 
 	// Set the timeouts
 	COMMTIMEOUTS timeouts;
@@ -151,6 +172,7 @@ bool VCP::open(bool fromAsync) {
 
 	if(!SetCommTimeouts(handle, &timeouts)) {
 		close();
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
@@ -158,6 +180,7 @@ bool VCP::open(bool fromAsync) {
 	DCB comstate;
 	if(!GetCommState(handle, &comstate)) {
 		close();
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
@@ -170,6 +193,7 @@ bool VCP::open(bool fromAsync) {
 
 	if(!SetCommState(handle, &comstate)) {
 		close();
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
@@ -181,12 +205,14 @@ bool VCP::open(bool fromAsync) {
 	overlappedWait.hEvent = CreateEvent(nullptr, true, false, nullptr);
 	if (overlappedRead.hEvent == nullptr || overlappedWrite.hEvent == nullptr || overlappedWait.hEvent == nullptr) {
 		close();
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
 	// Set up event so that we will satisfy overlappedWait when a character comes in
 	if(!SetCommMask(handle, EV_RXCHAR)) {
 		close();
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 	
@@ -237,6 +263,11 @@ bool VCP::close() {
 			ret = false;
 		overlappedWait.hEvent = INVALID_HANDLE_VALUE;
 	}
+
+	uint8_t flush;
+	WriteOperation flushop;
+	while(readQueue.try_dequeue(flush)) {}
+	while(writeQueue.try_dequeue(flushop)) {}
 
 	// TODO Set up some sort of shared memory, free which COM port we had open so we can try to open it again
 

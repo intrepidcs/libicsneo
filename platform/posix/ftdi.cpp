@@ -99,10 +99,16 @@ bool FTDI::close() {
 
 	closing = false;
 
+	bool ret = true;
 	if(ftdiDevice.close())
-		return false;
+		ret = false;
 
-	return true;
+	uint8_t flush;
+	WriteOperation flushop;
+	while(readQueue.try_dequeue(flush)) {}
+	while(writeQueue.try_dequeue(flushop)) {}
+
+	return ret;
 }
 
 void FTDI::readTask() {

@@ -233,6 +233,11 @@ bool PCAP::close() {
 	pcap.close(interface.fp);
 	interface.fp = nullptr;
 
+	uint8_t flush;
+	WriteOperation flushop;
+	while(readQueue.try_dequeue(flush)) {}
+	while(writeQueue.try_dequeue(flushop)) {}
+
 	return true;
 }
 

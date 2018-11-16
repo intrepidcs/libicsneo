@@ -256,6 +256,11 @@ bool STM32::close() {
 
 	int ret = ::close(fd);
 	fd = -1;
+
+	uint8_t flush;
+	WriteOperation flushop;
+	while (readQueue.try_dequeue(flush)) {}
+	while (writeQueue.try_dequeue(flushop)) {}
 	
 	return ret == 0;
 }
