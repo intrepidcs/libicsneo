@@ -228,6 +228,7 @@ bool PCAP::close() {
 	closing = true; // Signal the threads that we are closing
 	readThread.join();
 	writeThread.join();
+	closing = false;
 
 	pcap.close(interface.fp);
 	interface.fp = nullptr;

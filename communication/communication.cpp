@@ -31,8 +31,10 @@ void Communication::spawnThreads() {
 }
 
 void Communication::joinThreads() {
+	closing = true;
 	if(readTaskThread.joinable())
 		readTaskThread.join();
+	closing = false;
 }
 
 bool Communication::close() {
@@ -40,7 +42,6 @@ bool Communication::close() {
 		return false;
 
 	isOpen = false;
-	closing = true;
 	joinThreads();
 
 	return impl->close();

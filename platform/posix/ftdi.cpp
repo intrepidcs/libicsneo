@@ -97,6 +97,8 @@ bool FTDI::close() {
 	if(writeThread.joinable())
 		writeThread.join();
 
+	closing = false;
+
 	if(ftdiDevice.close())
 		return false;
 

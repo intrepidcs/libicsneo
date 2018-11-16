@@ -214,6 +214,7 @@ bool VCP::close() {
 		t->join(); // Wait for the threads to close
 	readThread.join();
 	writeThread.join();
+	closing = false;
 
 	if(!CloseHandle(handle))
 		return false;
@@ -224,14 +225,17 @@ bool VCP::close() {
 	if(overlappedRead.hEvent != INVALID_HANDLE_VALUE) {
 		if(!CloseHandle(overlappedRead.hEvent))
 			ret = false;
+		overlappedRead.hEvent = INVALID_HANDLE_VALUE;
 	}
 	if(overlappedWrite.hEvent != INVALID_HANDLE_VALUE) {
 		if(!CloseHandle(overlappedWrite.hEvent))
 			ret = false;
+		overlappedWrite.hEvent = INVALID_HANDLE_VALUE;
 	}
 	if(overlappedWait.hEvent != INVALID_HANDLE_VALUE) {
 		if(!CloseHandle(overlappedWait.hEvent))
 			ret = false;
+		overlappedWait.hEvent = INVALID_HANDLE_VALUE;
 	}
 
 	// TODO Set up some sort of shared memory, free which COM port we had open so we can try to open it again
