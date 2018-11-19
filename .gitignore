@@ -5,3 +5,4 @@ Thumbs.db
 .vscode/settings.json
 third-party/concurrentqueue/benchmarks
 third-party/concurrentqueue/tests
+*.bak
