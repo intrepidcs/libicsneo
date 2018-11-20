@@ -29,7 +29,7 @@ The C++ API is designed to be modern and easy to use. All library functions and 
 
 Any time you get bus traffic from the API, you will receive it as an `std::shared_ptr<icsneo::Message>`. The message will be valid as long as the `shared_ptr` stays in scope. Checking the type of the message allows you to cast it accordingly and access extra data for certain protocols. For instance, casting an `icsneo::Message` to an `icsneo::CANMessage` allows you to access the arbitration ID.
 
-A barebones example is provided. For a more complete example, check intrepidcs/libicsneocpp-example.
+A barebones example is provided. For a more complete example, check [intrepidcs/libicsneo-examples](https://github.com/intrepidcs/libicsneo-examples).
 ``` c++
 std::vector<std::shared_ptr<icsneo::Device>> devices = icsneo::FindAllDevices();
 std::cout << devices.size() << " found!" << std::endl;
@@ -64,7 +64,7 @@ The C API is designed to be a robust and fault tolerant interface which allows e
 
 Messages are passed in the form of `neomessage_t` structures when calling `icsneo_getMessages()`. These structures contain a `uint8_t*` to the payload data, and this pointer will be valid until the next call to `icsneo_getMessages()` or the device is closed.
 
-A barebones example is provided. For a more complete example, check intrepidcs/libicsneoc-example.
+A barebones example is provided. For a more complete example, check [intrepidcs/libicsneo-examples](https://github.com/intrepidcs/libicsneo-examples).
 ``` c
 size_t deviceCount = 10; // Pre-set to the size of your buffer before the icsneo_findAllDevices() call
 neodevice_t devices[10];
