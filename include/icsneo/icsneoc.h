@@ -281,6 +281,30 @@ extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, s
 extern bool DLLExport icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength);
 
 /**
+ * \brief Get the friendly product name for a specified devicetype.
+ * \param[in] type A neodevice_t structure specifying the device to operate on.
+ * \param[out] str A pointer to a buffer where the string will be written. NULL can be passed, which will write a character count to maxLength.
+ * \param[inout] maxLength A pointer to a size_t which, prior to the call,
+ * holds the maximum number of characters to be written (so str must be of size maxLength + 1 to account for the NULL terminator),
+ * and after the call holds the number of characters written.
+ * \returns True if str was written to
+ * 
+ * In the case of a neoVI FIRE 2, this function will write a string "neoVI FIRE 2" with a NULL terminator into str.
+ * 
+ * The constant ICSNEO_DEVICETYPE_LONGEST_NAME is defined for the client application to create static buffers of the correct length.
+ * 
+ * See also icsneo_describeDevice().
+ * 
+ * A query for length (`str == NULL`) will return false.
+ * icsneo_getLastError() should be checked to verify that the neodevice_t provided was valid.
+ * 
+ * If the size provided is not large enough, the output will be truncated.
+ * An icsneo::APIError::OutputTruncatedError will be available in icsneo_getLastError() in this case.
+ * True will still be returned.
+ */
+extern bool DLLExport icsneo_getProductNameForType(devicetype_t type, char* str, size_t* maxLength);
+
+/**
  * \brief Trigger a refresh of the settings structure for a specified device.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if the refresh succeeded.
@@ -513,6 +537,25 @@ extern void DLLExport icsneo_setErrorLimit(size_t newLimit);
  * If the error limit is reached, an icsneo::APIError::TooManyErrors will be flagged.
  */
 extern size_t DLLExport icsneo_getErrorLimit(void);
+
+/**
+ * \brief Get the devices supported by the current version of the API
+ * \param[out] devices A pointer to a buffer of devicetype_t structures which will be written to.
+ * NULL can be passed, which will write the current supported device count to count.
+ * \param[inout] count A pointer to a size_t which, prior to the call,
+ * holds the maximum number of devicetype_t structures to be written,
+ * and after the call holds the number of devicetype_t structures written.
+ * \returns True if devices was written to
+ * 
+ * See icsneo_getProductNameForType() to get textual descriptions of each device.
+ * 
+ * A query for length (`devices == NULL`) will return false.
+ * 
+ * If the count provided is not large enough, the output will be truncated.
+ * An icsneo::APIError::OutputTruncatedError will be available in icsneo_getLastError() in this case.
+ * True will still be returned.
+ */
+extern bool DLLExport icsneo_getSupportedDevices(devicetype_t* devices, size_t* count);
 
 #ifdef __cplusplus
 } // extern "C"

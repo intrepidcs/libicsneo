@@ -8,6 +8,7 @@
 #include "icsneo/icsneocpp.h"
 #include "icsneo/platform/dynamiclib.h"
 #include "icsneo/api/errormanager.h"
+#include "icsneo/device/devicefinder.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -269,6 +270,29 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 	return true;
 }
 
+bool icsneo_getProductNameForType(devicetype_t type, char* str, size_t* maxLength) {
+	// TAG String copy function
+	if(maxLength == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		return false;
+	}
+
+	std::string output = DeviceType(type).toString();
+
+	if(str == nullptr) {
+		*maxLength = output.length();
+		return false;
+	}
+
+	*maxLength = output.copy(str, *maxLength);
+	str[*maxLength] = '\0';
+
+	if(output.length() > *maxLength)
+		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+
+	return true;
+}
+
 bool icsneo_settingsRefresh(const neodevice_t* device) {
 	if(!icsneo_isValidNeoDevice(device)) {
 		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
@@ -459,4 +483,30 @@ void icsneo_setErrorLimit(size_t newLimit) {
 
 size_t icsneo_getErrorLimit(void) {
 	return icsneo::GetErrorLimit();
+}
+
+bool icsneo_getSupportedDevices(devicetype_t* devices, size_t* count) {
+	if(count == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		return false;
+	}
+
+	auto supported = DeviceFinder::GetSupportedDevices();
+	auto len = supported.size();
+
+	if(devices == nullptr) {
+		*count = len;
+		return false;
+	}
+
+	if(*count < len) {
+		len = *count;
+		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+	}
+
+	for(size_t i = 0; i < len; i++)
+		devices[i] = supported[i];
+	*count = len;
+
+	return true;
 }

@@ -3,6 +3,78 @@
 
 using namespace icsneo;
 
+static std::vector<DeviceType> supportedDevices = {
+
+	#ifdef __NEOOBD2PRO_H_
+	NeoOBD2PRO::DEVICE_TYPE,
+	#endif
+
+	#ifdef __NEOOBD2SIM_H_
+	NeoOBD2SIM::DEVICE_TYPE,
+	#endif
+
+	#ifdef __NEOVIFIRE_H_
+	NeoVIFIRE::DEVICE_TYPE,
+	#endif
+
+	#ifdef __NEOVIFIRE2ETH_H_
+	NeoVIFIRE2ETH::DEVICE_TYPE,
+	#endif
+
+	#ifdef __NEOVIFIRE2USB_H_
+	NeoVIFIRE2USB::DEVICE_TYPE,
+	#endif
+
+	#ifdef __NEOVIION_H_
+	NeoVIION::DEVICE_TYPE,
+	#endif
+
+	#ifdef __NEOVIPLASMA_H_
+	NeoVIPLASMA::DEVICE_TYPE,
+	#endif
+
+	#ifdef __RADGALAXY_H_
+	RADGalaxy::DEVICE_TYPE,
+	#endif
+
+	#ifdef __RADSTAR2ETH_H_
+	RADStar2ETH::DEVICE_TYPE,
+	#endif
+
+	#ifdef __RADSTAR2USB_H_
+	RADStar2USB::DEVICE_TYPE,
+	#endif
+
+	#ifdef __RADSUPERMOON_H_
+	RADSupermoon::DEVICE_TYPE,
+	#endif
+
+	#ifdef __VALUECAN3_H_
+	ValueCAN3::DEVICE_TYPE,
+	#endif
+
+	#ifdef __VALUECAN4_1_H_
+	ValueCAN4_1::DEVICE_TYPE,
+	#endif
+
+	#ifdef __VALUECAN4_2_H_
+	ValueCAN4_2::DEVICE_TYPE,
+	#endif
+
+	#ifdef __VALUECAN4_2EL_H_
+	ValueCAN4_2EL::DEVICE_TYPE,
+	#endif
+
+	#ifdef __VALUECAN4_4_H_
+	ValueCAN4_4::DEVICE_TYPE,
+	#endif
+
+	#ifdef __VIVIDCAN_H_
+	VividCAN::DEVICE_TYPE,
+	#endif
+
+};
+
 std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	std::vector<std::shared_ptr<Device>> foundDevices;
 	std::vector<std::vector<std::shared_ptr<Device>>> findResults;
@@ -81,4 +153,8 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	}
 
 	return foundDevices;
+}
+
+const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
+	return supportedDevices;
 }

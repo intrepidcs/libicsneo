@@ -155,6 +155,7 @@ public:
 		os << type.toString().c_str();
 		return os;
 	}
+	operator devicetype_t() const { return getDeviceType(); }
 
 private:
 	DeviceType::Enum value;
