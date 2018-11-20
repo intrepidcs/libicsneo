@@ -252,8 +252,15 @@ bool STM32::close() {
 	if(writeThread.joinable())
 		writeThread.join();
 
+	closing = false;
+
 	int ret = ::close(fd);
 	fd = -1;
+
+	uint8_t flush;
+	WriteOperation flushop;
+	while (readQueue.try_dequeue(flush)) {}
+	while (writeQueue.try_dequeue(flushop)) {}
 	
 	return ret == 0;
 }

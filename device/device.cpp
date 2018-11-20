@@ -180,6 +180,7 @@ bool Device::close() {
 	if(internalHandlerCallbackID)
 		com->removeMessageCallback(internalHandlerCallbackID);
 
+	goOffline();
 	return com->close();
 }
 

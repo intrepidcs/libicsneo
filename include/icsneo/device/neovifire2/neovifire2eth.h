@@ -15,13 +15,12 @@ public:
 		std::vector<std::shared_ptr<Device>> found;
 		
 		for(auto& foundDev : PCAP::FindAll()) {
-			auto packetizer = std::make_shared<Packetizer>();
-			auto decoder = std::unique_ptr<Decoder>(new Decoder());
-			for(auto& payload : foundDev.discoveryPackets)
-				packetizer->input(payload);
-			for(auto& packet : packetizer->output()) {
+			auto fakedev = std::shared_ptr<NeoVIFIRE2ETH>(new NeoVIFIRE2ETH({}));
+			for (auto& payload : foundDev.discoveryPackets)
+				fakedev->com->packetizer->input(payload);
+			for (auto& packet : fakedev->com->packetizer->output()) {
 				std::shared_ptr<Message> msg;
-				if(!decoder->decode(msg, packet))
+				if (!fakedev->com->decoder->decode(msg, packet))
 					continue; // We failed to decode this packet
 
 				if(!msg || msg->network.getNetID() != Network::NetID::Main51)
@@ -44,16 +43,15 @@ public:
 		return found;
 	}
 
-protected:
-	virtual void setupSettings(IDeviceSettings* settings) {
-		// TODO Check firmware version, old firmwares will reset Ethernet settings on settings send
-		settings->readonly = true;
-	}
-
-private:
 	NeoVIFIRE2ETH(neodevice_t neodevice) : NeoVIFIRE2(neodevice) {
 		initialize<PCAP, NeoVIFIRE2Settings>();
 		productId = PRODUCT_ID;
+	}
+
+protected:
+	virtual void setupSettings(IDeviceSettings* ssettings) {
+		// TODO Check firmware version, old firmwares will reset Ethernet settings on settings send
+		ssettings->readonly = true;
 	}
 };
 

@@ -16,7 +16,7 @@ namespace icsneo {
 // Virtual COM Port Communication
 class VCP : public ICommunication {
 public:
-	static std::vector<neodevice_t> FindByProduct(int product, wchar_t* driverName);
+	static std::vector<neodevice_t> FindByProduct(int product, std::vector<std::wstring> driverName);
 	static bool IsHandleValid(neodevice_handle_t handle);
 	typedef void(*fn_boolCallback)(bool success);
 	

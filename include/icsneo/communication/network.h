@@ -142,6 +142,8 @@ public:
 				return "Other";
 			case Type::Internal:
 				return "Internal";
+			case Type::Ethernet:
+				return "Ethernet";
 			case Type::Invalid:
 			default:
 				return "Invalid Type";
@@ -187,6 +189,21 @@ public:
 			case NetID::Invalid:
 			case NetID::Any:
 				return Type::Invalid;
+			case NetID::Ethernet:
+			case NetID::Ethernet_DAQ:
+			case NetID::OP_Ethernet1:
+			case NetID::OP_Ethernet2:
+			case NetID::OP_Ethernet3:
+			case NetID::OP_Ethernet4:
+			case NetID::OP_Ethernet5:
+			case NetID::OP_Ethernet6:
+			case NetID::OP_Ethernet7:
+			case NetID::OP_Ethernet8:
+			case NetID::OP_Ethernet9:
+			case NetID::OP_Ethernet10:
+			case NetID::OP_Ethernet11:
+			case NetID::OP_Ethernet12:
+				return Type::Ethernet;
 			default:
 				return Type::Other;
 		}

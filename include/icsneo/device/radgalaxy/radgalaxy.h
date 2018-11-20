@@ -47,17 +47,16 @@ public:
 		return found;
 	}
 
-protected:
-	void setupPacketizer(Packetizer* packetizer) override {
-		packetizer->disableChecksum = true;
-		packetizer->align16bit = false;
-	}
-
-private:
 	RADGalaxy(neodevice_t neodevice) : Device(neodevice) {
 		initialize<PCAP>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
+	}
+
+protected:
+	void setupPacketizer(Packetizer* packetizer) override {
+		packetizer->disableChecksum = true;
+		packetizer->align16bit = false;
 	}
 };
 

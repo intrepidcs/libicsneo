@@ -1,26 +1,30 @@
-Hardware
-=========
+# Hardware Support
 
-Ethernet devices
-	neoVI FIRE 2
-		CAN 2.0 works
-	RADGalaxy
-		CAN 2.0 works
+- Ethernet devices
+	- neoVI FIRE 2
+		- CAN works
+		- CAN FD works
+	- RADGalaxy
+		- CAN works
 
-STM32 devices
-	ValueCAN 4
-		CAN 2.0 works
-	neoOBD2 PRO
-		CAN 2.0 works
-	neoOBD2-SIM
-		Connects
+- STM32 devices
+	- ValueCAN 4
+		- CAN works
+		- CAN FD works
+	- neoOBD2 PRO
+		- CAN works
 
-FTDI devices
-	neoVI FIRE
-		HSCAN works
-	neoVI FIRE 2
-		CAN 2.0 works
-	ValueCAN 3
-		CAN works
-	RADStar 2
-		CAN works
+- FTDI devices
+	- neoVI FIRE
+		- CAN works
+	- neoVI FIRE 2
+		- CAN works
+		- CAN FD works
+	- ValueCAN 3
+		- CAN works
+	- RADStar 2
+		- CAN works
+	- neoVI PLASMA
+		- CAN works
+	- neoVI ION
+		- CAN works

@@ -97,10 +97,18 @@ bool FTDI::close() {
 	if(writeThread.joinable())
 		writeThread.join();
 
-	if(ftdiDevice.close())
-		return false;
+	closing = false;
 
-	return true;
+	bool ret = true;
+	if(ftdiDevice.close())
+		ret = false;
+
+	uint8_t flush;
+	WriteOperation flushop;
+	while(readQueue.try_dequeue(flush)) {}
+	while(writeQueue.try_dequeue(flushop)) {}
+
+	return ret;
 }
 
 void FTDI::readTask() {

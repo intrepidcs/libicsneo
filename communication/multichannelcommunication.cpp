@@ -12,8 +12,10 @@ void MultiChannelCommunication::spawnThreads() {
 }
 
 void MultiChannelCommunication::joinThreads() {
+	closing = true;
 	if(mainChannelReadThread.joinable())
 		mainChannelReadThread.join();
+	closing = false;
 }
 
 bool MultiChannelCommunication::sendPacket(std::vector<uint8_t>& bytes) {

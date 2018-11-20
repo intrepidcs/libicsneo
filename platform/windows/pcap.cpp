@@ -228,9 +228,15 @@ bool PCAP::close() {
 	closing = true; // Signal the threads that we are closing
 	readThread.join();
 	writeThread.join();
+	closing = false;
 
 	pcap.close(interface.fp);
 	interface.fp = nullptr;
+
+	uint8_t flush;
+	WriteOperation flushop;
+	while(readQueue.try_dequeue(flush)) {}
+	while(writeQueue.try_dequeue(flushop)) {}
 
 	return true;
 }
