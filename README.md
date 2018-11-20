@@ -1,11 +1,9 @@
 # libicsneo
----
-### Intrepid Control Systems Open Cross-Platform Device Communication API
+### The Intrepid Control Systems Open Cross-Platform Device Communication API
 
-An open source solution for communicating with Intrepid Control Systems devices.
+An open source solution to integrate Intrepid Control Systems vehicle networking hardware with your application.
 
 ## Getting Started
----
 There are two major ways to write a new application using libicsneo. You can use the C++ interface, which will be compiled with your project and statically linked, or you can use the C interface, which can be either statically or dynamically linked.
 ### Integration with CMake (Static Linking)
 Integrating the library with your current CMake project is extremely easy.
@@ -26,7 +24,6 @@ It is also possible to use the precompiled binaries with runtime linking. It is 
 5. Call `icsneo_close();` to unload the library.
 
 ## Usage
----
 ### Using the C++ API
 The C++ API is designed to be modern and easy to use. All library functions and classes are in the namespace `icsneo`. Most applications will start by calling `icsneo::FindAllDevices()`. This will return an `std::vector` of `std::shared_ptr<icsneo::Device>` objects. You will want to keep a copy of the `shared_ptr` to any devices you want to use, as allowing it to go out of scope will automatically close the device and free all memory associated with it.
 
@@ -107,7 +104,6 @@ icsneo_closeDevice(myDevice);
 ```
 
 ## Building from Source
----
 ### Windows
 Building will require Microsoft Visual Studio 2017 and CMake to be installed.
 ### macOS
