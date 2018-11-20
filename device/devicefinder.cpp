@@ -3,6 +3,7 @@
 
 using namespace icsneo;
 
+static bool supportedDevicesCached = false;
 static std::vector<DeviceType> supportedDevices = {
 
 	#ifdef __NEOOBD2PRO_H_
@@ -156,5 +157,9 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 }
 
 const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
+	if(!supportedDevicesCached) {
+		supportedDevices.erase(std::unique(supportedDevices.begin(), supportedDevices.end()), supportedDevices.end());
+		supportedDevicesCached = true;
+	}
 	return supportedDevices;
 }

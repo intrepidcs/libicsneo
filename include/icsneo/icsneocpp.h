@@ -11,6 +11,7 @@
 namespace icsneo {
 
 std::vector<std::shared_ptr<Device>> FindAllDevices();
+std::vector<DeviceType> GetSupportedDevices();
 
 size_t ErrorCount(ErrorFilter filter = ErrorFilter());
 std::vector<APIError> GetErrors(ErrorFilter filter, size_t max = 0);

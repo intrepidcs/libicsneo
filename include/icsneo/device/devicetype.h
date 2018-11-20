@@ -135,7 +135,7 @@ public:
 			case VividCAN:
 				return "VividCAN";
 			case OBD2_SIM:
-				return "neoOBD2-SIM";
+				return "neoOBD2 SIM";
 			case DONT_REUSE0:
 			case DONT_REUSE1:
 			case DONT_REUSE2:

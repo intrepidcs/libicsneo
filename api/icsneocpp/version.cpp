@@ -13,3 +13,14 @@ neoversion_t icsneo::GetVersion(void) {
 	version.buildTag = GIT_DESCRIBE;
 	return version;
 }
+
+std::ostream& operator<<(std::ostream& os, const neoversion_t& version) {
+	os << 'v' << version.major << '.' << version.minor << '.' << version.patch;
+	if(version.metadata[0] != '\0')
+		os << '+' << version.metadata;
+	if(std::string(version.buildBranch) != "master")
+		os << ' ' << version.buildBranch << " @";
+	if(version.buildTag[0] != 'v')
+		os << ' ' << version.buildTag;
+	return os;
+}

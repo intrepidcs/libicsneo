@@ -84,6 +84,7 @@ execute_process(
 	COMMAND git describe --abbrev=6 --dirty --always --tags
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	OUTPUT_VARIABLE GIT_DESCRIBE
+	ERROR_VARIABLE GIT_DESCRIBE
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 configure_file(api/icsneocpp/buildinfo.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated/buildinfo.h)

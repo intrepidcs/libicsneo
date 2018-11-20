@@ -7,6 +7,10 @@ std::vector<std::shared_ptr<Device>> icsneo::FindAllDevices() {
 	return DeviceFinder::FindAll();
 }
 
+std::vector<DeviceType> icsneo::GetSupportedDevices() {
+	return DeviceFinder::GetSupportedDevices();
+}
+
 size_t icsneo::ErrorCount(ErrorFilter filter) {
 	return ErrorManager::GetInstance().count(filter);
 }
