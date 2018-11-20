@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 include(GNUInstallDirs)
 
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # macOS Homebrew Boost Fix
 if(NOT MSVC)
 	include_directories(AFTER /usr/local/include)
@@ -36,10 +38,11 @@ endif(WIN32)
 
 # doxygen
 find_package(Doxygen)
-if (DOXYGEN_FOUND)
+if(DOXYGEN_FOUND)
 	set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/generated/Doxyfile)
+	set(ICSNEO_DOCS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs)
 
-	configure_file(api/icsneocpp/Doxyfile.template ${DOXYGEN_OUT} @ONLY)
+	configure_file(${ICSNEO_DOCS_DIR}/Doxyfile.template ${DOXYGEN_OUT} @ONLY)
 	message("Doxygen build started")
 	
 	add_custom_target(libicsneo_doxygen ALL
@@ -48,6 +51,34 @@ if (DOXYGEN_FOUND)
 		COMMENT "Generating API documentation with Doxygen"
 		VERBATIM
 		DEPENDS icsneocpp icsneoc icsneolegacy)
+
+	# sphinx
+	find_package(Sphinx)
+	if(SPHINX_EXECUTABLE)
+		# configured documentation tools and intermediate build results
+		set(SPHINX_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/_build)
+
+		# Sphinx cache with pickled ReST documents
+		set(SPHINX_CACHE_DIR ${CMAKE_CURRENT_BINARY_DIR}/_doctrees)
+
+		# HTML output directory
+		set(SPHINX_HTML_DIR ${CMAKE_CURRENT_BINARY_DIR}/doc_sphinx)
+
+		configure_file(
+			"${ICSNEO_DOCS_DIR}/conf.py.template"
+			"${SPHINX_BUILD_DIR}/conf.py"
+			@ONLY)
+
+		add_custom_target(libicsneo_sphinx ALL
+			${SPHINX_EXECUTABLE}
+				-q -b html
+				-c "${SPHINX_BUILD_DIR}"
+				-d "${SPHINX_CACHE_DIR}"
+				"${ICSNEO_DOCS_DIR}"
+				"${SPHINX_HTML_DIR}"
+			COMMENT "Building HTML documentation with Sphinx"
+			DEPENDS icsneocpp icsneoc icsneolegacy libicsneo_doxygen)
+	endif()
 endif()
 
 if(WIN32)

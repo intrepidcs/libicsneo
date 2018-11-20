@@ -120,7 +120,7 @@ typedef struct {
 	uint16_t netid;
 	uint8_t type;
 	uint8_t dlcOnWire;
-	char reserved[16];
+	uint8_t reserved[16];
 } neomessage_can_t;
 
 #pragma pack(pop)
