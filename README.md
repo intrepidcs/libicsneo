@@ -3,6 +3,8 @@
 
 An open source solution to integrate Intrepid Control Systems vehicle networking hardware with your application.
 
+[Read the Full Documentation](https://libicsneo.readthedocs.io/)
+
 ## Getting Started
 There are two major ways to write a new application using libicsneo. You can use the C++ interface, which will be compiled with your project and statically linked, or you can use the C interface, which can be either statically or dynamically linked.
 ### Integration with CMake (Static Linking)
