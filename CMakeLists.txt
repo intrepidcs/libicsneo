@@ -39,11 +39,10 @@ endif(WIN32)
 # doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
-	set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/generated/Doxyfile)
+	set(DOXYGEN_OUT ${CMAKE_CURRENT_SOURCE_DIR}/generated/Doxyfile)
 	set(ICSNEO_DOCS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs)
 
-	configure_file(${ICSNEO_DOCS_DIR}/Doxyfile.template ${DOXYGEN_OUT} @ONLY)
-	message("Doxygen build started")
+	message("Will build Doxygen based documentation")
 	
 	add_custom_target(libicsneo_doxygen ALL
 		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
@@ -55,6 +54,10 @@ if(DOXYGEN_FOUND)
 	# sphinx
 	find_package(Sphinx)
 	if(SPHINX_EXECUTABLE)
+		message("Will build Sphinx based documentation")
+
+		set(SPHINX_OUT ${ICSNEO_DOCS_DIR}/build/sphinx)
+
 		# configured documentation tools and intermediate build results
 		set(SPHINX_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/_build)
 
@@ -66,18 +69,18 @@ if(DOXYGEN_FOUND)
 
 		configure_file(
 			"${ICSNEO_DOCS_DIR}/conf.py.template"
-			"${SPHINX_BUILD_DIR}/conf.py"
+			"${ICSNEO_DOCS_DIR}/conf.py"
 			@ONLY)
 
 		add_custom_target(libicsneo_sphinx ALL
 			${SPHINX_EXECUTABLE}
 				-q -b html
-				-c "${SPHINX_BUILD_DIR}"
+				-c "${ICSNEO_DOCS_DIR}"
 				-d "${SPHINX_CACHE_DIR}"
 				"${ICSNEO_DOCS_DIR}"
 				"${SPHINX_HTML_DIR}"
 			COMMENT "Building HTML documentation with Sphinx"
-			DEPENDS icsneocpp icsneoc icsneolegacy libicsneo_doxygen)
+			DEPENDS icsneocpp icsneoc icsneolegacy)
 	endif()
 endif()
 
