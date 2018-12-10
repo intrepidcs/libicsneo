@@ -101,15 +101,20 @@ std::vector<neodevice_t> VCP::FindByProduct(int product, std::vector<std::wstrin
 			}
 
 			bool alreadyFound = false;
+			neodevice_t* shouldReplace = nullptr;
 			for(auto& foundDev : found) {
-				if(foundDev.handle == device.handle && serial == foundDev.serial) {
+				if((foundDev.handle == device.handle || foundDev.handle == 0 || device.handle == 0) && serial == foundDev.serial) {
 					alreadyFound = true;
+					if(foundDev.handle == 0)
+						shouldReplace = &foundDev;
 					break;
 				}
 			}
 
 			if(!alreadyFound)
 				found.push_back(device);
+			else if(shouldReplace != nullptr)
+				*shouldReplace = device;
 		}
 	}
 
