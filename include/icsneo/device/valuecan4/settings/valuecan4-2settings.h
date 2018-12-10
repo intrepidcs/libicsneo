@@ -10,7 +10,7 @@ namespace icsneo {
 class ValueCAN4_2Settings : public ValueCAN4_1_2Settings {
 public:
 	ValueCAN4_2Settings(std::shared_ptr<Communication> com) : ValueCAN4_1_2Settings(com) {}
-	CAN_SETTINGS* getCANSettingsFor(Network net) override {
+	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<valuecan4_1_2_settings_t>();
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:
@@ -21,7 +21,7 @@ public:
 				return nullptr;
 		}
 	}
-	CANFD_SETTINGS* getCANFDSettingsFor(Network net) override {
+	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<valuecan4_1_2_settings_t>();
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:

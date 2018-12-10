@@ -358,6 +358,17 @@ extern bool DLLExport icsneo_settingsApplyDefaults(const neodevice_t* device);
 extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device);
 
 /**
+ * \brief Get the network baudrate for a specified device.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] netid The network for which the baudrate should be retrieved.
+ * \returns The value in baud with no multipliers. (i.e. 500k becomes 500000) A negative value is returned if an error occurs.
+ * 
+ * In the case of CAN, this function gets the standard CAN baudrate.
+ * See icsneo_getFDBaudrate() to get the baudrate for (the baudrate-switched portion of) CAN FD.
+ */
+extern int64_t DLLExport icsneo_getBaudrate(const neodevice_t* device, uint16_t netid);
+
+/**
  * \brief Set the network baudrate for a specified device.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \param[in] netid The network to which the new baudrate should apply.
@@ -369,7 +380,17 @@ extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* d
  * 
  * Call icsneo_settingsApply() or similar to make the changes active on the device.
  */
-extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
+extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
+
+/**
+ * \brief Get the CAN FD baudrate for a specified device.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] netid The network for which the baudrate should be retrieved.
+ * \returns The value in baud with no multipliers. (i.e. 500k becomes 500000) A negative value is returned if an error occurs.
+ * 
+ * See icsneo_getBaudrate() to get the baudrate for the non baudrate-switched portion of CAN FD, classical CAN 2.0, and other network types.
+ */
+extern int64_t DLLExport icsneo_getFDBaudrate(const neodevice_t* device, uint16_t netid);
 
 /**
  * \brief Set the CAN FD baudrate for a specified device.
@@ -378,9 +399,11 @@ extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t net
  * \param[in] newBaudrate The requested baudrate, with no multipliers. (i.e. 2Mbaud CAN FD should be represented as 2000000)
  * \returns True if the baudrate could be set.
  * 
+ * See icsneo_setBaudrate() to set the baudrate for the non baudrate-switched portion of CAN FD, classical CAN 2.0, and other network types.
+ * 
  * Call icsneo_settingsApply() or similar to make the changes active on the device.
  */
-extern bool DLLExport icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
+extern bool DLLExport icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
 
 /**
  * \brief Transmit a single message.
@@ -626,10 +649,16 @@ fn_icsneo_settingsApplyDefaults icsneo_settingsApplyDefaults;
 typedef bool(*fn_icsneo_settingsApplyDefaultsTemporary)(const neodevice_t* device);
 fn_icsneo_settingsApplyDefaultsTemporary icsneo_settingsApplyDefaultsTemporary;
 
-typedef bool(*fn_icsneo_setBaudrate)(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
+typedef int64_t(*fn_icsneo_getBaudrate)(const neodevice_t* device, uint16_t netid);
+fn_icsneo_getBaudrate icsneo_getBaudrate;
+
+typedef bool(*fn_icsneo_setBaudrate)(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
 fn_icsneo_setBaudrate icsneo_setBaudrate;
 
-typedef bool(*fn_icsneo_setFDBaudrate)(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate);
+typedef int64_t(*fn_icsneo_getFDBaudrate)(const neodevice_t* device, uint16_t netid);
+fn_icsneo_getFDBaudrate icsneo_getFDBaudrate;
+
+typedef bool(*fn_icsneo_setFDBaudrate)(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
 fn_icsneo_setFDBaudrate icsneo_setFDBaudrate;
 
 typedef bool(*fn_icsneo_transmit)(const neodevice_t* device, const neomessage_t* message);
@@ -700,7 +729,9 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyTemporary);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyDefaults);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyDefaultsTemporary);
+	ICSNEO_IMPORTASSERT(icsneo_getBaudrate);
 	ICSNEO_IMPORTASSERT(icsneo_setBaudrate);
+	ICSNEO_IMPORTASSERT(icsneo_getFDBaudrate);
 	ICSNEO_IMPORTASSERT(icsneo_setFDBaudrate);
 	ICSNEO_IMPORTASSERT(icsneo_transmit);
 	ICSNEO_IMPORTASSERT(icsneo_transmitMessages);

@@ -338,7 +338,16 @@ bool icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device) {
 	return device->device->settings->applyDefaults(true);
 }
 
-bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate) {
+int64_t icsneo_getBaudrate(const neodevice_t* device, uint16_t netid) {
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return -1;
+	}
+
+	return device->device->settings->getBaudrateFor(netid);
+}
+
+bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate) {
 	if(!icsneo_isValidNeoDevice(device)) {
 		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;
@@ -347,7 +356,16 @@ bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newB
 	return device->device->settings->setBaudrateFor(netid, newBaudrate);
 }
 
-bool icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, uint32_t newBaudrate) {
+int64_t icsneo_getFDBaudrate(const neodevice_t* device, uint16_t netid) {
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return -1;
+	}
+
+	return device->device->settings->getFDBaudrateFor(netid);
+}
+
+bool icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate) {
 	if(!icsneo_isValidNeoDevice(device)) {
 		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 		return false;

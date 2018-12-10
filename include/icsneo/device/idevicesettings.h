@@ -13,7 +13,7 @@ enum
 };
 
 /* Baudrate in CAN_SETTINGS/CANFD_SETTINGS */
-enum
+enum CANBaudrate
 {
 	BPS20,
 	BPS33,
@@ -282,6 +282,8 @@ class IDeviceSettings {
 public:
 	static constexpr uint16_t GS_VERSION = 5;
 	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
+	static CANBaudrate GetEnumValueForBaudrate(int64_t baudrate);
+	static int64_t GetBaudrateValueForEnum(CANBaudrate enumValue);
 
 	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), err(com->err), structSize(size) {}
 	virtual ~IDeviceSettings() {}
@@ -293,18 +295,28 @@ public:
 	bool apply(bool temporary = false);
 	bool applyDefaults(bool temporary = false);
 
-	virtual bool setBaudrateFor(Network net, uint32_t baudrate);
-	virtual bool setFDBaudrateFor(Network net, uint32_t baudrate);
+	virtual int64_t getBaudrateFor(Network net) const;
+	virtual bool setBaudrateFor(Network net, int64_t baudrate);
 
-	virtual CAN_SETTINGS* getCANSettingsFor(Network net) { (void)net; return nullptr; }
-	virtual CANFD_SETTINGS* getCANFDSettingsFor(Network net) { (void)net; return nullptr; }
+	virtual int64_t getFDBaudrateFor(Network net) const;
+	virtual bool setFDBaudrateFor(Network net, int64_t baudrate);
 
+	virtual const CAN_SETTINGS* getCANSettingsFor(Network net) const { (void)net; return nullptr; }
+	CAN_SETTINGS* getCANSettingsFor(Network net) {
+		return const_cast<CAN_SETTINGS*>(static_cast<const IDeviceSettings*>(this)->getCANSettingsFor(net));
+	}
+
+	virtual const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const { (void)net; return nullptr; }
+	CANFD_SETTINGS* getCANFDSettingsFor(Network net) {
+		return const_cast<CANFD_SETTINGS*>(static_cast<const IDeviceSettings*>(this)->getCANFDSettingsFor(net));
+	}
+
+	const void* getRawStructurePointer() const { return settings.data(); }
 	void* getRawStructurePointer() { return settings.data(); }
-	template<typename T> T* getStructurePointer() { return static_cast<T*>((void*)settings.data()); }
-	template<typename T> T getStructureCopy() { return *getStructurePointer<T>(); }
+	template<typename T> const T* getStructurePointer() const { return static_cast<const T*>(getRawStructurePointer()); }
+	template<typename T> T* getStructurePointer() { return static_cast<T*>(getRawStructurePointer()); }
+	template<typename T> T getStructureCopy() const { return *getStructurePointer<T>(); }
 	template<typename T> bool setStructure(const T& newStructure);
-
-	uint8_t getEnumValueForBaudrate(uint32_t baudrate);
 
 	bool disabled = false;
 	bool readonly = false;

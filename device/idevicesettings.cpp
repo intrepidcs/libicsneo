@@ -42,6 +42,92 @@ uint16_t IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settin
 	return gs_crc;
 }
 
+CANBaudrate IDeviceSettings::GetEnumValueForBaudrate(int64_t baudrate) {
+	switch(baudrate) {
+		case 20000:
+			return BPS20;
+		case 33000:
+			return BPS33;
+		case 50000:
+			return BPS50;
+		case 62000:
+			return BPS62;
+		case 83000:
+			return BPS83;
+		case 100000:
+			return BPS100;
+		case 125000:
+			return BPS125;
+		case 250000:
+			return BPS250;
+		case 500000:
+			return BPS500;
+		case 800000:
+			return BPS800;
+		case 1000000:
+			return BPS1000;
+		case 666000:
+			return BPS666;
+		case 2000000:
+			return BPS2000;
+		case 4000000:
+			return BPS4000;
+		case 5000000:
+			return CAN_BPS5000;
+		case 6667000:
+			return CAN_BPS6667;
+		case 8000000:
+			return CAN_BPS8000;
+		case 10000000:
+			return CAN_BPS10000;
+		default:
+			return (CANBaudrate)-1;
+	}
+}
+
+int64_t IDeviceSettings::GetBaudrateValueForEnum(CANBaudrate enumValue) {
+	switch(enumValue) {
+		case BPS20:
+			return 20000;
+		case BPS33:
+			return 33000;
+		case BPS50:
+			return 50000;
+		case BPS62:
+			return 62000;
+		case BPS83:
+			return 83000;
+		case BPS100:
+			return 100000;
+		case BPS125:
+			return 125000;
+		case BPS250:
+			return 250000;
+		case BPS500:
+			return 500000;
+		case BPS800:
+			return 800000;
+		case BPS1000:
+			return 1000000;
+		case BPS666:
+			return 666000;
+		case BPS2000:
+			return 2000000;
+		case BPS4000:
+			return 4000000;
+		case CAN_BPS5000:
+			return 5000000;
+		case CAN_BPS6667:
+			return 6667000;
+		case CAN_BPS8000:
+			return 8000000;
+		case CAN_BPS10000:
+			return 10000000;
+		default:
+			return -1;
+	}
+}
+
 bool IDeviceSettings::refresh(bool ignoreChecksum) {
 	if(disabled) {
 		err(APIError::SettingsNotAvailable);
@@ -186,7 +272,27 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	return (msg && msg->data[0] == 1); // Device sends 0x01 for success
 }
 
-bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
+int64_t IDeviceSettings::getBaudrateFor(Network net) const {
+	if(disabled)
+		return -1;
+
+	switch(net.getType()) {
+		case Network::Type::CAN: {
+			const CAN_SETTINGS* cfg = getCANSettingsFor(net);
+			if(cfg == nullptr)
+				return -1;
+				
+			int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->Baudrate);
+			if(baudrate == -1)
+				return -1;
+			return baudrate;
+		}
+		default:
+			return -1;
+	}
+}
+
+bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 	if(disabled || readonly)
 		return false;
 
@@ -199,10 +305,10 @@ bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
 			if(cfg == nullptr)
 				return false;
 				
-			uint8_t newBaud = getEnumValueForBaudrate(baudrate);
-			if(newBaud == 0xFF)
+			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
+			if(newBaud == (CANBaudrate)-1)
 				return false;
-			cfg->Baudrate = newBaud;
+			cfg->Baudrate = (uint8_t)newBaud;
 			cfg->auto_baud = false;
 			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
 			return true;
@@ -212,7 +318,27 @@ bool IDeviceSettings::setBaudrateFor(Network net, uint32_t baudrate) {
 	}
 }
 
-bool IDeviceSettings::setFDBaudrateFor(Network net, uint32_t baudrate) {
+int64_t IDeviceSettings::getFDBaudrateFor(Network net) const {
+	if(disabled)
+		return -1;
+
+	switch(net.getType()) {
+		case Network::Type::CAN: {
+			const CANFD_SETTINGS* cfg = getCANFDSettingsFor(net);
+			if(cfg == nullptr)
+				return -1;
+				
+			int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->FDBaudrate);
+			if(baudrate == -1)
+				return -1;
+			return baudrate;
+		}
+		default:
+			return -1;
+	}
+}
+
+bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
 	if(disabled || readonly)
 		return false;
 
@@ -222,10 +348,10 @@ bool IDeviceSettings::setFDBaudrateFor(Network net, uint32_t baudrate) {
 			if(cfg == nullptr)
 				return false;
 
-			uint8_t newBaud = getEnumValueForBaudrate(baudrate);
-			if(newBaud == 0xFF)
+			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
+			if(newBaud == (CANBaudrate)-1)
 				return false;
-			cfg->FDBaudrate = newBaud;
+			cfg->FDBaudrate = (uint8_t)newBaud;
 			return true;
 		}
 		default:
@@ -245,47 +371,4 @@ template<typename T> bool IDeviceSettings::setStructure(const T& newStructure) {
 	
 	memcpy(settings.data(), &newStructure, structSize);
 	return true;
-}
-
-uint8_t IDeviceSettings::getEnumValueForBaudrate(uint32_t baudrate) {
-	switch(baudrate) {
-		case 20000:
-			return BPS20;
-		case 33000:
-			return BPS33;
-		case 50000:
-			return BPS50;
-		case 62000:
-			return BPS62;
-		case 83000:
-			return BPS83;
-		case 100000:
-			return BPS100;
-		case 125000:
-			return BPS125;
-		case 250000:
-			return BPS250;
-		case 500000:
-			return BPS500;
-		case 800000:
-			return BPS800;
-		case 1000000:
-			return BPS1000;
-		case 666000:
-			return BPS666;
-		case 2000000:
-			return BPS2000;
-		case 4000000:
-			return BPS4000;
-		case 5000000:
-			return CAN_BPS5000;
-		case 6667000:
-			return CAN_BPS6667;
-		case 8000000:
-			return CAN_BPS8000;
-		case 10000000:
-			return CAN_BPS10000;
-		default:
-			return 0xFF;
-	}
 }

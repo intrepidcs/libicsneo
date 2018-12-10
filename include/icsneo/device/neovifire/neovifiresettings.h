@@ -100,7 +100,7 @@ typedef struct {
 class NeoVIFIRESettings : public IDeviceSettings {
 public:
 	NeoVIFIRESettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire_settings_t)) {}
-	CAN_SETTINGS* getCANSettingsFor(Network net) override {
+	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<neovifire_settings_t>();
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:

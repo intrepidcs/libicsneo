@@ -36,7 +36,7 @@ typedef struct {
 class ValueCAN3Settings : public IDeviceSettings {
 public:
 	ValueCAN3Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(valuecan3_settings_t)) {}
-	CAN_SETTINGS* getCANSettingsFor(Network net) override {
+	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<valuecan3_settings_t>();
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:
