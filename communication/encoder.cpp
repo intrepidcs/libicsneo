@@ -1,4 +1,7 @@
 #include "icsneo/communication/encoder.h"
+#include "icsneo/communication/message/ethernetmessage.h"
+#include "icsneo/communication/packet/ethernetpacket.h"
+#include "icsneo/communication/packet/canpacket.h"
 
 using namespace icsneo;
 
@@ -8,9 +11,18 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 	result.clear();
 
 	switch(message->network.getType()) {
-		case Network::Type::CAN: {
-			useResultAsBuffer = true;
+		case Network::Type::Ethernet: {
+			auto ethmsg = std::dynamic_pointer_cast<EthernetMessage>(message);
+			if(!ethmsg)
+				return false; // The message was not a properly formed EthernetMessage
 
+			useResultAsBuffer = true;
+			if(!HardwareEthernetPacket::EncodeFromMessage(*ethmsg, result))
+				return false;
+
+			break;
+		} // End of Network::Type::Ethernet
+		case Network::Type::CAN: {
 			auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
 			if(!canmsg)
 				return false; // The message was not a properly formed CANMessage
@@ -18,88 +30,10 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 			if(!supportCANFD && canmsg->isCANFD)
 				return false; // This device does not support CAN FD
 
-			if(canmsg->isCANFD && canmsg->isRemote)
-				return false; // RTR frames can not be used with CAN FD
+			useResultAsBuffer = true;
+			if(!HardwareCANPacket::EncodeFromMessage(*canmsg, result))
+				return false; // The CANMessage was malformed
 
-			const size_t dataSize = canmsg->data.size();
-			if(dataSize > 64 || (dataSize > 8 && !canmsg->isCANFD))
-				return false; // Too much data for the protocol
-
-			uint8_t lengthNibble = uint8_t(canmsg->data.size());
-			if(lengthNibble > 8) {
-				switch(lengthNibble) {
-					case 12:
-						lengthNibble = 0x9;
-						break;
-					case 16:
-						lengthNibble = 0xA;
-						break;
-					case 20:
-						lengthNibble = 0xB;
-						break;
-					case 24:
-						lengthNibble = 0xC;
-						break;
-					case 32:
-						lengthNibble = 0xD;
-						break;
-					case 48:
-						lengthNibble = 0xE;
-						break;
-					case 64:
-						lengthNibble = 0xF;
-						break;
-					default:
-						return false; // CAN FD frame may have had an incorrect byte count
-				}
-			}
-
-			// Pre-allocate as much memory as we will possibly need for speed
-			result.reserve(17 + dataSize);
-
-			result.push_back(0 /* byte count here later */ << 4 | (uint8_t(canmsg->network.getNetID()) & 0xF));
-			result.insert(result.end(), {0,0}); // Two bytes for Description ID, big endian, not used in API currently
-
-			// Next 2-4 bytes are ArbID
-			if(canmsg->isExtended) {
-				if(canmsg->arbid >= 0x20000000) // Extended messages use 29-bit arb IDs
-					return false;
-
-				result.insert(result.end(), {
-					(uint8_t)(canmsg->arbid >> 21),
-					(uint8_t)(((((canmsg->arbid & 0x001C0000) >> 13) & 0xFF) + (((canmsg->arbid & 0x00030000) >> 16) & 0xFF)) | 8),
-					(uint8_t)(canmsg->arbid >> 8),
-					(uint8_t)canmsg->arbid
-				});
-			} else {
-				if(canmsg->arbid >= 0x800) // Standard messages use 11-bit arb IDs
-					return false;
-
-				result.insert(result.end(), {
-					(uint8_t)(canmsg->arbid >> 3),
-					(uint8_t)((canmsg->arbid & 0x7) << 5)
-				});
-			}
-
-			// Status and DLC bits
-			if(canmsg->isCANFD) {
-				result.push_back(0x0F); // FD Frame
-				uint8_t fdStatusByte = lengthNibble;
-				if(canmsg->baudrateSwitch)
-					fdStatusByte |= 0x80; // BRS status bit
-				result.push_back(fdStatusByte);
-			} else {
-				// TODO Support high voltage wakeup, bitwise-or in 0x8 here to enable
-				uint8_t statusNibble = canmsg->isRemote ? 0x4 : 0x0;
-				result.push_back((statusNibble << 4) | lengthNibble);
-			}
-
-			// Now finally the payload
-			result.insert(result.end(), canmsg->data.begin(), canmsg->data.end());
-			result.push_back(0);
-
-			// Fill in the length byte from earlier
-			result[0] |= result.size() << 4;
 			break;
 		} // End of Network::Type::CAN
 		default:

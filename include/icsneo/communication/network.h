@@ -245,11 +245,11 @@ public:
 			case NetID::LIN:
 				return "LIN";
 			case NetID::OP_Ethernet1:
-				return "Ethernet 1";
+				return "OP (BR) Ethernet 1";
 			case NetID::OP_Ethernet2:
-				return "Ethernet 2";
+				return "OP (BR) Ethernet 2";
 			case NetID::OP_Ethernet3:
-				return "Ethernet 3";
+				return "OP (BR) Ethernet 3";
 			case NetID::RED_EXT_MEMORYREAD:
 				return "RED_EXT_MEMORYREAD";
 			case NetID::RED_INT_MEMORYREAD:
@@ -299,9 +299,9 @@ public:
 			case NetID::HSCAN3:
 				return "HSCAN 3";
 			case NetID::OP_Ethernet4:
-				return "Ethernet 4";
+				return "OP (BR) Ethernet 4";
 			case NetID::OP_Ethernet5:
-				return "Ethernet 5";
+				return "OP (BR) Ethernet 5";
 			case NetID::ISO4:
 				return "ISO 4";
 			case NetID::LIN2:
@@ -351,19 +351,19 @@ public:
 			case NetID::TextAPI_To_Host:
 				return "TextAPI To Host";
 			case NetID::OP_Ethernet6:
-				return "Ethernet 6";
+				return "OP (BR) Ethernet 6";
 			case NetID::Red_VBat:
 				return "Red VBat";
 			case NetID::OP_Ethernet7:
-				return "Ethernet 7";
+				return "OP (BR) Ethernet 7";
 			case NetID::OP_Ethernet8:
-				return "Ethernet 8";
+				return "OP (BR) Ethernet 8";
 			case NetID::OP_Ethernet9:
-				return "Ethernet 9";
+				return "OP (BR) Ethernet 9";
 			case NetID::OP_Ethernet10:
-				return "Ethernet 10";
+				return "OP (BR) Ethernet 10";
 			case NetID::OP_Ethernet11:
-				return "Ethernet 11";
+				return "OP (BR) Ethernet 11";
 			case NetID::FlexRay1a:
 				return "FlexRay 1a";
 			case NetID::FlexRay1b:
@@ -379,7 +379,7 @@ public:
 			case NetID::FlexRay2:
 				return "FlexRay 2";
 			case NetID::OP_Ethernet12:
-				return "Ethernet 12";
+				return "OP (BR) Ethernet 12";
 			case NetID::MOST25:
 				return "MOST25";
 			case NetID::MOST50:

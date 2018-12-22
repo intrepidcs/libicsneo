@@ -8,6 +8,9 @@
 #include "icsneo/api/version.h"
 #include "icsneo/api/errormanager.h"
 
+#include "icsneo/communication/message/canmessage.h"
+#include "icsneo/communication/message/ethernetmessage.h"
+
 namespace icsneo {
 
 std::vector<std::shared_ptr<Device>> FindAllDevices();

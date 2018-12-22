@@ -5,6 +5,8 @@
 #include "icsneo/communication/message/readsettingsmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
+#include "icsneo/communication/packet/canpacket.h"
+#include "icsneo/communication/packet/ethernetpacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -18,82 +20,28 @@ uint64_t Decoder::GetUInt64FromLEBytes(uint8_t* bytes) {
 
 bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet) {
 	switch(packet->network.getType()) {
+		case Network::Type::Ethernet:
+			result = HardwareEthernetPacket::DecodeToMessage(packet->data);
+			if(!result)
+				return false; // A nullptr was returned, the packet was not long enough to decode
+
+			// Timestamps are in (multiplier) ns increments since 1/1/2007 GMT 00:00:00.0000
+			// The resolution (multiplier) depends on the device
+			result->timestamp *= timestampMultiplier;
+			result->network = packet->network;
+			return true;
 		case Network::Type::CAN: {
 			if(packet->data.size() < 24)
 				return false;
 
-			HardwareCANPacket* data = (HardwareCANPacket*)packet->data.data();
-			auto msg = std::make_shared<CANMessage>();
-			msg->network = packet->network;
+			result = HardwareCANPacket::DecodeToMessage(packet->data);
+			if(!result)
+				return false; // A nullptr was returned, the packet was malformed
 
-			// Timestamp calculation
-			msg->timestamp = data->timestamp.TS * 25; // Timestamps are in 25ns increments since 1/1/2007 GMT 00:00:00.0000
-
-			// Arb ID
-			if(data->header.IDE) { // Extended 29-bit ID
-				msg->arbid = (data->header.SID & 0x7ff) << 18;
-				msg->arbid |= (data->eid.EID & 0xfff) << 6;
-				msg->arbid |= (data->dlc.EID2 & 0x3f);
-				msg->isExtended = true;
-			} else { // Standard 11-bit ID
-				msg->arbid = data->header.SID;
-			}
-
-			// DLC
-			uint8_t length = data->dlc.DLC;
-			msg->dlcOnWire = length; // This will hold the real DLC on wire 0x0 - 0xF
-			if(data->header.EDL && data->timestamp.IsExtended) { // CAN FD
-				msg->isCANFD = true;
-				msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
-				if(length > 8) {
-					switch(length) { // CAN FD Length Decoding
-						case 0x9:
-							length = 12;
-							break;
-						case 0xa:
-							length = 16;
-							break;
-						case 0xb:
-							length = 20;
-							break;
-						case 0xc:
-							length = 24;
-							break;
-						case 0xd:
-							length = 32;
-							break;
-						case 0xe:
-							length = 48;
-							break;
-						case 0xf:
-							length = 64;
-							break;
-						default:
-							return false;
-					}
-				}
-			} else if(length > 8) { // This is a standard CAN frame with a length of more than 8
-				// Yes, this is possible. On the wire, the length field is a nibble, and we do want to return an accurate value
-				// We don't want to overread our buffer, though, so make sure we cap the length
-				length = 8;
-			}
-			
-			// Data
-			// The first 8 bytes are always in the standard place
-			if((data->dlc.RTR && data->header.IDE) || (!data->header.IDE && data->header.SRR)) { // Remote Request Frame
-				msg->data.resize(length); // This data will be all zeros, but the length will be set
-				msg->isRemote = true;
-			} else {
-				msg->data.reserve(length);
-				msg->data.insert(msg->data.end(), data->data, data->data + (length > 8 ? 8 : length));
-				if(length > 8) { // If there are more than 8 bytes, they come at the end of the message
-					// Messages with extra data are formatted as message, then uint16_t netid, then uint16_t length, then extra data
-					uint8_t* extraDataStart = packet->data.data() + sizeof(HardwareCANPacket) + 2 + 2;
-					msg->data.insert(msg->data.end(), extraDataStart, extraDataStart + (length - 8));
-				}
-			}
-
-			result = msg;
+			// Timestamps are in (multiplier) ns increments since 1/1/2007 GMT 00:00:00.0000
+			// The resolution (multiplier) depends on the device
+			result->timestamp *= timestampMultiplier; 
+			result->network = packet->network;
 			return true;
 		}
 		case Network::Type::Internal: {

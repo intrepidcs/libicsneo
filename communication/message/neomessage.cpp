@@ -1,5 +1,6 @@
 #include "icsneo/communication/message/neomessage.h"
 #include "icsneo/communication/message/canmessage.h"
+#include "icsneo/communication/message/ethernetmessage.h"
 
 using namespace icsneo;
 
@@ -13,6 +14,8 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 	neomsg.length = message->data.size();
 	neomsg.data = message->data.data();
 	neomsg.timestamp = message->timestamp;
+	neomsg.status.globalError = message->error;
+	neomsg.status.transmitMessage = message->transmitted;
 
 	switch(type) {
 		case Network::Type::CAN: {
@@ -25,6 +28,17 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 			can.status.canfdRTR = canmsg->isRemote;
 			can.status.canfdFDF = canmsg->isCANFD;
 			can.status.canfdBRS = canmsg->baudrateSwitch;
+			break;
+		}
+		case Network::Type::Ethernet: {
+			neomessage_eth_t& eth = *(neomessage_eth_t*)&neomsg;
+			auto ethmsg = std::static_pointer_cast<EthernetMessage>(message);
+			eth.preemptionFlags = ethmsg->preemptionFlags;
+			eth.status.incompleteFrame = ethmsg->frameTooShort;
+			// TODO Fill in extra status bits
+			//eth.status.xyz = ethmsg->preemptionEnabled;
+			//eth.status.xyz = ethmsg->fcsAvailable;
+			//eth.status.xyz = ethmsg->noPadding;
 			break;
 		}
 		default:

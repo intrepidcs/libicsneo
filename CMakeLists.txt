@@ -94,6 +94,8 @@ endif()
 
 set(COMMON_SRC
 	communication/message/neomessage.cpp
+	communication/packet/canpacket.cpp
+	communication/packet/ethernetpacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
 	communication/packetizer.cpp

@@ -102,18 +102,20 @@ typedef union {
 typedef struct {
 	neomessage_statusbitfield_t status;
 	uint64_t timestamp;
+	uint64_t timestampReserved;
 	const uint8_t* data;
 	size_t length;
 	uint8_t header[4];
 	uint16_t netid;
 	uint8_t type;
 	uint8_t reserved[17];
-} neomessage_t; // 64 bytes total
+} neomessage_t; // 72 bytes total
 // Any time you add another neomessage_*_t type, make sure to add it to the static_asserts below!
 
 typedef struct {
 	neomessage_statusbitfield_t status;
 	uint64_t timestamp;
+	uint64_t timestampReserved;
 	const uint8_t* data;
 	size_t length;
 	uint32_t arbid;
@@ -123,13 +125,28 @@ typedef struct {
 	uint8_t reserved[16];
 } neomessage_can_t;
 
+typedef struct {
+	neomessage_statusbitfield_t status;
+	uint64_t timestamp;
+	uint64_t timestampReserved;
+	const uint8_t* data;
+	size_t length;
+	uint8_t preemptionFlags;
+	uint8_t reservedHeader[3];
+	uint16_t netid;
+	uint8_t type;
+	uint8_t reserved[17];
+} neomessage_eth_t;
+
 #pragma pack(pop)
 
 #ifdef __cplusplus
 #include "icsneo/communication/message/message.h"
 #include <memory>
 
-static_assert(sizeof(neomessage_can_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size!");
+static_assert(sizeof(neomessage_t) == 72, "neomessage_t may not change size from 72 bytes!");
+static_assert(sizeof(neomessage_can_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size! (CAN is not)");
+static_assert(sizeof(neomessage_eth_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size! (Ethernet is not)");
 
 namespace icsneo {
 
