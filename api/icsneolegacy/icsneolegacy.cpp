@@ -326,8 +326,11 @@ int icsneoGetDLLVersion(void) {
 }
 
 int icsneoGetSerialNumber(void* hObject, unsigned int*iSerialNumber) {
-	// TODO Implement
+	if(!icsneoValidateHObject(hObject))
 	return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	*iSerialNumber = icsneo_serialStringToNum(device->serial);
+	return true;
 }
 
 int icsneoStartSockServer(void* hObject, int iPort) {
