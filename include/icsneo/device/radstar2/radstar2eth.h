@@ -44,7 +44,7 @@ public:
 	}
 
 	RADStar2ETH(neodevice_t neodevice) : RADStar2(neodevice) {
-		initialize<PCAP>();
+		initialize<PCAP, RADStar2Settings>();
 	}
 };
 

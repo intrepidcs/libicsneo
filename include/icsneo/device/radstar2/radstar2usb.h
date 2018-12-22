@@ -20,7 +20,7 @@ public:
 
 private:
 	RADStar2USB(neodevice_t neodevice) : RADStar2(neodevice) {
-		initialize<FTDI>();
+		initialize<FTDI, RADStar2Settings>();
 	}
 };
 

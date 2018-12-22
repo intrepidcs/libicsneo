@@ -96,6 +96,55 @@ typedef struct ETHERNET_SETTINGS_t
 } ETHERNET_SETTINGS;
 #define ETHERNET_SETTINGS_SIZE 8
 
+typedef struct OP_ETH_GENERAL_SETTINGS_t
+{
+	uint8_t ucInterfaceType;
+	uint8_t reserved0[3];
+	uint16_t tapPair0;
+	uint16_t tapPair1;
+	uint16_t tapPair2;
+	uint16_t tapPair3;
+	uint16_t tapPair4;
+	uint16_t tapPair5;
+	union {
+		struct
+		{
+			unsigned bTapEnSwitch : 1;
+			unsigned bTapEnPtp : 1;
+			unsigned bEnReportLinkQuality : 1;
+		} flags;
+		unsigned uFlags;
+	};
+} OP_ETH_GENERAL_SETTINGS;
+#define OP_ETH_GENERAL_SETTINGS_SIZE 20
+static_assert(sizeof(OP_ETH_GENERAL_SETTINGS) == OP_ETH_GENERAL_SETTINGS_SIZE, "OP_ETH_GENERAL_SETTINGS is the wrong size!");
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
+typedef struct OP_ETH_SETTINGS_t
+{
+	uint8_t ucConfigMode;
+	unsigned char preemption_en;
+	union {
+		struct {
+			// Reuse the mac_addr for switch mode if required!
+			unsigned char mac_addr1[6];// Original Addr for spoofing
+			unsigned char mac_addr2[6];// Target Addr for spoofing
+			unsigned short mac_spoofing_en : 1;
+			unsigned short mac_spoofing_isDstOrSrc : 1;
+			unsigned short reserved : 14;
+		};
+		unsigned char reserved0[14];
+	};
+} OP_ETH_SETTINGS;
+#define OP_ETH_SETTINGS_SIZE 16
+static_assert(sizeof(OP_ETH_SETTINGS) == OP_ETH_SETTINGS_SIZE, "OP_ETH_SETTINGS is the wrong size!");
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
 typedef struct
 {
 	uint8_t MasterEnable;
@@ -332,6 +381,7 @@ public:
 
 	bool disabled = false;
 	bool readonly = false;
+	bool disableGSChecksumming = false;
 protected:
 	std::shared_ptr<Communication> com;
 	device_errorhandler_t err;

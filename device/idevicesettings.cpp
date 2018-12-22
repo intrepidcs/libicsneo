@@ -134,6 +134,9 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 		return false;
 	}
 
+	if(disableGSChecksumming)
+		ignoreChecksum = true;
+
 	std::vector<uint8_t> rxSettings;
 	bool ret = com->getSettingsSync(rxSettings);
 	if(!ret) {

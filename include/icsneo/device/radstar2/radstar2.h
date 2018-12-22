@@ -3,6 +3,7 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
+#include "icsneo/device/radstar2/radstar2settings.h"
 
 namespace icsneo {
 
