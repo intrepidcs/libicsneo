@@ -170,31 +170,30 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 	}
 
 	settings = std::move(rxSettings);
+	settingsInDeviceRAM = settings;
 	settingsLoaded = true;
 
-	if(settings.size() != structSize) {
-		err(APIError::SettingsLengthError);
-		settingsLoaded = false;
-	}
+	// TODO Warn user that their API version differs from the device firmware version
+	//if(settings.size() != structSize)	
 
 	return settingsLoaded;
 }
 
 bool IDeviceSettings::apply(bool temporary) {
-	if(disabled || readonly)
+	if(!settingsLoaded || disabled || readonly)
 		return false;
 
 	std::vector<uint8_t> bytestream;
-	bytestream.resize(7 + structSize);
+	bytestream.resize(7 + settings.size());
 	bytestream[0] = 0x00;
 	bytestream[1] = GS_VERSION;
 	bytestream[2] = GS_VERSION >> 8;
-	bytestream[3] = (uint8_t)structSize;
-	bytestream[4] = (uint8_t)(structSize >> 8);
+	bytestream[3] = (uint8_t)settings.size();
+	bytestream[4] = (uint8_t)(settings.size() >> 8);
 	uint16_t gs_checksum = CalculateGSChecksum(settings);
 	bytestream[5] = (uint8_t)gs_checksum;
 	bytestream[6] = (uint8_t)(gs_checksum >> 8);
-	memcpy(bytestream.data() + 7, getRawStructurePointer(), structSize);
+	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
 	com->sendCommand(Command::SetSettings, bytestream);
 	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
@@ -210,7 +209,7 @@ bool IDeviceSettings::apply(bool temporary) {
 	gs_checksum = CalculateGSChecksum(settings);
 	bytestream[5] = (uint8_t)gs_checksum;
 	bytestream[6] = (uint8_t)(gs_checksum >> 8);
-	memcpy(bytestream.data() + 7, getRawStructurePointer(), structSize);
+	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
 	com->sendCommand(Command::SetSettings, bytestream);
 	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
@@ -244,16 +243,16 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	// The device might modify the settings once they are applied, however in this case it does not update the checksum
 	// We refresh to get these updates, update the checksum, and send it back so it's all in sync
 	std::vector<uint8_t> bytestream;
-	bytestream.resize(7 + structSize);
+	bytestream.resize(7 + settings.size());
 	bytestream[0] = 0x00;
 	bytestream[1] = GS_VERSION;
 	bytestream[2] = GS_VERSION >> 8;
-	bytestream[3] = (uint8_t)structSize;
-	bytestream[4] = (uint8_t)(structSize >> 8);
+	bytestream[3] = (uint8_t)settings.size();
+	bytestream[4] = (uint8_t)(settings.size() >> 8);
 	uint16_t gs_checksum = CalculateGSChecksum(settings);
 	bytestream[5] = (uint8_t)gs_checksum;
 	bytestream[6] = (uint8_t)(gs_checksum >> 8);
-	memcpy(bytestream.data() + 7, getRawStructurePointer(), structSize);
+	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
 	com->sendCommand(Command::SetSettings, bytestream);
 	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
@@ -273,7 +272,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 }
 
 int64_t IDeviceSettings::getBaudrateFor(Network net) const {
-	if(disabled)
+	if(!settingsLoaded || disabled)
 		return -1;
 
 	switch(net.getType()) {
@@ -293,7 +292,7 @@ int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 }
 
 bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
-	if(disabled || readonly)
+	if(!settingsLoaded || disabled || readonly)
 		return false;
 
 	switch(net.getType()) {
@@ -301,7 +300,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 			if(baudrate > 1000000) // This is an FD baudrate. Use setFDBaudrateFor instead.
 				return false;
 
-			CAN_SETTINGS* cfg = getCANSettingsFor(net);
+			CAN_SETTINGS* cfg = getMutableCANSettingsFor(net);
 			if(cfg == nullptr)
 				return false;
 				
@@ -319,7 +318,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 }
 
 int64_t IDeviceSettings::getFDBaudrateFor(Network net) const {
-	if(disabled)
+	if(!settingsLoaded || disabled)
 		return -1;
 
 	switch(net.getType()) {
@@ -339,12 +338,12 @@ int64_t IDeviceSettings::getFDBaudrateFor(Network net) const {
 }
 
 bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
-	if(disabled || readonly)
+	if(!settingsLoaded || disabled || readonly)
 		return false;
 
 	switch(net.getType()) {
 		case Network::Type::CAN: {
-			CANFD_SETTINGS* cfg = getCANFDSettingsFor(net);
+			CANFD_SETTINGS* cfg = getMutableCANFDSettingsFor(net);
 			if(cfg == nullptr)
 				return false;
 
@@ -359,16 +358,21 @@ bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
 	}
 }
 
-template<typename T> bool IDeviceSettings::setStructure(const T& newStructure) {
-	if(disabled || readonly)
+template<typename T> bool IDeviceSettings::applyStructure(const T& newStructure) {
+	if(!settingsLoaded || disabled || readonly)
 		return false;
-		
+	
+	// This function is only called from C++ so the callers structure size and ours should never differ
 	if(sizeof(T) != structSize)
 		return false; // The wrong structure was passed in for the current device
+
+	size_t copySize = sizeof(T);
+	if(copySize > settings.size())
+		copySize = settings.size(); // TODO Warn user that their structure is truncated
 	
-	if(settings.size() != structSize)
-		settings.resize(structSize);
+	// TODO Warn user that the device firmware doesn't support all the settings in the current API
+	//if(copySize < settings.size())
 	
 	memcpy(settings.data(), &newStructure, structSize);
-	return true;
+	return apply();
 }

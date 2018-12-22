@@ -302,21 +302,33 @@ public:
 	virtual bool setFDBaudrateFor(Network net, int64_t baudrate);
 
 	virtual const CAN_SETTINGS* getCANSettingsFor(Network net) const { (void)net; return nullptr; }
-	CAN_SETTINGS* getCANSettingsFor(Network net) {
-		return const_cast<CAN_SETTINGS*>(static_cast<const IDeviceSettings*>(this)->getCANSettingsFor(net));
+	CAN_SETTINGS* getMutableCANSettingsFor(Network net) {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = (const uint8_t*)getCANSettingsFor(net);
+		if(offset == nullptr)
+			return nullptr;
+		return static_cast<CAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
 	virtual const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const { (void)net; return nullptr; }
-	CANFD_SETTINGS* getCANFDSettingsFor(Network net) {
-		return const_cast<CANFD_SETTINGS*>(static_cast<const IDeviceSettings*>(this)->getCANFDSettingsFor(net));
+	CANFD_SETTINGS* getMutableCANFDSettingsFor(Network net) {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = (const uint8_t*)getCANFDSettingsFor(net);
+		if(offset == nullptr)
+			return nullptr;
+		return static_cast<CANFD_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
-	const void* getRawStructurePointer() const { return settings.data(); }
-	void* getRawStructurePointer() { return settings.data(); }
+	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
+	void* getMutableRawStructurePointer() { return settings.data(); }
 	template<typename T> const T* getStructurePointer() const { return static_cast<const T*>(getRawStructurePointer()); }
-	template<typename T> T* getStructurePointer() { return static_cast<T*>(getRawStructurePointer()); }
-	template<typename T> T getStructureCopy() const { return *getStructurePointer<T>(); }
-	template<typename T> bool setStructure(const T& newStructure);
+	template<typename T> T* getMutableStructurePointer() { return static_cast<T*>(getMutableRawStructurePointer()); }
+	template<typename T> T getStructure() const { return *getStructurePointer<T>(); }
+	template<typename T> bool applyStructure(const T& newStructure);
+
+	const size_t& getSize() const { return structSize; }
 
 	bool disabled = false;
 	bool readonly = false;
@@ -325,7 +337,9 @@ protected:
 	device_errorhandler_t err;
 	size_t structSize;
 	bool settingsLoaded = false;
-	std::vector<uint8_t> settings;
+
+	std::vector<uint8_t> settings; // For writing settings to, calling apply() should copy over to device RAM (and EEPROM)
+	std::vector<uint8_t> settingsInDeviceRAM; // For reading settings from
 
 	// Parameter createInoperableSettings exists because it is serving as a warning that you probably don't want to do this
 	typedef void* warn_t;

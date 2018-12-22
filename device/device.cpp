@@ -157,12 +157,8 @@ bool Device::open() {
 		return false;
 	}
 	
-	bool settingsNecessary = !settings->disabled;
-	if(settingsNecessary) {
+	if(!settings->disabled)
 		settings->refresh();
-		if(!settings->ok())
-			return false;
-	}
 
 	internalHandlerCallbackID = com->addMessageCallback(MessageCallback(MessageFilter(Network::Type::Internal), [this](std::shared_ptr<Message> message) {
 		handleInternalMessage(message);

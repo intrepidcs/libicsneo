@@ -177,88 +177,132 @@ void icsneoSetISO15765RxParameters(void* hObject, int lNetwork, int lEnable, spy
 
 //Device Functions
 int icsneoGetConfiguration(void* hObject, unsigned char* pData, int* lNumBytes) {
-	// TODO Implement
+	// 2G devices are not supported in the new API
 	return false;
 }
 
 int icsneoSendConfiguration(void* hObject, unsigned char* pData, int lNumBytes) {
-	// TODO Implement
+	// 2G devices are not supported in the new API
 	return false;
 }
 
 int icsneoGetFireSettings(void* hObject, SFireSettings* pSettings, int iNumBytes) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	return !!icsneo_settingsReadStructure(device, pSettings, iNumBytes);
 }
 
 int icsneoSetFireSettings(void* hObject, SFireSettings* pSettings, int iNumBytes, int bSaveToEEPROM) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	if(bSaveToEEPROM)
+		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
+	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
 int icsneoGetVCAN3Settings(void* hObject, SVCAN3Settings* pSettings, int iNumBytes) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	return !!icsneo_settingsReadStructure(device, pSettings, iNumBytes);
 }
 
 int icsneoSetVCAN3Settings(void* hObject, SVCAN3Settings* pSettings, int iNumBytes, int bSaveToEEPROM) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	if(bSaveToEEPROM)
+		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
+	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
 int icsneoGetFire2Settings(void* hObject, SFire2Settings* pSettings, int iNumBytes) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	return !!icsneo_settingsReadStructure(device, pSettings, iNumBytes);
 }
 
 int icsneoSetFire2Settings(void* hObject, SFire2Settings* pSettings, int iNumBytes, int bSaveToEEPROM) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	if(bSaveToEEPROM)
+		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
+	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
 int icsneoGetVCANRFSettings(void* hObject, SVCANRFSettings* pSettings, int iNumBytes) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	return !!icsneo_settingsReadStructure(device, pSettings, iNumBytes);
 }
 
 int icsneoSetVCANRFSettings(void* hObject, SVCANRFSettings* pSettings, int iNumBytes, int bSaveToEEPROM) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	if(bSaveToEEPROM)
+		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
+	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
 int icsneoGetVCAN412Settings(void* hObject, SVCAN412Settings* pSettings, int iNumBytes) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	return !!icsneo_settingsReadStructure(device, pSettings, iNumBytes);
 }
 
 int icsneoSetVCAN412Settings(void* hObject, SVCAN412Settings* pSettings, int iNumBytes, int bSaveToEEPROM) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	if(bSaveToEEPROM)
+		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
+	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
 int icsneoGetRADGalaxySettings(void* hObject, SRADGalaxySettings* pSettings, int iNumBytes) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	return !!icsneo_settingsReadStructure(device, pSettings, iNumBytes);
 }
 
 int icsneoSetRADGalaxySettings(void* hObject, SRADGalaxySettings* pSettings, int iNumBytes, int bSaveToEEPROM) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	if(bSaveToEEPROM)
+		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
+	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
 int icsneoGetRADStar2Settings(void* hObject, SRADStar2Settings* pSettings, int iNumBytes) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	return !!icsneo_settingsReadStructure(device, pSettings, iNumBytes);
 }
 
 int icsneoSetRADStar2Settings(void* hObject, SRADStar2Settings* pSettings, int iNumBytes, int bSaveToEEPROM) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	if(bSaveToEEPROM)
+		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
+	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
 int icsneoSetBitRate(void* hObject, int BitRate, int NetworkID) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	return icsneo_setBaudrate(device, (uint16_t)NetworkID, BitRate);
 }
 
 int icsneoGetDeviceParameters(void* hObject, char* pParameter, char* pValues, short ValuesLength) {
@@ -327,7 +371,7 @@ int icsneoGetDLLVersion(void) {
 
 int icsneoGetSerialNumber(void* hObject, unsigned int*iSerialNumber) {
 	if(!icsneoValidateHObject(hObject))
-	return false;
+		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
 	*iSerialNumber = icsneo_serialStringToNum(device->serial);
 	return true;

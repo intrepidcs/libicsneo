@@ -358,6 +358,52 @@ extern bool DLLExport icsneo_settingsApplyDefaults(const neodevice_t* device);
 extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device);
 
 /**
+ * \brief Apply the default settings structure for a specified device temporarily.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[out] structure A pointer to a device settings structure for the current device.
+ * \param[in] structureSize The size of the current device settings structure in bytes.
+ * \returns Number of bytes written to structure
+ * 
+ * See icsneo_settingsApply() for further information about applying settings. See icsneo_settingsApplyDefaults() for further information about applying default settings.
+ * 
+ * This function sets the default settings such that they will revert to the values saved in non-volatile storage when the device loses power.
+ * 
+ * If possible, use functions specific to the operation you want to acomplish (such as icsneo_setBaudrate()) instead of modifying the structure directly.
+ * This allows the client application to work with other hardware.
+ */
+extern size_t DLLExport icsneo_settingsReadStructure(const neodevice_t* device, void* structure, size_t structureSize);
+
+/**
+ * \brief Apply a provided settings structure for a specified device.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] structure A pointer to a device settings structure for the current device.
+ * \param[in] structureSize The size of the current device settings structure in bytes.
+ * \returns True if the settings were applied.
+ * 
+ * This function immediately applies the provided settings. See icsneo_settingsApplyTemporary() for further information about applying settings.
+ * 
+ * If possible, use functions specific to the operation you want to acomplish (such as icsneo_setBaudrate()) instead of modifying the structure directly.
+ * This allows the client application to work with other hardware.
+ */
+extern bool DLLExport icsneo_settingsApplyStructure(const neodevice_t* device, const void* structure, size_t structureSize);
+
+/**
+ * \brief Apply a provided settings structure for a specified device without saving to non-volatile EEPROM.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] structure A pointer to a device settings structure for the current device.
+ * \param[in] structureSize The size of the current device settings structure in bytes.
+ * \returns True if the settings were applied.
+ * 
+ * This function immediately applies the provided settings. See icsneo_settingsApply() for further information about applying settings.
+ * 
+ * This function sets the default settings such that they will revert to the values saved in non-volatile storage when the device loses power.
+ * 
+ * If possible, use functions specific to the operation you want to acomplish (such as icsneo_setBaudrate()) instead of modifying the structure directly.
+ * This allows the client application to work with other hardware.
+ */
+extern bool DLLExport icsneo_settingsApplyStructureTemporary(const neodevice_t* device, const void* structure, size_t structureSize);
+
+/**
  * \brief Get the network baudrate for a specified device.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \param[in] netid The network for which the baudrate should be retrieved.
@@ -649,6 +695,15 @@ fn_icsneo_settingsApplyDefaults icsneo_settingsApplyDefaults;
 typedef bool(*fn_icsneo_settingsApplyDefaultsTemporary)(const neodevice_t* device);
 fn_icsneo_settingsApplyDefaultsTemporary icsneo_settingsApplyDefaultsTemporary;
 
+typedef size_t(*fn_icsneo_settingsReadStructure)(const neodevice_t* device, void* structure, size_t structureSize);
+fn_icsneo_settingsReadStructure icsneo_settingsReadStructure;
+
+typedef bool(*fn_icsneo_settingsApplyStructure)(const neodevice_t* device, const void* structure, size_t structureSize);
+fn_icsneo_settingsApplyStructure icsneo_settingsApplyStructure;
+
+typedef bool(*fn_icsneo_settingsApplyStructureTemporary)(const neodevice_t* device, const void* structure, size_t structureSize);
+fn_icsneo_settingsApplyStructureTemporary icsneo_settingsApplyStructureTemporary;
+
 typedef int64_t(*fn_icsneo_getBaudrate)(const neodevice_t* device, uint16_t netid);
 fn_icsneo_getBaudrate icsneo_getBaudrate;
 
@@ -729,6 +784,9 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyTemporary);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyDefaults);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApplyDefaultsTemporary);
+	ICSNEO_IMPORTASSERT(icsneo_settingsReadStructure);
+	ICSNEO_IMPORTASSERT(icsneo_settingsApplyStructure);
+	ICSNEO_IMPORTASSERT(icsneo_settingsApplyStructureTemporary);
 	ICSNEO_IMPORTASSERT(icsneo_getBaudrate);
 	ICSNEO_IMPORTASSERT(icsneo_setBaudrate);
 	ICSNEO_IMPORTASSERT(icsneo_getFDBaudrate);

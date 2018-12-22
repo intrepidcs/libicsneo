@@ -338,6 +338,76 @@ bool icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device) {
 	return device->device->settings->applyDefaults(true);
 }
 
+size_t icsneo_settingsReadStructure(const neodevice_t* device, void* structure, size_t structureSize) {
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return 0;
+	}
+
+	size_t readSize = device->device->settings->getSize();
+	if(structure == nullptr) // Structure size request
+		return readSize;
+	if(readSize > structureSize) {
+		// Client application has a smaller structure than we do
+		// It is probably built against an older version of the API
+		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+		readSize = structureSize;
+	}
+
+	const void* deviceStructure = device->device->settings->getRawStructurePointer();
+	if(deviceStructure == nullptr) {
+		ErrorManager::GetInstance().add(APIError::SettingsNotAvailable);
+		return 0;
+	}
+
+	memcpy(structure, deviceStructure, readSize);
+	
+	if(readSize < structureSize) // Client application is attempting to read more than we have
+		memset((uint8_t*)structure + readSize, 0, structureSize - readSize);
+
+	return readSize;
+}
+
+// Not exported
+static bool icsneo_settingsWriteStructure(const neodevice_t* device, const void* structure, size_t structureSize) {
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return false;
+	}
+
+	if(structure == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		return false;
+	}
+
+	size_t writeSize = device->device->settings->getSize();
+	if(writeSize < structureSize) {
+		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+		structureSize = writeSize;
+	}
+
+	void* deviceStructure = device->device->settings->getMutableRawStructurePointer();
+	if(deviceStructure == nullptr) {
+		ErrorManager::GetInstance().add(APIError::SettingsNotAvailable);
+		return false;
+	}
+
+	memcpy(deviceStructure, structure, structureSize);
+
+	// If writeSize > structureSize that means that the user has given us a smaller structure
+	// This is okay, we will keep the end of the structure intact
+	// TODO Flag an error
+	return true;
+}
+
+bool icsneo_settingsApplyStructure(const neodevice_t* device, const void* structure, size_t structureSize) {
+	return icsneo_settingsWriteStructure(device, structure, structureSize) && icsneo_settingsApply(device);
+}
+
+bool icsneo_settingsApplyStructureTemporary(const neodevice_t* device, const void* structure, size_t structureSize) {
+	return icsneo_settingsWriteStructure(device, structure, structureSize) && icsneo_settingsApplyTemporary(device);
+}
+
 int64_t icsneo_getBaudrate(const neodevice_t* device, uint16_t netid) {
 	if(!icsneo_isValidNeoDevice(device)) {
 		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);

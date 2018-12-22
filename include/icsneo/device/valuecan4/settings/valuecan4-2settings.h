@@ -12,6 +12,8 @@ public:
 	ValueCAN4_2Settings(std::shared_ptr<Communication> com) : ValueCAN4_1_2Settings(com) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<valuecan4_1_2_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:
 				return &(cfg->can1);
@@ -23,6 +25,8 @@ public:
 	}
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<valuecan4_1_2_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:
 				return &(cfg->canfd1);
