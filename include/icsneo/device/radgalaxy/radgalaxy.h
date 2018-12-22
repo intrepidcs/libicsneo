@@ -58,6 +58,10 @@ protected:
 		packetizer->disableChecksum = true;
 		packetizer->align16bit = false;
 	}
+
+	virtual void setupDecoder(Decoder* decoder) override {
+		decoder->timestampMultiplier = 10; // Timestamps are in 10ns increments instead of the usual 25ns
+	}
 };
 
 }

@@ -21,6 +21,11 @@ public:
 		return found;
 	}
 
+protected:
+	virtual void setupDecoder(Decoder* decoder) override {
+		decoder->timestampMultiplier = 10; // Timestamps are in 10ns increments instead of the usual 25ns
+	}
+
 private:
 	RADSupermoon(neodevice_t neodevice) : Device(neodevice) {
 		initialize<FTDI>();

@@ -20,6 +20,11 @@ protected:
 		packetizer->align16bit = false;
 	}
 	
+	virtual void setupDecoder(Decoder* decoder) override {
+		Device::setupDecoder(decoder);
+		decoder->timestampMultiplier = 10; // Timestamps are in 10ns increments instead of the usual 25ns
+	}
+
 	RADStar2(neodevice_t neodevice) : Device(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
