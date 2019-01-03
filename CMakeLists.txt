@@ -154,6 +154,7 @@ target_link_libraries(icsneoc icsneocpp)
 
 add_library(icsneolegacy SHARED
 	api/icsneolegacy/icsneolegacy.cpp
+	api/icsneolegacy/icsneolegacyextra.cpp
 	api/icsneoc/icsneoc.cpp
 )
 target_include_directories(icsneolegacy

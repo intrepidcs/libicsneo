@@ -1,5 +1,5 @@
 #ifndef __cplusplus
-#error "icsneoc.cpp must be compiled with a C++ compiler!"
+#error "icsneolegacy.cpp must be compiled with a C++ compiler!"
 #endif
 
 #define NOMINMAX
@@ -18,7 +18,6 @@
 #pragma warning(disable : 4100) // unreferenced formal parameter
 #endif
 
-
 using namespace icsneo;
 
 typedef uint64_t legacymaphandle_t;
@@ -35,7 +34,66 @@ static NeoDevice OldNeoDeviceFromNew(const neodevice_t* newnd) {
 	return oldnd;
 }
 
+static void NeoMessageToSpyMessage(const neomessage_t& newmsg, icsSpyMessage& oldmsg) {
+	memset(&oldmsg, 0, sizeof(icsSpyMessage));
+	oldmsg.NumberBytesData = (uint8_t)std::min(newmsg.length, (size_t)255);
+	oldmsg.NumberBytesHeader = 4;
+	oldmsg.ExtraDataPtr = (void*)newmsg.data;
+	memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
+	oldmsg.ArbIDOrHeader = *(uint32_t*)newmsg.header;
+	oldmsg.ExtraDataPtrEnabled = newmsg.length > 8;
+	oldmsg.NetworkID = (uint8_t)newmsg.netid; // Note: NetID remapping from the original API is not supported
+	oldmsg.StatusBitField = newmsg.status.statusBitfield[0];
+	oldmsg.StatusBitField2 = newmsg.status.statusBitfield[1];
+	oldmsg.StatusBitField3 = newmsg.status.statusBitfield[2];
+	oldmsg.StatusBitField4 = newmsg.status.statusBitfield[3];
+	switch(Network::Type(newmsg.type)) {
+		case Network::Type::CAN:
+			oldmsg.Protocol = newmsg.status.canfdFDF ? SPY_PROTOCOL_CANFD : SPY_PROTOCOL_CAN;
+			break;
+		case Network::Type::Ethernet:
+			oldmsg.Protocol = SPY_PROTOCOL_ETHERNET;
+			break;
+	}
+}
+
 //Basic Functions
+int icsneoFindDevices(NeoDeviceEx* devs, int* devCount, unsigned int* devTypes, unsigned int devTypeCount, POptionsFindNeoEx*, unsigned int*) {
+	constexpr size_t MAX_DEVICES = 255;
+	if(devCount == nullptr)
+		return 0;
+	
+	unsigned int devTypesDefault[] = { NEODEVICE_ALL };
+	if(devTypes == nullptr || devTypeCount == 0) {
+		devTypes = devTypesDefault;
+		devTypeCount = 1;
+	}
+
+	size_t count = MAX_DEVICES;
+	if(devs == nullptr) { // Size query
+		icsneo_findAllDevices(nullptr, &count);
+		*devCount = (int)count;
+		return 1;
+	}
+
+	size_t bufferSize = (size_t)*devCount;
+	if(*devCount < 0 || bufferSize > MAX_DEVICES)
+		return 0;
+
+	neodevice_t devices[MAX_DEVICES];
+	icsneo_findAllDevices(devices, &count);
+	if(bufferSize < count)
+		count = bufferSize;
+	*devCount = (int)count;
+
+	for(size_t i = 0; i < count; i++) {
+		devs[i] = { OldNeoDeviceFromNew(&devices[i]) }; // Write out into user memory
+		neodevices[uint64_t(devices[i].handle) << 32 | icsneo_serialStringToNum(devices[i].serial)] = devices[i]; // Fill the look up table
+	}
+
+	return 1;
+}
+
 int icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* pNumDevices) {
 	constexpr size_t MAX_DEVICES = 255;
 	size_t count = MAX_DEVICES;
@@ -117,41 +175,59 @@ int icsneoGetMessages(void* hObject, icsSpyMessage* pMsg, int* pNumberOfMessages
 	*pNumberOfMessages = (int)messageCount;
 	*pNumberOfErrors = 0;
 
-	memset(pMsg, 0, sizeof(icsSpyMessage) * messageCount);
-	for(size_t i = 0; i < messageCount; i++) {
-		icsSpyMessage& oldmsg = pMsg[i];
-		neomessage_t& newmsg = messages[i];
-		oldmsg.NumberBytesData = (uint8_t)std::min(newmsg.length, (size_t)255);
-		oldmsg.NumberBytesHeader = 4;
-		oldmsg.ExtraDataPtr = (void*)newmsg.data;
-		memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
-		oldmsg.ArbIDOrHeader = *(uint32_t*)newmsg.header;
-		oldmsg.ExtraDataPtrEnabled = newmsg.length > 8;
-		oldmsg.NetworkID = (uint8_t)newmsg.netid; // TODO Handling for this?
-		switch(Network::Type(newmsg.type)) {
-			case Network::Type::CAN:
-				oldmsg.Protocol = SPY_PROTOCOL_CAN;
-				break;
-			// TODO Handle this better
-		}
-	}
+	for(size_t i = 0; i < messageCount; i++)
+		NeoMessageToSpyMessage(messages[i], pMsg[i]);
 
 	return true;
 }
 
 int icsneoTxMessages(void* hObject, icsSpyMessage* pMsg, int lNetworkID, int lNumMessages) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	std::vector<uint8_t> data;
+	neomessage_t newmsg = {};
+	newmsg.netid = (uint16_t)lNetworkID;
+	memcpy(newmsg.header, &pMsg[0].ArbIDOrHeader, sizeof(newmsg.header));
+	for(int i = 0; i < lNumMessages; i++)
+		data.insert(data.end(), pMsg[i].Data, pMsg[i].Data + pMsg[i].NumberBytesData);
+	newmsg.data = data.data();
+	newmsg.length = data.size();
+	newmsg.status.statusBitfield[0] = pMsg[0].StatusBitField;
+	newmsg.status.statusBitfield[1] = pMsg[0].StatusBitField2;
+	newmsg.status.statusBitfield[2] = pMsg[0].StatusBitField3;
+	newmsg.status.statusBitfield[3] = pMsg[0].StatusBitField4;
+	if(pMsg[0].Protocol == SPY_PROTOCOL_CANFD)
+		newmsg.status.canfdFDF = true;
+	return icsneo_transmit(device, &newmsg);
 }
 
 int icsneoTxMessagesEx(void* hObject, icsSpyMessage* pMsg, unsigned int lNetworkID, unsigned int lNumMessages, unsigned int* NumTxed, unsigned int zero2) {
-	// TODO Implement
-	return false;
-}
-
-int icsneoWaitForRxMessagesWithTimeOut(void* hObject, unsigned int iTimeOut) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	neomessage_t newmsg;
+	*NumTxed = 0;
+	for(unsigned int i = 0; i < lNumMessages; i++) {
+		const icsSpyMessage& oldmsg = pMsg[i];
+		newmsg = {};
+		newmsg.netid = (uint16_t)lNetworkID;
+		memcpy(newmsg.header, &oldmsg.ArbIDOrHeader, sizeof(newmsg.header));
+		newmsg.length = oldmsg.NumberBytesData | (oldmsg.NodeID << 8);
+		if (oldmsg.ExtraDataPtrEnabled)
+			newmsg.data = reinterpret_cast<const uint8_t*>(oldmsg.ExtraDataPtr);
+		else
+			newmsg.data = oldmsg.Data;
+		newmsg.status.statusBitfield[0] = oldmsg.StatusBitField;
+		newmsg.status.statusBitfield[1] = oldmsg.StatusBitField2;
+		newmsg.status.statusBitfield[2] = oldmsg.StatusBitField3;
+		newmsg.status.statusBitfield[3] = oldmsg.StatusBitField4;
+		if(oldmsg.Protocol == SPY_PROTOCOL_CANFD)
+			newmsg.status.canfdFDF = true;
+		if(icsneo_transmit(device, &newmsg))
+			(*NumTxed)++;
+	}
+	return lNumMessages == *NumTxed;
 }
 
 int icsneoEnableNetworkRXQueue(void* hObject, int iEnable) {
@@ -302,7 +378,9 @@ int icsneoSetBitRate(void* hObject, int BitRate, int NetworkID) {
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
-	return icsneo_setBaudrate(device, (uint16_t)NetworkID, BitRate);
+	if(!icsneo_setBaudrate(device, (uint16_t)NetworkID, BitRate))
+		return false;
+	return icsneo_settingsApply(device);
 }
 
 int icsneoGetDeviceParameters(void* hObject, char* pParameter, char* pValues, short ValuesLength) {

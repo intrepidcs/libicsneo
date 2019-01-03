@@ -1049,13 +1049,23 @@ typedef struct ALIGNED_(2) {
 
 #pragma pack(pop)
 
-typedef struct{
+typedef struct {
 	int DeviceType;
 	int Handle;
 	int NumberOfClients;
 	int SerialNumber;
 	int MaxAllowedClients;
 } NeoDevice;
+
+typedef struct {
+	NeoDevice neoDevice;
+	unsigned long FirmwareMajor;
+	unsigned long FirmwareMinor; 
+	unsigned long Status; // 1=CM Running 2=Bootloader
+	unsigned long Reserved[16];  // may be expanded in future revisions
+} NeoDeviceEx;
+
+typedef void POptionsFindNeoEx;
 
 typedef struct { // Matching C structure
 	unsigned long StatusValue; // 4
