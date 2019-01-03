@@ -203,6 +203,9 @@ bool Device::goOffline() {
 }
 
 bool Device::transmit(std::shared_ptr<Message> message) {
+	if(!isSupportedTXNetwork(message->network))
+		return false;
+
 	std::vector<uint8_t> packet;
 	if(!com->encoder->encode(packet, message))
 		return false;
@@ -216,6 +219,27 @@ bool Device::transmit(std::vector<std::shared_ptr<Message>> messages) {
 			return false;
 	}
 	return true;
+}
+
+size_t Device::getNetworkCountByType(Network::Type type) const {
+	size_t count = 0;
+	for(const auto& net : getSupportedRXNetworks())
+		if(net.getType() == type)
+			count++;
+	return count;
+}
+
+// Indexed starting at one
+Network Device::getNetworkByNumber(Network::Type type, size_t index) const {
+	size_t count = 0;
+	for(const auto& net : getSupportedRXNetworks()) {
+		if(net.getType() == type) {
+			count++;
+			if(count == index)
+				return net;
+		}
+	}
+	return Network::NetID::Invalid;
 }
 
 void Device::handleInternalMessage(std::shared_ptr<Message> message) {

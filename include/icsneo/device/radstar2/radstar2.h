@@ -14,21 +14,40 @@ public:
 	static constexpr const uint16_t PRODUCT_ID = 0x0005;
 	static constexpr const char* SERIAL_START = "RS";
 
+	static constexpr Network::NetID SUPPORTED_NETWORKS[] = {
+		Network::NetID::HSCAN,
+		Network::NetID::MSCAN,
+
+		Network::NetID::LIN,
+
+		Network::NetID::OP_Ethernet1,
+		Network::NetID::OP_Ethernet2
+	};
+
 protected:
-	virtual void setupPacketizer(Packetizer* packetizer) override {
-		packetizer->disableChecksum = true;
-		packetizer->align16bit = false;
+	virtual void setupPacketizer(Packetizer& packetizer) override {
+		Device::setupPacketizer(packetizer);
+		packetizer.disableChecksum = true;
+		packetizer.align16bit = false;
 	}
 
-	virtual void setupEncoder(Encoder* encoder) override {
+	virtual void setupEncoder(Encoder& encoder) override {
 		Device::setupEncoder(encoder);
-		encoder->supportCANFD = true;
+		encoder.supportCANFD = true;
 	}
 
-	virtual void setupDecoder(Decoder* decoder) override {
+	virtual void setupDecoder(Decoder& decoder) override {
 		Device::setupDecoder(decoder);
-		decoder->timestampMultiplier = 10; // Timestamps are in 10ns increments instead of the usual 25ns
+		decoder.timestampMultiplier = 10; // Timestamps are in 10ns increments instead of the usual 25ns
 	}
+
+	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+		for(auto& netid : SUPPORTED_NETWORKS)
+			rxNetworks.emplace_back(netid);
+	}
+
+	// The supported TX networks are the same as the supported RX networks for this device
+	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	RADStar2(neodevice_t neodevice) : Device(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;

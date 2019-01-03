@@ -125,6 +125,8 @@ public:
 		FlexRay = 4,
 		MOST = 5,
 		Ethernet = 6,
+		LSFTCAN = 7,
+		SWCAN = 8,
 		Any = 0xFE, // Never actually set as type, but used as flag for filtering
 		Other = 0xFF
 	};
@@ -144,6 +146,10 @@ public:
 				return "Internal";
 			case Type::Ethernet:
 				return "Ethernet";
+			case Type::LSFTCAN:
+				return "Low Speed Fault Tolerant CAN";
+			case Type::SWCAN:
+				return "Single Wire CAN";
 			case Type::Invalid:
 			default:
 				return "Invalid Type";
@@ -153,16 +159,12 @@ public:
 		switch(netid) {
 			case NetID::HSCAN:
 			case NetID::MSCAN:
-			case NetID::SWCAN:
-			case NetID::LSFTCAN:
 			case NetID::HSCAN2:
 			case NetID::HSCAN3:
 			case NetID::HSCAN4:
 			case NetID::HSCAN5:
-			case NetID::SWCAN2:
 			case NetID::HSCAN6:
 			case NetID::HSCAN7:
-			case NetID::LSFTCAN2:
 				return Type::CAN;
 			case NetID::LIN:
 			case NetID::LIN2:
@@ -204,6 +206,12 @@ public:
 			case NetID::OP_Ethernet11:
 			case NetID::OP_Ethernet12:
 				return Type::Ethernet;
+			case NetID::LSFTCAN:
+			case NetID::LSFTCAN2:
+				return Type::LSFTCAN;
+			case NetID::SWCAN:
+			case NetID::SWCAN2:
+				return Type::SWCAN;
 			default:
 				return Type::Other;
 		}
@@ -419,6 +427,7 @@ public:
 		os << GetNetIDString(network.getNetID());
 		return os;
 	}
+	friend bool operator==(const Network& net1, const Network& net2) { return net1.getNetID() == net2.getNetID(); }
 
 private:
 	NetID value; // Always use setValue so that value and type stay in sync

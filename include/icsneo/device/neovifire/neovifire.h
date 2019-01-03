@@ -21,6 +21,26 @@ public:
 		return found;
 	}
 
+	static constexpr Network::NetID SUPPORTED_NETWORKS[] = {
+		Network::NetID::HSCAN,
+		Network::NetID::MSCAN,
+		Network::NetID::HSCAN2,
+		Network::NetID::HSCAN3,
+		Network::NetID::HSCAN4,
+		Network::NetID::HSCAN5,
+
+		Network::NetID::LSFTCAN,
+		Network::NetID::LSFTCAN2,
+
+		Network::NetID::SWCAN,
+		Network::NetID::SWCAN2,
+
+		Network::NetID::LIN,
+		Network::NetID::LIN2,
+		Network::NetID::LIN3,
+		Network::NetID::LIN4
+	};
+
 	enum class Mode : char {
 		Application = 'A',
 		Bootloader = 'B'
@@ -57,6 +77,14 @@ private:
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
+
+	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+		for(auto& netid : SUPPORTED_NETWORKS)
+			rxNetworks.emplace_back(netid);
+	}
+
+	// The supported TX networks are the same as the supported RX networks for this device
+	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 };
 
 }

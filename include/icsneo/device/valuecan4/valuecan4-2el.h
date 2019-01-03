@@ -22,6 +22,22 @@ public:
 		return found;
 	}
 
+	static constexpr Network::NetID SUPPORTED_NETWORKS[] = {
+		Network::NetID::HSCAN,
+		Network::NetID::HSCAN2,
+
+		Network::NetID::Ethernet
+	};
+
+protected:
+	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+		for(auto& netid : SUPPORTED_NETWORKS)
+			rxNetworks.emplace_back(netid);
+	}
+
+	// The supported TX networks are the same as the supported RX networks for this device
+	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+
 private:
 	ValueCAN4_2EL(neodevice_t neodevice) : ValueCAN4(neodevice) {
 		initialize<STM32, ValueCAN4_2ELSettings>();

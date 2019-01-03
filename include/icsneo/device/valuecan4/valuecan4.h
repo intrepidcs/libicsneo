@@ -12,8 +12,9 @@ public:
 	static constexpr const uint16_t PRODUCT_ID = 0x1101;
 
 protected:
-	virtual void setupEncoder(Encoder* encoder) override {
-		encoder->supportCANFD = true;
+	virtual void setupEncoder(Encoder& encoder) override {
+		Device::setupEncoder(encoder);
+		encoder.supportCANFD = true;
 	}
 
 	ValueCAN4(neodevice_t neodevice) : Device(neodevice) {

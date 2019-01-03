@@ -64,6 +64,19 @@ public:
 	bool transmit(std::shared_ptr<Message> message);
 	bool transmit(std::vector<std::shared_ptr<Message>> messages);
 
+	const std::vector<Network>& getSupportedRXNetworks() const { return supportedRXNetworks; }
+	const std::vector<Network>& getSupportedTXNetworks() const { return supportedTXNetworks; }
+	virtual bool isSupportedRXNetwork(const Network& net) const {
+		return std::find(supportedRXNetworks.begin(), supportedRXNetworks.end(), net) != supportedRXNetworks.end();
+	}
+	virtual bool isSupportedTXNetwork(const Network& net) const {
+		return std::find(supportedTXNetworks.begin(), supportedTXNetworks.end(), net) != supportedTXNetworks.end();
+	}
+
+	virtual size_t getNetworkCountByType(Network::Type) const;
+	virtual Network getNetworkByNumber(Network::Type, size_t) const;
+
+	std::shared_ptr<Communication> com;
 	std::unique_ptr<IDeviceSettings> settings;
 
 protected:
@@ -71,7 +84,6 @@ protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
-	std::shared_ptr<Communication> com;
 	device_errorhandler_t err;
 
 	// START Initialization Functions
@@ -84,17 +96,19 @@ protected:
 	void initialize() {
 		err = makeErrorHandler();
 		auto transport = makeTransport<Transport>();
-		setupTransport(transport.get());
+		setupTransport(*transport);
 		auto packetizer = makePacketizer();
-		setupPacketizer(packetizer.get());
+		setupPacketizer(*packetizer);
 		auto encoder = makeEncoder(packetizer);
-		setupEncoder(encoder.get());
+		setupEncoder(*encoder);
 		auto decoder = makeDecoder();
-		setupDecoder(decoder.get());
+		setupDecoder(*decoder);
 		com = makeCommunication(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
-		setupCommunication(com.get());
+		setupCommunication(*com);
 		settings = makeSettings<Settings>(com);
-		setupSettings(settings.get());
+		setupSettings(*settings);
+		setupSupportedRXNetworks(supportedRXNetworks);
+		setupSupportedTXNetworks(supportedTXNetworks);
 	}
 
 	virtual device_errorhandler_t makeErrorHandler() {
@@ -103,29 +117,32 @@ protected:
 
 	template<typename Transport>
 	std::unique_ptr<ICommunication> makeTransport() { return std::unique_ptr<ICommunication>(new Transport(err, getWritableNeoDevice())); }
-	virtual void setupTransport(ICommunication* stransport) { (void)stransport; }
+	virtual void setupTransport(ICommunication&) {}
 
 	virtual std::shared_ptr<Packetizer> makePacketizer() { return std::make_shared<Packetizer>(err); }
-	virtual void setupPacketizer(Packetizer* spacketizer) { (void)spacketizer; }
+	virtual void setupPacketizer(Packetizer&) {}
 
 	virtual std::unique_ptr<Encoder> makeEncoder(std::shared_ptr<Packetizer> p) { return std::unique_ptr<Encoder>(new Encoder(err, p)); }
-	virtual void setupEncoder(Encoder* sencoder) { (void)sencoder; }
+	virtual void setupEncoder(Encoder&) {}
 
 	virtual std::unique_ptr<Decoder> makeDecoder() { return std::unique_ptr<Decoder>(new Decoder(err)); }
-	virtual void setupDecoder(Decoder* sdecoder) { (void)sdecoder; }
+	virtual void setupDecoder(Decoder&) {}
 
 	virtual std::shared_ptr<Communication> makeCommunication(
 		std::unique_ptr<ICommunication> t,
-		std::shared_ptr<Packetizer> p, 
+		std::shared_ptr<Packetizer> p,
 		std::unique_ptr<Encoder> e,
 		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(err, std::move(t), p, std::move(e), std::move(d)); }
-	virtual void setupCommunication(Communication* scom) { (void)scom; }
+	virtual void setupCommunication(Communication&) {}
 
 	template<typename Settings>
 	std::unique_ptr<IDeviceSettings> makeSettings(std::shared_ptr<Communication> com) {
 		return std::unique_ptr<IDeviceSettings>(new Settings(com));
 	}
-	virtual void setupSettings(IDeviceSettings* ssettings) { (void)ssettings; }
+	virtual void setupSettings(IDeviceSettings&) {}
+
+	virtual void setupSupportedRXNetworks(std::vector<Network>&) {}
+	virtual void setupSupportedTXNetworks(std::vector<Network>&) {}
 	// END Initialization Functions
 
 	void handleInternalMessage(std::shared_ptr<Message> message);
@@ -135,6 +152,9 @@ protected:
 private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
+
+	std::vector<Network> supportedTXNetworks;
+	std::vector<Network> supportedRXNetworks;
 	
 	enum class LEDState : uint8_t {
 		Offline = 0x04,

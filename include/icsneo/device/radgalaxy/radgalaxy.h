@@ -47,6 +47,35 @@ public:
 		return found;
 	}
 
+	static constexpr Network::NetID SUPPORTED_NETWORKS[] = {
+		Network::NetID::HSCAN,
+		Network::NetID::MSCAN,
+		Network::NetID::HSCAN2,
+		Network::NetID::HSCAN3,
+		Network::NetID::HSCAN4,
+		Network::NetID::HSCAN5,
+		Network::NetID::HSCAN6,
+		Network::NetID::HSCAN7,
+
+		Network::NetID::SWCAN,
+		Network::NetID::SWCAN2,
+
+		Network::NetID::LIN,
+		
+		Network::NetID::OP_Ethernet1,
+		Network::NetID::OP_Ethernet2,
+		Network::NetID::OP_Ethernet3,
+		Network::NetID::OP_Ethernet4,
+		Network::NetID::OP_Ethernet5,
+		Network::NetID::OP_Ethernet6,
+		Network::NetID::OP_Ethernet7,
+		Network::NetID::OP_Ethernet8,
+		Network::NetID::OP_Ethernet9,
+		Network::NetID::OP_Ethernet10,
+		Network::NetID::OP_Ethernet11,
+		Network::NetID::OP_Ethernet12
+	};
+
 	RADGalaxy(neodevice_t neodevice) : Device(neodevice) {
 		initialize<PCAP>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
@@ -54,14 +83,29 @@ public:
 	}
 
 protected:
-	void setupPacketizer(Packetizer* packetizer) override {
-		packetizer->disableChecksum = true;
-		packetizer->align16bit = false;
+	void setupPacketizer(Packetizer& packetizer) override {
+		Device::setupPacketizer(packetizer);
+		packetizer.disableChecksum = true;
+		packetizer.align16bit = false;
 	}
 
-	virtual void setupDecoder(Decoder* decoder) override {
-		decoder->timestampMultiplier = 10; // Timestamps are in 10ns increments instead of the usual 25ns
+	virtual void setupEncoder(Encoder& encoder) override {
+		Device::setupEncoder(encoder);
+		encoder.supportCANFD = true;
 	}
+
+	virtual void setupDecoder(Decoder& decoder) override {
+		Device::setupDecoder(decoder);
+		decoder.timestampMultiplier = 10; // Timestamps are in 10ns increments instead of the usual 25ns
+	}
+
+	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+		for(auto& netid : SUPPORTED_NETWORKS)
+			rxNetworks.emplace_back(netid);
+	}
+
+	// The supported TX networks are the same as the supported RX networks for this device
+	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 };
 
 }

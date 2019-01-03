@@ -21,12 +21,25 @@ public:
 		return found;
 	}
 
+	static constexpr Network::NetID SUPPORTED_NETWORKS[] = {
+		Network::NetID::HSCAN,
+		Network::NetID::HSCAN2
+	};
+
 private:
 	NeoOBD2SIM(neodevice_t neodevice) : Device(neodevice) {
 		initialize<STM32>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
+
+	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+		for(auto& netid : SUPPORTED_NETWORKS)
+			rxNetworks.emplace_back(netid);
+	}
+
+	// The supported TX networks are the same as the supported RX networks for this device
+	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 };
 
 }
