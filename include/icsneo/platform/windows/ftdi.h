@@ -8,7 +8,7 @@ namespace icsneo {
 class FTDI : public VCP {
 public:
 	FTDI(device_errorhandler_t err, neodevice_t& forDevice) : VCP(err, forDevice) {}
-	static std::vector<neodevice_t> FindByProduct(int product) { return VCP::FindByProduct(product, { L"serenum", L"ftdibus" }); }
+	static std::vector<neodevice_t> FindByProduct(int product) { return VCP::FindByProduct(product, { L"serenum" /*, L"ftdibus" */ }); }
 };
 
 }
