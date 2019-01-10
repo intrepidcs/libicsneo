@@ -144,7 +144,7 @@ typedef struct {
 #include "icsneo/communication/message/message.h"
 #include <memory>
 
-static_assert(sizeof(neomessage_t) == 72, "neomessage_t may not change size from 72 bytes!");
+static_assert(sizeof(neomessage_t) == (56 + sizeof(void*) + sizeof(size_t)), "neomessage_t size is incorrect! Changing size will break compatibility with existing C API programs.");
 static_assert(sizeof(neomessage_can_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size! (CAN is not)");
 static_assert(sizeof(neomessage_eth_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size! (Ethernet is not)");
 
