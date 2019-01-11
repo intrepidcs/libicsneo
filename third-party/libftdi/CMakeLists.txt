@@ -150,7 +150,6 @@ add_subdirectory(src)
 add_subdirectory(ftdipp)
 add_subdirectory(python)
 add_subdirectory(ftdi_eeprom)
-add_subdirectory(examples)
 add_subdirectory(packages)
 add_subdirectory(test)
 

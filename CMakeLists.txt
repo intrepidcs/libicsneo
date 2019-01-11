@@ -24,18 +24,6 @@ else() #if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-switch -Wno-nested-anon-types -Wno-gnu-anonymous-struct -Wno-unknown-pragmas -Wno-zero-length-array")
 endif()
 
-# libftdi
-if(NOT WIN32)
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR} third-party/libftdi/src third-party/libftdi/ftdipp)
-	add_subdirectory(third-party/libftdi)
-endif(NOT WIN32)
-
-# winpcap
-if(WIN32)
-	include_directories(AFTER third-party/winpcap/include)
-	add_definitions(-DWPCAP -DHAVE_REMOTE -DWIN32_LEAN_AND_MEAN)
-endif(WIN32)
-
 # doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
@@ -43,7 +31,7 @@ if(DOXYGEN_FOUND)
 	set(ICSNEO_DOCS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs)
 
 	message("Will build Doxygen based documentation")
-	
+
 	add_custom_target(libicsneo_doxygen ALL
 		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -142,6 +130,18 @@ target_include_directories(icsneocpp
 )
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 
+# libftdi
+if(NOT WIN32)
+	target_include_directories(icsneocpp PUBLIC third-party/libftdi/ftdipp)
+	add_subdirectory(third-party/libftdi)
+endif(NOT WIN32)
+
+# winpcap
+if(WIN32)
+	target_include_directories(icsneocpp PUBLIC AFTER third-party/winpcap/include)
+	add_definitions(-DWPCAP -DHAVE_REMOTE -DWIN32_LEAN_AND_MEAN)
+endif(WIN32)
+
 add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp)
 target_include_directories(icsneoc
 	PUBLIC
@@ -150,7 +150,7 @@ target_include_directories(icsneoc
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-target_link_libraries(icsneoc icsneocpp)
+target_link_libraries(icsneoc PRIVATE icsneocpp)
 
 add_library(icsneolegacy SHARED
 	api/icsneolegacy/icsneolegacy.cpp
@@ -164,9 +164,9 @@ target_include_directories(icsneolegacy
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-target_link_libraries(icsneolegacy icsneocpp)
+target_link_libraries(icsneolegacy PRIVATE icsneocpp)
 
-target_compile_features(icsneocpp PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 target_compile_features(icsneolegacy PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 
@@ -175,15 +175,8 @@ if(NOT WIN32)
 	find_package(Threads)
 	set_property(TARGET ftdi1-static PROPERTY POSITION_INDEPENDENT_CODE ON)
 	set_property(TARGET ftdipp1-static PROPERTY POSITION_INDEPENDENT_CODE ON)
-	target_link_libraries(icsneocpp ftdipp1-static)
-	target_link_libraries(icsneoc ftdipp1-static)
-	target_link_libraries(icsneolegacy ftdipp1-static)
-	target_link_libraries(icsneocpp ftdi1-static)
-	target_link_libraries(icsneoc ftdi1-static)
-	target_link_libraries(icsneolegacy ftdi1-static)
-	target_link_libraries(icsneocpp ${CMAKE_THREAD_LIBS_INIT})
-	target_link_libraries(icsneoc ${CMAKE_THREAD_LIBS_INIT})
-	target_link_libraries(icsneolegacy ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(icsneocpp PUBLIC ftdipp1-static)
+	target_link_libraries(icsneocpp PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

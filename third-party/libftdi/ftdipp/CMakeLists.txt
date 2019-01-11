@@ -11,20 +11,16 @@ if (FTDIPP)
 
   if(Boost_FOUND)
 
-    # Includes
-    include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR}
-                        ${CMAKE_CURRENT_SOURCE_DIR}
-                        ${CMAKE_SOURCE_DIR}/src)
-
-    include_directories(${Boost_INCLUDE_DIRS})
-
-
-
     set(FTDI_BUILD_CPP True PARENT_SCOPE)
     message(STATUS "Building libftdi1++")
 
     # Shared library
     add_library(ftdipp1 SHARED ${cpp_sources})
+
+    target_include_directories(ftdipp1 BEFORE PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
+                        ${CMAKE_CURRENT_SOURCE_DIR}
+                        ${CMAKE_CURRENT_SOURCE_DIR}/../src)
+    target_include_directories(ftdipp1 PUBLIC ${Boost_INCLUDE_DIRS})
 
     math(EXPR VERSION_FIXUP "${MAJOR_VERSION} + 1")    # Compatiblity with previous releases
     set_target_properties(ftdipp1 PROPERTIES VERSION ${VERSION_FIXUP}.${MINOR_VERSION}.0 SOVERSION 3)
@@ -33,7 +29,7 @@ if (FTDIPP)
     set_target_properties(ftdipp1 PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
     # Dependencies
-    target_link_libraries(ftdipp1 ftdi1 ${LIBUSB_LIBRARIES} ${BOOST_LIBRARIES})
+    target_link_libraries(ftdipp1 PUBLIC ftdi1 ${LIBUSB_LIBRARIES} ${BOOST_LIBRARIES})
 
     
     install ( TARGETS ftdipp1
@@ -45,6 +41,11 @@ if (FTDIPP)
     # Static library
     if ( STATICLIBS )
       add_library(ftdipp1-static STATIC ${cpp_sources})
+      target_include_directories(ftdipp1-static BEFORE PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
+                        ${CMAKE_CURRENT_SOURCE_DIR}
+                        ${CMAKE_CURRENT_SOURCE_DIR}/../src)
+      target_include_directories(ftdipp1-static PUBLIC ${Boost_INCLUDE_DIRS})
+      target_link_libraries(ftdipp1-static PUBLIC ftdi1 ${LIBUSB_LIBRARIES} ${BOOST_LIBRARIES})
       set_target_properties(ftdipp1-static PROPERTIES OUTPUT_NAME "ftdipp1")
       set_target_properties(ftdipp1-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
