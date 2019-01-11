@@ -22,9 +22,12 @@ public:
 		return found;
 	}
 
-	static constexpr Network::NetID SUPPORTED_NETWORKS[] = {
-		Network::NetID::HSCAN
-	};
+	static const std::vector<Network>& GetSupportedNetworks() {
+		static std::vector<Network> supportedNetworks = {
+			Network::NetID::HSCAN
+		};
+		return supportedNetworks;
+	}
 
 protected:
 	void setupEncoder(Encoder& encoder) override {
@@ -33,7 +36,7 @@ protected:
 	}
 
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
-		for(auto& netid : SUPPORTED_NETWORKS)
+		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 

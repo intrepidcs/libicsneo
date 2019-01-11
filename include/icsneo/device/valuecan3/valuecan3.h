@@ -21,10 +21,13 @@ public:
 		return found;
 	}
 
-	static constexpr Network::NetID SUPPORTED_NETWORKS[] = {
-		Network::NetID::HSCAN,
-		Network::NetID::MSCAN
-	};
+	static const std::vector<Network>& GetSupportedNetworks() {
+		static std::vector<Network> supportedNetworks = {
+			Network::NetID::HSCAN,
+			Network::NetID::MSCAN
+		};
+		return supportedNetworks;
+	}
 
 private:
 	ValueCAN3(neodevice_t neodevice) : Device(neodevice) {
@@ -34,7 +37,7 @@ private:
 	}
 
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
-		for(auto& netid : SUPPORTED_NETWORKS)
+		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 

@@ -14,15 +14,18 @@ public:
 	static constexpr const uint16_t PRODUCT_ID = 0x0005;
 	static constexpr const char* SERIAL_START = "RS";
 
-	static constexpr Network::NetID SUPPORTED_NETWORKS[] = {
-		Network::NetID::HSCAN,
-		Network::NetID::MSCAN,
+	static const std::vector<Network>& GetSupportedNetworks() {
+		static std::vector<Network> supportedNetworks = {
+			Network::NetID::HSCAN,
+			Network::NetID::MSCAN,
 
-		Network::NetID::LIN,
+			Network::NetID::LIN,
 
-		Network::NetID::OP_Ethernet1,
-		Network::NetID::OP_Ethernet2
-	};
+			Network::NetID::OP_Ethernet1,
+			Network::NetID::OP_Ethernet2
+		};
+		return supportedNetworks;
+	}
 
 protected:
 	virtual void setupPacketizer(Packetizer& packetizer) override {
@@ -42,7 +45,7 @@ protected:
 	}
 
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
-		for(auto& netid : SUPPORTED_NETWORKS)
+		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 

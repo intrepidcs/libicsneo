@@ -47,34 +47,37 @@ public:
 		return found;
 	}
 
-	static constexpr Network::NetID SUPPORTED_NETWORKS[] = {
-		Network::NetID::HSCAN,
-		Network::NetID::MSCAN,
-		Network::NetID::HSCAN2,
-		Network::NetID::HSCAN3,
-		Network::NetID::HSCAN4,
-		Network::NetID::HSCAN5,
-		Network::NetID::HSCAN6,
-		Network::NetID::HSCAN7,
+	static const std::vector<Network>& GetSupportedNetworks() {
+		static std::vector<Network> supportedNetworks = {
+			Network::NetID::HSCAN,
+			Network::NetID::MSCAN,
+			Network::NetID::HSCAN2,
+			Network::NetID::HSCAN3,
+			Network::NetID::HSCAN4,
+			Network::NetID::HSCAN5,
+			Network::NetID::HSCAN6,
+			Network::NetID::HSCAN7,
 
-		Network::NetID::SWCAN,
-		Network::NetID::SWCAN2,
+			Network::NetID::SWCAN,
+			Network::NetID::SWCAN2,
 
-		Network::NetID::LIN,
-		
-		Network::NetID::OP_Ethernet1,
-		Network::NetID::OP_Ethernet2,
-		Network::NetID::OP_Ethernet3,
-		Network::NetID::OP_Ethernet4,
-		Network::NetID::OP_Ethernet5,
-		Network::NetID::OP_Ethernet6,
-		Network::NetID::OP_Ethernet7,
-		Network::NetID::OP_Ethernet8,
-		Network::NetID::OP_Ethernet9,
-		Network::NetID::OP_Ethernet10,
-		Network::NetID::OP_Ethernet11,
-		Network::NetID::OP_Ethernet12
-	};
+			Network::NetID::LIN,
+			
+			Network::NetID::OP_Ethernet1,
+			Network::NetID::OP_Ethernet2,
+			Network::NetID::OP_Ethernet3,
+			Network::NetID::OP_Ethernet4,
+			Network::NetID::OP_Ethernet5,
+			Network::NetID::OP_Ethernet6,
+			Network::NetID::OP_Ethernet7,
+			Network::NetID::OP_Ethernet8,
+			Network::NetID::OP_Ethernet9,
+			Network::NetID::OP_Ethernet10,
+			Network::NetID::OP_Ethernet11,
+			Network::NetID::OP_Ethernet12
+		};
+		return supportedNetworks;
+	}
 
 	RADGalaxy(neodevice_t neodevice) : Device(neodevice) {
 		initialize<PCAP>();
@@ -100,7 +103,7 @@ protected:
 	}
 
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
-		for(auto& netid : SUPPORTED_NETWORKS)
+		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 
