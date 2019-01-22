@@ -71,17 +71,68 @@ std::vector<neodevice_t> VCP::FindByProduct(int product, std::vector<std::wstrin
 			}
 
 			std::wstringstream oss;
-			if(!sn || conversionError) {
-				// This is a device with characters in the serial number
-				oss << entry.substr(startchar + 1, 6);
-			}
-			else {
+			if(!sn || conversionError)
+				oss << entry.substr(startchar + 1, 6); // This is a device with characters in the serial number
+			else
 				oss << sn;
-			}
 
 			std::string serial = converter.to_bytes(oss.str());
-			if(serial.find_first_of('\\') != std::string::npos)
-				continue; // Not sure how this happened but a slash is not valid in the serial
+			// The serial number should not have a path slash in it. If it does, that means we don't have the real serial.
+			if(serial.find_first_of('\\') != std::string::npos) {
+				// The serial number was not in the first serenum key where we expected it.
+				// We can try to match the ContainerID with the one in ALL_ENUM\USB and get a serial that way
+				std::wstringstream uess;
+				uess << ALL_ENUM_REG_KEY << L"\\USB\\" << vss.str() << L'&' << pss.str() << L'\\';
+				std::wstringstream ciss;
+				ciss << ALL_ENUM_REG_KEY << entry;
+				std::wstring containerIDFromEntry, containerIDFromEnum;
+				if(!Registry::Get(ciss.str(), L"ContainerID", containerIDFromEntry))
+					continue; // We did not get a container ID. This can happen on Windows XP and before.
+				if(containerIDFromEntry.empty())
+					continue; // The container ID was empty?
+				std::vector<std::wstring> subkeys;
+				if(!Registry::EnumerateSubkeys(uess.str(), subkeys))
+					continue; // VID/PID combo was not present at all.
+				if(subkeys.empty())
+					continue; // No devices for VID/PID.
+				std::wstring correctSerial;
+				for(auto& subkey : subkeys) {
+					std::wstringstream skss;
+					skss << uess.str() << L'\\' << subkey;
+					if(!Registry::Get(skss.str(), L"ContainerID", containerIDFromEnum))
+						continue;
+					if(containerIDFromEntry != containerIDFromEnum)
+						continue;
+					correctSerial = subkey;
+					break;
+				}
+				if(correctSerial.empty())
+					continue; // Didn't find the device within the subkeys of the enumeration
+
+				sn = 0;
+				conversionError = false;
+				try {
+					sn = std::stoi(correctSerial);
+				}
+				catch(...) {
+					conversionError = true;
+				}
+
+				if(!sn || conversionError) {
+					// This is a device with characters in the serial number
+					if(correctSerial.size() != 6)
+						continue;
+					serial = converter.to_bytes(correctSerial);
+				}
+				else {
+					std::wstringstream soss;
+					soss << sn;
+					serial = converter.to_bytes(soss.str());
+				}
+
+				if(serial.find_first_of('\\') != std::string::npos)
+					continue;
+			}
 			strcpy_s(device.serial, sizeof(device.serial), serial.c_str());
 
 			// Serial number is saved, we want the COM port number now

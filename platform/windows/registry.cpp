@@ -19,6 +19,46 @@ Registry::Key::~Key() {
 		RegCloseKey(key);
 }
 
+bool Registry::EnumerateSubkeys(std::wstring path, std::vector<std::wstring>& subkeys) {
+	Key regKey(path);
+	if(!regKey.IsOpen())
+		return false;
+
+	char className[MAX_PATH];
+	memset(className, 0, sizeof(className));
+	DWORD classNameLen = MAX_PATH;
+	DWORD subKeyCount = 0;
+	DWORD maxSubKeyLen, maxClassStringLen, valueCount, maxValueNameLen, maxValueDataLen, securityDescriptorLen;
+	FILETIME lastWriteTime;
+	auto ret = RegQueryInfoKey(
+		regKey.GetKey(),
+		className,
+		&classNameLen,
+		nullptr,
+		&subKeyCount,
+		&maxSubKeyLen,
+		&maxClassStringLen,
+		&valueCount,
+		&maxValueNameLen,
+		&maxValueDataLen,
+		&securityDescriptorLen,
+		&lastWriteTime);
+
+	if(ret != ERROR_SUCCESS)
+		return false;
+	
+	subkeys.clear();
+	for(DWORD i = 0; i < subKeyCount; i++) {
+		DWORD nameLen = MAX_PATH;
+		char name[MAX_PATH];
+		memset(name, 0, sizeof(name));
+		ret = RegEnumKeyEx(regKey.GetKey(), i, name, &nameLen, nullptr, nullptr, nullptr, &lastWriteTime);
+		if(ret == ERROR_SUCCESS)
+			subkeys.push_back(converter.from_bytes(name));
+	}
+	return true;
+}
+
 bool Registry::Get(std::wstring path, std::wstring key, std::wstring& value) {
 	Key regKey(path);
 	if(!regKey.IsOpen())
