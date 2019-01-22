@@ -22,7 +22,9 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 
 			break;
 		} // End of Network::Type::Ethernet
-		case Network::Type::CAN: {
+		case Network::Type::CAN:
+		case Network::Type::SWCAN:
+		case Network::Type::LSFTCAN: {
 			auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
 			if(!canmsg)
 				return false; // The message was not a properly formed CANMessage

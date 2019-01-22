@@ -370,6 +370,26 @@ public:
 		return static_cast<CANFD_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
+	virtual const CAN_SETTINGS* getLSFTCANSettingsFor(Network net) const { (void)net; return nullptr; }
+	CAN_SETTINGS* getMutableLSFTCANSettingsFor(Network net) {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = (const uint8_t*)getLSFTCANSettingsFor(net);
+		if(offset == nullptr)
+			return nullptr;
+		return static_cast<CAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+	}
+
+	virtual const SWCAN_SETTINGS* getSWCANSettingsFor(Network net) const { (void)net; return nullptr; }
+	SWCAN_SETTINGS* getMutableSWCANSettingsFor(Network net) {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = (const uint8_t*)getSWCANSettingsFor(net);
+		if(offset == nullptr)
+			return nullptr;
+		return static_cast<SWCAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+	}
+
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }
 	template<typename T> const T* getStructurePointer() const { return static_cast<const T*>(getRawStructurePointer()); }

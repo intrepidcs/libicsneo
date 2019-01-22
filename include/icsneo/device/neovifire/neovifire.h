@@ -27,14 +27,10 @@ public:
 			Network::NetID::MSCAN,
 			Network::NetID::HSCAN2,
 			Network::NetID::HSCAN3,
-			Network::NetID::HSCAN4,
-			Network::NetID::HSCAN5,
 
 			Network::NetID::LSFTCAN,
-			Network::NetID::LSFTCAN2,
 
 			Network::NetID::SWCAN,
-			Network::NetID::SWCAN2,
 
 			Network::NetID::LIN,
 			Network::NetID::LIN2,

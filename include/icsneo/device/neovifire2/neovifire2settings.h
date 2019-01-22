@@ -135,6 +135,10 @@ public:
 				return &(cfg->can7);
 			case Network::NetID::HSCAN7:
 				return &(cfg->can8);
+			case Network::NetID::LSFTCAN:
+				return &(cfg->lsftcan1);
+			case Network::NetID::LSFTCAN2:
+				return &(cfg->lsftcan2);
 			default:
 				return nullptr;
 		}
@@ -160,6 +164,20 @@ public:
 				return &(cfg->canfd7);
 			case Network::NetID::HSCAN7:
 				return &(cfg->canfd8);
+			default:
+				return nullptr;
+		}
+	}
+	const CAN_SETTINGS* getLSFTCANSettingsFor(Network net) const override { return getCANSettingsFor(net); }
+	const SWCAN_SETTINGS* getSWCANSettingsFor(Network net) const override {
+		auto cfg = getStructurePointer<neovifire2_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		switch(net.getNetID()) {
+			case Network::NetID::SWCAN:
+				return &(cfg->swcan1);
+			case Network::NetID::SWCAN2:
+				return &(cfg->swcan2);
 			default:
 				return nullptr;
 		}

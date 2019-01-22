@@ -30,7 +30,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			result->timestamp *= timestampMultiplier;
 			result->network = packet->network;
 			return true;
-		case Network::Type::CAN: {
+		case Network::Type::CAN:
+		case Network::Type::SWCAN:
+		case Network::Type::LSFTCAN: {
 			if(packet->data.size() < 24)
 				return false;
 

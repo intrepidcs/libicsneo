@@ -18,7 +18,9 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 	neomsg.status.transmitMessage = message->transmitted;
 
 	switch(type) {
-		case Network::Type::CAN: {
+		case Network::Type::CAN:
+		case Network::Type::SWCAN:
+		case Network::Type::LSFTCAN: {
 			neomessage_can_t& can = *(neomessage_can_t*)&neomsg;
 			auto canmsg = std::static_pointer_cast<CANMessage>(message);
 			can.arbid = canmsg->arbid;
@@ -52,7 +54,9 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t* neomessage) {
 	const Network network = neomessage->netid;
 	switch(network.getType()) {
-		case Network::Type::CAN: {
+		case Network::Type::CAN:
+		case Network::Type::SWCAN:
+		case Network::Type::LSFTCAN: {
 			neomessage_can_t& can = *(neomessage_can_t*)neomessage;
 			auto canmsg = std::make_shared<CANMessage>();
 			canmsg->network = network;

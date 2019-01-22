@@ -242,6 +242,9 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 		return false;
 	}
 
+	// This short wait helps on FIRE devices, otherwise the checksum might be wrong!
+	std::this_thread::sleep_for(std::chrono::milliseconds(3));
+
 	refresh(true); // Refresh ignoring checksum
 	// The device might modify the settings once they are applied, however in this case it does not update the checksum
 	// We refresh to get these updates, update the checksum, and send it back so it's all in sync
@@ -304,6 +307,32 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 				return false;
 
 			CAN_SETTINGS* cfg = getMutableCANSettingsFor(net);
+			if(cfg == nullptr)
+				return false;
+				
+			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
+			if(newBaud == (CANBaudrate)-1)
+				return false;
+			cfg->Baudrate = (uint8_t)newBaud;
+			cfg->auto_baud = false;
+			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
+			return true;
+		}
+		case Network::Type::LSFTCAN: {
+			CAN_SETTINGS* cfg = getMutableLSFTCANSettingsFor(net);
+			if(cfg == nullptr)
+				return false;
+				
+			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
+			if(newBaud == (CANBaudrate)-1)
+				return false;
+			cfg->Baudrate = (uint8_t)newBaud;
+			cfg->auto_baud = false;
+			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
+			return true;
+		}
+		case Network::Type::SWCAN: {
+			SWCAN_SETTINGS* cfg = getMutableSWCANSettingsFor(net);
 			if(cfg == nullptr)
 				return false;
 				

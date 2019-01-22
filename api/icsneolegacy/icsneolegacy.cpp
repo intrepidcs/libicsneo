@@ -49,6 +49,8 @@ static void NeoMessageToSpyMessage(const neomessage_t& newmsg, icsSpyMessage& ol
 	oldmsg.StatusBitField4 = newmsg.status.statusBitfield[3];
 	switch(Network::Type(newmsg.type)) {
 		case Network::Type::CAN:
+		case Network::Type::SWCAN:
+		case Network::Type::LSFTCAN:
 			oldmsg.Protocol = newmsg.status.canfdFDF ? SPY_PROTOCOL_CANFD : SPY_PROTOCOL_CAN;
 			break;
 		case Network::Type::Ethernet:

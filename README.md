@@ -50,12 +50,18 @@ std::this_thread::wait_for(std::chrono::seconds(5));
 std::vector<std::shared_ptr<icsneo::Message>> messages = myDevice->getMessages();
 std::cout << "We got " << messages.size() << " messages!" << std::endl;
 for(auto& msg : messages) {
-    if(msg->network.getType() == icsneo::Network::Type::CAN) {
-        // A message of type CAN is guaranteed to be a CANMessage, so we can static cast safely
-        auto canmsg = std::static_pointer_cast<icsneo::CANMessage>(msg);
-        // canmsg->arbid is valid here
-        // canmsg->data is an std::vector<uint8_t>, you can check .size() for the DLC of the message
-        // canmsg->timestamp is the time recorded by the hardware in nanoseconds since (1/1/2007 12:00:00 GMT)
+    switch(msg->network.getType()) {
+        case icsneo::Network::Type::CAN:
+        case icsneo::Network::Type::SWCAN:
+        case icsneo::Network::Type::LSFTCAN: {
+            // A message of type CAN is guaranteed to be a CANMessage, so we can static cast safely
+            auto canmsg = std::static_pointer_cast<icsneo::CANMessage>(msg);
+            // canmsg->arbid is valid here
+            // canmsg->data is an std::vector<uint8_t>, you can check .size() for the DLC of the message
+            // canmsg->timestamp is the time recorded by the hardware in nanoseconds since (1/1/2007 12:00:00 GMT)
+        }
+        default:
+            // Handle others
     }
 }
 myDevice->close();
