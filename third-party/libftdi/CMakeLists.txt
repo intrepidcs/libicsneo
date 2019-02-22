@@ -46,7 +46,7 @@ set(CPACK_COMPONENT_SHAREDLIBS_GROUP "Development")
 set(CPACK_COMPONENT_STATICLIBS_GROUP "Development")
 set(CPACK_COMPONENT_HEADERS_GROUP    "Development")
 
-option ( STATICLIBS "Build static libraries" ON )
+option ( LIBFTDI_STATICLIBS "Build static libraries" ON )
 
 # guess LIB_SUFFIX, don't take debian multiarch into account 
 if ( NOT DEFINED LIB_SUFFIX )
@@ -114,14 +114,14 @@ add_custom_target(dist
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 # Tests
-option ( BUILD_TESTS "Build unit tests with Boost Unit Test framework" ON )
+option ( LIBFTDI_BUILD_TESTS "Build unit tests with Boost Unit Test framework" ON )
 
 # Documentation
-option ( DOCUMENTATION "Generate API documentation with Doxygen" ON )
+option ( LIBFTDI_DOCUMENTATION "Generate API documentation with Doxygen" ON )
 
 
 find_package ( Doxygen )
-if ( DOCUMENTATION AND DOXYGEN_FOUND )
+if ( LIBFTDI_DOCUMENTATION AND DOXYGEN_FOUND )
 
    # Find doxy config
    message(STATUS "Doxygen found.")
@@ -142,9 +142,9 @@ if ( DOCUMENTATION AND DOXYGEN_FOUND )
    add_custom_target(docs ALL DEPENDS ${CMAKE_BINARY_DIR}/doc/html/index.html)
 
    message(STATUS "Generating API documentation with Doxygen")
-else(DOCUMENTATION AND DOXYGEN_FOUND)
+else(LIBFTDI_DOCUMENTATION AND DOXYGEN_FOUND)
    message(STATUS "Not generating API documentation")
-endif(DOCUMENTATION AND DOXYGEN_FOUND)
+endif(LIBFTDI_DOCUMENTATION AND DOXYGEN_FOUND)
 
 add_subdirectory(src)
 add_subdirectory(ftdipp)
@@ -228,14 +228,17 @@ else ()
   )
 endif ()
 
+option ( LIBFTDI_INSTALL "Generate install step" ON )
 
-install ( FILES 
+if (LIBFTDI_INSTALL)
+  install ( FILES 
             ${CMAKE_CURRENT_BINARY_DIR}/LibFTDI1Config.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/LibFTDI1ConfigVersion.cmake
             cmake/UseLibFTDI1.cmake
 
           DESTINATION ${LIBFTDI_CMAKE_CONFIG_DIR}
         )
+endif (LIBFTDI_INSTALL)
 
 
 

@@ -1,6 +1,6 @@
 # Optional unit test
 
-if(BUILD_TESTS)
+if(LIBFTDI_BUILD_TESTS)
 
     find_package(Boost COMPONENTS unit_test_framework)
 
@@ -31,8 +31,8 @@ if(BUILD_TESTS)
 
     endif(Boost_UNIT_TEST_FRAMEWORK_FOUND)
 
-else(BUILD_TESTS)
+else(LIBFTDI_BUILD_TESTS)
 
     message(STATUS "NOT building unit test")
 
-endif(BUILD_TESTS)
+endif(LIBFTDI_BUILD_TESTS)

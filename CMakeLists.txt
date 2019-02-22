@@ -133,6 +133,9 @@ set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 # libftdi
 if(NOT WIN32)
 	target_include_directories(icsneocpp PUBLIC third-party/libftdi/ftdipp)
+	set(LIBFTDI_DOCUMENTATION OFF)
+	set(LIBFTDI_BUILD_TESTS OFF)
+	set(LIBFTDI_INSTALL OFF)
 	add_subdirectory(third-party/libftdi)
 endif(NOT WIN32)
 
