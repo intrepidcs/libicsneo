@@ -1,7 +1,7 @@
-option ( PYTHON_BINDINGS "Build python bindings via swig" ON )
-option ( LINK_PYTHON_LIBRARY "Link against python libraries" ON )
+option ( LIBFTDI_PYTHON_BINDINGS "Build python bindings via swig" ON )
+option ( LIBFTDI_LINK_PYTHON_LIBRARY "Link against python libraries" ON )
 
-if ( PYTHON_BINDINGS )
+if ( LIBFTDI_PYTHON_BINDINGS )
   # workaround for cmake bug #0013449
   if ( NOT DEFINED CMAKE_FIND_ROOT_PATH )
     find_package ( SWIG )
@@ -28,7 +28,7 @@ if ( SWIG_FOUND AND PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND )
   swig_add_module ( ftdi1 python ftdi1.i )
   swig_link_libraries ( ftdi1 ftdi1 )
 
-  if ( LINK_PYTHON_LIBRARY )
+  if ( LIBFTDI_LINK_PYTHON_LIBRARY )
     swig_link_libraries ( ftdi1 ${PYTHON_LIBRARIES} )
   elseif( APPLE )
     set_target_properties ( ${SWIG_MODULE_ftdi1_REAL_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup" )
