@@ -4,8 +4,7 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include <atomic>
-#include <ftdi.hpp>
+#include <ftdi.h>
 #include "icsneo/device/neodevice.h"
 #include "icsneo/communication/icommunication.h"
 #include "icsneo/third-party/concurrentqueue/blockingconcurrentqueue.h"
@@ -15,37 +14,49 @@ namespace icsneo {
 
 class FTDI : public ICommunication {
 public:
-	static constexpr neodevice_handle_t INVALID_HANDLE = 0x7fffffff; // int32_t max value
 	static std::vector<neodevice_t> FindByProduct(int product);
-	static bool IsHandleValid(neodevice_handle_t handle);
 
 	FTDI(device_errorhandler_t err, neodevice_t& forDevice);
 	~FTDI() { close(); }
 	bool open();
 	bool close();
-	bool isOpen() { return ftdiDevice.is_open(); }
+	bool isOpen() { return ftdi.isOpen(); }
 
 private:
-	static Ftdi::Context context;
-	static neodevice_handle_t handleCounter;
-	class FTDIDevice : public Ftdi::Context {
+	class FTDIContext {
 	public:
-		FTDIDevice() {}
-		FTDIDevice(const Ftdi::Context &x) : Ftdi::Context(x) {
-			handle = handleCounter++;
+		FTDIContext() : context(ftdi_new()) {}
+		~FTDIContext() {
+			if(context)
+				ftdi_free(context); // calls ftdi_deinit and ftdi_close if required
+			context = nullptr;
 		}
-		neodevice_handle_t handle = INVALID_HANDLE;
+
+		std::pair<int, std::vector<std::string>> findDevices(int pid);
+		int openDevice(int pid, const char* serial);
+		bool closeDevice();
+		bool isOpen() const { return deviceOpen; }
+		int flush() { return ftdi_usb_purge_buffers(context); }
+		int reset() { return ftdi_usb_reset(context); }
+		int read(uint8_t* data, size_t size) { return ftdi_read_data(context, data, (int)size); }
+		int write(const uint8_t* data, size_t size) { return ftdi_write_data(context, data, (int)size); }
+		int setBaudrate(int baudrate) { return ftdi_set_baudrate(context, baudrate); }
+		bool setReadTimeout(int timeout) { if(context == nullptr) return false; context->usb_read_timeout = timeout; return true; }
+		bool setWriteTimeout(int timeout) { if(context == nullptr) return false; context->usb_write_timeout = timeout; return true; }
+	private:
+		struct ftdi_context* context;
+		bool deviceOpen = false;
 	};
-	static std::vector<FTDIDevice> searchResultDevices;
-	static bool GetDeviceForHandle(neodevice_handle_t handle, FTDIDevice& device);
-	
+	FTDIContext ftdi;
+
+	static std::vector<std::tuple<int, std::string>> handles;
+
 	void readTask();
 	void writeTask();
 	bool openable; // Set to false in the constructor if the object has not been found in searchResultDevices
 
 	neodevice_t& device;
 	device_errorhandler_t err;
-	FTDIDevice ftdiDevice;
 };
 
 }

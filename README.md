@@ -121,5 +121,4 @@ The dependencies are as follows
  - CMake 3.2 or above
  - GCC 4.7 or above, 4.8+ recommended
  - `libusb-1.0-0-dev`
- - `libboost-dev`
- - `build-essential` on Ubuntu is recommended
+ - `build-essential` is recommended

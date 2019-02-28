@@ -3,79 +3,67 @@
 #include <stdio.h>
 #include <cstring>
 #include <memory>
+#include <utility>
+#include <algorithm>
 
 using namespace icsneo;
 
-// Instantiate static variables
-neodevice_handle_t FTDI::handleCounter = 1;
-Ftdi::Context FTDI::context;
-std::vector<FTDI::FTDIDevice> FTDI::searchResultDevices;
+std::vector<std::tuple<int, std::string>> FTDI::handles;
 
-/* Theory: Ftdi::List::find_all gives us back Ftdi::Context objects, but these can't be passed
- * back and forth with C nicely. So we wrap the Ftdi::Context objects in FTDIDevice classes which
- * will give it a nice neodevice_handle_t handle that we can reference it by. These FTDIDevice objects are
- * stored in searchResultDevices, and then moved into the instantiated FTDI class by the constructor.
- */
 std::vector<neodevice_t> FTDI::FindByProduct(int product) {
 	constexpr size_t deviceSerialBufferLength = sizeof(device.serial);
 	std::vector<neodevice_t> found;
+	FTDIContext context;
 
-	auto devlist = std::unique_ptr<Ftdi::List>(Ftdi::List::find_all(context, INTREPID_USB_VENDOR_ID, product));
-	searchResultDevices.clear();
-	for(auto it = devlist->begin(); it != devlist->end(); it++)
-		searchResultDevices.push_back(*it); // The upconversion to FTDIDevice will assign a handle
+	std::pair<int, std::vector<std::string>> result = context.findDevices(product);
+	if(result.first < 0)
+		return found; // TODO Flag an error for the client application, there was an issue with FTDI
 
-	for(auto& dev : searchResultDevices) {
+	for(auto& serial : result.second) {
 		neodevice_t d;
-		auto& serial = dev.serial();
 		strncpy(d.serial, serial.c_str(), deviceSerialBufferLength - 1);
 		d.serial[deviceSerialBufferLength - 1] = '\0'; // strncpy does not write a null terminator if serial is too long
-		d.handle = dev.handle;
+		std::tuple<int, std::string> devHandle = std::make_tuple(product, serial);
+		auto it = std::find(handles.begin(), handles.end(), devHandle);
+		size_t foundHandle = SIZE_MAX;
+		if(it != handles.end()) {
+			foundHandle = it - handles.begin();
+		} else {
+			foundHandle = handles.size();
+			handles.push_back(devHandle);
+		}
+		d.handle = foundHandle;
 		found.push_back(d);
 	}
 
 	return found;
 }
 
-bool FTDI::IsHandleValid(neodevice_handle_t handle) {
-	for(auto& dev : searchResultDevices) {
-		if(dev.handle != handle)
-			continue;
-
-		return true;
-	}
-	return false;
-}
-
-bool FTDI::GetDeviceForHandle(neodevice_handle_t handle, FTDIDevice& device) {
-	for(auto& dev : searchResultDevices) {
-		if(dev.handle != handle)
-			continue;
-		
-		device = dev;
-		return true;
-	}
-	return false;
-}
-
 FTDI::FTDI(device_errorhandler_t err, neodevice_t& forDevice) : device(forDevice), err(err) {
-	openable = GetDeviceForHandle(forDevice.handle, ftdiDevice);
+	openable = strlen(forDevice.serial) > 0 && device.handle >= 0 && device.handle < (neodevice_handle_t)handles.size();
 }
 
 bool FTDI::open() {
-	if(isOpen() || !openable)
+	if(isOpen())
 		return false;
 
-	if(ftdiDevice.open()) {
+	if(!openable) {
+		err(APIError::InvalidNeoDevice);
+		return false;
+	}
+
+	// At this point the handle has been checked to be within the bounds of the handles array
+	std::tuple<int, std::string>& handle = handles[device.handle];
+	if(ftdi.openDevice(std::get<0>(handle), std::get<1>(handle).c_str()) != 0) {
 		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
-	ftdiDevice.set_usb_read_timeout(100);
-	ftdiDevice.set_usb_write_timeout(1000);
-	ftdiDevice.reset();
-	ftdiDevice.set_baud_rate(500000);
-	ftdiDevice.flush();
+	ftdi.setReadTimeout(100);
+	ftdi.setWriteTimeout(1000);
+	ftdi.reset();
+	ftdi.setBaudrate(500000);
+	ftdi.flush();
 
 	// Create threads
 	closing = false;
@@ -97,25 +85,92 @@ bool FTDI::close() {
 	if(writeThread.joinable())
 		writeThread.join();
 
-	closing = false;
-
-	bool ret = true;
-	if(ftdiDevice.close())
-		ret = false;
+	bool ret = ftdi.closeDevice();
 
 	uint8_t flush;
 	WriteOperation flushop;
 	while(readQueue.try_dequeue(flush)) {}
 	while(writeQueue.try_dequeue(flushop)) {}
 
+	closing = false;
 	return ret;
+}
+
+std::pair<int, std::vector<std::string>> FTDI::FTDIContext::findDevices(int pid) {
+	std::pair<int, std::vector<std::string>> ret;
+	
+	if(context == nullptr) {
+		ret.first = -1;
+		return ret;
+	}
+	if(pid == 0) {
+		ret.first = -2;
+		return ret;
+	}
+	
+	struct ftdi_device_list* devlist = nullptr;
+	ret.first = ftdi_usb_find_all(context, &devlist, INTREPID_USB_VENDOR_ID, pid);
+	if(ret.first < 1) {
+		// Didn't find anything, maybe got an error
+		if(devlist != nullptr)
+			ftdi_list_free(&devlist);
+		return ret;
+	}
+	
+	if(devlist == nullptr) {
+		ret.first = -4;
+		return ret;
+	}
+
+	for (struct ftdi_device_list* curdev = devlist; curdev != NULL;) {
+		char serial[32];
+		memset(serial, 0, sizeof(serial));
+		int result = ftdi_usb_get_strings(context, curdev->dev, nullptr, 0, nullptr, 0, serial, 32);
+		size_t len = strlen(serial);
+		if(result >= 0 && len > 0)
+			ret.second.emplace_back(serial);
+		else if(ret.first > 0)
+			ret.first--; // We're discarding this device
+		curdev = curdev->next;
+	}
+
+	ftdi_list_free(&devlist);
+	return ret;
+}
+
+int FTDI::FTDIContext::openDevice(int pid, const char* serial) {
+	if(context == nullptr)
+		return 1;
+	if(pid == 0 || serial == nullptr)
+		return 2;
+	if(serial[0] == '\0')
+		return 3;
+	if(deviceOpen)
+		return 4;
+	int ret = ftdi_usb_open_desc(context, INTREPID_USB_VENDOR_ID, pid, nullptr, serial);
+	if(ret == 0 /* all ok */)
+		deviceOpen = true;
+	return ret;
+}
+
+bool FTDI::FTDIContext::closeDevice() {
+	if(context == nullptr)
+		return false;
+	if(!deviceOpen)
+		return true;
+
+	int ret = ftdi_usb_close(context);
+	if(ret != 0)
+		return false;
+	deviceOpen = false;
+	return true;
 }
 
 void FTDI::readTask() {
 	constexpr size_t READ_BUFFER_SIZE = 8;
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	while(!closing) {
-		auto readBytes = ftdiDevice.read(readbuf, READ_BUFFER_SIZE);
+		auto readBytes = ftdi.read(readbuf, READ_BUFFER_SIZE);
 		if(readBytes > 0)
 			readQueue.enqueue_bulk(readbuf, readBytes);
 	}
@@ -127,6 +182,6 @@ void FTDI::writeTask() {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
-		ftdiDevice.write(writeOp.bytes.data(), (int)writeOp.bytes.size());
+		ftdi.write(writeOp.bytes.data(), (int)writeOp.bytes.size());
 	}
 }
