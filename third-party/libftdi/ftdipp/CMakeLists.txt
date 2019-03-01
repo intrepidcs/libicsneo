@@ -31,12 +31,13 @@ if (FTDIPP)
     # Dependencies
     target_link_libraries(ftdipp1 PUBLIC ftdi1 ${LIBUSB_LIBRARIES} ${BOOST_LIBRARIES})
 
-    
-    install ( TARGETS ftdipp1
+    if ( LIBFTDI_INSTALL )
+      install ( TARGETS ftdipp1
               RUNTIME DESTINATION bin
               LIBRARY DESTINATION lib${LIB_SUFFIX}
               ARCHIVE DESTINATION lib${LIB_SUFFIX}
             )
+    endif()
             
     # Static library
     if ( LIBFTDI_STATICLIBS )
@@ -49,10 +50,12 @@ if (FTDIPP)
       set_target_properties(ftdipp1-static PROPERTIES OUTPUT_NAME "ftdipp1")
       set_target_properties(ftdipp1-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
-      install ( TARGETS ftdipp1-static
+      if ( LIBFTDI_INSTALL )
+        install ( TARGETS ftdipp1-static
                 ARCHIVE DESTINATION lib${LIB_SUFFIX}
                 COMPONENT staticlibs
               )
+      endif()
     endif ()
 
     install ( FILES ${cpp_headers}

@@ -32,24 +32,30 @@ set_target_properties ( ftdi1 PROPERTIES CLEAN_DIRECT_OUTPUT 1 )
 # Dependencies
 target_link_libraries(ftdi1 ${LIBUSB_LIBRARIES})
 
-install ( TARGETS ftdi1
+if ( LIBFTDI_INSTALL )
+  install ( TARGETS ftdi1
           RUNTIME DESTINATION bin
           LIBRARY DESTINATION lib${LIB_SUFFIX}
           ARCHIVE DESTINATION lib${LIB_SUFFIX}
         )
+endif()
 
 if ( LIBFTDI_STATICLIBS )
   add_library(ftdi1-static STATIC ${c_sources})
   target_link_libraries(ftdi1-static ${LIBUSB_LIBRARIES})
   set_target_properties(ftdi1-static PROPERTIES OUTPUT_NAME "ftdi1")
   set_target_properties(ftdi1-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-  install ( TARGETS ftdi1-static
+  if ( LIBFTDI_INSTALL )
+    install ( TARGETS ftdi1-static
             ARCHIVE DESTINATION lib${LIB_SUFFIX}
             COMPONENT staticlibs
           )
+  endif()
 endif ()
 
-install ( FILES ${c_headers}
+if ( LIBFTDI_INSTALL )
+  install ( FILES ${c_headers}
           DESTINATION include/${PROJECT_NAME}
           COMPONENT headers
         )
+endif()

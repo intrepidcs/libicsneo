@@ -46,6 +46,8 @@ set(CPACK_COMPONENT_SHAREDLIBS_GROUP "Development")
 set(CPACK_COMPONENT_STATICLIBS_GROUP "Development")
 set(CPACK_COMPONENT_HEADERS_GROUP    "Development")
 
+option ( LIBFTDI_INSTALL "Generate install step" ON )
+
 option ( LIBFTDI_STATICLIBS "Build static libraries" ON )
 
 # guess LIB_SUFFIX, don't take debian multiarch into account 
@@ -168,13 +170,17 @@ endif(${WIN32})
 configure_file(${PROJECT_SOURCE_DIR}/libftdi1.spec.in ${CMAKE_BINARY_DIR}/libftdi1.spec @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/libftdi1.pc.in ${CMAKE_BINARY_DIR}/libftdi1.pc @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/libftdipp1.pc.in ${CMAKE_BINARY_DIR}/libftdipp1.pc @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/libftdi1.pc ${CMAKE_BINARY_DIR}/libftdipp1.pc
+if (LIBFTDI_INSTALL)
+  install(FILES ${CMAKE_BINARY_DIR}/libftdi1.pc ${CMAKE_BINARY_DIR}/libftdipp1.pc
         DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+endif()
 
 if (UNIX OR MINGW)
   configure_file ( libftdi1-config.in ${CMAKE_CURRENT_BINARY_DIR}/libftdi1-config @ONLY )
-  install ( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/libftdi1-config
+  if (LIBFTDI_INSTALL)
+    install ( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/libftdi1-config
             DESTINATION bin )
+  endif()
 endif ()
 
 # config script install path
@@ -227,8 +233,6 @@ else ()
     COMPATIBILITY AnyNewerVersion
   )
 endif ()
-
-option ( LIBFTDI_INSTALL "Generate install step" ON )
 
 if (LIBFTDI_INSTALL)
   install ( FILES 
