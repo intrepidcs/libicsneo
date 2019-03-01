@@ -29,7 +29,12 @@ find_package(Doxygen)
 if(DOXYGEN_FOUND)
 	set(DOXYGEN_OUT ${CMAKE_CURRENT_SOURCE_DIR}/generated/Doxyfile)
 	set(ICSNEO_DOCS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+	if(NOT EXISTS "${DOXYGEN_OUT}")
+		set(DOXYGEN_FOUND FALSE)
+	endif()
+endif()
 
+if(DOXYGEN_FOUND)
 	message("Will build Doxygen based documentation")
 
 	add_custom_target(libicsneo_doxygen ALL
