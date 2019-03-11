@@ -78,11 +78,11 @@ bool ErrorManager::enforceLimit() {
 		return false;
 	
 	bool hasTooManyWarningAlready = count_internal(ErrorFilter(APIError::TooManyErrors)) != 0;
-	size_t amountToRemove = (errors.size() + (hasTooManyWarningAlready ? 0 : 1)) - errorLimit;
+	size_t amountToRemove = (errors.size() + (hasTooManyWarningAlready ? 1 : 2)) - errorLimit;
 
 	discardLeastSevere(amountToRemove);
 	if(!hasTooManyWarningAlready)
-		add_internal(APIError::TooManyErrors);
+		errors.emplace_back(APIError::TooManyErrors);
 	return true;
 }
 
@@ -95,6 +95,7 @@ APIError::Severity ErrorManager::lowestCurrentSeverity() {
 	while(it != errors.end()) {
 		if((*it).getSeverity() < lowest)
 			lowest = (*it).getSeverity();
+		it++;
 	}
 	return lowest;
 }
@@ -110,6 +111,8 @@ void ErrorManager::discardLeastSevere(size_t count) {
 			errors.erase(it++);
 			if(--count == 0)
 				break;
+		} else {
+			it++;
 		}
 	}
 
@@ -121,18 +124,22 @@ void ErrorManager::discardLeastSevere(size_t count) {
 				errors.erase(it++);
 				if(--count == 0)
 					break;
+			} else {
+				it++;
 			}
 		}
 	}
 
 	if(count != 0) {
-		ErrorFilter warningFilter(APIError::Severity::Warning);
+		ErrorFilter errorFilter(APIError::Severity::Error);
 		it = errors.begin();
 		while(it != errors.end()) {
-			if(warningFilter.match(*it)) {
+			if(errorFilter.match(*it)) {
 				errors.erase(it++);
 				if(--count == 0)
 					break;
+			} else {
+				it++;
 			}
 		}
 	}
