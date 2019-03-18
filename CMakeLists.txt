@@ -188,6 +188,8 @@ if(NOT WIN32)
 	set_property(TARGET ftdi1-static PROPERTY POSITION_INDEPENDENT_CODE ON)
 	target_link_libraries(icsneocpp PUBLIC ftdi1-static)
 	target_link_libraries(icsneocpp PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+	find_package(PCAP REQUIRED)
+	target_link_libraries(icsneocpp PUBLIC ${PCAP_LIBRARY})
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
