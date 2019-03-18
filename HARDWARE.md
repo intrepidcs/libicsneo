@@ -1,29 +1,38 @@
 # Hardware Support
 
-- Ethernet devices
+- Connecting over Ethernet
 	- neoVI FIRE 2
 		- CAN works
 		- CAN FD works
-	- RADGalaxy
-		- CAN works
-
-- STM32 devices
-	- ValueCAN 4
+	- ValueCAN 4-2EL
 		- CAN works
 		- CAN FD works
+		- Ethernet works
+	- RADGalaxy
+		- CAN works
+		- Ethernet works
+	- RADStar 2
+		- CAN works
+		- Ethernet works
+
+- Connecting over USB
+	- ValueCAN 4 series
+		- CAN works
+		- CAN FD works
+		- Ethernet works (on 4-2EL)
 	- neoOBD2 PRO
 		- CAN works
-
-- FTDI devices
 	- neoVI FIRE
 		- CAN works
 	- neoVI FIRE 2
 		- CAN works
 		- CAN FD works
+		- Ethernet works
 	- ValueCAN 3
 		- CAN works
 	- RADStar 2
 		- CAN works
+		- Ethernet works
 	- neoVI PLASMA
 		- CAN works
 	- neoVI ION
