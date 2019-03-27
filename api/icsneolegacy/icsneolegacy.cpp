@@ -14,6 +14,9 @@
 #include <map>
 #include <algorithm>
 
+#include <cstring>
+#include <climits>
+
 #ifdef _MSC_VER
 #pragma warning(disable : 4100) // unreferenced formal parameter
 #endif
@@ -65,7 +68,7 @@ int icsneoFindDevices(NeoDeviceEx* devs, int* devCount, unsigned int* devTypes, 
 	if(devCount == nullptr)
 		return 0;
 	
-	unsigned int devTypesDefault[] = { NEODEVICE_ALL };
+	unsigned int devTypesDefault[] = { std::numeric_limits<unsigned int>::max() };
 	if(devTypes == nullptr || devTypeCount == 0) {
 		devTypes = devTypesDefault;
 		devTypeCount = 1;
