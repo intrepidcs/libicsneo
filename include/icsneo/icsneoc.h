@@ -626,6 +626,18 @@ extern size_t DLLExport icsneo_getErrorLimit(void);
  */
 extern bool DLLExport icsneo_getSupportedDevices(devicetype_t* devices, size_t* count);
 
+/**
+ * \brief Get the devices timestamp multiplier
+ * \param[out] device A pointer to a buffer of devicetype_t structures which will be written to.
+ * \param[inout] multiplier A pointer to an int, for legacy tick rate to ns
+
+ * \returns True unless device is invalid
+ */
+extern bool DLLExport icsneo_getTimestampMultiplier(const neodevice_t* device, int* multiplier);
+
+
+
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

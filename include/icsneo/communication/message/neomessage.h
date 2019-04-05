@@ -108,7 +108,8 @@ typedef struct {
 	uint8_t header[4];
 	uint16_t netid;
 	uint8_t type;
-	uint8_t reserved[17];
+	uint8_t reserved[15];
+	uint16_t timestampMultiplier;
 } neomessage_t; // 72 bytes total
 // Any time you add another neomessage_*_t type, make sure to add it to the static_asserts below!
 

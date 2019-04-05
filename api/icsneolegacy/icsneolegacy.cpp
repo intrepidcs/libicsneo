@@ -60,6 +60,12 @@ static void NeoMessageToSpyMessage(const neomessage_t& newmsg, icsSpyMessage& ol
 			oldmsg.Protocol = SPY_PROTOCOL_ETHERNET;
 			break;
 	}
+	// Timestamp - epoch = 1/1/2007 - 25ns per tick most of the time
+	uint64_t t = newmsg.timestamp;
+	if (newmsg.timestampMultiplier)
+		t /= newmsg.timestampMultiplier;
+	oldmsg.TimeHardware2 = (unsigned long)(t >> 32);
+	oldmsg.TimeHardware = (unsigned long)(t & 0xFFFFFFFF);
 }
 
 //Basic Functions
@@ -241,8 +247,26 @@ int icsneoEnableNetworkRXQueue(void* hObject, int iEnable) {
 }
 
 int icsneoGetTimeStampForMsg(void* hObject, icsSpyMessage* pMsg, double* pTimeStamp) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+
+	int multiplier = 0;
+	if (!icsneo_getTimestampMultiplier(device, &multiplier))
+		return false;
+
+	// Convert back to ticks
+	uint64_t ticks = pMsg->TimeHardware2;
+	ticks <<= 32;
+	ticks += pMsg->TimeHardware;
+
+	// convert to ns
+	ticks *= multiplier;
+
+	// icsneoGetTimeStampForMsg() expects pTimeStamp to be in seconds
+	*pTimeStamp = ticks / (double)1000000000;
+
+	return true;
 }
 
 void icsneoGetISO15765Status(void* hObject, int lNetwork, int lClearTxStatus, int lClearRxStatus, int*lTxStatus, int*lRxStatus) {

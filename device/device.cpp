@@ -67,6 +67,10 @@ bool Device::SerialStringIsNumeric(const std::string& serial) {
 	return isdigit(serial[0]) && isdigit(serial[1]);
 }
 
+int Device::getTimestampMultiplier() const {
+	return com->decoder->timestampMultiplier;
+}
+
 std::string Device::describe() const {
 	std::stringstream ss;
 	ss << getType() << ' ' << getSerial();
