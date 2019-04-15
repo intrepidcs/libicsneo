@@ -122,3 +122,9 @@ The dependencies are as follows
  - GCC 4.7 or above, 4.8+ recommended
  - `libusb-1.0-0-dev`
  - `build-essential` is recommended
+ 
+If you'd like to be able to run programs that use this library without being root, consider using the included udev rules
+
+```
+$ sudo cp 99-intrepidcs.rules /etc/udev/rules.d/
+```
