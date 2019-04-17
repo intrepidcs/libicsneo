@@ -13,7 +13,7 @@ std::vector<std::tuple<int, std::string>> FTDI::handles;
 std::vector<neodevice_t> FTDI::FindByProduct(int product) {
 	constexpr size_t deviceSerialBufferLength = sizeof(device.serial);
 	std::vector<neodevice_t> found;
-	FTDIContext context;
+	static FTDIContext context;
 
 	std::pair<int, std::vector<std::string>> result = context.findDevices(product);
 	if(result.first < 0)
