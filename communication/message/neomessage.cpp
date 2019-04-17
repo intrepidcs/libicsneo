@@ -30,6 +30,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 			can.status.canfdRTR = canmsg->isRemote;
 			can.status.canfdFDF = canmsg->isCANFD;
 			can.status.canfdBRS = canmsg->baudrateSwitch;
+			can.status.canfdESI = canmsg->errorStateIndicator;
 			break;
 		}
 		case Network::Type::Ethernet: {
@@ -66,6 +67,7 @@ std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t*
 			canmsg->isRemote = can.status.remoteFrame | can.status.canfdRTR;
 			canmsg->isCANFD = can.status.canfdFDF;
 			canmsg->baudrateSwitch = can.status.canfdBRS;
+			canmsg->errorStateIndicator = can.status.canfdESI;
 			return canmsg;
 		}
 		default:

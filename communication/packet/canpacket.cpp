@@ -27,6 +27,7 @@ std::shared_ptr<CANMessage> HardwareCANPacket::DecodeToMessage(const std::vector
 	if(data->header.EDL && data->timestamp.IsExtended) { // CAN FD
 		msg->isCANFD = true;
 		msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
+		msg->errorStateIndicator = data->header.ESI;
 		if(length > 8) {
 			switch(length) { // CAN FD Length Decoding
 				case 0x9:
@@ -200,6 +201,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 		uint8_t fdStatusByte = lengthNibble;
 		if(message.baudrateSwitch)
 			fdStatusByte |= 0x80; // BRS status bit
+		// The firmware does not yet support transmitting ESI
 		result.push_back(fdStatusByte);
 	} else {
 		// TODO Support high voltage wakeup, bitwise-or in 0x8 here to enable

@@ -9,10 +9,11 @@ class CANMessage : public Message {
 public:
 	uint32_t arbid;
 	uint8_t dlcOnWire;
-	bool isRemote = false;
+	bool isRemote = false; // Not allowed if CAN FD
 	bool isExtended = false;
 	bool isCANFD = false;
 	bool baudrateSwitch = false; // CAN FD only
+	bool errorStateIndicator = false; // CAN FD only
 };
 
 }
