@@ -5,6 +5,7 @@
 
 #ifdef ICSNEOC_MAKEDLL
 #define DLLExport __declspec(dllexport)
+#define LegacyDLLExport _stdcall
 #else
 #define DLLExport __declspec(dllimport)
 #endif

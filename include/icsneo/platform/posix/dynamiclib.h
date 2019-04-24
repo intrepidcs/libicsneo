@@ -11,6 +11,7 @@
 
 // Nothing special is needed to export
 #define DLLExport
+#define LegacyDLLExport
 
 // #ifndef ICSNEO_NO_AUTO_DESTRUCT
 // #define ICSNEO_DESTRUCTOR __attribute__((destructor));

@@ -269,6 +269,7 @@ if(LIBICSNEO_BUILD_ICSNEOLEGACY)
 		api/icsneolegacy/icsneolegacy.cpp
 		api/icsneolegacy/icsneolegacyextra.cpp
 		api/icsneoc/icsneoc.cpp
+		platform/windows/icsneolegacy.def
 	)
 	target_include_directories(icsneolegacy
 		PUBLIC
