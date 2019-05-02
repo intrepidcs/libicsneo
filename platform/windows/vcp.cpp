@@ -389,6 +389,8 @@ void VCP::writeTask() {
 				bytesWritten = 0;
 				if(WriteFile(handle, writeOp.bytes.data(), (DWORD)writeOp.bytes.size(), nullptr, &overlappedWrite))
 					continue;
+
+				onWrite();
 				
 				auto winerr = GetLastError();
 				if(winerr == ERROR_IO_PENDING) {
