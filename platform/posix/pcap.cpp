@@ -2,13 +2,13 @@
 #include "icsneo/communication/network.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/packetizer.h"
+#include "icsneo/platform/posix/macaddr.h"
 #include <codecvt>
 #include <chrono>
 #include <iostream>
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netpacket/packet.h>
 
 using namespace icsneo;
 
@@ -52,9 +52,8 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		pcap_addr* currentAddress = dev->addresses;
 		bool hasAddress = false;
 		while(!hasAddress && currentAddress != nullptr) {
-			if(currentAddress->addr && currentAddress->addr->sa_family == AF_PACKET) {
-				struct sockaddr_ll* s = (struct sockaddr_ll*)currentAddress->addr;
-				memcpy(netif.macAddress, s->sll_addr, sizeof(netif.macAddress));
+			if(currentAddress->addr && currentAddress->addr->sa_family == ICSNEO_AF_MACADDR) {
+				memcpy(netif.macAddress, PLATFORM_MAC_FROM_SOCKADDR(currentAddress->addr), sizeof(netif.macAddress));
 				hasAddress = true;
 				break;
 			}
