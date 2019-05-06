@@ -24,7 +24,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
 	bool success = false;
 	// Calling pcap_findalldevs too quickly can cause various errors. Retry a few times in this case.
-	for(auto retry = 0; retry < 10; retry++) {
+	for(auto retry = 0; retry < 3; retry++) {
 		auto ret = pcap_findalldevs(&alldevs, errbuf);
 		if(ret == 0) {
 			success = true;
@@ -81,8 +81,17 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		auto& interface = knownInterfaces[i];
 
 		errbuf[0] = '\0';
-		interface.fp = pcap_open_live(interface.nameFromPCAP.c_str(), UINT16_MAX, 1, 0, errbuf);
+		interface.fp = pcap_create(interface.nameFromPCAP.c_str(), errbuf);
 		if(interface.fp == nullptr) {
+			// TODO Flag error that interface could not be opened?
+			// This can happen if, on Linux, you are not running as root
+			continue;
+		}
+		pcap_set_snaplen(interface.fp, UINT16_MAX);
+		pcap_set_timeout(interface.fp, 1);
+		pcap_set_immediate_mode(interface.fp, 1);
+		pcap_setnonblock(interface.fp, 1, errbuf);
+		if(pcap_activate(interface.fp)) {
 			// TODO Flag error that interface could not be opened?
 			// This can happen if, on Linux, you are not running as root
 			continue;
@@ -92,8 +101,6 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		// if(strlen(errbuf) != 0) { // The open succeeded but we got a warning
 		// 	std::cout << "Warning for " << interface.nameFromPCAP << " " << errbuf << std::endl;
 		// }
-
-		pcap_setnonblock(interface.fp, 1, errbuf);
 
 		EthernetPacket requestPacket;
 		requestPacket.payload.reserve(4);
@@ -107,7 +114,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		auto bs = requestPacket.getBytestream();
 		pcap_sendpacket(interface.fp, bs.data(), (int)bs.size());
 
-		auto timeout = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(50);
+		auto timeout = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(5);
 		while(std::chrono::high_resolution_clock::now() <= timeout) { // Wait up to 5ms for the response
 			struct pcap_pkthdr* header;
 			const uint8_t* data;
@@ -157,7 +164,6 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		pcap_close(interface.fp);
 		interface.fp = nullptr;
 	}
-
 	return foundDevices;
 }
 
