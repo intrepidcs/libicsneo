@@ -19,7 +19,7 @@ std::vector<PCAP::NetworkInterface> PCAP::knownInterfaces;
 std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	std::vector<PCAPFoundDevice> foundDevices;
 
-	// First we ask WinPCAP to give us all of the devices
+	// First we ask libpcap to give us all of the devices
 	pcap_if_t* alldevs;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
 	bool success = false;
@@ -46,9 +46,9 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 			continue;
 		}
 		NetworkInterface netif;
-		netif.nameFromWinPCAP = dev->name;
+		netif.nameFromPCAP = dev->name;
 		if(dev->description)
-			netif.descriptionFromWinPCAP = dev->description;
+			netif.descriptionFromPCAP = dev->description;
 		pcap_addr* currentAddress = dev->addresses;
 		bool hasAddress = false;
 		while(!hasAddress && currentAddress != nullptr) {
@@ -80,19 +80,19 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 
 	for(size_t i = 0; i < knownInterfaces.size(); i++) {
 		auto& interface = knownInterfaces[i];
-		// if(interface.fullName.length() == 0)
-		// 	continue; // Win32 did not find this interface in the previous step
 
 		errbuf[0] = '\0';
-		interface.fp = pcap_open_live(interface.nameFromWinPCAP.c_str(), UINT16_MAX, 1, 0, errbuf);
-		if(strlen(errbuf) != 0) { // This means a warning
-			std::cout << "Warning for " << interface.nameFromWinPCAP << " " << errbuf << std::endl;
+		interface.fp = pcap_open_live(interface.nameFromPCAP.c_str(), UINT16_MAX, 1, 0, errbuf);
+		if(interface.fp == nullptr) {
+			// TODO Flag error that interface could not be opened?
+			// This can happen if, on Linux, you are not running as root
+			continue;
 		}
 
-		if(interface.fp == nullptr) {
-			std::cout << "pcap_open_live failed for " << interface.nameFromWinPCAP << " with " << errbuf << std::endl;
-			continue; // Could not open the interface
-		}
+		// TODO Propagate this up
+		// if(strlen(errbuf) != 0) { // The open succeeded but we got a warning
+		// 	std::cout << "Warning for " << interface.nameFromPCAP << " " << errbuf << std::endl;
+		// }
 
 		pcap_setnonblock(interface.fp, 1, errbuf);
 
@@ -167,7 +167,7 @@ bool PCAP::IsHandleValid(neodevice_handle_t handle) {
 	return (netifIndex < knownInterfaces.size());
 }
 
-PCAP::PCAP(device_errorhandler_t err, neodevice_t& forDevice) : err(err), device(forDevice) {
+PCAP::PCAP(device_errorhandler_t err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
 	if(IsHandleValid(device.handle)) {
 		interface = knownInterfaces[(device.handle >> 24) & 0xFF];
 		interface.fp = nullptr; // We're going to open our own connection to the interface. This should already be nullptr but just in case.
@@ -191,7 +191,7 @@ bool PCAP::open() {
 		return false;
 
 	// Open the interface
-	interface.fp = pcap_open_live(interface.nameFromWinPCAP.c_str(), INT16_MAX, 1, 0, errbuf);
+	interface.fp = pcap_open_live(interface.nameFromPCAP.c_str(), INT16_MAX, 1, 0, errbuf);
 	if(interface.fp == nullptr) {
 		err(APIError::DriverFailedToOpen);
 		return false;
@@ -277,6 +277,7 @@ void PCAP::writeTask() {
 		if(!closing)
 			pcap_sendpacket(interface.fp, bs.data(), (int)bs.size());
 		// TODO Handle packet send errors
+		onWrite();
 	}
 }
 

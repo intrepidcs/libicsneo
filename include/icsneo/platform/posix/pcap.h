@@ -26,7 +26,6 @@ public:
 	bool isOpen();
 	bool close();
 private:
-	device_errorhandler_t err;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
 	neodevice_t& device;
 	uint8_t deviceMAC[6];
@@ -38,8 +37,8 @@ private:
 	public:
 		uint8_t uuid;
 		uint8_t macAddress[8];
-		std::string nameFromWinPCAP;
-		std::string descriptionFromWinPCAP;
+		std::string nameFromPCAP;
+		std::string descriptionFromPCAP;
 		std::string fullName;
 		pcap_t* fp = nullptr;
 		pcap_stat stats;
