@@ -63,6 +63,7 @@ static constexpr const char* ERROR_FAILED_TO_READ = "A read operation failed.";
 static constexpr const char* ERROR_FAILED_TO_WRITE = "A write operation failed.";
 static constexpr const char* ERROR_DRIVER_FAILED_TO_OPEN = "The device driver encountered a low-level error while opening the device.";
 static constexpr const char* ERROR_PACKET_CHECKSUM_ERROR = "There was a checksum error while decoding a packet. The packet was dropped.";
+static constexpr const char* ERROR_TRANSMIT_BUFFER_FULL = "The transmit buffer is full and the device is set to non-blocking.";
 static constexpr const char* ERROR_PCAP_COULD_NOT_START = "The PCAP driver could not be started. Ethernet devices will not be found.";
 static constexpr const char* ERROR_PCAP_COULD_NOT_FIND_DEVICES = "The PCAP driver failed to find devices. Ethernet devices will not be found.";
 
@@ -110,6 +111,8 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_DRIVER_FAILED_TO_OPEN;
 		case PacketChecksumError:
 			return ERROR_PACKET_CHECKSUM_ERROR;
+		case TransmitBufferFull:
+			return ERROR_TRANSMIT_BUFFER_FULL;
 		case PCAPCouldNotStart:
 			return ERROR_PCAP_COULD_NOT_START;
 		case PCAPCouldNotFindDevices:
@@ -154,6 +157,7 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case FailedToWrite:
 		case DriverFailedToOpen:
 		case PacketChecksumError:
+		case TransmitBufferFull:
 		// Other Errors
 		case TooManyErrors:
 		case Unknown:

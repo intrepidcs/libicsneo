@@ -11,7 +11,7 @@ namespace icsneo {
 
 class STM32 : public ICommunication {
 public:
-	STM32(device_errorhandler_t err, neodevice_t& forDevice) : device(forDevice), err(err) {}
+	STM32(const device_errorhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {}
 	static std::vector<neodevice_t> FindByProduct(int product);
 
 	bool open();
@@ -20,7 +20,6 @@ public:
 
 private:
 	neodevice_t& device;
-	device_errorhandler_t err;
 	int fd = -1;
 	static constexpr neodevice_handle_t HANDLE_OFFSET = 10;
 

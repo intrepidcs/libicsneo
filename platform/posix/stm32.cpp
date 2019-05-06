@@ -285,5 +285,6 @@ void STM32::writeTask() {
 		ssize_t actualWritten = ::write(fd, writeOp.bytes.data(), writeSize);
 		if(actualWritten != writeSize)
 			err(APIError::FailedToWrite);
+		onWrite();
 	}
 }

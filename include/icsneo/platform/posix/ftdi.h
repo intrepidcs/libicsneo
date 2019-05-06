@@ -16,7 +16,7 @@ class FTDI : public ICommunication {
 public:
 	static std::vector<neodevice_t> FindByProduct(int product);
 
-	FTDI(device_errorhandler_t err, neodevice_t& forDevice);
+	FTDI(const device_errorhandler_t& err, neodevice_t& forDevice);
 	~FTDI() { close(); }
 	bool open();
 	bool close();
@@ -56,7 +56,6 @@ private:
 	bool openable; // Set to false in the constructor if the object has not been found in searchResultDevices
 
 	neodevice_t& device;
-	device_errorhandler_t err;
 };
 
 }

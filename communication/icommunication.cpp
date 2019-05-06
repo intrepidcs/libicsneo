@@ -39,5 +39,16 @@ bool ICommunication::readWait(std::vector<uint8_t>& bytes, std::chrono::millisec
 }
 
 bool ICommunication::write(const std::vector<uint8_t>& bytes) {
+	if(writeBlocks) {
+		std::unique_lock<std::mutex> lk(writeMutex);
+		if(writeQueue.size_approx() > writeQueueSize) {
+			writeCV.wait(lk);
+		}
+	} else {
+		if(writeQueue.size_approx() > writeQueueSize) {
+			err(APIError::TransmitBufferFull);
+			return false;
+		}
+	}
 	return writeQueue.enqueue(WriteOperation(bytes));
 }

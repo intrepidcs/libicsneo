@@ -54,6 +54,7 @@ public:
 		FailedToWrite = 0x3001,
 		DriverFailedToOpen = 0x3002,
 		PacketChecksumError = 0x3003,
+		TransmitBufferFull = 0x3004,
 		PCAPCouldNotStart = 0x3102,
 		PCAPCouldNotFindDevices = 0x3103,
 

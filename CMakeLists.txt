@@ -164,6 +164,16 @@ target_include_directories(icsneoc
 )
 target_link_libraries(icsneoc PRIVATE icsneocpp)
 
+add_library(icsneoc-static STATIC api/icsneoc/icsneoc.cpp)
+target_include_directories(icsneoc-static
+	PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+		$<INSTALL_INTERFACE:>
+	PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_link_libraries(icsneoc-static PUBLIC icsneocpp)
+
 add_library(icsneolegacy SHARED
 	api/icsneolegacy/icsneolegacy.cpp
 	api/icsneolegacy/icsneolegacyextra.cpp
@@ -180,6 +190,7 @@ target_link_libraries(icsneolegacy PRIVATE icsneocpp)
 
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+target_compile_features(icsneoc-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 target_compile_features(icsneolegacy PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 
 # libftdi

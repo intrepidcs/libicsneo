@@ -14,6 +14,9 @@
 #include <map>
 #include <algorithm>
 
+#include <cstring>
+#include <climits>
+
 #ifdef _MSC_VER
 #pragma warning(disable : 4100) // unreferenced formal parameter
 #endif
@@ -41,7 +44,6 @@ static void NeoMessageToSpyMessage(const neomessage_t& newmsg, icsSpyMessage& ol
 	oldmsg.ExtraDataPtr = (void*)newmsg.data;
 	memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
 	oldmsg.ArbIDOrHeader = *(uint32_t*)newmsg.header;
-	oldmsg.ExtraDataPtrEnabled = newmsg.length > 8;
 	oldmsg.NetworkID = (uint8_t)newmsg.netid; // Note: NetID remapping from the original API is not supported
 	oldmsg.StatusBitField = newmsg.status.statusBitfield[0];
 	oldmsg.StatusBitField2 = newmsg.status.statusBitfield[1];
@@ -65,7 +67,7 @@ int icsneoFindDevices(NeoDeviceEx* devs, int* devCount, unsigned int* devTypes, 
 	if(devCount == nullptr)
 		return 0;
 	
-	unsigned int devTypesDefault[] = { NEODEVICE_ALL };
+	unsigned int devTypesDefault[] = { std::numeric_limits<unsigned int>::max() };
 	if(devTypes == nullptr || devTypeCount == 0) {
 		devTypes = devTypesDefault;
 		devTypeCount = 1;
@@ -184,24 +186,7 @@ int icsneoGetMessages(void* hObject, icsSpyMessage* pMsg, int* pNumberOfMessages
 }
 
 int icsneoTxMessages(void* hObject, icsSpyMessage* pMsg, int lNetworkID, int lNumMessages) {
-	if(!icsneoValidateHObject(hObject))
-		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
-	std::vector<uint8_t> data;
-	neomessage_t newmsg = {};
-	newmsg.netid = (uint16_t)lNetworkID;
-	memcpy(newmsg.header, &pMsg[0].ArbIDOrHeader, sizeof(newmsg.header));
-	for(int i = 0; i < lNumMessages; i++)
-		data.insert(data.end(), pMsg[i].Data, pMsg[i].Data + pMsg[i].NumberBytesData);
-	newmsg.data = data.data();
-	newmsg.length = data.size();
-	newmsg.status.statusBitfield[0] = pMsg[0].StatusBitField;
-	newmsg.status.statusBitfield[1] = pMsg[0].StatusBitField2;
-	newmsg.status.statusBitfield[2] = pMsg[0].StatusBitField3;
-	newmsg.status.statusBitfield[3] = pMsg[0].StatusBitField4;
-	if(pMsg[0].Protocol == SPY_PROTOCOL_CANFD)
-		newmsg.status.canfdFDF = true;
-	return icsneo_transmit(device, &newmsg);
+	return icsneoTxMessagesEx(hObject, pMsg, lNetworkID, lNumMessages, nullptr, 0);
 }
 
 int icsneoTxMessagesEx(void* hObject, icsSpyMessage* pMsg, unsigned int lNetworkID, unsigned int lNumMessages, unsigned int* NumTxed, unsigned int zero2) {
@@ -209,6 +194,9 @@ int icsneoTxMessagesEx(void* hObject, icsSpyMessage* pMsg, unsigned int lNetwork
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
 	neomessage_t newmsg;
+	unsigned int temp = 0;
+	if(NumTxed == nullptr)
+		NumTxed = &temp;
 	*NumTxed = 0;
 	for(unsigned int i = 0; i < lNumMessages; i++) {
 		const icsSpyMessage& oldmsg = pMsg[i];
@@ -216,7 +204,7 @@ int icsneoTxMessagesEx(void* hObject, icsSpyMessage* pMsg, unsigned int lNetwork
 		newmsg.netid = (uint16_t)lNetworkID;
 		memcpy(newmsg.header, &oldmsg.ArbIDOrHeader, sizeof(newmsg.header));
 		newmsg.length = oldmsg.NumberBytesData | (oldmsg.NodeID << 8);
-		if (oldmsg.ExtraDataPtrEnabled)
+		if (oldmsg.ExtraDataPtr != nullptr)
 			newmsg.data = reinterpret_cast<const uint8_t*>(oldmsg.ExtraDataPtr);
 		else
 			newmsg.data = oldmsg.Data;
