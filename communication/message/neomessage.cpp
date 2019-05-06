@@ -14,6 +14,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 	neomsg.length = message->data.size();
 	neomsg.data = message->data.data();
 	neomsg.timestamp = message->timestamp;
+	neomsg.timestampMultiplier = message->timestampMultiplier;
 	neomsg.status.globalError = message->error;
 	neomsg.status.transmitMessage = message->transmitted;
 
