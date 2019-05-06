@@ -29,6 +29,7 @@ public:
 	static uint32_t SerialStringToNum(const std::string& serial);
 	static bool SerialStringIsNumeric(const std::string& serial);
 
+	uint16_t getTimestampResolution() const;
 	DeviceType getType() const { return DeviceType(data.type); }
 	uint16_t getProductId() const { return productId; }
 	std::string getSerial() const { return data.serial; }

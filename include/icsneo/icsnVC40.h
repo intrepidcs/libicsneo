@@ -398,6 +398,18 @@ typedef unsigned __int64 uint64_t;
 #define NEOVI_RED_TIMESTAMP_2_10NS 429.4967296
 #define NEOVI_RED_TIMESTAMP_1_10NS 0.000000010
 
+#define HARDWARE_TIMESTAMP_ID_NONE (unsigned char)0
+#define HARDWARE_TIMESTAMP_ID_VSI (unsigned char)1
+#define HARDWARE_TIMESTAMP_ID_AVT_716 (unsigned char)2
+#define HARDWARE_TIMESTAMP_ID_NI_CAN (unsigned char)3
+#define HARDWARE_TIMESTAMP_ID_NEOVI (unsigned char)4
+#define HARDWARE_TIMESTAMP_ID_AVT_717 (unsigned char)5
+#define HARDWARE_TIMESTAMP_ID_NEOv6_VCAN (unsigned char)6
+#define HARDWARE_TIMESTAMP_ID_DOUBLE_SEC (unsigned char)7
+#define HARDWARE_TIMESTAMP_ID_NEORED_10US (unsigned char)8
+#define HARDWARE_TIMESTAMP_ID_NEORED_25NS (unsigned char)9
+#define HARDWARE_TIMESTAMP_ID_NEORED_10NS (unsigned char)10
+
 typedef struct
 {
 	uint32_t DeviceType;

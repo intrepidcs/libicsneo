@@ -598,3 +598,19 @@ bool icsneo_getSupportedDevices(devicetype_t* devices, size_t* count) {
 
 	return true;
 }
+
+extern bool DLLExport icsneo_getTimestampResolution(const neodevice_t* device, uint16_t* resolution)
+{
+	if (!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return false;
+	}
+
+	if (resolution == nullptr) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		return false;
+	}
+
+	*resolution = device->device->getTimestampResolution();
+	return true;
+}

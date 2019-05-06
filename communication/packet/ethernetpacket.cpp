@@ -40,8 +40,8 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	if(message.frameTooShort)
 		message.error = true;
 
-	// This timestamp is raw off the device (in timestampMultiplier increments)
-	// Decoder will fix as it has information about the timestampMultiplier increments
+	// This timestamp is raw off the device (in timestampResolution increments)
+	// Decoder will fix as it has information about the timestampResolution increments
 	message.timestamp = packet->timestamp.TS;
 
 	// Network ID is also not set, this will be fixed in the Decoder as well

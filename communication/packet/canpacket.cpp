@@ -17,8 +17,8 @@ std::shared_ptr<CANMessage> HardwareCANPacket::DecodeToMessage(const std::vector
 		msg->arbid = data->header.SID;
 	}
 
-	// This timestamp is raw off the device (in timestampMultiplier increments)
-	// Decoder will fix as it has information about the timestampMultiplier increments
+	// This timestamp is raw off the device (in timestampResolution increments)
+	// Decoder will fix as it has information about the timestampResolution increments
 	msg->timestamp = data->timestamp.TS;
 
 	// DLC

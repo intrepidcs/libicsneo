@@ -37,7 +37,7 @@ static NeoDevice OldNeoDeviceFromNew(const neodevice_t* newnd) {
 	return oldnd;
 }
 
-static void NeoMessageToSpyMessage(const neomessage_t& newmsg, icsSpyMessage& oldmsg) {
+static void NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t& newmsg, icsSpyMessage& oldmsg) {
 	memset(&oldmsg, 0, sizeof(icsSpyMessage));
 	oldmsg.NumberBytesData = (uint8_t)std::min(newmsg.length, (size_t)255);
 	oldmsg.NumberBytesHeader = 4;
@@ -58,6 +58,25 @@ static void NeoMessageToSpyMessage(const neomessage_t& newmsg, icsSpyMessage& ol
 		case Network::Type::Ethernet:
 			oldmsg.Protocol = SPY_PROTOCOL_ETHERNET;
 			break;
+	}
+	
+	// Timestamp - epoch = 1/1/2007 - 25ns per tick most of the time
+	uint64_t t = newmsg.timestamp;
+	uint16_t res = 0;
+	if (icsneo_getTimestampResolution(device, &res)) {
+		t /= res;
+		oldmsg.TimeHardware2 = (unsigned long)(t >> 32);
+		oldmsg.TimeHardware = (unsigned long)(t & 0xFFFFFFFF);
+		switch (res) {
+			case 25:
+				oldmsg.TimeStampHardwareID = HARDWARE_TIMESTAMP_ID_NEORED_25NS;
+				break;
+			case 10:
+				oldmsg.TimeStampHardwareID = HARDWARE_TIMESTAMP_ID_NEORED_10NS;
+				break;
+			default:
+				oldmsg.TimeStampHardwareID = HARDWARE_TIMESTAMP_ID_NONE;
+		}
 	}
 }
 
@@ -180,7 +199,7 @@ int icsneoGetMessages(void* hObject, icsSpyMessage* pMsg, int* pNumberOfMessages
 	*pNumberOfErrors = 0;
 
 	for(size_t i = 0; i < messageCount; i++)
-		NeoMessageToSpyMessage(messages[i], pMsg[i]);
+		NeoMessageToSpyMessage(device, messages[i], pMsg[i]);
 
 	return true;
 }
@@ -226,8 +245,26 @@ int icsneoEnableNetworkRXQueue(void* hObject, int iEnable) {
 }
 
 int icsneoGetTimeStampForMsg(void* hObject, icsSpyMessage* pMsg, double* pTimeStamp) {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+
+	uint16_t resolution = 0;
+	if (!icsneo_getTimestampResolution(device, &resolution))
+		return false;
+
+	// Convert back to ticks
+	uint64_t ticks = pMsg->TimeHardware2;
+	ticks <<= 32;
+	ticks += pMsg->TimeHardware;
+
+	// convert to ns
+	ticks *= resolution;
+
+	// icsneoGetTimeStampForMsg() expects pTimeStamp to be in seconds
+	*pTimeStamp = ticks / (double)1000000000;
+
+	return true;
 }
 
 void icsneoGetISO15765Status(void* hObject, int lNetwork, int lClearTxStatus, int lClearRxStatus, int*lTxStatus, int*lRxStatus) {
