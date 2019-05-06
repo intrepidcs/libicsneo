@@ -35,13 +35,13 @@ protected:
 		encoder.supportCANFD = false; // VCAN 4-1 does not support CAN FD
 	}
 
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 
 	// The supported TX networks are the same as the supported RX networks for this device
-	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 private:
 	ValueCAN4_1(neodevice_t neodevice) : ValueCAN4(neodevice) {

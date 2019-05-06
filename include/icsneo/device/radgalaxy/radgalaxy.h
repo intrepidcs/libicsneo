@@ -102,13 +102,13 @@ protected:
 		decoder.timestampResolution = 10; // Timestamps are in 10ns increments instead of the usual 25ns
 	}
 
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 
 	// The supported TX networks are the same as the supported RX networks for this device
-	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 };
 
 }
