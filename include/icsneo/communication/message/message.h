@@ -12,7 +12,6 @@ public:
 	Network network;
 	std::vector<uint8_t> data;
 	uint64_t timestamp = 0;
-	int timestampMultiplier = 0;
 	uint16_t description = 0;
 	bool transmitted = false;
 	bool error = false;

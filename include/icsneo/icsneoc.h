@@ -627,13 +627,13 @@ extern size_t DLLExport icsneo_getErrorLimit(void);
 extern bool DLLExport icsneo_getSupportedDevices(devicetype_t* devices, size_t* count);
 
 /**
- * \brief Get the devices timestamp multiplier
- * \param[out] device A pointer to a buffer of devicetype_t structures which will be written to.
- * \param[inout] multiplier A pointer to an int, for legacy tick rate to ns
+ * \brief Get the timestamp resolution for the given device
+ * \param[out] device A pointer to the neodevice_t structure specifying the device to read out the timestamp for.
+ * \param[out] resolution A pointer to a uint16_t where the resolution will be stored. This value is in nanoseconds.
 
- * \returns True unless device is invalid
+ * \returns True if the resolution was written
  */
-extern bool DLLExport icsneo_getTimestampMultiplier(const neodevice_t* device, int* multiplier);
+extern bool DLLExport icsneo_getTimestampResolution(const neodevice_t* device, uint16_t* resolution);
 
 
 

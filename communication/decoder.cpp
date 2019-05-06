@@ -25,10 +25,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			if(!result)
 				return false; // A nullptr was returned, the packet was not long enough to decode
 
-			// Timestamps are in (multiplier) ns increments since 1/1/2007 GMT 00:00:00.0000
-			// The resolution (multiplier) depends on the device
-			result->timestamp *= timestampMultiplier;
-			result->timestampMultiplier = timestampMultiplier;
+			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
+			// The resolution depends on the device
+			result->timestamp *= timestampResolution;
 			result->network = packet->network;
 			return true;
 		case Network::Type::CAN:
@@ -41,10 +40,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			if(!result)
 				return false; // A nullptr was returned, the packet was malformed
 
-			// Timestamps are in (multiplier) ns increments since 1/1/2007 GMT 00:00:00.0000
-			// The resolution (multiplier) depends on the device
-			result->timestamp *= timestampMultiplier; 
-			result->timestampMultiplier = timestampMultiplier;
+			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
+			// The resolution depends on the device
+			result->timestamp *= timestampResolution;
 			result->network = packet->network;
 			return true;
 		}

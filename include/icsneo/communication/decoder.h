@@ -19,7 +19,7 @@ public:
 	Decoder(device_errorhandler_t err) : err(err) {}
 	bool decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet);
 
-	int timestampMultiplier = 25;
+	uint16_t timestampResolution = 25;
 
 private:
 	device_errorhandler_t err;
