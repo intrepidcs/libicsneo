@@ -151,13 +151,15 @@ bool Device::open() {
 			break;
 	}
 	if(!serial) {
-		err(APIError::NoSerialNumber);
+		err(APIError::NoSerialNumber); // Communication could not be established with the device. Perhaps it is not powered with 12 volts?
+		com->close();
 		return false;
 	}
 	
 	std::string currentSerial = getNeoDevice().serial;
 	if(currentSerial != serial->deviceSerial) {
 		err(APIError::IncorrectSerialNumber);
+		com->close();
 		return false;
 	}
 	
