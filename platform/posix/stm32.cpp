@@ -200,9 +200,10 @@ bool STM32::open() {
 		return false;
 	}
 
-	struct termios tty;
+	struct termios tty = {};
+	struct termios compare = {};
 
-	if(tcgetattr(fd, &tty) < 0) {
+	if(tcgetattr(fd, &tty) != 0) {
 		close();
 		return false;
 	}
@@ -225,6 +226,11 @@ bool STM32::open() {
 	tty.c_cc[VTIME] = 1; // 100ms timeout (1 decisecond, what?)
 
 	if(tcsetattr(fd, TCSAFLUSH, &tty) != 0) { // Flushes input and output buffers as well as setting settings
+		close();
+		return false;
+	}
+
+	if(tcgetattr(fd, &compare) != 0 || memcmp(&tty, &compare, sizeof(struct termios)) != 0) {
 		close();
 		return false;
 	}
