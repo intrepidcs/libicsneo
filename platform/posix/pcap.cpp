@@ -167,7 +167,7 @@ bool PCAP::IsHandleValid(neodevice_handle_t handle) {
 	return (netifIndex < knownInterfaces.size());
 }
 
-PCAP::PCAP(device_errorhandler_t err, neodevice_t& forDevice) : err(err), device(forDevice) {
+PCAP::PCAP(device_errorhandler_t err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
 	if(IsHandleValid(device.handle)) {
 		interface = knownInterfaces[(device.handle >> 24) & 0xFF];
 		interface.fp = nullptr; // We're going to open our own connection to the interface. This should already be nullptr but just in case.
