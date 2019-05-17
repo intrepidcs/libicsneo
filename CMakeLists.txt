@@ -101,6 +101,7 @@ set(COMMON_SRC
 )
 
 set(SRC_FILES ${COMMON_SRC} ${PLATFORM_SRC})
+set(INSTALLTARGETS "")
 
 # Generate build info header
 execute_process(
@@ -134,6 +135,7 @@ target_include_directories(icsneocpp
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
+list(APPEND INSTALLTARGETS icsneocpp)
 
 # libftdi
 if(NOT WIN32)
@@ -163,6 +165,7 @@ target_include_directories(icsneoc
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_link_libraries(icsneoc PRIVATE icsneocpp)
+list(APPEND INSTALLTARGETS icsneoc)
 
 add_library(icsneoc-static STATIC api/icsneoc/icsneoc.cpp)
 target_include_directories(icsneoc-static
@@ -173,6 +176,7 @@ target_include_directories(icsneoc-static
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_link_libraries(icsneoc-static PUBLIC icsneocpp)
+list(APPEND INSTALLTARGETS icsneoc-static)
 
 add_library(icsneolegacy SHARED
 	api/icsneolegacy/icsneolegacy.cpp
@@ -187,6 +191,7 @@ target_include_directories(icsneolegacy
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_link_libraries(icsneolegacy PRIVATE icsneocpp)
+list(APPEND INSTALLTARGETS icsneolegacy)
 
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
@@ -200,6 +205,13 @@ if(NOT WIN32)
 	target_link_libraries(icsneocpp PUBLIC ftdi1-static)
 	target_link_libraries(icsneocpp PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 endif()
+
+install(TARGETS ${INSTALLTARGETS}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
