@@ -6,3 +6,4 @@ Thumbs.db
 third-party/concurrentqueue/benchmarks
 third-party/concurrentqueue/tests
 *.bak
+.vs
