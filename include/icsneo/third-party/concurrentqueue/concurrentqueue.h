@@ -3640,4 +3640,6 @@ inline void swap(typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& a, ty
 #pragma GCC diagnostic pop
 #endif
 
+#if defined(_MSC_VAR)
 #pragma warning(pop)
+#endif

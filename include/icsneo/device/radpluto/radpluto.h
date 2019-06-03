@@ -84,7 +84,7 @@ protected:
 
 	virtual void setupDecoder(Decoder& decoder) override {
 		Device::setupDecoder(decoder);
-		decoder.timestampMultiplier = 10; // Timestamps are in 10ns increments instead of the usual 25ns
+		decoder.timestampResolution = 10; // Timestamps are in 10ns increments instead of the usual 25ns
 	}
 
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
