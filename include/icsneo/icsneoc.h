@@ -574,7 +574,7 @@ extern bool DLLExport icsneo_getDeviceErrors(const neodevice_t* device, neoerror
  * 
  * See icsneo_getErrors() for more information about the error system.
  * 
- * This operation removes the returned error from the buffer, so subsequent calls to error functions will not inlcude the error.
+ * This operation removes the returned error from the buffer, so subsequent calls to error functions will not include the error.
  */
 extern bool DLLExport icsneo_getLastError(neoerror_t* error);
 
