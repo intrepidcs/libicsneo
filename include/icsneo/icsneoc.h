@@ -2,6 +2,8 @@
 #define __ICSNEOC_H_
 
 #include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include "icsneo/device/neodevice.h" // For neodevice_t
 #include "icsneo/communication/message/neomessage.h" // For neomessage_t and friends
 #include "icsneo/platform/dynamiclib.h" // Dynamic library loading and exporting
