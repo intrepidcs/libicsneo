@@ -9,7 +9,7 @@
 #include "icsneo/device/plasion/neoviion.h"
 #include "icsneo/device/plasion/neoviplasma.h"
 #include "icsneo/device/radgalaxy/radgalaxy.h"
-#include "icsneo/device/radgalaxy/radpluto.h"
+#include "icsneo/device/radpluto/radpluto.h"
 #include "icsneo/device/radstar2/radstar2eth.h"
 #include "icsneo/device/radstar2/radstar2usb.h"
 #include "icsneo/device/radsupermoon/radsupermoon.h"
