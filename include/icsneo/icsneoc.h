@@ -116,6 +116,17 @@ extern bool DLLExport icsneo_openDevice(const neodevice_t* device);
 extern bool DLLExport icsneo_closeDevice(const neodevice_t* device);
 
 /**
+ * \brief Verify network connection for the specified hardware
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \returns True if the device is connected.
+ * 
+ * This function does not modify the working state of the device at all.
+ * 
+ * See icsneo_openDevice() for an explanation about the concept of being "open".
+ */
+extern bool DLLExport icsneo_isOpen(const neodevice_t* device);
+
+/**
  * \brief Enable network communication for the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if communication could be enabled.
@@ -135,7 +146,7 @@ extern bool DLLExport icsneo_goOnline(const neodevice_t* device);
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if communication could be disabled.
  * 
- * See icsneo_goOnline() for an explaination about the concept of being "online".
+ * See icsneo_goOnline() for an explanation about the concept of being "online".
  */
 extern bool DLLExport icsneo_goOffline(const neodevice_t* device);
 
@@ -146,7 +157,7 @@ extern bool DLLExport icsneo_goOffline(const neodevice_t* device);
  * 
  * This function does not modify the working state of the device at all.
  * 
- * See icsneo_goOnline() for an explaination about the concept of being "online".
+ * See icsneo_goOnline() for an explanation about the concept of being "online".
  */
 extern bool DLLExport icsneo_isOnline(const neodevice_t* device);
 
@@ -667,6 +678,9 @@ fn_icsneo_openDevice icsneo_openDevice;
 typedef bool(*fn_icsneo_closeDevice)(const neodevice_t* device);
 fn_icsneo_closeDevice icsneo_closeDevice;
 
+typedef bool(*fn_icsneo_isOpen)(const neodevice_t* device);
+fn_icsneo_isOpen icsneo_isOpen;
+
 typedef bool(*fn_icsneo_goOnline)(const neodevice_t* device);
 fn_icsneo_goOnline icsneo_goOnline;
 
@@ -784,6 +798,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_isValidNeoDevice);
 	ICSNEO_IMPORTASSERT(icsneo_openDevice);
 	ICSNEO_IMPORTASSERT(icsneo_closeDevice);
+	ICSNEO_IMPORTASSERT(icsneo_isOpen);
 	ICSNEO_IMPORTASSERT(icsneo_goOnline);
 	ICSNEO_IMPORTASSERT(icsneo_goOffline);
 	ICSNEO_IMPORTASSERT(icsneo_isOnline);

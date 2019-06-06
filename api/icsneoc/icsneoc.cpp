@@ -143,6 +143,15 @@ bool icsneo_closeDevice(const neodevice_t* device) {
 	return true;
 }
 
+bool icsneo_isOpen(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device)) {
+		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+		return false;
+	}
+
+	return device->device->isOpen();
+}
+
 bool icsneo_goOnline(const neodevice_t* device) {
 	if(!icsneo_isValidNeoDevice(device)) {
 		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
