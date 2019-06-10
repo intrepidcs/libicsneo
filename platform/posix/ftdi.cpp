@@ -44,9 +44,11 @@ FTDI::FTDI(const device_errorhandler_t& err, neodevice_t& forDevice) : ICommunic
 }
 
 bool FTDI::open() {
-	if(isOpen())
+	if(isOpen()) {
+		err(APIError::DeviceCurrentlyOpen);
 		return false;
-
+	}
+		
 	if(!openable) {
 		err(APIError::InvalidNeoDevice);
 		return false;
@@ -74,9 +76,11 @@ bool FTDI::open() {
 }
 
 bool FTDI::close() {
-	if(!isOpen())
+	if(!isOpen()) {
+		err(APIError::DeviceCurrentlyClosed);
 		return false;
-
+	}
+		
 	closing = true;
 	
 	if(readThread.joinable())
@@ -86,7 +90,9 @@ bool FTDI::close() {
 		writeThread.join();
 
 	bool ret = ftdi.closeDevice();
-
+	if(ret != 0)
+		err(APIError::DriverFailedToClose);
+	
 	uint8_t flush;
 	WriteOperation flushop;
 	while(readQueue.try_dequeue(flush)) {}
@@ -156,12 +162,15 @@ int FTDI::FTDIContext::openDevice(int pid, const char* serial) {
 bool FTDI::FTDIContext::closeDevice() {
 	if(context == nullptr)
 		return false;
+	
+		
 	if(!deviceOpen)
 		return true;
 
 	int ret = ftdi_usb_close(context);
-	if(ret != 0)
+	if(ret != 0) 
 		return false;
+		
 	deviceOpen = false;
 	return true;
 }

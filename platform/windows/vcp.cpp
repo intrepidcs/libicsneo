@@ -183,8 +183,10 @@ bool VCP::IsHandleValid(neodevice_handle_t handle) {
 }
 
 bool VCP::open(bool fromAsync) {
-	if(isOpen() || (!fromAsync && opening))
+	if(isOpen() || (!fromAsync && opening)) {
+		err(APIError::DeviceCurrentlyOpen);
 		return false;
+	}
 
 	if(!IsHandleValid(device.handle)) {
 		err(APIError::DriverFailedToOpen);
@@ -216,6 +218,7 @@ bool VCP::open(bool fromAsync) {
 	COMMTIMEOUTS timeouts;
 	if(!GetCommTimeouts(handle, &timeouts)) {
 		close();
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
@@ -288,9 +291,11 @@ void VCP::openAsync(fn_boolCallback callback) {
 }
 
 bool VCP::close() {
-	if(!isOpen())
+	if(!isOpen()) {
+		err(APIError::DeviceCurrentlyClosed);
 		return false;
-
+	}
+		
 	closing = true; // Signal the threads that we are closing
 	for(auto& t : threads)
 		t->join(); // Wait for the threads to close
@@ -298,9 +303,11 @@ bool VCP::close() {
 	writeThread.join();
 	closing = false;
 
-	if(!CloseHandle(handle))
+	if(!CloseHandle(handle)) {
+		err(APIError::DriverFailedToClose);
 		return false;
-
+	}
+		
 	handle = INVALID_HANDLE_VALUE;
 
 	bool ret = true; // If one of the events fails closing, we probably still want to try and close the others
@@ -325,6 +332,9 @@ bool VCP::close() {
 	while(readQueue.try_dequeue(flush)) {}
 	while(writeQueue.try_dequeue(flushop)) {}
 
+	if(!ret)
+		err(APIError::DriverFailedToClose);
+	
 	// TODO Set up some sort of shared memory, free which COM port we had open so we can try to open it again
 
 	return ret;

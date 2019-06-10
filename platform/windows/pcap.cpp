@@ -194,14 +194,20 @@ PCAP::PCAP(const device_errorhandler_t& err, neodevice_t& forDevice) : ICommunic
 }
 
 bool PCAP::open() {
-	if(!openable)
+	if(!openable) {
+		err(APIError::InvalidNeoDevice);
 		return false;
+	}
 
-	if(!pcap.ok())
+	if(!pcap.ok()) {
+		err(APIError::DriverFailedToOpen);
 		return false;
+	}
 
-	if(isOpen())
+	if(isOpen()) {
+		err(APIError::DeviceCurrentlyOpen);
 		return false;
+	}	
 
 	// Open the interface
 	interface.fp = pcap.open(interface.nameFromWinPCAP.c_str(), 100, PCAP_OPENFLAG_PROMISCUOUS | PCAP_OPENFLAG_MAX_RESPONSIVENESS, 1, nullptr, errbuf);
@@ -222,8 +228,10 @@ bool PCAP::isOpen() {
 }
 
 bool PCAP::close() {
-	if(!isOpen())
+	if(!isOpen()) {
+		err(APIError::DeviceCurrentlyClosed);
 		return false;
+	}
 
 	closing = true; // Signal the threads that we are closing
 	readThread.join();

@@ -18,11 +18,12 @@ using namespace icsneo;
 int Communication::messageCallbackIDCounter = 1;
 
 bool Communication::open() {
-	if(isOpen)
-		return true;
-
+	if(isOpen()) {
+		err(APIError::DeviceCurrentlyOpen);
+		return false;
+	}
+	
 	spawnThreads();
-	isOpen = true;
 	return impl->open();
 }
 
@@ -38,13 +39,18 @@ void Communication::joinThreads() {
 }
 
 bool Communication::close() {
-	if(!isOpen)
+	if(!isOpen()) {
+		err(APIError::DeviceCurrentlyClosed);
 		return false;
+	}
 
-	isOpen = false;
 	joinThreads();
 
 	return impl->close();
+}
+
+bool Communication::isOpen() {
+	return impl->isOpen();
 }
 
 bool Communication::sendPacket(std::vector<uint8_t>& bytes) {

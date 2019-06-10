@@ -135,17 +135,14 @@ void Device::enforcePollingMessageLimit() {
 }
 
 bool Device::open() {
-	if(opened) {
-		return false;
-	}
-
 	if(!com) {
 		err(APIError::Unknown);
 		return false;
 	}
 
-	if(!com->open())
+	if(!com->open()) {
 		return false;
+	}
 
 	auto serial = com->getSerialNumberSync();
 	int i = 0;
@@ -179,10 +176,6 @@ bool Device::open() {
 }
 
 bool Device::close() {
-	if(!opened) {
-		return false;
-	}
-
 	if(!com) {
 		err(APIError::Unknown);
 		return false;

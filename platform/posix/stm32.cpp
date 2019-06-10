@@ -191,6 +191,10 @@ std::vector<neodevice_t> STM32::FindByProduct(int product) {
 }
 
 bool STM32::open() {
+	if(isOpen()) {
+		err(APIError::DeviceCurrentlyOpen);
+		return false;
+	}
 	std::stringstream ss;
 	ss << "/dev/ttyACM" << (int)(device.handle - HANDLE_OFFSET);
 	fd = ::open(ss.str().c_str(), O_RDWR | O_NOCTTY | O_SYNC);
@@ -205,6 +209,7 @@ bool STM32::open() {
 
 	if(tcgetattr(fd, &tty) != 0) {
 		close();
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
@@ -227,6 +232,7 @@ bool STM32::open() {
 
 	if(tcsetattr(fd, TCSAFLUSH, &tty) != 0) { // Flushes input and output buffers as well as setting settings
 		close();
+		err(APIError::DriverFailedToOpen);
 		return false;
 	}
 
@@ -247,8 +253,10 @@ bool STM32::isOpen() {
 }
 
 bool STM32::close() {
-	if(!isOpen())
+	if(!isOpen()) {
+		err(APIError::DeviceCurrentlyClosed);
 		return false;
+	}
 
 	closing = true;
 
@@ -268,7 +276,12 @@ bool STM32::close() {
 	while (readQueue.try_dequeue(flush)) {}
 	while (writeQueue.try_dequeue(flushop)) {}
 	
-	return ret == 0;
+	if(ret == 0) {
+		return true;
+	} else {
+		err(APIError::DriverFailedToClose);
+		return false;
+	}
 }
 
 void STM32::readTask() {

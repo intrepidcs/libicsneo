@@ -32,6 +32,7 @@ public:
 
 	bool open();
 	bool close();
+	bool isOpen();
 	virtual void spawnThreads();
 	virtual void joinThreads();
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return impl->write(bytes); }
@@ -62,8 +63,6 @@ protected:
 	std::atomic<bool> closing{false};
 
 private:
-	bool isOpen = false;
-
 	std::thread readTaskThread;
 	void readTask();
 };
