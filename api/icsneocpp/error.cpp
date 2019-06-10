@@ -47,6 +47,8 @@ static constexpr const char* ERROR_REQUIRED_PARAMETER_NULL = "A required paramet
 static constexpr const char* ERROR_BUFFER_INSUFFICIENT = "The provided buffer was insufficient. No data was written.";
 static constexpr const char* ERROR_OUTPUT_TRUNCATED = "The output was too large for the provided buffer and has been truncated.";
 static constexpr const char* ERROR_PARAMETER_OUT_OF_RANGE = "A parameter was out of range.";
+static constexpr const char* ERROR_DEVICE_CURRENTLY_OPEN = "The device is currently open. Perhaps a different device state was required.";
+static constexpr const char* ERROR_DEVICE_CURRENTLY_CLOSED = "The device is currently closed. Perhaps a different device state was required.";
 
 // Device Errors
 static constexpr const char* ERROR_POLLING_MESSAGE_OVERFLOW = "Too many messages have been recieved for the polling message buffer, some have been lost!";
@@ -62,6 +64,7 @@ static constexpr const char* ERROR_SETTINGS_NOT_AVAILABLE = "Settings are not av
 static constexpr const char* ERROR_FAILED_TO_READ = "A read operation failed.";
 static constexpr const char* ERROR_FAILED_TO_WRITE = "A write operation failed.";
 static constexpr const char* ERROR_DRIVER_FAILED_TO_OPEN = "The device driver encountered a low-level error while opening the device.";
+static constexpr const char* ERROR_DRIVER_FAILED_TO_CLOSE = "The device driver encountered a low-level error while closing the device.";
 static constexpr const char* ERROR_PACKET_CHECKSUM_ERROR = "There was a checksum error while decoding a packet. The packet was dropped.";
 static constexpr const char* ERROR_TRANSMIT_BUFFER_FULL = "The transmit buffer is full and the device is set to non-blocking.";
 static constexpr const char* ERROR_PCAP_COULD_NOT_START = "The PCAP driver could not be started. Ethernet devices will not be found.";
@@ -83,6 +86,10 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_OUTPUT_TRUNCATED;
 		case ParameterOutOfRange:
 			return ERROR_PARAMETER_OUT_OF_RANGE;
+		case DeviceCurrentlyOpen:
+			return ERROR_DEVICE_CURRENTLY_OPEN;
+		case DeviceCurrentlyClosed:
+			return ERROR_DEVICE_CURRENTLY_CLOSED;
 		
 		// Device Errors
 		case PollingMessageOverflow:
@@ -109,6 +116,8 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_FAILED_TO_WRITE;
 		case DriverFailedToOpen:
 			return ERROR_DRIVER_FAILED_TO_OPEN;
+		case DriverFailedToClose:
+			return ERROR_DRIVER_FAILED_TO_CLOSE;
 		case PacketChecksumError:
 			return ERROR_PACKET_CHECKSUM_ERROR;
 		case TransmitBufferFull:
@@ -132,6 +141,8 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 	switch(type) {
 		// API Warnings
 		case OutputTruncated:
+		case DeviceCurrentlyOpen:
+		case DeviceCurrentlyClosed:
 		// Device Warnings
 		case PollingMessageOverflow:
 		// Transport Warnings
@@ -144,6 +155,7 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case RequiredParameterNull:
 		case BufferInsufficient:
 		case ParameterOutOfRange:
+
 		// Device Errors
 		case NoSerialNumber:
 		case IncorrectSerialNumber:
@@ -156,6 +168,7 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case FailedToRead:
 		case FailedToWrite:
 		case DriverFailedToOpen:
+		case DriverFailedToClose:
 		case PacketChecksumError:
 		case TransmitBufferFull:
 		// Other Errors

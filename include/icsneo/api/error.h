@@ -38,6 +38,8 @@ public:
 		BufferInsufficient = 0x1002,
 		OutputTruncated = 0x1003,
 		ParameterOutOfRange = 0x1004,
+		DeviceCurrentlyOpen = 0x1005,
+		DeviceCurrentlyClosed = 0x1006,
 
 		// Device Errors
 		PollingMessageOverflow = 0x2000,
@@ -53,8 +55,9 @@ public:
 		FailedToRead = 0x3000,
 		FailedToWrite = 0x3001,
 		DriverFailedToOpen = 0x3002,
-		PacketChecksumError = 0x3003,
-		TransmitBufferFull = 0x3004,
+		DriverFailedToClose = 0x3003,
+		PacketChecksumError = 0x3004,
+		TransmitBufferFull = 0x3005,
 		PCAPCouldNotStart = 0x3102,
 		PCAPCouldNotFindDevices = 0x3103,
 
