@@ -59,6 +59,17 @@ static constexpr const char* ERROR_SETTINGS_VERSION = "The settings version is i
 static constexpr const char* ERROR_SETTINGS_LENGTH = "The settings length is incorrect, please update your firmware with neoVI Explorer.";
 static constexpr const char* ERROR_SETTINGS_CHECKSUM = "The settings checksum is incorrect, attempting to set defaults may remedy this issue.";
 static constexpr const char* ERROR_SETTINGS_NOT_AVAILABLE = "Settings are not available for this device.";
+static constexpr const char* ERROR_SETTINGS_READONLY = "Settings are read-only for this device.";
+static constexpr const char* ERROR_CAN_SETTINGS_NOT_AVAILABLE = "CAN settings are not available for this device.";
+static constexpr const char* ERROR_CANFD_SETTINGS_NOT_AVAILABLE = "CANFD settings are not available for this device.";
+static constexpr const char* ERROR_LSFTCAN_SETTINGS_NOT_AVAILABLE = "LSFTCAN settings are not available for this device.";
+static constexpr const char* ERROR_SWCAN_SETTINGS_NOT_AVAILABLE = "SWCAN settings are not available for this device.";
+static constexpr const char* ERROR_BAUDRATE_NOT_FOUND = "The baudrate was not found.";
+static constexpr const char* ERROR_BAD_NETWORK_TYPE = "The network type was not found.";
+static constexpr const char* ERROR_DEVICE_FIRMWARE_OUT_OF_DATE = "The device firmware is out of date. New API functionality may not be supported.";
+static constexpr const char* ERROR_SETTINGS_STRUCTURE_MISMATCH = "Unexpected settings structure for this device.";
+static constexpr const char* ERROR_SETTINGS_STRUCTURE_TRUNCATED = "Settings structure is longer than the device supports and will be truncated.";
+static constexpr const char* ERROR_NO_DEVICE_RESPONSE = "Expected a response from the device but none were found.";
 
 // Transport Errors
 static constexpr const char* ERROR_FAILED_TO_READ = "A read operation failed.";
@@ -108,6 +119,26 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_SETTINGS_CHECKSUM;
 		case SettingsNotAvailable:
 			return ERROR_SETTINGS_NOT_AVAILABLE;
+		case SettingsReadOnly:
+			return ERROR_SETTINGS_READONLY;
+		case CANSettingsNotAvailable:
+			return ERROR_CAN_SETTINGS_NOT_AVAILABLE;
+		case CANFDSettingsNotAvailable:
+			return ERROR_CANFD_SETTINGS_NOT_AVAILABLE;
+		case LSFTCANSettingsNotAvailable:
+			return ERROR_LSFTCAN_SETTINGS_NOT_AVAILABLE;
+		case SWCANSettingsNotAvailable:
+			return ERROR_SWCAN_SETTINGS_NOT_AVAILABLE;
+		case BaudrateNotFound:
+			return ERROR_BAUDRATE_NOT_FOUND;
+		case DeviceFirmwareOutOfDate:
+			return ERROR_DEVICE_FIRMWARE_OUT_OF_DATE;
+		case SettingsStructureMismatch:
+			return ERROR_SETTINGS_STRUCTURE_MISMATCH;
+		case SettingsStructureTruncated:
+			return ERROR_SETTINGS_STRUCTURE_TRUNCATED;
+		case NoDeviceResponse:
+			return ERROR_NO_DEVICE_RESPONSE;
 
 		// Transport Errors
 		case FailedToRead:
@@ -145,6 +176,8 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case DeviceCurrentlyClosed:
 		// Device Warnings
 		case PollingMessageOverflow:
+		case DeviceFirmwareOutOfDate:
+		case SettingsStructureTruncated:
 		// Transport Warnings
 		case PCAPCouldNotStart:
 		case PCAPCouldNotFindDevices:
@@ -164,6 +197,14 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case SettingsLengthError:
 		case SettingsChecksumError:
 		case SettingsNotAvailable:
+		case SettingsReadOnly:
+		case CANSettingsNotAvailable:
+		case CANFDSettingsNotAvailable:
+		case LSFTCANSettingsNotAvailable:
+		case SWCANSettingsNotAvailable:
+		case BaudrateNotFound:
+		case SettingsStructureMismatch:
+		case NoDeviceResponse:
 		// Transport Errors
 		case FailedToRead:
 		case FailedToWrite:

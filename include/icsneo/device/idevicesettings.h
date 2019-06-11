@@ -399,13 +399,17 @@ public:
 
 	const size_t& getSize() const { return structSize; }
 
+	// if settings are disabled for this device. always false unless constructed null
 	bool disabled = false;
+	
 	bool readonly = false;
 	bool disableGSChecksumming = false;
 protected:
 	std::shared_ptr<Communication> com;
 	device_errorhandler_t err;
 	size_t structSize;
+
+	// if we hold any local copies of the device settings
 	bool settingsLoaded = false;
 
 	std::vector<uint8_t> settings; // For writing settings to, calling apply() should copy over to device RAM (and EEPROM)

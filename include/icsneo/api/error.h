@@ -50,6 +50,17 @@ public:
 		SettingsLengthError = 0x2005,
 		SettingsChecksumError = 0x2006,
 		SettingsNotAvailable = 0x2007,
+		SettingsReadOnly = 0x2008,
+		CANSettingsNotAvailable = 0x2009,
+		CANFDSettingsNotAvailable = 0x2010,
+		LSFTCANSettingsNotAvailable = 0x2011,
+		SWCANSettingsNotAvailable = 0x2012,
+		BaudrateNotFound = 0x2013,
+		BadNetworkType = 0x2014,
+		DeviceFirmwareOutOfDate = 0x2015,
+		SettingsStructureMismatch = 0x2016,
+		SettingsStructureTruncated = 0x2017,
+		NoDeviceResponse = 0x2018,
 
 		// Transport Errors
 		FailedToRead = 0x3000,

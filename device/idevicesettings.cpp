@@ -183,8 +183,20 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 }
 
 bool IDeviceSettings::apply(bool temporary) {
-	if(!settingsLoaded || disabled || readonly)
+	if(readonly) {
+		err(APIError::SettingsReadOnly);
 		return false;
+	}
+
+	if(disabled) {
+		err(APIError::SettingsNotAvailable);
+		return false;
+	}
+
+	if(!settingsLoaded) {
+		err(APIError::SettingsReadError);
+		return false;
+	}
 
 	std::vector<uint8_t> bytestream;
 	bytestream.resize(7 + settings.size());
@@ -202,7 +214,11 @@ bool IDeviceSettings::apply(bool temporary) {
 	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
 
 	if(!msg || msg->data[0] != 1) { // We did not receive a response
-		refresh(); // Attempt to get the settings from the device so we're up to date if possible
+		// Attempt to get the settings from the device so we're up to date if possible
+		if(refresh()) { 
+			// refresh succeeded but previously there was an error
+			err(APIError::NoDeviceResponse);
+		}
 		return false;
 	}
 
@@ -217,7 +233,11 @@ bool IDeviceSettings::apply(bool temporary) {
 	com->sendCommand(Command::SetSettings, bytestream);
 	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
-		refresh();
+		// Attempt to get the settings from the device so we're up to date if possible
+		if(refresh()) { 
+			// refresh succeeded but previously there was an error
+			err(APIError::NoDeviceResponse);
+		}
 		return false;
 	}
 
@@ -228,17 +248,32 @@ bool IDeviceSettings::apply(bool temporary) {
 	
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 
-	return (msg && msg->data[0] == 1); // Device sends 0x01 for success
+	bool ret = (msg && msg->data[0] == 1); // Device sends 0x01 for success
+	if(!ret) {
+		err(APIError::FailedToWrite);
+	}
+	return ret; 
 }
 
 bool IDeviceSettings::applyDefaults(bool temporary) {
-	if(disabled || readonly)
+	if(disabled) {
+		err(APIError::SettingsNotAvailable);
 		return false;
+	}
+
+	if(readonly) {
+		err(APIError::SettingsReadOnly);
+		return false;
+	}
 
 	com->sendCommand(Command::SetDefaultSettings);
 	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetDefaultSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
-		refresh();
+		// Attempt to get the settings from the device so we're up to date if possible
+		if(refresh()) { 
+			// refresh succeeded but previously there was an error
+			err(APIError::NoDeviceResponse);
+		}
 		return false;
 	}
 
@@ -263,7 +298,11 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	com->sendCommand(Command::SetSettings, bytestream);
 	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
-		refresh();
+		// Attempt to get the settings from the device so we're up to date if possible
+		if(refresh()) { 
+			// refresh succeeded but previously there was an error
+			err(APIError::NoDeviceResponse);
+		}
 		return false;
 	}
 
@@ -274,45 +313,79 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 
-	return (msg && msg->data[0] == 1); // Device sends 0x01 for success
+	bool ret = (msg && msg->data[0] == 1); // Device sends 0x01 for success
+	if(!ret) {
+		err(APIError::FailedToWrite);
+	}
+	return ret; 
 }
 
 int64_t IDeviceSettings::getBaudrateFor(Network net) const {
-	if(!settingsLoaded || disabled)
+	if(disabled) {
+		err(APIError::SettingsNotAvailable);
 		return -1;
+	}
+
+	if(!settingsLoaded) {
+		err(APIError::SettingsReadError);
+		return -1;
+	}
 
 	switch(net.getType()) {
 		case Network::Type::CAN: {
 			const CAN_SETTINGS* cfg = getCANSettingsFor(net);
-			if(cfg == nullptr)
+			if(cfg == nullptr) {
+				err(APIError::CANFDSettingsNotAvailable);
 				return -1;
-				
+			}
+
 			int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->Baudrate);
-			if(baudrate == -1)
+			if(baudrate == -1) {
+				err(APIError::BaudrateNotFound);
 				return -1;
+			}
 			return baudrate;
 		}
 		default:
+			err(APIError::BadNetworkType);
 			return -1;
 	}
 }
 
 bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
-	if(!settingsLoaded || disabled || readonly)
+	if(disabled) {
+		err(APIError::SettingsNotAvailable);
 		return false;
+	}
+
+	if(!settingsLoaded) {
+		err(APIError::SettingsReadError);
+		return false;
+	}
+
+	if(readonly) {
+		err(APIError::SettingsReadOnly);
+		return false;
+	}
 
 	switch(net.getType()) {
 		case Network::Type::CAN: {
-			if(baudrate > 1000000) // This is an FD baudrate. Use setFDBaudrateFor instead.
+			if(baudrate > 1000000) { // This is an FD baudrate. Use setFDBaudrateFor instead.
+				err(APIError::CANFDSettingsNotAvailable);
 				return false;
+			}
 
 			CAN_SETTINGS* cfg = getMutableCANSettingsFor(net);
-			if(cfg == nullptr)
+			if(cfg == nullptr) {
+				err(APIError::CANSettingsNotAvailable);
 				return false;
-				
+			}
+								
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
-			if(newBaud == (CANBaudrate)-1)
+			if(newBaud == (CANBaudrate)-1) {
+				err(APIError::BaudrateNotFound);
 				return false;
+			}
 			cfg->Baudrate = (uint8_t)newBaud;
 			cfg->auto_baud = false;
 			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
@@ -320,12 +393,16 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 		}
 		case Network::Type::LSFTCAN: {
 			CAN_SETTINGS* cfg = getMutableLSFTCANSettingsFor(net);
-			if(cfg == nullptr)
+			if(cfg == nullptr) {
+				err(APIError::LSFTCANSettingsNotAvailable);
 				return false;
+			}
 				
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
-			if(newBaud == (CANBaudrate)-1)
+			if(newBaud == (CANBaudrate)-1) {
+				err(APIError::BaudrateNotFound);
 				return false;
+			}
 			cfg->Baudrate = (uint8_t)newBaud;
 			cfg->auto_baud = false;
 			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
@@ -333,78 +410,127 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 		}
 		case Network::Type::SWCAN: {
 			SWCAN_SETTINGS* cfg = getMutableSWCANSettingsFor(net);
-			if(cfg == nullptr)
+			if(cfg == nullptr) {
+				err(APIError::SWCANSettingsNotAvailable);
 				return false;
-				
+			}
+								
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
-			if(newBaud == (CANBaudrate)-1)
+			if(newBaud == (CANBaudrate)-1) {
+				err(APIError::BaudrateNotFound);
 				return false;
+			}
 			cfg->Baudrate = (uint8_t)newBaud;
 			cfg->auto_baud = false;
 			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
 			return true;
 		}
 		default:
+			err(APIError::BadNetworkType);
 			return false;
 	}
 }
 
 int64_t IDeviceSettings::getFDBaudrateFor(Network net) const {
-	if(!settingsLoaded || disabled)
+	if(disabled) {
+		err(APIError::SettingsNotAvailable);
+	}
+
+	if(!settingsLoaded) {
+		err(APIError::SettingsReadError);
 		return -1;
+	}
 
 	switch(net.getType()) {
 		case Network::Type::CAN: {
 			const CANFD_SETTINGS* cfg = getCANFDSettingsFor(net);
-			if(cfg == nullptr)
+			if(cfg == nullptr) {
+				err(APIError::CANFDSettingsNotAvailable);
 				return -1;
-				
+			}
+
 			int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->FDBaudrate);
-			if(baudrate == -1)
+			if(baudrate == -1) {
+				err(APIError::BaudrateNotFound);
 				return -1;
+			}
+
 			return baudrate;
 		}
 		default:
+			err(APIError::BadNetworkType);
 			return -1;
 	}
 }
 
 bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
-	if(!settingsLoaded || disabled || readonly)
+	if(!settingsLoaded) {
+		err(APIError::SettingsReadError);
 		return false;
+	}
+
+	if(disabled) {
+		err(APIError::SettingsNotAvailable);
+		return false;
+	}
+
+	if(readonly) {
+		err(APIError::SettingsReadOnly);
+		return false;
+	}
 
 	switch(net.getType()) {
 		case Network::Type::CAN: {
 			CANFD_SETTINGS* cfg = getMutableCANFDSettingsFor(net);
-			if(cfg == nullptr)
+			if(cfg == nullptr) {
+				err(APIError::CANFDSettingsNotAvailable);
 				return false;
+			}
 
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
-			if(newBaud == (CANBaudrate)-1)
+			if(newBaud == (CANBaudrate)-1) {
+				err(APIError::BaudrateNotFound);
 				return false;
+			}
 			cfg->FDBaudrate = (uint8_t)newBaud;
 			return true;
 		}
 		default:
+			err(APIError::BadNetworkType);
 			return false;
 	}
 }
 
 template<typename T> bool IDeviceSettings::applyStructure(const T& newStructure) {
-	if(!settingsLoaded || disabled || readonly)
+	if(!settingsLoaded) {
+		err(APIError::SettingsReadError);
 		return false;
-	
-	// This function is only called from C++ so the callers structure size and ours should never differ
-	if(sizeof(T) != structSize)
-		return false; // The wrong structure was passed in for the current device
+	}
 
+	if(disabled) {
+		err(APIError::SettingsNotAvailable);
+		return false;
+	}
+
+	if(readonly) {
+		err(APIError::SettingsReadOnly);
+		return false;
+	}
+	
+	// This function is only called from C++ so the caller's structure size and ours should never differ
+	if(sizeof(T) != structSize) {
+		err(APIError::SettingsStructureMismatch);
+		return false; // The wrong structure was passed in for the current device
+	}
 	size_t copySize = sizeof(T);
-	if(copySize > settings.size())
+	if(copySize > settings.size()) {
+		err(APIError::SettingsStructureTruncated);
 		copySize = settings.size(); // TODO Warn user that their structure is truncated
-	
-	// TODO Warn user that the device firmware doesn't support all the settings in the current API
-	//if(copySize < settings.size())
-	
+	}
+	// Warn user that the device firmware doesn't support all the settings in the current API
+	if(copySize < settings.size())
+		err(APIError::DeviceFirmwareOutOfDate);
+
 	memcpy(settings.data(), &newStructure, structSize);
 	return apply();
 }
