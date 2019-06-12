@@ -44,6 +44,11 @@ protected:
 		encoder.supportCANFD = true;
 	}
 
+	virtual void setupDecoder(Decoder& decoder) override {
+		Device::setupDecoder(decoder);
+		decoder.timestampResolution = 10; // Timestamps are in 10ns increments instead of the usual 25ns
+	}
+
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
