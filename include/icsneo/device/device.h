@@ -84,7 +84,6 @@ public:
 protected:
 	uint16_t productId = 0;
 	bool online = false;
-	bool opened = false;
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
 	device_errorhandler_t err;

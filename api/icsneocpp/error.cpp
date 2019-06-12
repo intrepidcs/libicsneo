@@ -65,11 +65,15 @@ static constexpr const char* ERROR_CANFD_SETTINGS_NOT_AVAILABLE = "CANFD setting
 static constexpr const char* ERROR_LSFTCAN_SETTINGS_NOT_AVAILABLE = "LSFTCAN settings are not available for this device.";
 static constexpr const char* ERROR_SWCAN_SETTINGS_NOT_AVAILABLE = "SWCAN settings are not available for this device.";
 static constexpr const char* ERROR_BAUDRATE_NOT_FOUND = "The baudrate was not found.";
-static constexpr const char* ERROR_BAD_NETWORK_TYPE = "The network type was not found.";
+static constexpr const char* ERROR_UNEXPECTED_NETWORK_TYPE = "The network type was not found.";
 static constexpr const char* ERROR_DEVICE_FIRMWARE_OUT_OF_DATE = "The device firmware is out of date. New API functionality may not be supported.";
 static constexpr const char* ERROR_SETTINGS_STRUCTURE_MISMATCH = "Unexpected settings structure for this device.";
 static constexpr const char* ERROR_SETTINGS_STRUCTURE_TRUNCATED = "Settings structure is longer than the device supports and will be truncated.";
 static constexpr const char* ERROR_NO_DEVICE_RESPONSE = "Expected a response from the device but none were found.";
+static constexpr const char* ERROR_MESSAGE_FORMATTING = "The message was not properly formed.";
+static constexpr const char* ERROR_MESSAGE_DATA_OVER_CAPACITY = "The message has too much data for the protocol.";
+static constexpr const char* ERROR_CANFD_NOT_SUPPORTED = "This device does not support CANFD.";
+static constexpr const char* ERROR_RTR_NOT_SUPPORTED = "RTR is not supported with CANFD.";
 
 // Transport Errors
 static constexpr const char* ERROR_FAILED_TO_READ = "A read operation failed.";
@@ -131,6 +135,8 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_SWCAN_SETTINGS_NOT_AVAILABLE;
 		case BaudrateNotFound:
 			return ERROR_BAUDRATE_NOT_FOUND;
+		case UnexpectedNetworkType:
+			return ERROR_UNEXPECTED_NETWORK_TYPE;
 		case DeviceFirmwareOutOfDate:
 			return ERROR_DEVICE_FIRMWARE_OUT_OF_DATE;
 		case SettingsStructureMismatch:
@@ -139,6 +145,14 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_SETTINGS_STRUCTURE_TRUNCATED;
 		case NoDeviceResponse:
 			return ERROR_NO_DEVICE_RESPONSE;
+		case MessageFormattingError:
+			return ERROR_MESSAGE_FORMATTING;
+		case MessageDataOverCapacity:
+			return ERROR_MESSAGE_DATA_OVER_CAPACITY;
+		case CANFDNotSupported:
+			return ERROR_CANFD_NOT_SUPPORTED;
+		case RTRNotSupported:
+			return ERROR_RTR_NOT_SUPPORTED;
 
 		// Transport Errors
 		case FailedToRead:
@@ -203,8 +217,14 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case LSFTCANSettingsNotAvailable:
 		case SWCANSettingsNotAvailable:
 		case BaudrateNotFound:
+		case UnexpectedNetworkType:
 		case SettingsStructureMismatch:
 		case NoDeviceResponse:
+		case MessageFormattingError:
+		case MessageDataOverCapacity:
+		case CANFDNotSupported:
+		case RTRNotSupported:
+
 		// Transport Errors
 		case FailedToRead:
 		case FailedToWrite:

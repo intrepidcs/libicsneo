@@ -73,12 +73,16 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 		return false;
 
 	std::shared_ptr<ReadSettingsMessage> gsmsg = std::dynamic_pointer_cast<ReadSettingsMessage>(msg);
-	if(!gsmsg)
+	if(!gsmsg) {
+		err(APIError::Unknown);
 		return false;
+	}
 
-	if(gsmsg->response != ReadSettingsMessage::Response::OK)
+	if(gsmsg->response != ReadSettingsMessage::Response::OK) {
+		err(APIError::Unknown);
 		return false;
-	
+	}
+
 	data = std::move(msg->data);
 	return true;
 }
@@ -108,6 +112,7 @@ bool Communication::removeMessageCallback(int id) {
 		messageCallbacks.erase(id);
 		return true;
 	} catch(...) {
+		err(APIError::Unknown);
 		return false;
 	}
 }

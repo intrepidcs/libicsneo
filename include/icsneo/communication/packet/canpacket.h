@@ -2,6 +2,7 @@
 #define __CANPACKET_H__
 
 #include "icsneo/communication/message/canmessage.h"
+#include "icsneo/api/errormanager.h"
 #include <cstdint>
 #include <memory>
 
@@ -11,7 +12,7 @@ typedef uint16_t icscm_bitfield;
 
 struct HardwareCANPacket {
 	static std::shared_ptr<CANMessage> DecodeToMessage(const std::vector<uint8_t>& bytestream);
-	static bool EncodeFromMessage(const CANMessage& message, std::vector<uint8_t>& bytestream);
+	static bool EncodeFromMessage(const CANMessage& message, std::vector<uint8_t>& bytestream, const device_errorhandler_t& err);
 
 	struct {
 		icscm_bitfield IDE : 1;

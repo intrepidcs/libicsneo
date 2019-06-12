@@ -79,13 +79,17 @@ std::shared_ptr<CANMessage> HardwareCANPacket::DecodeToMessage(const std::vector
 	return msg;
 }
 
-bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector<uint8_t>& result) {
-	if(message.isCANFD && message.isRemote)
+bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector<uint8_t>& result, const device_errorhandler_t& err) {
+	if(message.isCANFD && message.isRemote) {
+		err(APIError::RTRNotSupported);
 		return false; // RTR frames can not be used with CAN FD
+	}
 
 	const size_t dataSize = message.data.size();
-	if(dataSize > 64 || (dataSize > 8 && !message.isCANFD))
+	if(dataSize > 64 || (dataSize > 8 && !message.isCANFD)) {
+		err(APIError::MessageDataOverCapacity);
 		return false; // Too much data for the protocol
+	}
 
 	uint8_t lengthNibble = uint8_t(message.data.size());
 	uint8_t paddingBytes = 0;
@@ -162,6 +166,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 				lengthNibble = 0xF;
 				break;
 			default:
+				err(APIError::Unknown);
 				return false; // CAN FD frame may have had an incorrect byte count
 		}
 	}
@@ -176,8 +181,10 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 
 	// Next 2-4 bytes are ArbID
 	if(message.isExtended) {
-		if(message.arbid >= 0x20000000) // Extended messages use 29-bit arb IDs
+		if(message.arbid >= 0x20000000) {// Extended messages use 29-bit arb IDs
+			err(APIError::MessageFormattingError);
 			return false;
+		}
 
 		result.insert(result.end(), {
 			(uint8_t)(message.arbid >> 21),
@@ -186,8 +193,10 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 			(uint8_t)message.arbid
 		});
 	} else {
-		if(message.arbid >= 0x800) // Standard messages use 11-bit arb IDs
+		if(message.arbid >= 0x800) {// Standard messages use 11-bit arb IDs
+			err(APIError::MessageFormattingError);
 			return false;
+		}
 
 		result.insert(result.end(), {
 			(uint8_t)(message.arbid >> 3),

@@ -50,5 +50,10 @@ bool ICommunication::write(const std::vector<uint8_t>& bytes) {
 			return false;
 		}
 	}
-	return writeQueue.enqueue(WriteOperation(bytes));
+
+	bool ret = writeQueue.enqueue(WriteOperation(bytes));
+	if(!ret) {
+		err(APIError::Unknown);
+	}
+	return ret;
 }

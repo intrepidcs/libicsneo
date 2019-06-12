@@ -56,11 +56,15 @@ public:
 		LSFTCANSettingsNotAvailable = 0x2011,
 		SWCANSettingsNotAvailable = 0x2012,
 		BaudrateNotFound = 0x2013,
-		BadNetworkType = 0x2014,
+		UnexpectedNetworkType = 0x2014,
 		DeviceFirmwareOutOfDate = 0x2015,
 		SettingsStructureMismatch = 0x2016,
 		SettingsStructureTruncated = 0x2017,
 		NoDeviceResponse = 0x2018,
+		MessageFormattingError = 0x2019,
+		MessageDataOverCapacity = 0x2020,
+		CANFDNotSupported = 0x2021,
+		RTRNotSupported = 0x2022,
 
 		// Transport Errors
 		FailedToRead = 0x3000,

@@ -347,7 +347,7 @@ int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 			return baudrate;
 		}
 		default:
-			err(APIError::BadNetworkType);
+			err(APIError::UnexpectedNetworkType);
 			return -1;
 	}
 }
@@ -426,7 +426,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 			return true;
 		}
 		default:
-			err(APIError::BadNetworkType);
+			err(APIError::UnexpectedNetworkType);
 			return false;
 	}
 }
@@ -458,7 +458,7 @@ int64_t IDeviceSettings::getFDBaudrateFor(Network net) const {
 			return baudrate;
 		}
 		default:
-			err(APIError::BadNetworkType);
+			err(APIError::UnexpectedNetworkType);
 			return -1;
 	}
 }
@@ -496,7 +496,7 @@ bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
 			return true;
 		}
 		default:
-			err(APIError::BadNetworkType);
+			err(APIError::UnexpectedNetworkType);
 			return false;
 	}
 }

@@ -171,7 +171,6 @@ bool Device::open() {
 		handleInternalMessage(message);
 	}));
 
-	opened = true;
 	return true;
 }
 
@@ -185,8 +184,7 @@ bool Device::close() {
 		com->removeMessageCallback(internalHandlerCallbackID);
 
 	goOffline();
-	opened = !com->close();
-	return !opened;
+	return com->close();
 }
 
 bool Device::goOnline() {
