@@ -39,6 +39,11 @@ bool ICommunication::readWait(std::vector<uint8_t>& bytes, std::chrono::millisec
 }
 
 bool ICommunication::write(const std::vector<uint8_t>& bytes) {
+	if(!isOpen()) {
+		err(APIError::DeviceCurrentlyClosed);
+		return false;
+	}
+
 	if(writeBlocks) {
 		std::unique_lock<std::mutex> lk(writeMutex);
 		if(writeQueue.size_approx() > writeQueueSize) {
