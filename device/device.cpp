@@ -104,6 +104,25 @@ std::vector<std::shared_ptr<Message>> Device::getMessages() {
 }
 
 bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit, std::chrono::milliseconds timeout) {
+	
+	// not open
+	if(!isOpen()) {
+		err(APIError::DeviceCurrentlyClosed);
+		return false;
+	}
+
+	// not online
+	if(!isOnline()) {
+		err(APIError::DeviceCurrentlyOffline);
+		return false;
+	}
+
+	// not currently polling, throw error
+	if(messagePollingCallbackID == 0) {
+		err(APIError::DeviceNotPolling);
+		return false;
+	}
+
 	// A limit of zero indicates no limit
 	if(limit == 0)
 		limit = (size_t)-1;
@@ -183,6 +202,8 @@ bool Device::close() {
 	if(internalHandlerCallbackID)
 		com->removeMessageCallback(internalHandlerCallbackID);
 
+	internalHandlerCallbackID = 0;
+
 	goOffline();
 	return com->close();
 }
@@ -210,8 +231,29 @@ bool Device::goOffline() {
 }
 
 bool Device::transmit(std::shared_ptr<Message> message) {
-	if(!isSupportedTXNetwork(message->network))
+
+	// not open
+	if(!isOpen()) {
+		err(APIError::DeviceCurrentlyClosed);
 		return false;
+	}
+
+	// not online
+	if(!isOnline()) {
+		err(APIError::DeviceCurrentlyOffline);
+		return false;
+	}
+
+	// not currently polling, throw error
+	if(messagePollingCallbackID == 0) {
+		err(APIError::DeviceNotPolling);
+		return false;
+	}
+
+	if(!isSupportedTXNetwork(message->network)) {
+		err(APIError::UnsupportedTXNetwork);
+		return false;
+	}
 
 	std::vector<uint8_t> packet;
 	if(!com->encoder->encode(packet, message))
