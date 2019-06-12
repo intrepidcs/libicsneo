@@ -49,6 +49,11 @@ static constexpr const char* ERROR_OUTPUT_TRUNCATED = "The output was too large 
 static constexpr const char* ERROR_PARAMETER_OUT_OF_RANGE = "A parameter was out of range.";
 static constexpr const char* ERROR_DEVICE_CURRENTLY_OPEN = "The device is currently open. Perhaps a different device state was required.";
 static constexpr const char* ERROR_DEVICE_CURRENTLY_CLOSED = "The device is currently closed. Perhaps a different device state was required.";
+static constexpr const char* ERROR_DEVICE_CURRENTLY_ONLINE = "The device is currently online. Perhaps a different device state was required.";
+static constexpr const char* ERROR_DEVICE_CURRENTLY_OFFLINE = "The device is currently offline. Perhaps a different device state was required.";
+static constexpr const char* ERROR_DEVICE_NOT_POLLING = "The device is not currently polling for messages.";
+static constexpr const char* ERROR_UNSUPPORTED_TX_NETWORK = "Message network is not a supported TX network.";
+static constexpr const char* ERROR_MESSAGE_MAX_LENGTH_EXCEEDED = "The message was too long.";
 
 // Device Errors
 static constexpr const char* ERROR_POLLING_MESSAGE_OVERFLOW = "Too many messages have been recieved for the polling message buffer, some have been lost!";
@@ -71,7 +76,6 @@ static constexpr const char* ERROR_SETTINGS_STRUCTURE_MISMATCH = "Unexpected set
 static constexpr const char* ERROR_SETTINGS_STRUCTURE_TRUNCATED = "Settings structure is longer than the device supports and will be truncated.";
 static constexpr const char* ERROR_NO_DEVICE_RESPONSE = "Expected a response from the device but none were found.";
 static constexpr const char* ERROR_MESSAGE_FORMATTING = "The message was not properly formed.";
-static constexpr const char* ERROR_MESSAGE_DATA_OVER_CAPACITY = "The message has too much data for the protocol.";
 static constexpr const char* ERROR_CANFD_NOT_SUPPORTED = "This device does not support CANFD.";
 static constexpr const char* ERROR_RTR_NOT_SUPPORTED = "RTR is not supported with CANFD.";
 
@@ -105,7 +109,17 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_DEVICE_CURRENTLY_OPEN;
 		case DeviceCurrentlyClosed:
 			return ERROR_DEVICE_CURRENTLY_CLOSED;
-		
+		case DeviceCurrentlyOnline:
+			return ERROR_DEVICE_CURRENTLY_ONLINE;
+		case DeviceCurrentlyOffline:
+			return ERROR_DEVICE_CURRENTLY_OFFLINE;
+		case DeviceNotPolling:
+			return ERROR_DEVICE_NOT_POLLING;
+		case UnsupportedTXNetwork:
+			return ERROR_UNSUPPORTED_TX_NETWORK;
+		case MessageMaxLengthExceeded:
+			return ERROR_MESSAGE_MAX_LENGTH_EXCEEDED;
+
 		// Device Errors
 		case PollingMessageOverflow:
 			return ERROR_POLLING_MESSAGE_OVERFLOW;
@@ -147,8 +161,6 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_NO_DEVICE_RESPONSE;
 		case MessageFormattingError:
 			return ERROR_MESSAGE_FORMATTING;
-		case MessageDataOverCapacity:
-			return ERROR_MESSAGE_DATA_OVER_CAPACITY;
 		case CANFDNotSupported:
 			return ERROR_CANFD_NOT_SUPPORTED;
 		case RTRNotSupported:
@@ -188,6 +200,9 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case OutputTruncated:
 		case DeviceCurrentlyOpen:
 		case DeviceCurrentlyClosed:
+		case DeviceCurrentlyOnline:
+		case DeviceCurrentlyOffline:
+		case DeviceNotPolling:
 		// Device Warnings
 		case PollingMessageOverflow:
 		case DeviceFirmwareOutOfDate:
@@ -202,7 +217,9 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case RequiredParameterNull:
 		case BufferInsufficient:
 		case ParameterOutOfRange:
-
+		case UnsupportedTXNetwork:
+		case MessageMaxLengthExceeded:
+		
 		// Device Errors
 		case NoSerialNumber:
 		case IncorrectSerialNumber:
@@ -221,7 +238,6 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case SettingsStructureMismatch:
 		case NoDeviceResponse:
 		case MessageFormattingError:
-		case MessageDataOverCapacity:
 		case CANFDNotSupported:
 		case RTRNotSupported:
 

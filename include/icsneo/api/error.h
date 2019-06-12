@@ -40,7 +40,12 @@ public:
 		ParameterOutOfRange = 0x1004,
 		DeviceCurrentlyOpen = 0x1005,
 		DeviceCurrentlyClosed = 0x1006,
-
+		DeviceCurrentlyOnline = 0x1007,
+		DeviceCurrentlyOffline = 0x1008,
+		DeviceNotPolling = 0x1009,
+		UnsupportedTXNetwork = 0x1010,
+		MessageMaxLengthExceeded = 0x1011,
+		
 		// Device Errors
 		PollingMessageOverflow = 0x2000,
 		NoSerialNumber = 0x2001,
@@ -62,9 +67,8 @@ public:
 		SettingsStructureTruncated = 0x2017,
 		NoDeviceResponse = 0x2018,
 		MessageFormattingError = 0x2019,
-		MessageDataOverCapacity = 0x2020,
-		CANFDNotSupported = 0x2021,
-		RTRNotSupported = 0x2022,
+		CANFDNotSupported = 0x2020,
+		RTRNotSupported = 0x2021,
 
 		// Transport Errors
 		FailedToRead = 0x3000,

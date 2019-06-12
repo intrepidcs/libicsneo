@@ -87,7 +87,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 
 	const size_t dataSize = message.data.size();
 	if(dataSize > 64 || (dataSize > 8 && !message.isCANFD)) {
-		err(APIError::MessageDataOverCapacity);
+		err(APIError::MessageMaxLengthExceeded);
 		return false; // Too much data for the protocol
 	}
 
@@ -166,7 +166,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 				lengthNibble = 0xF;
 				break;
 			default:
-				err(APIError::Unknown);
+				err(APIError::MessageMaxLengthExceeded);
 				return false; // CAN FD frame may have had an incorrect byte count
 		}
 	}
