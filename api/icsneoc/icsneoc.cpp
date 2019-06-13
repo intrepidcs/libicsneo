@@ -87,6 +87,11 @@ uint32_t icsneo_serialStringToNum(const char* str) {
 }
 
 bool icsneo_isValidNeoDevice(const neodevice_t* device) {
+	// return false on nullptr
+	if(!device) {
+		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		return false;
+	}
 	// If this neodevice_t was returned by a previous search, it will no longer be valid (as the underlying icsneo::Device is freed)
 	for(auto& dev : connectedDevices) {
 		if(dev.get() == device->device)
@@ -96,14 +101,14 @@ bool icsneo_isValidNeoDevice(const neodevice_t* device) {
 		if(dev.get() == device->device)
 			return true;
 	}
+
+	ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
 	return false;
 }
 
 bool icsneo_openDevice(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	if(!device->device->open())
 		return false;
@@ -123,10 +128,8 @@ bool icsneo_openDevice(const neodevice_t* device) {
 }
 
 bool icsneo_closeDevice(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 	
 	if(!device->device->close())
 		return false;
@@ -144,65 +147,51 @@ bool icsneo_closeDevice(const neodevice_t* device) {
 }
 
 bool icsneo_isOpen(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->isOpen();
 }
 
 bool icsneo_goOnline(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->goOnline();
 }
 
 bool icsneo_goOffline(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->goOffline();
 }
 
 bool icsneo_isOnline(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->isOnline();
 }
 
 bool icsneo_enableMessagePolling(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	device->device->enableMessagePolling();
 	return true;
 }
 
 bool icsneo_disableMessagePolling(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->disableMessagePolling();
 }
 
 bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items, uint64_t timeout) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	if(items == nullptr) {
 		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
@@ -233,19 +222,15 @@ bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_
 }
 
 size_t icsneo_getPollingMessageLimit(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return 0;
-	}
 
 	return device->device->getPollingMessageLimit();
 }
 
 bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	device->device->setPollingMessageLimit(newLimit);
 	return true;
@@ -258,10 +243,8 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 		return false;
 	}
 
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	std::string output = device->device->getType().toString();
 
@@ -303,55 +286,43 @@ bool icsneo_getProductNameForType(devicetype_t type, char* str, size_t* maxLengt
 }
 
 bool icsneo_settingsRefresh(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->settings->refresh();
 }
 
 bool icsneo_settingsApply(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->settings->apply();
 }
 
 bool icsneo_settingsApplyTemporary(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->settings->apply(true);
 }
 
 bool icsneo_settingsApplyDefaults(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->settings->applyDefaults();
 }
 
 bool icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->settings->applyDefaults(true);
 }
 
 size_t icsneo_settingsReadStructure(const neodevice_t* device, void* structure, size_t structureSize) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return 0;
-	}
 
 	size_t readSize = device->device->settings->getSize();
 	if(structure == nullptr) // Structure size request
@@ -379,10 +350,8 @@ size_t icsneo_settingsReadStructure(const neodevice_t* device, void* structure, 
 
 // Not exported
 static bool icsneo_settingsWriteStructure(const neodevice_t* device, const void* structure, size_t structureSize) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	if(structure == nullptr) {
 		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
@@ -418,46 +387,36 @@ bool icsneo_settingsApplyStructureTemporary(const neodevice_t* device, const voi
 }
 
 int64_t icsneo_getBaudrate(const neodevice_t* device, uint16_t netid) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return -1;
-	}
 
 	return device->device->settings->getBaudrateFor(netid);
 }
 
 bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->settings->setBaudrateFor(netid, newBaudrate);
 }
 
 int64_t icsneo_getFDBaudrate(const neodevice_t* device, uint16_t netid) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return -1;
-	}
 
 	return device->device->settings->getFDBaudrateFor(netid);
 }
 
 bool icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->settings->setFDBaudrateFor(netid, newBaudrate);
 }
 
 bool icsneo_transmit(const neodevice_t* device, const neomessage_t* message) {
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	return device->device->transmit(CreateMessageFromNeoMessage(message));
 }
@@ -479,10 +438,8 @@ bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLeng
 		return false;
 	}
 
-	if(!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	std::string output = device->device->describe();
 
@@ -519,10 +476,8 @@ bool icsneo_getErrors(neoerror_t* errors, size_t* size) {
 }
 
 bool icsneo_getDeviceErrors(const neodevice_t* device, neoerror_t* errors, size_t* size) {
-	if(device != nullptr && !icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
 	if(size == nullptr) {
 		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
@@ -563,10 +518,8 @@ void icsneo_discardAllErrors(void) {
 }
 
 void icsneo_discardDeviceErrors(const neodevice_t* device) {
-	if(device != nullptr && !icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	if(!icsneo_isValidNeoDevice(device))
 		return;
-	}
 
 	if(device == nullptr)
 		icsneo::DiscardErrors(nullptr); // Discard errors not associated with a device
@@ -608,14 +561,11 @@ bool icsneo_getSupportedDevices(devicetype_t* devices, size_t* count) {
 	return true;
 }
 
-extern bool DLLExport icsneo_getTimestampResolution(const neodevice_t* device, uint16_t* resolution)
-{
-	if (!icsneo_isValidNeoDevice(device)) {
-		ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+extern bool DLLExport icsneo_getTimestampResolution(const neodevice_t* device, uint16_t* resolution) {
+	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	}
 
-	if (resolution == nullptr) {
+	if(resolution == nullptr) {
 		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
 		return false;
 	}

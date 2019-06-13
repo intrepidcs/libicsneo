@@ -88,6 +88,7 @@ static constexpr const char* ERROR_PACKET_CHECKSUM_ERROR = "There was a checksum
 static constexpr const char* ERROR_TRANSMIT_BUFFER_FULL = "The transmit buffer is full and the device is set to non-blocking.";
 static constexpr const char* ERROR_PCAP_COULD_NOT_START = "The PCAP driver could not be started. Ethernet devices will not be found.";
 static constexpr const char* ERROR_PCAP_COULD_NOT_FIND_DEVICES = "The PCAP driver failed to find devices. Ethernet devices will not be found.";
+static constexpr const char* ERROR_PACKET_DECODING = "The packet could not be decoded.";
 
 static constexpr const char* ERROR_TOO_MANY_ERRORS = "Too many errors have occurred. The list has been truncated.";
 static constexpr const char* ERROR_UNKNOWN = "An unknown internal error occurred.";
@@ -183,6 +184,8 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_PCAP_COULD_NOT_START;
 		case PCAPCouldNotFindDevices:
 			return ERROR_PCAP_COULD_NOT_FIND_DEVICES;
+		case PacketDecodingError:
+			return ERROR_PACKET_DECODING;
 		
 		// Other Errors
 		case TooManyErrors:
@@ -248,6 +251,7 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case DriverFailedToClose:
 		case PacketChecksumError:
 		case TransmitBufferFull:
+		case PacketDecodingError:
 		// Other Errors
 		case TooManyErrors:
 		case Unknown:

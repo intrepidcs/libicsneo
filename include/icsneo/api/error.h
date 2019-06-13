@@ -79,6 +79,7 @@ public:
 		TransmitBufferFull = 0x3005,
 		PCAPCouldNotStart = 0x3102,
 		PCAPCouldNotFindDevices = 0x3103,
+		PacketDecodingError = 0x3104,
 
 		TooManyErrors = 0xFFFFFFFE,
 		Unknown = 0xFFFFFFFF

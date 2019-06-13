@@ -22,8 +22,10 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 	switch(packet->network.getType()) {
 		case Network::Type::Ethernet:
 			result = HardwareEthernetPacket::DecodeToMessage(packet->data);
-			if(!result)
+			if(!result) {
+				err(APIError::PacketDecodingError);
 				return false; // A nullptr was returned, the packet was not long enough to decode
+			}
 
 			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
 			// The resolution depends on the device
@@ -33,13 +35,16 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 		case Network::Type::CAN:
 		case Network::Type::SWCAN:
 		case Network::Type::LSFTCAN: {
-			if(packet->data.size() < 24)
+			if(packet->data.size() < 24) {
+				err(APIError::PacketDecodingError);
 				return false;
+			}
 
 			result = HardwareCANPacket::DecodeToMessage(packet->data);
-			if(!result)
+			if(!result) {
+				err(APIError::PacketDecodingError);
 				return false; // A nullptr was returned, the packet was malformed
-
+			}
 			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
 			// The resolution depends on the device
 			result->timestamp *= timestampResolution;
@@ -49,8 +54,10 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 		case Network::Type::Internal: {
 			switch(packet->network.getNetID()) {
 				case Network::NetID::Reset_Status: {
-					if(packet->data.size() < sizeof(HardwareResetStatusPacket))
+					if(packet->data.size() < sizeof(HardwareResetStatusPacket)) {
+						err(APIError::PacketDecodingError);
 						return false;
+					}
 
 					HardwareResetStatusPacket* data = (HardwareResetStatusPacket*)packet->data.data();
 					auto msg = std::make_shared<ResetStatusMessage>();
@@ -111,7 +118,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					/* So-called "old format" messages are a "new style, long format" wrapper around the old short messages.
 					 * They consist of a 16-bit LE length first, then the 8-bit length and netid combo byte, then the payload
 					 * with no checksum. The upper-nibble length of the combo byte should be ignored completely, using the
-					 * length from the first two bytes in it's place. Ideally, we never actually send the oldformat messages
+					 * length from the first two bytes in its place. Ideally, we never actually send the oldformat messages
 					 * out to the rest of the application as they can recursively get decoded to another message type here.
 					 * Feed the result back into the decoder in case we do something special with the resultant netid.
 					 */

@@ -204,7 +204,9 @@ bool Device::close() {
 
 	internalHandlerCallbackID = 0;
 
-	goOffline();
+	if(isOnline())
+		goOffline();
+
 	return com->close();
 }
 
