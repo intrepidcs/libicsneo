@@ -35,7 +35,6 @@ private:
 	bool open(bool fromAsync);
 	bool opening = false;
 	neodevice_t& device;
-	device_errorhandler_t err;
 	HANDLE handle = INVALID_HANDLE_VALUE;
 	OVERLAPPED overlappedRead = {};
 	OVERLAPPED overlappedWrite = {};
