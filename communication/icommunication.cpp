@@ -35,10 +35,7 @@ bool ICommunication::readWait(std::vector<uint8_t>& bytes, std::chrono::millisec
 
 	bytes.resize(actuallyRead);
 
-	bool ret = actuallyRead > 0;
-	if(!ret)
-		err(APIError::FailedToRead);
-	return ret;
+	return actuallyRead > 0;
 }
 
 bool ICommunication::write(const std::vector<uint8_t>& bytes) {

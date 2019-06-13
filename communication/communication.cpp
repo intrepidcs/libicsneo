@@ -149,12 +149,11 @@ void Communication::readTask() {
 			if(packetizer->input(readBytes)) {
 				for(auto& packet : packetizer->output()) {
 					std::shared_ptr<Message> msg;
-					if(!decoder->decode(msg, packet)) {
-						err(APIError::Unknown); // TODO Use specific error
+					if(!decoder->decode(msg, packet))
 						continue;
-					}
 
 					std::lock_guard<std::mutex> lk(messageCallbacksLock);
+
 					for(auto& cb : messageCallbacks) {
 						if(!closing) { // We might have closed while reading or processing
 							cb.second.callIfMatch(msg);
