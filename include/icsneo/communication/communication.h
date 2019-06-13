@@ -57,6 +57,7 @@ public:
 protected:
 	std::unique_ptr<ICommunication> impl;
 	static int messageCallbackIDCounter;
+	std::mutex messageCallbacksLock;
 	std::map<int, MessageCallback> messageCallbacks;
 	std::atomic<bool> closing{false};
 

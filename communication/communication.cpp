@@ -91,11 +91,13 @@ std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chr
 }
 
 int Communication::addMessageCallback(const MessageCallback& cb) {
+	std::lock_guard<std::mutex> lk(messageCallbacksLock);
 	messageCallbacks.insert(std::make_pair(messageCallbackIDCounter, cb));
 	return messageCallbackIDCounter++;
 }
 
 bool Communication::removeMessageCallback(int id) {
+	std::lock_guard<std::mutex> lk(messageCallbacksLock);
 	try {
 		messageCallbacks.erase(id);
 		return true;
@@ -140,7 +142,8 @@ void Communication::readTask() {
 						err(APIError::Unknown); // TODO Use specific error
 						continue;
 					}
-					
+
+					std::lock_guard<std::mutex> lk(messageCallbacksLock);
 					for(auto& cb : messageCallbacks) {
 						if(!closing) { // We might have closed while reading or processing
 							cb.second.callIfMatch(msg);
