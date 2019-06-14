@@ -189,6 +189,13 @@ bool icsneo_disableMessagePolling(const neodevice_t* device) {
 	return device->device->disableMessagePolling();
 }
 
+bool icsneo_isMessagePollingEnabled(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+	
+	return device->device->isMessagePollingEnabled();
+}
+
 bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_t* items, uint64_t timeout) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;

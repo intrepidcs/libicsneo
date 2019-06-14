@@ -195,6 +195,8 @@ extern bool DLLExport icsneo_enableMessagePolling(const neodevice_t* device);
  */
 extern bool DLLExport icsneo_disableMessagePolling(const neodevice_t* device);
 
+extern bool DLLExport icsneo_isMessagePollingEnabled(const neodevice_t* device);
+
 /**
  * \brief Read out messages which have been recieved
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
@@ -696,6 +698,9 @@ fn_icsneo_enableMessagePolling icsneo_enableMessagePolling;
 typedef bool(*fn_icsneo_disableMessagePolling)(const neodevice_t* device);
 fn_icsneo_disableMessagePolling icsneo_disableMessagePolling;
 
+typedef bool(*fn_icsneo_isMessagePollingEnabled)(const neodevice_t* device);
+fn_icsneo_isMessagePollingEnabled icsneo_isMessagePollingEnabled;
+
 typedef bool(*fn_icsneo_getMessages)(const neodevice_t* device, neomessage_t* messages, size_t* items, uint64_t timeout);
 fn_icsneo_getMessages icsneo_getMessages;
 
@@ -804,6 +809,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_isOnline);
 	ICSNEO_IMPORTASSERT(icsneo_enableMessagePolling);
 	ICSNEO_IMPORTASSERT(icsneo_disableMessagePolling);
+	ICSNEO_IMPORTASSERT(icsneo_isMessagePollingEnabled);
 	ICSNEO_IMPORTASSERT(icsneo_getMessages);
 	ICSNEO_IMPORTASSERT(icsneo_getPollingMessageLimit);
 	ICSNEO_IMPORTASSERT(icsneo_setPollingMessageLimit);

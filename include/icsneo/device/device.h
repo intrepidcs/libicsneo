@@ -21,6 +21,7 @@ namespace icsneo {
 class Device {
 public:
 	virtual ~Device() {
+		destructing = true;
 		disableMessagePolling();
 		close();
 	}
@@ -51,6 +52,7 @@ public:
 	// Message polling related functions
 	void enableMessagePolling();
 	bool disableMessagePolling();
+	bool isMessagePollingEnabled() { return messagePollingCallbackID != 0; };
 	std::vector<std::shared_ptr<Message>> getMessages();
 	bool getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit = 0, std::chrono::milliseconds timeout = std::chrono::milliseconds(0));
 	size_t getCurrentMessageCount() { return pollingContainer.size_approx(); }
@@ -114,7 +116,10 @@ protected:
 	}
 
 	virtual device_errorhandler_t makeErrorHandler() {
-		return [this](APIError::ErrorType type) { ErrorManager::GetInstance().add(type, this); };
+		return [this](APIError::ErrorType type) { 
+			if(!destructing)
+				ErrorManager::GetInstance().add(type, this); 
+		};
 	}
 
 	template<typename Transport>
@@ -169,6 +174,8 @@ private:
 	size_t pollingMessageLimit = 20000;
 	moodycamel::BlockingConcurrentQueue<std::shared_ptr<Message>> pollingContainer;
 	void enforcePollingMessageLimit();
+
+	bool destructing = false;
 };
 
 }

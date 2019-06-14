@@ -78,7 +78,7 @@ std::string Device::describe() const {
 }
 
 void Device::enableMessagePolling() {
-	if(messagePollingCallbackID != 0) // We are already polling
+	if(isMessagePollingEnabled()) // We are already polling
 		return;
 
 	messagePollingCallbackID = com->addMessageCallback(MessageCallback([this](std::shared_ptr<Message> message) {
@@ -88,7 +88,7 @@ void Device::enableMessagePolling() {
 }
 
 bool Device::disableMessagePolling() {
-	if(messagePollingCallbackID == 0)
+	if(!isMessagePollingEnabled())
 		return true; // Not currently polling
 		
 	auto ret = com->removeMessageCallback(messagePollingCallbackID);
@@ -118,7 +118,7 @@ bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_
 	}
 
 	// not currently polling, throw error
-	if(messagePollingCallbackID == 0) {
+	if(!isMessagePollingEnabled()) {
 		err(APIError::DeviceNotPolling);
 		return false;
 	}
@@ -215,9 +215,10 @@ bool Device::goOnline() {
 		return false;
 
 	ledState = LEDState::Online;
-	updateLEDState();
 
 	online = true;
+	updateLEDState();
+
 	return true;
 }
 
@@ -226,9 +227,10 @@ bool Device::goOffline() {
 		return false;
 
 	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
+	
 	updateLEDState();
-
 	online = false;
+
 	return true;
 }
 
@@ -243,12 +245,6 @@ bool Device::transmit(std::shared_ptr<Message> message) {
 	// not online
 	if(!isOnline()) {
 		err(APIError::DeviceCurrentlyOffline);
-		return false;
-	}
-
-	// not currently polling, throw error
-	if(messagePollingCallbackID == 0) {
-		err(APIError::DeviceNotPolling);
 		return false;
 	}
 
