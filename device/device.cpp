@@ -104,7 +104,6 @@ std::vector<std::shared_ptr<Message>> Device::getMessages() {
 }
 
 bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit, std::chrono::milliseconds timeout) {
-	
 	// not open
 	if(!isOpen()) {
 		err(APIError::DeviceCurrentlyClosed);
@@ -235,7 +234,6 @@ bool Device::goOffline() {
 }
 
 bool Device::transmit(std::shared_ptr<Message> message) {
-
 	// not open
 	if(!isOpen()) {
 		err(APIError::DeviceCurrentlyClosed);

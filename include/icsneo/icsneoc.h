@@ -45,7 +45,7 @@ extern void DLLExport icsneo_findAllDevices(neodevice_t* devices, size_t* count)
 extern void DLLExport icsneo_freeUnconnectedDevices();
 
 /**
- * \brief Convert a serial number in numerical format to it's string representation.
+ * \brief Convert a serial number in numerical format to its string representation.
  * \param[in] num A numerical serial number.
  * \param[out] str A pointer to a buffer where the string representation will be written. NULL can be passed, which will write a character count to `count`.
  * \param[inout] count A pointer to a size_t which, prior to the call,
@@ -70,7 +70,7 @@ extern void DLLExport icsneo_freeUnconnectedDevices();
 extern bool DLLExport icsneo_serialNumToString(uint32_t num, char* str, size_t* count);
 
 /**
- * \brief Convert a serial number in string format to it's numerical representation.
+ * \brief Convert a serial number in string format to its numerical representation.
  * \param[in] str A NULL terminated string containing the string representation of an Intrepid serial number.
  * \returns The numerical representation of the serial number, or 0 if the conversion was unsuccessful.
  * 
@@ -102,7 +102,9 @@ extern bool DLLExport icsneo_isValidNeoDevice(const neodevice_t* device);
  * See icsneo_goOnline() for information about enabling network communication once the device is open.
  * 
  * If the open did not succeed, icsneo_getLastError() should provide more information about why.
- */ // TODO Solidify what happens in case the connection was already open
+ * 
+ * If the device was already open, an icsneo::APIError::DeviceCurrentlyOpen will be available in icsneo_getLastError().
+ */
 extern bool DLLExport icsneo_openDevice(const neodevice_t* device);
 
 /**
@@ -181,6 +183,8 @@ extern bool DLLExport icsneo_isOnline(const neodevice_t* device);
  * 
  * If the message limit is exceeded before a call to icsneo_getMessages() takes ownership of the messages,
  * the oldest message will be dropped (**LOST**) and an icsneo::APIError::PollingMessageOverflow will be flagged for the device.
+ * 
+ * This function will succeed even if the device is not open.
  */
 extern bool DLLExport icsneo_enableMessagePolling(const neodevice_t* device);
 
@@ -195,6 +199,15 @@ extern bool DLLExport icsneo_enableMessagePolling(const neodevice_t* device);
  */
 extern bool DLLExport icsneo_disableMessagePolling(const neodevice_t* device);
 
+/**
+ * \brief Verify message polling status for the specified hardware
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \returns True if polling is enabled.
+ * 
+ *  This function does not modify the working state of the device at all.
+ *  
+ * See icsneo_enableMessagePolling() for an explanation about how polling works.
+ */
 extern bool DLLExport icsneo_isMessagePollingEnabled(const neodevice_t* device);
 
 /**
