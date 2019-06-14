@@ -300,13 +300,6 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 }
 
 void Device::updateLEDState() {
-	/* NetID::Device is a super old command type.
-	 * It has a leading 0x00 byte, a byte for command, and a byte for an argument.
-	 * In this case, command 0x06 is SetLEDState.
-	 * This old command type is not really used anywhere else.
-	 */
-	auto msg = std::make_shared<Message>();
-	msg->network = Network::NetID::Device;
-	msg->data = {0x00, 0x06, uint8_t(ledState)};
-	transmit(msg);
+	std::vector<uint8_t> args {(uint8_t) ledState};
+	com->sendCommand(Command::UpdateLEDState, args);
 }

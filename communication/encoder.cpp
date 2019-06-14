@@ -103,9 +103,23 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 
 bool Encoder::encode(std::vector<uint8_t>& result, Command cmd, std::vector<uint8_t> arguments) {
 	auto msg = std::make_shared<Message>();
-	msg->network = Network::NetID::Main51;
-	msg->data.reserve(arguments.size() + 1);
-	msg->data.push_back((uint8_t)cmd);
-	msg->data.insert(msg->data.end(), std::make_move_iterator(arguments.begin()), std::make_move_iterator(arguments.end()));
+	if(cmd == Command::UpdateLEDState) {
+		/* NetID::Device is a super old command type.
+		 * It has a leading 0x00 byte, a byte for command, and a byte for an argument.
+	  	 * In this case, command 0x06 is SetLEDState.
+		 * This old command type is not really used anywhere else.
+		 */
+		msg->network = Network::NetID::Device;
+		msg->data.reserve(3);
+		msg->data.push_back(0x00);
+		msg->data.push_back(0x06);
+		msg->data.push_back(arguments.at(0));
+	} else {
+		msg->network = Network::NetID::Main51;
+		msg->data.reserve(arguments.size() + 1);
+		msg->data.push_back((uint8_t)cmd);
+		msg->data.insert(msg->data.end(), std::make_move_iterator(arguments.begin()), std::make_move_iterator(arguments.end()));
+	}
+	
 	return encode(result, msg);
 }
