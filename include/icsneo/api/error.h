@@ -42,9 +42,10 @@ public:
 		DeviceCurrentlyClosed = 0x1006,
 		DeviceCurrentlyOnline = 0x1007,
 		DeviceCurrentlyOffline = 0x1008,
-		DeviceNotPolling = 0x1009,
-		UnsupportedTXNetwork = 0x1010,
-		MessageMaxLengthExceeded = 0x1011,
+		DeviceCurrentlyPolling = 0x1009,
+		DeviceNotCurrentlyPolling = 0x1010,
+		UnsupportedTXNetwork = 0x1011,
+		MessageMaxLengthExceeded = 0x1012,
 		
 		// Device Errors
 		PollingMessageOverflow = 0x2000,

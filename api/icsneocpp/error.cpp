@@ -47,11 +47,12 @@ static constexpr const char* ERROR_REQUIRED_PARAMETER_NULL = "A required paramet
 static constexpr const char* ERROR_BUFFER_INSUFFICIENT = "The provided buffer was insufficient. No data was written.";
 static constexpr const char* ERROR_OUTPUT_TRUNCATED = "The output was too large for the provided buffer and has been truncated.";
 static constexpr const char* ERROR_PARAMETER_OUT_OF_RANGE = "A parameter was out of range.";
-static constexpr const char* ERROR_DEVICE_CURRENTLY_OPEN = "The device is currently open. Perhaps a different device state was required.";
-static constexpr const char* ERROR_DEVICE_CURRENTLY_CLOSED = "The device is currently closed. Perhaps a different device state was required.";
-static constexpr const char* ERROR_DEVICE_CURRENTLY_ONLINE = "The device is currently online. Perhaps a different device state was required.";
-static constexpr const char* ERROR_DEVICE_CURRENTLY_OFFLINE = "The device is currently offline. Perhaps a different device state was required.";
-static constexpr const char* ERROR_DEVICE_NOT_POLLING = "The device is not currently polling for messages.";
+static constexpr const char* ERROR_DEVICE_CURRENTLY_OPEN = "The device is currently open. Perhaps a different device state is required.";
+static constexpr const char* ERROR_DEVICE_CURRENTLY_CLOSED = "The device is currently closed. Perhaps a different device state is required.";
+static constexpr const char* ERROR_DEVICE_CURRENTLY_ONLINE = "The device is currently online. Perhaps a different device state is required.";
+static constexpr const char* ERROR_DEVICE_CURRENTLY_OFFLINE = "The device is currently offline. Perhaps a different device state is required.";
+static constexpr const char* ERROR_DEVICE_CURRENTLY_POLLING = "The device is currently polling for messages. Perhaps a different device state is required.";
+static constexpr const char* ERROR_DEVICE_NOT_CURRENTLY_POLLING = "The device is not currently polling for messages. Perhaps a different device state is required.";
 static constexpr const char* ERROR_UNSUPPORTED_TX_NETWORK = "Message network is not a supported TX network.";
 static constexpr const char* ERROR_MESSAGE_MAX_LENGTH_EXCEEDED = "The message was too long.";
 
@@ -114,8 +115,10 @@ const char* APIError::DescriptionForType(ErrorType type) {
 			return ERROR_DEVICE_CURRENTLY_ONLINE;
 		case DeviceCurrentlyOffline:
 			return ERROR_DEVICE_CURRENTLY_OFFLINE;
-		case DeviceNotPolling:
-			return ERROR_DEVICE_NOT_POLLING;
+		case DeviceCurrentlyPolling:
+			return ERROR_DEVICE_CURRENTLY_POLLING;
+		case DeviceNotCurrentlyPolling:
+			return ERROR_DEVICE_NOT_CURRENTLY_POLLING;
 		case UnsupportedTXNetwork:
 			return ERROR_UNSUPPORTED_TX_NETWORK;
 		case MessageMaxLengthExceeded:
@@ -205,7 +208,8 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case DeviceCurrentlyClosed:
 		case DeviceCurrentlyOnline:
 		case DeviceCurrentlyOffline:
-		case DeviceNotPolling:
+		case DeviceCurrentlyPolling:
+		case DeviceNotCurrentlyPolling:
 		// Device Warnings
 		case PollingMessageOverflow:
 		case DeviceFirmwareOutOfDate:

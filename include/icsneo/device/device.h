@@ -50,7 +50,7 @@ public:
 	virtual bool goOffline();
 
 	// Message polling related functions
-	void enableMessagePolling();
+	bool enableMessagePolling();
 	bool disableMessagePolling();
 	bool isMessagePollingEnabled() { return messagePollingCallbackID != 0; };
 	std::vector<std::shared_ptr<Message>> getMessages();

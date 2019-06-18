@@ -77,20 +77,23 @@ std::string Device::describe() const {
 	return ss.str();
 }
 
-void Device::enableMessagePolling() {
-	if(isMessagePollingEnabled()) // We are already polling
-		return;
-
+bool Device::enableMessagePolling() {
+	if(isMessagePollingEnabled()) {// We are already polling
+		err(APIError::DeviceCurrentlyPolling);
+		return false;
+	}
 	messagePollingCallbackID = com->addMessageCallback(MessageCallback([this](std::shared_ptr<Message> message) {
 		pollingContainer.enqueue(message);
 		enforcePollingMessageLimit();
 	}));
+	return true;
 }
 
 bool Device::disableMessagePolling() {
-	if(!isMessagePollingEnabled())
-		return true; // Not currently polling
-		
+	if(!isMessagePollingEnabled()) {
+		err(APIError::DeviceNotCurrentlyPolling);
+		return false; // Not currently polling
+	}
 	auto ret = com->removeMessageCallback(messagePollingCallbackID);
 	getMessages(); // Flush any messages still in the container
 	messagePollingCallbackID = 0;
@@ -126,7 +129,7 @@ bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_
 
 	// not currently polling, throw error
 	if(!isMessagePollingEnabled()) {
-		err(APIError::DeviceNotPolling);
+		err(APIError::DeviceNotCurrentlyPolling);
 		return false;
 	}
 
