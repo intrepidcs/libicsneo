@@ -163,9 +163,8 @@ int icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bN
 	*hObject = device;
 	if(!icsneo_openDevice(device))
 		return false;
-	icsneo_setPollingMessageLimit(device, 20000);
-	icsneo_enableMessagePolling(device);
-	return icsneo_goOnline(device);
+	
+	return icsneo_setPollingMessageLimit(device, 20000) && icsneo_enableMessagePolling(device) && icsneo_goOnline(device);
 }
 
 int icsneoClosePort(void* hObject, int* pNumberOfErrors) {
