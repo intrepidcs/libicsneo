@@ -97,9 +97,17 @@ bool Device::disableMessagePolling() {
 	return ret;
 }
 
+/**
+ * Gets all messages from the device with no limit or timeout.
+ * If it fails, a vector containing a single nullptr is returned.
+ * Otherwise, returns a vector of shared ptrs to each message.
+ */
 std::vector<std::shared_ptr<Message>> Device::getMessages() {
 	std::vector<std::shared_ptr<Message>> ret;
-	getMessages(ret);
+	// if it fails, ret will always be empty
+	if(!getMessages(ret)) {
+		ret.push_back(nullptr);
+	}
 	return ret;
 }
 
