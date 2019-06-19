@@ -30,7 +30,19 @@ std::string APIError::describe() const noexcept {
 		ss << *device; // Makes use of device.describe()
 	else
 		ss << "API";
-	ss << " Error: ";
+	
+	Severity severity = getSeverity();
+	if(severity == Severity::Info) {
+		ss << " Info: ";
+	} else if(severity == Severity::Warning) {
+		ss << " Warning: ";
+	} else if(severity == Severity::Error) {
+		ss << " Error: ";
+	} else {
+		// Should never get here, since Severity::Any should only be used for filtering
+		ss << " Any: ";
+	}
+
 	ss << getDescription();
 	return ss.str();
 }
