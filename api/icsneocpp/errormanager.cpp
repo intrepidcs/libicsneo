@@ -48,6 +48,16 @@ bool ErrorManager::getLastError(APIError& errorOutput, ErrorFilter filter) {
 	return false;
 }
 
+bool ErrorManager::getLastError(APIError& errorOutput, std::thread::id id) {
+	auto iter = lastUserErrors.find(id);
+	if(iter == lastUserErrors.end()) {
+		return false;
+	} else {
+		errorOutput = iter->second;
+		return true;
+	}
+}
+
 void ErrorManager::discard(ErrorFilter filter) {
 	std::lock_guard<std::mutex> lk(mutex);
 	errors.remove_if([&filter](const APIError& error) {
@@ -69,7 +79,7 @@ size_t ErrorManager::count_internal(ErrorFilter filter) const {
  */
 bool ErrorManager::enforceLimit() {
 	// Remove all TooManyErrors before checking
-	errors.remove_if([](icsneo::APIError err){ return err.getType == icsneo::APIError::TooManyErrors; });
+	errors.remove_if([](icsneo::APIError err){ return err.getType() == icsneo::APIError::TooManyErrors; });
 	
 	// We are not overflowing
 	if(errors.size() < errorLimit)

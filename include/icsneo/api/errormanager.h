@@ -5,6 +5,8 @@
 #include <list>
 #include <mutex>
 #include <functional>
+#include <unordered_map>
+#include <thread>
 #include "icsneo/api/error.h"
 
 namespace icsneo {
@@ -29,20 +31,42 @@ public:
 	void get(std::vector<APIError>& outErrors, ErrorFilter filter, size_t max = 0) { get(outErrors, max, filter); }
 	void get(std::vector<APIError>& outErrors, size_t max = 0, ErrorFilter filter = ErrorFilter());
 	bool getLastError(APIError& outErrors, ErrorFilter filter = ErrorFilter());
+	bool getLastError(APIError& errorOutput, std::thread::id id);
 
 	void add(APIError error) {
 		std::lock_guard<std::mutex> lk(mutex);
 		add_internal(error);
 	}
+	void add(APIError error, std::thread::id id) {
+		std::lock_guard<std::mutex> lk(mutex);
+		if(id == std::thread::id())
+			add_internal(error);
+		else 
+			add_internal_threaded(error, id);
+	}
 	void add(APIError::ErrorType type) {
 		std::lock_guard<std::mutex> lk(mutex);
 		add_internal(APIError::APIError(type));
+	}
+	void add(APIError::ErrorType type, std::thread::id id) {
+		std::lock_guard<std::mutex> lk(mutex);
+		if(id == std::thread::id())
+			add_internal(APIError::APIError(type));
+		else
+			add_internal_threaded(APIError::APIError(type), id);
+		
 	}
 	void add(APIError::ErrorType type, const Device* forDevice) {
 		std::lock_guard<std::mutex> lk(mutex);
 		add_internal(APIError::APIError(type, forDevice));
 	}
-
+	void add(APIError::ErrorType type, const Device* forDevice, std::thread::id id) {
+		std::lock_guard<std::mutex> lk(mutex);
+		if(id == std::thread::id())
+			add_internal(APIError::APIError(type, forDevice));
+		else
+			add_internal_threaded(APIError::APIError(type, forDevice), id);
+	}
 
 	void discard(ErrorFilter filter = ErrorFilter());
 
@@ -70,12 +94,28 @@ private:
 
 	// Stores all errors
 	std::list<APIError> errors;
+	std::unordered_map<std::thread::id, APIError> lastUserErrors;
 	size_t errorLimit = 10000;
 
 	size_t count_internal(ErrorFilter filter = ErrorFilter()) const;
 
-	// If errors is not full, add the error at the end
-	// Otherwise, remove the least significant errors, push the error to the back and push a APIError::TooManyErrors to the back (in that order)
+	/**
+	 * Places a {id, error} pair into the lastUserErrors
+	 * If the key id already exists in the map, replace the error of that pair with the new one
+	 */
+	void add_internal_threaded(APIError error, std::thread::id id) {
+		auto iter = lastUserErrors.find(id);
+		if(iter == lastUserErrors.end()) {
+			lastUserErrors.insert(std::make_pair(id, error));
+		} else {
+			iter->second = error;
+		}
+	}
+
+	/**
+	 * If errors is not full, add the error at the end
+	 * Otherwise, remove the least significant errors, push the error to the back and push a APIError::TooManyErrors to the back (in that order)
+	 */
 	void add_internal(APIError error) {
 		// Ensure the error list is at most exactly full (size of errorLimit - 1, leaving room for a potential APIError::TooManyErrors) 
 		enforceLimit();
