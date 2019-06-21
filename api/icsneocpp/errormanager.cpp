@@ -63,26 +63,22 @@ size_t ErrorManager::count_internal(ErrorFilter filter) const {
 	return ret;
 }
 
-bool ErrorManager::beforeAddCheck(APIError::ErrorType type) {
-	if(enforceLimit()) { // The enforceLimit will add the "TooManyErrors" error for us if necessary
-		// We need to decide whether to add this error or drop it
-		// We would have to remove something if we added this error
-		if(APIError::SeverityForType(type) < lowestCurrentSeverity())
-			return false; // Don't add this one, we are already full of higher priority items
-	}
-	return true;
-}
-
+/**
+ * Ensures errors is always at most errorLimit - 1 in size.
+ * Returns true if any errors were removed in the process of doing so.
+ */
 bool ErrorManager::enforceLimit() {
-	if(errors.size() + 1 < errorLimit)
-		return false;
+	// Remove all TooManyErrors before checking
+	errors.remove_if([](icsneo::APIError err){ return err.getType == icsneo::APIError::TooManyErrors; });
 	
-	bool hasTooManyWarningAlready = count_internal(ErrorFilter(APIError::TooManyErrors)) != 0;
-	size_t amountToRemove = (errors.size() + (hasTooManyWarningAlready ? 1 : 2)) - errorLimit;
+	// We are not overflowing
+	if(errors.size() < errorLimit)
+		return false;
+
+	size_t amountToRemove = errors.size() + 1 - errorLimit;
 
 	discardLeastSevere(amountToRemove);
-	if(!hasTooManyWarningAlready)
-		errors.emplace_back(APIError::TooManyErrors);
+
 	return true;
 }
 
@@ -104,6 +100,7 @@ void ErrorManager::discardLeastSevere(size_t count) {
 	if(count == 0)
 		return;
 
+	// Erase needed Info level errors, starting from the beginning
 	ErrorFilter infoFilter(APIError::Severity::Info);
 	auto it = errors.begin();
 	while(it != errors.end()) {
@@ -116,6 +113,7 @@ void ErrorManager::discardLeastSevere(size_t count) {
 		}
 	}
 
+	// Erase needed Warning level errors, starting from the beginning
 	if(count != 0) {
 		ErrorFilter warningFilter(APIError::Severity::Warning);
 		it = errors.begin();
@@ -130,6 +128,7 @@ void ErrorManager::discardLeastSevere(size_t count) {
 		}
 	}
 
+	// Erase needed Error level errors, starting from the beginning
 	if(count != 0) {
 		ErrorFilter errorFilter(APIError::Severity::Error);
 		it = errors.begin();

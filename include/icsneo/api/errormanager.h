@@ -46,6 +46,9 @@ public:
 	void discard(ErrorFilter filter = ErrorFilter());
 
 	void setErrorLimit(size_t newLimit) {
+		if(newLimit == errorLimit)
+			return;
+		
 		if(newLimit < 10) {
 			add(APIError::ParameterOutOfRange);
 			return;
@@ -53,39 +56,76 @@ public:
 
 		std::lock_guard<std::mutex> lk(mutex);
 		errorLimit = newLimit;
-		enforceLimit();
+		if(enforceLimit()) 
+			add(APIError::TooManyErrors);
 	}
 
 	size_t getErrorLimit() const { return errorLimit; }
 
 private:
 	ErrorManager() {}
+	// Used by functions for threadsafety
 	mutable std::mutex mutex;
+
+	// Stores all errors
 	std::list<APIError> errors;
 	size_t errorLimit = 10000;
 
 	size_t count_internal(ErrorFilter filter = ErrorFilter()) const;
 
+	// If errors is not full, add the error at the end
+	// Otherwise, remove the least significant errors, push the error to the back and push a APIError::TooManyErrors to the back (in that order)
 	void add_internal(APIError error) {
-		if(!beforeAddCheck(error.getType()))
-			return;
-		errors.push_back(error);
+		// Ensure the error list is at most exactly full (size of errorLimit - 1, leaving room for a potential APIError::TooManyErrors) 
 		enforceLimit();
+
+		// We are exactly full, either because the list was truncated or because we were simply full before
+		if(errors.size() == errorLimit - 1) {
+			// If the error is worth adding
+			if(APIError::SeverityForType(error.getType()) >= lowestCurrentSeverity()) {
+				discardLeastSevere(1);
+				errors.push_back(error);	
+			}
+
+			errors.push_back(APIError(APIError::TooManyErrors));
+		} else {
+			errors.push_back(error);
+		}
 	}
 	void add_internal(APIError::ErrorType type) {
-		if(!beforeAddCheck(type))
-			return;
-		errors.emplace_back(type);
+		// Ensure the error list is at most exactly full (size of errorLimit - 1, leaving room for a potential APIError::TooManyErrors) 
 		enforceLimit();
+
+		// We are exactly full, either because the list was truncated or because we were simply full before
+		if(errors.size() == errorLimit - 1) {
+			// If the error is worth adding
+			if(APIError::SeverityForType(type) >= lowestCurrentSeverity()) {
+				discardLeastSevere(1);
+				errors.emplace_back(type);
+			}
+
+			errors.push_back(APIError(APIError::TooManyErrors));
+		} else {
+			errors.emplace_back(type);
+		}
 	}
 	void add_internal(APIError::ErrorType type, const Device* forDevice) {
-		if(!beforeAddCheck(type))
-			return;
-		errors.emplace_back(type, forDevice);
+		// Ensure the error list is at most exactly full (size of errorLimit - 1, leaving room for a potential APIError::TooManyErrors) 
 		enforceLimit();
-	}
 
-	bool beforeAddCheck(APIError::ErrorType type); // Returns whether the error should be added
+		// We are exactly full, either because the list was truncated or because we were simply full before
+		if(errors.size() == errorLimit - 1) {
+			// If the error is worth adding
+			if(APIError::SeverityForType(type) >= lowestCurrentSeverity()) {
+				discardLeastSevere(1);
+				errors.emplace_back(type);
+			}
+
+			errors.push_back(APIError(APIError::TooManyErrors));
+		} else {
+			errors.emplace_back(type, forDevice);
+		}
+	}
 
 	bool enforceLimit(); // Returns whether the limit enforcement resulted in an overflow
 

@@ -617,7 +617,7 @@ extern void DLLExport icsneo_discardDeviceErrors(const neodevice_t* device);
 
 /**
  * \brief Set the number of errors which will be held in the API managed buffer before icsneo::APIError::TooManyErrors
- * \param[in] newLimit The new limit. Must be >10.
+ * \param[in] newLimit The new limit. Must be >10. 1 error slot is always reserved for a potential icsneo::APIError::TooManyErrors, so (newLimit - 1) other errors can be stored.
  * 
  * If the error limit is reached, an icsneo::APIError::TooManyErrors will be flagged.
  * 
@@ -628,10 +628,8 @@ extern void DLLExport icsneo_discardDeviceErrors(const neodevice_t* device);
 extern void DLLExport icsneo_setErrorLimit(size_t newLimit);
 
 /**
- * \brief Set the number of errors which will be held in the API managed buffer before icsneo::APIError::TooManyErrors
+ * \brief Get the number of errors which can be held in the API managed buffer
  * \returns The current limit.
- * 
- * If the error limit is reached, an icsneo::APIError::TooManyErrors will be flagged.
  */
 extern size_t DLLExport icsneo_getErrorLimit(void);
 
