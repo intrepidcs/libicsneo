@@ -36,12 +36,13 @@ public:
 	}
 	void add(APIError::ErrorType type) {
 		std::lock_guard<std::mutex> lk(mutex);
-		add_internal(type);
+		add_internal(APIError::APIError(type));
 	}
 	void add(APIError::ErrorType type, const Device* forDevice) {
 		std::lock_guard<std::mutex> lk(mutex);
-		add_internal(type, forDevice);
+		add_internal(APIError::APIError(type, forDevice));
 	}
+
 
 	void discard(ErrorFilter filter = ErrorFilter());
 
@@ -90,40 +91,6 @@ private:
 			errors.push_back(APIError(APIError::TooManyErrors));
 		} else {
 			errors.push_back(error);
-		}
-	}
-	void add_internal(APIError::ErrorType type) {
-		// Ensure the error list is at most exactly full (size of errorLimit - 1, leaving room for a potential APIError::TooManyErrors) 
-		enforceLimit();
-
-		// We are exactly full, either because the list was truncated or because we were simply full before
-		if(errors.size() == errorLimit - 1) {
-			// If the error is worth adding
-			if(APIError::SeverityForType(type) >= lowestCurrentSeverity()) {
-				discardLeastSevere(1);
-				errors.emplace_back(type);
-			}
-
-			errors.push_back(APIError(APIError::TooManyErrors));
-		} else {
-			errors.emplace_back(type);
-		}
-	}
-	void add_internal(APIError::ErrorType type, const Device* forDevice) {
-		// Ensure the error list is at most exactly full (size of errorLimit - 1, leaving room for a potential APIError::TooManyErrors) 
-		enforceLimit();
-
-		// We are exactly full, either because the list was truncated or because we were simply full before
-		if(errors.size() == errorLimit - 1) {
-			// If the error is worth adding
-			if(APIError::SeverityForType(type) >= lowestCurrentSeverity()) {
-				discardLeastSevere(1);
-				errors.emplace_back(type);
-			}
-
-			errors.push_back(APIError(APIError::TooManyErrors));
-		} else {
-			errors.emplace_back(type, forDevice);
 		}
 	}
 

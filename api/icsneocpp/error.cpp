@@ -216,12 +216,7 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 	switch(type) {
 		// API Warnings
 		case OutputTruncated:
-		case DeviceCurrentlyOpen:
-		case DeviceCurrentlyClosed:
-		case DeviceCurrentlyOnline:
-		case DeviceCurrentlyOffline:
-		case DeviceCurrentlyPolling:
-		case DeviceNotCurrentlyPolling:
+		
 		// Device Warnings
 		case PollingMessageOverflow:
 		case DeviceFirmwareOutOfDate:
@@ -240,6 +235,12 @@ APIError::Severity APIError::SeverityForType(ErrorType type) {
 		case MessageMaxLengthExceeded:
 		
 		// Device Errors
+		case DeviceCurrentlyOpen:
+		case DeviceCurrentlyClosed:
+		case DeviceCurrentlyOnline:
+		case DeviceCurrentlyOffline:
+		case DeviceCurrentlyPolling:
+		case DeviceNotCurrentlyPolling:
 		case NoSerialNumber:
 		case IncorrectSerialNumber:
 		case SettingsReadError:
