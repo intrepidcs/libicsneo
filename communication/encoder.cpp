@@ -14,12 +14,12 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 		case Network::Type::Ethernet: {
 			auto ethmsg = std::dynamic_pointer_cast<EthernetMessage>(message);
 			if(!ethmsg) {
-				err(APIError::MessageFormattingError);
+				report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
 				return false; // The message was not a properly formed EthernetMessage
 			}
 
 			useResultAsBuffer = true;
-			if(!HardwareEthernetPacket::EncodeFromMessage(*ethmsg, result, err))
+			if(!HardwareEthernetPacket::EncodeFromMessage(*ethmsg, result, report))
 				return false;
 
 			break;
@@ -29,17 +29,17 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 		case Network::Type::LSFTCAN: {
 			auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
 			if(!canmsg) {
-				err(APIError::MessageFormattingError);
+				report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
 				return false; // The message was not a properly formed CANMessage
 			}
 
 			if(!supportCANFD && canmsg->isCANFD) {
-				err(APIError::CANFDNotSupported);
+				report(APIEvent::Type::CANFDNotSupported, APIEvent::Severity::Error);
 				return false; // This device does not support CAN FD
 			}
 			
 			useResultAsBuffer = true;
-			if(!HardwareCANPacket::EncodeFromMessage(*canmsg, result, err))
+			if(!HardwareCANPacket::EncodeFromMessage(*canmsg, result, report))
 				return false; // The CANMessage was malformed
 
 			break;
@@ -75,7 +75,7 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 					break;
 				}
 				default:
-					err(APIError::UnexpectedNetworkType);
+					report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 					return false;
 			}
 	}

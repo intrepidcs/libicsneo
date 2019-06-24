@@ -3,7 +3,7 @@
 
 #include "icsneo/communication/icommunication.h"
 #include "icsneo/device/neodevice.h"
-#include "icsneo/api/errormanager.h"
+#include "icsneo/api/eventmanager.h"
 #include <chrono>
 #include <stdint.h>
 
@@ -11,7 +11,7 @@ namespace icsneo {
 
 class STM32 : public ICommunication {
 public:
-	STM32(const device_errorhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {}
+	STM32(const device_eventhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {}
 	static std::vector<neodevice_t> FindByProduct(int product);
 
 	bool open();

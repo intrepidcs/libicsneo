@@ -7,14 +7,14 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include "icsneo/api/errormanager.h"
+#include "icsneo/api/eventmanager.h"
 #include "icsneo/third-party/concurrentqueue/blockingconcurrentqueue.h"
 
 namespace icsneo {
 
 class ICommunication {
 public:
-	ICommunication(const device_errorhandler_t& handler) : err(handler) {}
+	ICommunication(const device_eventhandler_t& handler) : report(handler) {}
 	virtual ~ICommunication() {}
 	virtual bool open() = 0;
 	virtual bool isOpen() = 0;
@@ -27,7 +27,7 @@ public:
 			writeCV.notify_one();
 	}
 
-	device_errorhandler_t err;
+	device_eventhandler_t report;
 
 	size_t writeQueueSize = 50;
 	bool writeBlocks = true; // Otherwise it just fails when the queue is full

@@ -14,7 +14,7 @@ protected:
 		std::shared_ptr<Packetizer> packetizer,
 		std::unique_ptr<Encoder> encoder,
 		std::unique_ptr<Decoder> decoder
-	) override { return std::make_shared<MultiChannelCommunication>(err, std::move(transport), packetizer, std::move(encoder), std::move(decoder)); }
+	) override { return std::make_shared<MultiChannelCommunication>(report, std::move(transport), packetizer, std::move(encoder), std::move(decoder)); }
 
 	// TODO: This is done so that Plasion can still transmit it's basic networks, awaiting VLAN support
 	virtual bool isSupportedRXNetwork(const Network&) const override { return true; }

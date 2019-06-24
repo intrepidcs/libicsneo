@@ -334,7 +334,7 @@ public:
 	static CANBaudrate GetEnumValueForBaudrate(int64_t baudrate);
 	static int64_t GetBaudrateValueForEnum(CANBaudrate enumValue);
 
-	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), err(com->err), structSize(size) {}
+	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), report(com->report), structSize(size) {}
 	virtual ~IDeviceSettings() {}
 	bool ok() { return !disabled && settingsLoaded; }
 	
@@ -406,7 +406,7 @@ public:
 	bool disableGSChecksumming = false;
 protected:
 	std::shared_ptr<Communication> com;
-	device_errorhandler_t err;
+	device_eventhandler_t report;
 	size_t structSize;
 
 	// if we hold any local copies of the device settings
@@ -418,7 +418,7 @@ protected:
 	// Parameter createInoperableSettings exists because it is serving as a warning that you probably don't want to do this
 	typedef void* warn_t;
 	IDeviceSettings(warn_t createInoperableSettings, std::shared_ptr<Communication> com)
-		: disabled(true), readonly(true), err(com->err), structSize(0) { (void)createInoperableSettings; }
+		: disabled(true), readonly(true), report(com->report), structSize(0) { (void)createInoperableSettings; }
 };
 
 }

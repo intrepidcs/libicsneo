@@ -2,7 +2,7 @@
 #define __PACKETIZER_H_
 
 #include "icsneo/communication/packet.h"
-#include "icsneo/api/errormanager.h"
+#include "icsneo/api/eventmanager.h"
 #include <queue>
 #include <vector>
 #include <memory>
@@ -13,7 +13,7 @@ class Packetizer {
 public:
 	static uint8_t ICSChecksum(const std::vector<uint8_t>& data);
 
-	Packetizer(device_errorhandler_t err) : err(err) {}
+	Packetizer(device_eventhandler_t report) : report(report) {}
 
 	std::vector<uint8_t>& packetWrap(std::vector<uint8_t>& data, bool shortFormat);
 
@@ -42,7 +42,7 @@ private:
 
 	std::vector<std::shared_ptr<Packet>> processedPackets;
 
-	device_errorhandler_t err;
+	device_eventhandler_t report;
 };
 
 }

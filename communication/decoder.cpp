@@ -23,7 +23,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 		case Network::Type::Ethernet:
 			result = HardwareEthernetPacket::DecodeToMessage(packet->data);
 			if(!result) {
-				err(APIError::PacketDecodingError);
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false; // A nullptr was returned, the packet was not long enough to decode
 			}
 
@@ -36,13 +36,13 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 		case Network::Type::SWCAN:
 		case Network::Type::LSFTCAN: {
 			if(packet->data.size() < 24) {
-				err(APIError::PacketDecodingError);
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false;
 			}
 
 			result = HardwareCANPacket::DecodeToMessage(packet->data);
 			if(!result) {
-				err(APIError::PacketDecodingError);
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false; // A nullptr was returned, the packet was malformed
 			}
 			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
@@ -55,7 +55,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			switch(packet->network.getNetID()) {
 				case Network::NetID::Reset_Status: {
 					if(packet->data.size() < sizeof(HardwareResetStatusPacket)) {
-						err(APIError::PacketDecodingError);
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 						return false;
 					}
 

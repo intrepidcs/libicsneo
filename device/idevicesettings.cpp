@@ -130,7 +130,7 @@ int64_t IDeviceSettings::GetBaudrateValueForEnum(CANBaudrate enumValue) {
 
 bool IDeviceSettings::refresh(bool ignoreChecksum) {
 	if(disabled) {
-		err(APIError::SettingsNotAvailable);
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -140,12 +140,12 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 	std::vector<uint8_t> rxSettings;
 	bool ret = com->getSettingsSync(rxSettings);
 	if(!ret) {
-		err(APIError::SettingsReadError);
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(rxSettings.size() < 6) { // We need to at least have the header of GLOBAL_SETTINGS
-		err(APIError::SettingsReadError);
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -158,17 +158,17 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 	rxSettings.erase(rxSettings.begin(), rxSettings.begin() + gs_size);
 
 	if(gs_version != 5) {
-		err(APIError::SettingsVersionError);
+		report(APIEvent::Type::SettingsVersionError, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(rxLen != gs_len) {
-		err(APIError::SettingsLengthError);
+		report(APIEvent::Type::SettingsLengthError, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(!ignoreChecksum && gs_chksum != CalculateGSChecksum(rxSettings)) {
-		err(APIError::SettingsChecksumError);
+		report(APIEvent::Type::SettingsChecksumError, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -184,17 +184,17 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 
 bool IDeviceSettings::apply(bool temporary) {
 	if(readonly) {
-		err(APIError::SettingsReadOnly);
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(disabled) {
-		err(APIError::SettingsNotAvailable);
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(!settingsLoaded) {
-		err(APIError::SettingsReadError);
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -217,7 +217,7 @@ bool IDeviceSettings::apply(bool temporary) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) { 
 			// refresh succeeded but previously there was an error
-			err(APIError::NoDeviceResponse);
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		}
 		return false;
 	}
@@ -236,7 +236,7 @@ bool IDeviceSettings::apply(bool temporary) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) { 
 			// refresh succeeded but previously there was an error
-			err(APIError::NoDeviceResponse);
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		}
 		return false;
 	}
@@ -250,19 +250,19 @@ bool IDeviceSettings::apply(bool temporary) {
 
 	bool ret = (msg && msg->data[0] == 1); // Device sends 0x01 for success
 	if(!ret) {
-		err(APIError::FailedToWrite);
+		report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 	}
 	return ret; 
 }
 
 bool IDeviceSettings::applyDefaults(bool temporary) {
 	if(disabled) {
-		err(APIError::SettingsNotAvailable);
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(readonly) {
-		err(APIError::SettingsReadOnly);
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -272,7 +272,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) { 
 			// refresh succeeded but previously there was an error
-			err(APIError::NoDeviceResponse);
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		}
 		return false;
 	}
@@ -301,7 +301,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) { 
 			// refresh succeeded but previously there was an error
-			err(APIError::NoDeviceResponse);
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		}
 		return false;
 	}
@@ -315,19 +315,19 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 
 	bool ret = (msg && msg->data[0] == 1); // Device sends 0x01 for success
 	if(!ret) {
-		err(APIError::FailedToWrite);
+		report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 	}
 	return ret; 
 }
 
 int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 	if(disabled) {
-		err(APIError::SettingsNotAvailable);
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return -1;
 	}
 
 	if(!settingsLoaded) {
-		err(APIError::SettingsReadError);
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return -1;
 	}
 
@@ -335,55 +335,55 @@ int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 		case Network::Type::CAN: {
 			const CAN_SETTINGS* cfg = getCANSettingsFor(net);
 			if(cfg == nullptr) {
-				err(APIError::CANFDSettingsNotAvailable);
+				report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
 				return -1;
 			}
 
 			int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->Baudrate);
 			if(baudrate == -1) {
-				err(APIError::BaudrateNotFound);
+				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
 				return -1;
 			}
 			return baudrate;
 		}
 		default:
-			err(APIError::UnexpectedNetworkType);
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 			return -1;
 	}
 }
 
 bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 	if(disabled) {
-		err(APIError::SettingsNotAvailable);
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(!settingsLoaded) {
-		err(APIError::SettingsReadError);
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(readonly) {
-		err(APIError::SettingsReadOnly);
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
 		return false;
 	}
 
 	switch(net.getType()) {
 		case Network::Type::CAN: {
 			if(baudrate > 1000000) { // This is an FD baudrate. Use setFDBaudrateFor instead.
-				err(APIError::CANFDSettingsNotAvailable);
+				report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
 				return false;
 			}
 
 			CAN_SETTINGS* cfg = getMutableCANSettingsFor(net);
 			if(cfg == nullptr) {
-				err(APIError::CANSettingsNotAvailable);
+				report(APIEvent::Type::CANSettingsNotAvailable, APIEvent::Severity::Error);
 				return false;
 			}
 								
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
 			if(newBaud == (CANBaudrate)-1) {
-				err(APIError::BaudrateNotFound);
+				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
 				return false;
 			}
 			cfg->Baudrate = (uint8_t)newBaud;
@@ -394,13 +394,13 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 		case Network::Type::LSFTCAN: {
 			CAN_SETTINGS* cfg = getMutableLSFTCANSettingsFor(net);
 			if(cfg == nullptr) {
-				err(APIError::LSFTCANSettingsNotAvailable);
+				report(APIEvent::Type::LSFTCANSettingsNotAvailable, APIEvent::Severity::Error);
 				return false;
 			}
 				
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
 			if(newBaud == (CANBaudrate)-1) {
-				err(APIError::BaudrateNotFound);
+				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
 				return false;
 			}
 			cfg->Baudrate = (uint8_t)newBaud;
@@ -411,13 +411,13 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 		case Network::Type::SWCAN: {
 			SWCAN_SETTINGS* cfg = getMutableSWCANSettingsFor(net);
 			if(cfg == nullptr) {
-				err(APIError::SWCANSettingsNotAvailable);
+				report(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::Error);
 				return false;
 			}
 								
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
 			if(newBaud == (CANBaudrate)-1) {
-				err(APIError::BaudrateNotFound);
+				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
 				return false;
 			}
 			cfg->Baudrate = (uint8_t)newBaud;
@@ -426,18 +426,18 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 			return true;
 		}
 		default:
-			err(APIError::UnexpectedNetworkType);
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 			return false;
 	}
 }
 
 int64_t IDeviceSettings::getFDBaudrateFor(Network net) const {
 	if(disabled) {
-		err(APIError::SettingsNotAvailable);
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 	}
 
 	if(!settingsLoaded) {
-		err(APIError::SettingsReadError);
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return -1;
 	}
 
@@ -445,37 +445,37 @@ int64_t IDeviceSettings::getFDBaudrateFor(Network net) const {
 		case Network::Type::CAN: {
 			const CANFD_SETTINGS* cfg = getCANFDSettingsFor(net);
 			if(cfg == nullptr) {
-				err(APIError::CANFDSettingsNotAvailable);
+				report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
 				return -1;
 			}
 
 			int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->FDBaudrate);
 			if(baudrate == -1) {
-				err(APIError::BaudrateNotFound);
+				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
 				return -1;
 			}
 
 			return baudrate;
 		}
 		default:
-			err(APIError::UnexpectedNetworkType);
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 			return -1;
 	}
 }
 
 bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
 	if(!settingsLoaded) {
-		err(APIError::SettingsReadError);
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(disabled) {
-		err(APIError::SettingsNotAvailable);
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(readonly) {
-		err(APIError::SettingsReadOnly);
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -483,53 +483,53 @@ bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
 		case Network::Type::CAN: {
 			CANFD_SETTINGS* cfg = getMutableCANFDSettingsFor(net);
 			if(cfg == nullptr) {
-				err(APIError::CANFDSettingsNotAvailable);
+				report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
 				return false;
 			}
 
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
 			if(newBaud == (CANBaudrate)-1) {
-				err(APIError::BaudrateNotFound);
+				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
 				return false;
 			}
 			cfg->FDBaudrate = (uint8_t)newBaud;
 			return true;
 		}
 		default:
-			err(APIError::UnexpectedNetworkType);
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 			return false;
 	}
 }
 
 template<typename T> bool IDeviceSettings::applyStructure(const T& newStructure) {
 	if(!settingsLoaded) {
-		err(APIError::SettingsReadError);
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(disabled) {
-		err(APIError::SettingsNotAvailable);
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(readonly) {
-		err(APIError::SettingsReadOnly);
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
 		return false;
 	}
 	
 	// This function is only called from C++ so the caller's structure size and ours should never differ
 	if(sizeof(T) != structSize) {
-		err(APIError::SettingsStructureMismatch);
+		report(APIEvent::Type::SettingsStructureMismatch, APIEvent::Severity::Error);
 		return false; // The wrong structure was passed in for the current device
 	}
 	size_t copySize = sizeof(T);
 	if(copySize > settings.size()) {
-		err(APIError::SettingsStructureTruncated);
+		report(APIEvent::Type::SettingsStructureTruncated, APIEvent::Severity::EventWarning);
 		copySize = settings.size(); // TODO Warn user that their structure is truncated
 	}
 	// Warn user that the device firmware doesn't support all the settings in the current API
 	if(copySize < settings.size())
-		err(APIError::DeviceFirmwareOutOfDate);
+		report(APIEvent::Type::DeviceFirmwareOutOfDate, APIEvent::Severity::EventWarning);
 
 	memcpy(settings.data(), &newStructure, structSize);
 	return apply();

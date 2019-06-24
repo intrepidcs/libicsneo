@@ -5,7 +5,7 @@
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/packet.h"
 #include "icsneo/communication/network.h"
-#include "icsneo/api/errormanager.h"
+#include "icsneo/api/eventmanager.h"
 #include <queue>
 #include <vector>
 #include <memory>
@@ -16,13 +16,13 @@ class Decoder {
 public:
 	static uint64_t GetUInt64FromLEBytes(uint8_t* bytes);
 
-	Decoder(device_errorhandler_t err) : err(err) {}
+	Decoder(device_eventhandler_t report) : report(report) {}
 	bool decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet);
 
 	uint16_t timestampResolution = 25;
 
 private:
-	device_errorhandler_t err;
+	device_eventhandler_t report;
 
 #pragma pack(push, 1)
 

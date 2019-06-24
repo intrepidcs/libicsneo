@@ -20,7 +20,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	std::vector<PCAPFoundDevice> foundDevices;
 	PCAPDLL pcap;
 	if(!pcap.ok()) {
-		ErrorManager::GetInstance().add(APIError::PCAPCouldNotStart);
+		EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotStart, APIEvent::Severity::Error);
 		return std::vector<PCAPFoundDevice>();
 	}
 
@@ -38,7 +38,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	}
 
 	if(!success) {
-		ErrorManager::GetInstance().add(APIError::PCAPCouldNotFindDevices);
+		EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotFindDevices, APIEvent::Severity::Error);
 		return std::vector<PCAPFoundDevice>();
 	}
 
@@ -55,13 +55,13 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	// Now we're going to ask Win32 for the information as well
 	ULONG size = 0;
 	if(GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr, nullptr, &size) != ERROR_BUFFER_OVERFLOW) {
-		ErrorManager::GetInstance().add(APIError::PCAPCouldNotFindDevices);
+		EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotFindDevices, APIEvent::Severity::Error);
 		return std::vector<PCAPFoundDevice>();
 	}
 	std::vector<uint8_t> adapterAddressBuffer;
 	adapterAddressBuffer.resize(size);
 	if(GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr, (IP_ADAPTER_ADDRESSES*)adapterAddressBuffer.data(), &size) != ERROR_SUCCESS) {
-		ErrorManager::GetInstance().add(APIError::PCAPCouldNotFindDevices);
+		EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotFindDevices, APIEvent::Severity::Error);
 		return std::vector<PCAPFoundDevice>();
 	}
 	
@@ -177,7 +177,7 @@ bool PCAP::IsHandleValid(neodevice_handle_t handle) {
 	return (netifIndex < knownInterfaces.size());
 }
 
-PCAP::PCAP(const device_errorhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
+PCAP::PCAP(const device_eventhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
 	if(IsHandleValid(device.handle)) {
 		interface = knownInterfaces[(device.handle >> 24) & 0xFF];
 		interface.fp = nullptr; // We're going to open our own connection to the interface. This should already be nullptr but just in case.
@@ -195,24 +195,24 @@ PCAP::PCAP(const device_errorhandler_t& err, neodevice_t& forDevice) : ICommunic
 
 bool PCAP::open() {
 	if(!openable) {
-		err(APIError::InvalidNeoDevice);
+		report(APIEvent::Type::InvalidNeoDevice, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(!pcap.ok()) {
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(isOpen()) {
-		err(APIError::DeviceCurrentlyOpen);
+		report(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::Error);
 		return false;
 	}	
 
 	// Open the interface
 	interface.fp = pcap.open(interface.nameFromWinPCAP.c_str(), 100, PCAP_OPENFLAG_PROMISCUOUS | PCAP_OPENFLAG_MAX_RESPONSIVENESS, 1, nullptr, errbuf);
 	if(interface.fp == nullptr) {
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -229,7 +229,7 @@ bool PCAP::isOpen() {
 
 bool PCAP::close() {
 	if(!isOpen()) {
-		err(APIError::DeviceCurrentlyClosed);
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -255,7 +255,7 @@ void PCAP::readTask() {
 	while(!closing) {
 		auto readBytes = pcap.next_ex(interface.fp, &header, &data);
 		if(readBytes < 0) {
-			err(APIError::FailedToRead);
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 			break;
 		}
 		if(readBytes == 0)

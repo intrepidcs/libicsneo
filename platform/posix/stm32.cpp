@@ -192,7 +192,7 @@ std::vector<neodevice_t> STM32::FindByProduct(int product) {
 
 bool STM32::open() {
 	if(isOpen()) {
-		err(APIError::DeviceCurrentlyOpen);
+		report(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::Error);
 		return false;
 	}
 	std::stringstream ss;
@@ -200,7 +200,7 @@ bool STM32::open() {
 	fd = ::open(ss.str().c_str(), O_RDWR | O_NOCTTY | O_SYNC);
 	if(!isOpen()) {
 		//std::cout << "Open of " << ss.str().c_str() << " failed with " << strerror(errno) << ' ';
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -209,7 +209,7 @@ bool STM32::open() {
 
 	if(tcgetattr(fd, &tty) != 0) {
 		close();
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -232,7 +232,7 @@ bool STM32::open() {
 
 	if(tcsetattr(fd, TCSAFLUSH, &tty) != 0) { // Flushes input and output buffers as well as setting settings
 		close();
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -254,7 +254,7 @@ bool STM32::isOpen() {
 
 bool STM32::close() {
 	if(!isOpen()) {
-		err(APIError::DeviceCurrentlyClosed);
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -279,7 +279,7 @@ bool STM32::close() {
 	if(ret == 0) {
 		return true;
 	} else {
-		err(APIError::DriverFailedToClose);
+		report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
 		return false;
 	}
 }
@@ -303,7 +303,7 @@ void STM32::writeTask() {
 		const ssize_t writeSize = (ssize_t)writeOp.bytes.size();
 		ssize_t actualWritten = ::write(fd, writeOp.bytes.data(), writeSize);
 		if(actualWritten != writeSize)
-			err(APIError::FailedToWrite);
+			report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 		onWrite();
 	}
 }

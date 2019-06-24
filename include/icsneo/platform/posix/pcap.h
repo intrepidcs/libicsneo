@@ -3,7 +3,7 @@
 
 #include "icsneo/device/neodevice.h"
 #include "icsneo/communication/icommunication.h"
-#include "icsneo/api/errormanager.h"
+#include "icsneo/api/eventmanager.h"
 #include <string>
 #include <pcap.h>
 
@@ -21,7 +21,7 @@ public:
 	static std::string GetEthDevSerialFromMacAddress(uint8_t product, uint16_t macSerial);
 	static bool IsHandleValid(neodevice_handle_t handle);
 
-	PCAP(device_errorhandler_t err, neodevice_t& forDevice);
+	PCAP(device_eventhandler_t err, neodevice_t& forDevice);
 	bool open();
 	bool isOpen();
 	bool close();

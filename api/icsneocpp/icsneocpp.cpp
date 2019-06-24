@@ -11,38 +11,38 @@ std::vector<DeviceType> icsneo::GetSupportedDevices() {
 	return DeviceFinder::GetSupportedDevices();
 }
 
-size_t icsneo::ErrorCount(ErrorFilter filter) {
-	return ErrorManager::GetInstance().count(filter);
+size_t icsneo::EventCount(EventFilter filter) {
+	return EventManager::GetInstance().count(filter);
 }
 
-std::vector<APIError> icsneo::GetErrors(ErrorFilter filter, size_t max) {
-	return ErrorManager::GetInstance().get(filter, max);
+std::vector<APIEvent> icsneo::GetEvents(EventFilter filter, size_t max) {
+	return EventManager::GetInstance().get(filter, max);
 }
 
-std::vector<APIError> icsneo::GetErrors(size_t max, ErrorFilter filter) {
-	return ErrorManager::GetInstance().get(max, filter);
+std::vector<APIEvent> icsneo::GetEvents(size_t max, EventFilter filter) {
+	return EventManager::GetInstance().get(max, filter);
 }
 
-void icsneo::GetErrors(std::vector<APIError>& errors, ErrorFilter filter, size_t max) {
-	ErrorManager::GetInstance().get(errors, filter, max);
+void icsneo::GetEvents(std::vector<APIEvent>& events, EventFilter filter, size_t max) {
+	EventManager::GetInstance().get(events, filter, max);
 }
 
-void icsneo::GetErrors(std::vector<APIError>& errors, size_t max, ErrorFilter filter) {
-	ErrorManager::GetInstance().get(errors, max, filter);
+void icsneo::GetEvents(std::vector<APIEvent>& events, size_t max, EventFilter filter) {
+	EventManager::GetInstance().get(events, max, filter);
 }
 
-bool icsneo::GetLastError(APIError& error, ErrorFilter filter) {
-	return ErrorManager::GetInstance().getLastError(error, filter);
+APIEvent icsneo::GetLastError() {
+	return EventManager::GetInstance().getLastError();
 }
 
-void icsneo::DiscardErrors(ErrorFilter filter) {
-	ErrorManager::GetInstance().discard(filter);
+void icsneo::DiscardEvents(EventFilter filter) {
+	EventManager::GetInstance().discard(filter);
 }
 
-void icsneo::SetErrorLimit(size_t newLimit) {
-	ErrorManager::GetInstance().setErrorLimit(newLimit);
+void icsneo::SetEventLimit(size_t newLimit) {
+	EventManager::GetInstance().setEventLimit(newLimit);
 }
 
-size_t icsneo::GetErrorLimit() {
-	return ErrorManager::GetInstance().getErrorLimit();
+size_t icsneo::GetEventLimit() {
+	return EventManager::GetInstance().getEventLimit();
 }

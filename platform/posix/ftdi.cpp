@@ -39,25 +39,25 @@ std::vector<neodevice_t> FTDI::FindByProduct(int product) {
 	return found;
 }
 
-FTDI::FTDI(const device_errorhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
+FTDI::FTDI(const device_eventhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
 	openable = strlen(forDevice.serial) > 0 && device.handle >= 0 && device.handle < (neodevice_handle_t)handles.size();
 }
 
 bool FTDI::open() {
 	if(isOpen()) {
-		err(APIError::DeviceCurrentlyOpen);
+		report(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::Error);
 		return false;
 	}
 		
 	if(!openable) {
-		err(APIError::InvalidNeoDevice);
+		report(APIEvent::Type::InvalidNeoDevice, APIEvent::Severity::Error);
 		return false;
 	}
 
 	// At this point the handle has been checked to be within the bounds of the handles array
 	std::tuple<int, std::string>& handle = handles[device.handle];
 	if(ftdi.openDevice(std::get<0>(handle), std::get<1>(handle).c_str()) != 0) {
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -77,7 +77,7 @@ bool FTDI::open() {
 
 bool FTDI::close() {
 	if(!isOpen()) {
-		err(APIError::DeviceCurrentlyClosed);
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 		
@@ -91,7 +91,7 @@ bool FTDI::close() {
 
 	bool ret = ftdi.closeDevice();
 	if(ret != 0)
-		err(APIError::DriverFailedToClose);
+		report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
 	
 	uint8_t flush;
 	WriteOperation flushop;

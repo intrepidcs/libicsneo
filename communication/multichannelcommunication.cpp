@@ -107,7 +107,7 @@ void MultiChannelCommunication::readTask() {
 						for(auto& packet : packetizer->output()) {
 							std::shared_ptr<Message> msg;
 							if(!decoder->decode(msg, packet)) {
-								err(APIError::Unknown); // TODO Use specific error
+								report(APIEvent::Type::Unknown, APIEvent::Severity::Error); // TODO Use specific error
 								continue;
 							}
 

@@ -1,5 +1,5 @@
-#ifndef __ICSNEO_API_ERROR_H_
-#define __ICSNEO_API_ERROR_H_
+#ifndef __ICSNEO_API_EVENT_H_
+#define __ICSNEO_API_EVENT_H_
 
 #include <stdint.h>
 #include <time.h>
@@ -7,11 +7,11 @@
 typedef struct {
 	const char* description;
 	time_t timestamp;
-	uint32_t errorNumber;
+	uint32_t eventNumber;
 	uint8_t severity;
 	char serial[7];
 	uint8_t reserved[16];
-} neoerror_t;
+} neoevent_t;
 
 #ifdef __cplusplus
 
@@ -24,19 +24,19 @@ namespace icsneo {
 
 class Device;
 
-class APIError {
+class APIEvent {
 public:
-	typedef std::chrono::system_clock ErrorClock;
-	typedef std::chrono::time_point<ErrorClock> ErrorTimePoint;
+	typedef std::chrono::system_clock EventClock;
+	typedef std::chrono::time_point<EventClock> EventTimePoint;
 
-	enum ErrorType : uint32_t {
+	enum class Type : uint32_t {
 		Any = 0, // Used for filtering, should not appear in data
 
-		// API Errors
-		InvalidNeoDevice = 0x1000,
+		// API Events
+		InvalidNeoDevice = 0x1000, // api
 		RequiredParameterNull = 0x1001,
 		BufferInsufficient = 0x1002,
-		OutputTruncated = 0x1003,
+		OutputTruncated = 0x1003, // just a warning
 		ParameterOutOfRange = 0x1004,
 		DeviceCurrentlyOpen = 0x1005,
 		DeviceCurrentlyClosed = 0x1006,
@@ -47,10 +47,10 @@ public:
 		UnsupportedTXNetwork = 0x1011,
 		MessageMaxLengthExceeded = 0x1012,
 		
-		// Device Errors
+		// Device Events
 		PollingMessageOverflow = 0x2000,
-		NoSerialNumber = 0x2001,
-		IncorrectSerialNumber = 0x2002,
+		NoSerialNumber = 0x2001, // api
+		IncorrectSerialNumber = 0x2002, // api
 		SettingsReadError = 0x2003,
 		SettingsVersionError = 0x2004,
 		SettingsLengthError = 0x2005,
@@ -71,7 +71,7 @@ public:
 		CANFDNotSupported = 0x2020,
 		RTRNotSupported = 0x2021,
 
-		// Transport Errors
+		// Transport Events
 		FailedToRead = 0x3000,
 		FailedToWrite = 0x3001,
 		DriverFailedToOpen = 0x3002,
@@ -81,66 +81,65 @@ public:
 		PCAPCouldNotStart = 0x3102,
 		PCAPCouldNotFindDevices = 0x3103,
 		PacketDecodingError = 0x3104,
-
-		TooManyErrors = 0xFFFFFFFE,
+		
+		NoErrorFound = 0xFFFFFFFD,
+		TooManyEvents = 0xFFFFFFFE,
 		Unknown = 0xFFFFFFFF
 	};
 	enum class Severity : uint8_t {
 		Any = 0, // Used for filtering, should not appear in data
-		Info = 0x10,
-		Warning = 0x20,
+		EventInfo = 0x10,
+		EventWarning = 0x20,
 		Error = 0x30
 	};
 
-	APIError() : errorStruct({}), device(nullptr) {}
-	APIError(ErrorType error);
-	APIError(ErrorType error, const Device* device);
-
-	const neoerror_t* getNeoError() const noexcept { return &errorStruct; }
-	ErrorType getType() const noexcept { return ErrorType(errorStruct.errorNumber); }
-	Severity getSeverity() const noexcept { return Severity(errorStruct.severity); }
-	std::string getDescription() const noexcept { return std::string(errorStruct.description); }
-	const Device* getDevice() const noexcept { return device; } // Will return nullptr if this is an API-wide error
-	ErrorTimePoint getTimestamp() const noexcept { return timepoint; }
+	APIEvent() : eventStruct({}), device(nullptr), serial(), timepoint() {}
+	APIEvent(APIEvent::Type event, APIEvent::Severity severity, const Device* device = nullptr);
+	
+	const neoevent_t* getNeoEvent() const noexcept { return &eventStruct; }
+	Type getType() const noexcept { return Type(eventStruct.eventNumber); }
+	Severity getSeverity() const noexcept { return Severity(eventStruct.severity); }
+	std::string getDescription() const noexcept { return std::string(eventStruct.description); }
+	const Device* getDevice() const noexcept { return device; } // Will return nullptr if this is an API-wide event
+	EventTimePoint getTimestamp() const noexcept { return timepoint; }
 
 	bool isForDevice(const Device* forDevice) const noexcept { return forDevice == device; }
 	bool isForDevice(std::string serial) const noexcept;
 	
 	// As opposed to getDescription, this will also add text such as "neoVI FIRE 2 CY2468 Error: " to fully describe the problem
 	std::string describe() const noexcept;
-	friend std::ostream& operator<<(std::ostream& os, const APIError& error) {
-		os << error.describe();
+	friend std::ostream& operator<<(std::ostream& os, const APIEvent& event) {
+		os << event.describe();
 		return os;
 	}
 
-	static const char* DescriptionForType(ErrorType type);
-	static Severity SeverityForType(ErrorType type);
+	static const char* DescriptionForType(Type type);
 
 private:
-	neoerror_t errorStruct;
+	neoevent_t eventStruct;
 	std::string serial;
-	ErrorTimePoint timepoint;
+	EventTimePoint timepoint;
 	const Device* device;
 
-	void init(ErrorType error);
+	void init(Type event, APIEvent::Severity);
 };
 
-class ErrorFilter {
+class EventFilter {
 public:
-	ErrorFilter() {} // Empty filter matches anything
-	ErrorFilter(APIError::ErrorType error) : type(error) {}
-	ErrorFilter(APIError::Severity severity) : severity(severity) {}
-	ErrorFilter(const Device* device, APIError::ErrorType error = APIError::Any) : type(error), matchOnDevicePtr(true), device(device) {}
-	ErrorFilter(const Device* device, APIError::Severity severity) : severity(severity), matchOnDevicePtr(true), device(device) {}
-	ErrorFilter(std::string serial, APIError::ErrorType error = APIError::Any) : type(error), serial(serial) {}
-	ErrorFilter(std::string serial, APIError::Severity severity) : severity(severity), serial(serial) {}
+	EventFilter() {} // Empty filter matches anything
+	EventFilter(APIEvent::Type type) : type(type) {}
+	EventFilter(APIEvent::Severity severity) : severity(severity) {}
+	EventFilter(const Device* device, APIEvent::Type type = APIEvent::Type::Any) : type(type), matchOnDevicePtr(true), device(device) {}
+	EventFilter(const Device* device, APIEvent::Severity severity) : severity(severity), matchOnDevicePtr(true), device(device) {}
+	EventFilter(std::string serial, APIEvent::Type type = APIEvent::Type::Any) : type(type), serial(serial) {}
+	EventFilter(std::string serial, APIEvent::Severity severity) : severity(severity), serial(serial) {}
 
-	bool match(const APIError& error) const noexcept;
+	bool match(const APIEvent& event) const noexcept;
 
-	APIError::Severity severity = APIError::Severity::Any;
-	APIError::ErrorType type = APIError::Any;
+	APIEvent::Type type = APIEvent::Type::Any;
+	APIEvent::Severity severity = APIEvent::Severity::Any;
 	bool matchOnDevicePtr = false;
-	const Device* device = nullptr; // nullptr will match on "no device, generic API error"
+	const Device* device = nullptr; // nullptr will match on "no device, generic API event"
 	std::string serial; // Empty serial will match any, including no device. Not affected by matchOnDevicePtr
 };
 

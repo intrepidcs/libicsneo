@@ -184,12 +184,12 @@ bool VCP::IsHandleValid(neodevice_handle_t handle) {
 
 bool VCP::open(bool fromAsync) {
 	if(isOpen() || (!fromAsync && opening)) {
-		err(APIError::DeviceCurrentlyOpen);
+		report(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(!IsHandleValid(device.handle)) {
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -210,7 +210,7 @@ bool VCP::open(bool fromAsync) {
 	opening = false;
 
 	if(!isOpen()) {
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -218,7 +218,7 @@ bool VCP::open(bool fromAsync) {
 	COMMTIMEOUTS timeouts;
 	if(!GetCommTimeouts(handle, &timeouts)) {
 		close();
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -231,7 +231,7 @@ bool VCP::open(bool fromAsync) {
 
 	if(!SetCommTimeouts(handle, &timeouts)) {
 		close();
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -239,7 +239,7 @@ bool VCP::open(bool fromAsync) {
 	DCB comstate;
 	if(!GetCommState(handle, &comstate)) {
 		close();
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -252,7 +252,7 @@ bool VCP::open(bool fromAsync) {
 
 	if(!SetCommState(handle, &comstate)) {
 		close();
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -264,14 +264,14 @@ bool VCP::open(bool fromAsync) {
 	overlappedWait.hEvent = CreateEvent(nullptr, true, false, nullptr);
 	if (overlappedRead.hEvent == nullptr || overlappedWrite.hEvent == nullptr || overlappedWait.hEvent == nullptr) {
 		close();
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
 	// Set up event so that we will satisfy overlappedWait when a character comes in
 	if(!SetCommMask(handle, EV_RXCHAR)) {
 		close();
-		err(APIError::DriverFailedToOpen);
+		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 	
@@ -292,7 +292,7 @@ void VCP::openAsync(fn_boolCallback callback) {
 
 bool VCP::close() {
 	if(!isOpen()) {
-		err(APIError::DeviceCurrentlyClosed);
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 		
@@ -304,7 +304,7 @@ bool VCP::close() {
 	closing = false;
 
 	if(!CloseHandle(handle)) {
-		err(APIError::DriverFailedToClose);
+		report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
 		return false;
 	}
 		
@@ -333,7 +333,7 @@ bool VCP::close() {
 	while(writeQueue.try_dequeue(flushop)) {}
 
 	if(!ret)
-		err(APIError::DriverFailedToClose);
+		report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
 	
 	// TODO Set up some sort of shared memory, free which COM port we had open so we can try to open it again
 
@@ -365,7 +365,7 @@ void VCP::readTask() {
 				if(lastError == ERROR_IO_PENDING)
 					state = WAIT;
 				else if(lastError != ERROR_SUCCESS)
-					err(APIError::FailedToRead);
+					report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 			}
 			break;
 			case WAIT: {
@@ -375,11 +375,11 @@ void VCP::readTask() {
 						readQueue.enqueue_bulk(readbuf, bytesRead);
 						state = LAUNCH;
 					} else
-						err(APIError::FailedToRead);
+						report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 				}
 				if(ret == WAIT_ABANDONED) {
 					state = LAUNCH;
-					err(APIError::FailedToRead);
+					report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 				}
 			}
 		}
@@ -407,19 +407,19 @@ void VCP::writeTask() {
 					state = WAIT;
 				}
 				else
-					err(APIError::FailedToWrite);
+					report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 			}
 			break;
 			case WAIT: {
 				auto ret = WaitForSingleObject(overlappedWrite.hEvent, 50);
 				if(ret == WAIT_OBJECT_0) {
 					if(!GetOverlappedResult(handle, &overlappedWrite, &bytesWritten, FALSE))
-						err(APIError::FailedToWrite);
+						report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 					state = LAUNCH;
 				}
 				
 				if(ret == WAIT_ABANDONED) {
-					err(APIError::FailedToWrite);
+					report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 					state = LAUNCH;
 				}
 			}

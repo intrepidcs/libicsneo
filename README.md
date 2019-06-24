@@ -88,7 +88,7 @@ for(size_t i = 0; i < deviceCount; i++) {
 
 neodevice_t* myDevice = &devices[0];
 if(!icsneo_openDevice(myDevice)) {
-    neoerror_t error;
+    neoevent_t error;
     if(icsneo_getLastError(&error))
         printf("Error! %s\n", error.description);
 }

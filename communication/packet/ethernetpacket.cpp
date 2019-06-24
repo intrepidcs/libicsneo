@@ -53,7 +53,7 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	return messagePtr;
 }
 
-bool HardwareEthernetPacket::EncodeFromMessage(const EthernetMessage& message, std::vector<uint8_t>& bytestream, const device_errorhandler_t&) {
+bool HardwareEthernetPacket::EncodeFromMessage(const EthernetMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t&) {
 	const size_t unpaddedSize = message.data.size();
 	size_t paddedSize = unpaddedSize;
 

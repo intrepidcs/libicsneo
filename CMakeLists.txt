@@ -121,8 +121,8 @@ include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(icsneocpp
 	api/icsneocpp/icsneocpp.cpp
-	api/icsneocpp/error.cpp
-	api/icsneocpp/errormanager.cpp
+	api/icsneocpp/event.cpp
+	api/icsneocpp/eventmanager.cpp
 	api/icsneocpp/version.cpp
 	${SRC_FILES}
 )

@@ -9,7 +9,7 @@
 #include <Windows.h>
 #include "icsneo/device/neodevice.h"
 #include "icsneo/communication/icommunication.h"
-#include "icsneo/api/errormanager.h"
+#include "icsneo/api/eventmanager.h"
 
 namespace icsneo {
 
@@ -20,7 +20,7 @@ public:
 	static bool IsHandleValid(neodevice_handle_t handle);
 	typedef void(*fn_boolCallback)(bool success);
 	
-	VCP(const device_errorhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
+	VCP(const device_eventhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
 		overlappedRead.hEvent = INVALID_HANDLE_VALUE;
 		overlappedWrite.hEvent = INVALID_HANDLE_VALUE;
 		overlappedWait.hEvent = INVALID_HANDLE_VALUE;

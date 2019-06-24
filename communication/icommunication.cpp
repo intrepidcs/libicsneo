@@ -40,7 +40,7 @@ bool ICommunication::readWait(std::vector<uint8_t>& bytes, std::chrono::millisec
 
 bool ICommunication::write(const std::vector<uint8_t>& bytes) {
 	if(!isOpen()) {
-		err(APIError::DeviceCurrentlyClosed);
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -50,14 +50,14 @@ bool ICommunication::write(const std::vector<uint8_t>& bytes) {
 			writeCV.wait(lk);
 	} else {
 		if(writeQueue.size_approx() > writeQueueSize) {
-			err(APIError::TransmitBufferFull);
+			report(APIEvent::Type::TransmitBufferFull, APIEvent::Severity::Error);
 			return false;
 		}
 	}
 
 	bool ret = writeQueue.enqueue(WriteOperation(bytes));
 	if(!ret)
-		err(APIError::Unknown);
+		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 
 	return ret;
 }

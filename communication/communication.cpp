@@ -19,7 +19,7 @@ int Communication::messageCallbackIDCounter = 1;
 
 bool Communication::open() {
 	if(isOpen()) {
-		err(APIError::DeviceCurrentlyOpen);
+		report(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::Error);
 		return false;
 	}
 	
@@ -40,7 +40,7 @@ void Communication::joinThreads() {
 
 bool Communication::close() {
 	if(!isOpen()) {
-		err(APIError::DeviceCurrentlyClosed);
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -74,12 +74,12 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 
 	std::shared_ptr<ReadSettingsMessage> gsmsg = std::dynamic_pointer_cast<ReadSettingsMessage>(msg);
 	if(!gsmsg) {
-		err(APIError::Unknown);
+		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(gsmsg->response != ReadSettingsMessage::Response::OK) {
-		err(APIError::Unknown);
+		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -112,7 +112,7 @@ bool Communication::removeMessageCallback(int id) {
 		messageCallbacks.erase(id);
 		return true;
 	} catch(...) {
-		err(APIError::Unknown);
+		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 		return false;
 	}
 }

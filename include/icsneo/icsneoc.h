@@ -9,7 +9,7 @@
 #include "icsneo/platform/dynamiclib.h" // Dynamic library loading and exporting
 #include "icsneo/communication/network.h" // Network type and netID defines
 #include "icsneo/api/version.h" // For version info
-#include "icsneo/api/error.h" // For error info
+#include "icsneo/api/event.h" // For error info
 
 #ifndef ICSNEOC_DYNAMICLOAD
 
@@ -33,7 +33,7 @@ extern "C" {
  * To invoke this behavior without finding devices again, call icsneo_freeUnconnectedDevices().
  * 
  * If the size provided is not large enough, the output will be truncated.
- * An icsneo::APIError::OutputTruncatedError will be available in icsneo_getLastError() in this case.
+ * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  */
 extern void DLLExport icsneo_findAllDevices(neodevice_t* devices, size_t* count);
 
@@ -64,7 +64,7 @@ extern void DLLExport icsneo_freeUnconnectedDevices();
  * 
  * If the size provided is not large enough, the output will be **NOT** be truncated.
  * Nothing will be written to the output.
- * Instead, an icsneo::APIError::BufferInsufficient will be available in icsneo_getLastError().
+ * Instead, an icsneo::APIEvent::BufferInsufficient will be available in icsneo_getLastError().
  * False will be returned, and `count` will now contain the number of *bytes* necessary to store the full string.
  */
 extern bool DLLExport icsneo_serialNumToString(uint32_t num, char* str, size_t* count);
@@ -86,7 +86,7 @@ extern uint32_t DLLExport icsneo_serialStringToNum(const char* str);
  * \returns True if the neodevice_t is valid.
  * 
  * This check is automatically performed at the beginning of any API function that operates on a device.
- * If there is a failure, an icsneo::APIError::InvalidNeoDevice will be available in icsneo_getLastError().
+ * If there is a failure, an icsneo::APIEvent::InvalidNeoDevice will be available in icsneo_getLastError().
  * 
  * See icsneo_findAllDevices() for information regarding the neodevice_t validity contract.
  */
@@ -103,7 +103,7 @@ extern bool DLLExport icsneo_isValidNeoDevice(const neodevice_t* device);
  * 
  * If the open did not succeed, icsneo_getLastError() should provide more information about why.
  * 
- * If the device was already open, an icsneo::APIError::DeviceCurrentlyOpen will be available in icsneo_getLastError().
+ * If the device was already open, an icsneo::APIEvent::DeviceCurrentlyOpen will be available in icsneo_getLastError().
  */
 extern bool DLLExport icsneo_openDevice(const neodevice_t* device);
 
@@ -182,7 +182,7 @@ extern bool DLLExport icsneo_isOnline(const neodevice_t* device);
  * The client application will have to call icsneo_getMessages() very often to avoid losing messages, or change the limit.
  * 
  * If the message limit is exceeded before a call to icsneo_getMessages() takes ownership of the messages,
- * the oldest message will be dropped (**LOST**) and an icsneo::APIError::PollingMessageOverflow will be flagged for the device.
+ * the oldest message will be dropped (**LOST**) and an icsneo::APIEvent::PollingMessageOverflow will be flagged for the device.
  * 
  * This function will succeed even if the device is not open.
  */
@@ -280,7 +280,7 @@ extern size_t DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device)
  * See icsneo_enableMessagePolling() for more information about the message polling system.
  * 
  * Setting the maximum lower than the current number of stored messages will cause the oldest messages
- * to be dropped (**LOST**) and an icsneo::APIError::PollingMessageOverflow to be flagged for the device.
+ * to be dropped (**LOST**) and an icsneo::APIEvent::PollingMessageOverflow to be flagged for the device.
  */
 extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit);
 
@@ -303,7 +303,7 @@ extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, s
  * icsneo_getLastError() should be checked to verify that the neodevice_t provided was valid.
  * 
  * If the size provided is not large enough, the output will be truncated.
- * An icsneo::APIError::OutputTruncatedError will be available in icsneo_getLastError() in this case.
+ * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.
  */
 extern bool DLLExport icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength);
@@ -327,7 +327,7 @@ extern bool DLLExport icsneo_getProductName(const neodevice_t* device, char* str
  * icsneo_getLastError() should be checked to verify that the neodevice_t provided was valid.
  * 
  * If the size provided is not large enough, the output will be truncated.
- * An icsneo::APIError::OutputTruncatedError will be available in icsneo_getLastError() in this case.
+ * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.
  */
 extern bool DLLExport icsneo_getProductNameForType(devicetype_t type, char* str, size_t* maxLength);
@@ -551,7 +551,7 @@ extern bool DLLExport icsneo_transmitMessages(const neodevice_t* device, const n
  * icsneo_getLastError() should be checked to verify that the neodevice_t provided was valid.
  * 
  * If the size provided is not large enough, the output will be truncated.
- * An icsneo::APIError::OutputTruncatedError will be available in icsneo_getLastError() in this case.
+ * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.
  */
 extern bool DLLExport icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLength);
@@ -563,75 +563,82 @@ extern bool DLLExport icsneo_describeDevice(const neodevice_t* device, char* str
 extern neoversion_t DLLExport icsneo_getVersion(void);
 
 /**
- * \brief Read out errors which have occurred in API operation
- * \param[out] errors A pointer to a buffer which neoerror_t structures will be written to. NULL can be passed, which will write the current error count to size.
+ * \brief Read out events which have occurred in API operation
+ * \param[out] events A pointer to a buffer which neoevent_t structures will be written to. NULL can be passed, which will write the current event count to size.
  * \param[inout] size A pointer to a size_t which, prior to the call,
- * holds the maximum number of errors to be written, and after the call holds the number of errors written.
- * \returns True if the errors were read out successfully (even if there were no errors to report).
+ * holds the maximum number of events to be written, and after the call holds the number of events written.
+ * \returns True if the events were read out successfully (even if there were no events to report).
  * 
- * Errors can be caused by API usage, such as bad input or operating on a closed neodevice_t.
+ * Events contain INFO and WARNINGS, and may potentially contain one TooManyEvents ERROR at the end. No other ERRORS are found in Events, see icsneo_getLastError() instead.
  * 
- * Errors can also occur asynchronously to the client application threads, in the case of a device communication error or similar.
+ * Events can be caused by API usage, such as providing too small of a buffer or disconnecting from a device.
  * 
- * Errors are read out of the API managed buffer in order of oldest to newest.
+ * Events can also occur asynchronously to the client application threads, in the case of a device communication event or similar.
+ * 
+ * Events are read out of the API managed buffer in order of oldest to newest.
  * As they are read out, they are removed from the API managed buffer.
  * 
- * If size is too small to contain all errors, as many errors as will fit will be read out.
- * Subsequent calls to icsneo_getErrors() can retrieve any errors which were not read out.
+ * If size is too small to contain all events, as many events as will fit will be read out.
+ * Subsequent calls to icsneo_getErrors() can retrieve any events which were not read out.
  */
-extern bool DLLExport icsneo_getErrors(neoerror_t* errors, size_t* size);
+extern bool DLLExport icsneo_getEvents(neoevent_t* events, size_t* size);
 
 /**
- * \brief Read out errors which have occurred in API operation for a specific device
- * \param[in] device A pointer to the neodevice_t structure specifying the device to read out errors for. NULL can be passed, which indicates that **ONLY** errors *not* associated with a device are desired (API errors).
- * \param[out] errors A pointer to a buffer which neoerror_t structures will be written to. NULL can be passed, which will write the current error count to size.
+ * \brief Read out events which have occurred in API operation for a specific device
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to read out events for. NULL can be passed, which indicates that **ONLY** events *not* associated with a device are desired (API events).
+ * \param[out] events A pointer to a buffer which neoevent_t structures will be written to. NULL can be passed, which will write the current event count to size.
  * \param[inout] size A pointer to a size_t which, prior to the call,
- * holds the maximum number of errors to be written, and after the call holds the number of errors written.
- * \returns True if the errors were read out successfully (even if there were no errors to report).
+ * holds the maximum number of events to be written, and after the call holds the number of events written.
+ * \returns True if the events were read out successfully (even if there were no events to report).
  * 
- * See icsneo_getErrors() for more information about the error system.
+ * See icsneo_getEvents() for more information about the event system.
  */
-extern bool DLLExport icsneo_getDeviceErrors(const neodevice_t* device, neoerror_t* errors, size_t* size);
+extern bool DLLExport icsneo_getDeviceEvents(const neodevice_t* device, neoevent_t* events, size_t* size);
 
 /**
- * \brief Read out the last error which occurred in API operation.
- * \param[out] error A pointer to a buffer which a neoerror_t structure will be written to.
+ * \brief Read out the last error which occurred in API operation on this thread.
+ * \param[out] error A pointer to a buffer which a neoevent_t structure will be written to.
  * \returns True if an error was read out.
  * 
- * See icsneo_getErrors() for more information about the error system.
+ * All errors are stored on a per-thread basis, meaning that calling icsneo_getLastError() will return the last error that occured on the calling thread.
+ * Any errors can only be retrieved through this function, and NOT ics_neo_getEvents() or similar! Only INFO and WARNING level events are accessible through those, with the exception of the 
+ * Only the last error is stored, so call this function often!
+ * Calling icsneo_getLastError() will remove the returned error, meaning that subsequent calls to icsneo_getLastError() on the same thread will return false (barring any additional errors)
+ * 
+ * See icsneo_getEvents() for more information about the event system.
  * 
  * This operation removes the returned error from the buffer, so subsequent calls to error functions will not include the error.
  */
-extern bool DLLExport icsneo_getLastError(neoerror_t* error);
+extern bool DLLExport icsneo_getLastError(neoevent_t* error);
 
 /**
  * \brief Discard all errors which have occurred in API operation.
  */
-extern void DLLExport icsneo_discardAllErrors(void);
+extern void DLLExport icsneo_discardAllEvents(void);
 
 /**
  * \brief Discard all errors which have occurred in API operation.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to discard errors for. NULL can be passed, which indicates that **ONLY** errors *not* associated with a device are desired (API errors).
  */
-extern void DLLExport icsneo_discardDeviceErrors(const neodevice_t* device);
+extern void DLLExport icsneo_discardDeviceEvents(const neodevice_t* device);
 
 /**
- * \brief Set the number of errors which will be held in the API managed buffer before icsneo::APIError::TooManyErrors
- * \param[in] newLimit The new limit. Must be >10. 1 error slot is always reserved for a potential icsneo::APIError::TooManyErrors, so (newLimit - 1) other errors can be stored.
+ * \brief Set the number of errors which will be held in the API managed buffer before icsneo::APIEvent::TooManyEvents
+ * \param[in] newLimit The new limit. Must be >10. 1 error slot is always reserved for a potential icsneo::APIEvent::TooManyEvents, so (newLimit - 1) other errors can be stored.
  * 
- * If the error limit is reached, an icsneo::APIError::TooManyErrors will be flagged.
+ * If the error limit is reached, an icsneo::APIEvent::TooManyEvents will be flagged.
  * 
  * If the `newLimit` is smaller than the current error count,
  * errors will be removed in order of increasing severity and decreasing age.
- * This will also flag an icsneo::APIError::TooManyErrors.
+ * This will also flag an icsneo::APIEvent::TooManyEvents.
  */
-extern void DLLExport icsneo_setErrorLimit(size_t newLimit);
+extern void DLLExport icsneo_setEventLimit(size_t newLimit);
 
 /**
  * \brief Get the number of errors which can be held in the API managed buffer
  * \returns The current limit.
  */
-extern size_t DLLExport icsneo_getErrorLimit(void);
+extern size_t DLLExport icsneo_getEventLimit(void);
 
 /**
  * \brief Get the devices supported by the current version of the API
@@ -647,7 +654,7 @@ extern size_t DLLExport icsneo_getErrorLimit(void);
  * A query for length (`devices == NULL`) will return false.
  * 
  * If the count provided is not large enough, the output will be truncated.
- * An icsneo::APIError::OutputTruncatedError will be available in icsneo_getLastError() in this case.
+ * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.
  */
 extern bool DLLExport icsneo_getSupportedDevices(devicetype_t* devices, size_t* count);
@@ -772,13 +779,13 @@ fn_icsneo_describeDevice icsneo_describeDevice;
 typedef neoversion_t(*fn_icsneo_getVersion)(void);
 fn_icsneo_getVersion icsneo_getVersion;
 
-typedef bool(*fn_icsneo_getErrors)(neoerror_t* errors, size_t* size);
+typedef bool(*fn_icsneo_getErrors)(neoevent_t* errors, size_t* size);
 fn_icsneo_getErrors icsneo_getErrors;
 
-typedef bool(*fn_icsneo_getDeviceErrors)(const neodevice_t* device, neoerror_t* errors, size_t* size);
+typedef bool(*fn_icsneo_getDeviceErrors)(const neodevice_t* device, neoevent_t* errors, size_t* size);
 fn_icsneo_getDeviceErrors icsneo_getDeviceErrors;
 
-typedef bool(*fn_icsneo_getLastError)(neoerror_t* error);
+typedef bool(*fn_icsneo_getLastError)(neoevent_t* error);
 fn_icsneo_getLastError icsneo_getLastError;
 
 typedef void(*fn_icsneo_discardAllErrors)(void);

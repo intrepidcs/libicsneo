@@ -11,7 +11,7 @@ namespace icsneo {
 class MultiChannelCommunication : public Communication {
 public:
 	MultiChannelCommunication(
-		device_errorhandler_t err,
+		device_eventhandler_t err,
 		std::unique_ptr<ICommunication> com,
 		std::shared_ptr<Packetizer> p,
 		std::unique_ptr<Encoder> e,

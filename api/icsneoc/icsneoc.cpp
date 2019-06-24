@@ -7,7 +7,7 @@
 #include "icsneo/icsneoc.h"
 #include "icsneo/icsneocpp.h"
 #include "icsneo/platform/dynamiclib.h"
-#include "icsneo/api/errormanager.h"
+#include "icsneo/api/eventmanager.h"
 #include "icsneo/device/devicefinder.h"
 #include <string>
 #include <vector>
@@ -28,7 +28,7 @@ void icsneo_findAllDevices(neodevice_t* devices, size_t* count) {
 	std::vector<std::shared_ptr<Device>> foundDevices = icsneo::FindAllDevices();
 	
 	if(count == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return;
 	}
 
@@ -43,7 +43,7 @@ void icsneo_findAllDevices(neodevice_t* devices, size_t* count) {
 	*count = foundDevices.size();
 	size_t outputSize = *count;
 	if(outputSize > inputSize) {
-		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+		EventManager::GetInstance().add(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning);
 		outputSize = inputSize;
 	}
 
@@ -60,7 +60,7 @@ void icsneo_freeUnconnectedDevices() {
 bool icsneo_serialNumToString(uint32_t num, char* str, size_t* count) {
 	// TAG String copy function
 	if(count == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -73,7 +73,7 @@ bool icsneo_serialNumToString(uint32_t num, char* str, size_t* count) {
 
 	if(*count < result.length()) {
 		*count = result.length() + 1; // This is how big of a buffer we need
-		ErrorManager::GetInstance().add(APIError::BufferInsufficient);
+		EventManager::GetInstance().add(APIEvent::Type::BufferInsufficient, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -89,7 +89,7 @@ uint32_t icsneo_serialStringToNum(const char* str) {
 bool icsneo_isValidNeoDevice(const neodevice_t* device) {
 	// return false on nullptr
 	if(!device) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 	// If this neodevice_t was returned by a previous search, it will no longer be valid (as the underlying icsneo::Device is freed)
@@ -102,7 +102,7 @@ bool icsneo_isValidNeoDevice(const neodevice_t* device) {
 			return true;
 	}
 
-	ErrorManager::GetInstance().add(APIError::InvalidNeoDevice);
+	EventManager::GetInstance().add(APIEvent::Type::InvalidNeoDevice, APIEvent::Severity::Error);
 	return false;
 }
 
@@ -200,7 +200,7 @@ bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_
 		return false;
 
 	if(items == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -245,7 +245,7 @@ bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
 bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength) {
 	// TAG String copy function
 	if(maxLength == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -263,7 +263,7 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 	str[*maxLength] = '\0';
 
 	if(output.length() > *maxLength)
-		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+		EventManager::GetInstance().add(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning);
 
 	return true;
 }
@@ -271,7 +271,7 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 bool icsneo_getProductNameForType(devicetype_t type, char* str, size_t* maxLength) {
 	// TAG String copy function
 	if(maxLength == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -286,7 +286,7 @@ bool icsneo_getProductNameForType(devicetype_t type, char* str, size_t* maxLengt
 	str[*maxLength] = '\0';
 
 	if(output.length() > *maxLength)
-		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+		EventManager::GetInstance().add(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning);
 
 	return true;
 }
@@ -336,13 +336,13 @@ size_t icsneo_settingsReadStructure(const neodevice_t* device, void* structure, 
 	if(readSize > structureSize) {
 		// Client application has a smaller structure than we do
 		// It is probably built against an older version of the API
-		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+		EventManager::GetInstance().add(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning);
 		readSize = structureSize;
 	}
 
 	const void* deviceStructure = device->device->settings->getRawStructurePointer();
 	if(deviceStructure == nullptr) {
-		ErrorManager::GetInstance().add(APIError::SettingsNotAvailable);
+		EventManager::GetInstance().add(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return 0;
 	}
 
@@ -360,19 +360,19 @@ static bool icsneo_settingsWriteStructure(const neodevice_t* device, const void*
 		return false;
 
 	if(structure == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
 	size_t writeSize = device->device->settings->getSize();
 	if(writeSize < structureSize) {
-		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+		EventManager::GetInstance().add(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning);
 		structureSize = writeSize;
 	}
 
 	void* deviceStructure = device->device->settings->getMutableRawStructurePointer();
 	if(deviceStructure == nullptr) {
-		ErrorManager::GetInstance().add(APIError::SettingsNotAvailable);
+		EventManager::GetInstance().add(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -440,7 +440,7 @@ bool icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* mess
 bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLength) {
 	// TAG String copy function
 	if(maxLength == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -453,7 +453,7 @@ bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLeng
 	str[*maxLength] = '\0';
 
 	if(output.length() > *maxLength)
-		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+		EventManager::GetInstance().add(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning);
 
 	return true;
 }
@@ -462,88 +462,88 @@ neoversion_t icsneo_getVersion(void) {
 	return icsneo::GetVersion();
 }
 
-bool icsneo_getErrors(neoerror_t* errors, size_t* size) {
+bool icsneo_getEvents(neoevent_t* events, size_t* size) {
 	if(size == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
-	if(errors == nullptr) {
-		*size = icsneo::ErrorCount();
+	if(events == nullptr) {
+		*size = icsneo::EventCount();
 		return false;
 	}
 
-	auto cppErrors = icsneo::GetErrors(*size);
+	auto cppErrors = icsneo::GetEvents(*size);
 	for(size_t i = 0; i < cppErrors.size(); i++)
-		memcpy(&errors[i], cppErrors[i].getNeoError(), sizeof(neoerror_t));
+		memcpy(&events[i], cppErrors[i].getNeoEvent(), sizeof(neoevent_t));
 	*size = cppErrors.size();
 
 	return true;
 }
 
-bool icsneo_getDeviceErrors(const neodevice_t* device, neoerror_t* errors, size_t* size) {
+bool icsneo_getDeviceEvents(const neodevice_t* device, neoevent_t* events, size_t* size) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	if(size == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
-	// Creating the filter will nullptr is okay! It will find any errors not associated with a device.
-	ErrorFilter filter = (device != nullptr ? device->device : nullptr);
+	// Creating the filter will nullptr is okay! It will find any events not associated with a device.
+	EventFilter filter = (device != nullptr ? device->device : nullptr);
 
-	if(errors == nullptr) {
-		*size = icsneo::ErrorCount(filter);
+	if(events == nullptr) {
+		*size = icsneo::EventCount(filter);
 		return false;
 	}
 
-	auto cppErrors = icsneo::GetErrors(*size, filter);
+	auto cppErrors = icsneo::GetEvents(*size, filter);
 	for(size_t i = 0; i < cppErrors.size(); i++)
-		memcpy(&errors[i], cppErrors[i].getNeoError(), sizeof(neoerror_t));
+		memcpy(&events[i], cppErrors[i].getNeoEvent(), sizeof(neoevent_t));
 	*size = cppErrors.size();
 
 	return true;
 }
 
-bool icsneo_getLastError(neoerror_t* error) {
+bool icsneo_getLastError(neoevent_t* error) {
 	if(error == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
-	APIError cppErr;
-	if(!icsneo::GetLastError(cppErr))
+	APIEvent cppErr = icsneo::GetLastError();
+	if(cppErr.getType() == icsneo::APIEvent::Type::NoErrorFound)
 		return false;
-	memcpy(error, cppErr.getNeoError(), sizeof(neoerror_t));
+	memcpy(error, cppErr.getNeoEvent(), sizeof(neoevent_t));
 	return true;
 }
 
-void icsneo_discardAllErrors(void) {
-	icsneo::DiscardErrors();
+void icsneo_discardAllEvents(void) {
+	icsneo::DiscardEvents();
 }
 
-void icsneo_discardDeviceErrors(const neodevice_t* device) {
+void icsneo_discardDeviceEvents(const neodevice_t* device) {
 	if(!icsneo_isValidNeoDevice(device))
 		return;
 
 	if(device == nullptr)
-		icsneo::DiscardErrors(nullptr); // Discard errors not associated with a device
+		icsneo::DiscardEvents(nullptr); // Discard events not associated with a device
 	else
-		icsneo::DiscardErrors(device->device);
+		icsneo::DiscardEvents(device->device);
 }
 
-void icsneo_setErrorLimit(size_t newLimit) {
-	icsneo::SetErrorLimit(newLimit);
+void icsneo_setEventLimit(size_t newLimit) {
+	icsneo::SetEventLimit(newLimit);
 }
 
-size_t icsneo_getErrorLimit(void) {
-	return icsneo::GetErrorLimit();
+size_t icsneo_getEventLimit(void) {
+	return icsneo::GetEventLimit();
 }
 
 bool icsneo_getSupportedDevices(devicetype_t* devices, size_t* count) {
 	if(count == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -557,7 +557,7 @@ bool icsneo_getSupportedDevices(devicetype_t* devices, size_t* count) {
 
 	if(*count < len) {
 		len = *count;
-		ErrorManager::GetInstance().add(APIError::OutputTruncated);
+		EventManager::GetInstance().add(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning);
 	}
 
 	for(size_t i = 0; i < len; i++)
@@ -572,7 +572,7 @@ extern bool DLLExport icsneo_getTimestampResolution(const neodevice_t* device, u
 		return false;
 
 	if(resolution == nullptr) {
-		ErrorManager::GetInstance().add(APIError::RequiredParameterNull);
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 

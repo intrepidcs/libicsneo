@@ -8,7 +8,7 @@
 #include "icsneo/device/neodevice.h"
 #include "icsneo/communication/icommunication.h"
 #include "icsneo/third-party/concurrentqueue/blockingconcurrentqueue.h"
-#include "icsneo/api/errormanager.h"
+#include "icsneo/api/eventmanager.h"
 
 namespace icsneo {
 
@@ -16,7 +16,7 @@ class FTDI : public ICommunication {
 public:
 	static std::vector<neodevice_t> FindByProduct(int product);
 
-	FTDI(const device_errorhandler_t& err, neodevice_t& forDevice);
+	FTDI(const device_eventhandler_t& err, neodevice_t& forDevice);
 	~FTDI() { close(); }
 	bool open();
 	bool close();

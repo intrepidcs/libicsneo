@@ -79,7 +79,7 @@ std::string Device::describe() const {
 
 bool Device::enableMessagePolling() {
 	if(isMessagePollingEnabled()) {// We are already polling
-		err(APIError::DeviceCurrentlyPolling);
+		report(APIEvent::Type::DeviceCurrentlyPolling, APIEvent::Severity::Error);
 		return false;
 	}
 	messagePollingCallbackID = com->addMessageCallback(MessageCallback([this](std::shared_ptr<Message> message) {
@@ -91,7 +91,7 @@ bool Device::enableMessagePolling() {
 
 bool Device::disableMessagePolling() {
 	if(!isMessagePollingEnabled()) {
-		err(APIError::DeviceNotCurrentlyPolling);
+		report(APIEvent::Type::DeviceNotCurrentlyPolling, APIEvent::Severity::Error);
 		return false; // Not currently polling
 	}
 	auto ret = com->removeMessageCallback(messagePollingCallbackID);
@@ -117,19 +117,19 @@ std::vector<std::shared_ptr<Message>> Device::getMessages() {
 bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit, std::chrono::milliseconds timeout) {
 	// not open
 	if(!isOpen()) {
-		err(APIError::DeviceCurrentlyClosed);
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
 	// not online
 	if(!isOnline()) {
-		err(APIError::DeviceCurrentlyOffline);
+		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
 		return false;
 	}
 
 	// not currently polling, throw error
 	if(!isMessagePollingEnabled()) {
-		err(APIError::DeviceNotCurrentlyPolling);
+		report(APIEvent::Type::DeviceNotCurrentlyPolling, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -159,13 +159,13 @@ void Device::enforcePollingMessageLimit() {
 	while(pollingContainer.size_approx() > pollingMessageLimit) {
 		std::shared_ptr<Message> throwAway;
 		pollingContainer.try_dequeue(throwAway);
-		err(APIError::PollingMessageOverflow);
+		report(APIEvent::Type::PollingMessageOverflow, APIEvent::Severity::EventWarning);
 	}
 }
 
 bool Device::open() {
 	if(!com) {
-		err(APIError::Unknown);
+		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -181,14 +181,14 @@ bool Device::open() {
 			break;
 	}
 	if(!serial) {
-		err(APIError::NoSerialNumber); // Communication could not be established with the device. Perhaps it is not powered with 12 volts?
+		report(APIEvent::Type::NoSerialNumber, APIEvent::Severity::Error); // Communication could not be established with the device. Perhaps it is not powered with 12 volts?
 		com->close();
 		return false;
 	}
 	
 	std::string currentSerial = getNeoDevice().serial;
 	if(currentSerial != serial->deviceSerial) {
-		err(APIError::IncorrectSerialNumber);
+		report(APIEvent::Type::IncorrectSerialNumber, APIEvent::Severity::Error);
 		com->close();
 		return false;
 	}
@@ -205,7 +205,7 @@ bool Device::open() {
 
 bool Device::close() {
 	if(!com) {
-		err(APIError::Unknown);
+		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -247,18 +247,18 @@ bool Device::goOffline() {
 bool Device::transmit(std::shared_ptr<Message> message) {
 	// not open
 	if(!isOpen()) {
-		err(APIError::DeviceCurrentlyClosed);
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
 	// not online
 	if(!isOnline()) {
-		err(APIError::DeviceCurrentlyOffline);
+		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
 		return false;
 	}
 
 	if(!isSupportedTXNetwork(message->network)) {
-		err(APIError::UnsupportedTXNetwork);
+		report(APIEvent::Type::UnsupportedTXNetwork, APIEvent::Severity::Error);
 		return false;
 	}
 

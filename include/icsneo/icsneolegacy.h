@@ -60,9 +60,9 @@ extern int DLLExport icsneoGetDeviceParameters(void* hObject, char* pParameter, 
 extern int DLLExport icsneoSetDeviceParameters(void* hObject, char* pParmValue, int* pErrorIndex, int bSaveToEEPROM);
 
 //Error Functions
-extern int DLLExport icsneoGetLastAPIError(void* hObject, unsigned long* pErrorNumber);
+extern int DLLExport icsneoGetLastAPIEvent(void* hObject, unsigned long* peventNumber);
 extern int DLLExport icsneoGetErrorMessages(void* hObject, int* pErrorMsgs, int* pNumberOfErrors);
-extern int DLLExport icsneoGetErrorInfo(int lErrorNumber, TCHAR*szErrorDescriptionShort, TCHAR*szErrorDescriptionLong, int* lMaxLengthShort, int* lMaxLengthLong,int* lErrorSeverity,int* lRestartNeeded);
+extern int DLLExport icsneoGetErrorInfo(int leventNumber, TCHAR*szErrorDescriptionShort, TCHAR*szErrorDescriptionLong, int* lMaxLengthShort, int* lMaxLengthLong,int* lErrorSeverity,int* lRestartNeeded);
 
 //ISO15765-2 Functions
 extern int DLLExport icsneoISO15765_EnableNetworks(void* hObject, unsigned long ulNetworks);

@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include <cstring>
-#include "icsneo/api/errormanager.h"
+#include "icsneo/api/eventmanager.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/device/nullsettings.h"
@@ -88,7 +88,7 @@ protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
-	device_errorhandler_t err;
+	device_eventhandler_t report;
 
 	// START Initialization Functions
 	Device(neodevice_t neodevice = { 0 }) {
@@ -98,7 +98,7 @@ protected:
 	
 	template<typename Transport, typename Settings = NullSettings>
 	void initialize() {
-		err = makeErrorHandler();
+		report = makeEventHandler();
 		auto transport = makeTransport<Transport>();
 		setupTransport(*transport);
 		auto packetizer = makePacketizer();
@@ -115,31 +115,31 @@ protected:
 		setupSupportedTXNetworks(supportedTXNetworks);
 	}
 
-	virtual device_errorhandler_t makeErrorHandler() {
-		return [this](APIError::ErrorType type) { 
+	virtual device_eventhandler_t makeEventHandler() {
+		return [this](APIEvent::Type type, APIEvent::Severity severity) { 
 			if(!destructing)
-				ErrorManager::GetInstance().add(type, this); 
+				EventManager::GetInstance().add(type, severity, this); 
 		};
 	}
 
 	template<typename Transport>
-	std::unique_ptr<ICommunication> makeTransport() { return std::unique_ptr<ICommunication>(new Transport(err, getWritableNeoDevice())); }
+	std::unique_ptr<ICommunication> makeTransport() { return std::unique_ptr<ICommunication>(new Transport(report, getWritableNeoDevice())); }
 	virtual void setupTransport(ICommunication&) {}
 
-	virtual std::shared_ptr<Packetizer> makePacketizer() { return std::make_shared<Packetizer>(err); }
+	virtual std::shared_ptr<Packetizer> makePacketizer() { return std::make_shared<Packetizer>(report); }
 	virtual void setupPacketizer(Packetizer&) {}
 
-	virtual std::unique_ptr<Encoder> makeEncoder(std::shared_ptr<Packetizer> p) { return std::unique_ptr<Encoder>(new Encoder(err, p)); }
+	virtual std::unique_ptr<Encoder> makeEncoder(std::shared_ptr<Packetizer> p) { return std::unique_ptr<Encoder>(new Encoder(report, p)); }
 	virtual void setupEncoder(Encoder&) {}
 
-	virtual std::unique_ptr<Decoder> makeDecoder() { return std::unique_ptr<Decoder>(new Decoder(err)); }
+	virtual std::unique_ptr<Decoder> makeDecoder() { return std::unique_ptr<Decoder>(new Decoder(report)); }
 	virtual void setupDecoder(Decoder&) {}
 
 	virtual std::shared_ptr<Communication> makeCommunication(
 		std::unique_ptr<ICommunication> t,
 		std::shared_ptr<Packetizer> p,
 		std::unique_ptr<Encoder> e,
-		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(err, std::move(t), p, std::move(e), std::move(d)); }
+		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(report, std::move(t), p, std::move(e), std::move(d)); }
 	virtual void setupCommunication(Communication&) {}
 
 	template<typename Settings>
