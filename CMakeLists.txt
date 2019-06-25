@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(libicsneo VERSION 0.1.1)
 
+option(test "Build all tests." ON) # Makes 'test' variable available
+
 set(CMAKE_CXX_STANDARD 11)
 
 include(GNUInstallDirs)
@@ -201,6 +203,30 @@ if(NOT WIN32)
 	target_link_libraries(icsneocpp PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 	find_package(PCAP REQUIRED)
 	target_link_libraries(icsneocpp PUBLIC ${PCAP_LIBRARY})
+endif()
+
+# googletest, hopefully cross-platform and won't have to split into 2 places in CMakeLists
+if(test)
+	if(WIN32)
+		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+	endif()	
+
+	add_subdirectory(third-party/googletest-master)
+	
+	if (CMAKE_VERSION VERSION_LESS 2.8.11)
+		include_directories("${gtest_SOURCE_DIR}/include")
+	endif()
+	
+	add_executable(runTests test/main.cpp)
+	
+	target_link_libraries(runTests gtest gtest_main)
+	target_link_libraries(runTests icsneocpp)
+	
+	target_include_directories(runTests PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+		
+	enable_testing()
+	
+	add_test(NAME plshelpme COMMAND runTests)
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
