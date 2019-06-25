@@ -38,11 +38,10 @@ std::cout << devices.size() << " found!" << std::endl;
 for(auto& device : devices)
     std::cout << "Found " << device->describe() << std::endl; // "Found neoVI FIRE 2 CY2345"
 std::shared_ptr<icsneo::Device> myDevice = devices[0];
-if(!myDevice->open()) {
-    // There was an error while attempting to open the device, print the error details
-    for(auto& error : icsneo::getErrors())
-        std::cout << error << std::endl;
-}
+
+if(!myDevice->open()) // Device tried and failed to open, print the last error
+    std::cout << icsneo::GetLastError() << std::endl;
+
 myDevice->goOnline(); // Start receiving messages
 myDevice->enableMessagePolling(); // Allow the use of myDevice->getMessages() later
 // Alternatively, assign a callback for new messages
@@ -113,7 +112,7 @@ icsneo_closeDevice(myDevice);
 
 ## Building from Source
 ### Windows
-Building will require Microsoft Visual Studio 2017 and CMake to be installed.
+Building will require Microsoft Visual Studio 2017+ and CMake to be installed.
 ### macOS
 Getting the dependencies is easiest with the Homebrew package manager. You will also need XCode installed. You can then install CMake, an up-to-date version of GCC or Clang, and `libusb-1.0`.
 ### Linux
