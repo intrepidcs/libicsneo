@@ -6,7 +6,7 @@ using namespace icsneo;
 
 APIEvent::APIEvent(Type type, APIEvent::Severity severity, const Device* device) : eventStruct({}) {
 	this->device = device;
-	if(!device) {
+	if(device) {
 		serial = device->getSerial();
 		eventStruct.serial[serial.copy(eventStruct.serial, sizeof(eventStruct.serial))] = '\0';
 	}
