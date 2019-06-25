@@ -779,26 +779,26 @@ fn_icsneo_describeDevice icsneo_describeDevice;
 typedef neoversion_t(*fn_icsneo_getVersion)(void);
 fn_icsneo_getVersion icsneo_getVersion;
 
-typedef bool(*fn_icsneo_getErrors)(neoevent_t* errors, size_t* size);
-fn_icsneo_getErrors icsneo_getErrors;
+typedef bool(*fn_icsneo_getEvents)(neoevent_t* events, size_t* size);
+fn_icsneo_getEvents icsneo_getEvents;
 
-typedef bool(*fn_icsneo_getDeviceErrors)(const neodevice_t* device, neoevent_t* errors, size_t* size);
-fn_icsneo_getDeviceErrors icsneo_getDeviceErrors;
+typedef bool(*fn_icsneo_getDeviceEvents)(const neodevice_t* device, neoevent_t* events, size_t* size);
+fn_icsneo_getDeviceEvents icsneo_getDeviceEvents;
 
 typedef bool(*fn_icsneo_getLastError)(neoevent_t* error);
 fn_icsneo_getLastError icsneo_getLastError;
 
-typedef void(*fn_icsneo_discardAllErrors)(void);
-fn_icsneo_discardAllErrors icsneo_discardAllErrors;
+typedef void(*fn_icsneo_discardAllEvents)(void);
+fn_icsneo_discardAllEvents icsneo_discardAllEvents;
 
-typedef void(*fn_icsneo_discardDeviceErrors)(const neodevice_t* device);
-fn_icsneo_discardDeviceErrors icsneo_discardDeviceErrors;
+typedef void(*fn_icsneo_discardDeviceEvents)(const neodevice_t* device);
+fn_icsneo_discardDeviceEvents icsneo_discardDeviceEvents;
 
-typedef void(*fn_icsneo_setErrorLimit)(size_t newLimit);
-fn_icsneo_setErrorLimit icsneo_setErrorLimit;
+typedef void(*fn_icsneo_setEventLimit)(size_t newLimit);
+fn_icsneo_setEventLimit icsneo_setEventLimit;
 
-typedef size_t(*fn_icsneo_getErrorLimit)(void);
-fn_icsneo_getErrorLimit icsneo_getErrorLimit;
+typedef size_t(*fn_icsneo_getEventLimit)(void);
+fn_icsneo_getEventLimit icsneo_getEventLimit;
 
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
@@ -848,13 +848,13 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_transmitMessages);
 	ICSNEO_IMPORTASSERT(icsneo_describeDevice);
 	ICSNEO_IMPORTASSERT(icsneo_getVersion);
-	ICSNEO_IMPORTASSERT(icsneo_getErrors);
-	ICSNEO_IMPORTASSERT(icsneo_getDeviceErrors);
+	ICSNEO_IMPORTASSERT(icsneo_getEvents);
+	ICSNEO_IMPORTASSERT(icsneo_getDeviceEvents);
 	ICSNEO_IMPORTASSERT(icsneo_getLastError);
-	ICSNEO_IMPORTASSERT(icsneo_discardAllErrors);
-	ICSNEO_IMPORTASSERT(icsneo_discardDeviceErrors);
-	ICSNEO_IMPORTASSERT(icsneo_setErrorLimit);
-	ICSNEO_IMPORTASSERT(icsneo_getErrorLimit);
+	ICSNEO_IMPORTASSERT(icsneo_discardAllEvents);
+	ICSNEO_IMPORTASSERT(icsneo_discardDeviceEvents);
+	ICSNEO_IMPORTASSERT(icsneo_setEventLimit);
+	ICSNEO_IMPORTASSERT(icsneo_getEventLimit);
 
 	icsneo_initialized = true;
 	return 0;
