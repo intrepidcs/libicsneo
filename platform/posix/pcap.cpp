@@ -33,7 +33,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	}
 
 	if(!success) {
-		EventManager::GetInstance().add(APIEvent::PCAPCouldNotFindDevices);
+		EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotFindDevices, APIEvent::Severity::Error);
 		return std::vector<PCAPFoundDevice>();
 	}
 

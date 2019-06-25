@@ -39,7 +39,7 @@ public:
 	}
 	void add(APIEvent::Type type, APIEvent::Severity severity, const Device* forDevice = nullptr) {
 		std::lock_guard<std::mutex> lk(mutex);
-		add_internal(APIEvent::APIEvent(type, severity, forDevice));
+		add_internal(APIEvent(type, severity, forDevice));
 	}
 
 	void discard(EventFilter filter = EventFilter());

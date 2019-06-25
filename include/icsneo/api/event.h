@@ -93,7 +93,7 @@ public:
 		Error = 0x30
 	};
 
-	APIEvent() : eventStruct({}), device(nullptr), serial(), timepoint() {}
+	APIEvent() : eventStruct({}), serial(), timepoint(), device(nullptr) {}
 	APIEvent(APIEvent::Type event, APIEvent::Severity severity, const Device* device = nullptr);
 	
 	const neoevent_t* getNeoEvent() const noexcept { return &eventStruct; }
