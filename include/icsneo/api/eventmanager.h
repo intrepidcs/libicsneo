@@ -51,14 +51,14 @@ public:
 			return;
 		
 		if(newLimit < 10) {
-			add(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::EventWarning);
+			add(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 			return;
 		}
 
 		std::lock_guard<std::mutex> lk(mutex);
 		eventLimit = newLimit;
 		if(enforceLimit()) 
-			add(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning);
+			add_internal(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
 	}
 
 	size_t getEventLimit() const { return eventLimit; }
