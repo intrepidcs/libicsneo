@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(libicsneo VERSION 0.1.1)
 
-option(test "Build all tests." ON) # Makes 'test' variable available
+option(BUILD_TESTS "Build all tests." OFF) # Makes 'BUILD_TEST' variable available
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -206,7 +206,7 @@ if(NOT WIN32)
 endif()
 
 # googletest, hopefully cross-platform and won't have to split into 2 places in CMakeLists
-if(test)
+if(BUILD_TESTS)
 	if(WIN32)
 		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 	endif()	
