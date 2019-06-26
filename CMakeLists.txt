@@ -217,7 +217,7 @@ if(test)
 		include_directories("${gtest_SOURCE_DIR}/include")
 	endif()
 	
-	add_executable(runTests test/main.cpp)
+	add_executable(runTests test/main.cpp test/eventmanagertest.cpp)
 	
 	target_link_libraries(runTests gtest gtest_main)
 	target_link_libraries(runTests icsneocpp)

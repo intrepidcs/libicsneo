@@ -12,7 +12,7 @@ std::vector<DeviceType> icsneo::GetSupportedDevices() {
 }
 
 size_t icsneo::EventCount(EventFilter filter) {
-	return EventManager::GetInstance().count(filter);
+	return EventManager::GetInstance().eventCount(filter);
 }
 
 std::vector<APIEvent> icsneo::GetEvents(EventFilter filter, size_t max) {

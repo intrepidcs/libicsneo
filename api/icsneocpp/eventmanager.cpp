@@ -11,6 +11,10 @@ EventManager& EventManager::GetInstance() {
 	return *singleton.get();
 }
 
+void EventManager::ResetInstance() {
+	singleton = nullptr;
+}
+
 void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilter filter) {
 	std::lock_guard<std::mutex> lk(mutex);
 

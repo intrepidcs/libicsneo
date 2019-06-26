@@ -17,7 +17,9 @@ class EventManager {
 public:
 	static EventManager& GetInstance();
 
-	size_t count(EventFilter filter = EventFilter()) const {
+	static void ResetInstance();
+
+	size_t eventCount(EventFilter filter = EventFilter()) const {
 		std::lock_guard<std::mutex> lk(mutex);
 		return count_internal(filter);
 	};
@@ -61,8 +63,10 @@ public:
 
 	size_t getEventLimit() const { return eventLimit; }
 
+
+
 private:
-	EventManager() {}
+	EventManager() : mutex(), events(), lastUserErrors(), eventLimit(10000) {}
 	// Used by functions for threadsafety
 	mutable std::mutex mutex;
 
