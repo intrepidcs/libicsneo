@@ -12,50 +12,6 @@ protected:
     }
 };
 
-// Multithreaded test of GetLastError()
-TEST_F(EventManagerTest, GetLastErrorMultiThreaded) {
-    std::thread t1( []() {
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
-        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
-        auto err = GetLastError();
-        EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
-        EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
-    });
-
-    std::thread t2( []() {
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error));
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error));
-        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::SettingsNotAvailable);
-        auto err = GetLastError();
-        EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
-        EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
-    });
-
-    t1.join();
-    t2.join();
-}
-
-// Tests that adding 1 error and calling GetLastError() twice will first return the error then return a NoErrorFound info message. Singlethreaded.
-TEST_F(EventManagerTest, GetLastErrorSingleTest) {
-    EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
-    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
-    auto err = GetLastError();
-    EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
-    EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
-}
-
-// Tests that adding multiple errors and calling GetLastError() twice will first return the last error then return a NoErrorFound info message. Singlethreaded.
-TEST_F(EventManagerTest, GetLastErrorMultipleTest) {
-    EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
-    EventManager::GetInstance().add(APIEvent(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error));
-    EventManager::GetInstance().add(APIEvent(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error));
-    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::SettingsNotAvailable);
-    auto err = GetLastError();
-    EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
-    EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
-}
-
 // Tests that adding and removing events properly updates EventCount(). Also tests that EventCount() does not go past the limit.
 TEST_F(EventManagerTest, CountTest) {
     // Add an error event, should not go into events list.
@@ -85,7 +41,7 @@ TEST_F(EventManagerTest, CountTest) {
 
     // default limit is 10000
     for(int i = 0; i < 11000; i++)
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventInfo));
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
     
     EXPECT_EQ(EventCount(), 10000);
 }
@@ -308,33 +264,48 @@ TEST_F(EventManagerTest, GetSizeFilterTest) {
     EXPECT_EQ(EventCount(), 0);
 }
 
-// Tests that setting the event limit works in normal conditions, if the new limit is too small, and if the list needs truncating
-TEST_F(EventManagerTest, SetEventLimitTest) {
-    // Test if event limit too low to be set
-    EventManager::GetInstance().setEventLimit(9);
-    EXPECT_EQ(GetEventLimit(), 10000);
-    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::ParameterOutOfRange);
+// Multithreaded test of GetLastError()
+TEST_F(EventManagerTest, GetLastErrorMultiThreaded) {
+    std::thread t1( []() {
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
+        auto err = GetLastError();
+        EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
+        EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
+    });
 
-    // Test truncating existing list when new limit set
-    for(int i = 0; i < 9001; i++)
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
-    
-    EXPECT_EQ(EventCount(), 9001);
+    std::thread t2( []() {
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error));
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error));
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::SettingsNotAvailable);
+        auto err = GetLastError();
+        EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
+        EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
+    });
 
-    SetEventLimit(5000);
-    EXPECT_EQ(GetEventLimit(), 5000);
-    EXPECT_EQ(EventCount(), 5000);
-
-    // auto events = GetEvents();
-    // for(int i = 0; i < 4998; i++) {
-    //     EXPECT_EQ(events.at(i).getType(), APIEvent::Type::OutputTruncated);
-    // }
-    // EXPECT_EQ(events.at(4999).getType(), APIEvent::Type::TooManyEvents);
+    t1.join();
+    t2.join();
 }
 
-// Tests that setting the event limit when already overflowing works
-TEST_F(EventManagerTest, SetEventLimitOverflowTest) {
+// Tests that adding 1 error and calling GetLastError() twice will first return the error then return a NoErrorFound info message. Singlethreaded.
+TEST_F(EventManagerTest, GetLastErrorSingleTest) {
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
+    auto err = GetLastError();
+    EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
+    EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
+}
 
+// Tests that adding multiple errors and calling GetLastError() twice will first return the last error then return a NoErrorFound info message. Singlethreaded.
+TEST_F(EventManagerTest, GetLastErrorMultipleTest) {
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error));
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error));
+    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::SettingsNotAvailable);
+    auto err = GetLastError();
+    EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
+    EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
 }
 
 // Tests the case where too many warnings are added
@@ -387,4 +358,39 @@ TEST_F(EventManagerTest, TestAddWarningsInfoOverflow) {
         EXPECT_EQ(events.at(i).getType(), APIEvent::Type::ParameterOutOfRange);
     
     EXPECT_EQ(events.at(49).getType(), APIEvent::Type::TooManyEvents);
+}
+
+// Tests that setting the event limit works in normal conditions, if the new limit is too small, and if the list needs truncating
+TEST_F(EventManagerTest, SetEventLimitTest) {
+    // Test if event limit too low to be set
+    EventManager::GetInstance().setEventLimit(9);
+    EXPECT_EQ(GetEventLimit(), 10000);
+    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::ParameterOutOfRange);
+
+    // Test truncating existing list when new limit set
+    for(int i = 0; i < 9001; i++)
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
+    
+    EXPECT_EQ(EventCount(), 9001);
+
+    // Sets new limit to be exactly full.
+    SetEventLimit(9002);
+    EXPECT_EQ(GetEventLimit(), 9002);
+    EXPECT_EQ(EventCount(), 9001);
+    
+    // 1 overflowed.
+    SetEventLimit(9001);
+    EXPECT_EQ(GetEventLimit(), 9001);
+    EXPECT_EQ(EventCount(), 9001);
+
+    // auto events = GetEvents();
+    // for(int i = 0; i < 4998; i++) {
+    //     EXPECT_EQ(events.at(i).getType(), APIEvent::Type::OutputTruncated);
+    // }
+    // EXPECT_EQ(events.at(4999).getType(), APIEvent::Type::TooManyEvents);
+}
+
+// Tests that setting the event limit when already overflowing works
+TEST_F(EventManagerTest, SetEventLimitOverflowTest) {
+
 }
