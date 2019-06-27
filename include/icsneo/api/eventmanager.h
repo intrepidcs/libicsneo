@@ -4,9 +4,7 @@
 #include <vector>
 #include <list>
 #include <mutex>
-#include <shared_mutex>
 #include <functional>
-#include <unordered_map>
 #include<map>
 #include <thread>
 #include "icsneo/api/event.h"
@@ -22,7 +20,7 @@ public:
 	static void ResetInstance();
 
 	size_t eventCount(EventFilter filter = EventFilter()) const {
-		std::shared_lock<std::shared_mutex> lk(mutex);
+		std::lock_guard<std::mutex> lk(mutex);
 		return count_internal(filter);
 	};
 
@@ -38,11 +36,11 @@ public:
 	APIEvent getLastError();
 
 	void add(APIEvent event) {
-		std::unique_lock<std::shared_mutex> lk(mutex);
+		std::lock_guard<std::mutex> lk(mutex);
 		add_internal(event);
 	}
 	void add(APIEvent::Type type, APIEvent::Severity severity, const Device* forDevice = nullptr) {
-		std::unique_lock<std::shared_mutex> lk(mutex);
+		std::lock_guard<std::mutex> lk(mutex);
 		add_internal(APIEvent(type, severity, forDevice));
 	}
 
@@ -57,14 +55,14 @@ public:
 			return;
 		}
 
-		std::unique_lock<std::shared_mutex> lk(mutex);
+		std::lock_guard<std::mutex> lk(mutex);
 		eventLimit = newLimit;
 		if(enforceLimit()) 
 			add_internal(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
 	}
 
 	size_t getEventLimit() const { 
-		std::shared_lock<std::shared_mutex> lk(mutex);
+		std::lock_guard<std::mutex> lk(mutex);
 		return eventLimit;
 	}
 
@@ -74,7 +72,7 @@ private:
 	EventManager& operator=(const EventManager &other);
 
 	// Used by functions for threadsafety
-	mutable std::shared_mutex mutex;
+	mutable std::mutex mutex;
 
 	// Stores all events
 	std::list<APIEvent> events;
