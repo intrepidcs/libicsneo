@@ -112,8 +112,8 @@ private:
 		// We are exactly full, either because the list was truncated or because we were simply full before
 		if(events.size() == eventLimit - 1) {
 			// If the event is worth adding
-			if(event.getType() != APIEvent::Type::TooManyEvents && event.getSeverity() >= lowestCurrentSeverity()) {
-				discardLeastSevere(1);
+			if(event.getType() != APIEvent::Type::TooManyEvents) {
+				discardOldest(1);
 				events.push_back(event);	
 			}
 
@@ -126,8 +126,7 @@ private:
 
 	bool enforceLimit(); // Returns whether the limit enforcement resulted in an overflow
 
-	APIEvent::Severity lowestCurrentSeverity() const;
-	void discardLeastSevere(size_t count = 1);
+	void discardOldest(size_t count = 1);
 };
 
 }

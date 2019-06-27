@@ -86,59 +86,19 @@ bool EventManager::enforceLimit() {
 
 	size_t amountToRemove = events.size() + 1 - eventLimit;
 
-	discardLeastSevere(amountToRemove);
+	discardOldest(amountToRemove);
 
 	return true;
 }
 
-APIEvent::Severity EventManager::lowestCurrentSeverity() const {
-	if(events.empty())
-		return APIEvent::Severity(0);
-
-	APIEvent::Severity lowest = APIEvent::Severity::Error;
-	auto it = events.begin();
-	while(it != events.end()) {
-		if((*it).getSeverity() < lowest)
-			lowest = (*it).getSeverity();
-		it++;
-		
-		if(lowest == APIEvent::Severity::EventInfo)
-			return lowest;
-	}
-	return lowest;
-}
-
-void EventManager::discardLeastSevere(size_t count) {
+void EventManager::discardOldest(size_t count) {
 	if(count == 0)
 		return;
 
-	// Erase needed Info level events, starting from the beginning
-	EventFilter infoFilter(APIEvent::Severity::EventInfo);
 	auto it = events.begin();
 	while(it != events.end()) {
-		if(infoFilter.match(*it)) {
-			it = events.erase(it);
-			if(--count == 0)
-				break;
-		} else {
-			it++;
-		}
+		it = events.erase(it);
+		if(--count == 0)
+			break;				
 	}
-
-	// Erase needed Warning level events, starting from the beginning
-	if(count != 0) {
-		EventFilter warningFilter(APIEvent::Severity::EventWarning);
-		it = events.begin();
-		while(it != events.end()) {
-			if(warningFilter.match(*it)) {
-				it = events.erase(it);
-				if(--count == 0)
-					break;
-			} else {
-				it++;
-			}
-		}
-	}
-
-	// No need to check for Error level events, as they are not stored in the list of events.
 }

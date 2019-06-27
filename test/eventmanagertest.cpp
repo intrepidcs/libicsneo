@@ -318,15 +318,25 @@ TEST_F(EventManagerTest, TestAddWarningsOverflow) {
     for(int i = 0; i < 3; i++)
         EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
 
-    // 49 of these
-    for(int i = 0; i < 49; i++)
+    // 1 info
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::EventInfo));
+
+    // 48 of these
+    for(int i = 0; i < 48; i++)
         EventManager::GetInstance().add(APIEvent(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::EventWarning));
 
     auto events = GetEvents();
-    for(int i = 0; i < 49; i++)
+
+    EXPECT_EQ(events.at(0).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
+    EXPECT_EQ(events.at(0).getSeverity(), APIEvent::Severity::EventInfo);
+
+    for(int i = 1; i < 49; i++) {
         EXPECT_EQ(events.at(i).getType(), APIEvent::Type::ParameterOutOfRange);
-    
+        EXPECT_EQ(events.at(i).getSeverity(), APIEvent::Severity::EventWarning);
+    }
+
     EXPECT_EQ(events.at(49).getType(), APIEvent::Type::TooManyEvents);
+    EXPECT_EQ(events.at(49).getSeverity(), APIEvent::Severity::EventWarning);
 }
 
 // Tests the case where too many warnings and info are added
@@ -336,7 +346,7 @@ TEST_F(EventManagerTest, TestAddWarningsInfoOverflow) {
     SetEventLimit(50);
 
     // Event list filling: 1 warning, 3 info, 47 warning.
-    // Expect to see: 1 warning, 1 info, 47 warning, 1 TooManyEvents
+    // Expect to see: 2 info, 47 warning, 1 TooManyEvents
 
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::SettingsVersionError, APIEvent::Severity::EventWarning));
 
@@ -350,9 +360,9 @@ TEST_F(EventManagerTest, TestAddWarningsInfoOverflow) {
 
     auto events = GetEvents();
 
-    EXPECT_EQ(events.at(0).getType(), APIEvent::Type::SettingsVersionError);
-
-    EXPECT_EQ(events.at(1).getType(), APIEvent::Type::OutputTruncated);
+    for(int i = 0; i < 2; i++) {
+        EXPECT_EQ(events.at(i).getType(), APIEvent::Type::OutputTruncated);
+    }
 
     for(int i = 2; i < 49; i++)
         EXPECT_EQ(events.at(i).getType(), APIEvent::Type::ParameterOutOfRange);
@@ -383,14 +393,13 @@ TEST_F(EventManagerTest, SetEventLimitTest) {
     EXPECT_EQ(GetEventLimit(), 9001);
     EXPECT_EQ(EventCount(), 9001);
 
-    // auto events = GetEvents();
-    // for(int i = 0; i < 4998; i++) {
-    //     EXPECT_EQ(events.at(i).getType(), APIEvent::Type::OutputTruncated);
-    // }
-    // EXPECT_EQ(events.at(4999).getType(), APIEvent::Type::TooManyEvents);
-}
+    SetEventLimit(5000);
+    EXPECT_EQ(GetEventLimit(), 5000);
+    EXPECT_EQ(EventCount(), 5000);
 
-// Tests that setting the event limit when already overflowing works
-TEST_F(EventManagerTest, SetEventLimitOverflowTest) {
-
+    auto events = GetEvents();
+    for(int i = 0; i < 4998; i++) {
+        EXPECT_EQ(events.at(i).getType(), APIEvent::Type::OutputTruncated);
+    }
+    EXPECT_EQ(events.at(4999).getType(), APIEvent::Type::TooManyEvents);
 }

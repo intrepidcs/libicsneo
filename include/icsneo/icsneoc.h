@@ -629,7 +629,7 @@ extern void DLLExport icsneo_discardDeviceEvents(const neodevice_t* device);
  * If the error limit is reached, an icsneo::APIEvent::TooManyEvents will be flagged.
  * 
  * If the `newLimit` is smaller than the current error count,
- * errors will be removed in order of increasing severity and decreasing age.
+ * errors will be removed in order of decreasing age.
  * This will also flag an icsneo::APIEvent::TooManyEvents.
  */
 extern void DLLExport icsneo_setEventLimit(size_t newLimit);
