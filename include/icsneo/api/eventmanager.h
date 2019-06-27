@@ -4,8 +4,10 @@
 #include <vector>
 #include <list>
 #include <mutex>
+#include <shared_mutex>
 #include <functional>
 #include <unordered_map>
+#include<map>
 #include <thread>
 #include "icsneo/api/event.h"
 
@@ -20,7 +22,7 @@ public:
 	static void ResetInstance();
 
 	size_t eventCount(EventFilter filter = EventFilter()) const {
-		std::lock_guard<std::mutex> lk(mutex);
+		std::shared_lock<std::shared_mutex> lk(mutex);
 		return count_internal(filter);
 	};
 
@@ -36,11 +38,11 @@ public:
 	APIEvent getLastError();
 
 	void add(APIEvent event) {
-		std::lock_guard<std::mutex> lk(mutex);
+		std::unique_lock<std::shared_mutex> lk(mutex);
 		add_internal(event);
 	}
 	void add(APIEvent::Type type, APIEvent::Severity severity, const Device* forDevice = nullptr) {
-		std::lock_guard<std::mutex> lk(mutex);
+		std::unique_lock<std::shared_mutex> lk(mutex);
 		add_internal(APIEvent(type, severity, forDevice));
 	}
 
@@ -55,24 +57,28 @@ public:
 			return;
 		}
 
-		std::lock_guard<std::mutex> lk(mutex);
+		std::unique_lock<std::shared_mutex> lk(mutex);
 		eventLimit = newLimit;
 		if(enforceLimit()) 
 			add_internal(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
 	}
 
-	size_t getEventLimit() const { return eventLimit; }
-
-
+	size_t getEventLimit() const { 
+		std::shared_lock<std::shared_mutex> lk(mutex);
+		return eventLimit;
+	}
 
 private:
 	EventManager() : mutex(), events(), lastUserErrors(), eventLimit(10000) {}
+	EventManager(const EventManager &other);
+	EventManager& operator=(const EventManager &other);
+
 	// Used by functions for threadsafety
-	mutable std::mutex mutex;
+	mutable std::shared_mutex mutex;
 
 	// Stores all events
 	std::list<APIEvent> events;
-	std::unordered_map<std::thread::id, APIEvent> lastUserErrors;
+	std::map<std::thread::id, APIEvent> lastUserErrors;
 	size_t eventLimit = 10000;
 
 	size_t count_internal(EventFilter filter = EventFilter()) const;
@@ -89,9 +95,10 @@ private:
 	 * If the key id already exists in the map, replace the event of that pair with the new one
 	 */
 	void add_internal_error(APIEvent event) {
-		auto iter = lastUserErrors.find(std::this_thread::get_id());
+		std::thread::id id = std::this_thread::get_id();
+		std::map<std::thread::id, APIEvent>::iterator iter = lastUserErrors.find(id);
 		if(iter == lastUserErrors.end())
-			lastUserErrors.insert(std::make_pair(std::this_thread::get_id(), event));
+			lastUserErrors.insert({id, event});
 		else
 			iter->second = event;
 	}
@@ -120,7 +127,7 @@ private:
 
 	bool enforceLimit(); // Returns whether the limit enforcement resulted in an overflow
 
-	APIEvent::Severity lowestCurrentSeverity();
+	APIEvent::Severity lowestCurrentSeverity() const;
 	void discardLeastSevere(size_t count = 1);
 };
 

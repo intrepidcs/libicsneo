@@ -12,11 +12,11 @@ EventManager& EventManager::GetInstance() {
 }
 
 void EventManager::ResetInstance() {
-	singleton = nullptr;
+	singleton = std::unique_ptr<EventManager>(new EventManager());
 }
 
 void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilter filter) {
-	std::lock_guard<std::mutex> lk(mutex);
+	std::unique_lock<std::shared_mutex> lk(mutex);
 
 	if(max == 0) // A limit of 0 indicates no limit
 		max = (size_t)-1;
@@ -27,34 +27,34 @@ void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilt
 	while(it != events.end()) {
 		if(filter.match(*it)) {
 			eventOutput.push_back(*it);
-			events.erase(it++);
+			it = events.erase(it);
 			if(count++ >= max)
 				break; // We now have as many written to output as we can
 		} else {
-			std::advance(it, 1);
+			it++;
 		}
 	}
 }
 
 /**
  * Removes the returned error from the map
- * If no error was found, return a default-constructed event
+ * If no error was found, return a NoErrorFound Info event
  */
 APIEvent EventManager::getLastError() {
-	std::lock_guard<std::mutex> lk(mutex);
+	std::unique_lock<std::shared_mutex> lk(mutex);
 
 	auto it = lastUserErrors.find(std::this_thread::get_id());
 	if(it == lastUserErrors.end()) {
 		return APIEvent(APIEvent::Type::NoErrorFound, APIEvent::Severity::EventInfo);
 	} else {
 		APIEvent ret = it->second;
-		lastUserErrors.erase(it);
+		it = lastUserErrors.erase(it);
 		return ret;
 	}
 }
 
 void EventManager::discard(EventFilter filter) {
-	std::lock_guard<std::mutex> lk(mutex);
+	std::unique_lock<std::shared_mutex> lk(mutex);
 	events.remove_if([&filter](const APIEvent& event) {
 		return filter.match(event);
 	});
@@ -87,7 +87,7 @@ bool EventManager::enforceLimit() {
 	return true;
 }
 
-APIEvent::Severity EventManager::lowestCurrentSeverity() {
+APIEvent::Severity EventManager::lowestCurrentSeverity() const {
 	if(events.empty())
 		return APIEvent::Severity(0);
 
@@ -110,7 +110,7 @@ void EventManager::discardLeastSevere(size_t count) {
 	auto it = events.begin();
 	while(it != events.end()) {
 		if(infoFilter.match(*it)) {
-			events.erase(it++);
+			it = events.erase(it);
 			if(--count == 0)
 				break;
 		} else {
@@ -124,7 +124,7 @@ void EventManager::discardLeastSevere(size_t count) {
 		it = events.begin();
 		while(it != events.end()) {
 			if(warningFilter.match(*it)) {
-				events.erase(it++);
+				it = events.erase(it);
 				if(--count == 0)
 					break;
 			} else {
