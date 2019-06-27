@@ -96,11 +96,11 @@ private:
 	 */
 	void add_internal_error(APIEvent event) {
 		std::thread::id id = std::this_thread::get_id();
-		std::map<std::thread::id, APIEvent>::iterator iter = lastUserErrors.find(id);
-		if(iter == lastUserErrors.end())
+		auto it = lastUserErrors.find(id);
+		if(it == lastUserErrors.end())
 			lastUserErrors.insert({id, event});
 		else
-			iter->second = event;
+			it->second = event;
 	}
 
 	/**
@@ -114,14 +114,15 @@ private:
 		// We are exactly full, either because the list was truncated or because we were simply full before
 		if(events.size() == eventLimit - 1) {
 			// If the event is worth adding
-			if(event.getSeverity() >= lowestCurrentSeverity()) {
+			if(event.getType() != APIEvent::Type::TooManyEvents && event.getSeverity() >= lowestCurrentSeverity()) {
 				discardLeastSevere(1);
 				events.push_back(event);	
 			}
 
 			events.push_back(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
 		} else {
-			events.push_back(event);
+			if (event.getType() != APIEvent::Type::TooManyEvents)
+				events.push_back(event);
 		}
 	}
 

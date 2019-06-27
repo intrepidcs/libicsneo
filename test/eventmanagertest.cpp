@@ -58,28 +58,112 @@ TEST_F(EventManagerTest, GetLastErrorMultipleTest) {
 
 // Tests that adding and removing events properly updates EventCount(). Also tests that EventCount() does not go past the limit.
 TEST_F(EventManagerTest, CountTest) {
+    // Add an error event, should not go into events list.
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
     EXPECT_EQ(EventCount(), 0);
+
+    // Adds actual event
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
+    
+    // Manually tries to add some TooManyEvents, these should not be added.
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventInfo));
+
     EXPECT_EQ(EventCount(), 1);
+
+    // Add another actual event
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventInfo));
     EXPECT_EQ(EventCount(), 2);
+
+    // Take all info events (1)
     GetEvents(EventFilter(APIEvent::Severity::EventInfo));
     EXPECT_EQ(EventCount(), 1);
+
+    // Take all events
     GetEvents();
     EXPECT_EQ(EventCount(), 0);
 
-    SetEventLimit(50);
-    for(int i = 0; i < 60; i++)
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
+    // default limit is 10000
+    for(int i = 0; i < 11000; i++)
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventInfo));
     
-    EXPECT_EQ(EventCount(), 50);
+    EXPECT_EQ(EventCount(), 10000);
 }
 
-// 
-TEST_F(EventManagerTest, GetTest) {
+// Test default get params
+TEST_F(EventManagerTest, GetDefaultTest) {
+    for(int i = 0; i < 5; i++) {
+        EventManager::GetInstance().add(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning);
+        EventManager::GetInstance().add(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::EventInfo);
 
+        // errors should not go in events
+        EventManager::GetInstance().add(APIEvent::Type::SettingsVersionError, APIEvent::Severity::Error);
+    }
+
+    auto events = EventManager::GetInstance().get();
+    
+    EXPECT_EQ(events.size(), 10);
+    
+    for(int i = 0; i < 5; i++) {
+        EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::UnexpectedNetworkType);
+        EXPECT_EQ(events.at(2 * i).getSeverity(), APIEvent::Severity::EventWarning);
+
+        EXPECT_EQ(events.at(2 * i + 1).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
+        EXPECT_EQ(events.at(2 * i + 1).getSeverity(), APIEvent::Severity::EventInfo);
+    }
 }
+
+// Test get with a size limit
+TEST_F(EventManagerTest, GetSizeTest) {
+
+    // Add 10 events
+    for(int i = 0; i < 5; i++) {
+        EventManager::GetInstance().add(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning);
+        EventManager::GetInstance().add(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::EventInfo);
+
+        // errors should not go in events
+        EventManager::GetInstance().add(APIEvent::Type::SettingsVersionError, APIEvent::Severity::Error);
+    }
+
+    // Take 3 events, 7 left
+    auto events = EventManager::GetInstance().get(3);
+
+    EXPECT_EQ(events.size(), 3);
+    EXPECT_EQ(EventCount(), 7);
+
+    EXPECT_EQ(events.at(0).getType(), APIEvent::Type::UnexpectedNetworkType);
+    EXPECT_EQ(events.at(0).getSeverity(), APIEvent::Severity::EventWarning);
+    EXPECT_EQ(events.at(1).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
+    EXPECT_EQ(events.at(1).getSeverity(), APIEvent::Severity::EventInfo);
+    EXPECT_EQ(events.at(2).getType(), APIEvent::Type::UnexpectedNetworkType);
+    EXPECT_EQ(events.at(2).getSeverity(), APIEvent::Severity::EventWarning);
+
+    // Take 1 event, 6 left
+    events = EventManager::GetInstance().get(1);
+
+    EXPECT_EQ(events.size(), 1);
+    EXPECT_EQ(EventCount(), 6);
+
+    EXPECT_EQ(events.at(0).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
+    EXPECT_EQ(events.at(0).getSeverity(), APIEvent::Severity::EventInfo);
+
+    // Try to take 8 events, should actually take the 6 remaining. 0 left.
+    events = EventManager::GetInstance().get(8);
+    EXPECT_EQ(events.size(), 6);
+    EXPECT_EQ(EventCount(), 0);
+
+    for(int i = 0; i < 3; i++) {
+        EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::UnexpectedNetworkType);
+        EXPECT_EQ(events.at(2 * i).getSeverity(), APIEvent::Severity::EventWarning);
+
+        EXPECT_EQ(events.at(2 * i + 1).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
+        EXPECT_EQ(events.at(2 * i + 1).getSeverity(), APIEvent::Severity::EventInfo);
+    }
+}
+
+// Test get with a filter (type, device, severity)
+
+// Test get with both size limit and filter
 
 // Tests that setting the event limit works in normal conditions, if the new limit is too small, and if the list needs truncating
 TEST_F(EventManagerTest, SetEventLimitTest) {
@@ -89,16 +173,25 @@ TEST_F(EventManagerTest, SetEventLimitTest) {
     EXPECT_EQ(GetLastError().getType(), APIEvent::Type::ParameterOutOfRange);
 
     // Test truncating existing list when new limit set
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < 9001; i++)
         EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
     
-    EXPECT_EQ(EventCount(), 100);
+    EXPECT_EQ(EventCount(), 9001);
 
-    SetEventLimit(50);
-    EXPECT_EQ(GetEventLimit(), 50);
+    SetEventLimit(5000);
+    EXPECT_EQ(GetEventLimit(), 5000);
+    EXPECT_EQ(EventCount(), 5000);
 
-    // maybe 5001? since TooManyEvents is in there too.
-    EXPECT_EQ(EventCount(), 50);
+    // auto events = GetEvents();
+    // for(int i = 0; i < 4998; i++) {
+    //     EXPECT_EQ(events.at(i).getType(), APIEvent::Type::OutputTruncated);
+    // }
+    // EXPECT_EQ(events.at(4999).getType(), APIEvent::Type::TooManyEvents);
+}
+
+// Tests that setting the event limit when already overflowing works
+TEST_F(EventManagerTest, SetEventLimitOverflowTest) {
+
 }
 
 // Tests the case where too many warnings are added

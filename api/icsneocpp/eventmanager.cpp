@@ -28,7 +28,7 @@ void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilt
 		if(filter.match(*it)) {
 			eventOutput.push_back(*it);
 			it = events.erase(it);
-			if(count++ >= max)
+			if(++count >= max)
 				break; // We now have as many written to output as we can
 		} else {
 			it++;
@@ -73,8 +73,12 @@ size_t EventManager::count_internal(EventFilter filter) const {
  * Returns true if any events were removed in the process of doing so.
  */
 bool EventManager::enforceLimit() {
-	// Remove all TooManyEvents before checking
-	events.remove_if([](icsneo::APIEvent err){ return err.getType() == APIEvent::Type::TooManyEvents; });
+	// Remove all TooManyEvents from the end before checking
+	auto filter = EventFilter(APIEvent::Type::TooManyEvents);
+	auto it = events.rbegin();
+	while(it != events.rend() && filter.match(*it)) {
+		it = decltype(it){events.erase( std::next(it).base() )};
+	}
 	
 	// We are not overflowing
 	if(events.size() < eventLimit)
@@ -97,6 +101,9 @@ APIEvent::Severity EventManager::lowestCurrentSeverity() const {
 		if((*it).getSeverity() < lowest)
 			lowest = (*it).getSeverity();
 		it++;
+		
+		if(lowest == APIEvent::Severity::EventInfo)
+			return lowest;
 	}
 	return lowest;
 }
