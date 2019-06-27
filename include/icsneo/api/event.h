@@ -127,11 +127,11 @@ private:
 class EventFilter {
 public:
 	EventFilter() {} // Empty filter matches anything
-	EventFilter(APIEvent::Type type) : type(type) {}
+	EventFilter(APIEvent::Type type, APIEvent::Severity severity = APIEvent::Severity::Any) : type(type), severity(severity) {}
 	EventFilter(APIEvent::Severity severity) : severity(severity) {}
-	EventFilter(const Device* device, APIEvent::Type type = APIEvent::Type::Any) : type(type), matchOnDevicePtr(true), device(device) {}
+	EventFilter(const Device* device, APIEvent::Type type = APIEvent::Type::Any, APIEvent::Severity severity = APIEvent::Severity::Any) : type(type), severity(severity), matchOnDevicePtr(true), device(device) {}
 	EventFilter(const Device* device, APIEvent::Severity severity) : severity(severity), matchOnDevicePtr(true), device(device) {}
-	EventFilter(std::string serial, APIEvent::Type type = APIEvent::Type::Any) : type(type), serial(serial) {}
+	EventFilter(std::string serial, APIEvent::Type type = APIEvent::Type::Any, APIEvent::Severity severity = APIEvent::Severity::Any) : type(type), severity(severity), serial(serial) {}
 	EventFilter(std::string serial, APIEvent::Severity severity) : severity(severity), serial(serial) {}
 
 	bool match(const APIEvent& event) const noexcept;

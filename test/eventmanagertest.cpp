@@ -103,6 +103,7 @@ TEST_F(EventManagerTest, GetDefaultTest) {
     auto events = EventManager::GetInstance().get();
     
     EXPECT_EQ(events.size(), 10);
+    EXPECT_EQ(EventCount(), 0);
     
     for(int i = 0; i < 5; i++) {
         EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::UnexpectedNetworkType);
@@ -111,6 +112,11 @@ TEST_F(EventManagerTest, GetDefaultTest) {
         EXPECT_EQ(events.at(2 * i + 1).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
         EXPECT_EQ(events.at(2 * i + 1).getSeverity(), APIEvent::Severity::EventInfo);
     }
+
+    // Check getting when 0 events exist doesn't break
+    events = EventManager::GetInstance().get();
+    EXPECT_EQ(events.size(), 0);
+    EXPECT_EQ(EventCount(), 0);
 }
 
 // Test get with a size limit
@@ -159,11 +165,148 @@ TEST_F(EventManagerTest, GetSizeTest) {
         EXPECT_EQ(events.at(2 * i + 1).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
         EXPECT_EQ(events.at(2 * i + 1).getSeverity(), APIEvent::Severity::EventInfo);
     }
+
+    // Check getting when 0 events exist doesn't break
+    events = EventManager::GetInstance().get(5);
+    EXPECT_EQ(events.size(), 0);
+    EXPECT_EQ(EventCount(), 0);
 }
 
-// Test get with a filter (type, device, severity)
+// Test get with a filter (type, severity)
+// Doesn't test with device!
+TEST_F(EventManagerTest, GetFilterTest) {
+    // Add 20 events
+    for(int i = 0; i < 5; i++) {
+        // {network, warning}, {settings, info}, {network, info}, {mismatch, warning}
+        EventManager::GetInstance().add(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning);
+        EventManager::GetInstance().add(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::EventInfo);
+        EventManager::GetInstance().add(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventInfo);
+        EventManager::GetInstance().add(APIEvent::Type::SettingsStructureMismatch, APIEvent::Severity::EventWarning);
+
+        // errors should not go in events
+        EventManager::GetInstance().add(APIEvent::Type::SettingsVersionError, APIEvent::Severity::Error);
+    }
+
+    // Get all 5 {network, warning}. 15 left.
+    auto events = EventManager::GetInstance().get(EventFilter(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning));
+
+    EXPECT_EQ(events.size(), 5);
+    EXPECT_EQ(EventCount(), 15);
+
+    for(APIEvent event : events) {
+        EXPECT_EQ(event.getType(), APIEvent::Type::UnexpectedNetworkType);
+        EXPECT_EQ(event.getSeverity(), APIEvent::Severity::EventWarning);
+    }
+
+    // Get all 10 infos. 5 {mismatch, warning} remaining.
+    events = EventManager::GetInstance().get(EventFilter(APIEvent::Severity::EventInfo));
+
+    EXPECT_EQ(events.size(), 10);
+    EXPECT_EQ(EventCount(), 5);
+
+    for(int i = 0; i < 5; i++) {
+        EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
+        EXPECT_EQ(events.at(2 * i).getSeverity(), APIEvent::Severity::EventInfo);
+
+        EXPECT_EQ(events.at(2 * i + 1).getType(), APIEvent::Type::UnexpectedNetworkType);
+        EXPECT_EQ(events.at(2 * i + 1).getSeverity(), APIEvent::Severity::EventInfo);
+    }
+
+    // (Incorrectly) try to get settings type again. 5 {mismatch, warning} remaining. 
+    events = EventManager::GetInstance().get(EventFilter(APIEvent::Type::SWCANSettingsNotAvailable));
+    EXPECT_EQ(events.size(), 0);
+    EXPECT_EQ(EventCount(), 5);
+
+    // Get the 5 {mismatch, warning} remaining.
+    events = EventManager::GetInstance().get(EventFilter(APIEvent::Type::SettingsStructureMismatch));
+    EXPECT_EQ(events.size(), 5);
+    EXPECT_EQ(EventCount(), 0);
+
+    for(APIEvent event : events) {
+        EXPECT_EQ(event.getType(), APIEvent::Type::SettingsStructureMismatch);
+        EXPECT_EQ(event.getSeverity(), APIEvent::Severity::EventWarning);
+    }
+
+    // Check getting when 0 events exist doesn't break
+    events = EventManager::GetInstance().get(EventFilter(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning));
+    EXPECT_EQ(events.size(), 0);
+    EXPECT_EQ(EventCount(), 0);
+}
 
 // Test get with both size limit and filter
+// Doesn't test with devices
+TEST_F(EventManagerTest, GetSizeFilterTest) {
+    // Add 20 events
+    for(int i = 0; i < 5; i++) {
+        // {network, warning}, {settings, info}, {network, info}, {mismatch, warning}
+        EventManager::GetInstance().add(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning);
+        EventManager::GetInstance().add(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::EventInfo);
+        EventManager::GetInstance().add(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventInfo);
+        EventManager::GetInstance().add(APIEvent::Type::SettingsStructureMismatch, APIEvent::Severity::EventWarning);
+
+        // errors should not go in events
+        EventManager::GetInstance().add(APIEvent::Type::SettingsVersionError, APIEvent::Severity::Error);
+    }
+
+    // Get all 5 {network, warning}. 15 left.
+    auto events = EventManager::GetInstance().get(6, EventFilter(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning));
+
+    EXPECT_EQ(events.size(), 5);
+    EXPECT_EQ(EventCount(), 15);
+
+    for(APIEvent event : events) {
+        EXPECT_EQ(event.getType(), APIEvent::Type::UnexpectedNetworkType);
+        EXPECT_EQ(event.getSeverity(), APIEvent::Severity::EventWarning);
+    }
+
+    // Get 6 infos. 4 infos and 5 {mismatch, warning} remaining.
+    events = EventManager::GetInstance().get(6, EventFilter(APIEvent::Severity::EventInfo));
+
+    EXPECT_EQ(events.size(), 6);
+    EXPECT_EQ(EventCount(), 9);
+
+    for(int i = 0; i < 3; i++) {
+        EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
+        EXPECT_EQ(events.at(2 * i).getSeverity(), APIEvent::Severity::EventInfo);
+
+        EXPECT_EQ(events.at(2 * i + 1).getType(), APIEvent::Type::UnexpectedNetworkType);
+        EXPECT_EQ(events.at(2 * i + 1).getSeverity(), APIEvent::Severity::EventInfo);
+    }
+
+    // Get 4 remaining infos. 5 {mismatch, warning} remaining.
+    events = EventManager::GetInstance().get(4, EventFilter(APIEvent::Severity::EventInfo));
+
+    EXPECT_EQ(events.size(), 4);
+    EXPECT_EQ(EventCount(), 5);
+
+    for(int i = 0; i < 2; i++) {
+        EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
+        EXPECT_EQ(events.at(2 * i).getSeverity(), APIEvent::Severity::EventInfo);
+
+        EXPECT_EQ(events.at(2 * i + 1).getType(), APIEvent::Type::UnexpectedNetworkType);
+        EXPECT_EQ(events.at(2 * i + 1).getSeverity(), APIEvent::Severity::EventInfo);
+    }
+
+    // (Incorrectly) try to get settings type again. 5 {mismatch, warning} remaining. 
+    events = EventManager::GetInstance().get(-1, EventFilter(APIEvent::Type::SWCANSettingsNotAvailable));
+    EXPECT_EQ(events.size(), 0);
+    EXPECT_EQ(EventCount(), 5);
+
+    // Get the 5 {mismatch, warning} remaining.
+    events = EventManager::GetInstance().get(5, EventFilter(APIEvent::Type::SettingsStructureMismatch));
+    EXPECT_EQ(events.size(), 5);
+    EXPECT_EQ(EventCount(), 0);
+
+    for(APIEvent event : events) {
+        EXPECT_EQ(event.getType(), APIEvent::Type::SettingsStructureMismatch);
+        EXPECT_EQ(event.getSeverity(), APIEvent::Severity::EventWarning);
+    }
+
+    // Check getting when 0 events exist doesn't break
+    events = EventManager::GetInstance().get(2, EventFilter(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning));
+    EXPECT_EQ(events.size(), 0);
+    EXPECT_EQ(EventCount(), 0);
+}
 
 // Tests that setting the event limit works in normal conditions, if the new limit is too small, and if the list needs truncating
 TEST_F(EventManagerTest, SetEventLimitTest) {
