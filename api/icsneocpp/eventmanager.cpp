@@ -16,7 +16,7 @@ void EventManager::ResetInstance() {
 }
 
 void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilter filter) {
-	std::unique_lock<std::shared_mutex> lk(mutex);
+	std::lock_guard<std::mutex> lk(mutex);
 
 	if(max == 0) // A limit of 0 indicates no limit
 		max = (size_t)-1;
@@ -41,7 +41,7 @@ void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilt
  * If no error was found, return a NoErrorFound Info event
  */
 APIEvent EventManager::getLastError() {
-	std::unique_lock<std::shared_mutex> lk(mutex);
+	std::lock_guard<std::mutex> lk(mutex);
 
 	auto it = lastUserErrors.find(std::this_thread::get_id());
 	if(it == lastUserErrors.end()) {
@@ -54,10 +54,15 @@ APIEvent EventManager::getLastError() {
 }
 
 void EventManager::discard(EventFilter filter) {
-	std::unique_lock<std::shared_mutex> lk(mutex);
-	events.remove_if([&filter](const APIEvent& event) {
-		return filter.match(event);
-	});
+	std::lock_guard<std::mutex> lk(mutex);
+
+	auto it = events.begin();
+	while(it != events.end()) {
+		if(filter.match(*it))
+			it = events.erase(it);
+		else
+			it++;
+	}
 }
 
 size_t EventManager::count_internal(EventFilter filter) const {
@@ -73,8 +78,15 @@ size_t EventManager::count_internal(EventFilter filter) const {
  * Returns true if any events were removed in the process of doing so.
  */
 bool EventManager::enforceLimit() {
-	// Remove all TooManyEvents before checking
-	events.remove_if([](icsneo::APIEvent err){ return err.getType() == APIEvent::Type::TooManyEvents; });
+	// Remove all TooManyEvents before checking. TODO: is this worth doing? not efficient. maybe start from the end and erase any from there
+	auto filter = EventFilter(APIEvent::Type::TooManyEvents);
+	auto it = events.begin();
+	while(it != events.end()) {
+		if(filter.match(*it))
+			it = events.erase(it);
+		else
+			it++;
+	}
 	
 	// We are not overflowing
 	if(events.size() < eventLimit)
