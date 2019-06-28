@@ -17,7 +17,7 @@ void EventManager::ResetInstance() {
 
 void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilter filter) {
 	std::lock_guard<std::mutex> lk(mutex);
-
+	
 	if(max == 0) // A limit of 0 indicates no limit
 		max = (size_t)-1;
 

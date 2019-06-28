@@ -7,12 +7,128 @@ using namespace icsneo;
 
 class EventManagerTest : public ::testing::Test {
 protected:
+    // Start with a clean instance of eventmanager for every test
     void SetUp() override {
         EventManager::ResetInstance();
     }
 };
 
-// Tests that adding and removing events properly updates EventCount(). Also tests that EventCount() does not go past the limit.
+/**
+ * Adds a total of 3000 events from 3 different threads, checking that all were correctly added after all threads are joined.
+ * Also adds errors from each of the 3 threads, checking that the last error is correct for that thread and that the main thread has no errors.
+ */
+TEST_F(EventManagerTest, MultithreadedTest) {
+
+    // Check that main thread has no errors
+    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+    // Adds 500 {OutputTruncated, Warning} and 500 {OutputTruncated, Info}
+    // Adds and checks errors as well.
+    std::thread t1( []() {
+        for(int i = 0; i < 500; i++) {
+            EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
+            EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventInfo));
+        }
+
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::BufferInsufficient, APIEvent::Severity::Error));
+
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::BufferInsufficient);
+
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+        
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
+    });
+
+    // Check that main thread has no errors
+    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+    // Adds 500 {CANFDNotSupported, Warning} and 500 {CANFDSettingsNotAvailable, Info}
+    // Adds and checks errors as well.
+    std::thread t2( []() {
+        for(int i = 0; i < 500; i++) {
+            EventManager::GetInstance().add(APIEvent(APIEvent::Type::CANFDNotSupported, APIEvent::Severity::EventWarning));
+            EventManager::GetInstance().add(APIEvent(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::EventInfo));
+        }
+
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error));
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error));
+
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::DeviceCurrentlyOffline);
+
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyOnline, APIEvent::Severity::Error));
+        
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::DeviceCurrentlyOnline);
+
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error));
+    });
+
+    // Check that main thread has no errors
+    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+    // Adds 500 {CANFDNotSupported, Warning} and 500 {FailedToWrite, Info}
+    // Adds and checks errors as well.
+    std::thread t3( []() {
+        for(int i = 0; i < 500; i++) {
+            EventManager::GetInstance().add(APIEvent(APIEvent::Type::CANFDNotSupported, APIEvent::Severity::EventWarning));
+            EventManager::GetInstance().add(APIEvent(APIEvent::Type::FailedToWrite, APIEvent::Severity::EventInfo));
+        }
+
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::NoSerialNumber, APIEvent::Severity::Error));
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::SettingsChecksumError, APIEvent::Severity::Error));
+
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::SettingsChecksumError);
+
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::Error));
+        
+        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::SWCANSettingsNotAvailable);
+    });
+
+    // Check that main thread has no errors
+    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+    // Wait for threads to finish
+    t1.join();
+    t2.join();
+    t3.join();
+
+    // Check that main thread has no errors
+    EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+    // Should be 500 {OutputTruncated, Warning}, 500 {OutputTruncated, Info}, 1000 {CANFDNotSupported, Warning}, 500 {CANFDSettingsNotAvailable, Info}, 500 {FailedToWrite, Info}
+    EXPECT_EQ(EventCount(), 3000);
+    
+    auto events = GetEvents(EventFilter(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
+    EXPECT_EQ(EventCount(), 2500);
+    EXPECT_EQ(events.size(), 500);
+
+    events = GetEvents(EventFilter(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventInfo));
+    EXPECT_EQ(EventCount(), 2000);
+    EXPECT_EQ(events.size(), 500);
+
+    events = GetEvents(EventFilter(APIEvent::Type::CANFDNotSupported, APIEvent::Severity::EventWarning));
+    EXPECT_EQ(EventCount(), 1000);
+    EXPECT_EQ(events.size(), 1000);
+
+    events = GetEvents(EventFilter(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::EventInfo));
+    EXPECT_EQ(EventCount(), 500);
+    EXPECT_EQ(events.size(), 500);
+
+    events = GetEvents(EventFilter(APIEvent::Type::FailedToWrite, APIEvent::Severity::EventInfo));
+    EXPECT_EQ(EventCount(), 0);
+    EXPECT_EQ(events.size(), 500);
+}
+
+/**
+ * Checks that errors do not go into the events list, and that TooManyEvents events are not added either.
+ * Checks that EventCount() updates accordingly, even when overflowing (trying to add 11000 events when the limit is 10000)
+ */
 TEST_F(EventManagerTest, CountTest) {
     // Add an error event, should not go into events list.
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
@@ -46,7 +162,9 @@ TEST_F(EventManagerTest, CountTest) {
     EXPECT_EQ(EventCount(), 10000);
 }
 
-// Test default get params
+/**
+ * Checks that the default get() clears out and returns all events.
+ */
 TEST_F(EventManagerTest, GetDefaultTest) {
     for(int i = 0; i < 5; i++) {
         EventManager::GetInstance().add(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning);
@@ -75,7 +193,9 @@ TEST_F(EventManagerTest, GetDefaultTest) {
     EXPECT_EQ(EventCount(), 0);
 }
 
-// Test get with a size limit
+/**
+ * Checks that get() with a size param only flushes and returns the desired amount, even when requesting too many.
+ */
 TEST_F(EventManagerTest, GetSizeTest) {
 
     // Add 10 events
@@ -128,8 +248,9 @@ TEST_F(EventManagerTest, GetSizeTest) {
     EXPECT_EQ(EventCount(), 0);
 }
 
-// Test get with a filter (type, severity)
-// Doesn't test with device!
+/**
+ * Checks that get() with a filter param only flushes and returns the events matching the filter.
+ */
 TEST_F(EventManagerTest, GetFilterTest) {
     // Add 20 events
     for(int i = 0; i < 5; i++) {
@@ -189,8 +310,9 @@ TEST_F(EventManagerTest, GetFilterTest) {
     EXPECT_EQ(EventCount(), 0);
 }
 
-// Test get with both size limit and filter
-// Doesn't test with devices
+/**
+ * Checks that get() with both a size and filter param only flushes and returns the desired amount of events matching the filter.
+ */
 TEST_F(EventManagerTest, GetSizeFilterTest) {
     // Add 20 events
     for(int i = 0; i < 5; i++) {
@@ -264,31 +386,9 @@ TEST_F(EventManagerTest, GetSizeFilterTest) {
     EXPECT_EQ(EventCount(), 0);
 }
 
-// Multithreaded test of GetLastError()
-TEST_F(EventManagerTest, GetLastErrorMultiThreaded) {
-    std::thread t1( []() {
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
-        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
-        auto err = GetLastError();
-        EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
-        EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
-    });
-
-    std::thread t2( []() {
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error));
-        EventManager::GetInstance().add(APIEvent(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error));
-        EXPECT_EQ(GetLastError().getType(), APIEvent::Type::SettingsNotAvailable);
-        auto err = GetLastError();
-        EXPECT_EQ(err.getType(), APIEvent::Type::NoErrorFound);
-        EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
-    });
-
-    t1.join();
-    t2.join();
-}
-
-// Tests that adding 1 error and calling GetLastError() twice will first return the error then return a NoErrorFound info message. Singlethreaded.
+/**
+ * Checks that adding 1 error and calling GetLastError() twice will first return the error then return a NoErrorFound info message. Singlethreaded.
+ */
 TEST_F(EventManagerTest, GetLastErrorSingleTest) {
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
     EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
@@ -297,7 +397,9 @@ TEST_F(EventManagerTest, GetLastErrorSingleTest) {
     EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
 }
 
-// Tests that adding multiple errors and calling GetLastError() twice will first return the last error then return a NoErrorFound info message. Singlethreaded.
+/**
+ * Checks that adding multiple errors and calling GetLastError() twice will first return the last error then return a NoErrorFound info message. Singlethreaded.
+ */
 TEST_F(EventManagerTest, GetLastErrorMultipleTest) {
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error));
@@ -308,7 +410,10 @@ TEST_F(EventManagerTest, GetLastErrorMultipleTest) {
     EXPECT_EQ(err.getSeverity(), APIEvent::Severity::EventInfo);
 }
 
-// Tests the case where too many warnings are added
+/**
+ * Adds 52 events when the limit is 50 (49 normal, 1 reserved)
+ * Checks that only the latest 49 are kept, and a TooManyEvents warning exists at the end.
+ */
 TEST_F(EventManagerTest, TestAddWarningsOverflow) {
     
     // space for 49 normal events, 1 reserved for TooManyEvents
@@ -339,7 +444,10 @@ TEST_F(EventManagerTest, TestAddWarningsOverflow) {
     EXPECT_EQ(events.at(49).getSeverity(), APIEvent::Severity::EventWarning);
 }
 
-// Tests the case where too many warnings and info are added
+/**
+ * Adds 1 warning, 3 info, and 47 warning events, in that order, when the limit is 50 (49 normal, 1 reserved)
+ * Checks that only the latest 49 are kept, and a TOoManyEvents warning exists at the end.
+ */
 TEST_F(EventManagerTest, TestAddWarningsInfoOverflow) {
     
     // space for 49 normal events, 1 reserved for TooManyEvents
@@ -370,7 +478,51 @@ TEST_F(EventManagerTest, TestAddWarningsInfoOverflow) {
     EXPECT_EQ(events.at(49).getType(), APIEvent::Type::TooManyEvents);
 }
 
-// Tests that setting the event limit works in normal conditions, if the new limit is too small, and if the list needs truncating
+/**
+ * Checks that discarding with no params flushes every event.
+ */
+TEST_F(EventManagerTest, DiscardDefault) {
+    for(int i = 0; i < 3000; i++) {
+        EventManager::GetInstance().add(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo);
+        EventManager::GetInstance().add(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventWarning);
+        EventManager::GetInstance().add(APIEvent::Type::BufferInsufficient, APIEvent::Severity::EventWarning);
+    }
+
+    EXPECT_EQ(EventCount(), 9000);
+
+    DiscardEvents();
+
+    EXPECT_EQ(EventCount(), 0);
+}
+
+/**
+ * Checks that discarding with a filter only flushes events matching the filter.
+ */
+TEST_F(EventManagerTest, DiscardFilter) {
+    for(int i = 0; i < 3000; i++) {
+        EventManager::GetInstance().add(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo);
+        EventManager::GetInstance().add(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventWarning);
+        EventManager::GetInstance().add(APIEvent::Type::BufferInsufficient, APIEvent::Severity::EventWarning);
+    }
+
+    EXPECT_EQ(EventCount(), 9000);
+
+    DiscardEvents(EventFilter(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo));
+
+    EXPECT_EQ(EventCount(), 6000);
+
+    DiscardEvents(EventFilter(APIEvent::Type::BufferInsufficient, APIEvent::Severity::EventInfo));
+
+    EXPECT_EQ(EventCount(), 6000);
+
+    DiscardEvents(EventFilter(APIEvent::Severity::EventWarning));
+
+    EXPECT_EQ(EventCount(), 0);
+}
+
+/**
+ * Checks setting the event limit when truncating is not required, when the new limit is < 10, and when the new limit < num events.
+ */
 TEST_F(EventManagerTest, SetEventLimitTest) {
     // Test if event limit too low to be set
     EventManager::GetInstance().setEventLimit(9);
@@ -393,6 +545,7 @@ TEST_F(EventManagerTest, SetEventLimitTest) {
     EXPECT_EQ(GetEventLimit(), 9001);
     EXPECT_EQ(EventCount(), 9001);
 
+    // Truncate a lot
     SetEventLimit(5000);
     EXPECT_EQ(GetEventLimit(), 5000);
     EXPECT_EQ(EventCount(), 5000);

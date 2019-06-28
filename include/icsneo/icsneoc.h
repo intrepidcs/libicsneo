@@ -9,7 +9,7 @@
 #include "icsneo/platform/dynamiclib.h" // Dynamic library loading and exporting
 #include "icsneo/communication/network.h" // Network type and netID defines
 #include "icsneo/api/version.h" // For version info
-#include "icsneo/api/event.h" // For error info
+#include "icsneo/api/event.h" // For event and error info
 
 #ifndef ICSNEOC_DYNAMICLOAD
 
@@ -569,7 +569,7 @@ extern neoversion_t DLLExport icsneo_getVersion(void);
  * holds the maximum number of events to be written, and after the call holds the number of events written.
  * \returns True if the events were read out successfully (even if there were no events to report).
  * 
- * Events contain INFO and WARNINGS, and may potentially contain one TooManyEvents ERROR at the end. No other ERRORS are found in Events, see icsneo_getLastError() instead.
+ * Events contain INFO and WARNINGS, and may potentially contain one TooManyEvents WARNING at the end. No ERRORS are found in Events, see icsneo_getLastError() instead.
  * 
  * Events can be caused by API usage, such as providing too small of a buffer or disconnecting from a device.
  * 
@@ -579,7 +579,7 @@ extern neoversion_t DLLExport icsneo_getVersion(void);
  * As they are read out, they are removed from the API managed buffer.
  * 
  * If size is too small to contain all events, as many events as will fit will be read out.
- * Subsequent calls to icsneo_getErrors() can retrieve any events which were not read out.
+ * Subsequent calls to icsneo_getEvents() can retrieve any events which were not read out.
  */
 extern bool DLLExport icsneo_getEvents(neoevent_t* events, size_t* size);
 
@@ -601,7 +601,7 @@ extern bool DLLExport icsneo_getDeviceEvents(const neodevice_t* device, neoevent
  * \returns True if an error was read out.
  * 
  * All errors are stored on a per-thread basis, meaning that calling icsneo_getLastError() will return the last error that occured on the calling thread.
- * Any errors can only be retrieved through this function, and NOT ics_neo_getEvents() or similar! Only INFO and WARNING level events are accessible through those, with the exception of the 
+ * Any errors can only be retrieved through this function, and NOT ics_neo_getEvents() or similar! Only INFO and WARNING level events are accessible through those.
  * Only the last error is stored, so call this function often!
  * Calling icsneo_getLastError() will remove the returned error, meaning that subsequent calls to icsneo_getLastError() on the same thread will return false (barring any additional errors)
  * 
@@ -612,30 +612,31 @@ extern bool DLLExport icsneo_getDeviceEvents(const neodevice_t* device, neoevent
 extern bool DLLExport icsneo_getLastError(neoevent_t* error);
 
 /**
- * \brief Discard all errors which have occurred in API operation.
+ * \brief Discard all events which have occurred in API operation. Does NOT discard any errors.
  */
 extern void DLLExport icsneo_discardAllEvents(void);
 
 /**
- * \brief Discard all errors which have occurred in API operation.
- * \param[in] device A pointer to the neodevice_t structure specifying the device to discard errors for. NULL can be passed, which indicates that **ONLY** errors *not* associated with a device are desired (API errors).
+ * \brief Discard all events which have occurred in API operation.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to discard events for. NULL can be passed, which indicates that **ONLY** events *not* associated with a device are desired (API events).
+ * Does NOT discard any errors (device or otherwise).
  */
 extern void DLLExport icsneo_discardDeviceEvents(const neodevice_t* device);
 
 /**
- * \brief Set the number of errors which will be held in the API managed buffer before icsneo::APIEvent::TooManyEvents
- * \param[in] newLimit The new limit. Must be >10. 1 error slot is always reserved for a potential icsneo::APIEvent::TooManyEvents, so (newLimit - 1) other errors can be stored.
+ * \brief Set the number of events which will be held in the API managed buffer before icsneo::APIEvent::TooManyEvents
+ * \param[in] newLimit The new limit. Must be >10. 1 event slot is always reserved for a potential icsneo::APIEvent::TooManyEvents, so (newLimit - 1) other events can be stored.
  * 
- * If the error limit is reached, an icsneo::APIEvent::TooManyEvents will be flagged.
+ * If the event limit is reached, an icsneo::APIEvent::TooManyEvents will be flagged.
  * 
- * If the `newLimit` is smaller than the current error count,
- * errors will be removed in order of decreasing age.
+ * If the `newLimit` is smaller than the current event count,
+ * events will be removed in order of decreasing age.
  * This will also flag an icsneo::APIEvent::TooManyEvents.
  */
 extern void DLLExport icsneo_setEventLimit(size_t newLimit);
 
 /**
- * \brief Get the number of errors which can be held in the API managed buffer
+ * \brief Get the number of events which can be held in the API managed buffer
  * \returns The current limit.
  */
 extern size_t DLLExport icsneo_getEventLimit(void);
