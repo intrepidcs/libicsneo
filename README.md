@@ -1,5 +1,5 @@
 # libicsneo
-### The Intrepid Control Systems Open Cross-Platform Device Communication API
+### The Intrepid Control Systems Open Source Cross-Platform Device Communication API
 
 An open source solution to integrate Intrepid Control Systems vehicle networking hardware with your application.
 
@@ -120,6 +120,7 @@ The dependencies are as follows
  - CMake 3.2 or above
  - GCC 4.7 or above, 4.8+ recommended
  - `libusb-1.0-0-dev`
+ - `libpcap0.8-dev`
  - `build-essential` is recommended
  
 If you'd like to be able to run programs that use this library without being root, consider using the included udev rules

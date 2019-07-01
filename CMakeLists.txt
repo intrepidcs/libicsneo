@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(libicsneo VERSION 0.1.1)
 
-option(BUILD_TESTS "Build all tests." OFF) # Makes 'BUILD_TEST' variable available
+option(BUILD_TESTS "Build all tests." OFF)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -205,7 +205,7 @@ if(NOT WIN32)
 	target_link_libraries(icsneocpp PUBLIC ${PCAP_LIBRARY})
 endif()
 
-# googletest, hopefully cross-platform and won't have to split into 2 places in CMakeLists
+# googletest
 if(BUILD_TESTS)
 	if(WIN32)
 		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
