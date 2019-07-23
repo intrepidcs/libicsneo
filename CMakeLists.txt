@@ -226,7 +226,7 @@ if(BUILD_TESTS)
 		
 	enable_testing()
 	
-	add_test(NAME plshelpme COMMAND runTests)
+	add_test(NAME testSuite COMMAND runTests)
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
