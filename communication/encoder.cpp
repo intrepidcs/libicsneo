@@ -106,14 +106,18 @@ bool Encoder::encode(std::vector<uint8_t>& result, Command cmd, std::vector<uint
 	if(cmd == Command::UpdateLEDState) {
 		/* NetID::Device is a super old command type.
 		 * It has a leading 0x00 byte, a byte for command, and a byte for an argument.
-	  	 * In this case, command 0x06 is SetLEDState.
+		 * In this case, command 0x06 is SetLEDState.
 		 * This old command type is not really used anywhere else.
 		 */
+		if (arguments.empty()) {
+			report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+			return false;
+		}
 		msg->network = Network::NetID::Device;
 		msg->data.reserve(3);
 		msg->data.push_back(0x00);
-		msg->data.push_back(0x06);
-		msg->data.push_back(arguments.at(0));
+		msg->data.push_back(0x06); // SetLEDState
+		msg->data.push_back(arguments.at(0)); // See Device::LEDState
 	} else {
 		msg->network = Network::NetID::Main51;
 		msg->data.reserve(arguments.size() + 1);
