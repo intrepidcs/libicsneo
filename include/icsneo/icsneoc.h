@@ -601,9 +601,10 @@ extern bool DLLExport icsneo_getDeviceEvents(const neodevice_t* device, neoevent
  * \returns True if an error was read out.
  * 
  * All errors are stored on a per-thread basis, meaning that calling icsneo_getLastError() will return the last error that occured on the calling thread.
- * Any errors can only be retrieved through this function, and NOT ics_neo_getEvents() or similar! Only INFO and WARNING level events are accessible through those.
- * Only the last error is stored, so call this function often!
- * Calling icsneo_getLastError() will remove the returned error, meaning that subsequent calls to icsneo_getLastError() on the same thread will return false (barring any additional errors)
+ * Any errors can only be retrieved through this function, and NOT icsneo_getEvents() or similar! Only INFO and WARNING level events are accessible through those.
+ * Only the last error is stored, so the intention is for this function to be called immediately following another failed API call.
+ * 
+ * The API error system is thread-safe. Only an API error which occurred on the current thread will be returned.
  * 
  * See icsneo_getEvents() for more information about the event system.
  * 
