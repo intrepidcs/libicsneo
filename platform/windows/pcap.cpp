@@ -252,6 +252,7 @@ bool PCAP::close() {
 void PCAP::readTask() {
 	struct pcap_pkthdr* header;
 	const uint8_t* data;
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
 		auto readBytes = pcap.next_ex(interface.fp, &header, &data);
 		if(readBytes < 0) {
@@ -275,12 +276,14 @@ void PCAP::readTask() {
 
 		readQueue.enqueue_bulk(packet.payload.data(), packet.payload.size());
 	}
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 void PCAP::writeTask() {
 	WriteOperation writeOp;
 	uint16_t sequence = 0;
 	EthernetPacket sendPacket;
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	
 	// Set MAC address of packet
 	memcpy(sendPacket.srcMAC, interface.macAddress, sizeof(sendPacket.srcMAC));
@@ -298,6 +301,7 @@ void PCAP::writeTask() {
 		onWrite();
 		// TODO Handle packet send errors
 	}
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 PCAP::EthernetPacket::EthernetPacket(const std::vector<uint8_t>& bytestream) {

@@ -345,6 +345,7 @@ void VCP::readTask() {
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	IOTaskState state = LAUNCH;
 	DWORD bytesRead = 0;
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
 		switch(state) {
 			case LAUNCH: {
@@ -384,12 +385,14 @@ void VCP::readTask() {
 			}
 		}
 	}
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 void VCP::writeTask() {
 	IOTaskState state = LAUNCH;
 	VCP::WriteOperation writeOp;
 	DWORD bytesWritten = 0;
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
 		switch(state) {
 			case LAUNCH: {
@@ -425,4 +428,5 @@ void VCP::writeTask() {
 			}
 		}
 	}
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }

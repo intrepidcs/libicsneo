@@ -143,6 +143,8 @@ std::shared_ptr<Message> Communication::waitForMessageSync(std::shared_ptr<Messa
 void Communication::readTask() {
 	std::vector<uint8_t> readBytes;
 
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+	
 	while(!closing) {
 		readBytes.clear();
 		if(impl->readWait(readBytes)) {
@@ -163,4 +165,6 @@ void Communication::readTask() {
 			}
 		}
 	}
+
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }

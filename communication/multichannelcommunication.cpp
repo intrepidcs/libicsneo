@@ -29,6 +29,8 @@ void MultiChannelCommunication::readTask() {
 	std::vector<uint8_t> readBytes;
 	std::vector<uint8_t> payloadBytes;
 
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+
 	while(!closing) {
 		if(readMore) {
 			readBytes.clear();
@@ -124,4 +126,5 @@ void MultiChannelCommunication::readTask() {
 		}
 		
 	}
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }

@@ -287,15 +287,18 @@ bool STM32::close() {
 void STM32::readTask() {
 	constexpr size_t READ_BUFFER_SIZE = 8;
 	uint8_t readbuf[READ_BUFFER_SIZE];
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
 		auto bytesRead = ::read(fd, readbuf, READ_BUFFER_SIZE);
 		if(bytesRead > 0)
 			readQueue.enqueue_bulk(readbuf, bytesRead);
 	}
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 void STM32::writeTask() {
 	WriteOperation writeOp;
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
@@ -306,4 +309,5 @@ void STM32::writeTask() {
 			report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 		onWrite();
 	}
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }

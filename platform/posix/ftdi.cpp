@@ -178,15 +178,18 @@ bool FTDI::FTDIContext::closeDevice() {
 void FTDI::readTask() {
 	constexpr size_t READ_BUFFER_SIZE = 8;
 	uint8_t readbuf[READ_BUFFER_SIZE];
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
 		auto readBytes = ftdi.read(readbuf, READ_BUFFER_SIZE);
 		if(readBytes > 0)
 			readQueue.enqueue_bulk(readbuf, readBytes);
 	}
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 void FTDI::writeTask() {
 	WriteOperation writeOp;
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
@@ -194,4 +197,5 @@ void FTDI::writeTask() {
 		ftdi.write(writeOp.bytes.data(), (int)writeOp.bytes.size());
 		onWrite();
 	}
+	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
