@@ -38,6 +38,8 @@ public:
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return impl->write(bytes); }
 	virtual bool sendPacket(std::vector<uint8_t>& bytes);
 
+	void setWriteBlocks(bool blocks) { impl->writeBlocks = blocks; }
+
 	virtual bool sendCommand(Command cmd, bool boolean) { return sendCommand(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
 	virtual bool sendCommand(Command cmd, std::vector<uint8_t> arguments = {});
 	bool getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));

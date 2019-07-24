@@ -533,6 +533,15 @@ extern bool DLLExport icsneo_transmit(const neodevice_t* device, const neomessag
 extern bool DLLExport icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* messages, size_t count);
 
 /**
+ * \brief Set the behavior of whether writing is a blocking action or not.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to transmit on.
+ * \param[in] blocks Whether or not writing is a blocking action.
+ * 
+ * By default, writing is a blocking action.
+ */
+extern void DLLExport icsneo_setWriteBlocks(const neodevice_t* device, bool blocks);
+
+/**
  * \brief Get the friendly description for a specified device.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \param[out] str A pointer to a buffer where the string will be written. NULL can be passed, which will write a character count to maxLength.
@@ -775,6 +784,9 @@ fn_icsneo_transmit icsneo_transmit;
 typedef bool(*fn_icsneo_transmitMessages)(const neodevice_t* device, const neomessage_t* messages, size_t count);
 fn_icsneo_transmitMessages icsneo_transmitMessages;
 
+typedef bool(*fn_icsneo_setWriteBlocks)(const neodevice_t* device, bool blocks);
+fn_icsneo_setWriteBlocks icsneo_setWriteBlocks;
+
 typedef bool(*fn_icsneo_describeDevice)(const neodevice_t* device, char* str, size_t* maxLength);
 fn_icsneo_describeDevice icsneo_describeDevice;
 
@@ -848,6 +860,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_setFDBaudrate);
 	ICSNEO_IMPORTASSERT(icsneo_transmit);
 	ICSNEO_IMPORTASSERT(icsneo_transmitMessages);
+	ICSNEO_IMPORTASSERT(icsneo_setWriteBlocks);
 	ICSNEO_IMPORTASSERT(icsneo_describeDevice);
 	ICSNEO_IMPORTASSERT(icsneo_getVersion);
 	ICSNEO_IMPORTASSERT(icsneo_getEvents);

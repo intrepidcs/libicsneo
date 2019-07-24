@@ -69,6 +69,8 @@ public:
 	bool transmit(std::shared_ptr<Message> message);
 	bool transmit(std::vector<std::shared_ptr<Message>> messages);
 
+	void setWriteBlocks(bool blocks);
+
 	const std::vector<Network>& getSupportedRXNetworks() const { return supportedRXNetworks; }
 	const std::vector<Network>& getSupportedTXNetworks() const { return supportedTXNetworks; }
 	virtual bool isSupportedRXNetwork(const Network& net) const {

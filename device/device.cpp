@@ -270,6 +270,10 @@ bool Device::transmit(std::vector<std::shared_ptr<Message>> messages) {
 	return true;
 }
 
+void Device::setWriteBlocks(bool blocks) {
+	com->setWriteBlocks(blocks);
+}
+
 size_t Device::getNetworkCountByType(Network::Type type) const {
 	size_t count = 0;
 	for(const auto& net : getSupportedRXNetworks())

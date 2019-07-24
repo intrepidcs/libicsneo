@@ -437,6 +437,13 @@ bool icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* mess
 	return true;
 }
 
+void icsneo_setWriteBlocks(const neodevice_t* device, bool blocks) {
+	if(!icsneo_isValidNeoDevice(device))
+		return;
+	
+	device->device->com->setWriteBlocks(blocks);
+}
+
 bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLength) {
 	// TAG String copy function
 	if(maxLength == nullptr) {
