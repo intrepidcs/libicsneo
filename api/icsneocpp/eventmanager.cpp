@@ -15,6 +15,14 @@ void EventManager::ResetInstance() {
 	singleton = std::unique_ptr<EventManager>(new EventManager());
 }
 
+void EventManager::downgradeErrorsOnCurrentThread() {
+	downgradedThreads.insert(std::this_thread::get_id());
+}
+
+void EventManager::cancelErrorDowngradingOnCurrentThread() {
+	downgradedThreads.erase(std::this_thread::get_id());
+}
+
 void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilter filter) {
 	std::lock_guard<std::mutex> lk(mutex);
 	

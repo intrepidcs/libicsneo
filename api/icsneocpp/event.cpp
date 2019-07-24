@@ -45,6 +45,10 @@ std::string APIEvent::describe() const noexcept {
 	return ss.str();
 }
 
+void APIEvent::downgradeFromError() noexcept {
+	eventStruct.severity = (uint8_t) APIEvent::Severity::EventWarning;
+}
+
 bool APIEvent::isForDevice(std::string filterSerial) const noexcept {
 	if(!device || filterSerial.length() == 0)
 		return false;

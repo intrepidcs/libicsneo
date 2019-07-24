@@ -13,6 +13,62 @@ protected:
     }
 };
 
+TEST_F(EventManagerTest, ErrorDowngradingTest) {
+	// Check that main thread has no errors
+	EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+	// Adds 500 {OutputTruncated, Warning} and 500 {OutputTruncated, Info}
+	// Adds and checks errors as well.
+	std::thread t1([]() {
+		for(int i = 0; i < 500; i++) {
+			EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
+			EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventInfo));
+		}
+
+		EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+		EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+
+		EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
+
+		EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+		EventManager::GetInstance().add(APIEvent(APIEvent::Type::BufferInsufficient, APIEvent::Severity::Error));
+		
+		EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+		auto events = GetEvents(EventFilter(APIEvent::Type::BufferInsufficient, APIEvent::Severity::EventWarning));
+		EXPECT_EQ(events.empty(), false);
+
+		EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
+
+		EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+
+		EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
+	});
+
+	// Adds 500 {OutputTruncated, Warning} and 500 {OutputTruncated, Info}
+	// Adds and checks errors as well.
+	std::thread t2([]() {
+		for(int i = 0; i < 500; i++) {
+			EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
+			EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventInfo));
+		}
+
+		EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
+
+		EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+		EventManager::GetInstance().add(APIEvent(APIEvent::Type::BufferInsufficient, APIEvent::Severity::Error));
+
+		EXPECT_EQ(GetLastError().getType(), APIEvent::Type::BufferInsufficient);
+
+		EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
+
+		EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
+	});
+
+	t1.join();
+	t2.join();
+}
+
 /**
  * Adds a total of 3000 events from 3 different threads, checking that all were correctly added after all threads are joined.
  * Also adds errors from each of the 3 threads, checking that the last error is correct for that thread and that the main thread has no errors.

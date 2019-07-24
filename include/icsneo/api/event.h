@@ -102,6 +102,8 @@ public:
 	std::string getDescription() const noexcept { return std::string(eventStruct.description); }
 	const Device* getDevice() const noexcept { return device; } // Will return nullptr if this is an API-wide event
 	EventTimePoint getTimestamp() const noexcept { return timepoint; }
+	
+	void downgradeFromError() noexcept;
 
 	bool isForDevice(const Device* forDevice) const noexcept { return forDevice == device; }
 	bool isForDevice(std::string serial) const noexcept;

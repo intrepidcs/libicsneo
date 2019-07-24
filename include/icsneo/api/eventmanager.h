@@ -2,11 +2,13 @@
 #define __ICSNEO_API_EVENTMANAGER_H_
 
 #include <vector>
+#include <set>
 #include <list>
 #include <mutex>
 #include <functional>
 #include<map>
 #include <thread>
+#include <algorithm>
 #include "icsneo/api/event.h"
 
 namespace icsneo {
@@ -18,6 +20,10 @@ public:
 	static EventManager& GetInstance();
 
 	static void ResetInstance();
+
+	void downgradeErrorsOnCurrentThread();
+	
+	void cancelErrorDowngradingOnCurrentThread();
 
 	size_t eventCount(EventFilter filter = EventFilter()) const {
 		std::lock_guard<std::mutex> lk(mutex);
@@ -67,13 +73,15 @@ public:
 	}
 
 private:
-	EventManager() : mutex(), events(), lastUserErrors(), eventLimit(10000) {}
+	EventManager() : mutex(), downgradedThreads(), events(), lastUserErrors(), eventLimit(10000) {}
 	EventManager(const EventManager &other);
 	EventManager& operator=(const EventManager &other);
 
 	// Used by functions for threadsafety
 	mutable std::mutex mutex;
 
+	std::set<std::thread::id> downgradedThreads;
+	
 	// Stores all events
 	std::list<APIEvent> events;
 	std::map<std::thread::id, APIEvent> lastUserErrors;
@@ -82,9 +90,14 @@ private:
 	size_t count_internal(EventFilter filter = EventFilter()) const;
 
 	void add_internal(APIEvent event) {
-		if(event.getSeverity() == APIEvent::Severity::Error)
-			add_internal_error(event);
-		else
+		if(event.getSeverity() == APIEvent::Severity::Error) {
+			// if the error was added on a thread that downgrades errors (non-user thread)
+			if(std::find(downgradedThreads.begin(), downgradedThreads.end(), std::this_thread::get_id()) != downgradedThreads.end()) {
+				event.downgradeFromError();
+				add_internal_event(event);
+			} else
+				add_internal_error(event);
+		} else
 			add_internal_event(event);
 	}
 
