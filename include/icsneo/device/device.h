@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <utility>
 #include <cstring>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/device/neodevice.h"
@@ -53,7 +54,7 @@ public:
 	bool enableMessagePolling();
 	bool disableMessagePolling();
 	bool isMessagePollingEnabled() { return messagePollingCallbackID != 0; };
-	std::vector<std::shared_ptr<Message>> getMessages();
+	std::pair<std::vector<std::shared_ptr<Message>>, bool> getMessages();
 	bool getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit = 0, std::chrono::milliseconds timeout = std::chrono::milliseconds(0));
 	size_t getCurrentMessageCount() { return pollingContainer.size_approx(); }
 	size_t getPollingMessageLimit() { return pollingMessageLimit; }

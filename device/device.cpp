@@ -100,18 +100,11 @@ bool Device::disableMessagePolling() {
 	return ret;
 }
 
-/**
- * Gets all messages from the device with no limit or timeout.
- * If it fails, a vector containing a single nullptr is returned.
- * Otherwise, returns a vector of shared ptrs to each message.
- */
-std::vector<std::shared_ptr<Message>> Device::getMessages() {
+// Returns a pair of {vector, bool}, where the vector contains shared_ptrs to the returned msgs and the bool is whether or not the call was successful.
+std::pair<std::vector<std::shared_ptr<Message>>, bool> Device::getMessages() {
 	std::vector<std::shared_ptr<Message>> ret;
-	// if it fails, ret will always be empty
-	if(!getMessages(ret)) {
-		ret.push_back(nullptr);
-	}
-	return ret;
+	bool retBool = getMessages(ret);
+	return std::make_pair(ret, retBool);
 }
 
 bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit, std::chrono::milliseconds timeout) {
