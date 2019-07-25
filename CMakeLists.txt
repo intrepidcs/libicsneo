@@ -29,7 +29,7 @@ endif()
 # doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
-	set(DOXYGEN_OUT ${CMAKE_CURRENT_SOURCE_DIR}/generated/Doxyfile)
+	set(DOXYGEN_OUT ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile)
 	set(ICSNEO_DOCS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/docs)
 	if(NOT EXISTS "${DOXYGEN_OUT}")
 		set(DOXYGEN_FOUND FALSE)
