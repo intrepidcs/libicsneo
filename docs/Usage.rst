@@ -43,11 +43,28 @@ Device Concepts
 Open/Close Status
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+In order to access device functionality, the device must first be opened. The exception to this is setting the message polling status of the device.
+Trying to open/close the device when the device is already open/closed will result in an error being logged on the calling thread.
+
 Online/Offline Status
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+The online/offline status of the device determines whether or not communication (such as sending messages) is available with the device. 
+In order to be online, the device must also be open. Trying to go online/offline when the device is already online/offline will result in an error being logged on the calling thread.
+
+It is possible to have a device be both open and offline. In this situation, device settings such as the baudrate may still be read and changed.
+This is useful for setting up your device properly before going online and beginning communication.
 
 Message Polling Status
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+The message polling status of the device controls whether or not the device stores a buffer of messages. The default limit of this buffer is 20,000 messages.
+If the limit is exceeded, the oldest messages will be dropped until the buffer is at capacity, and an error will be logged on the calling thread.
+To avoid exceeding the limit, try to get messages periodically, which will flush the buffer upon each call.
+Attempting to read messages without first enabling message polling or registering a traffic handler will result in an error being logged on the calling thread.
+
 Write Blocking Status
 ~~~~~~~~~~~~~~~~~~~~~~~
+The write blocking status of the device determines the behavior of attempting to transmit to the device (likely via sending messages) with a large backlog of messages.
+If write blocking is enabled, then the transmitting thread will wait for the entire buffer to be transmitted.
+If write blocking is disabled, then the attempt to transmit will simply fail and an error will be logged on the calling thread.
