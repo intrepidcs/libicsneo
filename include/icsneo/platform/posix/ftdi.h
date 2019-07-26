@@ -41,6 +41,7 @@ private:
 		int read(uint8_t* data, size_t size) { return ftdi_read_data(context, data, (int)size); }
 		int write(const uint8_t* data, size_t size) { return ftdi_write_data(context, data, (int)size); }
 		int setBaudrate(int baudrate) { return ftdi_set_baudrate(context, baudrate); }
+		int setLatencyTimer(uint8_t latency) { return ftdi_set_latency_timer(context, latency); }
 		bool setReadTimeout(int timeout) { if(context == nullptr) return false; context->usb_read_timeout = timeout; return true; }
 		bool setWriteTimeout(int timeout) { if(context == nullptr) return false; context->usb_write_timeout = timeout; return true; }
 	private:

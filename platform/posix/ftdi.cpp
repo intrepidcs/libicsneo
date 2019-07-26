@@ -65,6 +65,7 @@ bool FTDI::open() {
 	ftdi.setWriteTimeout(1000);
 	ftdi.reset();
 	ftdi.setBaudrate(500000);
+	ftdi.setLatencyTimer(1);
 	ftdi.flush();
 
 	// Create threads
