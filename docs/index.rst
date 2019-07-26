@@ -6,7 +6,5 @@ Welcome to libicsneo's documentation!
    :caption: Documentation
 
    Usage
-   icsneojava
-   icsneocsharp
    icsneocpp
    icsneoc
