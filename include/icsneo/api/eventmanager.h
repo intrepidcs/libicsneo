@@ -116,10 +116,11 @@ private:
 
 	/**
 	 * If events is not full, add the event at the end
-	 * Otherwise, remove the least significant events, push the event to the back and push a APIEvent::TooManyEvents to the back (in that order)
+	 * Otherwise, remove the oldest event, push the event to the back and push a APIEvent::TooManyEvents to the back (in that order)
 	 */
 	void add_internal_event(APIEvent event) {
 		// Ensure the event list is at most exactly full (size of eventLimit - 1, leaving room for a potential APIEvent::TooManyEvents) 
+		// Removes any events of type TooManyEvents from the end before checking to avoid duplicates.
 		enforceLimit();
 
 		// We are exactly full, either because the list was truncated or because we were simply full before
