@@ -265,7 +265,7 @@ extern bool DLLExport icsneo_getMessages(const neodevice_t* device, neomessage_t
 /**
  * \brief Get the maximum number of messages which will be held in the API managed buffer for the specified hardware.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
- * \returns Number of messages.
+ * \returns Number of messages, or -1 if device is invalid.
  * 
  * See icsneo_enableMessagePolling() for more information about the message polling system.
  */
@@ -283,6 +283,10 @@ extern size_t DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device)
  * to be dropped (**LOST**) and an icsneo::APIEvent::PollingMessageOverflow to be flagged for the device.
  */
 extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit);
+
+extern int DLLExport icsneo_addMessageCallback(const neodevice_t* device, void (*callback) (neomessage_t*));
+
+extern bool DLLExport icsneo_removeMessageCallback(const neodevice_t* device, int id);
 
 /**
  * \brief Get the friendly product name for a specified device.
@@ -390,7 +394,7 @@ extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* d
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \param[out] structure A pointer to a device settings structure for the current device.
  * \param[in] structureSize The size of the current device settings structure in bytes.
- * \returns Number of bytes written to structure
+ * \returns Number of bytes written to structure, or -1 if the operation failed.
  * 
  * See icsneo_settingsApply() for further information about applying settings. See icsneo_settingsApplyDefaults() for further information about applying default settings.
  * 
@@ -399,7 +403,7 @@ extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* d
  * If possible, use functions specific to the operation you want to acomplish (such as icsneo_setBaudrate()) instead of modifying the structure directly.
  * This allows the client application to work with other hardware.
  */
-extern size_t DLLExport icsneo_settingsReadStructure(const neodevice_t* device, void* structure, size_t structureSize);
+extern int DLLExport icsneo_settingsReadStructure(const neodevice_t* device, void* structure, size_t structureSize);
 
 /**
  * \brief Apply a provided settings structure for a specified device.
@@ -739,6 +743,12 @@ fn_icsneo_getPollingMessageLimit icsneo_getPollingMessageLimit;
 typedef bool(*fn_icsneo_setPollingMessageLimit)(const neodevice_t* device, size_t newLimit);
 fn_icsneo_setPollingMessageLimit icsneo_setPollingMessageLimit;
 
+typedef int(*fn_icsneo_addMessageCallback)(const neodevice_t* device, void (*callback) (neomessage_t*);
+fn_icsneo_addMessageCallback icsneo_addMessageCallback;
+
+typedef bool(*fn_icsneo_removeMessageCallback)(const neodevice_t* device, int id);
+fn_icsneo_removeMessageCallback icsneo_removeMessageCallback;
+
 typedef bool(*fn_icsneo_getProductName)(const neodevice_t* device, char* str, size_t* maxLength);
 fn_icsneo_getProductName icsneo_getProductName;
 
@@ -757,7 +767,7 @@ fn_icsneo_settingsApplyDefaults icsneo_settingsApplyDefaults;
 typedef bool(*fn_icsneo_settingsApplyDefaultsTemporary)(const neodevice_t* device);
 fn_icsneo_settingsApplyDefaultsTemporary icsneo_settingsApplyDefaultsTemporary;
 
-typedef size_t(*fn_icsneo_settingsReadStructure)(const neodevice_t* device, void* structure, size_t structureSize);
+typedef int(*fn_icsneo_settingsReadStructure)(const neodevice_t* device, void* structure, size_t structureSize);
 fn_icsneo_settingsReadStructure icsneo_settingsReadStructure;
 
 typedef bool(*fn_icsneo_settingsApplyStructure)(const neodevice_t* device, const void* structure, size_t structureSize);
@@ -845,6 +855,8 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_getMessages);
 	ICSNEO_IMPORTASSERT(icsneo_getPollingMessageLimit);
 	ICSNEO_IMPORTASSERT(icsneo_setPollingMessageLimit);
+	ICSNEO_IMPORTASSERT(icsneo_addMessageCallback);
+	ICSNEO_IMPORTASSERT(icsneo_removeMessageCallback);
 	ICSNEO_IMPORTASSERT(icsneo_getProductName);
 	ICSNEO_IMPORTASSERT(icsneo_settingsRefresh);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApply);

@@ -229,7 +229,7 @@ bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_
 
 size_t icsneo_getPollingMessageLimit(const neodevice_t* device) {
 	if(!icsneo_isValidNeoDevice(device))
-		return 0;
+		return -1;
 
 	return device->device->getPollingMessageLimit();
 }
@@ -240,6 +240,16 @@ bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
 
 	device->device->setPollingMessageLimit(newLimit);
 	return true;
+}
+
+int icsneo_addMessageCallback(const neodevice_t* device, void (*callback) (neomessage_t*)) {
+	if(!icsneo_isValidNeoDevice(device))
+		return -1;
+}
+
+bool icsneo_removeMessageCallback(const neodevice_t* device, int id) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
 }
 
 bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength) {
@@ -326,9 +336,9 @@ bool icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device) {
 	return device->device->settings->applyDefaults(true);
 }
 
-size_t icsneo_settingsReadStructure(const neodevice_t* device, void* structure, size_t structureSize) {
+int icsneo_settingsReadStructure(const neodevice_t* device, void* structure, size_t structureSize) {
 	if(!icsneo_isValidNeoDevice(device))
-		return 0;
+		return -1;
 
 	size_t readSize = device->device->settings->getSize();
 	if(structure == nullptr) // Structure size request
@@ -343,7 +353,7 @@ size_t icsneo_settingsReadStructure(const neodevice_t* device, void* structure, 
 	const void* deviceStructure = device->device->settings->getRawStructurePointer();
 	if(deviceStructure == nullptr) {
 		EventManager::GetInstance().add(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
-		return 0;
+		return -1;
 	}
 
 	memcpy(structure, deviceStructure, readSize);
