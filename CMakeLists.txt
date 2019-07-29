@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 project(libicsneo VERSION 0.2.0)
 
 option(BUILD_TESTS "Build all tests." OFF)
+option(BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -36,48 +37,51 @@ if(DOXYGEN_FOUND)
 	endif()
 endif()
 
-if(DOXYGEN_FOUND)
-	message("Will build Doxygen based documentation")
+if(BUILD_DOCS)
+	if(DOXYGEN_FOUND)
+		message("Will build Doxygen based documentation")
 
-	add_custom_target(libicsneo_doxygen ALL
-		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMENT "Generating API documentation with Doxygen"
-		VERBATIM
-		DEPENDS icsneocpp icsneoc icsneolegacy)
-
-	# sphinx
-	find_package(Sphinx)
-	if(SPHINX_EXECUTABLE)
-		message("Will build Sphinx based documentation")
-
-		set(SPHINX_OUT ${ICSNEO_DOCS_DIR}/build/sphinx)
-
-		# configured documentation tools and intermediate build results
-		set(SPHINX_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/_build)
-
-		# Sphinx cache with pickled ReST documents
-		set(SPHINX_CACHE_DIR ${CMAKE_CURRENT_BINARY_DIR}/_doctrees)
-
-		# HTML output directory
-		set(SPHINX_HTML_DIR ${CMAKE_CURRENT_BINARY_DIR}/doc_sphinx)
-
-		configure_file(
-			"${ICSNEO_DOCS_DIR}/conf.py.template"
-			"${ICSNEO_DOCS_DIR}/conf.py"
-			@ONLY)
-
-		add_custom_target(libicsneo_sphinx ALL
-			${SPHINX_EXECUTABLE}
-				-q -b html
-				-c "${ICSNEO_DOCS_DIR}"
-				-d "${SPHINX_CACHE_DIR}"
-				"${ICSNEO_DOCS_DIR}"
-				"${SPHINX_HTML_DIR}"
-			COMMENT "Building HTML documentation with Sphinx"
+		add_custom_target(libicsneo_doxygen ALL
+			COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			COMMENT "Generating API documentation with Doxygen"
+			VERBATIM
 			DEPENDS icsneocpp icsneoc icsneolegacy)
+
+		# sphinx
+		find_package(Sphinx)
+		if(SPHINX_EXECUTABLE)
+			message("Will build Sphinx based documentation")
+
+			set(SPHINX_OUT ${ICSNEO_DOCS_DIR}/build/sphinx)
+
+			# configured documentation tools and intermediate build results
+			set(SPHINX_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/_build)
+
+			# Sphinx cache with pickled ReST documents
+			set(SPHINX_CACHE_DIR ${CMAKE_CURRENT_BINARY_DIR}/_doctrees)
+
+			# HTML output directory
+			set(SPHINX_HTML_DIR ${CMAKE_CURRENT_BINARY_DIR}/doc_sphinx)
+
+			configure_file(
+				"${ICSNEO_DOCS_DIR}/conf.py.template"
+				"${ICSNEO_DOCS_DIR}/conf.py"
+				@ONLY)
+
+			add_custom_target(libicsneo_sphinx
+				${SPHINX_EXECUTABLE}
+					-q -b html
+					-c "${ICSNEO_DOCS_DIR}"
+					-d "${SPHINX_CACHE_DIR}"
+					"${ICSNEO_DOCS_DIR}"
+					"${SPHINX_HTML_DIR}"
+				COMMENT "Building HTML documentation with Sphinx"
+				DEPENDS icsneocpp icsneoc icsneolegacy)
+		endif()
 	endif()
 endif()
+
 
 if(WIN32)
 	file(GLOB PLATFORM_SRC_EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/*.cpp)
