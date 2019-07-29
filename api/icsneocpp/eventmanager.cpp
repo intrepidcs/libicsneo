@@ -15,12 +15,23 @@ void EventManager::ResetInstance() {
 	singleton = std::unique_ptr<EventManager>(new EventManager());
 }
 
+// If this thread is not in the map, add it to be ignored
+// If it is, set it to be ignored
 void EventManager::downgradeErrorsOnCurrentThread() {
-	downgradedThreads.insert(std::this_thread::get_id());
+	auto i = downgradedThreads.find(std::this_thread::get_id());
+	if(i != downgradedThreads.end()) {
+		i->second = true;
+	} else {
+		downgradedThreads.insert({std::this_thread::get_id(), true});
+	}
 }
 
+// If this thread exists in the map, turn off downgrading
 void EventManager::cancelErrorDowngradingOnCurrentThread() {
-	downgradedThreads.erase(std::this_thread::get_id());
+	auto i = downgradedThreads.find(std::this_thread::get_id());
+	if(i != downgradedThreads.end()) {
+		i->second = false;
+	}
 }
 
 void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilter filter) {

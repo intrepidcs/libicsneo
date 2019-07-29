@@ -2,7 +2,6 @@
 #define __ICSNEO_API_EVENTMANAGER_H_
 
 #include <vector>
-#include <set>
 #include <list>
 #include <mutex>
 #include <functional>
@@ -80,7 +79,7 @@ private:
 	// Used by functions for threadsafety
 	mutable std::mutex mutex;
 
-	std::set<std::thread::id> downgradedThreads;
+	std::map<std::thread::id, bool> downgradedThreads;
 	
 	// Stores all events
 	std::list<APIEvent> events;
@@ -92,7 +91,8 @@ private:
 	void add_internal(APIEvent event) {
 		if(event.getSeverity() == APIEvent::Severity::Error) {
 			// if the error was added on a thread that downgrades errors (non-user thread)
-			if(std::find(downgradedThreads.begin(), downgradedThreads.end(), std::this_thread::get_id()) != downgradedThreads.end()) {
+			auto i = downgradedThreads.find(std::this_thread::get_id());
+			if(i != downgradedThreads.end() && i->second) {
 				event.downgradeFromError();
 				add_internal_event(event);
 			} else
