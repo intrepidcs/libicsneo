@@ -66,6 +66,7 @@ Message Callbacks and Polling
 In order to handle messages, users may register message callbacks, which are automatically called whenever a matching message is received.
 Message callbacks consist of a user-defined ``std::function< void( std::shared_ptr<Message> ) >`` and optional message filter used for matching.
 Registering a callback returns an ``int`` representing the id of the callback, which should be stored by the user and later used to remove the callback when desired.
+Note that this functionality is only available in C and C++.
 
 The default method of handling messages is to enable message polling, which is built upon message callbacks.
 Enabling message polling will register a callback that stores each received message in a buffer for later retrieval.

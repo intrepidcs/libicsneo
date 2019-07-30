@@ -243,7 +243,8 @@ bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
 	return true;
 }
 
-int icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t)) {
+int icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t), void* filter) {
+	(void)filter; // unused for now
 	if(!icsneo_isValidNeoDevice(device))
 		return -1;
 

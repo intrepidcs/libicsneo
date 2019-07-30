@@ -284,8 +284,21 @@ extern size_t DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device)
  */
 extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit);
 
-extern int DLLExport icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t));
+/**
+ * \brief Adds a message callback to the specified device.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] callback A function pointer with void return type and a single neomessage_t parameter
+ * \param[in] filter Unused for now. Exists as a placeholder here for future backwards-compatibility.
+ * \returns the id of the callback added, or -1 if the operation failed.
+ */
+extern int DLLExport icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t), void* filter);
 
+/**
+ * \brief Removes a message callback from the specified device.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] id The id of the callback to remove
+ * \returns True if the callback was successfully removed.
+ */
 extern bool DLLExport icsneo_removeMessageCallback(const neodevice_t* device, int id);
 
 /**
@@ -743,7 +756,7 @@ fn_icsneo_getPollingMessageLimit icsneo_getPollingMessageLimit;
 typedef bool(*fn_icsneo_setPollingMessageLimit)(const neodevice_t* device, size_t newLimit);
 fn_icsneo_setPollingMessageLimit icsneo_setPollingMessageLimit;
 
-typedef int(*fn_icsneo_addMessageCallback)(const neodevice_t* device, void (*callback)(neomessage_t));
+typedef int(*fn_icsneo_addMessageCallback)(const neodevice_t* device, void (*callback)(neomessage_t), void* filter);
 fn_icsneo_addMessageCallback icsneo_addMessageCallback;
 
 typedef bool(*fn_icsneo_removeMessageCallback)(const neodevice_t* device, int id);
