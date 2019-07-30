@@ -292,9 +292,7 @@ int icsneoGetFireSettings(void* hObject, SFireSettings* pSettings, int iNumBytes
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
-	if(icsneo_settingsReadStructure(device, pSettings, iNumBytes) == -1)
-		return 0;
-	else return 1;
+	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
 int icsneoSetFireSettings(void* hObject, SFireSettings* pSettings, int iNumBytes, int bSaveToEEPROM) {
@@ -310,9 +308,7 @@ int icsneoGetVCAN3Settings(void* hObject, SVCAN3Settings* pSettings, int iNumByt
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
-	if(icsneo_settingsReadStructure(device, pSettings, iNumBytes) == -1)
-		return 0;
-	else return 1;
+	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
 int icsneoSetVCAN3Settings(void* hObject, SVCAN3Settings* pSettings, int iNumBytes, int bSaveToEEPROM) {
@@ -328,9 +324,7 @@ int icsneoGetFire2Settings(void* hObject, SFire2Settings* pSettings, int iNumByt
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
-	if(icsneo_settingsReadStructure(device, pSettings, iNumBytes) == -1)
-		return 0;
-	else return 1;
+	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
 int icsneoSetFire2Settings(void* hObject, SFire2Settings* pSettings, int iNumBytes, int bSaveToEEPROM) {
@@ -346,9 +340,7 @@ int icsneoGetVCANRFSettings(void* hObject, SVCANRFSettings* pSettings, int iNumB
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
-	if(icsneo_settingsReadStructure(device, pSettings, iNumBytes) == -1)
-		return 0;
-	else return 1;
+	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
 int icsneoSetVCANRFSettings(void* hObject, SVCANRFSettings* pSettings, int iNumBytes, int bSaveToEEPROM) {
@@ -364,9 +356,7 @@ int icsneoGetVCAN412Settings(void* hObject, SVCAN412Settings* pSettings, int iNu
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
-	if(icsneo_settingsReadStructure(device, pSettings, iNumBytes) == -1)
-		return 0;
-	else return 1;
+	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
 int icsneoSetVCAN412Settings(void* hObject, SVCAN412Settings* pSettings, int iNumBytes, int bSaveToEEPROM) {
@@ -382,9 +372,7 @@ int icsneoGetRADGalaxySettings(void* hObject, SRADGalaxySettings* pSettings, int
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
-	if(icsneo_settingsReadStructure(device, pSettings, iNumBytes) == -1)
-		return 0;
-	else return 1;
+	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
 int icsneoSetRADGalaxySettings(void* hObject, SRADGalaxySettings* pSettings, int iNumBytes, int bSaveToEEPROM) {
@@ -400,9 +388,7 @@ int icsneoGetRADStar2Settings(void* hObject, SRADStar2Settings* pSettings, int i
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
-	if(icsneo_settingsReadStructure(device, pSettings, iNumBytes) == -1)
-		return 0;
-	else return 1;
+	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
 int icsneoSetRADStar2Settings(void* hObject, SRADStar2Settings* pSettings, int iNumBytes, int bSaveToEEPROM) {
