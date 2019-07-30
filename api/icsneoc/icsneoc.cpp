@@ -10,6 +10,7 @@
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/device/devicefinder.h"
 #include <string>
+#include <functional>
 #include <vector>
 #include <memory>
 #include <algorithm>
@@ -242,14 +243,23 @@ bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
 	return true;
 }
 
-int icsneo_addMessageCallback(const neodevice_t* device, void (*callback) (neomessage_t*)) {
+int icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t)) {
 	if(!icsneo_isValidNeoDevice(device))
 		return -1;
+
+	return device->device->addMessageCallback(
+		MessageCallback(
+			[=](std::shared_ptr<icsneo::Message> msg) {
+				return callback(CreateNeoMessage(msg));
+			}
+		)
+	);
 }
 
 bool icsneo_removeMessageCallback(const neodevice_t* device, int id) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
+	return device->device->removeMessageCallback(id);
 }
 
 bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength) {
@@ -451,7 +461,7 @@ void icsneo_setWriteBlocks(const neodevice_t* device, bool blocks) {
 	if(!icsneo_isValidNeoDevice(device))
 		return;
 	
-	device->device->com->setWriteBlocks(blocks);
+	device->device->setWriteBlocks(blocks);
 }
 
 bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLength) {

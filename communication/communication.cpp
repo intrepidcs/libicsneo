@@ -156,11 +156,14 @@ void Communication::readTask() {
 
 					std::lock_guard<std::mutex> lk(messageCallbacksLock);
 
+					// We want callbacks to be able to access errors
+					EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 					for(auto& cb : messageCallbacks) {
 						if(!closing) { // We might have closed while reading or processing
 							cb.second.callIfMatch(msg);
 						}
 					}
+					EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 				}
 			}
 		}

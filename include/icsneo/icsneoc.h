@@ -284,7 +284,7 @@ extern size_t DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device)
  */
 extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit);
 
-extern int DLLExport icsneo_addMessageCallback(const neodevice_t* device, void (*callback) (neomessage_t*));
+extern int DLLExport icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t));
 
 extern bool DLLExport icsneo_removeMessageCallback(const neodevice_t* device, int id);
 
@@ -743,7 +743,7 @@ fn_icsneo_getPollingMessageLimit icsneo_getPollingMessageLimit;
 typedef bool(*fn_icsneo_setPollingMessageLimit)(const neodevice_t* device, size_t newLimit);
 fn_icsneo_setPollingMessageLimit icsneo_setPollingMessageLimit;
 
-typedef int(*fn_icsneo_addMessageCallback)(const neodevice_t* device, void (*callback) (neomessage_t*);
+typedef int(*fn_icsneo_addMessageCallback)(const neodevice_t* device, void (*callback)(neomessage_t));
 fn_icsneo_addMessageCallback icsneo_addMessageCallback;
 
 typedef bool(*fn_icsneo_removeMessageCallback)(const neodevice_t* device, int id);
