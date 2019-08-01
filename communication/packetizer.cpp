@@ -82,7 +82,7 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 				 */
 				if(packetLength < 4 || packetLength > 4000) {
 					bytes.pop_front();
-					//std::cout << "skipping long packet with length " << packetLength << std::endl;
+					EventManager::GetInstance().add(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 					state = ReadState::SearchForHeader;
 				} else {
 					state = ReadState::GetData;
