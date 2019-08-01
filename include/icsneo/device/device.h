@@ -23,7 +23,8 @@ class Device {
 public:
 	virtual ~Device() {
 		destructing = true;
-		disableMessagePolling();
+		if(isMessagePollingEnabled())
+			disableMessagePolling();
 		close();
 	}
 
