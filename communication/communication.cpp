@@ -168,6 +168,4 @@ void Communication::readTask() {
 			}
 		}
 	}
-
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }

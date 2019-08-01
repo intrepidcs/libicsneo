@@ -385,7 +385,6 @@ void VCP::readTask() {
 			}
 		}
 	}
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 void VCP::writeTask() {
@@ -428,5 +427,4 @@ void VCP::writeTask() {
 			}
 		}
 	}
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }

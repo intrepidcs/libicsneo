@@ -309,5 +309,4 @@ void STM32::writeTask() {
 			report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 		onWrite();
 	}
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }

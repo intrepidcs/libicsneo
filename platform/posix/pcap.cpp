@@ -257,7 +257,6 @@ void PCAP::readTask() {
 
 		readQueue.enqueue_bulk(packet.payload.data(), packet.payload.size());
 	}
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 void PCAP::writeTask() {
@@ -281,7 +280,6 @@ void PCAP::writeTask() {
 			pcap_sendpacket(interface.fp, bs.data(), (int)bs.size());
 		// TODO Handle packet send errors
 	}
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 PCAP::EthernetPacket::EthernetPacket(const std::vector<uint8_t>& bytestream) {

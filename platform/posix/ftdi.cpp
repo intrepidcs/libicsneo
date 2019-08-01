@@ -185,7 +185,6 @@ void FTDI::readTask() {
 		if(readBytes > 0)
 			readQueue.enqueue_bulk(readbuf, readBytes);
 	}
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 void FTDI::writeTask() {
@@ -198,5 +197,4 @@ void FTDI::writeTask() {
 		ftdi.write(writeOp.bytes.data(), (int)writeOp.bytes.size());
 		onWrite();
 	}
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }

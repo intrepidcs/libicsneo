@@ -129,5 +129,4 @@ void MultiChannelCommunication::readTask() {
 		}
 		
 	}
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
