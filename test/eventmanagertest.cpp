@@ -1,4 +1,5 @@
 #include <thread>
+#include <memory>
 
 #include "icsneo/icsneocpp.h"
 #include "gtest/gtest.h"
@@ -12,6 +13,75 @@ protected:
         EventManager::ResetInstance();
     }
 };
+
+
+TEST_F(EventManagerTest, SingleThreadCallbacksTest) {
+    int callCounter = 0;
+    
+	// increments counter when baudrate events show up
+    int id1 = EventManager::GetInstance().addEventCallback(EventCallback([&callCounter](std::shared_ptr<APIEvent>){
+        callCounter++;
+    }, EventFilter(APIEvent::Type::BaudrateNotFound)));
+
+	// increments counter when infos show up
+	int id2 = EventManager::GetInstance().addEventCallback(EventCallback([&callCounter](std::shared_ptr<APIEvent>) {
+		callCounter++;
+	}, EventFilter(APIEvent::Severity::EventInfo)));
+
+	EXPECT_EQ(callCounter, 0);
+
+	EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::EventWarning));
+
+	EXPECT_EQ(callCounter, 0);
+
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventWarning));
+
+	EXPECT_EQ(callCounter, 1);
+
+	EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::EventInfo));
+
+	EXPECT_EQ(callCounter, 2);
+
+	EventManager::GetInstance().add(APIEvent(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo));
+
+	EXPECT_EQ(callCounter, 4);
+
+	EXPECT_EQ(EventManager::GetInstance().removeEventCallback(id2), true);
+
+	EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::EventInfo));
+
+	EXPECT_EQ(callCounter, 4);
+
+	EventManager::GetInstance().add(APIEvent(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo));
+
+	EXPECT_EQ(callCounter, 5);
+
+    // increments counter when device currently open shows up
+	int id3 = EventManager::GetInstance().addEventCallback(EventCallback([&callCounter](std::shared_ptr<APIEvent>) {
+		callCounter++;
+	}, EventFilter(APIEvent::Type::DeviceCurrentlyOpen)));
+
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::EventInfo));
+
+	EXPECT_EQ(callCounter, 6);
+    
+    EXPECT_EQ(EventManager::GetInstance().removeEventCallback(id2), false);
+	EXPECT_EQ(EventManager::GetInstance().removeEventCallback(id1), true);
+	
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo));
+
+    EXPECT_EQ(callCounter, 6);
+
+	EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::EventInfo));
+
+	EXPECT_EQ(callCounter, 7);
+
+    EXPECT_EQ(EventManager::GetInstance().removeEventCallback(id3), true);
+
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::EventInfo));
+
+    EXPECT_EQ(callCounter, 7);
+}
 
 TEST_F(EventManagerTest, ErrorDowngradingTest) {
 	// Check that main thread has no errors

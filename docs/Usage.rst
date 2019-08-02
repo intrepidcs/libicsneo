@@ -79,6 +79,7 @@ It is recommended to either enable message polling or manually register callback
 
 Write Blocking Status
 ~~~~~~~~~~~~~~~~~~~~~~~
+
 The write blocking status of the device determines the behavior of attempting to transmit to the device (likely via sending messages) with a large backlog of messages.
 If write blocking is enabled, then the transmitting thread will wait for the entire buffer to be transmitted.
 If write blocking is disabled, then the attempt to transmit will simply fail and an error will be logged on the calling thread.

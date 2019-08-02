@@ -9,6 +9,7 @@
 #include <thread>
 #include <algorithm>
 #include "icsneo/api/event.h"
+#include "icsneo/api/eventcallback.h"
 
 namespace icsneo {
 
@@ -24,8 +25,12 @@ public:
 	
 	void cancelErrorDowngradingOnCurrentThread();
 
+	int addEventCallback(const EventCallback &cb);
+
+	bool removeEventCallback(int id);
+
 	size_t eventCount(EventFilter filter = EventFilter()) const {
-		std::lock_guard<std::mutex> lk(mutex);
+		std::lock_guard<std::mutex> lk(eventsMutex);
 		return count_internal(filter);
 	};
 
@@ -41,17 +46,34 @@ public:
 	APIEvent getLastError();
 
 	void add(APIEvent event) {
-		std::lock_guard<std::mutex> lk(mutex);
-		add_internal(event);
+		if(event.getSeverity() == APIEvent::Severity::Error) {
+			// if the error was added on a thread that downgrades errors (non-user thread)
+			std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
+			auto i = downgradedThreads.find(std::this_thread::get_id());
+			if(i != downgradedThreads.end() && i->second) {
+				event.downgradeFromError();
+				runCallbacks(event);
+				std::lock_guard<std::mutex> lk(eventsMutex);
+				add_internal_event(event);
+			} else {
+				std::lock_guard<std::mutex> lk(errorsMutex);
+				add_internal_error(event);
+			}
+		} else {
+			runCallbacks(event);
+			std::lock_guard<std::mutex> lk(eventsMutex);
+			add_internal_event(event);
+		}
 	}
 	void add(APIEvent::Type type, APIEvent::Severity severity, const Device* forDevice = nullptr) {
-		std::lock_guard<std::mutex> lk(mutex);
-		add_internal(APIEvent(type, severity, forDevice));
+		add(APIEvent(type, severity, forDevice));
 	}
 
 	void discard(EventFilter filter = EventFilter());
 
 	void setEventLimit(size_t newLimit) {
+		std::lock_guard<std::mutex> lk(eventsMutex);
+		
 		if(newLimit == eventLimit)
 			return;
 		
@@ -59,27 +81,33 @@ public:
 			add(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 			return;
 		}
-
-		std::lock_guard<std::mutex> lk(mutex);
+	
 		eventLimit = newLimit;
 		if(enforceLimit()) 
-			add_internal(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
+			add_internal_event(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
 	}
 
 	size_t getEventLimit() const { 
-		std::lock_guard<std::mutex> lk(mutex);
+		std::lock_guard<std::mutex> lk(eventsMutex);
 		return eventLimit;
 	}
 
 private:
-	EventManager() : mutex(), downgradedThreads(), events(), lastUserErrors(), eventLimit(10000) {}
+	EventManager() : eventsMutex(), errorsMutex(), downgradedThreadsMutex(), callbacksMutex(), downgradedThreads(), callbacks(), events(), lastUserErrors(), eventLimit(10000) {}
 	EventManager(const EventManager &other);
 	EventManager& operator=(const EventManager &other);
 
 	// Used by functions for threadsafety
-	mutable std::mutex mutex;
+	mutable std::mutex eventsMutex;
+	mutable std::mutex errorsMutex;
+	mutable std::mutex downgradedThreadsMutex;
+	mutable std::mutex callbacksMutex;
 
 	std::map<std::thread::id, bool> downgradedThreads;
+
+	std::map<int, EventCallback> callbacks;
+
+	int callbackID = 0;
 	
 	// Stores all events
 	std::list<APIEvent> events;
@@ -88,17 +116,11 @@ private:
 
 	size_t count_internal(EventFilter filter = EventFilter()) const;
 
-	void add_internal(APIEvent event) {
-		if(event.getSeverity() == APIEvent::Severity::Error) {
-			// if the error was added on a thread that downgrades errors (non-user thread)
-			auto i = downgradedThreads.find(std::this_thread::get_id());
-			if(i != downgradedThreads.end() && i->second) {
-				event.downgradeFromError();
-				add_internal_event(event);
-			} else
-				add_internal_error(event);
-		} else
-			add_internal_event(event);
+	void runCallbacks(APIEvent event) {
+		std::lock_guard<std::mutex> lk(callbacksMutex);
+		for(auto &i : callbacks) {
+			i.second.callIfMatch(std::make_shared<APIEvent>(event));
+		}
 	}
 
 	/**

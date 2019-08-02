@@ -18,6 +18,7 @@ void EventManager::ResetInstance() {
 // If this thread is not in the map, add it to be ignored
 // If it is, set it to be ignored
 void EventManager::downgradeErrorsOnCurrentThread() {
+	std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
 	auto i = downgradedThreads.find(std::this_thread::get_id());
 	if(i != downgradedThreads.end()) {
 		i->second = true;
@@ -28,14 +29,33 @@ void EventManager::downgradeErrorsOnCurrentThread() {
 
 // If this thread exists in the map, turn off downgrading
 void EventManager::cancelErrorDowngradingOnCurrentThread() {
+	std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
 	auto i = downgradedThreads.find(std::this_thread::get_id());
 	if(i != downgradedThreads.end()) {
 		i->second = false;
 	}
 }
 
+int EventManager::addEventCallback(const EventCallback &cb) {
+	std::lock_guard<std::mutex> lk(callbacksMutex);
+	callbacks.insert({callbackID, cb});
+	return callbackID++;
+}
+
+bool EventManager::removeEventCallback(int id) {
+	std::lock_guard<std::mutex> lk(callbacksMutex);
+
+	auto iter = callbacks.find(id);
+
+	if(iter != callbacks.end()) {
+		callbacks.erase(iter);
+		return true;
+	} else
+		return false;
+}
+
 void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilter filter) {
-	std::lock_guard<std::mutex> lk(mutex);
+	std::lock_guard<std::mutex> lk(eventsMutex);
 	
 	if(max == 0) // A limit of 0 indicates no limit
 		max = (size_t)-1;
@@ -60,7 +80,7 @@ void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilt
  * If no error was found, return a NoErrorFound Info event
  */
 APIEvent EventManager::getLastError() {
-	std::lock_guard<std::mutex> lk(mutex);
+	std::lock_guard<std::mutex> lk(errorsMutex);
 
 	auto it = lastUserErrors.find(std::this_thread::get_id());
 	if(it == lastUserErrors.end()) {
@@ -73,7 +93,7 @@ APIEvent EventManager::getLastError() {
 }
 
 void EventManager::discard(EventFilter filter) {
-	std::lock_guard<std::mutex> lk(mutex);
+	std::lock_guard<std::mutex> lk(eventsMutex);
 	events.remove_if([&filter](const APIEvent& event) {
 		return filter.match(event);
 	});
