@@ -123,7 +123,7 @@ private:
 	EventTimePoint timepoint;
 	const Device* device;
 
-	void init(Type event, APIEvent::Severity);
+	void init(APIEvent::Type event, APIEvent::Severity);
 };
 
 class EventFilter {

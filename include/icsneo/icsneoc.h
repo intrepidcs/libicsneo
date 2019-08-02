@@ -285,18 +285,18 @@ extern size_t DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device)
 extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit);
 
 /**
- * \brief Adds a message callback to the specified device.
+ * \brief Adds a message callback to the specified device to be called when a new message is received.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
- * \param[in] callback A function pointer with void return type and a single neomessage_t parameter
+ * \param[in] callback A function pointer with void return type and a single neomessage_t parameter.
  * \param[in] filter Unused for now. Exists as a placeholder here for future backwards-compatibility.
- * \returns the id of the callback added, or -1 if the operation failed.
+ * \returns The id of the callback added, or -1 if the operation failed.
  */
 extern int DLLExport icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t), void* filter);
 
 /**
  * \brief Removes a message callback from the specified device.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
- * \param[in] id The id of the callback to remove
+ * \param[in] id The id of the callback to remove.
  * \returns True if the callback was successfully removed.
  */
 extern bool DLLExport icsneo_removeMessageCallback(const neodevice_t* device, int id);
@@ -589,6 +589,23 @@ extern bool DLLExport icsneo_describeDevice(const neodevice_t* device, char* str
 extern neoversion_t DLLExport icsneo_getVersion(void);
 
 /**
+ * \brief Adds an event callback to be called when a new event is added.
+ * \param[in] callback A function pointer with void return type and a single neoevent_t parameter.
+ * \param[in] filter Unused for now. Exists as a placeholder here for future backwards-compatibility.
+ * \returns The id of the callback added. Does not error.
+ * 
+ * Do not attempt to add or remove callbacks inside of a callback, as the stored callbacks are locked during calls.
+ */
+extern int DLLExport icsneo_addEventCallback(void (*callback)(neoevent_t), void* filter);
+
+/**
+ * \brief Removes an event callback.
+ * \param[in] id The id of the callback to remove.
+ * \returns True if the callback was successfully removed.
+ */
+extern bool DLLExport icsneo_removeEventCallback(int id);
+
+/**
  * \brief Read out events which have occurred in API operation
  * \param[out] events A pointer to a buffer which neoevent_t structures will be written to. NULL can be passed, which will write the current event count to size.
  * \param[inout] size A pointer to a size_t which, prior to the call,
@@ -816,6 +833,12 @@ fn_icsneo_describeDevice icsneo_describeDevice;
 typedef neoversion_t(*fn_icsneo_getVersion)(void);
 fn_icsneo_getVersion icsneo_getVersion;
 
+typedef int(*fn_icsneo_addEventCallback)(void (*callback)(neoevent_t), void* filter);
+fn_icsneo_addEventCallback icsneo_addEventCallback;
+
+typedef bool(*fn_icsneo_removeEventCallback)(int id);
+fn_icsneo_removeEventCallback icsneo_removeEventCallback;
+
 typedef bool(*fn_icsneo_getEvents)(neoevent_t* events, size_t* size);
 fn_icsneo_getEvents icsneo_getEvents;
 
@@ -888,6 +911,8 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_setWriteBlocks);
 	ICSNEO_IMPORTASSERT(icsneo_describeDevice);
 	ICSNEO_IMPORTASSERT(icsneo_getVersion);
+	ICSNEO_IMPORTASSERT(icsneo_addEventCallback);
+	ICSNEO_IMPORTASSERT(icsneo_removeEventCallback);
 	ICSNEO_IMPORTASSERT(icsneo_getEvents);
 	ICSNEO_IMPORTASSERT(icsneo_getDeviceEvents);
 	ICSNEO_IMPORTASSERT(icsneo_getLastError);

@@ -490,6 +490,22 @@ neoversion_t icsneo_getVersion(void) {
 	return icsneo::GetVersion();
 }
 
+int icsneo_addEventCallback(void (*callback)(neoevent_t), void* filter) {
+	(void)filter; // unused for now
+
+	return EventManager::GetInstance().addEventCallback(
+		EventCallback(
+			[=](std::shared_ptr<icsneo::APIEvent> evt) {
+				return callback(*(evt->getNeoEvent()));
+			}
+		)
+	);
+}
+
+bool icsneo_removeEventCallback(int id) {
+	return EventManager::GetInstance().removeEventCallback(id);
+}
+
 bool icsneo_getEvents(neoevent_t* events, size_t* size) {
 	if(size == nullptr) {
 		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
