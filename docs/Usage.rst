@@ -15,6 +15,8 @@ Those of severity ``Error`` are referred to as "errors", which use a separate er
 
 Events should periodically be read out in order to avoid overflowing, and the last error should be read out immediately after an API function fails.
 
+Additionally, `event callbacks`_ can be registered, which may remove the need to periodically read events in some cases.
+
 .. _events:
 
 Events 
@@ -28,6 +30,20 @@ Because of this reserved slot, the buffer by default is able to hold 9,999 event
 When events are read out by the user, they are removed from the buffer. If an event filter is used, only the filtered events will be removed from the buffer.
 
 In a multithreaded environment, all threads will log their events to the same buffer. In this case, the order of events will largely be meaningless, although the behavior of ``TooManyEvents`` is still guaranteed to be as described above.
+
+.. _event callbacks:
+
+Event Callbacks
+~~~~~~~~~~~~~~~~~~~~
+
+Users may register event callbacks, which are automatically called whenever a matching event is logged.
+Message callbacks consist of a user-defined ``std::function< void( std::shared_ptr<APIEvent> ) >`` and optional EventFilter used for matching.
+If no EventFilter is provided, the default-constructed one will be used, which matches any event.
+Registering a callback returns an ``int`` representing the id of the callback, which should be stored by the user and later used to remove the callback when desired.
+Note that this functionality is only available in C and C++. C does not currently support filters.
+
+Event callbacks are run after the event has been added to the buffer of events. The buffer of events may be safely modified within the callback, such as getting (flushing) the type and severity of the triggering event.
+Using event callbacks in this manner means that periodically reading events is unnecessary.
 
 .. _errors:
 
@@ -65,8 +81,9 @@ Message Callbacks and Polling
 
 In order to handle messages, users may register message callbacks, which are automatically called whenever a matching message is received.
 Message callbacks consist of a user-defined ``std::function< void( std::shared_ptr<Message> ) >`` and optional message filter used for matching.
+If no message filter is provided, the default-constructed one will be used, which matches any message.
 Registering a callback returns an ``int`` representing the id of the callback, which should be stored by the user and later used to remove the callback when desired.
-Note that this functionality is only available in C and C++.
+Note that this functionality is only available in C and C++. C does not currently support filters.
 
 The default method of handling messages is to enable message polling, which is built upon message callbacks.
 Enabling message polling will register a callback that stores each received message in a buffer for later retrieval.
