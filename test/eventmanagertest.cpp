@@ -1,5 +1,6 @@
 #include <thread>
 #include <memory>
+#include <mutex>
 
 #include "icsneo/icsneocpp.h"
 #include "gtest/gtest.h"
@@ -14,8 +15,61 @@ protected:
     }
 };
 
+/**
+ * Tests behavior of adding event callbcaks on multiple threads.
+ * The order in which they are called is not guaranteed, but we check for the correct amount of calls.
+ */
+TEST_F(EventManagerTest, MultithreadedEventCallbacksTest) {
+    int callCounter = 0;
+    std::mutex mutex;
 
-TEST_F(EventManagerTest, SingleThreadCallbacksTest) {
+    std::thread t1([&callCounter, &mutex]() {
+        // increments counter when baudrate events show up
+        int id1 = EventManager::GetInstance().addEventCallback(EventCallback([&callCounter, &mutex](std::shared_ptr<APIEvent>){
+            std::lock_guard<std::mutex> lk(mutex);
+            callCounter++;
+        }, EventFilter(APIEvent::Type::BaudrateNotFound)));
+
+        // shouldn't add anything
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::EventWarning));
+
+        // should add 1
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventWarning));
+
+        EventManager::GetInstance().removeEventCallback(id1);
+
+    });
+
+    std::thread t2([&callCounter, &mutex]() {
+        // increments counter when infos show up
+        int id2 = EventManager::GetInstance().addEventCallback(EventCallback([&callCounter, &mutex](std::shared_ptr<APIEvent>) {
+            std::lock_guard<std::mutex> lk(mutex);
+            callCounter++;
+        }, EventFilter(APIEvent::Severity::EventInfo)));
+
+        // shouldn't add anything
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::EventWarning));
+
+        // should add 1
+        EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::EventInfo));
+
+        EventManager::GetInstance().removeEventCallback(id2);
+    });
+
+    t1.join();
+    t2.join();
+
+    EXPECT_EQ(callCounter, 2);
+
+    EventManager::GetInstance().add(APIEvent(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo));
+
+    EXPECT_EQ(callCounter, 2);
+}
+
+/**
+ * Tests behavior of adding and removing multiple event callbacks on a single thread.
+ */
+TEST_F(EventManagerTest, SingleThreadEventCallbacksTest) {
     int callCounter = 0;
     
 	// increments counter when baudrate events show up
@@ -83,12 +137,16 @@ TEST_F(EventManagerTest, SingleThreadCallbacksTest) {
     EXPECT_EQ(callCounter, 7);
 }
 
+/**
+ * Checks that error downgrading is functioning appropriately when downgrading and canceling downgrading.
+ * Also checks that error downgrading is thread-specific.
+ */
 TEST_F(EventManagerTest, ErrorDowngradingTest) {
 	// Check that main thread has no errors
 	EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
 
 	// Adds 500 {OutputTruncated, Warning} and 500 {OutputTruncated, Info}
-	// Adds and checks errors as well.
+	// Also adds errors in both downgraded and non-downgraded states, and checks for appropriate behavior.
 	std::thread t1([]() {
 		for(int i = 0; i < 500; i++) {
 			EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
