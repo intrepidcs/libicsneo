@@ -4,6 +4,7 @@
 #include <string.h>
 #include <iostream>
 #include <sstream>
+#include <chrono>
 
 using namespace icsneo;
 
@@ -217,10 +218,18 @@ bool Device::goOnline() {
 	if(!com->sendCommand(Command::EnableNetworkCommunication, true))
 		return false;
 
+	auto startTime = std::chrono::system_clock::now();
+
 	ledState = LEDState::Online;
 
 	online = true;
 	updateLEDState();
+
+	// wait until communication is enabled or 10 seconds, whichever comes first
+	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(10)) {
+		if(latestResetStatus && latestResetStatus->comEnabled)
+			break;
+	}
 
 	return true;
 }
@@ -229,10 +238,18 @@ bool Device::goOffline() {
 	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
 		return false;
 
+	auto startTime = std::chrono::system_clock::now();
+
 	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
 	
 	updateLEDState();
 	online = false;
+
+	// wait until communication is disabled or 10 seconds, whichever comes first
+	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(10)) {
+		if(latestResetStatus && !latestResetStatus->comEnabled)
+			break;
+	}
 
 	return true;
 }
