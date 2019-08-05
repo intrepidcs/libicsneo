@@ -52,17 +52,21 @@ public:
 			auto i = downgradedThreads.find(std::this_thread::get_id());
 			if(i != downgradedThreads.end() && i->second) {
 				event.downgradeFromError();
-				runCallbacks(event);
-				std::lock_guard<std::mutex> lk(eventsMutex);
+				std::unique_lock<std::mutex> eventsLock(eventsMutex);
 				add_internal_event(event);
+				// free the lock so that callbacks may modify events
+				eventsLock.unlock();
+				runCallbacks(event);
 			} else {
 				std::lock_guard<std::mutex> lk(errorsMutex);
 				add_internal_error(event);
 			}
 		} else {
-			runCallbacks(event);
-			std::lock_guard<std::mutex> lk(eventsMutex);
+			std::unique_lock<std::mutex> eventsLock(eventsMutex);
 			add_internal_event(event);
+			// free the lock so that callbacks may modify events
+			eventsLock.unlock();
+			runCallbacks(event);
 		}
 	}
 	void add(APIEvent::Type type, APIEvent::Severity severity, const Device* forDevice = nullptr) {
