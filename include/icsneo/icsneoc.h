@@ -269,7 +269,7 @@ extern bool DLLExport icsneo_getMessages(const neodevice_t* device, neomessage_t
  * 
  * See icsneo_enableMessagePolling() for more information about the message polling system.
  */
-extern size_t DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device);
+extern int DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device);
 
 /**
  * \brief Set the maximum number of messages which will be held in the API managed buffer for the specified hardware.

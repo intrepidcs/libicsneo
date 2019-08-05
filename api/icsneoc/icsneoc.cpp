@@ -228,7 +228,7 @@ bool icsneo_getMessages(const neodevice_t* device, neomessage_t* messages, size_
 	return true;
 }
 
-size_t icsneo_getPollingMessageLimit(const neodevice_t* device) {
+int icsneo_getPollingMessageLimit(const neodevice_t* device) {
 	if(!icsneo_isValidNeoDevice(device))
 		return -1;
 
