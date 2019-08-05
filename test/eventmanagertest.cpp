@@ -16,8 +16,9 @@ protected:
 };
 
 /**
- * Tests behavior of adding event callbcaks on multiple threads.
+ * Tests behavior of adding event callbacks on multiple threads.
  * The order in which they are called is not guaranteed, but we check for the correct amount of calls.
+ * Each callback also flushes the event buffer upon call.
  */
 TEST_F(EventManagerTest, MultithreadedEventCallbacksTest) {
     int callCounter = 0;
@@ -28,6 +29,7 @@ TEST_F(EventManagerTest, MultithreadedEventCallbacksTest) {
         int id1 = EventManager::GetInstance().addEventCallback(EventCallback([&callCounter, &mutex](std::shared_ptr<APIEvent>){
             std::lock_guard<std::mutex> lk(mutex);
             callCounter++;
+            EventManager::GetInstance().get();
         }, EventFilter(APIEvent::Type::BaudrateNotFound)));
 
         // shouldn't add anything
@@ -45,6 +47,7 @@ TEST_F(EventManagerTest, MultithreadedEventCallbacksTest) {
         int id2 = EventManager::GetInstance().addEventCallback(EventCallback([&callCounter, &mutex](std::shared_ptr<APIEvent>) {
             std::lock_guard<std::mutex> lk(mutex);
             callCounter++;
+            EventManager::GetInstance().get();
         }, EventFilter(APIEvent::Severity::EventInfo)));
 
         // shouldn't add anything
@@ -59,9 +62,13 @@ TEST_F(EventManagerTest, MultithreadedEventCallbacksTest) {
     t1.join();
     t2.join();
 
+    EXPECT_EQ(EventCount(), 0);
+
     EXPECT_EQ(callCounter, 2);
 
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo));
+
+    EXPECT_EQ(EventCount(), 1);
 
     EXPECT_EQ(callCounter, 2);
 }
