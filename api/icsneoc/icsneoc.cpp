@@ -244,7 +244,6 @@ bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
 }
 
 int icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t), void* filter) {
-	(void)filter; // unused for now
 	if(!icsneo_isValidNeoDevice(device))
 		return -1;
 
@@ -491,8 +490,6 @@ neoversion_t icsneo_getVersion(void) {
 }
 
 int icsneo_addEventCallback(void (*callback)(neoevent_t), void* filter) {
-	(void)filter; // unused for now
-
 	return EventManager::GetInstance().addEventCallback(
 		EventCallback(
 			[=](std::shared_ptr<icsneo::APIEvent> evt) {
