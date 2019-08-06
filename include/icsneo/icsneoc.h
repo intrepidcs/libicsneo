@@ -291,7 +291,7 @@ extern bool DLLExport icsneo_setPollingMessageLimit(const neodevice_t* device, s
  * \param[in] filter Unused for now. Exists as a placeholder here for future backwards-compatibility.
  * \returns The id of the callback added, or -1 if the operation failed.
  */
-extern int DLLExport icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t), void* filter);
+extern int DLLExport icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomessage_t), void*);
 
 /**
  * \brief Removes a message callback from the specified device.
@@ -596,7 +596,7 @@ extern neoversion_t DLLExport icsneo_getVersion(void);
  * 
  * Do not attempt to add or remove callbacks inside of a callback, as the stored callbacks are locked during calls.
  */
-extern int DLLExport icsneo_addEventCallback(void (*callback)(neoevent_t), void* filter);
+extern int DLLExport icsneo_addEventCallback(void (*callback)(neoevent_t), void*);
 
 /**
  * \brief Removes an event callback.
@@ -773,7 +773,7 @@ fn_icsneo_getPollingMessageLimit icsneo_getPollingMessageLimit;
 typedef bool(*fn_icsneo_setPollingMessageLimit)(const neodevice_t* device, size_t newLimit);
 fn_icsneo_setPollingMessageLimit icsneo_setPollingMessageLimit;
 
-typedef int(*fn_icsneo_addMessageCallback)(const neodevice_t* device, void (*callback)(neomessage_t), void* filter);
+typedef int(*fn_icsneo_addMessageCallback)(const neodevice_t* device, void (*callback)(neomessage_t), void*);
 fn_icsneo_addMessageCallback icsneo_addMessageCallback;
 
 typedef bool(*fn_icsneo_removeMessageCallback)(const neodevice_t* device, int id);
@@ -833,7 +833,7 @@ fn_icsneo_describeDevice icsneo_describeDevice;
 typedef neoversion_t(*fn_icsneo_getVersion)(void);
 fn_icsneo_getVersion icsneo_getVersion;
 
-typedef int(*fn_icsneo_addEventCallback)(void (*callback)(neoevent_t), void* filter);
+typedef int(*fn_icsneo_addEventCallback)(void (*callback)(neoevent_t), void*);
 fn_icsneo_addEventCallback icsneo_addEventCallback;
 
 typedef bool(*fn_icsneo_removeEventCallback)(int id);
