@@ -10,11 +10,6 @@ include(GNUInstallDirs)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# macOS Homebrew Boost Fix
-if(NOT MSVC)
-	include_directories(AFTER /usr/local/include)
-endif()
-
 # Enable Warnings
 if(MSVC)
 	# Force to always compile with W4

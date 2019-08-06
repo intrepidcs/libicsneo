@@ -8,7 +8,9 @@
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
+#ifndef __APPLE__
 #include <netpacket/packet.h>
+#endif
 
 using namespace icsneo;
 
@@ -52,12 +54,16 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		pcap_addr* currentAddress = dev->addresses;
 		bool hasAddress = false;
 		while(!hasAddress && currentAddress != nullptr) {
+#ifndef __APPLE__
 			if(currentAddress->addr && currentAddress->addr->sa_family == AF_PACKET) {
 				struct sockaddr_ll* s = (struct sockaddr_ll*)currentAddress->addr;
 				memcpy(netif.macAddress, s->sll_addr, sizeof(netif.macAddress));
 				hasAddress = true;
 				break;
 			}
+#else
+			//TODO: get adapter address on macOS
+#endif
 			currentAddress = currentAddress->next;
 		}
 
