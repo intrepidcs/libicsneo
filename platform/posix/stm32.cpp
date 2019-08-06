@@ -293,7 +293,6 @@ void STM32::readTask() {
 		if(bytesRead > 0)
 			readQueue.enqueue_bulk(readbuf, bytesRead);
 	}
-	EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 }
 
 void STM32::writeTask() {

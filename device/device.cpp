@@ -203,14 +203,14 @@ bool Device::close() {
 		return false;
 	}
 
+	if(isOnline())
+		goOffline();
+	
 	if(internalHandlerCallbackID)
 		com->removeMessageCallback(internalHandlerCallbackID);
 
 	internalHandlerCallbackID = 0;
-
-	if(isOnline())
-		goOffline();
-
+	
 	return com->close();
 }
 

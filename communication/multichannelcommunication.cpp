@@ -113,14 +113,14 @@ void MultiChannelCommunication::readTask() {
 								continue;
 							}
 
-							// We want callbacks to be able to access errors
-							EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 							for(auto& cb : messageCallbacks) { // We might have closed while reading or processing
 								if(!closing) {
+									// We want callbacks to be able to access errors
+									EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 									cb.second.callIfMatch(msg);
+									EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 								}
 							}
-							EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 						}
 					}
 

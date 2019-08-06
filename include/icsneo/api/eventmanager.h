@@ -58,7 +58,7 @@ public:
 				eventsLock.unlock();
 				runCallbacks(event);
 			} else {
-				std::lock_guard<std::mutex> lk(errorsMutex);
+				std::lock_guard<std::mutex> errorsLock(errorsMutex);
 				add_internal_error(event);
 			}
 		} else {
