@@ -226,7 +226,7 @@ bool Device::goOnline() {
 	updateLEDState();
 
 	// wait until communication is enabled or 10 seconds, whichever comes first
-	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(10)) {
+	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(10)) {
 		if(latestResetStatus && latestResetStatus->comEnabled)
 			break;
 	}
@@ -246,7 +246,7 @@ bool Device::goOffline() {
 	online = false;
 
 	// wait until communication is disabled or 10 seconds, whichever comes first
-	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(10)) {
+	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(10)) {
 		if(latestResetStatus && !latestResetStatus->comEnabled)
 			break;
 	}
