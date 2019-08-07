@@ -21,9 +21,26 @@ public:
 
 	static void ResetInstance();
 
-	void downgradeErrorsOnCurrentThread();
+	// If this thread is not in the map, add it to be ignored
+	// If it is, set it to be ignored
+	void downgradeErrorsOnCurrentThread() {
+		std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
+		auto i = downgradedThreads.find(std::this_thread::get_id());
+		if(i != downgradedThreads.end()) {
+			i->second = true;
+		} else {
+			downgradedThreads.insert({std::this_thread::get_id(), true});
+		}
+	}
 	
-	void cancelErrorDowngradingOnCurrentThread();
+	// If this thread exists in the map, turn off downgrading
+	void cancelErrorDowngradingOnCurrentThread() {
+		std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
+		auto i = downgradedThreads.find(std::this_thread::get_id());
+		if(i != downgradedThreads.end()) {
+			i->second = false;
+		}
+	}
 
 	int addEventCallback(const EventCallback &cb);
 

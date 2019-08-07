@@ -10,6 +10,7 @@ enum class Command : uint8_t {
 	//GetSettings = 0xA5, // Previously known as RED_CMD_READ_BAUD_REQ, now unused
 	SaveSettings = 0xA6,
 	SetDefaultSettings = 0xA8, // Follow up with SaveSettings to write to EEPROM
+	RequestStatusUpdate = 0xBC,
 	ReadSettings = 0xC7, // Previously known as 3G_READ_SETTINGS_EX
 	UpdateLEDState = 0xA7
 };

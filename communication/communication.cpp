@@ -131,7 +131,8 @@ std::shared_ptr<Message> Communication::waitForMessageSync(std::shared_ptr<Messa
 
 	// We have now added the callback, wait for it to return from the other thread
 	std::unique_lock<std::mutex> lk(m);
-	cv.wait_for(lk, timeout, [&returnedMessage]{ return !!returnedMessage; }); // `!!shared_ptr` checks if the ptr has a value
+	cv.wait_for(lk, timeout, [&returnedMessage] { return !!returnedMessage; }); // `!!shared_ptr` checks if the ptr has a value
+	lk.unlock();
 
 	// We don't actually check that we got a message, because either way we want to remove the callback (since it should only happen once)
 	removeMessageCallback(cb);

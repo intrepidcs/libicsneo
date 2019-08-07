@@ -222,15 +222,24 @@ bool Device::goOnline() {
 
 	ledState = LEDState::Online;
 
-	online = true;
 	updateLEDState();
 
+	MessageFilter filter(Network::NetID::Reset_Status);
+	filter.includeInternalInAny = true;
+
 	// wait until communication is enabled or 10 seconds, whichever comes first
-	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(10)) {
+	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(5)) {
 		if(latestResetStatus && latestResetStatus->comEnabled)
 			break;
-	}
+		
+		if(!com->sendCommand(Command::RequestStatusUpdate))
+			return false;
 
+		com->waitForMessageSync(filter, std::chrono::milliseconds(100));
+	}
+	
+	online = true;
+	
 	return true;
 }
 
@@ -243,13 +252,22 @@ bool Device::goOffline() {
 	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
 	
 	updateLEDState();
-	online = false;
+	
+	MessageFilter filter(Network::NetID::Reset_Status);
+	filter.includeInternalInAny = true;
 
 	// wait until communication is disabled or 10 seconds, whichever comes first
-	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(10)) {
+	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(5)) {
 		if(latestResetStatus && !latestResetStatus->comEnabled)
 			break;
+		
+		if(!com->sendCommand(Command::RequestStatusUpdate))
+			return false;
+
+		com->waitForMessageSync(filter, std::chrono::milliseconds(100));
 	}
+	
+	online = false;
 
 	return true;
 }

@@ -378,7 +378,7 @@ void VCP::readTask() {
 					} else
 						report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 				}
-				if(ret == WAIT_ABANDONED) {
+				if(ret == WAIT_ABANDONED || ret == WAIT_FAILED) {
 					state = LAUNCH;
 					report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 				}
