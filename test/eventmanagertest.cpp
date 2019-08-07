@@ -11,7 +11,7 @@ class EventManagerTest : public ::testing::Test {
 protected:
     // Start with a clean instance of eventmanager for every test
     void SetUp() override {
-        EventManager::ResetInstance();
+        EventManager::GetInstance().ResetInstance();
     }
 };
 

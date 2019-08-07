@@ -3,20 +3,32 @@
 
 using namespace icsneo;
 
-static std::unique_ptr<EventManager> singleton;
-
 EventManager& EventManager::GetInstance() {
-	if(!singleton)
-		singleton = std::unique_ptr<EventManager>(new EventManager());
-	return *singleton.get();
+	static EventManager inst;
+	return inst;
 }
 
 void EventManager::ResetInstance() {
-	singleton = std::unique_ptr<EventManager>(new EventManager());
+	std::lock_guard<std::mutex> eventsLock(eventsMutex);
+	std::lock_guard<std::mutex> errorsLock(errorsMutex);
+	std::lock_guard<std::mutex> downgradedThreadsLock(downgradedThreadsMutex);
+	std::lock_guard<std::mutex> callbacksLock(callbacksMutex);
+
+	std::lock_guard<std::mutex> callbackIDLock(callbackIDMutex);
+	std::lock_guard<std::mutex> eventLimitLock(eventLimitMutex);
+
+	events.clear();
+	lastUserErrors.clear();
+	downgradedThreads.clear();
+	callbacks.clear();
+	
+	callbackID = 0;
+	eventLimit = 10000;
 }
 
 int EventManager::addEventCallback(const EventCallback &cb) {
-	std::lock_guard<std::mutex> lk(callbacksMutex);
+	std::lock_guard<std::mutex> callbacksLock(callbacksMutex);
+	std::lock_guard<std::mutex> callbackIDLock(callbackIDMutex);
 	callbacks.insert({callbackID, cb});
 	return callbackID++;
 }

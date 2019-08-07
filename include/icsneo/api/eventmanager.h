@@ -17,13 +17,19 @@ typedef std::function<void (APIEvent::Type, APIEvent::Severity)> device_eventhan
 
 class EventManager {
 public:
+	~EventManager() {
+		destructing = true;
+	}
+
 	static EventManager& GetInstance();
 
-	static void ResetInstance();
+	void ResetInstance();
 
 	// If this thread is not in the map, add it to be ignored
 	// If it is, set it to be ignored
 	void downgradeErrorsOnCurrentThread() {
+		if(destructing)
+			return;
 		std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
 		auto i = downgradedThreads.find(std::this_thread::get_id());
 		if(i != downgradedThreads.end()) {
@@ -35,6 +41,8 @@ public:
 	
 	// If this thread exists in the map, turn off downgrading
 	void cancelErrorDowngradingOnCurrentThread() {
+		if(destructing)
+			return;
 		std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
 		auto i = downgradedThreads.find(std::this_thread::get_id());
 		if(i != downgradedThreads.end()) {
@@ -63,6 +71,8 @@ public:
 	APIEvent getLastError();
 
 	void add(APIEvent event) {
+		if(destructing)
+			return;
 		if(event.getSeverity() == APIEvent::Severity::Error) {
 			// if the error was added on a thread that downgrades errors (non-user thread)
 			std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
@@ -93,7 +103,7 @@ public:
 	void discard(EventFilter filter = EventFilter());
 
 	void setEventLimit(size_t newLimit) {
-		std::lock_guard<std::mutex> lk(eventsMutex);
+		std::lock_guard<std::mutex> eventLimitLock(eventLimitMutex);
 		
 		if(newLimit == eventLimit)
 			return;
@@ -104,17 +114,19 @@ public:
 		}
 	
 		eventLimit = newLimit;
+		
+		std::lock_guard<std::mutex> eventsLock(eventsMutex);
 		if(enforceLimit()) 
 			add_internal_event(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
 	}
 
 	size_t getEventLimit() const { 
-		std::lock_guard<std::mutex> lk(eventsMutex);
+		std::lock_guard<std::mutex> lk(eventLimitMutex);
 		return eventLimit;
 	}
 
 private:
-	EventManager() : eventsMutex(), errorsMutex(), downgradedThreadsMutex(), callbacksMutex(), downgradedThreads(), callbacks(), events(), lastUserErrors(), eventLimit(10000) {}
+	EventManager() : eventsMutex(), errorsMutex(), downgradedThreadsMutex(), callbacksMutex(), callbackIDMutex(), eventLimitMutex(), downgradedThreads(), callbacks(), events(), lastUserErrors(), eventLimit(10000) {}
 	EventManager(const EventManager &other);
 	EventManager& operator=(const EventManager &other);
 
@@ -124,12 +136,17 @@ private:
 	mutable std::mutex downgradedThreadsMutex;
 	mutable std::mutex callbacksMutex;
 
+	mutable std::mutex callbackIDMutex;
+	mutable std::mutex eventLimitMutex;
+
 	std::map<std::thread::id, bool> downgradedThreads;
 
 	std::map<int, EventCallback> callbacks;
 
 	int callbackID = 0;
 	
+	bool destructing = false;
+
 	// Stores all events
 	std::list<APIEvent> events;
 	std::map<std::thread::id, APIEvent> lastUserErrors;

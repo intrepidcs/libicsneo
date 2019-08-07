@@ -1,5 +1,6 @@
 #include "icsneo/device/device.h"
 #include "icsneo/communication/message/callback/messagecallback.h"
+#include "icsneo/api/eventmanager.h"
 #include "icsneo/communication/command.h"
 #include <string.h>
 #include <iostream>

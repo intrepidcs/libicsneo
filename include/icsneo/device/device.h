@@ -22,7 +22,6 @@ namespace icsneo {
 class Device {
 public:
 	virtual ~Device() {
-		destructing = true;
 		if(isMessagePollingEnabled())
 			disableMessagePolling();
 		close();
@@ -121,8 +120,7 @@ protected:
 
 	virtual device_eventhandler_t makeEventHandler() {
 		return [this](APIEvent::Type type, APIEvent::Severity severity) { 
-			if(!destructing)
-				EventManager::GetInstance().add(type, severity, this); 
+			EventManager::GetInstance().add(type, severity, this); 
 		};
 	}
 
@@ -178,8 +176,6 @@ private:
 	size_t pollingMessageLimit = 20000;
 	moodycamel::BlockingConcurrentQueue<std::shared_ptr<Message>> pollingContainer;
 	void enforcePollingMessageLimit();
-
-	bool destructing = false;
 };
 
 }
