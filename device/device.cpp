@@ -229,7 +229,7 @@ bool Device::goOnline() {
 	filter.includeInternalInAny = true;
 
 	// wait until communication is enabled or 10 seconds, whichever comes first
-	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(5)) {
+	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
 		if(latestResetStatus && latestResetStatus->comEnabled)
 			break;
 		
@@ -258,7 +258,7 @@ bool Device::goOffline() {
 	filter.includeInternalInAny = true;
 
 	// wait until communication is disabled or 10 seconds, whichever comes first
-	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds::duration(5)) {
+	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
 		if(latestResetStatus && !latestResetStatus->comEnabled)
 			break;
 		
