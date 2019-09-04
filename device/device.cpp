@@ -267,5 +267,10 @@ void Device::updateLEDState() {
 	auto msg = std::make_shared<Message>();
 	msg->network = Network::NetID::Device;
 	msg->data = {0x00, 0x06, uint8_t(ledState)};
-	transmit(msg);
+
+	std::vector<uint8_t> packet;
+	if(!com->encoder->encode(packet, msg))
+		return;
+	
+	com->sendPacket(packet);
 }
