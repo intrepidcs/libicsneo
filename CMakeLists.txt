@@ -121,7 +121,19 @@ execute_process(
 	ERROR_VARIABLE GIT_DESCRIBE
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+if(${BUILD_METADATA})
+	set(BUILD_METADATA_PLUS +${BUILD_METADATA})
+endif()
+if(NOT ${GIT_BRANCH} STREQUAL "master")
+	set(BUILD_GIT_INFO "${GIT_BRANCH} @ ")
+endif()
+string(SUBSTRING GIT_DESCRIBE 0 1 GIT_DESCRIBE_FIRST)
+if(NOT ${GIT_DESCRIBE_FIRST} STREQUAL "v")
+	string(APPEND BUILD_GIT_INFO "${GIT_DESCRIBE}")
+endif()
+
 configure_file(api/icsneocpp/buildinfo.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated/buildinfo.h)
+configure_file(api/icsneoc/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(icsneocpp
@@ -159,7 +171,7 @@ if(WIN32)
 	add_definitions(-DWPCAP -DHAVE_REMOTE -DWIN32_LEAN_AND_MEAN)
 endif(WIN32)
 
-add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp)
+add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
 target_include_directories(icsneoc
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
