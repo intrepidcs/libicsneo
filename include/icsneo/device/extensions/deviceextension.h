@@ -14,7 +14,7 @@ public:
 	DeviceExtension(Device& device) : device(device) {}
 	virtual ~DeviceExtension() = default;
 	virtual const char* getName() const = 0;
-	virtual void handleMessage(const std::shared_ptr<Message>& message) {}
+	virtual void handleMessage(const std::shared_ptr<Message>&) {}
 
 protected:
 	Device& device;

@@ -86,7 +86,7 @@ public:
 	virtual size_t getNetworkCountByType(Network::Type) const;
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
-	virtual std::shared_ptr<FlexRay::Controller> getFlexRayControllerByNetwork(const Network& net) const { return nullptr; }
+	virtual std::shared_ptr<FlexRay::Controller> getFlexRayControllerByNetwork(const Network&) const { return nullptr; }
 
 	const device_eventhandler_t& getEventHandler() const { return report; }
 

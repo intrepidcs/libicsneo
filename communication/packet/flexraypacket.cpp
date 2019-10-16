@@ -31,7 +31,7 @@ std::shared_ptr<FlexRayMessage> HardwareFlexRayPacket::DecodeToMessage(const std
 		}
 
 		uint32_t numBytes = data->payload_len * 2;
-		if(ssize_t(numBytes) >= ssize_t(data->Length) - 4) {
+		if(int64_t(numBytes) >= int64_t(data->Length) - 4) {
 			if(data->statusBits.bits.fcrc_error)
 				msg->crcStatus = FlexRay::CRCStatus::Error;
 		} else {
@@ -47,7 +47,7 @@ std::shared_ptr<FlexRayMessage> HardwareFlexRayPacket::DecodeToMessage(const std
 				msg->sync = data->sync;
 				msg->startup = data->startup;
 				msg->id = data->id;
-				if(ssize_t(numBytes) != ssize_t(data->Length) - 4) {
+				if(int64_t(numBytes) != int64_t(data->Length) - 4) {
 					
 				} else {
 					// This is an error, probably need to flag it
