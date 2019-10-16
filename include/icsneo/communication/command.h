@@ -12,7 +12,8 @@ enum class Command : uint8_t {
 	SetDefaultSettings = 0xA8, // Follow up with SaveSettings to write to EEPROM
 	RequestStatusUpdate = 0xBC,
 	ReadSettings = 0xC7, // Previously known as 3G_READ_SETTINGS_EX
-	UpdateLEDState = 0xA7
+	UpdateLEDState = 0xA7,
+	FlexRayControl = 0xF3
 };
 
 }

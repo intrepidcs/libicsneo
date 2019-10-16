@@ -191,7 +191,9 @@ bool Device::open() {
 	if(!settings->disabled)
 		settings->refresh();
 
-	internalHandlerCallbackID = com->addMessageCallback(MessageCallback(MessageFilter(Network::Type::Internal), [this](std::shared_ptr<Message> message) {
+	MessageFilter filter;
+	filter.includeInternalInAny = true;
+	internalHandlerCallbackID = com->addMessageCallback(MessageCallback(filter, [this](std::shared_ptr<Message> message) {
 		handleInternalMessage(message);
 	}));
 
@@ -228,7 +230,7 @@ bool Device::goOnline() {
 	MessageFilter filter(Network::NetID::Reset_Status);
 	filter.includeInternalInAny = true;
 
-	// wait until communication is enabled or 10 seconds, whichever comes first
+	// Wait until communication is enabled or 5 seconds, whichever comes first
 	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
 		if(latestResetStatus && latestResetStatus->comEnabled)
 			break;
@@ -331,6 +333,17 @@ Network Device::getNetworkByNumber(Network::Type type, size_t index) const {
 	return Network::NetID::Invalid;
 }
 
+void Device::addExtension(std::shared_ptr<DeviceExtension>&& extension) {
+	std::lock_guard<std::mutex> lk(extensionsLock);
+	extensions.push_back(extension);
+}
+
+void Device::forEachExtension(std::function<void(const std::shared_ptr<DeviceExtension>&)> fn) {
+	std::lock_guard<std::mutex> lk(extensionsLock);
+	for(const auto& ext : extensions)
+		fn(ext);
+}
+
 void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 	switch(message->network.getNetID()) {
 		case Network::NetID::Reset_Status:
@@ -339,6 +352,9 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 		default:
 			break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;
 	}
+	forEachExtension([&](const std::shared_ptr<DeviceExtension>& ext) {
+		ext->handleMessage(message);
+	});
 }
 
 void Device::updateLEDState() {

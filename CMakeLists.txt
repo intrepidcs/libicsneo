@@ -87,7 +87,9 @@ else()
 endif()
 
 set(COMMON_SRC
+	communication/message/flexray/control/flexraycontrolmessage.cpp
 	communication/message/neomessage.cpp
+	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/ethernetpacket.cpp
 	communication/decoder.cpp
@@ -96,6 +98,8 @@ set(COMMON_SRC
 	communication/multichannelcommunication.cpp
 	communication/communication.cpp
 	communication/icommunication.cpp
+	device/extensions/flexray/extension.cpp
+	device/extensions/flexray/controller.cpp
 	device/idevicesettings.cpp
 	device/devicefinder.cpp
 	device/device.cpp

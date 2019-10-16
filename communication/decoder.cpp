@@ -3,10 +3,12 @@
 #include "icsneo/communication/message/serialnumbermessage.h"
 #include "icsneo/communication/message/resetstatusmessage.h"
 #include "icsneo/communication/message/readsettingsmessage.h"
+#include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
 #include "icsneo/communication/packet/ethernetpacket.h"
+#include "icsneo/communication/packet/flexraypacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -51,6 +53,23 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			result->network = packet->network;
 			return true;
 		}
+		case Network::Type::FlexRay: {
+			if(packet->data.size() < 24) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false;
+			}
+
+			result = HardwareFlexRayPacket::DecodeToMessage(packet->data);
+			if(!result) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false; // A nullptr was returned, the packet was malformed
+			}
+			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
+			// The resolution depends on the device
+			result->timestamp *= timestampResolution;
+			result->network = packet->network;
+			return true;
+		}
 		case Network::Type::Internal: {
 			switch(packet->network.getNetID()) {
 				case Network::NetID::Reset_Status: {
@@ -80,6 +99,15 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					msg->hidUsbState = data->status.hidUsbState;
 					msg->fpgaUsbState = data->status.fpgaUsbState;
 					result = msg;
+					return true;
+				}
+				case Network::NetID::FlexRayControl: {
+					auto frResult = std::make_shared<FlexRayControlMessage>(*packet);
+					if(!frResult->decoded) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+						return false;
+					}
+					result = frResult;
 					return true;
 				}
 				default:

@@ -64,6 +64,8 @@ protected:
 	std::map<int, MessageCallback> messageCallbacks;
 	std::atomic<bool> closing{false};
 
+	void dispatchMessage(const std::shared_ptr<Message>& msg);
+
 private:
 	std::thread readTaskThread;
 	void readTask();

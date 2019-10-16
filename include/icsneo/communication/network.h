@@ -112,6 +112,7 @@ public:
 		HSCAN7 = 97,
 		LIN6 = 98,
 		LSFTCAN2 = 99,
+		FlexRayControl = 243,
 		HW_COM_Latency_Test = 512,
 		Device_Status = 513,
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
@@ -187,6 +188,7 @@ public:
 			case NetID::RED:
 			case NetID::Reset_Status:
 			case NetID::Device_Status:
+			case NetID::FlexRayControl:
 				return Type::Internal;
 			case NetID::Invalid:
 			case NetID::Any:
@@ -408,14 +410,17 @@ public:
 				return "LIN 6";
 			case NetID::LSFTCAN2:
 				return "LSFTCAN 2";
+			case NetID::FlexRayControl:
+				return "FlexRay Control";
 			case NetID::HW_COM_Latency_Test:
 				return "HW COM Latency Test";
 			case NetID::Device_Status:
 				return "Device Status";
+			case NetID::Any:
 			case NetID::Invalid:
-			default:
-				return "Invalid Network";
+				break;
 		}
+		return "Invalid Network";
 	}
 
 	Network() { setValue(NetID::Invalid); }

@@ -25,6 +25,7 @@ bool MultiChannelCommunication::sendPacket(std::vector<uint8_t>& bytes) {
 
 void MultiChannelCommunication::readTask() {
 	bool readMore = true;
+	bool gotPacket = false; // Have we got the first valid packet (don't flag errors otherwise)
 	std::deque<uint8_t> usbReadFifo;
 	std::vector<uint8_t> readBytes;
 	std::vector<uint8_t> payloadBytes;
@@ -108,19 +109,11 @@ void MultiChannelCommunication::readTask() {
 					if(packetizer->input(payloadBytes)) {
 						for(auto& packet : packetizer->output()) {
 							std::shared_ptr<Message> msg;
-							if(!decoder->decode(msg, packet)) {
-								report(APIEvent::Type::Unknown, APIEvent::Severity::Error); // TODO Use specific error
-								continue;
-							}
+							if(!decoder->decode(msg, packet))
+								continue; // Error will have been reported from within decoder
 
-							for(auto& cb : messageCallbacks) { // We might have closed while reading or processing
-								if(!closing) {
-									// We want callbacks to be able to access errors
-									EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
-									cb.second.callIfMatch(msg);
-									EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-								}
-							}
+							gotPacket = true;
+							dispatchMessage(msg);
 						}
 					}
 

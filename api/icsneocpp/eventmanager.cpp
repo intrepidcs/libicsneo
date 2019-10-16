@@ -45,6 +45,14 @@ bool EventManager::removeEventCallback(int id) {
 		return false;
 }
 
+bool EventManager::isDowngradingErrorsOnCurrentThread() const {
+	auto i = downgradedThreads.find(std::this_thread::get_id());
+	if(i != downgradedThreads.end()) {
+		return i->second;
+	}
+	return false;
+}
+
 void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilter filter) {
 	std::lock_guard<std::mutex> lk(eventsMutex);
 	

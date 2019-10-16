@@ -44,6 +44,62 @@ private:
 		HostPC_to_Microblaze = 0x80, // Host PC data to microblaze processor
 		Microblaze_to_HostPC = 0x81 // Microblaze processor data to host PC
 	};
+
+	static bool FixSlaveVNETPacketNetID(Packet& packet);
+	enum class CoreMiniNetwork : uint8_t {
+		HSCAN1 = (0),
+		MSCAN1 = (1),
+		LIN1 = (2),
+		LIN2 = (3),
+		VIRTUAL = (4),
+		HSCAN2 = (5),
+		LSFTCAN1 = (6),
+		SWCAN1 = (7),
+		HSCAN3 = (8),
+		GMCGI = (9),
+		J1850_VPW = (10),
+		LIN3 = (11),
+		LIN4 = (12),
+		J1708 = (13),
+		HSCAN4 = (14),
+		HSCAN5 = (15),
+		KLINE1 = (16),
+		KLINE2 = (17),
+		KLINE3 = (18),
+		KLINE4 = (19),
+		FLEXRAY_1A = (20),
+		UART = (21),
+		UART2 = (22),
+		LIN5 = (23),
+		MOST25 = (24),
+		MOST50 = (25),
+		FLEXRAY_1B = (26),
+		SWCAN2 = (27),
+		ETHERNET_DAQ = (28),
+		ETHERNET = (29),
+		FLEXRAY_2A = (30),
+		FLEXRAY_2B = (31),
+		HSCAN6 = (32),
+		HSCAN7 = (33),
+		LIN6 = (34),
+		LSFTCAN2 = (35),
+		OP_ETHERNET1 = (36),
+		OP_ETHERNET2 = (37),
+		OP_ETHERNET3 = (38),
+		OP_ETHERNET4 = (39),
+		OP_ETHERNET5 = (40),
+		OP_ETHERNET6 = (41),
+		OP_ETHERNET7 = (42),
+		OP_ETHERNET8 = (43),
+		OP_ETHERNET9 = (44),
+		OP_ETHERNET10 = (45),
+		OP_ETHERNET11 = (46),
+		OP_ETHERNET12 = (47),
+		KLINE5 = (48),
+		KLINE6 = (49),
+		FLEXRAY1 = (50),
+		FLEXRAY2 = (51)
+	};
 	static bool CommandTypeIsValid(CommandType cmd) {
 		switch(cmd) {
 			case CommandType::PlasmaReadRequest:

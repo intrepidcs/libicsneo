@@ -10,11 +10,14 @@
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/device/nullsettings.h"
 #include "icsneo/device/devicetype.h"
+#include "icsneo/device/extensions/deviceextension.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
 #include "icsneo/communication/decoder.h"
 #include "icsneo/communication/message/resetstatusmessage.h"
+#include "icsneo/device/extensions/flexray/controller.h"
+#include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/third-party/concurrentqueue/concurrentqueue.h"
 
 namespace icsneo {
@@ -83,6 +86,10 @@ public:
 	virtual size_t getNetworkCountByType(Network::Type) const;
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
+	virtual std::shared_ptr<FlexRay::Controller> getFlexRayControllerByNetwork(const Network& net) const { return nullptr; }
+
+	const device_eventhandler_t& getEventHandler() const { return report; }
+
 	std::shared_ptr<Communication> com;
 	std::unique_ptr<IDeviceSettings> settings;
 
@@ -116,6 +123,7 @@ protected:
 		setupSettings(*settings);
 		setupSupportedRXNetworks(supportedRXNetworks);
 		setupSupportedTXNetworks(supportedTXNetworks);
+		setupExtensions();
 	}
 
 	virtual device_eventhandler_t makeEventHandler() {
@@ -152,6 +160,20 @@ protected:
 
 	virtual void setupSupportedRXNetworks(std::vector<Network>&) {}
 	virtual void setupSupportedTXNetworks(std::vector<Network>&) {}
+
+	virtual void setupExtensions() {}
+	void addExtension(std::shared_ptr<DeviceExtension>&& extension);
+	
+	template<typename Extension>
+	std::shared_ptr<Extension> getExtension() const {
+		std::shared_ptr<Extension> ret;
+		std::lock_guard<std::mutex> lk(extensionsLock);
+		for(auto& ext : extensions) {
+			if((ret = std::dynamic_pointer_cast<Extension>(ext)))
+				break;
+		}
+		return ret;
+	}
 	// END Initialization Functions
 
 	void handleInternalMessage(std::shared_ptr<Message> message);
@@ -161,6 +183,10 @@ protected:
 private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
+
+	mutable std::mutex extensionsLock;
+	std::vector<std::shared_ptr<DeviceExtension>> extensions;
+	void forEachExtension(std::function<void(const std::shared_ptr<DeviceExtension>&)> fn);
 
 	std::vector<Network> supportedTXNetworks;
 	std::vector<Network> supportedRXNetworks;

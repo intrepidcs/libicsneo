@@ -50,8 +50,9 @@ public:
 		}
 	}
 
-	int addEventCallback(const EventCallback &cb);
+	bool isDowngradingErrorsOnCurrentThread() const;
 
+	int addEventCallback(const EventCallback &cb);
 	bool removeEventCallback(int id);
 
 	size_t eventCount(EventFilter filter = EventFilter()) const {

@@ -141,6 +141,22 @@ std::shared_ptr<Message> Communication::waitForMessageSync(std::shared_ptr<Messa
 	return returnedMessage;
 }
 
+void Communication::dispatchMessage(const std::shared_ptr<Message>& msg) {
+	std::lock_guard<std::mutex> lk(messageCallbacksLock);
+
+	// We want callbacks to be able to access errors
+	const bool downgrade = EventManager::GetInstance().isDowngradingErrorsOnCurrentThread();
+	if(downgrade)
+		EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
+	for(auto& cb : messageCallbacks) {
+		if(!closing) { // We might have closed while reading or processing
+			cb.second.callIfMatch(msg);
+		}
+	}
+	if(downgrade)
+		EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+}
+
 void Communication::readTask() {
 	std::vector<uint8_t> readBytes;
 
@@ -155,17 +171,7 @@ void Communication::readTask() {
 					if(!decoder->decode(msg, packet))
 						continue;
 
-					std::lock_guard<std::mutex> lk(messageCallbacksLock);
-
-					for(auto& cb : messageCallbacks) {
-						if(!closing) { // We might have closed while reading or processing
-							// We want callbacks to be able to access errors
-							EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
-							cb.second.callIfMatch(msg);
-							EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-						}
-					}
-					
+					dispatchMessage(msg);
 				}
 			}
 		}
