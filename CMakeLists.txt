@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.2)
 project(libicsneo VERSION 0.2.0)
 
-option(BUILD_TESTS "Build all tests." OFF)
-option(BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
+option(LIBICSNEO_BUILD_TESTS "Build all tests." OFF)
+option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
+option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
+option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
+option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -32,7 +35,7 @@ if(DOXYGEN_FOUND)
 	endif()
 endif()
 
-if(BUILD_DOCS)
+if(LIBICSNEO_BUILD_DOCS)
 	if(DOXYGEN_FOUND)
 		message("Will build Doxygen based documentation")
 
@@ -151,6 +154,7 @@ target_include_directories(icsneocpp
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 
 # libftdi
 if(NOT WIN32)
@@ -171,44 +175,48 @@ if(WIN32)
 	add_definitions(-DWPCAP -DHAVE_REMOTE -DWIN32_LEAN_AND_MEAN)
 endif(WIN32)
 
-add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
-target_include_directories(icsneoc
-	PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<INSTALL_INTERFACE:>
-	PRIVATE
-		${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-target_link_libraries(icsneoc PRIVATE icsneocpp)
+if(LIBICSNEO_BUILD_ICSNEOC)
+	add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
+	target_include_directories(icsneoc
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneoc PRIVATE icsneocpp)
+	target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+endif()
 
-add_library(icsneoc-static STATIC api/icsneoc/icsneoc.cpp)
-target_include_directories(icsneoc-static
-	PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<INSTALL_INTERFACE:>
-	PRIVATE
-		${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-target_link_libraries(icsneoc-static PUBLIC icsneocpp)
+if(LIBICSNEO_BUILD_ICSNEOC_STATIC)
+	add_library(icsneoc-static STATIC api/icsneoc/icsneoc.cpp)
+	target_include_directories(icsneoc-static
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneoc-static PUBLIC icsneocpp)
+	target_compile_features(icsneoc-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+endif()
 
-add_library(icsneolegacy SHARED
-	api/icsneolegacy/icsneolegacy.cpp
-	api/icsneolegacy/icsneolegacyextra.cpp
-	api/icsneoc/icsneoc.cpp
-)
-target_include_directories(icsneolegacy
-	PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<INSTALL_INTERFACE:>
-	PRIVATE
-		${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-target_link_libraries(icsneolegacy PRIVATE icsneocpp)
-
-target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
-target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
-target_compile_features(icsneoc-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
-target_compile_features(icsneolegacy PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+if(LIBICSNEO_BUILD_ICSNEOLEGACY)
+	add_library(icsneolegacy SHARED
+		api/icsneolegacy/icsneolegacy.cpp
+		api/icsneolegacy/icsneolegacyextra.cpp
+		api/icsneoc/icsneoc.cpp
+	)
+	target_include_directories(icsneolegacy
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneolegacy PRIVATE icsneocpp)
+	target_compile_features(icsneolegacy PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+endif()
 
 # libftdi
 if(NOT WIN32)
@@ -221,7 +229,7 @@ if(NOT WIN32)
 endif()
 
 # googletest
-if(BUILD_TESTS)
+if(LIBICSNEO_BUILD_TESTS)
 	if(WIN32)
 		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 	endif()	

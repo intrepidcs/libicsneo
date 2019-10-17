@@ -232,7 +232,7 @@ int icsneo_getPollingMessageLimit(const neodevice_t* device) {
 	if(!icsneo_isValidNeoDevice(device))
 		return -1;
 
-	return device->device->getPollingMessageLimit();
+	return (int)device->device->getPollingMessageLimit();
 }
 
 bool icsneo_setPollingMessageLimit(const neodevice_t* device, size_t newLimit) {
@@ -352,7 +352,7 @@ int icsneo_settingsReadStructure(const neodevice_t* device, void* structure, siz
 
 	size_t readSize = device->device->settings->getSize();
 	if(structure == nullptr) // Structure size request
-		return readSize;
+		return (int)readSize;
 	if(readSize > structureSize) {
 		// Client application has a smaller structure than we do
 		// It is probably built against an older version of the API
@@ -371,7 +371,7 @@ int icsneo_settingsReadStructure(const neodevice_t* device, void* structure, siz
 	if(readSize < structureSize) // Client application is attempting to read more than we have
 		memset((uint8_t*)structure + readSize, 0, structureSize - readSize);
 
-	return readSize;
+	return (int)readSize;
 }
 
 // Not exported
