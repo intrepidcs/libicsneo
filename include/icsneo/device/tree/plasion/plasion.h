@@ -21,7 +21,7 @@ protected:
 	virtual bool isSupportedRXNetwork(const Network&) const override { return true; }
 	virtual bool isSupportedTXNetwork(const Network&) const override { return true; }
 	virtual void setupExtensions() override {
-		addExtension(std::make_shared<FlexRay::Extension>(*this, 2));
+		addExtension(std::make_shared<FlexRay::Extension>(*this, (uint8_t)2));
 	}
 
 	static const std::vector<Network>& GetSupportedNetworks() {

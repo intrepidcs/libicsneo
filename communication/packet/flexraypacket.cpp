@@ -59,5 +59,8 @@ std::shared_ptr<FlexRayMessage> HardwareFlexRayPacket::DecodeToMessage(const std
 }
 
 bool HardwareFlexRayPacket::EncodeFromMessage(const FlexRayMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t& report) {
+	(void)message;
+	(void)bytestream;
+	(void)report;
 	return false;
 }
