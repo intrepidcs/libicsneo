@@ -9,7 +9,7 @@ namespace icsneo {
 
 class FlexRayMessage : public Message {
 public:
-	uint16_t id = 0;
+	uint16_t slotid = 0;
 	double tsslen = 0;
 	double framelen = 0;
 	FlexRay::Symbol symbol = FlexRay::Symbol::None;

@@ -13,7 +13,7 @@ struct HardwareFlexRayPacket {
 	static bool EncodeFromMessage(const FlexRayMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t& report);
 
 	//Word 0
-	uint16_t id : 11;
+	uint16_t slotid : 11;
 	uint16_t startup : 1;
 	uint16_t sync : 1;
 	uint16_t null_frame : 1;
