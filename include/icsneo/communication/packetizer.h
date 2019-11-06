@@ -37,7 +37,7 @@ private:
 	int headerSize = 0;
 	bool checksum = false;
 	bool gotGoodPackets = false; // Tracks whether we've ever gotten a good packet
-	Packet packet;
+	Packet packet, previousPacket;
 	std::deque<uint8_t> bytes;
 
 	std::vector<std::shared_ptr<Packet>> processedPackets;

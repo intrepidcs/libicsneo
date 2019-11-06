@@ -41,6 +41,7 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 					state = ReadState::ParseHeader;
 					currentIndex = 1;
 				} else {
+					std::cerr << "Discarding byte " << std::hex << std::setw(2) << std::setfill('0') << int(bytes.front()) << std::endl;
 					bytes.pop_front(); // Discard
 				}
 				break;
@@ -81,6 +82,21 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 				 * payload, and not the header or checksum.
 				 */
 				if(packetLength < 4 || packetLength > 4000) {
+					std::cerr << "====================================\n";
+					std::cerr << "An improper packet has occurred!\n";
+					std::cerr << "Packet: (" << std::dec << packetLength << ")\n";
+					std::cerr << '\t';
+					for(auto i = 0; i < std::min(packetLength, 16); i++)
+						std::cerr << std::hex << std::setw(2) << std::setfill('0') << int(bytes[i]) << ' ';
+					std::cerr << std::endl;
+					std::cerr << "Previous: (" << std::dec << previousPacket.data.size() << ") " << previousPacket.network << '\n';
+					for(auto i = 0; i < previousPacket.data.size(); i += 16) {
+						std::cerr << '\t';
+						for(auto j = 0; j < 16 && (i + j) < previousPacket.data.size(); j++)
+							std::cerr << std::hex << std::setw(2) << std::setfill('0') << int(previousPacket.data[i+j]) << ' ';
+						std::cerr << std::endl;
+					}
+					std::cerr << "====================================\n";
 					bytes.pop_front();
 					EventManager::GetInstance().add(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 					state = ReadState::SearchForHeader;
@@ -112,8 +128,28 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 				} else {
 					if(gotGoodPackets) // Don't complain unless we've already gotten a good packet, in case we started in the middle of a stream
 						report(APIEvent::Type::PacketChecksumError, APIEvent::Severity::Error);
+
+					std::cerr << "====================================\n";
+					std::cerr << "A checksum error has occurred!\n";
+					std::cerr << "Packet: (" << std::dec << packet.data.size() << ") " << packet.network << '\n';
+					for(auto i = 0; i < packet.data.size(); i += 16) {
+						std::cerr << '\t';
+						for(auto j = 0; j < 16 && (i + j) < packet.data.size(); j++)
+							std::cerr << std::hex << std::setw(2) << std::setfill('0') << int(packet.data[i+j]) << ' ';
+						std::cerr << std::endl;
+					}
+					std::cerr << "Previous: (" << std::dec << previousPacket.data.size() << ") " << previousPacket.network << '\n';
+					for(auto i = 0; i < previousPacket.data.size(); i += 16) {
+						std::cerr << '\t';
+						for(auto j = 0; j < 16 && (i + j) < previousPacket.data.size(); j++)
+							std::cerr << std::hex << std::setw(2) << std::setfill('0') << int(previousPacket.data[i+j]) << ' ';
+						std::cerr << std::endl;
+					}
+					std::cerr << "====================================\n";
+					
 					bytes.pop_front(); // Drop the first byte so it doesn't get picked up again
 				}
+				previousPacket = packet;
 				
 				// Reset for the next packet
 				currentIndex = 0;
