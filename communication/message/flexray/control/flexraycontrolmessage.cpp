@@ -38,6 +38,18 @@ std::vector<uint8_t> FlexRayControlMessage::BuildWriteCCRegArgs(uint8_t controll
 	});
 }
 
+std::vector<uint8_t> FlexRayControlMessage::BuildAddConfiguredTxMessageArgs(
+	uint8_t controller, uint16_t descriptionId, uint16_t slotId, uint8_t baseCycle, uint8_t cycleReps, FlexRay::Channel channel) {
+	return BuildBaseControlArgs(controller, FlexRay::Opcode::AddConfiguredTxMessage, {
+		uint8_t(descriptionId),
+		uint8_t(descriptionId >> 8),
+		uint8_t(slotId),
+		uint8_t(slotId >> 8),
+		uint8_t(baseCycle + cycleReps),
+		uint8_t(channel)
+	});
+}
+
 FlexRayControlMessage::FlexRayControlMessage(const Packet& packet) : Message() {
 	if(packet.data.size() < 2)
 		return; // huh?

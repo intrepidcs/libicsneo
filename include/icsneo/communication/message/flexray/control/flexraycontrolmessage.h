@@ -5,6 +5,7 @@
 #include "icsneo/communication/packet.h"
 #include "icsneo/device/extensions/flexray/opcode.h"
 #include "icsneo/device/extensions/flexray/pocstatus.h"
+#include "icsneo/device/extensions/flexray/channel.h"
 
 namespace icsneo {
 
@@ -14,6 +15,8 @@ public:
 	static std::vector<uint8_t> BuildBaseControlArgs(uint8_t controller, FlexRay::Opcode op, std::initializer_list<uint8_t> args);
 	static std::vector<uint8_t> BuildReadCCRegsArgs(uint8_t controller, uint16_t startAddress, uint8_t numRegisters = 1);
 	static std::vector<uint8_t> BuildWriteCCRegArgs(uint8_t controller, uint16_t address, uint32_t value);
+	static std::vector<uint8_t> BuildAddConfiguredTxMessageArgs(
+		uint8_t controller, uint16_t descriptionId, uint16_t slotId, uint8_t baseCycle, uint8_t cycleReps, FlexRay::Channel channel);
 
 	FlexRayControlMessage(const Packet& packet);
 	virtual ~FlexRayControlMessage() = default;

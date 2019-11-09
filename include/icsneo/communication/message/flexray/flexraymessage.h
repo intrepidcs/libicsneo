@@ -4,6 +4,7 @@
 #include "icsneo/communication/message/message.h"
 #include "icsneo/device/extensions/flexray/symbol.h"
 #include "icsneo/device/extensions/flexray/crcstatus.h"
+#include "icsneo/device/extensions/flexray/channel.h"
 
 namespace icsneo {
 
@@ -17,7 +18,7 @@ public:
 	uint16_t headerCRC = 0;
 	FlexRay::CRCStatus crcStatus = FlexRay::CRCStatus::OK;
 	uint32_t frameCRC = 0;
-	bool channelB = false;
+	FlexRay::Channel channel = FlexRay::Channel::None;
 	bool nullFrame = false;
 	bool reserved0was1 = false;
 	bool payloadPreamble = false;

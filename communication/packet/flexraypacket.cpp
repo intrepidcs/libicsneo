@@ -21,7 +21,7 @@ std::shared_ptr<FlexRayMessage> HardwareFlexRayPacket::DecodeToMessage(const std
 		// Eventually we'll have to get this from the framelen
 	} else {
 		msg->tsslen = data->tss_length_12_5ns * 12.5e-9;
-		msg->channelB = data->statusBits.bits.chb;
+		msg->channel = data->statusBits.bits.chb ? icsneo::FlexRay::Channel::B : icsneo::FlexRay::Channel::A;
 		
 		if(data->statusBits.bits.bytesRxed >= 5) {
 			if(data->statusBits.bits.hcrc_error)

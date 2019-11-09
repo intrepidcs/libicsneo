@@ -14,7 +14,7 @@ enum class Opcode : uint8_t {
 	WriteCCReg = 0x02,
 	WriteMessageBuffer = 0x03,
 	ReadCCStatus = 0x04,
-	AddConfiguredMessage = 0x05,
+	AddConfiguredTxMessage = 0x05,
 	InitForRun = 0x06,
 	Unknown = 0xff
 };
