@@ -433,6 +433,7 @@ public:
 		return os;
 	}
 	friend bool operator==(const Network& net1, const Network& net2) { return net1.getNetID() == net2.getNetID(); }
+	friend bool operator!=(const Network& net1, const Network& net2) { return !(net1 == net2); }
 
 private:
 	NetID value; // Always use setValue so that value and type stay in sync

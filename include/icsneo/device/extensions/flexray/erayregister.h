@@ -5,6 +5,8 @@
 
 namespace icsneo {
 
+namespace FlexRay {
+
 enum class ERAYRegister : uint32_t {
 	// Customer Registers : Not Part of ERAY, part of FUJITSU FlexRay  ASSP MB88121C
 	VER = 0x0000,// Version Information Register  reset = 0440_79FF  Access = r
@@ -100,6 +102,8 @@ enum class ERAYRegister : uint32_t {
 	NDAT1 = 0x0330,// New Data Register 1  0000_0000  r
 	NDAT2 = 0x0334,// New Data Register 2  0000_0000  r
 
+	ENDN = 0x03F4,// Endian check, 8765_4321  r
+
 	WRHS1 = 0x0500,// Write Header Section Register 1
 	WRHS2 = 0x0504,// Write Header Section Register 2
 	WRHS3 = 0x0508,// Write Header Section Register 3
@@ -110,6 +114,8 @@ enum class ERAYRegister : uint32_t {
 	OBCM = 0x710,
 	OBCR = 0x714,
 };
+
+} // namespace FlexRay
 
 } // namespace icsneo
 

@@ -197,6 +197,7 @@ bool Device::open() {
 		handleInternalMessage(message);
 	}));
 
+	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onDeviceOpen(); return true; });
 	return true;
 }
 
@@ -213,7 +214,8 @@ bool Device::close() {
 		com->removeMessageCallback(internalHandlerCallbackID);
 
 	internalHandlerCallbackID = 0;
-	
+
+	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onDeviceClose(); return true; });
 	return com->close();
 }
 
@@ -242,7 +244,8 @@ bool Device::goOnline() {
 	}
 	
 	online = true;
-	
+
+	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOnline(); return true; });
 	return true;
 }
 
@@ -272,6 +275,7 @@ bool Device::goOffline() {
 	
 	online = false;
 
+	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOffline(); return true; });
 	return true;
 }
 
@@ -292,6 +296,16 @@ bool Device::transmit(std::shared_ptr<Message> message) {
 		report(APIEvent::Type::UnsupportedTXNetwork, APIEvent::Severity::Error);
 		return false;
 	}
+
+	bool extensionHookedTransmit = false;
+	bool transmitStatusFromExtension = false;
+	forEachExtension([&](const std::shared_ptr<DeviceExtension>& ext) {
+		if(!ext->transmitHook(message, transmitStatusFromExtension))
+			extensionHookedTransmit = true;
+		return !extensionHookedTransmit; // false breaks out of the loop early
+	});
+	if(extensionHookedTransmit)
+		return transmitStatusFromExtension;
 
 	std::vector<uint8_t> packet;
 	if(!com->encoder->encode(packet, message))
@@ -338,10 +352,18 @@ void Device::addExtension(std::shared_ptr<DeviceExtension>&& extension) {
 	extensions.push_back(extension);
 }
 
-void Device::forEachExtension(std::function<void(const std::shared_ptr<DeviceExtension>&)> fn) {
-	std::lock_guard<std::mutex> lk(extensionsLock);
-	for(const auto& ext : extensions)
-		fn(ext);
+void Device::forEachExtension(std::function<bool(const std::shared_ptr<DeviceExtension>&)> fn) {
+	std::vector<std::shared_ptr<DeviceExtension>> extensionsCopy;
+
+	{
+		std::lock_guard<std::mutex> lk(extensionsLock);
+		extensionsCopy = extensions;
+	}
+
+	for(const auto& ext : extensionsCopy) {
+		if(!fn(ext))
+			break;
+	}
 }
 
 void Device::handleInternalMessage(std::shared_ptr<Message> message) {
@@ -354,6 +376,7 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 	}
 	forEachExtension([&](const std::shared_ptr<DeviceExtension>& ext) {
 		ext->handleMessage(message);
+		return true; // false breaks out early
 	});
 }
 

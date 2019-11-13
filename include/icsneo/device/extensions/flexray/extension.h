@@ -16,9 +16,14 @@ class Controller;
 
 class Extension : public DeviceExtension {
 public:
-	Extension(Device& device, uint8_t controllerCount);
+	Extension(Device& device, const std::vector<Network>& controllerNetworks);
 	const char* getName() const override { return "FlexRay"; }
+
+	void onGoOnline() override;
+	void onGoOffline() override;
+
 	void handleMessage(const std::shared_ptr<Message>& message) override;
+	bool transmitHook(const std::shared_ptr<Message>& message, bool& success) override;
 
 	std::shared_ptr<Controller> getController(uint8_t index) const {
 		if(index >= controllers.size())

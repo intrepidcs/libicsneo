@@ -14,6 +14,7 @@ enum class POCStatus : uint8_t {
 	NormalPassive = 0x03,
 	Halt = 0x04,
 	MonitorMode = 0x05,
+	Config = 0x0f,
 	WakeupStandby = 0x10,
 	WakeupListen = 0x11,
 	WakeupSend = 0x12,

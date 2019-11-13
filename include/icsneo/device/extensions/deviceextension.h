@@ -14,7 +14,16 @@ public:
 	DeviceExtension(Device& device) : device(device) {}
 	virtual ~DeviceExtension() = default;
 	virtual const char* getName() const = 0;
+
+	virtual void onDeviceOpen() {}
+	virtual void onGoOnline() {}
+	virtual void onGoOffline() {}
+	virtual void onDeviceClose() {}
+
 	virtual void handleMessage(const std::shared_ptr<Message>&) {}
+
+	// Return true to continue transmitting, success should be written to if false is returned
+	virtual bool transmitHook(const std::shared_ptr<Message>& message, bool& success) { return true; }
 
 protected:
 	Device& device;

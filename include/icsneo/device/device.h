@@ -86,7 +86,7 @@ public:
 	virtual size_t getNetworkCountByType(Network::Type) const;
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
-	virtual std::shared_ptr<FlexRay::Controller> getFlexRayControllerByNetwork(const Network&) const { return nullptr; }
+	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const { return {}; }
 
 	const device_eventhandler_t& getEventHandler() const { return report; }
 
@@ -186,7 +186,7 @@ private:
 
 	mutable std::mutex extensionsLock;
 	std::vector<std::shared_ptr<DeviceExtension>> extensions;
-	void forEachExtension(std::function<void(const std::shared_ptr<DeviceExtension>&)> fn);
+	void forEachExtension(std::function<bool(const std::shared_ptr<DeviceExtension>&)> fn);
 
 	std::vector<Network> supportedTXNetworks;
 	std::vector<Network> supportedRXNetworks;

@@ -17,11 +17,14 @@ protected:
 		std::unique_ptr<Decoder> decoder
 	) override { return std::make_shared<MultiChannelCommunication>(report, std::move(transport), packetizer, std::move(encoder), std::move(decoder)); }
 
-	// TODO: This is done so that Plasion can still transmit it's basic networks, awaiting VLAN support
+	// TODO This is done so that Plasion can still transmit it's basic networks, awaiting slave VNET support
 	virtual bool isSupportedRXNetwork(const Network&) const override { return true; }
 	virtual bool isSupportedTXNetwork(const Network&) const override { return true; }
 	virtual void setupExtensions() override {
-		addExtension(std::make_shared<FlexRay::Extension>(*this, (uint8_t)2));
+		std::vector<Network> flexRayControllers;
+		flexRayControllers.push_back(Network::NetID::FlexRay);
+		flexRayControllers.push_back(Network::NetID::FlexRay2);
+		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
 	}
 
 	static const std::vector<Network>& GetSupportedNetworks() {
@@ -57,29 +60,26 @@ protected:
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
+		// TODO Check configuration for FlexRay ColdStart mode, disable FlexRay 2 if so
 	}
 
-	virtual std::shared_ptr<FlexRay::Controller> getFlexRayControllerByNetwork(const Network& net) const override {
-		uint8_t idx = 0xff;
-		switch(net.getNetID()) {
-			case Network::NetID::FlexRay:
-				idx = 0;
-				break;
-			case Network::NetID::FlexRay2:
-				idx = 1;
-				break;
-			default:
-				return Device::getFlexRayControllerByNetwork(net);
-		}
-		
+	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const override {
+		// TODO Check configuration for FlexRay Enabled
+
 		auto extension = getExtension<FlexRay::Extension>();
 		if(!extension)
-			return Device::getFlexRayControllerByNetwork(net);
+			return Device::getFlexRayControllers();
 		
-		auto res = extension->getController(idx);
-		if(!res)
-			return Device::getFlexRayControllerByNetwork(net);
-		return res;
+		std::vector<std::shared_ptr<FlexRay::Controller>> ret;
+
+		if(auto ctrl1 = extension->getController(0))
+			ret.push_back(std::move(ctrl1));
+
+		// TODO Check configuration for FlexRay ColdStart mode, FlexRay2 -> FlexRay if so
+		if(auto ctrl2 = extension->getController(1))
+			ret.push_back(std::move(ctrl2));
+
+		return ret;
 	}
 
 public:

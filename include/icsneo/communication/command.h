@@ -5,6 +5,7 @@ namespace icsneo {
 
 enum class Command : uint8_t {
 	EnableNetworkCommunication = 0x07,
+	EnableNetworkCommunicationEx = 0x08,
 	RequestSerialNumber = 0xA1,
 	SetSettings = 0xA4, // Previously known as RED_CMD_SET_BAUD_REQ, follow up with SaveSettings to write to EEPROM
 	//GetSettings = 0xA5, // Previously known as RED_CMD_READ_BAUD_REQ, now unused

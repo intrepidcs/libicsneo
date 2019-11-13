@@ -1,5 +1,6 @@
 #include "icsneo/communication/encoder.h"
 #include "icsneo/communication/message/ethernetmessage.h"
+#include "icsneo/communication/message/main51message.h"
 #include "icsneo/communication/packet/ethernetpacket.h"
 #include "icsneo/communication/packet/canpacket.h"
 
@@ -49,24 +50,34 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 				case Network::NetID::Device:
 					shortFormat = true;
 					break;
-				case Network::NetID::Main51:
-					if(message->data.size() > 0xF) {
+				case Network::NetID::Main51: {
+					auto m51msg = std::dynamic_pointer_cast<Main51Message>(message);
+					if(!m51msg) {
+						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+						return false; // The message was not a properly formed Main51Message
+					}
+
+					if(!m51msg->forceShortFormat) {
 						// Main51 can be sent as a long message without setting the NetID to RED first
 						// Size in long format is the size of the entire packet
 						// So +1 for AA header, +1 for short format header, and +2 for long format size
 						uint16_t size = uint16_t(message->data.size()) + 1 + 1 + 2;
 						size += 1; // Even though we are not including the NetID bytes, the device expects them to be counted in the length
+						size += 1; // Main51 Command
 						message->data.insert(message->data.begin(), {
 							(uint8_t)Network::NetID::Main51, // 0x0B for long message
 							(uint8_t)size, // Size, little endian 16-bit
-							(uint8_t)(size >> 8)
+							(uint8_t)(size >> 8),
+							(uint8_t)m51msg->command
 						});
 						result = packetizer->packetWrap(message->data, shortFormat);
 						return true;
 					} else {
+						message->data.insert(message->data.begin(), { uint8_t(m51msg->command) });
 						shortFormat = true;
 					}
 					break;
+				}
 				case Network::NetID::RED_OLDFORMAT: {
 					// See the decoder for an explanation
 					// We expect the network byte to be populated already in data, but not the length
@@ -102,14 +113,15 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 }
 
 bool Encoder::encode(std::vector<uint8_t>& result, Command cmd, std::vector<uint8_t> arguments) {
-	auto msg = std::make_shared<Message>();
+	std::shared_ptr<Message> msg;
 	if(cmd == Command::UpdateLEDState) {
 		/* NetID::Device is a super old command type.
 		 * It has a leading 0x00 byte, a byte for command, and a byte for an argument.
 		 * In this case, command 0x06 is SetLEDState.
 		 * This old command type is not really used anywhere else.
 		 */
-		if (arguments.empty()) {
+		msg = std::make_shared<Message>();
+		if(arguments.empty()) {
 			report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
 			return false;
 		}
@@ -119,9 +131,20 @@ bool Encoder::encode(std::vector<uint8_t>& result, Command cmd, std::vector<uint
 		msg->data.push_back(0x06); // SetLEDState
 		msg->data.push_back(arguments.at(0)); // See Device::LEDState
 	} else {
+		auto m51msg = std::make_shared<Main51Message>();
+		msg = m51msg;
 		msg->network = Network::NetID::Main51;
-		msg->data.reserve(arguments.size() + 1);
-		msg->data.push_back((uint8_t)cmd);
+		m51msg->command = cmd;
+		switch(cmd) {
+			case Command::RequestSerialNumber:
+			case Command::EnableNetworkCommunication:
+			case Command::EnableNetworkCommunicationEx:
+				// There is a firmware handling idiosyncrasy with these commands
+				// They must be encoded in the short format
+				m51msg->forceShortFormat = true;
+			default:
+				break;
+		}
 		msg->data.insert(msg->data.end(), std::make_move_iterator(arguments.begin()), std::make_move_iterator(arguments.end()));
 	}
 	

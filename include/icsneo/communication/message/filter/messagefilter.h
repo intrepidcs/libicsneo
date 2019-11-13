@@ -11,7 +11,7 @@ class MessageFilter {
 public:
 	MessageFilter() {}
 	MessageFilter(Network::Type type) : type(type) {}
-	MessageFilter(Network::NetID netid) : netid(netid) {}
+	MessageFilter(Network::NetID netid) : type(Network::GetTypeOfNetID(netid)), netid(netid) {}
 	virtual ~MessageFilter() {}
 	// When getting "all" types of messages, include the ones marked as "internal only"
 	bool includeInternalInAny = false;

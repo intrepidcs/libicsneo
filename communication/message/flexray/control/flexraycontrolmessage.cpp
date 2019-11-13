@@ -2,10 +2,11 @@
 #include <cstring> // memcpy
 #include <limits>
 #include <algorithm>
+#include <iostream>
 
 using namespace icsneo;
 
-std::vector<uint8_t> FlexRayControlMessage::BuildBaseControlArgs(uint8_t controller, FlexRay::Opcode op, std::initializer_list<uint8_t> args) {
+std::vector<uint8_t> FlexRayControlMessage::BuildBaseControlArgs(uint8_t controller, FlexRay::Opcode op, const std::vector<uint8_t>& args) {
 	std::vector<uint8_t> ret;
 	ret.reserve(args.size() + 4);
 	ret.push_back(controller);
@@ -28,7 +29,7 @@ std::vector<uint8_t> FlexRayControlMessage::BuildReadCCRegsArgs(uint8_t controll
 
 std::vector<uint8_t> FlexRayControlMessage::BuildWriteCCRegArgs(uint8_t controller, uint16_t address, uint32_t value) {
 	address /= 4;
-	return BuildBaseControlArgs(controller, FlexRay::Opcode::ReadCCRegs, {
+	return BuildBaseControlArgs(controller, FlexRay::Opcode::WriteCCReg, {
 		uint8_t(address),
 		uint8_t(address >> 8),
 		uint8_t(value),
@@ -50,11 +51,26 @@ std::vector<uint8_t> FlexRayControlMessage::BuildAddConfiguredTxMessageArgs(
 	});
 }
 
+std::vector<uint8_t> FlexRayControlMessage::BuildWriteMessageBufferArgs(
+	uint8_t controller, uint16_t bufferId, const std::vector<uint8_t>& data, uint16_t desiredSize) {
+	desiredSize += desiredSize % 4; // Must be a multiple of 4
+	std::vector<uint8_t> args = {
+		uint8_t(bufferId),
+		uint8_t(desiredSize / 4)
+	};
+	args.insert(args.end(), data.begin(), data.end());
+	if(args.size() != desiredSize + 2)
+		args.resize(desiredSize + 2);
+	return BuildBaseControlArgs(controller, FlexRay::Opcode::WriteMessageBuffer, args);
+}
+
 FlexRayControlMessage::FlexRayControlMessage(const Packet& packet) : Message() {
+	network = Network::NetID::FlexRayControl;
+
 	if(packet.data.size() < 2)
 		return; // huh?
 	controller = packet.data[0];
-	if(controller < 2)
+	if(controller >= 2)
 		return; // Invalid controller
 
 	// Opcode is only ReadCCStatus or ReadCCRegs for the moment

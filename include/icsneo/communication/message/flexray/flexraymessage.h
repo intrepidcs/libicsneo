@@ -25,7 +25,8 @@ public:
 	bool sync = false;
 	bool startup = false;
 	bool dynamic = false;
-	uint8_t cycle = 0;
+	uint8_t cycle = 0; // baseCycle when transmitting
+	uint8_t cycleRepetition = 0; // only for transmit
 };
 
 }
