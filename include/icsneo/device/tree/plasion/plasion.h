@@ -23,7 +23,7 @@ protected:
 	virtual void setupExtensions() override {
 		std::vector<Network> flexRayControllers;
 		flexRayControllers.push_back(Network::NetID::FlexRay);
-		flexRayControllers.push_back(Network::NetID::FlexRay2);
+		flexRayControllers.push_back(Network::NetID::FlexRay); // TODO Becomes FlexRay2 if not in coldstart mode
 		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
 	}
 
