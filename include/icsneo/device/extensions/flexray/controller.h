@@ -196,7 +196,7 @@ private:
 	bool configDirty = false;
 	Cluster::Configuration clusterConfig;
 	Controller::Configuration controllerConfig;
-	std::vector<MessageBuffer> messageBuffers;
+	std::vector<std::shared_ptr<MessageBuffer>> messageBuffers;
 };
 
 } // namespace FlexRay

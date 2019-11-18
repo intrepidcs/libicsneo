@@ -16,13 +16,20 @@ std::shared_ptr<FlexRayMessage> HardwareFlexRayPacket::DecodeToMessage(const std
 	// Always get the frame length, even for a symbol
 	msg->framelen = data->frame_length_12_5ns * 12.5e-9;
 
+	msg->channel = data->statusBits.bits.chb ? icsneo::FlexRay::Channel::B : icsneo::FlexRay::Channel::A;
+
 	if(data->tss_length_12_5ns == 0xffff) {// Flag value meaning this is a symbol
-		msg->symbol = FlexRay::Symbol::Unknown; // We can't know the symbol yet because this will depend on the baudrate
-		// Eventually we'll have to get this from the framelen
+		// These values are only for 10Mbit
+		// That's the only baudrate supported for now
+		if (data->frame_length_12_5ns > 480)
+			msg->symbol = FlexRay::Symbol::Wakeup;
+		else if (data->frame_length_12_5ns > 264)
+			msg->symbol = FlexRay::Symbol::CAS;
+		else
+			msg->symbol = FlexRay::Symbol::Unknown;
 	} else {
 		msg->tsslen = data->tss_length_12_5ns * 12.5e-9;
-		msg->channel = data->statusBits.bits.chb ? icsneo::FlexRay::Channel::B : icsneo::FlexRay::Channel::A;
-		
+
 		if(data->statusBits.bits.bytesRxed >= 5) {
 			if(data->statusBits.bits.hcrc_error)
 				msg->headerCRCStatus = FlexRay::CRCStatus::Error;
@@ -43,14 +50,16 @@ std::shared_ptr<FlexRayMessage> HardwareFlexRayPacket::DecodeToMessage(const std
 			if(msg->headerCRCStatus != FlexRay::CRCStatus::Error) {
 				msg->reserved0was1 = data->reserved_0;
 				msg->payloadPreamble = data->payload_preamble;
-				msg->nullFrame = data->null_frame;
+				msg->nullFrame = !data->null_frame;
 				msg->sync = data->sync;
 				msg->startup = data->startup;
 				msg->slotid = data->slotid;
+				msg->cycle = data->cycle;
+				msg->dynamic = data->statusBits.bits.dynamic;
 				if(int64_t(numBytes) != int64_t(data->Length) - 4) {
-					
-				} else {
 					// This is an error, probably need to flag it
+				} else {
+					msg->data = std::vector<uint8_t>((const uint8_t*)(data + 1), (const uint8_t*)(data + 1) + numBytes);
 				}
 			}
 		}

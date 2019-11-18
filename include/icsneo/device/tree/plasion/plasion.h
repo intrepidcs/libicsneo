@@ -51,8 +51,7 @@ protected:
 			Network::NetID::LIN3,
 			Network::NetID::LIN4,
 
-			Network::NetID::FlexRay,
-			Network::NetID::FlexRay2
+			Network::NetID::FlexRay
 		};
 		return supportedNetworks;
 	}

@@ -25,7 +25,7 @@ void FlexRay::Controller::setConfiguration(Cluster::Configuration clConfig, Cont
 
 void FlexRay::Controller::addMessageBuffer(MessageBuffer buffer) {
 	configDirty = true;
-	messageBuffers.emplace_back(std::move(buffer));
+	messageBuffers.emplace_back(std::make_shared<MessageBuffer>(buffer));
 }
 
 void FlexRay::Controller::clearMessageBuffers() {
@@ -180,71 +180,72 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		(controllerConfig.ExternRateCorrectionMicroticks << 24)
 	});
 
-	std::vector<MessageBuffer> staticTx, dynamicTx;
+	std::vector<std::shared_ptr<MessageBuffer>> staticTx;
+	std::vector<std::shared_ptr<MessageBuffer>> dynamicTx;
 
 	// Add key slot messages
-	MessageBuffer first;
+	std::shared_ptr<MessageBuffer> first = std::make_shared<MessageBuffer>();
 	bool firstIsInMessageBuffers = false;
 	bool firstUsed = false;
 
-	MessageBuffer second;
+	std::shared_ptr<MessageBuffer> second = std::make_shared<MessageBuffer>();
 	bool secondIsInMessageBuffers = false;
 	bool secondUsed = false;
 
 	if(controllerConfig.KeySlotUsedForSync || controllerConfig.KeySlotOnlyEnabled) {
-		first.isStartup = controllerConfig.KeySlotUsedForStartup;
-		first.isSync = controllerConfig.KeySlotUsedForSync;
-		first.isTransmit = true;
-		first.channelA = true;
-		first.channelB = !controllerConfig.TwoKeySlotMode && controllerConfig.ChannelB;
-		first.frameID = controllerConfig.KeySlotID;
-		first.frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
-		first.baseCycle = 0;
-		first.cycleRepetition = 1;
-		first.continuousMode = 1;
-		staticTx.emplace_back(first);
+		first->isStartup = controllerConfig.KeySlotUsedForStartup;
+		first->isSync = controllerConfig.KeySlotUsedForSync;
+		first->isTransmit = true;
+		first->channelA = true;
+		first->channelB = !controllerConfig.TwoKeySlotMode && controllerConfig.ChannelB;
+		first->frameID = controllerConfig.KeySlotID;
+		first->frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
+		first->baseCycle = 0;
+		first->cycleRepetition = 1;
+		first->continuousMode = 0;
+		staticTx.push_back(first);
 		firstUsed = true;
 
 		if(controllerConfig.TwoKeySlotMode) {
-			second.isStartup = controllerConfig.KeySlotUsedForStartup;
-			second.isSync = controllerConfig.KeySlotUsedForSync;
-			second.isTransmit = true;
-			second.channelB =true;
-			second.frameID = controllerConfig.SecondKeySlotID;
-			second.frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
-			second.baseCycle = 0;
-			second.cycleRepetition = 1;
-			second.continuousMode = 0;
-			staticTx.emplace_back(second);
+			second->isStartup = controllerConfig.KeySlotUsedForStartup;
+			second->isSync = controllerConfig.KeySlotUsedForSync;
+			second->isTransmit = true;
+			second->channelB =true;
+			second->frameID = controllerConfig.SecondKeySlotID;
+			second->frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
+			second->baseCycle = 0;
+			second->cycleRepetition = 1;
+			second->continuousMode = 0;
+			staticTx.push_back(second);
 			secondUsed = true;
 		}
 	}
 
-	for(const auto& buf : messageBuffers) {
-		if(!buf.isTransmit)
+	for(auto& buf : messageBuffers) {
+		if(!buf->isTransmit)
 			continue; // Only transmit frames need to be written to the controller
 
-		if(!buf.isDynamic && ((controllerConfig.KeySlotUsedForSync && buf.isSync) || (controllerConfig.KeySlotUsedForStartup && buf.isStartup))) {
-			if(staticTx[0].frameID == buf.frameID) {
-				staticTx[0].frameLengthBytes = buf.frameLengthBytes;
-				staticTx[0].baseCycle = buf.baseCycle;
-				staticTx[0].cycleRepetition = buf.cycleRepetition;
-				staticTx[0].continuousMode = buf.continuousMode;
+		if(!buf->isDynamic && ((controllerConfig.KeySlotUsedForSync && buf->isSync) || (controllerConfig.KeySlotUsedForStartup && buf->isStartup))) {
+			if(staticTx[0]->frameID == buf->frameID) {
+				staticTx[0]->frameLengthBytes = buf->frameLengthBytes;
+				staticTx[0]->baseCycle = buf->baseCycle;
+				staticTx[0]->cycleRepetition = buf->cycleRepetition;
+				staticTx[0]->continuousMode = buf->continuousMode;
 				firstIsInMessageBuffers = true;
 				continue;
 			}
 
-			if(controllerConfig.TwoKeySlotMode && staticTx[1].frameID == buf.frameID) {
-				staticTx[1].frameLengthBytes = buf.frameLengthBytes;
-				staticTx[1].baseCycle = buf.baseCycle;
-				staticTx[1].cycleRepetition = buf.cycleRepetition;
-				staticTx[1].continuousMode = buf.continuousMode;
+			if(controllerConfig.TwoKeySlotMode && staticTx[1]->frameID == buf->frameID) {
+				staticTx[1]->frameLengthBytes = buf->frameLengthBytes;
+				staticTx[1]->baseCycle = buf->baseCycle;
+				staticTx[1]->cycleRepetition = buf->cycleRepetition;
+				staticTx[1]->continuousMode = buf->continuousMode;
 				secondIsInMessageBuffers = true;
 				continue;
 			}
 		}
 
-		if(buf.isDynamic)
+		if(buf->isDynamic)
 			dynamicTx.push_back(buf);
 		else
 			staticTx.push_back(buf);
@@ -259,13 +260,12 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 	int64_t totalBuffers = staticTx.size() + dynamicTx.size();
 	if(totalBuffers > 128) // TODO warn
 		totalBuffers = 128;
-	totalBuffers -= 1;
 
 	registerWrites.push_back({ ERAYRegister::MRC,
 		// FDB[7:0] set to 0, No group of message buffers exclusively for the static segment configured
 		// FFB[7:0] set to 0x80, No message buffer assigned to the FIFO
 		(0x80 << 8) |
-		(uint8_t(totalBuffers) << 16) |
+		(uint8_t(totalBuffers - 1) << 16) |
 		(controllerConfig.TwoKeySlotMode << 2)
 	});
 
@@ -276,8 +276,8 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 	}
 
 	uint16_t dataPointer = (totalBuffers + 1) * 4;
-	for(auto i = 0; i <= totalBuffers; i++) {
-		auto& buf = (i < staticTx.size() ? staticTx[i] : dynamicTx[i - staticTx.size()]);
+	for(auto i = 0; i < totalBuffers; i++) {
+		MessageBuffer& buf = *(i < staticTx.size() ? staticTx[i] : dynamicTx[i - staticTx.size()]);
 
 		if(buf.frameID == 0)
 			buf.frameID = i | (1 << 10);
@@ -355,8 +355,12 @@ bool FlexRay::Controller::getReady(std::chrono::milliseconds timeout) {
 		return false;
 	updateTimeout();
 
-	if(status == POCStatus::Ready && !configDirty)
-		return true; // Already in the desired state
+	if(status == POCStatus::Ready && !configDirty) {
+		// Already in the desired state
+		if(allowColdstart && !setCurrentPOCCommand(FlexRay::POCCommand::AllowColdstart, true, timeout))
+			return false;
+		return true;
+	}
 
 	if(status != POCStatus::Config) {
 		// Must enter config before continuing
@@ -408,28 +412,28 @@ bool FlexRay::Controller::transmit(const std::shared_ptr<FlexRayMessage>& frmsg)
 	bool success = false;
 
 	for(const auto& buf : messageBuffers) {
-		if(!buf.isTransmit)
+		if(!buf->isTransmit)
 			continue;
 
-		if(frmsg->slotid != buf.frameID)
+		if(frmsg->slotid != buf->frameID)
 			continue;
 
-		if(CalculateCycleFilter(frmsg->cycle, frmsg->cycleRepetition) != CalculateCycleFilter(buf.baseCycle, buf.cycleRepetition))
+		if(CalculateCycleFilter(frmsg->cycle, frmsg->cycleRepetition) != CalculateCycleFilter(buf->baseCycle, buf->cycleRepetition))
 			continue;
 
 		FlexRay::Channel bufChannel = FlexRay::Channel::None;
-		if(buf.channelA && buf.channelB)
+		if(buf->channelA && buf->channelB)
 			bufChannel = FlexRay::Channel::AB;
-		else if(buf.channelA)
+		else if(buf->channelA)
 			bufChannel = FlexRay::Channel::A;
-		else if(buf.channelB)
+		else if(buf->channelB)
 			bufChannel = FlexRay::Channel::B;
 		
 		if(frmsg->channel != bufChannel)
 			continue;
 
 		// This is a message buffer we want to fill
-		if(!device.com->sendCommand(Command::FlexRayControl, FlexRayControlMessage::BuildWriteMessageBufferArgs(index, buf._id, frmsg->data, buf.frameLengthBytes)))
+		if(!device.com->sendCommand(Command::FlexRayControl, FlexRayControlMessage::BuildWriteMessageBufferArgs(index, buf->_id, frmsg->data, buf->frameLengthBytes)))
 			continue;
 
 		success = true;
