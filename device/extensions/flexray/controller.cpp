@@ -202,7 +202,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		first->frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
 		first->baseCycle = 0;
 		first->cycleRepetition = 1;
-		first->continuousMode = 0;
+		first->continuousMode = true;
 		staticTx.push_back(first);
 		firstUsed = true;
 
@@ -215,7 +215,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 			second->frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
 			second->baseCycle = 0;
 			second->cycleRepetition = 1;
-			second->continuousMode = 0;
+			second->continuousMode = true;
 			staticTx.push_back(second);
 			secondUsed = true;
 		}
@@ -225,24 +225,28 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		if(!buf->isTransmit)
 			continue; // Only transmit frames need to be written to the controller
 
-		if(!buf->isDynamic && ((controllerConfig.KeySlotUsedForSync && buf->isSync) || (controllerConfig.KeySlotUsedForStartup && buf->isStartup))) {
-			if(staticTx[0]->frameID == buf->frameID) {
-				staticTx[0]->frameLengthBytes = buf->frameLengthBytes;
-				staticTx[0]->baseCycle = buf->baseCycle;
-				staticTx[0]->cycleRepetition = buf->cycleRepetition;
-				staticTx[0]->continuousMode = buf->continuousMode;
-				firstIsInMessageBuffers = true;
-				continue;
-			}
-
-			if(controllerConfig.TwoKeySlotMode && staticTx[1]->frameID == buf->frameID) {
-				staticTx[1]->frameLengthBytes = buf->frameLengthBytes;
-				staticTx[1]->baseCycle = buf->baseCycle;
-				staticTx[1]->cycleRepetition = buf->cycleRepetition;
-				staticTx[1]->continuousMode = buf->continuousMode;
-				secondIsInMessageBuffers = true;
-				continue;
-			}
+		if(buf->frameID == controllerConfig.KeySlotID) {
+			first = buf;
+			staticTx[0] = buf;
+			// Enforce keyslot rules
+			first->isStartup = controllerConfig.KeySlotUsedForStartup;
+			first->isSync = controllerConfig.KeySlotUsedForSync;
+			first->isDynamic = false;
+			// Suppress default buffer
+			firstIsInMessageBuffers = true;
+			continue;
+		}
+		else if(controllerConfig.TwoKeySlotMode && buf->frameID == controllerConfig.SecondKeySlotID) {
+			second = buf;
+			staticTx[1] = buf;
+			buf->isDynamic = false;
+			// Enforce keyslot rules
+			second->isStartup = controllerConfig.KeySlotUsedForStartup;
+			second->isSync = controllerConfig.KeySlotUsedForSync;
+			second->isDynamic = false;
+			// Suppress default buffer
+			secondIsInMessageBuffers = true;
+			continue;
 		}
 
 		if(buf->isDynamic)
@@ -262,11 +266,11 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		totalBuffers = 128;
 
 	registerWrites.push_back({ ERAYRegister::MRC,
-		// FDB[7:0] set to 0, No group of message buffers exclusively for the static segment configured
+		(uint8_t(staticTx.size())) | // FDB[7:0] message buffers exclusively for the static segment
 		// FFB[7:0] set to 0x80, No message buffer assigned to the FIFO
 		(0x80 << 8) |
 		(uint8_t(totalBuffers - 1) << 16) |
-		(controllerConfig.TwoKeySlotMode << 2)
+		(controllerConfig.TwoKeySlotMode << 26)
 	});
 
 	for(const auto& regpair : registerWrites) {
@@ -596,12 +600,15 @@ std::pair<bool, uint32_t> FlexRay::Controller::readRegister(ERAYRegister reg, st
 	device.com->sendCommand(Command::FlexRayControl, FlexRayControlMessage::BuildReadCCRegsArgs(index, uint16_t(reg)));
 	std::shared_ptr<FlexRayControlMessage> resp;
 	const auto start = std::chrono::steady_clock::now();
-	while(!resp && (std::chrono::steady_clock::now() - start) < timeout) {
-		auto msg = device.com->waitForMessageSync(MessageFilter(icsneo::Network::NetID::FlexRayControl), timeout);
+	while((std::chrono::steady_clock::now() - start) < timeout) {
+		auto msg = device.com->waitForMessageSync(MessageFilter(icsneo::Network::NetID::FlexRayControl), timeout / 4);
 		if(auto frmsg = std::dynamic_pointer_cast<FlexRayControlMessage>(msg)) {
 			if(frmsg->decoded && frmsg->controller == index && frmsg->opcode == FlexRay::Opcode::ReadCCRegs)
 				resp = frmsg;
 		}
+		if(resp)
+			break;
+		device.com->sendCommand(Command::FlexRayControl, FlexRayControlMessage::BuildReadCCRegsArgs(index, uint16_t(reg)));
 	}
 	if(resp && !resp->registers.empty())
 		return {true, resp->registers[0]};
