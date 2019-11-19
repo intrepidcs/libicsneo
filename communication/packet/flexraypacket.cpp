@@ -59,7 +59,8 @@ std::shared_ptr<FlexRayMessage> HardwareFlexRayPacket::DecodeToMessage(const std
 				if(int64_t(numBytes) != int64_t(data->Length) - 4) {
 					// This is an error, probably need to flag it
 				} else {
-					msg->data = std::vector<uint8_t>((const uint8_t*)(data + 1), (const uint8_t*)(data + 1) + numBytes);
+					const uint8_t* dataStart = (const uint8_t*)(data) - 4 + sizeof(HardwareFlexRayPacket);
+					msg->data = std::vector<uint8_t>(dataStart, dataStart + numBytes);
 				}
 			}
 		}
