@@ -86,7 +86,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 
 	registerWrites.push_back({ ERAYRegister::SUCC2,
 		((controllerConfig.ListenTimeout & 0x1fffff)) |
-		(clusterConfig.ListenNoiseMacroticks << 24)
+		((clusterConfig.ListenNoiseMacroticks - 1) << 24)
 	});
 
 	registerWrites.push_back({ ERAYRegister::SUCC3,
@@ -103,7 +103,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		((clusterConfig.CASRxLowMax & 0x3F) << 4) |
 		((clusterConfig.StrobePointPosition & 0x3) << 12) |
 		((clusterConfig.Speed & 0x3) << 14) |
-		((clusterConfig.WakeupRxWindowBits & 0x1F) << 16) |
+		((clusterConfig.WakeupRxWindowBits & 0x1ff) << 16) |
 		((controllerConfig.WakeupPattern) << 26)
 	});
 
@@ -153,8 +153,8 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC7,
-		clusterConfig.NumberOfStaticSlots |
-		(clusterConfig.StaticSlotMacroticks << 16)
+		(clusterConfig.StaticSlotMacroticks) |
+		(clusterConfig.NumberOfStaticSlots << 16)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC8,
