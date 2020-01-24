@@ -94,7 +94,7 @@ bool Registry::Get(std::wstring path, std::wstring key, uint32_t& value) {
 		return false;
 	
 	// Query for the data
-	DWORD type, size, kvalue;
+	DWORD type, size = sizeof(DWORD), kvalue;
 	auto ret = RegQueryValueExW(regKey.GetKey(), key.c_str(), nullptr, &type, (LPBYTE)&kvalue, &size);
 	if(ret != ERROR_SUCCESS || type != REG_DWORD)
 		return false;
