@@ -80,13 +80,24 @@ if(LIBICSNEO_BUILD_DOCS)
 	endif()
 endif()
 
-
-if(WIN32)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	file(GLOB PLATFORM_SRC_EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/*.cpp)
 	file(GLOB PLATFORM_SRC_INTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/internal/*.cpp)
 	set(PLATFORM_SRC ${PLATFORM_SRC_EXTERNAL} ${PLATFORM_SRC_INTERNAL})
-else()
-	file(GLOB PLATFORM_SRC ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/*.cpp)
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+	file(GLOB PLATFORM_SRC_DARWIN ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/darwin/*.cpp)
+	file(GLOB PLATFORM_SRC_POSIX ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/*.cpp)
+	set(PLATFORM_SRC ${PLATFORM_SRC_POSIX} ${PLATFORM_SRC_DARWIN})
+else() # elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	file(GLOB PLATFORM_SRC_LINUX ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/linux/*.cpp)
+	file(GLOB PLATFORM_SRC_POSIX ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/*.cpp)
+	set(PLATFORM_SRC ${PLATFORM_SRC_POSIX} ${PLATFORM_SRC_LINUX})
+	if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+		message(WARNING
+			"There is no platform port defined for ${CMAKE_SYSTEM_NAME}!\n"
+			"The Linux platform code will be used, as it will generally allow building, but some devices may not enumerate properly."
+		)
+	endif()
 endif()
 
 set(COMMON_SRC

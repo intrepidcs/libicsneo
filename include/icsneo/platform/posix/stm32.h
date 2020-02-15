@@ -11,6 +11,16 @@ namespace icsneo {
 
 class STM32 : public ICommunication {
 public:
+	/*
+	 * Note: This is a driver for all devices which use CDC_ACM
+	 * Once we find the TTY we want it's a pretty generic POSIX TTY driver, but
+	 * the method for finding the TTY we want varies by OS.
+	 * On Linux, we read sysfs to find users of the CDC_ACM driver
+	 * On macOS, we use IOKit to find the USB device we're looking for
+	 * As such platform specific FindByProduct & HandleToTTY code can be found
+	 * in stm32linux.cpp and stm32darwin.cpp respectively
+	 * Other POSIX systems (BSDs, QNX, etc) will need bespoke code written in the future
+	 */
 	STM32(const device_eventhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {}
 	static std::vector<neodevice_t> FindByProduct(int product);
 
@@ -21,7 +31,8 @@ public:
 private:
 	neodevice_t& device;
 	int fd = -1;
-	static constexpr neodevice_handle_t HANDLE_OFFSET = 10;
+
+	static std::string HandleToTTY(neodevice_handle_t handle);
 
 	void readTask();
 	void writeTask();
