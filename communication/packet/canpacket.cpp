@@ -76,6 +76,10 @@ std::shared_ptr<CANMessage> HardwareCANPacket::DecodeToMessage(const std::vector
 		}
 	}
 
+	msg->transmitted = data->eid.TXMSG;
+	msg->error = data->eid.TXAborted || data->eid.TXError || data->eid.TXLostArb;
+	msg->description = data->stats;
+
 	return msg;
 }
 
