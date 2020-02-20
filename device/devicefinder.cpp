@@ -6,6 +6,10 @@ using namespace icsneo;
 static bool supportedDevicesCached = false;
 static std::vector<DeviceType> supportedDevices = {
 
+	#ifdef __ETHERBADGE_H_
+	EtherBADGE::DEVICE_TYPE,
+	#endif
+
 	#ifdef __NEOOBD2PRO_H_
 	NeoOBD2PRO::DEVICE_TYPE,
 	#endif
@@ -83,6 +87,10 @@ static std::vector<DeviceType> supportedDevices = {
 std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	std::vector<std::shared_ptr<Device>> foundDevices;
 	std::vector<std::vector<std::shared_ptr<Device>>> findResults;
+
+	#ifdef __ETHERBADGE_H_
+	findResults.push_back(EtherBADGE::Find());
+	#endif
 	
 	#ifdef __NEOOBD2PRO_H_
 	findResults.push_back(NeoOBD2PRO::Find());

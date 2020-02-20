@@ -36,6 +36,7 @@ public:
 		VCAN4_2EL = (0x0000000a),
 		RADIO_CANHUB = (0x0000000b),
 		VCAN3 = (0x00000010),
+		EtherBADGE = (0x00000016),
 		RED = (0x00000040),
 		ECU = (0x00000080),
 		IEVB = (0x00000100),
@@ -92,6 +93,8 @@ public:
 				return "RADIO_CANHUB";
 			case VCAN3:
 				return "ValueCAN 3";
+			case EtherBADGE:
+				return "EtherBADGE";
 			case RED:
 				return "neoVI RED";
 			case ECU:
@@ -179,6 +182,7 @@ private:
 #define ICSNEO_DEVICETYPE_VCAN4_2EL ((devicetype_t)0x0000000a)
 #define ICSNEO_DEVICETYPE_RADIO_CANHUB ((devicetype_t)0x0000000b)
 #define ICSNEO_DEVICETYPE_VCAN3 ((devicetype_t)0x00000010)
+#define ICSNEO_DEVICETYPE_ETHERBADGE ((devicetype_t)0x00000016)
 #define ICSNEO_DEVICETYPE_RED ((devicetype_t)0x00000040)
 #define ICSNEO_DEVICETYPE_ECU ((devicetype_t)0x00000080)
 #define ICSNEO_DEVICETYPE_IEVB ((devicetype_t)0x00000100)
