@@ -274,7 +274,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 	});
 
 	for(const auto& regpair : registerWrites) {
-		if(!writeRegister(regpair.first, regpair.second, true, timeout))
+		if(!writeRegister(regpair.first, regpair.second, false, timeout))
 			return false;
 		updateTimeout();
 	}
