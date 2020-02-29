@@ -47,10 +47,17 @@ public:
 	
 	int addMessageCallback(const MessageCallback& cb);
 	bool removeMessageCallback(int id);
-	std::shared_ptr<Message> waitForMessageSync(MessageFilter f = MessageFilter(), std::chrono::milliseconds timeout = std::chrono::milliseconds(50)) {
-		return waitForMessageSync(std::make_shared<MessageFilter>(f), timeout);
+	std::shared_ptr<Message> waitForMessageSync(
+		MessageFilter f = MessageFilter(),
+		std::chrono::milliseconds timeout = std::chrono::milliseconds(50)) {
+		return waitForMessageSync([](){ return true; }, f, timeout);
 	}
-	std::shared_ptr<Message> waitForMessageSync(std::shared_ptr<MessageFilter> f, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
+	// onceWaitingDo is a way to avoid race conditions.
+	// Return false to bail early, in case your initial command failed.
+	std::shared_ptr<Message> waitForMessageSync(
+		std::function<bool(void)> onceWaitingDo,
+		MessageFilter f = MessageFilter(),
+		std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	std::shared_ptr<Packetizer> packetizer; // Ownership is shared with the encoder
 	std::unique_ptr<Encoder> encoder;

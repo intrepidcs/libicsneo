@@ -210,8 +210,10 @@ bool IDeviceSettings::apply(bool temporary) {
 	bytestream[6] = (uint8_t)(gs_checksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
-	com->sendCommand(Command::SetSettings, bytestream);
-	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
+	
+	std::shared_ptr<Message> msg = com->waitForMessageSync([this, &bytestream]() {
+		return com->sendCommand(Command::SetSettings, bytestream);
+	}, Main51MessageFilter(Command::SetSettings), std::chrono::milliseconds(1000));
 
 	if(!msg || msg->data[0] != 1) { // We did not receive a response
 		// Attempt to get the settings from the device so we're up to date if possible
@@ -230,8 +232,9 @@ bool IDeviceSettings::apply(bool temporary) {
 	bytestream[6] = (uint8_t)(gs_checksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
-	com->sendCommand(Command::SetSettings, bytestream);
-	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
+	msg = com->waitForMessageSync([this, &bytestream]() {
+		return com->sendCommand(Command::SetSettings, bytestream);
+	}, Main51MessageFilter(Command::SetSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) { 
@@ -242,8 +245,9 @@ bool IDeviceSettings::apply(bool temporary) {
 	}
 
 	if(!temporary) {
-		com->sendCommand(Command::SaveSettings);
-		msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000));
+		msg = com->waitForMessageSync([this]() {
+			return com->sendCommand(Command::SaveSettings);
+		}, Main51MessageFilter(Command::SaveSettings), std::chrono::milliseconds(5000));
 	}
 	
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
@@ -266,8 +270,9 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 		return false;
 	}
 
-	com->sendCommand(Command::SetDefaultSettings);
-	std::shared_ptr<Message> msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetDefaultSettings), std::chrono::milliseconds(1000));
+	std::shared_ptr<Message> msg = com->waitForMessageSync([this]() {
+		return com->sendCommand(Command::SetDefaultSettings);
+	}, Main51MessageFilter(Command::SetDefaultSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) { 
@@ -295,8 +300,9 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	bytestream[6] = (uint8_t)(gs_checksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
-	com->sendCommand(Command::SetSettings, bytestream);
-	msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000));
+	msg = com->waitForMessageSync([this, &bytestream]() {
+		return com->sendCommand(Command::SetSettings, bytestream);
+	}, Main51MessageFilter(Command::SetSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) { 
@@ -307,8 +313,9 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	}
 
 	if(!temporary) {
-		com->sendCommand(Command::SaveSettings);
-		msg = com->waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000));
+		msg = com->waitForMessageSync([this]() {
+			return com->sendCommand(Command::SaveSettings);
+		}, Main51MessageFilter(Command::SaveSettings), std::chrono::milliseconds(5000));
 	}
 	
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not

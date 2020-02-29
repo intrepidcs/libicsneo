@@ -67,8 +67,9 @@ bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 }
 
 bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout) {
-	sendCommand(Command::ReadSettings, { 0, 0, 0, 1 /* Get Global Settings */, 0, 1 /* Subversion 1 */ });
-	std::shared_ptr<Message> msg = waitForMessageSync(MessageFilter(Network::NetID::ReadSettings), timeout);
+	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
+		return sendCommand(Command::ReadSettings, { 0, 0, 0, 1 /* Get Global Settings */, 0, 1 /* Subversion 1 */ });
+	}, MessageFilter(Network::NetID::ReadSettings), timeout);
 	if(!msg)
 		return false;
 
@@ -89,7 +90,9 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 
 std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chrono::milliseconds timeout) {
 	sendCommand(Command::RequestSerialNumber);
-	std::shared_ptr<Message> msg = waitForMessageSync(std::make_shared<Main51MessageFilter>(Command::RequestSerialNumber), timeout);
+	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
+		return sendCommand(Command::RequestSerialNumber);
+	}, Main51MessageFilter(Command::RequestSerialNumber), timeout);
 	if(!msg) // Did not receive a message
 		return std::shared_ptr<SerialNumberMessage>();
 
@@ -117,25 +120,32 @@ bool Communication::removeMessageCallback(int id) {
 	}
 }
 
-std::shared_ptr<Message> Communication::waitForMessageSync(std::shared_ptr<MessageFilter> f, std::chrono::milliseconds timeout) {
+std::shared_ptr<Message> Communication::waitForMessageSync(std::function<bool(void)> onceWaitingDo, MessageFilter f, std::chrono::milliseconds timeout) {
 	std::mutex m;
 	std::condition_variable cv;
 	std::shared_ptr<Message> returnedMessage;
+
+	std::unique_lock<std::mutex> lk(m); // Don't let the callback fire until we're waiting for it
 	int cb = addMessageCallback(MessageCallback([&m, &returnedMessage, &cv](std::shared_ptr<Message> message) {
 		{
 			std::lock_guard<std::mutex> lk(m);
 			returnedMessage = message;
 		}
-		cv.notify_one();
+		cv.notify_all();
 	}, f));
 
-	// We have now added the callback, wait for it to return from the other thread
-	std::unique_lock<std::mutex> lk(m);
-	cv.wait_for(lk, timeout, [&returnedMessage] { return !!returnedMessage; }); // `!!shared_ptr` checks if the ptr has a value
-	lk.unlock();
+	// We have now added the callback, do whatever the caller wanted to do
+	bool fail = !onceWaitingDo();
+	if(!fail)
+		cv.wait_for(lk, timeout, [&returnedMessage] { return !!returnedMessage; }); // `!!shared_ptr` checks if the ptr has a value
+	lk.unlock(); // Ensure callbacks can complete even if we didn't wait for them
 
 	// We don't actually check that we got a message, because either way we want to remove the callback (since it should only happen once)
 	removeMessageCallback(cb);
+	// We are now guaranteed that no more callbacks will happen
+
+	if(fail) // The caller's function failed, so don't return a message
+		returnedMessage.reset();
 
 	// Then we either will return the message we got or we will return the empty shared_ptr, caller responsible for checking
 	return returnedMessage;

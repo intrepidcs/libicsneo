@@ -236,11 +236,17 @@ bool Device::goOnline() {
 	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
 		if(latestResetStatus && latestResetStatus->comEnabled)
 			break;
-		
-		if(!com->sendCommand(Command::RequestStatusUpdate))
-			return false;
 
-		com->waitForMessageSync(filter, std::chrono::milliseconds(100));
+		bool failOut = false;
+		com->waitForMessageSync([this, &failOut]() {
+			if(!com->sendCommand(Command::RequestStatusUpdate)) {
+				failOut = true;
+				return false;
+			}
+			return true;
+		}, filter, std::chrono::milliseconds(100));
+		if(failOut)
+			return false;
 	}
 	
 	online = true;
