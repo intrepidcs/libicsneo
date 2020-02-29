@@ -250,6 +250,8 @@ bool Device::goOnline() {
 }
 
 bool Device::goOffline() {
+	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOffline(); return true; });
+
 	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
 		return false;
 
@@ -275,7 +277,6 @@ bool Device::goOffline() {
 	
 	online = false;
 
-	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOffline(); return true; });
 	return true;
 }
 
