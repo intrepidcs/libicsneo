@@ -593,23 +593,34 @@ uint16_t FlexRay::Controller::CalculateCycleFilter(uint8_t baseCycle, uint8_t cy
 }
 
 std::pair<bool, uint32_t> FlexRay::Controller::readRegister(ERAYRegister reg, std::chrono::milliseconds timeout) const {
-	if(timeout.count() <= 0)
+	if(timeout.count() <= 20)
 		return {false, 0}; // Out of time!
 
 	std::lock_guard<std::mutex> lk(readRegisterLock);
-	device.com->sendCommand(Command::FlexRayControl, FlexRayControlMessage::BuildReadCCRegsArgs(index, uint16_t(reg)));
 	std::shared_ptr<FlexRayControlMessage> resp;
-	const auto start = std::chrono::steady_clock::now();
-	while((std::chrono::steady_clock::now() - start) < timeout) {
-		auto msg = device.com->waitForMessageSync(MessageFilter(icsneo::Network::NetID::FlexRayControl), timeout / 4);
+	std::chrono::steady_clock::time_point lastSent;
+	do {
+		const auto waitTime = std::chrono::steady_clock::now();
+		auto msg = device.com->waitForMessageSync([this, &lastSent, &reg, &timeout]() {
+			if(timeout.count() < 20)
+				return true; // Might not have time to receive the response, so don't request
+			if(std::chrono::steady_clock::now() - lastSent < std::chrono::milliseconds(40))
+				return true; // Don't send too fast
+
+			if(!device.com->sendCommand(Command::FlexRayControl, FlexRayControlMessage::BuildReadCCRegsArgs(index, uint16_t(reg))))
+				return false; // Command failed to send
+			lastSent = std::chrono::steady_clock::now();
+			return true;
+		}, MessageFilter(icsneo::Network::NetID::FlexRayControl), timeout);
 		if(auto frmsg = std::dynamic_pointer_cast<FlexRayControlMessage>(msg)) {
 			if(frmsg->decoded && frmsg->controller == index && frmsg->opcode == FlexRay::Opcode::ReadCCRegs)
 				resp = frmsg;
 		}
 		if(resp)
 			break;
-		device.com->sendCommand(Command::FlexRayControl, FlexRayControlMessage::BuildReadCCRegsArgs(index, uint16_t(reg)));
-	}
+		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - waitTime);
+	} while(timeout.count() > 0);
+
 	if(resp && !resp->registers.empty())
 		return {true, resp->registers[0]};
 	else
