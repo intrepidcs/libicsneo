@@ -1,7 +1,7 @@
 #ifndef __COMMUNICATION_H_
 #define __COMMUNICATION_H_
 
-#include "icsneo/communication/icommunication.h"
+#include "icsneo/communication/driver.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/communication/network.h"
 #include "icsneo/communication/packet.h"
@@ -24,10 +24,10 @@ class Communication {
 public:
 	Communication(
 		device_eventhandler_t report,
-		std::unique_ptr<ICommunication>&& com,
+		std::unique_ptr<Driver>&& driver,
 		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder>&& e,
-		std::unique_ptr<Decoder>&& md) : makeConfiguredPacketizer(makeConfiguredPacketizer), encoder(std::move(e)), decoder(std::move(md)), report(report), impl(std::move(com)) {
+		std::unique_ptr<Decoder>&& md) : makeConfiguredPacketizer(makeConfiguredPacketizer), encoder(std::move(e)), decoder(std::move(md)), report(report), driver(std::move(driver)) {
 		packetizer = makeConfiguredPacketizer();
 	}
 	virtual ~Communication() { close(); }
@@ -37,10 +37,10 @@ public:
 	bool isOpen();
 	virtual void spawnThreads();
 	virtual void joinThreads();
-	bool rawWrite(const std::vector<uint8_t>& bytes) { return impl->write(bytes); }
+	bool rawWrite(const std::vector<uint8_t>& bytes) { return driver->write(bytes); }
 	virtual bool sendPacket(std::vector<uint8_t>& bytes);
 
-	void setWriteBlocks(bool blocks) { impl->writeBlocks = blocks; }
+	void setWriteBlocks(bool blocks) { driver->writeBlocks = blocks; }
 
 	virtual bool sendCommand(Command cmd, bool boolean) { return sendCommand(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
 	virtual bool sendCommand(Command cmd, std::vector<uint8_t> arguments = {});
@@ -68,7 +68,7 @@ public:
 	device_eventhandler_t report;
 
 protected:
-	std::unique_ptr<ICommunication> impl;
+	std::unique_ptr<Driver> driver;
 	static int messageCallbackIDCounter;
 	std::mutex messageCallbacksLock;
 	std::map<int, MessageCallback> messageCallbacks;

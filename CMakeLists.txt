@@ -111,7 +111,7 @@ set(COMMON_SRC
 	communication/packetizer.cpp
 	communication/multichannelcommunication.cpp
 	communication/communication.cpp
-	communication/icommunication.cpp
+	communication/driver.cpp
 	device/extensions/flexray/extension.cpp
 	device/extensions/flexray/controller.cpp
 	device/idevicesettings.cpp

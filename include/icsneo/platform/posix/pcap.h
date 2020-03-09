@@ -2,14 +2,14 @@
 #define __PCAP_POSIX_H_
 
 #include "icsneo/device/neodevice.h"
-#include "icsneo/communication/icommunication.h"
+#include "icsneo/communication/driver.h"
 #include "icsneo/api/eventmanager.h"
 #include <string>
 #include <pcap.h>
 
 namespace icsneo {
 
-class PCAP : public ICommunication {
+class PCAP : public Driver {
 public:
 	class PCAPFoundDevice {
 	public:

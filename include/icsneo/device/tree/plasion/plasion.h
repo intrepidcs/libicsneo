@@ -11,7 +11,7 @@ namespace icsneo {
 class Plasion : public Device {
 protected:
 	virtual std::shared_ptr<Communication> makeCommunication(
-		std::unique_ptr<ICommunication> transport,
+		std::unique_ptr<Driver> transport,
 		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder> encoder,
 		std::unique_ptr<Decoder> decoder

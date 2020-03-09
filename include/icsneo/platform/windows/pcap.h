@@ -3,13 +3,13 @@
 
 #include "icsneo/platform/windows/internal/pcapdll.h"
 #include "icsneo/device/neodevice.h"
-#include "icsneo/communication/icommunication.h"
+#include "icsneo/communication/driver.h"
 #include "icsneo/api/eventmanager.h"
 #include <string>
 
 namespace icsneo {
 
-class PCAP : public ICommunication {
+class PCAP : public Driver {
 public:
 	class PCAPFoundDevice {
 	public:

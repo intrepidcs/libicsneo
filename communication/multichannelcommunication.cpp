@@ -41,7 +41,7 @@ void MultiChannelCommunication::hidReadTask() {
 	while(!closing) {
 		if(readMore) {
 			readBytes.clear();
-			if(impl->readWait(readBytes)) {
+			if(driver->readWait(readBytes)) {
 				readMore = false;
 				usbReadFifo.insert(usbReadFifo.end(), std::make_move_iterator(readBytes.begin()), std::make_move_iterator(readBytes.end()));
 			}

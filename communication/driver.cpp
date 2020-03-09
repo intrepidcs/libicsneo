@@ -1,8 +1,8 @@
-#include "icsneo/communication/icommunication.h"
+#include "icsneo/communication/driver.h"
 
 using namespace icsneo;
 
-bool ICommunication::read(std::vector<uint8_t>& bytes, size_t limit) {
+bool Driver::read(std::vector<uint8_t>& bytes, size_t limit) {
 	// A limit of zero indicates no limit
 	if(limit == 0)
 		limit = (size_t)-1;
@@ -21,7 +21,7 @@ bool ICommunication::read(std::vector<uint8_t>& bytes, size_t limit) {
 	return true;
 }
 
-bool ICommunication::readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout, size_t limit) {
+bool Driver::readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout, size_t limit) {
 	// A limit of zero indicates no limit
 	if(limit == 0)
 		limit = (size_t)-1;
@@ -38,7 +38,7 @@ bool ICommunication::readWait(std::vector<uint8_t>& bytes, std::chrono::millisec
 	return actuallyRead > 0;
 }
 
-bool ICommunication::write(const std::vector<uint8_t>& bytes) {
+bool Driver::write(const std::vector<uint8_t>& bytes) {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;

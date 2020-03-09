@@ -24,7 +24,7 @@ bool Communication::open() {
 	}
 	
 	spawnThreads();
-	return impl->open();
+	return driver->open();
 }
 
 void Communication::spawnThreads() {
@@ -46,11 +46,11 @@ bool Communication::close() {
 
 	joinThreads();
 
-	return impl->close();
+	return driver->close();
 }
 
 bool Communication::isOpen() {
-	return impl->isOpen();
+	return driver->isOpen();
 }
 
 bool Communication::sendPacket(std::vector<uint8_t>& bytes) {
@@ -174,7 +174,7 @@ void Communication::readTask() {
 	
 	while(!closing) {
 		readBytes.clear();
-		if(impl->readWait(readBytes)) {
+		if(driver->readWait(readBytes)) {
 			if(packetizer->input(readBytes)) {
 				for(const auto& packet : packetizer->output()) {
 					std::shared_ptr<Message> msg;

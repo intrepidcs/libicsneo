@@ -6,13 +6,13 @@
 #include <string>
 #include <ftdi.h>
 #include "icsneo/device/neodevice.h"
-#include "icsneo/communication/icommunication.h"
+#include "icsneo/communication/driver.h"
 #include "icsneo/third-party/concurrentqueue/blockingconcurrentqueue.h"
 #include "icsneo/api/eventmanager.h"
 
 namespace icsneo {
 
-class FTDI : public ICommunication {
+class FTDI : public Driver {
 public:
 	static std::vector<neodevice_t> FindByProduct(int product);
 

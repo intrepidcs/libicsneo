@@ -106,16 +106,16 @@ protected:
 		data.device = this;
 	}
 	
-	template<typename Transport, typename Settings = NullSettings>
+	template<typename Driver, typename Settings = NullSettings>
 	void initialize() {
 		report = makeEventHandler();
-		auto transport = makeTransport<Transport>();
-		setupTransport(*transport);
+		auto driver = makeDriver<Driver>();
+		setupDriver(*driver);
 		auto encoder = makeEncoder();
 		setupEncoder(*encoder);
 		auto decoder = makeDecoder();
 		setupDecoder(*decoder);
-		com = makeCommunication(std::move(transport), std::bind(&Device::makeConfiguredPacketizer, this), std::move(encoder), std::move(decoder));
+		com = makeCommunication(std::move(driver), std::bind(&Device::makeConfiguredPacketizer, this), std::move(encoder), std::move(decoder));
 		setupCommunication(*com);
 		settings = makeSettings<Settings>(com);
 		setupSettings(*settings);
@@ -130,9 +130,9 @@ protected:
 		};
 	}
 
-	template<typename Transport>
-	std::unique_ptr<ICommunication> makeTransport() { return std::unique_ptr<ICommunication>(new Transport(report, getWritableNeoDevice())); }
-	virtual void setupTransport(ICommunication&) {}
+	template<typename Driver>
+	std::unique_ptr<Driver> makeDriver() { return std::unique_ptr<Driver>(new Driver(report, getWritableNeoDevice())); }
+	virtual void setupDriver(Driver&) {}
 
 	virtual std::unique_ptr<Packetizer> makePacketizer() { return std::unique_ptr<Packetizer>(new Packetizer(report)); }
 	virtual void setupPacketizer(Packetizer&) {}
@@ -149,7 +149,7 @@ protected:
 	virtual void setupDecoder(Decoder&) {}
 
 	virtual std::shared_ptr<Communication> makeCommunication(
-		std::unique_ptr<ICommunication> t,
+		std::unique_ptr<Driver> t,
 		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder> e,
 		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(report, std::move(t), makeConfiguredPacketizer, std::move(e), std::move(d)); }

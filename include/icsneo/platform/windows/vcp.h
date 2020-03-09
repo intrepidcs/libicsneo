@@ -8,19 +8,19 @@
 #include <chrono>
 #include <Windows.h>
 #include "icsneo/device/neodevice.h"
-#include "icsneo/communication/icommunication.h"
+#include "icsneo/communication/driver.h"
 #include "icsneo/api/eventmanager.h"
 
 namespace icsneo {
 
 // Virtual COM Port Communication
-class VCP : public ICommunication {
+class VCP : public Driver {
 public:
 	static std::vector<neodevice_t> FindByProduct(int product, std::vector<std::wstring> driverName);
 	static bool IsHandleValid(neodevice_handle_t handle);
 	typedef void(*fn_boolCallback)(bool success);
 	
-	VCP(const device_eventhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
+	VCP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {
 		overlappedRead.hEvent = INVALID_HANDLE_VALUE;
 		overlappedWrite.hEvent = INVALID_HANDLE_VALUE;
 		overlappedWait.hEvent = INVALID_HANDLE_VALUE;

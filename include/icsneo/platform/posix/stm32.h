@@ -1,7 +1,7 @@
 #ifndef __STM32_POSIX_H_
 #define __STM32_POSIX_H_
 
-#include "icsneo/communication/icommunication.h"
+#include "icsneo/communication/driver.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/api/eventmanager.h"
 #include <chrono>
@@ -9,7 +9,7 @@
 
 namespace icsneo {
 
-class STM32 : public ICommunication {
+class STM32 : public Driver {
 public:
 	/*
 	 * Note: This is a driver for all devices which use CDC_ACM
@@ -21,7 +21,7 @@ public:
 	 * in stm32linux.cpp and stm32darwin.cpp respectively
 	 * Other POSIX systems (BSDs, QNX, etc) will need bespoke code written in the future
 	 */
-	STM32(const device_eventhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {}
+	STM32(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {}
 	static std::vector<neodevice_t> FindByProduct(int product);
 
 	bool open();

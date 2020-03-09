@@ -39,7 +39,7 @@ std::vector<neodevice_t> FTDI::FindByProduct(int product) {
 	return found;
 }
 
-FTDI::FTDI(const device_eventhandler_t& err, neodevice_t& forDevice) : ICommunication(err), device(forDevice) {
+FTDI::FTDI(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {
 	openable = strlen(forDevice.serial) > 0 && device.handle >= 0 && device.handle < (neodevice_handle_t)handles.size();
 }
 

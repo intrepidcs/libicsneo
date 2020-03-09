@@ -2,7 +2,7 @@
 #define __MULTICHANNELCOMMUNICATION_H_
 
 #include "icsneo/communication/communication.h"
-#include "icsneo/communication/icommunication.h"
+#include "icsneo/communication/driver.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/communication/encoder.h"
 #include "icsneo/third-party/readerwriterqueue/readerwriterqueue.h"
@@ -13,7 +13,7 @@ class MultiChannelCommunication : public Communication {
 public:
 	MultiChannelCommunication(
 		device_eventhandler_t err,
-		std::unique_ptr<ICommunication> com,
+		std::unique_ptr<Driver> com,
 		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder> e,
 		std::unique_ptr<Decoder> md) : Communication(err, std::move(com), makeConfiguredPacketizer, std::move(e), std::move(md)) {}

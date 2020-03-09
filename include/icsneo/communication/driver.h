@@ -1,5 +1,5 @@
-#ifndef __ICOMMUNICATION_H_
-#define __ICOMMUNICATION_H_
+#ifndef __DRIVER_H_
+#define __DRIVER_H_
 
 #include <vector>
 #include <chrono>
@@ -12,10 +12,10 @@
 
 namespace icsneo {
 
-class ICommunication {
+class Driver {
 public:
-	ICommunication(const device_eventhandler_t& handler) : report(handler) {}
-	virtual ~ICommunication() {}
+	Driver(const device_eventhandler_t& handler) : report(handler) {}
+	virtual ~Driver() {}
 	virtual bool open() = 0;
 	virtual bool isOpen() = 0;
 	virtual bool close() = 0;
