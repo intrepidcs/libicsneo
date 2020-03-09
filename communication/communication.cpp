@@ -60,7 +60,7 @@ bool Communication::sendPacket(std::vector<uint8_t>& bytes) {
 
 bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 	std::vector<uint8_t> packet;
-	if(!encoder->encode(packet, cmd, arguments))
+	if(!encoder->encode(*packetizer, packet, cmd, arguments))
 		return false;
 
 	return sendPacket(packet);
@@ -176,7 +176,7 @@ void Communication::readTask() {
 		readBytes.clear();
 		if(impl->readWait(readBytes)) {
 			if(packetizer->input(readBytes)) {
-				for(auto& packet : packetizer->output()) {
+				for(const auto& packet : packetizer->output()) {
 					std::shared_ptr<Message> msg;
 					if(!decoder->decode(msg, packet))
 						continue;

@@ -111,13 +111,11 @@ protected:
 		report = makeEventHandler();
 		auto transport = makeTransport<Transport>();
 		setupTransport(*transport);
-		auto packetizer = makePacketizer();
-		setupPacketizer(*packetizer);
-		auto encoder = makeEncoder(packetizer);
+		auto encoder = makeEncoder();
 		setupEncoder(*encoder);
 		auto decoder = makeDecoder();
 		setupDecoder(*decoder);
-		com = makeCommunication(std::move(transport), packetizer, std::move(encoder), std::move(decoder));
+		com = makeCommunication(std::move(transport), std::bind(&Device::makeConfiguredPacketizer, this), std::move(encoder), std::move(decoder));
 		setupCommunication(*com);
 		settings = makeSettings<Settings>(com);
 		setupSettings(*settings);
@@ -136,10 +134,15 @@ protected:
 	std::unique_ptr<ICommunication> makeTransport() { return std::unique_ptr<ICommunication>(new Transport(report, getWritableNeoDevice())); }
 	virtual void setupTransport(ICommunication&) {}
 
-	virtual std::shared_ptr<Packetizer> makePacketizer() { return std::make_shared<Packetizer>(report); }
+	virtual std::unique_ptr<Packetizer> makePacketizer() { return std::unique_ptr<Packetizer>(new Packetizer(report)); }
 	virtual void setupPacketizer(Packetizer&) {}
+	std::unique_ptr<Packetizer> makeConfiguredPacketizer() {
+		auto packetizer = makePacketizer();
+		setupPacketizer(*packetizer);
+		return packetizer;
+	}
 
-	virtual std::unique_ptr<Encoder> makeEncoder(std::shared_ptr<Packetizer> p) { return std::unique_ptr<Encoder>(new Encoder(report, p)); }
+	virtual std::unique_ptr<Encoder> makeEncoder() { return std::unique_ptr<Encoder>(new Encoder(report)); }
 	virtual void setupEncoder(Encoder&) {}
 
 	virtual std::unique_ptr<Decoder> makeDecoder() { return std::unique_ptr<Decoder>(new Decoder(report)); }
@@ -147,9 +150,9 @@ protected:
 
 	virtual std::shared_ptr<Communication> makeCommunication(
 		std::unique_ptr<ICommunication> t,
-		std::shared_ptr<Packetizer> p,
+		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder> e,
-		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(report, std::move(t), p, std::move(e), std::move(d)); }
+		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(report, std::move(t), makeConfiguredPacketizer, std::move(e), std::move(d)); }
 	virtual void setupCommunication(Communication&) {}
 
 	template<typename Settings>

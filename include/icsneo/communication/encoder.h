@@ -15,14 +15,15 @@ namespace icsneo {
 
 class Encoder {
 public:
-	Encoder(device_eventhandler_t report, std::shared_ptr<Packetizer> p) : packetizer(p), report(report) {}
-	bool encode(std::vector<uint8_t>& result, const std::shared_ptr<Message>& message);
-	bool encode(std::vector<uint8_t>& result, Command cmd, bool boolean) { return encode(result, cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
-	bool encode(std::vector<uint8_t>& result, Command cmd, std::vector<uint8_t> arguments = {});
+	Encoder(device_eventhandler_t report) : report(report) {}
+	bool encode(const Packetizer& packetizer, std::vector<uint8_t>& result, const std::shared_ptr<Message>& message);
+	bool encode(const Packetizer& packetizer, std::vector<uint8_t>& result, Command cmd, bool boolean) {
+		return encode(packetizer, result, cmd, std::vector<uint8_t>({ (uint8_t)boolean }));
+	}
+	bool encode(const Packetizer& packetizer, std::vector<uint8_t>& result, Command cmd, std::vector<uint8_t> arguments = {});
 
 	bool supportCANFD = false;
 private:
-	std::shared_ptr<Packetizer> packetizer;
 	device_eventhandler_t report;
 };
 

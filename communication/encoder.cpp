@@ -6,7 +6,7 @@
 
 using namespace icsneo;
 
-bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message>& message) {
+bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result, const std::shared_ptr<Message>& message) {
 	bool shortFormat = false;
 	bool useResultAsBuffer = false; // Otherwise it's expected that we use message->data
 	result.clear();
@@ -70,7 +70,7 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 							(uint8_t)(size >> 8),
 							(uint8_t)m51msg->command
 						});
-						result = packetizer->packetWrap(message->data, shortFormat);
+						result = packetizer.packetWrap(message->data, shortFormat);
 						return true;
 					} else {
 						message->data.insert(message->data.begin(), { uint8_t(m51msg->command) });
@@ -108,11 +108,11 @@ bool Encoder::encode(std::vector<uint8_t>& result, const std::shared_ptr<Message
 		});
 	}
 
-	result = packetizer->packetWrap(buffer, shortFormat);
+	result = packetizer.packetWrap(buffer, shortFormat);
 	return true;
 }
 
-bool Encoder::encode(std::vector<uint8_t>& result, Command cmd, std::vector<uint8_t> arguments) {
+bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result, Command cmd, std::vector<uint8_t> arguments) {
 	std::shared_ptr<Message> msg;
 	if(cmd == Command::UpdateLEDState) {
 		/* NetID::Device is a super old command type.
@@ -148,5 +148,5 @@ bool Encoder::encode(std::vector<uint8_t>& result, Command cmd, std::vector<uint
 		msg->data.insert(msg->data.end(), std::make_move_iterator(arguments.begin()), std::make_move_iterator(arguments.end()));
 	}
 	
-	return encode(result, msg);
+	return encode(packetizer, result, msg);
 }

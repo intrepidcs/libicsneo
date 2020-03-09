@@ -12,10 +12,18 @@ class Plasion : public Device {
 protected:
 	virtual std::shared_ptr<Communication> makeCommunication(
 		std::unique_ptr<ICommunication> transport,
-		std::shared_ptr<Packetizer> packetizer,
+		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder> encoder,
 		std::unique_ptr<Decoder> decoder
-	) override { return std::make_shared<MultiChannelCommunication>(report, std::move(transport), packetizer, std::move(encoder), std::move(decoder)); }
+	) override {
+		return std::make_shared<MultiChannelCommunication>(
+			report,
+			std::move(transport),
+			makeConfiguredPacketizer,
+			std::move(encoder),
+			std::move(decoder)
+		);
+	}
 
 	// TODO This is done so that Plasion can still transmit it's basic networks, awaiting slave VNET support
 	virtual bool isSupportedRXNetwork(const Network&) const override { return true; }

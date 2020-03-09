@@ -15,7 +15,7 @@ public:
 
 	Packetizer(device_eventhandler_t report) : report(report) {}
 
-	std::vector<uint8_t>& packetWrap(std::vector<uint8_t>& data, bool shortFormat);
+	std::vector<uint8_t>& packetWrap(std::vector<uint8_t>& data, bool shortFormat) const;
 
 	bool input(const std::vector<uint8_t>& bytes);
 	std::vector<std::shared_ptr<Packet>> output();

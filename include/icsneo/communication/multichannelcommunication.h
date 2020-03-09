@@ -5,6 +5,7 @@
 #include "icsneo/communication/icommunication.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/communication/encoder.h"
+#include "icsneo/third-party/readerwriterqueue/readerwriterqueue.h"
 
 namespace icsneo {
 
@@ -13,9 +14,9 @@ public:
 	MultiChannelCommunication(
 		device_eventhandler_t err,
 		std::unique_ptr<ICommunication> com,
-		std::shared_ptr<Packetizer> p,
+		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder> e,
-		std::unique_ptr<Decoder> md) : Communication(err, std::move(com), p, std::move(e), std::move(md)) {}
+		std::unique_ptr<Decoder> md) : Communication(err, std::move(com), makeConfiguredPacketizer, std::move(e), std::move(md)) {}
 	void spawnThreads() override;
 	void joinThreads() override;
 	bool sendPacket(std::vector<uint8_t>& bytes) override;
@@ -24,6 +25,8 @@ protected:
 	bool preprocessPacket(std::deque<uint8_t>& usbReadFifo);
 
 private:
+	static constexpr const size_t NUM_SUPPORTED_VNETS = 1;
+
 	enum class CommandType : uint8_t {
 		PlasmaReadRequest = 0x10, // Status read request to HSC
 		PlasmaStatusResponse = 0x11, // Status response by HSC
@@ -45,7 +48,6 @@ private:
 		Microblaze_to_HostPC = 0x81 // Microblaze processor data to host PC
 	};
 
-	static bool FixSlaveVNETPacketNetID(Packet& packet);
 	enum class CoreMiniNetwork : uint8_t {
 		HSCAN1 = (0),
 		MSCAN1 = (1),
@@ -156,8 +158,11 @@ private:
 	CommandType currentCommandType;
 	size_t currentReadIndex = 0;
 
-	std::thread mainChannelReadThread;
-	void readTask();
+	std::thread hidReadThread;
+	std::array<std::thread, NUM_SUPPORTED_VNETS> vnetThreads;
+	std::array<moodycamel::BlockingReaderWriterQueue< std::vector<uint8_t> >, NUM_SUPPORTED_VNETS> vnetQueues;
+	void hidReadTask();
+	void vnetReadTask(size_t vnetIndex);
 };
 
 }

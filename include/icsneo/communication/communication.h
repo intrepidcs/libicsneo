@@ -24,10 +24,12 @@ class Communication {
 public:
 	Communication(
 		device_eventhandler_t report,
-		std::unique_ptr<ICommunication> com,
-		std::shared_ptr<Packetizer> p,
-		std::unique_ptr<Encoder> e,
-		std::unique_ptr<Decoder> md) : packetizer(p), encoder(std::move(e)), decoder(std::move(md)), report(report), impl(std::move(com)) {}
+		std::unique_ptr<ICommunication>&& com,
+		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
+		std::unique_ptr<Encoder>&& e,
+		std::unique_ptr<Decoder>&& md) : makeConfiguredPacketizer(makeConfiguredPacketizer), encoder(std::move(e)), decoder(std::move(md)), report(report), impl(std::move(com)) {
+		packetizer = makeConfiguredPacketizer();
+	}
 	virtual ~Communication() { close(); }
 
 	bool open();
@@ -59,7 +61,8 @@ public:
 		MessageFilter f = MessageFilter(),
 		std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
-	std::shared_ptr<Packetizer> packetizer; // Ownership is shared with the encoder
+	std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer;
+	std::unique_ptr<Packetizer> packetizer;
 	std::unique_ptr<Encoder> encoder;
 	std::unique_ptr<Decoder> decoder;
 	device_eventhandler_t report;

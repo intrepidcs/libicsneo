@@ -2,19 +2,25 @@
 #include "icsneo/communication/command.h"
 #include "icsneo/communication/decoder.h"
 #include "icsneo/communication/packetizer.h"
-#include <iostream>
-#include <iomanip>
 
 using namespace icsneo;
 
 void MultiChannelCommunication::spawnThreads() {
-	mainChannelReadThread = std::thread(&MultiChannelCommunication::readTask, this);
+	for(size_t i = 0; i < NUM_SUPPORTED_VNETS; i++) {
+		while(vnetQueues[i].pop()) {} // Ensure the queue is empty
+		vnetThreads[i] = std::thread(&MultiChannelCommunication::vnetReadTask, this, i);
+	}
+	hidReadThread = std::thread(&MultiChannelCommunication::hidReadTask, this);
 }
 
 void MultiChannelCommunication::joinThreads() {
 	closing = true;
-	if(mainChannelReadThread.joinable())
-		mainChannelReadThread.join();
+	if(hidReadThread.joinable())
+		hidReadThread.join();
+	for(auto& thread : vnetThreads) {
+		if(thread.joinable())
+			thread.join();
+	}
 	closing = false;
 }
 
@@ -23,7 +29,7 @@ bool MultiChannelCommunication::sendPacket(std::vector<uint8_t>& bytes) {
 	return rawWrite(bytes);
 }
 
-void MultiChannelCommunication::readTask() {
+void MultiChannelCommunication::hidReadTask() {
 	bool readMore = true;
 	bool gotPacket = false; // Have we got the first valid packet (don't flag errors otherwise)
 	std::deque<uint8_t> usbReadFifo;
@@ -51,7 +57,8 @@ void MultiChannelCommunication::readTask() {
 
 					if(!CommandTypeIsValid(currentCommandType)) {
 						// Device to host bytes discarded
-						EventManager::GetInstance().add(APIEvent(APIEvent::Type::FailedToRead, APIEvent::Severity::Error));
+						if(gotPacket)
+							EventManager::GetInstance().add(APIEvent(APIEvent::Type::FailedToRead, APIEvent::Severity::Error));
 						usbReadFifo.pop_front();
 						continue;
 					}
@@ -105,21 +112,65 @@ void MultiChannelCommunication::readTask() {
 						payloadBytes[i] = usbReadFifo[0];
 						usbReadFifo.pop_front();
 					}
-					
-					if(packetizer->input(payloadBytes)) {
-						for(auto& packet : packetizer->output()) {
-							std::shared_ptr<Message> msg;
-							if(!decoder->decode(msg, packet))
-								continue; // Error will have been reported from within decoder
 
-							gotPacket = true;
-							dispatchMessage(msg);
-						}
+					moodycamel::BlockingReaderWriterQueue< std::vector<uint8_t> >* currentQueue = nullptr;
+					switch(currentCommandType) {
+						case CommandType::Vnet1_to_HostPC:
+							currentQueue = &vnetQueues[0];
+							break;
+						case CommandType::Vnet2_to_HostPC:
+							if(NUM_SUPPORTED_VNETS >= 2)
+								currentQueue = &vnetQueues[1];
+							break;
+						case CommandType::Vnet3_to_HostPC:
+							if(NUM_SUPPORTED_VNETS >= 3)
+								currentQueue = &vnetQueues[2];
+							break;
 					}
 
+					if(currentQueue == nullptr) {
+						state = PreprocessState::SearchForCommand;
+						break;
+					}
+
+					if(!currentQueue->enqueue(std::move(payloadBytes)) && gotPacket)
+						EventManager::GetInstance().add(APIEvent(APIEvent::Type::FailedToRead, APIEvent::Severity::Error));
+					payloadBytes.clear();
+					gotPacket = true;
 					state = PreprocessState::SearchForCommand;
+					break;
 			}
 		}
-		
+	}
+}
+
+void MultiChannelCommunication::vnetReadTask(size_t vnetIndex) {
+	moodycamel::BlockingReaderWriterQueue< std::vector<uint8_t> >& queue = vnetQueues[vnetIndex];
+	std::vector<uint8_t> payloadBytes;
+	std::unique_ptr<Packetizer> packetizerLifetime;
+	Packetizer* vnetPacketizer;
+	if(vnetIndex == 0)
+		vnetPacketizer = packetizer.get();
+	else {
+		packetizerLifetime = makeConfiguredPacketizer();
+		vnetPacketizer = packetizerLifetime.get();
+	}
+
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+
+	while(!closing) {
+		if(queue.wait_dequeue_timed(payloadBytes, std::chrono::milliseconds(250))) {
+			if(closing)
+				break;
+			
+			if(vnetPacketizer->input(payloadBytes)) {
+				for(const auto& packet : vnetPacketizer->output()) {
+					std::shared_ptr<Message> msg;
+					if(!decoder->decode(msg, packet))
+						continue; // Error will have been reported from within decoder
+					dispatchMessage(msg);
+				}
+			}
+		}
 	}
 }

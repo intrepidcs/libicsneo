@@ -13,7 +13,7 @@ uint8_t Packetizer::ICSChecksum(const std::vector<uint8_t>& data) {
 	return (uint8_t)checksum;
 }
 
-std::vector<uint8_t>& Packetizer::packetWrap(std::vector<uint8_t>& data, bool shortFormat) {
+std::vector<uint8_t>& Packetizer::packetWrap(std::vector<uint8_t>& data, bool shortFormat) const {
 	if(shortFormat) {
 		// Some devices don't use the checksum, so might as well not calculate it if that's the case
 		// Either way the byte is still expected to be present in the bytestream for short messages

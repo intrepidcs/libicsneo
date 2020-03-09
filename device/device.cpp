@@ -315,7 +315,7 @@ bool Device::transmit(std::shared_ptr<Message> message) {
 		return transmitStatusFromExtension;
 
 	std::vector<uint8_t> packet;
-	if(!com->encoder->encode(packet, message))
+	if(!com->encoder->encode(*com->packetizer, packet, message))
 		return false;
 	
 	return com->sendPacket(packet);
