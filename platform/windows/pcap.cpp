@@ -18,7 +18,7 @@ std::vector<PCAP::NetworkInterface> PCAP::knownInterfaces;
 
 std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	std::vector<PCAPFoundDevice> foundDevices;
-	PCAPDLL pcap;
+	const PCAPDLL& pcap = PCAPDLL::getInstance();
 	if(!pcap.ok()) {
 		EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotStart, APIEvent::Severity::Error);
 		return std::vector<PCAPFoundDevice>();
@@ -177,7 +177,7 @@ bool PCAP::IsHandleValid(neodevice_handle_t handle) {
 	return (netifIndex < knownInterfaces.size());
 }
 
-PCAP::PCAP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {
+PCAP::PCAP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice), pcap(PCAPDLL::getInstance()) {
 	if(IsHandleValid(device.handle)) {
 		interface = knownInterfaces[(device.handle >> 24) & 0xFF];
 		interface.fp = nullptr; // We're going to open our own connection to the interface. This should already be nullptr but just in case.

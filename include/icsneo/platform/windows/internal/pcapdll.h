@@ -12,8 +12,7 @@ namespace icsneo {
 class PCAPDLL {
 public:
 	// The first time we use the DLL we keep it in here and it won't get freed until the user unloads us (for speed reasons)
-	static std::shared_ptr<PCAPDLL> lazyLoadHolder;
-	static bool lazyLoaded;
+	static const PCAPDLL& getInstance();
 
 	// Functions
 	typedef int(__cdecl* PCAPFINDDEVICE)(char* source, struct pcap_rmtauth* auth, pcap_if_t** alldevs, char* errbuf);
@@ -45,14 +44,14 @@ public:
 	PCAPCREATESRCSTR createsrcstr;
 	PCAPSETBUFF setbuff;
 
-	PCAPDLL();
-	~PCAPDLL() { closeDLL(); }
-	bool ok() const { return dll != nullptr; }
+
+	~PCAPDLL();
+	bool ok() const;
 private:
+	PCAPDLL();
 	HINSTANCE dll;
 	void closeDLL();
 };
-
 }
 
 #endif

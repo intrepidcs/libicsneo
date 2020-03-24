@@ -26,7 +26,7 @@ public:
 	bool isOpen();
 	bool close();
 private:
-	PCAPDLL pcap;
+	const PCAPDLL& pcap;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
 	neodevice_t& device;
 	uint8_t deviceMAC[6];
