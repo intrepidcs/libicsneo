@@ -3,7 +3,6 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/platform/pcap.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/decoder.h"
 

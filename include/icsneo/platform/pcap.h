@@ -9,4 +9,6 @@
 #warning "This platform is not supported by the PCAP driver"
 #endif
 
+#define LIBICSNEO_HAVE_PCAP 1
+
 #endif

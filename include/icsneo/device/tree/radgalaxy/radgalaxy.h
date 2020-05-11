@@ -15,10 +15,10 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADGalaxy;
 	static constexpr const uint16_t PRODUCT_ID = 0x0003;
 	static constexpr const char* SERIAL_START = "RG";
-	static std::vector<std::shared_ptr<Device>> Find() {
+	static std::vector<std::shared_ptr<Device>> Find(const std::vector<PCAP::PCAPFoundDevice>& pcapDevices) {
 		std::vector<std::shared_ptr<Device>> found;
 		
-		for(auto& foundDev : PCAP::FindAll()) {
+		for(auto& foundDev : pcapDevices) {
 			auto fakedev = std::shared_ptr<RADGalaxy>(new RADGalaxy({}));
 			for(auto& payload : foundDev.discoveryPackets)
 				fakedev->com->packetizer->input(payload);
@@ -38,8 +38,9 @@ public:
 				if(sn->deviceSerial.substr(0, 2) != SERIAL_START)
 					continue; // Not a RADGalaxy
 				
-				foundDev.device.serial[sn->deviceSerial.copy(foundDev.device.serial, sizeof(foundDev.device.serial))] = '\0';
-				found.emplace_back(new RADGalaxy(foundDev.device));
+				auto device = foundDev.device;
+				device.serial[sn->deviceSerial.copy(device.serial, sizeof(device.serial))] = '\0';
+				found.emplace_back(new RADGalaxy(std::move(device)));
 				break;
 			}
 		}

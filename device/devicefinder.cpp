@@ -88,6 +88,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	std::vector<std::shared_ptr<Device>> foundDevices;
 	std::vector<std::vector<std::shared_ptr<Device>>> findResults;
 
+#if defined(LIBICSNEO_HAVE_PCAP) && LIBICSNEO_HAVE_PCAP == 1
+	auto pcapDevices = PCAP::FindAll();
+#endif
+
 	#ifdef __ETHERBADGE_H_
 	findResults.push_back(EtherBADGE::Find());
 	#endif
@@ -105,7 +109,7 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	#endif
 
 	#ifdef __NEOVIFIRE2ETH_H_
-	findResults.push_back(NeoVIFIRE2ETH::Find());
+	findResults.push_back(NeoVIFIRE2ETH::Find(pcapDevices));
 	#endif
 
 	#ifdef __NEOVIFIRE2USB_H_
@@ -121,7 +125,7 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	#endif
 
 	#ifdef __RADGALAXY_H_
-	findResults.push_back(RADGalaxy::Find());
+	findResults.push_back(RADGalaxy::Find(pcapDevices));
 	#endif
 
 	#ifdef __RADPLUTOUSB_H_
@@ -129,7 +133,7 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	#endif
 
 	#ifdef __RADSTAR2ETH_H_
-	findResults.push_back(RADStar2ETH::Find());
+	findResults.push_back(RADStar2ETH::Find(pcapDevices));
 	#endif
 
 	#ifdef __RADSTAR2USB_H_
