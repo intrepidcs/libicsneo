@@ -70,6 +70,13 @@ std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t*
 			canmsg->errorStateIndicator = can.status.canfdESI;
 			return canmsg;
 		}
+		case Network::Type::Ethernet: {
+			neomessage_eth_t& eth = *(neomessage_eth_t*)neomessage;
+			auto ethmsg = std::make_shared<EthernetMessage>();
+			ethmsg->network = network;
+			ethmsg->data.insert(ethmsg->data.end(), eth.data, eth.data + eth.length);
+			return ethmsg;
+		}
 		default:
 			// TODO Implement others
 			return std::shared_ptr<Message>();
