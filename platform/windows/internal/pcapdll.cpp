@@ -27,6 +27,21 @@ bool PCAPDLL::ok() const
 
 PCAPDLL::PCAPDLL() 
 {
+#ifdef NPCAP
+	BOOL(WINAPI * SetDllDirectory)(LPCTSTR);
+	char sysdir_name[512];
+	int len;
+	SetDllDirectory = (BOOL(WINAPI*)(LPCTSTR)) GetProcAddress(GetModuleHandle("kernel32.dll"), "SetDllDirectoryA");
+	if (SetDllDirectory != NULL)
+	{
+		len = GetSystemDirectory(sysdir_name, 480);	//	be safe
+		if (len)
+		{
+			strcat(sysdir_name, "\\Npcap");
+			SetDllDirectory(sysdir_name);
+		}
+	}
+#endif
 	dll = LoadLibrary("wpcap.dll");
 
 	if(dll == NULL) {

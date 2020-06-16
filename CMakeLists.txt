@@ -6,6 +6,7 @@ option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." O
 option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
+set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -182,8 +183,13 @@ endif(NOT WIN32)
 
 # winpcap
 if(WIN32)
-	target_include_directories(icsneocpp PUBLIC AFTER third-party/winpcap/include)
-	add_definitions(-DWPCAP -DHAVE_REMOTE -DWIN32_LEAN_AND_MEAN)
+	if(LIBICSNEO_NPCAP_INCLUDE_DIR STREQUAL "")
+		target_include_directories(icsneocpp PUBLIC AFTER third-party/winpcap/include)
+		add_definitions(-DWPCAP -DHAVE_REMOTE -DWIN32_LEAN_AND_MEAN)
+	else()
+		target_include_directories(icsneocpp PUBLIC AFTER ${LIBICSNEO_NPCAP_INCLUDE_DIR})
+		add_definitions(-DNPCAP -DWIN32_LEAN_AND_MEAN)
+	endif()
 endif(WIN32)
 
 if(LIBICSNEO_BUILD_ICSNEOC)
