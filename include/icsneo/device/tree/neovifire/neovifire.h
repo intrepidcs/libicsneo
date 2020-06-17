@@ -45,18 +45,12 @@ public:
 		Bootloader = 'B'
 	};
 
-	bool open() override {
-		if(!com)
-			return false;
-
-		if(!com->open())
+	bool afterCommunicationOpen() override {
+		if(!Device::afterCommunicationOpen()) // Doesn't do anything right now but just in case it gets added to later
 			return false;
 
 		// Enter mode is only needed on very old FIRE devices (white board), will be ignored by newer devices
-		if(!enterMode(Mode::Application))
-			return false;
-
-		return Device::open();
+		return enterMode(Mode::Application);
 	}
 
 	bool enterMode(Mode mode) {

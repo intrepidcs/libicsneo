@@ -168,6 +168,14 @@ bool Device::open() {
 		return false;
 	}
 
+	if(!afterCommunicationOpen()) {
+		// Very unlikely, at the time of writing this only fails if rawWrite does.
+		// If you're looking for this error, you're probably looking for if(!serial) below.
+		report(APIEvent::Type::NoSerialNumber, APIEvent::Severity::Error); // Communication could not be established with the device. Perhaps it is not powered with 12 volts?
+		com->close();
+		return false;
+	}
+
 	auto serial = com->getSerialNumberSync();
 	int i = 0;
 	while(!serial) {

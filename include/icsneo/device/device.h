@@ -166,6 +166,10 @@ protected:
 
 	virtual void setupExtensions() {}
 	void addExtension(std::shared_ptr<DeviceExtension>&& extension);
+
+	// Hook for devices such as FIRE which need to inject traffic before RequestSerialNumber
+	// Return false to bail
+	virtual bool afterCommunicationOpen() { return true; }
 	
 	template<typename Extension>
 	std::shared_ptr<Extension> getExtension() const {
