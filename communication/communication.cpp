@@ -23,8 +23,10 @@ bool Communication::open() {
 		return false;
 	}
 	
+	if(!driver->open())
+		return false;
 	spawnThreads();
-	return driver->open();
+	return true;
 }
 
 void Communication::spawnThreads() {
@@ -39,12 +41,12 @@ void Communication::joinThreads() {
 }
 
 bool Communication::close() {
+	joinThreads();
+
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
-
-	joinThreads();
 
 	return driver->close();
 }
