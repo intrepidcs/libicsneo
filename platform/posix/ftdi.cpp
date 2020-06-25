@@ -56,7 +56,11 @@ bool FTDI::open() {
 
 	// At this point the handle has been checked to be within the bounds of the handles array
 	std::tuple<int, std::string>& handle = handles[device.handle];
-	if(ftdi.openDevice(std::get<0>(handle), std::get<1>(handle).c_str()) != 0) {
+	const int openError = ftdi.openDevice(std::get<0>(handle), std::get<1>(handle).c_str());
+	if(openError == -5) { // Unable to claim device
+		report(APIEvent::Type::DeviceInUse, APIEvent::Severity::Error);
+		return false;
+	} else if(openError != 0) {
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}

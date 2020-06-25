@@ -78,6 +78,7 @@ public:
 		DriverFailedToClose = 0x3003,
 		PacketChecksumError = 0x3004,
 		TransmitBufferFull = 0x3005,
+		DeviceInUse = 0x3006,
 		PCAPCouldNotStart = 0x3102,
 		PCAPCouldNotFindDevices = 0x3103,
 		PacketDecodingError = 0x3104,

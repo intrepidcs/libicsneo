@@ -101,6 +101,7 @@ static constexpr const char* DRIVER_FAILED_TO_OPEN = "The device driver encounte
 static constexpr const char* DRIVER_FAILED_TO_CLOSE = "The device driver encountered a low-level error while closing the device.";
 static constexpr const char* PACKET_CHECKSUM_ERROR = "There was a checksum error while decoding a packet. The packet was dropped.";
 static constexpr const char* TRANSMIT_BUFFER_FULL = "The transmit buffer is full and the device is set to non-blocking.";
+static constexpr const char* DEVICE_IN_USE = "The device is currently in use by another program.";
 static constexpr const char* PCAP_COULD_NOT_START = "The PCAP driver could not be started. Ethernet devices will not be found.";
 static constexpr const char* PCAP_COULD_NOT_FIND_DEVICES = "The PCAP driver failed to find devices. Ethernet devices will not be found.";
 static constexpr const char* PACKET_DECODING = "The packet could not be decoded.";
@@ -197,6 +198,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return PACKET_CHECKSUM_ERROR;
 		case Type::TransmitBufferFull:
 			return TRANSMIT_BUFFER_FULL;
+		case Type::DeviceInUse:
+			return DEVICE_IN_USE;
 		case Type::PCAPCouldNotStart:
 			return PCAP_COULD_NOT_START;
 		case Type::PCAPCouldNotFindDevices:
