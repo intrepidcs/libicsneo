@@ -98,7 +98,7 @@ void MultiChannelCommunication::hidReadTask() {
 				case PreprocessState::GetData:
 					state = PreprocessState::GetData; // Set state in case we've fallen through, but later need to go around again
 
-					if(usbReadFifo.size() <= currentReadIndex + currentCommandLength) { // Come back we have more data
+					if(usbReadFifo.size() < currentReadIndex + currentCommandLength) { // Come back when we have more data
 						readMore = true;
 						continue;
 					}
