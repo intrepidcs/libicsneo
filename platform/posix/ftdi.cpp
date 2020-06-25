@@ -91,7 +91,7 @@ bool FTDI::close() {
 		writeThread.join();
 
 	bool ret = ftdi.closeDevice();
-	if(ret != 0)
+	if(!ret)
 		report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
 	
 	uint8_t flush;
