@@ -41,7 +41,7 @@ if(LIBICSNEO_BUILD_DOCS)
 	if(DOXYGEN_FOUND)
 		message("Will build Doxygen based documentation")
 
-		add_custom_target(libicsneo_doxygen ALL
+		add_custom_target(libicsneo_doxygen
 			COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 			COMMENT "Generating API documentation with Doxygen"
@@ -69,7 +69,7 @@ if(LIBICSNEO_BUILD_DOCS)
 				"${ICSNEO_DOCS_DIR}/conf.py"
 				@ONLY)
 
-			add_custom_target(libicsneo_sphinx
+			add_custom_target(libicsneo_sphinx ALL
 				${SPHINX_EXECUTABLE}
 					-q -b html
 					-c "${ICSNEO_DOCS_DIR}"

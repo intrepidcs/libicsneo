@@ -19,7 +19,7 @@ Additionally, `event callbacks`_ can be registered, which may remove the need to
 
 .. _events:
 
-Events 
+Events
 ~~~~~~~~~~~~~~~~~~~~
 
 The API stores events in a single buffer that can has a default size of 10,000 events.
@@ -67,7 +67,7 @@ In order to access device functionality, the device must first be opened, which 
 The exception to this is setting the message polling status of the device.
 Trying to open/close the device when the device is already open/closed will result in an error being logged on the calling thread.
 
-Online/Offline Status 
+Online/Offline Status
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Going online begins communication between the device and the rest of the network. In order to be online, the device must also be open.
