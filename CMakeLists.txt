@@ -3,6 +3,7 @@ project(libicsneo VERSION 0.2.0)
 
 option(LIBICSNEO_BUILD_TESTS "Build all tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
+option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
 option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
@@ -99,6 +100,10 @@ else() # elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 			"The Linux platform code will be used, as it will generally allow building, but some devices may not enumerate properly."
 		)
 	endif()
+endif()
+
+if(LIBICSNEO_BUILD_EXAMPLES)
+	add_subdirectory(examples)
 endif()
 
 set(COMMON_SRC
