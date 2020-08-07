@@ -5,6 +5,7 @@
 #include "icsneo/device/devicetype.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/decoder.h"
+#include "icsneo/device/tree/radpluto/radplutosettings.h"
 
 namespace icsneo {
 
