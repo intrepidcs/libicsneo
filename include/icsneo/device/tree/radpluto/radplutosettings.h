@@ -10,7 +10,7 @@ namespace icsneo {
 
 #endif
 
-#define PLUTO_MAX_MAC_CONFIG_ENTRIES 5
+constexpr size_t PLUTO_MAX_MAC_CONFIG_ENTRIES = 5;
 
 #pragma pack(push, 2)
 typedef struct {
