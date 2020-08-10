@@ -136,6 +136,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 		msg->network = Network::NetID::Main51;
 		m51msg->command = cmd;
 		switch(cmd) {
+			case Command::ReadSettings:
 			case Command::RequestSerialNumber:
 			case Command::EnableNetworkCommunication:
 			case Command::EnableNetworkCommunicationEx:
