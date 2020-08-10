@@ -20,7 +20,7 @@ public:
 
 private:
 	RADPlutoUSB(neodevice_t neodevice) : RADPluto(neodevice) {
-		initialize<STM32>();
+		initialize<STM32, RADPlutoSettings>();
 	}
 };
 
