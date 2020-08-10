@@ -1,5 +1,5 @@
-#ifndef __RADSTAR2SETTINGS_H_
-#define __RADSTAR2SETTINGS_H_
+#ifndef __RADPLUTOSETTINGS_H_
+#define __RADPLUTOSETTINGS_H_
 
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
