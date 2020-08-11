@@ -46,42 +46,42 @@ public class neodevice_t : global::System.IDisposable {
   public SWIGTYPE_p_void device {
     set {
       icsneocsharpPINVOKE.neodevice_t_device_set(swigCPtr, SWIGTYPE_p_void.getCPtr(value));
-    } 
+    }
     get {
       global::System.IntPtr cPtr = icsneocsharpPINVOKE.neodevice_t_device_get(swigCPtr);
       SWIGTYPE_p_void ret = (cPtr == global::System.IntPtr.Zero) ? null : new SWIGTYPE_p_void(cPtr, false);
       return ret;
-    } 
+    }
   }
 
   public int handle {
     set {
       icsneocsharpPINVOKE.neodevice_t_handle_set(swigCPtr, value);
-    } 
+    }
     get {
       int ret = icsneocsharpPINVOKE.neodevice_t_handle_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint type {
     set {
       icsneocsharpPINVOKE.neodevice_t_type_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neodevice_t_type_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public string serial {
     set {
       icsneocsharpPINVOKE.neodevice_t_serial_set(swigCPtr, value);
-    } 
+    }
     get {
       string ret = icsneocsharpPINVOKE.neodevice_t_serial_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public neodevice_t() : this(icsneocsharpPINVOKE.new_neodevice_t(), true) {

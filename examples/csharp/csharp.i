@@ -7,7 +7,7 @@
 
 #define DLLExport
 
-%typemap(ctype) uint8_t const *data "unsigned char *" 
+%typemap(ctype) uint8_t const *data "unsigned char *"
 %typemap(imtype, out="System.IntPtr") uint8_t const *data "byte[]"
 %typemap(cstype) uint8_t const *data "byte[]"
 
@@ -23,16 +23,16 @@
 
 %typemap(csvarout, excode=SWIGEXCODE2) uint8_t const *data %{
 	get {
-		byte[] ret = new byte[this.length]; 
-        System.IntPtr data = $imcall; 
+		byte[] ret = new byte[this.length];
+        System.IntPtr data = $imcall;
         System.Runtime.InteropServices.Marshal.Copy(data, ret, 0, (int)this.length)$excode;
-		return ret; 
+		return ret;
 	}
 %}
 
 %typemap(ctype) char *str "char *"
 %typemap(imtype) char *str "System.Text.StringBuilder"
-%typemap(cstype) char *str "System.Text.StringBuilder" 
+%typemap(cstype) char *str "System.Text.StringBuilder"
 
 %{
 #include "icsneo/icsneoc.h"

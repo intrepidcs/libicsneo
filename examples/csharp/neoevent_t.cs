@@ -46,64 +46,64 @@ public class neoevent_t : global::System.IDisposable {
   public string description {
     set {
       icsneocsharpPINVOKE.neoevent_t_description_set(swigCPtr, value);
-    } 
+    }
     get {
       string ret = icsneocsharpPINVOKE.neoevent_t_description_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public SWIGTYPE_p_time_t timestamp {
     set {
       icsneocsharpPINVOKE.neoevent_t_timestamp_set(swigCPtr, SWIGTYPE_p_time_t.getCPtr(value));
       if (icsneocsharpPINVOKE.SWIGPendingException.Pending) throw icsneocsharpPINVOKE.SWIGPendingException.Retrieve();
-    } 
+    }
     get {
       SWIGTYPE_p_time_t ret = new SWIGTYPE_p_time_t(icsneocsharpPINVOKE.neoevent_t_timestamp_get(swigCPtr), true);
       if (icsneocsharpPINVOKE.SWIGPendingException.Pending) throw icsneocsharpPINVOKE.SWIGPendingException.Retrieve();
       return ret;
-    } 
+    }
   }
 
   public uint eventNumber {
     set {
       icsneocsharpPINVOKE.neoevent_t_eventNumber_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neoevent_t_eventNumber_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public byte severity {
     set {
       icsneocsharpPINVOKE.neoevent_t_severity_set(swigCPtr, value);
-    } 
+    }
     get {
       byte ret = icsneocsharpPINVOKE.neoevent_t_severity_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public string serial {
     set {
       icsneocsharpPINVOKE.neoevent_t_serial_set(swigCPtr, value);
-    } 
+    }
     get {
       string ret = icsneocsharpPINVOKE.neoevent_t_serial_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public SWIGTYPE_p_unsigned_char reserved {
     set {
       icsneocsharpPINVOKE.neoevent_t_reserved_set(swigCPtr, SWIGTYPE_p_unsigned_char.getCPtr(value));
-    } 
+    }
     get {
       global::System.IntPtr cPtr = icsneocsharpPINVOKE.neoevent_t_reserved_get(swigCPtr);
       SWIGTYPE_p_unsigned_char ret = (cPtr == global::System.IntPtr.Zero) ? null : new SWIGTYPE_p_unsigned_char(cPtr, false);
       return ret;
-    } 
+    }
   }
 
   public neoevent_t() : this(icsneocsharpPINVOKE.new_neoevent_t(), true) {

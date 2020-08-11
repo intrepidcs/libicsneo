@@ -46,71 +46,71 @@ public class neoversion_t : global::System.IDisposable {
   public ushort major {
     set {
       icsneocsharpPINVOKE.neoversion_t_major_set(swigCPtr, value);
-    } 
+    }
     get {
       ushort ret = icsneocsharpPINVOKE.neoversion_t_major_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public ushort minor {
     set {
       icsneocsharpPINVOKE.neoversion_t_minor_set(swigCPtr, value);
-    } 
+    }
     get {
       ushort ret = icsneocsharpPINVOKE.neoversion_t_minor_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public ushort patch {
     set {
       icsneocsharpPINVOKE.neoversion_t_patch_set(swigCPtr, value);
-    } 
+    }
     get {
       ushort ret = icsneocsharpPINVOKE.neoversion_t_patch_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public string metadata {
     set {
       icsneocsharpPINVOKE.neoversion_t_metadata_set(swigCPtr, value);
-    } 
+    }
     get {
       string ret = icsneocsharpPINVOKE.neoversion_t_metadata_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public string buildBranch {
     set {
       icsneocsharpPINVOKE.neoversion_t_buildBranch_set(swigCPtr, value);
-    } 
+    }
     get {
       string ret = icsneocsharpPINVOKE.neoversion_t_buildBranch_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public string buildTag {
     set {
       icsneocsharpPINVOKE.neoversion_t_buildTag_set(swigCPtr, value);
-    } 
+    }
     get {
       string ret = icsneocsharpPINVOKE.neoversion_t_buildTag_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public string reserved {
     set {
       icsneocsharpPINVOKE.neoversion_t_reserved_set(swigCPtr, value);
-    } 
+    }
     get {
       string ret = icsneocsharpPINVOKE.neoversion_t_reserved_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public neoversion_t() : this(icsneocsharpPINVOKE.new_neoversion_t(), true) {

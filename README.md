@@ -122,7 +122,7 @@ The dependencies are as follows
  - `libusb-1.0-0-dev`
  - `libpcap0.8-dev`
  - `build-essential` is recommended
- 
+
 If you'd like to be able to run programs that use this library without being root, consider using the included udev rules
 
 ```

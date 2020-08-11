@@ -467,7 +467,7 @@ int main() {
 			for(size_t i = 0; i < msgCount; i++) {
 				neomessage_t* msg = &msgs[i];
 				switch(msg->type) {
-				case ICSNEO_NETWORK_TYPE_CAN: // CAN 
+				case ICSNEO_NETWORK_TYPE_CAN: // CAN
 				{
 					neomessage_can_t* canMsg = (neomessage_can_t*) msg;
 					printf("\t0x%03x [%zu] ", canMsg->arbid, canMsg->length);

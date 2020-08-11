@@ -217,7 +217,7 @@ bool IDeviceSettings::apply(bool temporary) {
 
 	if(!msg || msg->data[0] != 1) { // We did not receive a response
 		// Attempt to get the settings from the device so we're up to date if possible
-		if(refresh()) { 
+		if(refresh()) {
 			// refresh succeeded but previously there was an error
 			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		}
@@ -237,7 +237,7 @@ bool IDeviceSettings::apply(bool temporary) {
 	}, Main51MessageFilter(Command::SetSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
-		if(refresh()) { 
+		if(refresh()) {
 			// refresh succeeded but previously there was an error
 			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		}
@@ -256,7 +256,7 @@ bool IDeviceSettings::apply(bool temporary) {
 	if(!ret) {
 		report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 	}
-	return ret; 
+	return ret;
 }
 
 bool IDeviceSettings::applyDefaults(bool temporary) {
@@ -275,7 +275,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	}, Main51MessageFilter(Command::SetDefaultSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
-		if(refresh()) { 
+		if(refresh()) {
 			// refresh succeeded but previously there was an error
 			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		}
@@ -305,7 +305,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	}, Main51MessageFilter(Command::SetSettings), std::chrono::milliseconds(1000));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
-		if(refresh()) { 
+		if(refresh()) {
 			// refresh succeeded but previously there was an error
 			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		}
@@ -324,7 +324,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	if(!ret) {
 		report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 	}
-	return ret; 
+	return ret;
 }
 
 int64_t IDeviceSettings::getBaudrateFor(Network net) const {

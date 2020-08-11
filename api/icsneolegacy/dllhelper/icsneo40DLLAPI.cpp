@@ -81,17 +81,17 @@ SCRIPTWRITEAPPSIGNAL icsneoScriptWriteAppSignal;
 //SCRIPTWRITETXMESSAGE icsneoScriptWriteTxMessage;
 
 
-//The following are valid strings for setting parameters on devices 
+//The following are valid strings for setting parameters on devices
 //using the icsneoGetDeviceParameters() and icsneoSetDeviceParameters() functions
 char *FireParameters[] =
 {
 	"can1", "can2", "can3", "can4", "swcan", "lsftcan", "lin1", "lin2",
 	"lin3", "lin4", "cgi_baud", "cgi_tx_ifs_bit_times",
-	"cgi_rx_ifs_bit_times", "cgi_chksum_enable", "network_enables", 
-	"network_enabled_on_boot", "pwm_man_timeout", "pwr_man_enable", 
-	"misc_io_initial_ddr", "misc_io_initial_latch", "misc_io_analog_enable", 
-	"misc_io_report_period", "misc_io_on_report_events", "ain_sample_period", 
-	"ain_threshold", "iso15765_separation_time_offset", "iso9141_kwp_settings", 
+	"cgi_rx_ifs_bit_times", "cgi_chksum_enable", "network_enables",
+	"network_enabled_on_boot", "pwm_man_timeout", "pwr_man_enable",
+	"misc_io_initial_ddr", "misc_io_initial_latch", "misc_io_analog_enable",
+	"misc_io_report_period", "misc_io_on_report_events", "ain_sample_period",
+	"ain_threshold", "iso15765_separation_time_offset", "iso9141_kwp_settings",
 	"perf_en", "iso_parity", "iso_msg_termination", "network_enables_2"
 };
 
@@ -99,30 +99,30 @@ char *FireParameters[] =
 char *VCAN3Parameters[] =
 {
 	"can1", "can2", "network_enables", "network_enabled_on_boot", "iso15765_separation_time_offset",
-	"perf_en", "misc_io_initial_ddr", "misc_io_initial_latch", "misc_io_report_period", 
+	"perf_en", "misc_io_initial_ddr", "misc_io_initial_latch", "misc_io_report_period",
 	"misc_io_on_report_events"
 };
 
-char *CANParameters[] = 
+char *CANParameters[] =
 {
      "Mode", "SetBaudrate", "Baudrate", "NetworkType", "TqSeg1",
 	 "TqSeg2", "TqProp", "TqSync", "BRP", "auto_baud"
 };
 
-char *SWCANParameters[] = 
+char *SWCANParameters[] =
 {
-	 "Mode", "SetBaudrate", "Baudrate", "NetworkType", "TqSeg1", "TqSeg2", 
+	 "Mode", "SetBaudrate", "Baudrate", "NetworkType", "TqSeg1", "TqSeg2",
 	 "TqProp", "TqSync", "BRP", "high_speed_auto_switch", "auto_baud"
 };
 
-char *LINParameters[] = 
+char *LINParameters[] =
 {
 	 "Baudrate", "spbrg", "brgh", "MasterResistor", "Mode"
 };
 
 char *ISOKWPParms[] =
 {
-	 "Baudrate", "spbrg", "brgh", "init_steps", "init_step_count", 
+	 "Baudrate", "spbrg", "brgh", "init_steps", "init_step_count",
 	 "p2_500us", "p3_500us", "p4_500us", "chksum_enabled"
 };
 
@@ -203,14 +203,14 @@ bool LoadDLLAPI(HINSTANCE &hAPIDLL)
 
 	
 
-    if(!icsneoFindNeoDevices || !icsneoOpenNeoDevice || !icsneoClosePort || !icsneoFreeObject ||  
+    if(!icsneoFindNeoDevices || !icsneoOpenNeoDevice || !icsneoClosePort || !icsneoFreeObject ||
 	   !icsneoTxMessages || !icsneoGetMessages || !icsneoWaitForRxMessagesWithTimeOut ||
        !icsneoGetTimeStampForMsg || !icsneoEnableNetworkRXQueue || !icsneoGetISO15765Status || !icsneoTxMessagesEx ||
        !icsneoSetISO15765RxParameters || !icsneoGetConfiguration || !icsneoSendConfiguration ||
        !icsneoGetFireSettings || !icsneoSetFireSettings || !icsneoGetVCAN3Settings ||
        !icsneoSetVCAN3Settings || !icsneoGetVCANRFSettings || !icsneoSetVCANRFSettings || !icsneoGetFire2Settings ||
 	   !icsneoGetVCAN412Settings || !icsneoSetVCAN412Settings ||
-	   !icsneoSetFire2Settings || !icsneoGetRADGalaxySettings || !icsneoSetRADGalaxySettings || 
+	   !icsneoSetFire2Settings || !icsneoGetRADGalaxySettings || !icsneoSetRADGalaxySettings ||
 	   !icsneoSetBitRate || !icsneoGetDeviceParameters || !icsneoSerialNumberToString ||
        !icsneoSetDeviceParameters || !icsneoGetLastAPIError || !icsneoGetErrorMessages ||
        !icsneoGetErrorInfo || !icsneoScriptLoad || !icsneoScriptStart || !icsneoScriptStop ||

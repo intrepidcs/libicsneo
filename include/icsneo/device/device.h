@@ -125,8 +125,8 @@ protected:
 	}
 
 	virtual device_eventhandler_t makeEventHandler() {
-		return [this](APIEvent::Type type, APIEvent::Severity severity) { 
-			EventManager::GetInstance().add(type, severity, this); 
+		return [this](APIEvent::Type type, APIEvent::Severity severity) {
+			EventManager::GetInstance().add(type, severity, this);
 		};
 	}
 

@@ -46,562 +46,562 @@ public class neomessage_statusbitfield_t : global::System.IDisposable {
   public uint globalError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_globalError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_globalError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint transmitMessage {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_transmitMessage_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_transmitMessage_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint extendedFrame {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_extendedFrame_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_extendedFrame_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint remoteFrame {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_remoteFrame_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_remoteFrame_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint crcError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_crcError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_crcError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canErrorPassive {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canErrorPassive_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canErrorPassive_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint incompleteFrame {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_incompleteFrame_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_incompleteFrame_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint lostArbitration {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_lostArbitration_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_lostArbitration_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint undefinedError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_undefinedError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_undefinedError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canBusOff {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canBusOff_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canBusOff_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canErrorWarning {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canErrorWarning_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canErrorWarning_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canBusShortedPlus {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canBusShortedPlus_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canBusShortedPlus_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canBusShortedGround {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canBusShortedGround_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canBusShortedGround_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint checksumError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_checksumError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_checksumError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint badMessageBitTimeError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_badMessageBitTimeError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_badMessageBitTimeError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint ifrData {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_ifrData_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_ifrData_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint hardwareCommError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_hardwareCommError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_hardwareCommError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint expectedLengthError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_expectedLengthError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_expectedLengthError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint incomingNoMatch {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_incomingNoMatch_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_incomingNoMatch_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint statusBreak {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_statusBreak_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_statusBreak_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint avsiRecOverflow {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_avsiRecOverflow_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_avsiRecOverflow_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint testTrigger {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_testTrigger_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_testTrigger_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint audioComment {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_audioComment_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_audioComment_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint gpsData {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_gpsData_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_gpsData_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint analogDigitalInput {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_analogDigitalInput_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_analogDigitalInput_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint textComment {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_textComment_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_textComment_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint networkMessageType {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_networkMessageType_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_networkMessageType_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint vsiTXUnderrun {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_vsiTXUnderrun_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_vsiTXUnderrun_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint vsiIFRCRCBit {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_vsiIFRCRCBit_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_vsiIFRCRCBit_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint initMessage {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_initMessage_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_initMessage_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint flexraySecondStartupFrame {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_flexraySecondStartupFrame_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_flexraySecondStartupFrame_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint extended {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_extended_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_extended_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint hasValue {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_hasValue_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_hasValue_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint valueIsBoolean {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_valueIsBoolean_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_valueIsBoolean_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint highVoltage {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_highVoltage_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_highVoltage_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint longMessage {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_longMessage_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_longMessage_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint globalChange {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_globalChange_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_globalChange_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint errorFrame {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_errorFrame_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_errorFrame_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint endOfLongMessage {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_endOfLongMessage_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_endOfLongMessage_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linErrorRXBreakNotZero {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorRXBreakNotZero_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorRXBreakNotZero_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linErrorRXBreakTooShort {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorRXBreakTooShort_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorRXBreakTooShort_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linErrorRXSyncNot55 {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorRXSyncNot55_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorRXSyncNot55_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linErrorRXDataGreaterEight {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorRXDataGreaterEight_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorRXDataGreaterEight_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linErrorTXRXMismatch {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorTXRXMismatch_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorTXRXMismatch_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linErrorMessageIDParity {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorMessageIDParity_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linErrorMessageIDParity_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linSyncFrameError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linSyncFrameError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linSyncFrameError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linIDFrameError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linIDFrameError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linIDFrameError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linSlaveByteError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linSlaveByteError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linSlaveByteError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint rxTimeoutError {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_rxTimeoutError_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_rxTimeoutError_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint linNoSlaveData {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_linNoSlaveData_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_linNoSlaveData_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canfdESI {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdESI_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdESI_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canfdIDE {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdIDE_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdIDE_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canfdRTR {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdRTR_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdRTR_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canfdFDF {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdFDF_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdFDF_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public uint canfdBRS {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdBRS_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_statusbitfield_t_canfdBRS_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public SWIGTYPE_p_unsigned_int statusBitfield {
     set {
       icsneocsharpPINVOKE.neomessage_statusbitfield_t_statusBitfield_set(swigCPtr, SWIGTYPE_p_unsigned_int.getCPtr(value));
-    } 
+    }
     get {
       global::System.IntPtr cPtr = icsneocsharpPINVOKE.neomessage_statusbitfield_t_statusBitfield_get(swigCPtr);
       SWIGTYPE_p_unsigned_int ret = (cPtr == global::System.IntPtr.Zero) ? null : new SWIGTYPE_p_unsigned_int(cPtr, false);
       return ret;
-    } 
+    }
   }
 
   public neomessage_statusbitfield_t() : this(icsneocsharpPINVOKE.new_neomessage_statusbitfield_t(), true) {

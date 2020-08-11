@@ -141,8 +141,8 @@ typedef unsigned __int64 uint64_t;
 #define NETID_INVALID 0xffff
 
 /* Device types -- value of DeviceType of NeoDevice */
-/* Older devices have a value on a specific bit. Those values have not changed 
- * to support existing apps using the api. New devices can fill in between the 
+/* Older devices have a value on a specific bit. Those values have not changed
+ * to support existing apps using the api. New devices can fill in between the
  * existing ones. I know it hurts, but it's just a number!
  */
 //clang-format off

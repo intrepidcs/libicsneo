@@ -158,9 +158,9 @@
 
 /* Support for throwing Java exceptions */
 typedef enum {
-  SWIG_JavaOutOfMemoryError = 1, 
-  SWIG_JavaIOException, 
-  SWIG_JavaRuntimeException, 
+  SWIG_JavaOutOfMemoryError = 1,
+  SWIG_JavaIOException,
+  SWIG_JavaRuntimeException,
   SWIG_JavaIndexOutOfBoundsException,
   SWIG_JavaArithmeticException,
   SWIG_JavaIllegalArgumentException,
@@ -281,8 +281,8 @@ static int SWIG_JavaArrayInSchar (JNIEnv *jenv, jbyte **jarr, signed char **carr
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetByteArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (signed char*) malloc(sz * sizeof(signed char)); 
+    return 0;
+  *carr = (signed char*) malloc(sz * sizeof(signed char));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -327,8 +327,8 @@ static int SWIG_JavaArrayInUchar (JNIEnv *jenv, jshort **jarr, unsigned char **c
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetShortArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (unsigned char*) malloc(sz * sizeof(unsigned char)); 
+    return 0;
+  *carr = (unsigned char*) malloc(sz * sizeof(unsigned char));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -373,8 +373,8 @@ static int SWIG_JavaArrayInShort (JNIEnv *jenv, jshort **jarr, short **carr, jsh
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetShortArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (short*) malloc(sz * sizeof(short)); 
+    return 0;
+  *carr = (short*) malloc(sz * sizeof(short));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -419,8 +419,8 @@ static int SWIG_JavaArrayInUshort (JNIEnv *jenv, jint **jarr, unsigned short **c
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetIntArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (unsigned short*) malloc(sz * sizeof(unsigned short)); 
+    return 0;
+  *carr = (unsigned short*) malloc(sz * sizeof(unsigned short));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -465,8 +465,8 @@ static int SWIG_JavaArrayInInt (JNIEnv *jenv, jint **jarr, int **carr, jintArray
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetIntArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (int*) malloc(sz * sizeof(int)); 
+    return 0;
+  *carr = (int*) malloc(sz * sizeof(int));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -511,8 +511,8 @@ static int SWIG_JavaArrayInUint (JNIEnv *jenv, jlong **jarr, unsigned int **carr
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetLongArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (unsigned int*) malloc(sz * sizeof(unsigned int)); 
+    return 0;
+  *carr = (unsigned int*) malloc(sz * sizeof(unsigned int));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -557,8 +557,8 @@ static int SWIG_JavaArrayInLong (JNIEnv *jenv, jint **jarr, long **carr, jintArr
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetIntArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (long*) malloc(sz * sizeof(long)); 
+    return 0;
+  *carr = (long*) malloc(sz * sizeof(long));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -603,8 +603,8 @@ static int SWIG_JavaArrayInUlong (JNIEnv *jenv, jlong **jarr, unsigned long **ca
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetLongArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (unsigned long*) malloc(sz * sizeof(unsigned long)); 
+    return 0;
+  *carr = (unsigned long*) malloc(sz * sizeof(unsigned long));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -649,8 +649,8 @@ static int SWIG_JavaArrayInLonglong (JNIEnv *jenv, jlong **jarr, jlong **carr, j
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetLongArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (jlong*) malloc(sz * sizeof(jlong)); 
+    return 0;
+  *carr = (jlong*) malloc(sz * sizeof(jlong));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -695,8 +695,8 @@ static int SWIG_JavaArrayInFloat (JNIEnv *jenv, jfloat **jarr, float **carr, jfl
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetFloatArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (float*) malloc(sz * sizeof(float)); 
+    return 0;
+  *carr = (float*) malloc(sz * sizeof(float));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -741,8 +741,8 @@ static int SWIG_JavaArrayInDouble (JNIEnv *jenv, jdouble **jarr, double **carr, 
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetDoubleArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0; 
-  *carr = (double*) malloc(sz * sizeof(double)); 
+    return 0;
+  *carr = (double*) malloc(sz * sizeof(double));
   if (!*carr) {
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
     return 0;
@@ -799,12 +799,12 @@ static neomessage_t* from_eth_neomessage_t_cast(neomessage_eth_t* msg) {
 }
 
 
-static neodevice_t *new_neodevice_t_array(int nelements) { 
-  return (neodevice_t *) calloc(nelements,sizeof(neodevice_t)); 
+static neodevice_t *new_neodevice_t_array(int nelements) {
+  return (neodevice_t *) calloc(nelements,sizeof(neodevice_t));
 }
 
-static void delete_neodevice_t_array(neodevice_t *ary) { 
-  free(ary); 
+static void delete_neodevice_t_array(neodevice_t *ary) {
+  free(ary);
 }
 
 static neodevice_t neodevice_t_array_getitem(neodevice_t *ary, int index) {
@@ -815,12 +815,12 @@ static void neodevice_t_array_setitem(neodevice_t *ary, int index, neodevice_t v
 }
 
 
-static neoevent_t *new_neoevent_t_array(int nelements) { 
-  return (neoevent_t *) calloc(nelements,sizeof(neoevent_t)); 
+static neoevent_t *new_neoevent_t_array(int nelements) {
+  return (neoevent_t *) calloc(nelements,sizeof(neoevent_t));
 }
 
-static void delete_neoevent_t_array(neoevent_t *ary) { 
-  free(ary); 
+static void delete_neoevent_t_array(neoevent_t *ary) {
+  free(ary);
 }
 
 static neoevent_t neoevent_t_array_getitem(neoevent_t *ary, int index) {
@@ -831,12 +831,12 @@ static void neoevent_t_array_setitem(neoevent_t *ary, int index, neoevent_t valu
 }
 
 
-static neomessage_t *new_neomessage_t_array(int nelements) { 
-  return (neomessage_t *) calloc(nelements,sizeof(neomessage_t)); 
+static neomessage_t *new_neomessage_t_array(int nelements) {
+  return (neomessage_t *) calloc(nelements,sizeof(neomessage_t));
 }
 
-static void delete_neomessage_t_array(neomessage_t *ary) { 
-  free(ary); 
+static void delete_neomessage_t_array(neomessage_t *ary) {
+  free(ary);
 }
 
 static neomessage_t neomessage_t_array_getitem(neomessage_t *ary, int index) {
@@ -854,11 +854,11 @@ extern "C" {
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_icsneo_1findAllDevices(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jintArray jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   size_t *arg2 = (size_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   {
     if (!jarg2) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
@@ -868,13 +868,13 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_icsneo_1findAllDevices(JNIEnv *jenv, 
       SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
       return ;
     }
-    arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0); 
+    arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0);
   }
   icsneo_findAllDevices(arg1,arg2);
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0); 
+    (*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0);
   }
-  
+
 }
 
 
@@ -891,10 +891,10 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1serialNumToString(JNIEnv 
   char *arg2 = (char *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = (uint32_t)jarg1; 
+  arg1 = (uint32_t)jarg1;
   {
     arg2 = NULL;
     if(jarg2 != NULL) {
@@ -903,19 +903,19 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1serialNumToString(JNIEnv 
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
       jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
       jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
-      
+
       /* Convert the String to a C string */
       const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
-      
+
       /* Take a copy of the C string as the typemap is for a non const C string */
       jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
       jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
       arg2 = (char *) malloc(capacity+1);
       strcpy(arg2, pCharStr);
-      
+
       /* Release the UTF string we obtained with GetStringUTFChars */
       (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
-      
+
       /* Zero the original StringBuffer, so we can replace it with the result */
       setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
       (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
@@ -930,10 +930,10 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1serialNumToString(JNIEnv 
       SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
       return 0;
     }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0); 
+    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_serialNumToString(arg1,arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   {
     if(arg2 != NULL) {
       /* Append the result to the empty StringBuffer */
@@ -941,17 +941,17 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1serialNumToString(JNIEnv 
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
       jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
       (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
-      
+
       /* Clean up the string object, no longer needed */
       free(arg2);
       arg2 = NULL;
     }
   }
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0); 
+    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
-  
-  
+
+
   return jresult;
 }
 
@@ -960,7 +960,7 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1serialStringToNum(JNIEnv *je
   jlong jresult = 0 ;
   char *arg1 = (char *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   {
@@ -971,26 +971,26 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1serialStringToNum(JNIEnv *je
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg1);
       jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
       jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg1, toStringID);
-      
+
       /* Convert the String to a C string */
       const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
-      
+
       /* Take a copy of the C string as the typemap is for a non const C string */
       jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
       jint capacity = (*jenv)->CallIntMethod(jenv, jarg1, capacityID);
       arg1 = (char *) malloc(capacity+1);
       strcpy(arg1, pCharStr);
-      
+
       /* Release the UTF string we obtained with GetStringUTFChars */
       (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
-      
+
       /* Zero the original StringBuffer, so we can replace it with the result */
       setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
       (*jenv)->CallVoidMethod(jenv, jarg1, setLengthID, (jint) 0);
     }
   }
   result = (uint32_t)icsneo_serialStringToNum((char const *)arg1);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   {
     if(arg1 != NULL) {
       /* Append the result to the empty StringBuffer */
@@ -998,13 +998,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1serialStringToNum(JNIEnv *je
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg1);
       jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
       (*jenv)->CallObjectMethod(jenv, jarg1, appendStringID, newString);
-      
+
       /* Clean up the string object, no longer needed */
       free(arg1);
       arg1 = NULL;
     }
   }
-  
+
   return jresult;
 }
 
@@ -1013,13 +1013,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1isValidNeoDevice(JNIEnv *
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_isValidNeoDevice((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1028,13 +1028,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1openDevice(JNIEnv *jenv, 
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_openDevice((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1043,13 +1043,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1closeDevice(JNIEnv *jenv,
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_closeDevice((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1058,13 +1058,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1isOpen(JNIEnv *jenv, jcla
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_isOpen((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1073,13 +1073,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1goOnline(JNIEnv *jenv, jc
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_goOnline((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1088,13 +1088,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1goOffline(JNIEnv *jenv, j
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_goOffline((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1103,13 +1103,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1isOnline(JNIEnv *jenv, jc
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_isOnline((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1118,13 +1118,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1enableMessagePolling(JNIE
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_enableMessagePolling((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1133,13 +1133,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1disableMessagePolling(JNI
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_disableMessagePolling((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1148,13 +1148,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1isMessagePollingEnabled(J
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_isMessagePollingEnabled((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1166,13 +1166,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getMessages(JNIEnv *jenv,
   size_t *arg3 = (size_t *) 0 ;
   uint64_t arg4 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = *(neomessage_t **)&jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = *(neomessage_t **)&jarg2;
   {
     if (!jarg3) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
@@ -1182,7 +1182,7 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getMessages(JNIEnv *jenv,
       SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
       return 0;
     }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0); 
+    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   {
     jclass clazz;
@@ -1191,7 +1191,7 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getMessages(JNIEnv *jenv,
     jbyte* bae;
     jsize sz;
     int i;
-    
+
     if (!jarg4) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
       return 0;
@@ -1211,11 +1211,11 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getMessages(JNIEnv *jenv,
     (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
   }
   result = (bool)icsneo_getMessages((neodevice_t const *)arg1,arg2,arg3,arg4);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0); 
+    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
-  
+
   return jresult;
 }
 
@@ -1224,13 +1224,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1getPollingMessageLimit(JNIEn
   jlong jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   size_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = icsneo_getPollingMessageLimit((neodevice_t const *)arg1);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -1240,14 +1240,14 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1setPollingMessageLimit(JN
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   size_t arg2 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = (size_t)jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = (size_t)jarg2;
   result = (bool)icsneo_setPollingMessageLimit((neodevice_t const *)arg1,arg2);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1258,11 +1258,11 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductName(JNIEnv *je
   char *arg2 = (char *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   {
     arg2 = NULL;
     if(jarg2 != NULL) {
@@ -1271,19 +1271,19 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductName(JNIEnv *je
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
       jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
       jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
-      
+
       /* Convert the String to a C string */
       const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
-      
+
       /* Take a copy of the C string as the typemap is for a non const C string */
       jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
       jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
       arg2 = (char *) malloc(capacity+1);
       strcpy(arg2, pCharStr);
-      
+
       /* Release the UTF string we obtained with GetStringUTFChars */
       (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
-      
+
       /* Zero the original StringBuffer, so we can replace it with the result */
       setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
       (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
@@ -1298,10 +1298,10 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductName(JNIEnv *je
       SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
       return 0;
     }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0); 
+    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_getProductName((neodevice_t const *)arg1,arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   {
     if(arg2 != NULL) {
       /* Append the result to the empty StringBuffer */
@@ -1309,17 +1309,17 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductName(JNIEnv *je
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
       jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
       (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
-      
+
       /* Clean up the string object, no longer needed */
       free(arg2);
       arg2 = NULL;
     }
   }
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0); 
+    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
-  
-  
+
+
   return jresult;
 }
 
@@ -1330,10 +1330,10 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductNameForType(JNI
   char *arg2 = (char *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = (devicetype_t)jarg1; 
+  arg1 = (devicetype_t)jarg1;
   {
     arg2 = NULL;
     if(jarg2 != NULL) {
@@ -1342,19 +1342,19 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductNameForType(JNI
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
       jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
       jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
-      
+
       /* Convert the String to a C string */
       const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
-      
+
       /* Take a copy of the C string as the typemap is for a non const C string */
       jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
       jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
       arg2 = (char *) malloc(capacity+1);
       strcpy(arg2, pCharStr);
-      
+
       /* Release the UTF string we obtained with GetStringUTFChars */
       (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
-      
+
       /* Zero the original StringBuffer, so we can replace it with the result */
       setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
       (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
@@ -1369,10 +1369,10 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductNameForType(JNI
       SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
       return 0;
     }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0); 
+    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_getProductNameForType(arg1,arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   {
     if(arg2 != NULL) {
       /* Append the result to the empty StringBuffer */
@@ -1380,17 +1380,17 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductNameForType(JNI
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
       jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
       (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
-      
+
       /* Clean up the string object, no longer needed */
       free(arg2);
       arg2 = NULL;
     }
   }
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0); 
+    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
-  
-  
+
+
   return jresult;
 }
 
@@ -1399,13 +1399,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1settingsRefresh(JNIEnv *j
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_settingsRefresh((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1414,13 +1414,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1settingsApply(JNIEnv *jen
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_settingsApply((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1429,13 +1429,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1settingsApplyTemporary(JN
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_settingsApplyTemporary((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1444,13 +1444,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1settingsApplyDefaults(JNI
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_settingsApplyDefaults((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1459,13 +1459,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1settingsApplyDefaultsTemp
   jboolean jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (bool)icsneo_settingsApplyDefaultsTemporary((neodevice_t const *)arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1476,15 +1476,15 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_icsneo_1settingsReadStructure(JNIEnv 
   void *arg2 = (void *) 0 ;
   size_t arg3 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = *(void **)&jarg2; 
-  arg3 = (size_t)jarg3; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = *(void **)&jarg2;
+  arg3 = (size_t)jarg3;
   result = (int)icsneo_settingsReadStructure((neodevice_t const *)arg1,arg2,arg3);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -1495,15 +1495,15 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1settingsApplyStructure(JN
   void *arg2 = (void *) 0 ;
   size_t arg3 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = *(void **)&jarg2; 
-  arg3 = (size_t)jarg3; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = *(void **)&jarg2;
+  arg3 = (size_t)jarg3;
   result = (bool)icsneo_settingsApplyStructure((neodevice_t const *)arg1,(void const *)arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1514,15 +1514,15 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1settingsApplyStructureTem
   void *arg2 = (void *) 0 ;
   size_t arg3 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = *(void **)&jarg2; 
-  arg3 = (size_t)jarg3; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = *(void **)&jarg2;
+  arg3 = (size_t)jarg3;
   result = (bool)icsneo_settingsApplyStructureTemporary((neodevice_t const *)arg1,(void const *)arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1532,14 +1532,14 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1getBaudrate(JNIEnv *jenv, jc
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   uint16_t arg2 ;
   int64_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
   result = (int64_t)icsneo_getBaudrate((neodevice_t const *)arg1,arg2);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -1550,15 +1550,15 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1setBaudrate(JNIEnv *jenv,
   uint16_t arg2 ;
   int64_t arg3 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
-  arg3 = (int64_t)jarg3; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
+  arg3 = (int64_t)jarg3;
   result = (bool)icsneo_setBaudrate((neodevice_t const *)arg1,arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1568,14 +1568,14 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1getFDBaudrate(JNIEnv *jenv, 
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   uint16_t arg2 ;
   int64_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
   result = (int64_t)icsneo_getFDBaudrate((neodevice_t const *)arg1,arg2);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -1586,15 +1586,15 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1setFDBaudrate(JNIEnv *jen
   uint16_t arg2 ;
   int64_t arg3 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
-  arg3 = (int64_t)jarg3; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
+  arg3 = (int64_t)jarg3;
   result = (bool)icsneo_setFDBaudrate((neodevice_t const *)arg1,arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1604,15 +1604,15 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1transmit(JNIEnv *jenv, jc
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   neomessage_t *arg2 = (neomessage_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = *(neomessage_t **)&jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = *(neomessage_t **)&jarg2;
   result = (bool)icsneo_transmit((neodevice_t const *)arg1,(neomessage_t const *)arg2);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1623,16 +1623,16 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1transmitMessages(JNIEnv *
   neomessage_t *arg2 = (neomessage_t *) 0 ;
   size_t arg3 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = *(neomessage_t **)&jarg2; 
-  arg3 = (size_t)jarg3; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = *(neomessage_t **)&jarg2;
+  arg3 = (size_t)jarg3;
   result = (bool)icsneo_transmitMessages((neodevice_t const *)arg1,(neomessage_t const *)arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1640,12 +1640,12 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1transmitMessages(JNIEnv *
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_icsneo_1setWriteBlocks(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jboolean jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = jarg2 ? true : false; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = jarg2 ? true : false;
   icsneo_setWriteBlocks((neodevice_t const *)arg1,arg2);
 }
 
@@ -1656,11 +1656,11 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1describeDevice(JNIEnv *je
   char *arg2 = (char *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   {
     arg2 = NULL;
     if(jarg2 != NULL) {
@@ -1669,19 +1669,19 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1describeDevice(JNIEnv *je
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
       jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
       jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
-      
+
       /* Convert the String to a C string */
       const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
-      
+
       /* Take a copy of the C string as the typemap is for a non const C string */
       jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
       jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
       arg2 = (char *) malloc(capacity+1);
       strcpy(arg2, pCharStr);
-      
+
       /* Release the UTF string we obtained with GetStringUTFChars */
       (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
-      
+
       /* Zero the original StringBuffer, so we can replace it with the result */
       setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
       (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
@@ -1696,10 +1696,10 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1describeDevice(JNIEnv *je
       SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
       return 0;
     }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0); 
+    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_describeDevice((neodevice_t const *)arg1,arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   {
     if(arg2 != NULL) {
       /* Append the result to the empty StringBuffer */
@@ -1707,17 +1707,17 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1describeDevice(JNIEnv *je
       jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
       jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
       (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
-      
+
       /* Clean up the string object, no longer needed */
       free(arg2);
       arg2 = NULL;
     }
   }
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0); 
+    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
-  
-  
+
+
   return jresult;
 }
 
@@ -1725,7 +1725,7 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1describeDevice(JNIEnv *je
 SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1getVersion(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   neoversion_t result;
-  
+
   (void)jenv;
   (void)jcls;
   result = icsneo_getVersion();
@@ -1743,11 +1743,11 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getEvents(JNIEnv *jenv, j
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   size_t *arg2 = (size_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   {
     if (!jarg2) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
@@ -1757,14 +1757,14 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getEvents(JNIEnv *jenv, j
       SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
       return 0;
     }
-    arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0); 
+    arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0);
   }
   result = (bool)icsneo_getEvents(arg1,arg2);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0); 
+    (*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0);
   }
-  
+
   return jresult;
 }
 
@@ -1775,13 +1775,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getDeviceEvents(JNIEnv *j
   neoevent_t *arg2 = (neoevent_t *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = *(neoevent_t **)&jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = *(neoevent_t **)&jarg2;
   {
     if (!jarg3) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
@@ -1791,14 +1791,14 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getDeviceEvents(JNIEnv *j
       SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
       return 0;
     }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0); 
+    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_getDeviceEvents((neodevice_t const *)arg1,arg2,arg3);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0); 
+    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
-  
+
   return jresult;
 }
 
@@ -1807,13 +1807,13 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getLastError(JNIEnv *jenv
   jboolean jresult = 0 ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   result = (bool)icsneo_getLastError(arg1);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1827,21 +1827,21 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_icsneo_1discardAllEvents(JNIEnv *jenv
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_icsneo_1discardDeviceEvents(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   icsneo_discardDeviceEvents((neodevice_t const *)arg1);
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_icsneo_1setEventLimit(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   size_t arg1 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = (size_t)jarg1; 
+  arg1 = (size_t)jarg1;
   icsneo_setEventLimit(arg1);
 }
 
@@ -1849,11 +1849,11 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_icsneo_1setEventLimit(JNIEnv *jenv, j
 SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1getEventLimit(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   size_t result;
-  
+
   (void)jenv;
   (void)jcls;
   result = icsneo_getEventLimit();
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -1863,10 +1863,10 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getSupportedDevices(JNIEn
   devicetype_t *arg1 = (devicetype_t *) 0 ;
   size_t *arg2 = (size_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = *(devicetype_t **)&jarg1; 
+  arg1 = *(devicetype_t **)&jarg1;
   {
     if (!jarg2) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
@@ -1876,14 +1876,14 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getSupportedDevices(JNIEn
       SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
       return 0;
     }
-    arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0); 
+    arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0);
   }
   result = (bool)icsneo_getSupportedDevices(arg1,arg2);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0); 
+    (*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0);
   }
-  
+
   return jresult;
 }
 
@@ -1893,14 +1893,14 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getTimestampResolution(JN
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   uint16_t *arg2 = (uint16_t *) 0 ;
   bool result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = *(uint16_t **)&jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = *(uint16_t **)&jarg2;
   result = (bool)icsneo_getTimestampResolution((neodevice_t const *)arg1,arg2);
-  jresult = (jboolean)result; 
+  jresult = (jboolean)result;
   return jresult;
 }
 
@@ -1908,12 +1908,12 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getTimestampResolution(JN
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neodevice_1t_1device_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   devicehandle_t arg2 = (devicehandle_t) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = *(devicehandle_t *)&jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = *(devicehandle_t *)&jarg2;
   if (arg1) (arg1)->device = arg2;
 }
 
@@ -1922,13 +1922,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neodevice_1t_1device_1get(JNIEnv *je
   jlong jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   devicehandle_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (devicehandle_t) ((arg1)->device);
-  *(devicehandle_t *)&jresult = result; 
+  *(devicehandle_t *)&jresult = result;
   return jresult;
 }
 
@@ -1936,12 +1936,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neodevice_1t_1device_1get(JNIEnv *je
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neodevice_1t_1handle_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   neodevice_handle_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = (neodevice_handle_t)jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = (neodevice_handle_t)jarg2;
   if (arg1) (arg1)->handle = arg2;
 }
 
@@ -1950,13 +1950,13 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neodevice_1t_1handle_1get(JNIEnv *jen
   jint jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   neodevice_handle_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (neodevice_handle_t) ((arg1)->handle);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -1964,12 +1964,12 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neodevice_1t_1handle_1get(JNIEnv *jen
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neodevice_1t_1type_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   devicetype_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = (devicetype_t)jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = (devicetype_t)jarg2;
   if (arg1) (arg1)->type = arg2;
 }
 
@@ -1978,13 +1978,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neodevice_1t_1type_1get(JNIEnv *jenv
   jlong jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   devicetype_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (devicetype_t) ((arg1)->type);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -1992,11 +1992,11 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neodevice_1t_1type_1get(JNIEnv *jenv
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neodevice_1t_1serial_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   char *arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
@@ -2010,7 +2010,7 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neodevice_1t_1serial_1set(JNIEnv *jen
       arg1->serial[0] = 0;
     }
   }
-  
+
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
 }
 
@@ -2019,11 +2019,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neodevice_1t_1serial_1get(JNIEnv *
   jstring jresult = 0 ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   char *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   result = (char *)(char *) ((arg1)->serial);
   if (result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   return jresult;
@@ -2033,21 +2033,21 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neodevice_1t_1serial_1get(JNIEnv *
 SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neodevice_1t(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   neodevice_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   result = (neodevice_t *)calloc(1, sizeof(neodevice_t));
-  *(neodevice_t **)&jresult = result; 
+  *(neodevice_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neodevice_1t(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   free((char *) arg1);
 }
 
@@ -2055,12 +2055,12 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neodevice_1t(JNIEnv *jenv, jc
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1globalError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->globalError = arg2;
 }
 
@@ -2069,13 +2069,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1globa
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->globalError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2083,12 +2083,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1globa
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1transmitMessage_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->transmitMessage = arg2;
 }
 
@@ -2097,13 +2097,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1trans
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->transmitMessage);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2111,12 +2111,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1trans
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1extendedFrame_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->extendedFrame = arg2;
 }
 
@@ -2125,13 +2125,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1exten
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->extendedFrame);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2139,12 +2139,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1exten
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1remoteFrame_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->remoteFrame = arg2;
 }
 
@@ -2153,13 +2153,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1remot
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->remoteFrame);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2167,12 +2167,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1remot
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1crcError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->crcError = arg2;
 }
 
@@ -2181,13 +2181,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1crcEr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->crcError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2195,12 +2195,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1crcEr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canErrorPassive_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canErrorPassive = arg2;
 }
 
@@ -2209,13 +2209,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canEr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canErrorPassive);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2223,12 +2223,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canEr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1incompleteFrame_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->incompleteFrame = arg2;
 }
 
@@ -2237,13 +2237,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1incom
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->incompleteFrame);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2251,12 +2251,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1incom
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1lostArbitration_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->lostArbitration = arg2;
 }
 
@@ -2265,13 +2265,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1lostA
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->lostArbitration);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2279,12 +2279,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1lostA
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1undefinedError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->undefinedError = arg2;
 }
 
@@ -2293,13 +2293,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1undef
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->undefinedError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2307,12 +2307,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1undef
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canBusOff_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canBusOff = arg2;
 }
 
@@ -2321,13 +2321,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canBu
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canBusOff);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2335,12 +2335,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canBu
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canErrorWarning_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canErrorWarning = arg2;
 }
 
@@ -2349,13 +2349,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canEr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canErrorWarning);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2363,12 +2363,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canEr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canBusShortedPlus_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canBusShortedPlus = arg2;
 }
 
@@ -2377,13 +2377,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canBu
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canBusShortedPlus);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2391,12 +2391,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canBu
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canBusShortedGround_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canBusShortedGround = arg2;
 }
 
@@ -2405,13 +2405,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canBu
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canBusShortedGround);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2419,12 +2419,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canBu
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1checksumError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->checksumError = arg2;
 }
 
@@ -2433,13 +2433,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1check
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->checksumError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2447,12 +2447,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1check
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1badMessageBitTimeError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->badMessageBitTimeError = arg2;
 }
 
@@ -2461,13 +2461,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1badMe
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->badMessageBitTimeError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2475,12 +2475,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1badMe
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1ifrData_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->ifrData = arg2;
 }
 
@@ -2489,13 +2489,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1ifrDa
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->ifrData);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2503,12 +2503,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1ifrDa
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1hardwareCommError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->hardwareCommError = arg2;
 }
 
@@ -2517,13 +2517,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1hardw
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->hardwareCommError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2531,12 +2531,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1hardw
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1expectedLengthError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->expectedLengthError = arg2;
 }
 
@@ -2545,13 +2545,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1expec
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->expectedLengthError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2559,12 +2559,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1expec
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1incomingNoMatch_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->incomingNoMatch = arg2;
 }
 
@@ -2573,13 +2573,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1incom
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->incomingNoMatch);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2587,12 +2587,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1incom
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1statusBreak_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->statusBreak = arg2;
 }
 
@@ -2601,13 +2601,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1statu
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->statusBreak);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2615,12 +2615,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1statu
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1avsiRecOverflow_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->avsiRecOverflow = arg2;
 }
 
@@ -2629,13 +2629,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1avsiR
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->avsiRecOverflow);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2643,12 +2643,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1avsiR
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1testTrigger_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->testTrigger = arg2;
 }
 
@@ -2657,13 +2657,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1testT
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->testTrigger);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2671,12 +2671,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1testT
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1audioComment_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->audioComment = arg2;
 }
 
@@ -2685,13 +2685,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1audio
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->audioComment);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2699,12 +2699,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1audio
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1gpsData_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->gpsData = arg2;
 }
 
@@ -2713,13 +2713,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1gpsDa
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->gpsData);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2727,12 +2727,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1gpsDa
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1analogDigitalInput_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->analogDigitalInput = arg2;
 }
 
@@ -2741,13 +2741,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1analo
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->analogDigitalInput);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2755,12 +2755,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1analo
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1textComment_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->textComment = arg2;
 }
 
@@ -2769,13 +2769,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1textC
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->textComment);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2783,12 +2783,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1textC
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1networkMessageType_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->networkMessageType = arg2;
 }
 
@@ -2797,13 +2797,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1netwo
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->networkMessageType);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2811,12 +2811,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1netwo
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1vsiTXUnderrun_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->vsiTXUnderrun = arg2;
 }
 
@@ -2825,13 +2825,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1vsiTX
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->vsiTXUnderrun);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2839,12 +2839,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1vsiTX
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1vsiIFRCRCBit_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->vsiIFRCRCBit = arg2;
 }
 
@@ -2853,13 +2853,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1vsiIF
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->vsiIFRCRCBit);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2867,12 +2867,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1vsiIF
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1initMessage_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->initMessage = arg2;
 }
 
@@ -2881,13 +2881,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1initM
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->initMessage);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2895,12 +2895,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1initM
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1flexraySecondStartupFrame_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->flexraySecondStartupFrame = arg2;
 }
 
@@ -2909,13 +2909,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1flexr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->flexraySecondStartupFrame);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2923,12 +2923,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1flexr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1extended_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->extended = arg2;
 }
 
@@ -2937,13 +2937,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1exten
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->extended);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2951,12 +2951,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1exten
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1hasValue_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->hasValue = arg2;
 }
 
@@ -2965,13 +2965,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1hasVa
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->hasValue);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -2979,12 +2979,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1hasVa
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1valueIsBoolean_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->valueIsBoolean = arg2;
 }
 
@@ -2993,13 +2993,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1value
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->valueIsBoolean);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3007,12 +3007,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1value
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1highVoltage_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->highVoltage = arg2;
 }
 
@@ -3021,13 +3021,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1highV
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->highVoltage);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3035,12 +3035,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1highV
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1longMessage_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->longMessage = arg2;
 }
 
@@ -3049,13 +3049,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1longM
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->longMessage);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3063,12 +3063,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1longM
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1globalChange_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->globalChange = arg2;
 }
 
@@ -3077,13 +3077,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1globa
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->globalChange);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3091,12 +3091,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1globa
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1errorFrame_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->errorFrame = arg2;
 }
 
@@ -3105,13 +3105,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1error
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->errorFrame);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3119,12 +3119,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1error
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1endOfLongMessage_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->endOfLongMessage = arg2;
 }
 
@@ -3133,13 +3133,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1endOf
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->endOfLongMessage);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3147,12 +3147,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1endOf
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linErrorRXBreakNotZero_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorRXBreakNotZero = arg2;
 }
 
@@ -3161,13 +3161,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linErrorRXBreakNotZero);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3175,12 +3175,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linErrorRXBreakTooShort_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorRXBreakTooShort = arg2;
 }
 
@@ -3189,13 +3189,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linErrorRXBreakTooShort);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3203,12 +3203,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linErrorRXSyncNot55_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorRXSyncNot55 = arg2;
 }
 
@@ -3217,13 +3217,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linErrorRXSyncNot55);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3231,12 +3231,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linErrorRXDataGreaterEight_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorRXDataGreaterEight = arg2;
 }
 
@@ -3245,13 +3245,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linErrorRXDataGreaterEight);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3259,12 +3259,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linErrorTXRXMismatch_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorTXRXMismatch = arg2;
 }
 
@@ -3273,13 +3273,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linErrorTXRXMismatch);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3287,12 +3287,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linErrorMessageIDParity_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorMessageIDParity = arg2;
 }
 
@@ -3301,13 +3301,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linErrorMessageIDParity);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3315,12 +3315,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linEr
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linSyncFrameError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linSyncFrameError = arg2;
 }
 
@@ -3329,13 +3329,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linSy
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linSyncFrameError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3343,12 +3343,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linSy
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linIDFrameError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linIDFrameError = arg2;
 }
 
@@ -3357,13 +3357,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linID
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linIDFrameError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3371,12 +3371,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linID
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linSlaveByteError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linSlaveByteError = arg2;
 }
 
@@ -3385,13 +3385,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linSl
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linSlaveByteError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3399,12 +3399,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linSl
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1rxTimeoutError_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->rxTimeoutError = arg2;
 }
 
@@ -3413,13 +3413,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1rxTim
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->rxTimeoutError);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3427,12 +3427,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1rxTim
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linNoSlaveData_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linNoSlaveData = arg2;
 }
 
@@ -3441,13 +3441,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linNo
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->linNoSlaveData);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3455,12 +3455,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1linNo
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfdESI_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdESI = arg2;
 }
 
@@ -3469,13 +3469,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfd
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canfdESI);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3483,12 +3483,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfd
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfdIDE_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdIDE = arg2;
 }
 
@@ -3497,13 +3497,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfd
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canfdIDE);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3511,12 +3511,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfd
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfdRTR_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdRTR = arg2;
 }
 
@@ -3525,13 +3525,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfd
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canfdRTR);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3539,12 +3539,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfd
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfdFDF_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdFDF = arg2;
 }
 
@@ -3553,13 +3553,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfd
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canfdFDF);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3567,12 +3567,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfd
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfdBRS_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdBRS = arg2;
 }
 
@@ -3581,13 +3581,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1canfd
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t) ((arg1)->canfdBRS);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3596,23 +3596,23 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1status
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t *arg2 ;
   jlong *jarr2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 4) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
     return ;
   }
-  if (!SWIG_JavaArrayInUint(jenv, &jarr2, (unsigned int **)&arg2, jarg2)) return ; 
+  if (!SWIG_JavaArrayInUint(jenv, &jarr2, (unsigned int **)&arg2, jarg2)) return ;
   {
     size_t ii;
     uint32_t *b = (uint32_t *) arg1->statusBitfield;
     for (ii = 0; ii < (size_t)4; ii++) b[ii] = *((uint32_t *) arg2 + ii);
   }
-  SWIG_JavaArrayArgoutUint(jenv, jarr2, (unsigned int *)arg2, jarg2); 
-  free(arg2); 
+  SWIG_JavaArrayArgoutUint(jenv, jarr2, (unsigned int *)arg2, jarg2);
+  free(arg2);
 }
 
 
@@ -3620,13 +3620,13 @@ SWIGEXPORT jlongArray JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1
   jlongArray jresult = 0 ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   result = (uint32_t *)(uint32_t *) ((arg1)->statusBitfield);
-  jresult = SWIG_JavaArrayOutUint(jenv, (unsigned int *)result, 4); 
+  jresult = SWIG_JavaArrayOutUint(jenv, (unsigned int *)result, 4);
   return jresult;
 }
 
@@ -3634,21 +3634,21 @@ SWIGEXPORT jlongArray JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1
 SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neomessage_1statusbitfield_1t(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   neomessage_statusbitfield_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   result = (neomessage_statusbitfield_t *)calloc(1, sizeof(neomessage_statusbitfield_t));
-  *(neomessage_statusbitfield_t **)&jresult = result; 
+  *(neomessage_statusbitfield_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neomessage_1statusbitfield_1t(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = *(neomessage_statusbitfield_t **)&jarg1; 
+  arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   free((char *) arg1);
 }
 
@@ -3656,13 +3656,13 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neomessage_1statusbitfield_1t
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1status_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   neomessage_statusbitfield_t *arg2 = (neomessage_statusbitfield_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(neomessage_t **)&jarg1; 
-  arg2 = *(neomessage_statusbitfield_t **)&jarg2; 
+  arg1 = *(neomessage_t **)&jarg1;
+  arg2 = *(neomessage_statusbitfield_t **)&jarg2;
   if (arg1) (arg1)->status = *arg2;
 }
 
@@ -3671,13 +3671,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1t_1status_1get(JNIEnv *j
   jlong jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   neomessage_statusbitfield_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (neomessage_statusbitfield_t *)& ((arg1)->status);
-  *(neomessage_statusbitfield_t **)&jresult = result; 
+  *(neomessage_statusbitfield_t **)&jresult = result;
   return jresult;
 }
 
@@ -3685,11 +3685,11 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1t_1status_1get(JNIEnv *j
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1timestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint64_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   {
     jclass clazz;
     jmethodID mid;
@@ -3697,7 +3697,7 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1timestamp_1set(JNIEnv 
     jbyte* bae;
     jsize sz;
     int i;
-    
+
     if (!jarg2) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
       return ;
@@ -3724,11 +3724,11 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1t_1timestamp_1get(JNIE
   jobject jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint64_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestamp);
   {
     jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
@@ -3737,12 +3737,12 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1t_1timestamp_1get(JNIE
     jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
     jobject bigint;
     int i;
-    
+
     bae[0] = 0;
     for(i=1; i<9; i++ ) {
       bae[i] = (jbyte)(result>>8*(8-i));
     }
-    
+
     (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
     bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
     (*jenv)->DeleteLocalRef(jenv, ba);
@@ -3755,11 +3755,11 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1t_1timestamp_1get(JNIE
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1timestampReserved_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint64_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   {
     jclass clazz;
     jmethodID mid;
@@ -3767,7 +3767,7 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1timestampReserved_1set
     jbyte* bae;
     jsize sz;
     int i;
-    
+
     if (!jarg2) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
       return ;
@@ -3794,11 +3794,11 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1t_1timestampReserved_1
   jobject jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint64_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestampReserved);
   {
     jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
@@ -3807,12 +3807,12 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1t_1timestampReserved_1
     jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
     jobject bigint;
     int i;
-    
+
     bae[0] = 0;
     for(i=1; i<9; i++ ) {
       bae[i] = (jbyte)(result>>8*(8-i));
     }
-    
+
     (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
     bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
     (*jenv)->DeleteLocalRef(jenv, ba);
@@ -3825,15 +3825,15 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1t_1timestampReserved_1
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1data_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *arg2 = (uint8_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
-  
+  arg1 = *(neomessage_t **)&jarg1;
+
   bool isCopy;
   arg2 = (*jenv)->GetByteArrayElements(jenv, jarg2, &isCopy);
-  
+
   if (arg1) (arg1)->data = (uint8_t const *)arg2;
 }
 
@@ -3842,16 +3842,16 @@ SWIGEXPORT jbyteArray JNICALL Java_icsneojavaJNI_neomessage_1t_1data_1get(JNIEnv
   jbyteArray jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (uint8_t *) ((arg1)->data);
-  
+
   jresult = (*jenv)->NewByteArray(jenv, (int) arg1->length);
   (*jenv)->SetByteArrayRegion(jenv, jresult, 0, (int) arg1->length, result);
-  
+
   return jresult;
 }
 
@@ -3859,12 +3859,12 @@ SWIGEXPORT jbyteArray JNICALL Java_icsneojavaJNI_neomessage_1t_1data_1get(JNIEnv
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1length_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   size_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
-  arg2 = (size_t)jarg2; 
+  arg1 = *(neomessage_t **)&jarg1;
+  arg2 = (size_t)jarg2;
   if (arg1) (arg1)->length = arg2;
 }
 
@@ -3873,13 +3873,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1t_1length_1get(JNIEnv *j
   jlong jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   size_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result =  ((arg1)->length);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -3888,23 +3888,23 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1header_1set(JNIEnv *je
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *arg2 ;
   jshort *jarr2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 4) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
     return ;
   }
-  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ; 
+  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->header;
     for (ii = 0; ii < (size_t)4; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
-  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2); 
-  free(arg2); 
+  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
+  free(arg2);
 }
 
 
@@ -3912,13 +3912,13 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1t_1header_1get(JNI
   jshortArray jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->header);
-  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 4); 
+  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 4);
   return jresult;
 }
 
@@ -3926,12 +3926,12 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1t_1header_1get(JNI
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1netid_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint16_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
+  arg1 = *(neomessage_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->netid = arg2;
 }
 
@@ -3940,13 +3940,13 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neomessage_1t_1netid_1get(JNIEnv *jen
   jint jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint16_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (uint16_t) ((arg1)->netid);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -3954,12 +3954,12 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neomessage_1t_1netid_1get(JNIEnv *jen
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1type_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jshort jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
-  arg2 = (uint8_t)jarg2; 
+  arg1 = *(neomessage_t **)&jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->type = arg2;
 }
 
@@ -3968,13 +3968,13 @@ SWIGEXPORT jshort JNICALL Java_icsneojavaJNI_neomessage_1t_1type_1get(JNIEnv *je
   jshort jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (uint8_t) ((arg1)->type);
-  jresult = (jshort)result; 
+  jresult = (jshort)result;
   return jresult;
 }
 
@@ -3983,23 +3983,23 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1reserved_1set(JNIEnv *
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *arg2 ;
   jshort *jarr2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 17) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
     return ;
   }
-  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ; 
+  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reserved;
     for (ii = 0; ii < (size_t)17; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
-  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2); 
-  free(arg2); 
+  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
+  free(arg2);
 }
 
 
@@ -4007,13 +4007,13 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1t_1reserved_1get(J
   jshortArray jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reserved);
-  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 17); 
+  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 17);
   return jresult;
 }
 
@@ -4021,21 +4021,21 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1t_1reserved_1get(J
 SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neomessage_1t(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   neomessage_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   result = (neomessage_t *)calloc(1, sizeof(neomessage_t));
-  *(neomessage_t **)&jresult = result; 
+  *(neomessage_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neomessage_1t(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   free((char *) arg1);
 }
 
@@ -4043,13 +4043,13 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neomessage_1t(JNIEnv *jenv, j
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1status_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   neomessage_statusbitfield_t *arg2 = (neomessage_statusbitfield_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
-  arg2 = *(neomessage_statusbitfield_t **)&jarg2; 
+  arg1 = *(neomessage_can_t **)&jarg1;
+  arg2 = *(neomessage_statusbitfield_t **)&jarg2;
   if (arg1) (arg1)->status = *arg2;
 }
 
@@ -4058,13 +4058,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1status_1get(JNIE
   jlong jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   neomessage_statusbitfield_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (neomessage_statusbitfield_t *)& ((arg1)->status);
-  *(neomessage_statusbitfield_t **)&jresult = result; 
+  *(neomessage_statusbitfield_t **)&jresult = result;
   return jresult;
 }
 
@@ -4072,11 +4072,11 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1status_1get(JNIE
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint64_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   {
     jclass clazz;
     jmethodID mid;
@@ -4084,7 +4084,7 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestamp_1set(JN
     jbyte* bae;
     jsize sz;
     int i;
-    
+
     if (!jarg2) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
       return ;
@@ -4111,11 +4111,11 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestamp_1get
   jobject jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint64_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestamp);
   {
     jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
@@ -4124,12 +4124,12 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestamp_1get
     jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
     jobject bigint;
     int i;
-    
+
     bae[0] = 0;
     for(i=1; i<9; i++ ) {
       bae[i] = (jbyte)(result>>8*(8-i));
     }
-    
+
     (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
     bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
     (*jenv)->DeleteLocalRef(jenv, ba);
@@ -4142,11 +4142,11 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestamp_1get
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestampReserved_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint64_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   {
     jclass clazz;
     jmethodID mid;
@@ -4154,7 +4154,7 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestampReserved
     jbyte* bae;
     jsize sz;
     int i;
-    
+
     if (!jarg2) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
       return ;
@@ -4181,11 +4181,11 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestampReser
   jobject jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint64_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestampReserved);
   {
     jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
@@ -4194,12 +4194,12 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestampReser
     jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
     jobject bigint;
     int i;
-    
+
     bae[0] = 0;
     for(i=1; i<9; i++ ) {
       bae[i] = (jbyte)(result>>8*(8-i));
     }
-    
+
     (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
     bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
     (*jenv)->DeleteLocalRef(jenv, ba);
@@ -4212,15 +4212,15 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestampReser
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1data_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t *arg2 = (uint8_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
-  
+  arg1 = *(neomessage_can_t **)&jarg1;
+
   bool isCopy;
   arg2 = (*jenv)->GetByteArrayElements(jenv, jarg2, &isCopy);
-  
+
   if (arg1) (arg1)->data = (uint8_t const *)arg2;
 }
 
@@ -4229,16 +4229,16 @@ SWIGEXPORT jbyteArray JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1data_1get(J
   jbyteArray jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint8_t *) ((arg1)->data);
-  
+
   jresult = (*jenv)->NewByteArray(jenv, (int) arg1->length);
   (*jenv)->SetByteArrayRegion(jenv, jresult, 0, (int) arg1->length, result);
-  
+
   return jresult;
 }
 
@@ -4246,12 +4246,12 @@ SWIGEXPORT jbyteArray JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1data_1get(J
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1length_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   size_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
-  arg2 = (size_t)jarg2; 
+  arg1 = *(neomessage_can_t **)&jarg1;
+  arg2 = (size_t)jarg2;
   if (arg1) (arg1)->length = arg2;
 }
 
@@ -4260,13 +4260,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1length_1get(JNIE
   jlong jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   size_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result =  ((arg1)->length);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -4274,12 +4274,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1length_1get(JNIE
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1arbid_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neomessage_can_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->arbid = arg2;
 }
 
@@ -4288,13 +4288,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1arbid_1get(JNIEn
   jlong jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint32_t) ((arg1)->arbid);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -4302,12 +4302,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1arbid_1get(JNIEn
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1netid_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint16_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
+  arg1 = *(neomessage_can_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->netid = arg2;
 }
 
@@ -4316,13 +4316,13 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1netid_1get(JNIEnv
   jint jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint16_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint16_t) ((arg1)->netid);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -4330,12 +4330,12 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1netid_1get(JNIEnv
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1type_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jshort jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
-  arg2 = (uint8_t)jarg2; 
+  arg1 = *(neomessage_can_t **)&jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->type = arg2;
 }
 
@@ -4344,13 +4344,13 @@ SWIGEXPORT jshort JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1type_1get(JNIEn
   jshort jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint8_t) ((arg1)->type);
-  jresult = (jshort)result; 
+  jresult = (jshort)result;
   return jresult;
 }
 
@@ -4358,12 +4358,12 @@ SWIGEXPORT jshort JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1type_1get(JNIEn
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1dlcOnWire_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jshort jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
-  arg2 = (uint8_t)jarg2; 
+  arg1 = *(neomessage_can_t **)&jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->dlcOnWire = arg2;
 }
 
@@ -4372,13 +4372,13 @@ SWIGEXPORT jshort JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1dlcOnWire_1get(
   jshort jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint8_t) ((arg1)->dlcOnWire);
-  jresult = (jshort)result; 
+  jresult = (jshort)result;
   return jresult;
 }
 
@@ -4387,23 +4387,23 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1reserved_1set(JNI
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t *arg2 ;
   jshort *jarr2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 16) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
     return ;
   }
-  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ; 
+  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reserved;
     for (ii = 0; ii < (size_t)16; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
-  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2); 
-  free(arg2); 
+  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
+  free(arg2);
 }
 
 
@@ -4411,13 +4411,13 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1reserved_1
   jshortArray jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reserved);
-  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 16); 
+  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 16);
   return jresult;
 }
 
@@ -4425,21 +4425,21 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1reserved_1
 SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neomessage_1can_1t(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   neomessage_can_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   result = (neomessage_can_t *)calloc(1, sizeof(neomessage_can_t));
-  *(neomessage_can_t **)&jresult = result; 
+  *(neomessage_can_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neomessage_1can_1t(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   free((char *) arg1);
 }
 
@@ -4447,13 +4447,13 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neomessage_1can_1t(JNIEnv *je
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1status_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   neomessage_statusbitfield_t *arg2 = (neomessage_statusbitfield_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
-  arg2 = *(neomessage_statusbitfield_t **)&jarg2; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
+  arg2 = *(neomessage_statusbitfield_t **)&jarg2;
   if (arg1) (arg1)->status = *arg2;
 }
 
@@ -4462,13 +4462,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1status_1get(JNIE
   jlong jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   neomessage_statusbitfield_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (neomessage_statusbitfield_t *)& ((arg1)->status);
-  *(neomessage_statusbitfield_t **)&jresult = result; 
+  *(neomessage_statusbitfield_t **)&jresult = result;
   return jresult;
 }
 
@@ -4476,11 +4476,11 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1status_1get(JNIE
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestamp_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint64_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   {
     jclass clazz;
     jmethodID mid;
@@ -4488,7 +4488,7 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestamp_1set(JN
     jbyte* bae;
     jsize sz;
     int i;
-    
+
     if (!jarg2) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
       return ;
@@ -4515,11 +4515,11 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestamp_1get
   jobject jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint64_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestamp);
   {
     jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
@@ -4528,12 +4528,12 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestamp_1get
     jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
     jobject bigint;
     int i;
-    
+
     bae[0] = 0;
     for(i=1; i<9; i++ ) {
       bae[i] = (jbyte)(result>>8*(8-i));
     }
-    
+
     (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
     bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
     (*jenv)->DeleteLocalRef(jenv, ba);
@@ -4546,11 +4546,11 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestamp_1get
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestampReserved_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jobject jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint64_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   {
     jclass clazz;
     jmethodID mid;
@@ -4558,7 +4558,7 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestampReserved
     jbyte* bae;
     jsize sz;
     int i;
-    
+
     if (!jarg2) {
       SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
       return ;
@@ -4585,11 +4585,11 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestampReser
   jobject jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint64_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestampReserved);
   {
     jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
@@ -4598,12 +4598,12 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestampReser
     jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
     jobject bigint;
     int i;
-    
+
     bae[0] = 0;
     for(i=1; i<9; i++ ) {
       bae[i] = (jbyte)(result>>8*(8-i));
     }
-    
+
     (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
     bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
     (*jenv)->DeleteLocalRef(jenv, ba);
@@ -4616,15 +4616,15 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestampReser
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1data_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jbyteArray jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *arg2 = (uint8_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
-  
+  arg1 = *(neomessage_eth_t **)&jarg1;
+
   bool isCopy;
   arg2 = (*jenv)->GetByteArrayElements(jenv, jarg2, &isCopy);
-  
+
   if (arg1) (arg1)->data = (uint8_t const *)arg2;
 }
 
@@ -4633,16 +4633,16 @@ SWIGEXPORT jbyteArray JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1data_1get(J
   jbyteArray jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint8_t *) ((arg1)->data);
-  
+
   jresult = (*jenv)->NewByteArray(jenv, (int) arg1->length);
   (*jenv)->SetByteArrayRegion(jenv, jresult, 0, (int) arg1->length, result);
-  
+
   return jresult;
 }
 
@@ -4650,12 +4650,12 @@ SWIGEXPORT jbyteArray JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1data_1get(J
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1length_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   size_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
-  arg2 = (size_t)jarg2; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
+  arg2 = (size_t)jarg2;
   if (arg1) (arg1)->length = arg2;
 }
 
@@ -4664,13 +4664,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1length_1get(JNIE
   jlong jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   size_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result =  ((arg1)->length);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -4678,12 +4678,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1length_1get(JNIE
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1preemptionFlags_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jshort jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
-  arg2 = (uint8_t)jarg2; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->preemptionFlags = arg2;
 }
 
@@ -4692,13 +4692,13 @@ SWIGEXPORT jshort JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1preemptionFlags
   jshort jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint8_t) ((arg1)->preemptionFlags);
-  jresult = (jshort)result; 
+  jresult = (jshort)result;
   return jresult;
 }
 
@@ -4707,23 +4707,23 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1reservedHeader_1s
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *arg2 ;
   jshort *jarr2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
     return ;
   }
-  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ; 
+  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reservedHeader;
     for (ii = 0; ii < (size_t)3; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
-  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2); 
-  free(arg2); 
+  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
+  free(arg2);
 }
 
 
@@ -4731,13 +4731,13 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1reservedHe
   jshortArray jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reservedHeader);
-  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 3); 
+  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 3);
   return jresult;
 }
 
@@ -4745,12 +4745,12 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1reservedHe
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1netid_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint16_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->netid = arg2;
 }
 
@@ -4759,13 +4759,13 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1netid_1get(JNIEnv
   jint jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint16_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint16_t) ((arg1)->netid);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -4773,12 +4773,12 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1netid_1get(JNIEnv
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1type_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jshort jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
-  arg2 = (uint8_t)jarg2; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->type = arg2;
 }
 
@@ -4787,13 +4787,13 @@ SWIGEXPORT jshort JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1type_1get(JNIEn
   jshort jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint8_t) ((arg1)->type);
-  jresult = (jshort)result; 
+  jresult = (jshort)result;
   return jresult;
 }
 
@@ -4802,23 +4802,23 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1reserved_1set(JNI
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *arg2 ;
   jshort *jarr2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 17) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
     return ;
   }
-  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ; 
+  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reserved;
     for (ii = 0; ii < (size_t)17; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
-  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2); 
-  free(arg2); 
+  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
+  free(arg2);
 }
 
 
@@ -4826,13 +4826,13 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1reserved_1
   jshortArray jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reserved);
-  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 17); 
+  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 17);
   return jresult;
 }
 
@@ -4840,21 +4840,21 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1reserved_1
 SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neomessage_1eth_1t(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   neomessage_eth_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   result = (neomessage_eth_t *)calloc(1, sizeof(neomessage_eth_t));
-  *(neomessage_eth_t **)&jresult = result; 
+  *(neomessage_eth_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neomessage_1eth_1t(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   free((char *) arg1);
 }
 
@@ -4862,11 +4862,11 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neomessage_1eth_1t(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1DEVICETYPE_1LONGEST_1NAME_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)((35+1));
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -4874,11 +4874,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1DEVICETYPE_1LONGEST_1NAME_1ge
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1DEVICETYPE_1LONGEST_1DESCRIPTION_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(((35+1) +7));
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -4886,12 +4886,12 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1DEVICETYPE_1LONGEST_1DESCRIPT
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1major_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
+  arg1 = *(neoversion_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->major = arg2;
 }
 
@@ -4900,13 +4900,13 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neoversion_1t_1major_1get(JNIEnv *jen
   jint jresult = 0 ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   result = (uint16_t) ((arg1)->major);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -4914,12 +4914,12 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neoversion_1t_1major_1get(JNIEnv *jen
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1minor_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
+  arg1 = *(neoversion_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->minor = arg2;
 }
 
@@ -4928,13 +4928,13 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neoversion_1t_1minor_1get(JNIEnv *jen
   jint jresult = 0 ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   result = (uint16_t) ((arg1)->minor);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -4942,12 +4942,12 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neoversion_1t_1minor_1get(JNIEnv *jen
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1patch_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
-  arg2 = (uint16_t)jarg2; 
+  arg1 = *(neoversion_t **)&jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->patch = arg2;
 }
 
@@ -4956,13 +4956,13 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neoversion_1t_1patch_1get(JNIEnv *jen
   jint jresult = 0 ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   result = (uint16_t) ((arg1)->patch);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -4970,11 +4970,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_neoversion_1t_1patch_1get(JNIEnv *jen
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1metadata_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *arg2 = (char *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
@@ -4996,11 +4996,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoversion_1t_1metadata_1get(JNIEn
   jstring jresult = 0 ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   result = (char *) ((arg1)->metadata);
   if (result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   return jresult;
@@ -5010,11 +5010,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoversion_1t_1metadata_1get(JNIEn
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1buildBranch_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *arg2 = (char *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
@@ -5036,11 +5036,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoversion_1t_1buildBranch_1get(JN
   jstring jresult = 0 ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   result = (char *) ((arg1)->buildBranch);
   if (result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   return jresult;
@@ -5050,11 +5050,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoversion_1t_1buildBranch_1get(JN
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1buildTag_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *arg2 = (char *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
@@ -5076,11 +5076,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoversion_1t_1buildTag_1get(JNIEn
   jstring jresult = 0 ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   result = (char *) ((arg1)->buildTag);
   if (result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   return jresult;
@@ -5090,11 +5090,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoversion_1t_1buildTag_1get(JNIEn
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1reserved_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
@@ -5108,7 +5108,7 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1reserved_1set(JNIEnv *
       arg1->reserved[0] = 0;
     }
   }
-  
+
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
 }
 
@@ -5117,11 +5117,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoversion_1t_1reserved_1get(JNIEn
   jstring jresult = 0 ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   result = (char *)(char *) ((arg1)->reserved);
   if (result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   return jresult;
@@ -5131,21 +5131,21 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoversion_1t_1reserved_1get(JNIEn
 SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neoversion_1t(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   neoversion_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   result = (neoversion_t *)calloc(1, sizeof(neoversion_t));
-  *(neoversion_t **)&jresult = result; 
+  *(neoversion_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neoversion_1t(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = *(neoversion_t **)&jarg1; 
+  arg1 = *(neoversion_t **)&jarg1;
   free((char *) arg1);
 }
 
@@ -5153,11 +5153,11 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neoversion_1t(JNIEnv *jenv, j
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1description_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   char *arg2 = (char *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
@@ -5179,11 +5179,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoevent_1t_1description_1get(JNIE
   jstring jresult = 0 ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   char *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   result = (char *) ((arg1)->description);
   if (result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   return jresult;
@@ -5194,17 +5194,17 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1timestamp_1set(JNIEnv *j
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   time_t arg2 ;
   time_t *argp2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
-  argp2 = *(time_t **)&jarg2; 
+  arg1 = *(neoevent_t **)&jarg1;
+  argp2 = *(time_t **)&jarg2;
   if (!argp2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null time_t");
     return ;
   }
-  arg2 = *argp2; 
+  arg2 = *argp2;
   if (arg1) (arg1)->timestamp = arg2;
 }
 
@@ -5213,11 +5213,11 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neoevent_1t_1timestamp_1get(JNIEnv *
   jlong jresult = 0 ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   time_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   result =  ((arg1)->timestamp);
   {
     time_t * resultptr = (time_t *) malloc(sizeof(time_t));
@@ -5231,12 +5231,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neoevent_1t_1timestamp_1get(JNIEnv *
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1eventNumber_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint32_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
-  arg2 = (uint32_t)jarg2; 
+  arg1 = *(neoevent_t **)&jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->eventNumber = arg2;
 }
 
@@ -5245,13 +5245,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neoevent_1t_1eventNumber_1get(JNIEnv
   jlong jresult = 0 ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint32_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   result = (uint32_t) ((arg1)->eventNumber);
-  jresult = (jlong)result; 
+  jresult = (jlong)result;
   return jresult;
 }
 
@@ -5259,12 +5259,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neoevent_1t_1eventNumber_1get(JNIEnv
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1severity_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jshort jarg2) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint8_t arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
-  arg2 = (uint8_t)jarg2; 
+  arg1 = *(neoevent_t **)&jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->severity = arg2;
 }
 
@@ -5273,13 +5273,13 @@ SWIGEXPORT jshort JNICALL Java_icsneojavaJNI_neoevent_1t_1severity_1get(JNIEnv *
   jshort jresult = 0 ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint8_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   result = (uint8_t) ((arg1)->severity);
-  jresult = (jshort)result; 
+  jresult = (jshort)result;
   return jresult;
 }
 
@@ -5287,11 +5287,11 @@ SWIGEXPORT jshort JNICALL Java_icsneojavaJNI_neoevent_1t_1severity_1get(JNIEnv *
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1serial_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   char *arg2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
@@ -5305,7 +5305,7 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1serial_1set(JNIEnv *jenv
       arg1->serial[0] = 0;
     }
   }
-  
+
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
 }
 
@@ -5314,11 +5314,11 @@ SWIGEXPORT jstring JNICALL Java_icsneojavaJNI_neoevent_1t_1serial_1get(JNIEnv *j
   jstring jresult = 0 ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   char *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   result = (char *)(char *) ((arg1)->serial);
   if (result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   return jresult;
@@ -5329,23 +5329,23 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1reserved_1set(JNIEnv *je
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint8_t *arg2 ;
   jshort *jarr2 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 16) {
     SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
     return ;
   }
-  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ; 
+  if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reserved;
     for (ii = 0; ii < (size_t)16; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
-  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2); 
-  free(arg2); 
+  SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
+  free(arg2);
 }
 
 
@@ -5353,13 +5353,13 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neoevent_1t_1reserved_1get(JNI
   jshortArray jresult = 0 ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint8_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reserved);
-  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 16); 
+  jresult = SWIG_JavaArrayOutUchar(jenv, (unsigned char *)result, 16);
   return jresult;
 }
 
@@ -5367,21 +5367,21 @@ SWIGEXPORT jshortArray JNICALL Java_icsneojavaJNI_neoevent_1t_1reserved_1get(JNI
 SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neoevent_1t(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
   neoevent_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   result = (neoevent_t *)calloc(1, sizeof(neoevent_t));
-  *(neoevent_t **)&jresult = result; 
+  *(neoevent_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neoevent_1t(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   free((char *) arg1);
 }
 
@@ -5389,11 +5389,11 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neoevent_1t(JNIEnv *jenv, jcl
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1DEVICE_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(0);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5401,11 +5401,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1DEVICE_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(1);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5413,11 +5413,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN_1get(JNIEnv *jen
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MSCAN_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(2);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5425,11 +5425,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MSCAN_1get(JNIEnv *jen
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1SWCAN_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(3);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5437,11 +5437,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1SWCAN_1get(JNIEnv *jen
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LSFTCAN_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(4);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5449,11 +5449,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LSFTCAN_1get(JNIEnv *j
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FORDSCP_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(5);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5461,11 +5461,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FORDSCP_1get(JNIEnv *j
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1J1708_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(6);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5473,11 +5473,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1J1708_1get(JNIEnv *jen
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1AUX_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(7);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5485,11 +5485,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1AUX_1get(JNIEnv *jenv,
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1J1850VPW_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(8);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5497,11 +5497,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1J1850VPW_1get(JNIEnv *
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(9);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5509,11 +5509,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO_1get(JNIEnv *jenv,
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISOPIC_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(10);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5521,11 +5521,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISOPIC_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MAIN51_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(11);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5533,11 +5533,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MAIN51_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(12);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5545,11 +5545,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1get(JNIEnv *jenv,
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1SCI_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(13);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5557,11 +5557,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1SCI_1get(JNIEnv *jenv,
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO2_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(14);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5569,11 +5569,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO2_1get(JNIEnv *jenv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO14230_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(15);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5581,11 +5581,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO14230_1get(JNIEnv *
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(16);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5593,11 +5593,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN_1get(JNIEnv *jenv,
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET1_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(17);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5605,11 +5605,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET1_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET2_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(18);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5617,11 +5617,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET2_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET3_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(19);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5629,11 +5629,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET3_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1EXT_1MEMORYREAD_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(20);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5641,11 +5641,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1EXT_1MEMORYREAD_1
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1INT_1MEMORYREAD_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(21);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5653,11 +5653,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1INT_1MEMORYREAD_1
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1DFLASH_1READ_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(22);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5665,11 +5665,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1DFLASH_1READ_1get
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1SDCARD_1READ_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(23);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5677,11 +5677,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1SDCARD_1READ_1get
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1CAN_1ERRBITS_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(24);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5689,11 +5689,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1CAN_1ERRBITS_1get(JNIE
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1DFLASH_1WRITE_1DONE_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(25);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5701,11 +5701,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1DFLASH_1WRITE_1DO
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1CAN1_1LOGICAL_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(26);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5713,11 +5713,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1CAN1_1LOGIC
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1CAN2_1LOGICAL_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(27);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5725,11 +5725,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1CAN2_1LOGIC
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1LIN1_1LOGICAL_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(28);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5737,11 +5737,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1LIN1_1LOGIC
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1LIN2_1LOGICAL_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(29);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5749,11 +5749,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1LIN2_1LOGIC
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1LIN1_1ANALOG_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(30);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5761,11 +5761,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1LIN1_1ANALO
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1LIN2_1ANALOG_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(31);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5773,11 +5773,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1LIN2_1ANALO
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1MISC_1ANALOG_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(32);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5785,11 +5785,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1MISC_1ANALO
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1MISCDIO2_1LOGICAL_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(33);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5797,11 +5797,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1WAVE_1MISCDIO2_1L
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1NETWORK_1COM_1ENABLE_1EX_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(34);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5809,11 +5809,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1NETWORK_1COM_1ENA
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1NEOVI_1NETWORK_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(35);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5821,11 +5821,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1NEOVI_1NETWORK_1g
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1READ_1BAUD_1SETTINGS_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(36);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5833,11 +5833,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1READ_1BAUD_1SETTI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1OLDFORMAT_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(37);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5845,11 +5845,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1OLDFORMAT_1get(JN
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1SCOPE_1CAPTURE_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(38);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5857,11 +5857,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1SCOPE_1CAPTURE_1g
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1HARDWARE_1EXCEP_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(39);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5869,11 +5869,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1HARDWARE_1EXCEP_1
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1GET_1RTC_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(40);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5881,11 +5881,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1GET_1RTC_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO3_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(41);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5893,11 +5893,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO3_1get(JNIEnv *jenv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN2_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(42);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5905,11 +5905,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN2_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN3_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(44);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5917,11 +5917,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN3_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET4_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(45);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5929,11 +5929,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET4_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET5_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(46);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5941,11 +5941,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET5_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO4_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(47);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5953,11 +5953,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO4_1get(JNIEnv *jenv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN2_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(48);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5965,11 +5965,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN2_1get(JNIEnv *jenv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN3_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(49);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5977,11 +5977,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN3_1get(JNIEnv *jenv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN4_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(50);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -5989,11 +5989,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN4_1get(JNIEnv *jenv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1APP_1ERROR_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(52);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6001,11 +6001,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1APP_1ERROR_1get(J
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1CGI_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(53);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6013,11 +6013,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1CGI_1get(JNIEnv *jenv,
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RESET_1STATUS_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(54);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6025,11 +6025,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RESET_1STATUS_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FB_1STATUS_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(55);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6037,11 +6037,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FB_1STATUS_1get(JNIEnv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1APP_1SIGNAL_1STATUS_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(56);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6049,11 +6049,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1APP_1SIGNAL_1STATUS_1g
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1READ_1DATALINK_1CM_1TX_1MSG_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(57);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6061,11 +6061,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1READ_1DATALINK_1CM_1TX
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1READ_1DATALINK_1CM_1RX_1MSG_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(58);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6073,11 +6073,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1READ_1DATALINK_1CM_1RX
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LOGGING_1OVERFLOW_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(59);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6085,11 +6085,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LOGGING_1OVERFLOW_1get
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1READ_1SETTINGS_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(60);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6097,11 +6097,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1READ_1SETTINGS_1get(JN
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN4_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(61);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6109,11 +6109,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN4_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN5_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(62);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6121,11 +6121,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN5_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RS232_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(63);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6133,11 +6133,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RS232_1get(JNIEnv *jen
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1UART_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(64);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6145,11 +6145,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1UART_1get(JNIEnv *jenv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1UART2_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(65);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6157,11 +6157,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1UART2_1get(JNIEnv *jen
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1UART3_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(66);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6169,11 +6169,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1UART3_1get(JNIEnv *jen
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1UART4_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(67);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6181,11 +6181,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1UART4_1get(JNIEnv *jen
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1SWCAN2_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(68);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6193,11 +6193,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1SWCAN2_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ETHERNET_1DAQ_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(69);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6205,11 +6205,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ETHERNET_1DAQ_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1DATA_1TO_1HOST_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(70);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6217,11 +6217,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1DATA_1TO_1HOST_1get(JN
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1TEXTAPI_1TO_1HOST_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(71);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6229,11 +6229,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1TEXTAPI_1TO_1HOST_1get
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET6_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(73);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6241,11 +6241,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET6_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1VBAT_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(74);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6253,11 +6253,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1RED_1VBAT_1get(JNIEnv 
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET7_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(75);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6265,11 +6265,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET7_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET8_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(76);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6277,11 +6277,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET8_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET9_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(77);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6289,11 +6289,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET9_1get(JNI
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET10_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(78);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6301,11 +6301,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET10_1get(JN
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET11_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(79);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6313,11 +6313,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET11_1get(JN
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY1A_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(80);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6325,11 +6325,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY1A_1get(JNIEnv 
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY1B_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(81);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6337,11 +6337,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY1B_1get(JNIEnv 
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY2A_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(82);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6349,11 +6349,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY2A_1get(JNIEnv 
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY2B_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(83);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6361,11 +6361,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY2B_1get(JNIEnv 
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN5_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(84);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6373,11 +6373,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN5_1get(JNIEnv *jenv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(85);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6385,11 +6385,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY_1get(JNIEnv *j
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY2_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(86);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6397,11 +6397,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1FLEXRAY2_1get(JNIEnv *
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET12_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(87);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6409,11 +6409,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1OP_1ETHERNET12_1get(JN
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MOST25_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(90);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6421,11 +6421,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MOST25_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MOST50_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(91);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6433,11 +6433,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MOST50_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MOST150_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(92);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6445,11 +6445,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MOST150_1get(JNIEnv *j
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ETHERNET_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(93);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6457,11 +6457,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ETHERNET_1get(JNIEnv *
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1GMFSA_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(94);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6469,11 +6469,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1GMFSA_1get(JNIEnv *jen
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1TCP_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(95);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6481,11 +6481,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1TCP_1get(JNIEnv *jenv,
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN6_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(96);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6493,11 +6493,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN6_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN7_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(97);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6505,11 +6505,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HSCAN7_1get(JNIEnv *je
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN6_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(98);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6517,11 +6517,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LIN6_1get(JNIEnv *jenv
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LSFTCAN2_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(99);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6529,11 +6529,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1LSFTCAN2_1get(JNIEnv *
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HW_1COM_1LATENCY_1TEST_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(512);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6541,11 +6541,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1HW_1COM_1LATENCY_1TEST
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1DEVICE_1STATUS_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(513);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6553,11 +6553,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1DEVICE_1STATUS_1get(JN
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ANY_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(0xfffe);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6565,11 +6565,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ANY_1get(JNIEnv *jenv,
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1INVALID_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(0xffff);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6577,11 +6577,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1INVALID_1get(JNIEnv *j
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1INVALID_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(0);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6589,11 +6589,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1INVALID_1get(J
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1INTERNAL_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(1);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6601,11 +6601,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1INTERNAL_1get(
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1CAN_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(2);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6613,11 +6613,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1CAN_1get(JNIEn
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1LIN_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(3);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6625,11 +6625,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1LIN_1get(JNIEn
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1FLEXRAY_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(4);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6637,11 +6637,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1FLEXRAY_1get(J
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1MOST_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(5);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6649,11 +6649,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1MOST_1get(JNIE
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1ETHERNET_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(6);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6661,11 +6661,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1ETHERNET_1get(
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1ANY_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(0xFE);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6673,11 +6673,11 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1ANY_1get(JNIEn
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETWORK_1TYPE_1OTHER_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
-  
+
   (void)jenv;
   (void)jcls;
   result = (int)(0xFF);
-  jresult = (jint)result; 
+  jresult = (jint)result;
   return jresult;
 }
 
@@ -6686,13 +6686,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1cast(JNIEnv *jen
   jlong jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   neomessage_can_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (neomessage_can_t *)neomessage_can_t_cast(arg1);
-  *(neomessage_can_t **)&jresult = result; 
+  *(neomessage_can_t **)&jresult = result;
   return jresult;
 }
 
@@ -6701,13 +6701,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1cast(JNIEnv *jen
   jlong jresult = 0 ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   neomessage_eth_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   result = (neomessage_eth_t *)neomessage_eth_t_cast(arg1);
-  *(neomessage_eth_t **)&jresult = result; 
+  *(neomessage_eth_t **)&jresult = result;
   return jresult;
 }
 
@@ -6716,13 +6716,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_from_1can_1neomessage_1t_1cast(JNIEn
   jlong jresult = 0 ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   neomessage_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_can_t **)&jarg1; 
+  arg1 = *(neomessage_can_t **)&jarg1;
   result = (neomessage_t *)from_can_neomessage_t_cast(arg1);
-  *(neomessage_t **)&jresult = result; 
+  *(neomessage_t **)&jresult = result;
   return jresult;
 }
 
@@ -6731,13 +6731,13 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_from_1eth_1neomessage_1t_1cast(JNIEn
   jlong jresult = 0 ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   neomessage_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_eth_t **)&jarg1; 
+  arg1 = *(neomessage_eth_t **)&jarg1;
   result = (neomessage_t *)from_eth_neomessage_t_cast(arg1);
-  *(neomessage_t **)&jresult = result; 
+  *(neomessage_t **)&jresult = result;
   return jresult;
 }
 
@@ -6746,23 +6746,23 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neodevice_1t_1array(JNIEnv *jen
   jlong jresult = 0 ;
   int arg1 ;
   neodevice_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = (int)jarg1; 
+  arg1 = (int)jarg1;
   result = (neodevice_t *)new_neodevice_t_array(arg1);
-  *(neodevice_t **)&jresult = result; 
+  *(neodevice_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neodevice_1t_1array(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
+  arg1 = *(neodevice_t **)&jarg1;
   delete_neodevice_t_array(arg1);
 }
 
@@ -6772,12 +6772,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neodevice_1t_1array_1getitem(JNIEnv 
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   int arg2 ;
   neodevice_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = (int)jarg2; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = (int)jarg2;
   result = neodevice_t_array_getitem(arg1,arg2);
   {
     neodevice_t * resultptr = (neodevice_t *) malloc(sizeof(neodevice_t));
@@ -6793,19 +6793,19 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neodevice_1t_1array_1setitem(JNIEnv *
   int arg2 ;
   neodevice_t arg3 ;
   neodevice_t *argp3 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg3_;
-  arg1 = *(neodevice_t **)&jarg1; 
-  arg2 = (int)jarg2; 
-  argp3 = *(neodevice_t **)&jarg3; 
+  arg1 = *(neodevice_t **)&jarg1;
+  arg2 = (int)jarg2;
+  argp3 = *(neodevice_t **)&jarg3;
   if (!argp3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null neodevice_t");
     return ;
   }
-  arg3 = *argp3; 
+  arg3 = *argp3;
   neodevice_t_array_setitem(arg1,arg2,arg3);
 }
 
@@ -6814,23 +6814,23 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neoevent_1t_1array(JNIEnv *jenv
   jlong jresult = 0 ;
   int arg1 ;
   neoevent_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = (int)jarg1; 
+  arg1 = (int)jarg1;
   result = (neoevent_t *)new_neoevent_t_array(arg1);
-  *(neoevent_t **)&jresult = result; 
+  *(neoevent_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neoevent_1t_1array(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
+  arg1 = *(neoevent_t **)&jarg1;
   delete_neoevent_t_array(arg1);
 }
 
@@ -6840,12 +6840,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neoevent_1t_1array_1getitem(JNIEnv *
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   int arg2 ;
   neoevent_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neoevent_t **)&jarg1; 
-  arg2 = (int)jarg2; 
+  arg1 = *(neoevent_t **)&jarg1;
+  arg2 = (int)jarg2;
   result = neoevent_t_array_getitem(arg1,arg2);
   {
     neoevent_t * resultptr = (neoevent_t *) malloc(sizeof(neoevent_t));
@@ -6861,19 +6861,19 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1array_1setitem(JNIEnv *j
   int arg2 ;
   neoevent_t arg3 ;
   neoevent_t *argp3 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg3_;
-  arg1 = *(neoevent_t **)&jarg1; 
-  arg2 = (int)jarg2; 
-  argp3 = *(neoevent_t **)&jarg3; 
+  arg1 = *(neoevent_t **)&jarg1;
+  arg2 = (int)jarg2;
+  argp3 = *(neoevent_t **)&jarg3;
   if (!argp3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null neoevent_t");
     return ;
   }
-  arg3 = *argp3; 
+  arg3 = *argp3;
   neoevent_t_array_setitem(arg1,arg2,arg3);
 }
 
@@ -6882,23 +6882,23 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_new_1neomessage_1t_1array(JNIEnv *je
   jlong jresult = 0 ;
   int arg1 ;
   neomessage_t *result = 0 ;
-  
+
   (void)jenv;
   (void)jcls;
-  arg1 = (int)jarg1; 
+  arg1 = (int)jarg1;
   result = (neomessage_t *)new_neomessage_t_array(arg1);
-  *(neomessage_t **)&jresult = result; 
+  *(neomessage_t **)&jresult = result;
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_icsneojavaJNI_delete_1neomessage_1t_1array(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
+  arg1 = *(neomessage_t **)&jarg1;
   delete_neomessage_t_array(arg1);
 }
 
@@ -6908,12 +6908,12 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1t_1array_1getitem(JNIEnv
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   int arg2 ;
   neomessage_t result;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(neomessage_t **)&jarg1; 
-  arg2 = (int)jarg2; 
+  arg1 = *(neomessage_t **)&jarg1;
+  arg2 = (int)jarg2;
   result = neomessage_t_array_getitem(arg1,arg2);
   {
     neomessage_t * resultptr = (neomessage_t *) malloc(sizeof(neomessage_t));
@@ -6929,19 +6929,19 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1array_1setitem(JNIEnv 
   int arg2 ;
   neomessage_t arg3 ;
   neomessage_t *argp3 ;
-  
+
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg3_;
-  arg1 = *(neomessage_t **)&jarg1; 
-  arg2 = (int)jarg2; 
-  argp3 = *(neomessage_t **)&jarg3; 
+  arg1 = *(neomessage_t **)&jarg1;
+  arg2 = (int)jarg2;
+  argp3 = *(neomessage_t **)&jarg3;
   if (!argp3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null neomessage_t");
     return ;
   }
-  arg3 = *argp3; 
+  arg3 = *argp3;
   neomessage_t_array_setitem(arg1,arg2,arg3);
 }
 

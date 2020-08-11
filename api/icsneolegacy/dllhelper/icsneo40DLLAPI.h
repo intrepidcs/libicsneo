@@ -11,23 +11,23 @@ void UnloadDLLAPI(HINSTANCE &hAPIDLL);
 //Basic Functions
 typedef int  (__stdcall *FINDNEODEVICES)(unsigned long DeviceTypes, NeoDevice *pNeoDevice, int *pNumDevices);
 typedef int  (__stdcall *OPENNEODEVICE)(NeoDevice *pNeoDevice, void * hObject, unsigned char *bNetworkIDs, int bConfigRead, int bSyncToPC);
-typedef int  (__stdcall *CLOSEPORT)(void * hObject, int *pNumberOfErrors); 
+typedef int  (__stdcall *CLOSEPORT)(void * hObject, int *pNumberOfErrors);
 typedef void (__stdcall *FREEOBJECT)(void * hObject);
-typedef int  (__stdcall *OPENPORTEX)(void * lPortNumber, int lPortType, int lDriverType, int lIPAddressMSB, int lIPAddressLSBOrBaudRate, 
+typedef int  (__stdcall *OPENPORTEX)(void * lPortNumber, int lPortType, int lDriverType, int lIPAddressMSB, int lIPAddressLSBOrBaudRate,
 							         int bConfigRead, unsigned char *bNetworkID, int * hObject);
 typedef int  (__stdcall *SERIALNUMBERTOSTRING) (unsigned long serial, char *data,unsigned long data_size);
 
 //Message Functions
-typedef int  (__stdcall *GETMESSAGES)(void * hObject, icsSpyMessage *pMsg, int * pNumberOfMessages, int * pNumberOfErrors); 
-typedef int  (__stdcall *TXMESSAGES)(void * hObject, icsSpyMessage *pMsg, int lNetworkID, int lNumMessages); 
+typedef int  (__stdcall *GETMESSAGES)(void * hObject, icsSpyMessage *pMsg, int * pNumberOfMessages, int * pNumberOfErrors);
+typedef int  (__stdcall *TXMESSAGES)(void * hObject, icsSpyMessage *pMsg, int lNetworkID, int lNumMessages);
 typedef int  (__stdcall *TXMESSAGESEX)(void * hObject,icsSpyMessage *pMsg, unsigned int lNetworkID,unsigned int lNumMessages,unsigned int *NumTxed, unsigned int zero2);
 typedef int  (__stdcall *WAITFORRXMSGS)(void * hObject, unsigned int iTimeOut);
 typedef int  (__stdcall *ENABLERXQUEUE)(void * hObject, int iEnable);
 typedef int  (__stdcall *GETTSFORMSG)(void * hObject, icsSpyMessage *pMsg, double *pTimeStamp);
-typedef void (__stdcall *GETISO15765STATUS)(void * hObject, int lNetwork, int lClearTxStatus, 
+typedef void (__stdcall *GETISO15765STATUS)(void * hObject, int lNetwork, int lClearTxStatus,
 											int lClearRxStatus, int *lTxStatus, int *lRxStatus);
-typedef void (__stdcall *SETISO15765RXPARMS)(void * hObject, int lNetwork, int lEnable, 
-			                                spyFilterLong *pFF_CFMsgFilter, icsSpyMessage *pTxMsg, 
+typedef void (__stdcall *SETISO15765RXPARMS)(void * hObject, int lNetwork, int lEnable,
+			                                spyFilterLong *pFF_CFMsgFilter, icsSpyMessage *pTxMsg,
 											int lCFTimeOutMs, int lFlowCBlockSize,
 											int lUsesExtendedAddressing, int lUseHardwareIfPresent);
 typedef int (__stdcall *DOWNLOADISO15765_2_TXSCRIPT)(void * hObject, unsigned int NetworkID);
@@ -36,7 +36,7 @@ typedef int (__stdcall *TXISO15765_2_MESSAGE)(void * hObject, stCM_ISO157652_TxM
 
 //Device Functions
 typedef int (__stdcall *GETCONFIG)(void * hObject, unsigned char * pData, int * lNumBytes);
-typedef int (__stdcall *SENDCONFIG)(void * hObject, unsigned char * pData, int lNumBytes); 
+typedef int (__stdcall *SENDCONFIG)(void * hObject, unsigned char * pData, int lNumBytes);
 typedef int (__stdcall *GETFIRESETTINGS)(void * hObject, SFireSettings *pSettings, int iNumBytes);
 typedef int (__stdcall *SETFIRESETTINGS)(void * hObject, SFireSettings *pSettings, int iNumBytes, int bSaveToEEPROM);
 
@@ -66,7 +66,7 @@ typedef int (__stdcall *SETDEVICEPARMS)(void * hObject, char *pParmValue, int *p
 //Error Functions
 typedef int (__stdcall *GETLASTAPIERROR)(void * hObject, unsigned long *pErrorNumber);
 typedef int (__stdcall *GETERRMSGS)(void * hObject, int * pErrorMsgs, int * pNumberOfErrors);
-typedef int (__stdcall *GETERRORINFO)(int lErrorNumber, TCHAR *szErrorDescriptionShort, 
+typedef int (__stdcall *GETERRORINFO)(int lErrorNumber, TCHAR *szErrorDescriptionShort,
 										TCHAR *szErrorDescriptionLong, int * lMaxLengthShort,
                                         int * lMaxLengthLong,int * lErrorSeverity,int * lRestartNeeded);
 
@@ -84,8 +84,8 @@ typedef int (__stdcall *STARTSOCKSERVER)(void * hObject, int iPort);
 typedef int (__stdcall *STOPSOCKSERVER)(void * hObject);
 
 //CoreMini Script functions
-typedef int  (__stdcall *SCRIPTSTART)(void * hObject, int iLocation);  
-typedef int  (__stdcall *SCRIPTSTOP)(void * hObject);  
+typedef int  (__stdcall *SCRIPTSTART)(void * hObject, int iLocation);
+typedef int  (__stdcall *SCRIPTSTOP)(void * hObject);
 typedef int  (__stdcall *SCRIPTLOAD)(void * hObject, const unsigned char * bin, unsigned long len_bytes, int iLocation);
 typedef int  (__stdcall *SCRIPTCLEAR)(void * hObject, int iLocation);
 typedef int  (__stdcall *SCRIPTSTARTFBLOCK)(void * hObject,unsigned int fb_index);
@@ -99,15 +99,15 @@ typedef int  (__stdcall *SCRIPTWRITEISO15765TXMESSAGE)(void * hObject, unsigned 
 
 
 //Deprecated (but still suppored in the DLL)
-//////typedef int  (__stdcall *OPENPORTEX)(int lPortSerialNumber, int lPortType, int lDriverType, 
-//////					                 int lIPAddressMSB, int lIPAddressLSBOrBaudRate,int bConfigRead, 
+//////typedef int  (__stdcall *OPENPORTEX)(int lPortSerialNumber, int lPortType, int lDriverType,
+//////					                 int lIPAddressMSB, int lIPAddressLSBOrBaudRate,int bConfigRead,
 //////				                     unsigned char * bNetworkID, int * hObject);
 //////
-//////typedef int  (__stdcall *OPENPORT)(int lPortNumber, int lPortType, int lDriverType, 
+//////typedef int  (__stdcall *OPENPORT)(int lPortNumber, int lPortType, int lDriverType,
 //////					               unsigned char *bNetworkID, unsigned char *bSCPIDs,  int * hObject);
 //////typedef int (__stdcall *ENABLENETWORKCOM)(void * hObject, int Enable);
 //////typedef int (__stdcall *FINDCOMDEVICES)(int lDriverType,  int lGetSerialNumbers, int lStopAtFirst, int lUSBCommOnly,
-//////							            int *p_lDeviceTypes, int *p_lComPorts, int *p_lSerialNumbers, int *lNumDevices); 
+//////							            int *p_lDeviceTypes, int *p_lComPorts, int *p_lSerialNumbers, int *lNumDevices);
 
 
 

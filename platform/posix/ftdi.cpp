@@ -173,7 +173,7 @@ bool FTDI::FTDIContext::closeDevice() {
 		return true;
 
 	int ret = ftdi_usb_close(context);
-	if(ret != 0) 
+	if(ret != 0)
 		return false;
 		
 	deviceOpen = false;

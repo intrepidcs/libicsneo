@@ -22,16 +22,16 @@ extern "C" {
  * \param[out] devices Pointer to memory where devices should be written. If NULL, the current number of detected devices is written to count.
  * \param[inout] count Pointer to a size_t, which should initially contain the number of devices the buffer can hold,
  * and will afterwards contain the number of devices found.
- * 
+ *
  * For each found device, a neodevice_t structure will be written into the memory you provide.
- * 
+ *
  * The neodevice_t can later be passed by reference into the API to perform actions relating to the device.
  * The neodevice_t contains a handle to the internal memory for the icsneo::Device object.
  * The memory for the internal icsneo::Device object is managed by the API.
- * 
+ *
  * Any neodevice_t objects which have not been opened will become invalid when icsneo_findAllDevices() is called again.
  * To invoke this behavior without finding devices again, call icsneo_freeUnconnectedDevices().
- * 
+ *
  * If the size provided is not large enough, the output will be truncated.
  * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  */
@@ -39,7 +39,7 @@ extern void DLLExport icsneo_findAllDevices(neodevice_t* devices, size_t* count)
 
 /**
  * \brief Invalidate neodevice_t objects which have not been opened.
- * 
+ *
  * See icsneo_findAllDevices() for information regarding the neodevice_t validity contract.
  */
 extern void DLLExport icsneo_freeUnconnectedDevices();
@@ -52,16 +52,16 @@ extern void DLLExport icsneo_freeUnconnectedDevices();
  * holds the maximum number of characters to be written (so str must be of size count + 1 to account for the NULL terminator),
  * and after the call holds the number of characters written.
  * \returns True if str contains the string representation of the given serial number.
- * 
+ *
  * On older devices, the serial number is one like 138635, the numerical representation is the same as the string representation.
- * 
+ *
  * On newer devices, the serial number is one like RS2259, and this function can convert the numerical value back into the string seen on the back of the device.
- * 
+ *
  * A query for length (`str == NULL`) will return false.
  * icsneo_getLastError() should be checked to verify that the neodevice_t provided was valid.
- * 
+ *
  * The client application should provide a buffer of size 7, as serial numbers are always 6 characters or fewer.
- * 
+ *
  * If the size provided is not large enough, the output will be **NOT** be truncated.
  * Nothing will be written to the output.
  * Instead, an icsneo::APIEvent::BufferInsufficient will be available in icsneo_getLastError().
@@ -73,9 +73,9 @@ extern bool DLLExport icsneo_serialNumToString(uint32_t num, char* str, size_t* 
  * \brief Convert a serial number in string format to its numerical representation.
  * \param[in] str A NULL terminated string containing the string representation of an Intrepid serial number.
  * \returns The numerical representation of the serial number, or 0 if the conversion was unsuccessful.
- * 
+ *
  * On older devices, the serial number is one like 138635, and this string will simply be returned as a number.
- * 
+ *
  * On newer devices, the serial number is one like RS2259, and this function can convert that string to a number.
  */
 extern uint32_t DLLExport icsneo_serialStringToNum(const char* str);
@@ -84,10 +84,10 @@ extern uint32_t DLLExport icsneo_serialStringToNum(const char* str);
  * \brief Verify that a neodevice_t is valid.
  * \param[in] device A pointer to the neodevice_t structure to operate on.
  * \returns True if the neodevice_t is valid.
- * 
+ *
  * This check is automatically performed at the beginning of any API function that operates on a device.
  * If there is a failure, an icsneo::APIEvent::InvalidNeoDevice will be available in icsneo_getLastError().
- * 
+ *
  * See icsneo_findAllDevices() for information regarding the neodevice_t validity contract.
  */
 extern bool DLLExport icsneo_isValidNeoDevice(const neodevice_t* device);
@@ -96,13 +96,13 @@ extern bool DLLExport icsneo_isValidNeoDevice(const neodevice_t* device);
  * \brief Connect to the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to open.
  * \returns True if the connection could be opened.
- * 
+ *
  * The device **MUST** be opened before any other functions which operate on the device will be valid.
- * 
+ *
  * See icsneo_goOnline() for information about enabling network communication once the device is open.
- * 
+ *
  * If the open did not succeed, icsneo_getLastError() should provide more information about why.
- * 
+ *
  * If the device was already open, an icsneo::APIEvent::DeviceCurrentlyOpen will be available in icsneo_getLastError().
  */
 extern bool DLLExport icsneo_openDevice(const neodevice_t* device);
@@ -111,7 +111,7 @@ extern bool DLLExport icsneo_openDevice(const neodevice_t* device);
  * \brief Close an open connection to the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to close.
  * \returns True if the connection could be closed.
- * 
+ *
  * After this function succeeds, the neodevice_t will be invalid.
  * To connect again, you must call icsneo_findAllDevices() or similar to re-find the device.
  */
@@ -121,9 +121,9 @@ extern bool DLLExport icsneo_closeDevice(const neodevice_t* device);
  * \brief Verify network connection for the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if the device is connected.
- * 
+ *
  * This function does not modify the working state of the device at all.
- * 
+ *
  * See icsneo_openDevice() for an explanation about the concept of being "open".
  */
 extern bool DLLExport icsneo_isOpen(const neodevice_t* device);
@@ -132,12 +132,12 @@ extern bool DLLExport icsneo_isOpen(const neodevice_t* device);
  * \brief Enable network communication for the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if communication could be enabled.
- * 
+ *
  * The device is not "online" when it is first opened. It is not possible to receive or transmit while the device is "offline".
  * Network controllers are disabled. (i.e. In the case of CAN, the hardware will not send ACKs on the client application's behalf)
- * 
+ *
  * This allows filtering or handlers to be set up before allowing traffic to flow.
- * 
+ *
  * This also allows device settings to be set (i.e. baudrates) before enabling the controllers,
  * which prevents momentarily causing loss of communication if the baud rates are not correct.
  */
@@ -147,7 +147,7 @@ extern bool DLLExport icsneo_goOnline(const neodevice_t* device);
  * \brief Disable network communication for the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if communication could be disabled.
- * 
+ *
  * See icsneo_goOnline() for an explanation about the concept of being "online".
  */
 extern bool DLLExport icsneo_goOffline(const neodevice_t* device);
@@ -156,9 +156,9 @@ extern bool DLLExport icsneo_goOffline(const neodevice_t* device);
  * \brief Verify network communication for the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if communication is enabled.
- * 
+ *
  * This function does not modify the working state of the device at all.
- * 
+ *
  * See icsneo_goOnline() for an explanation about the concept of being "online".
  */
 extern bool DLLExport icsneo_isOnline(const neodevice_t* device);
@@ -167,23 +167,23 @@ extern bool DLLExport icsneo_isOnline(const neodevice_t* device);
  * \brief Enable buffering of messages for the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if polling could be enabled.
- * 
+ *
  * By default, traffic the device receives will not reach the client application.
  * The client application must register traffic handlers, enable message polling, or both.
  * This function addresses message polling.
- * 
+ *
  * With polling enabled, all traffic that the device receives will be stored in a buffer managed by the API.
  * The client application should then call icsneo_getMessages() periodically to take ownership of the messages in that buffer.
- * 
+ *
  * The API managed buffer will only grow to a specified size, 20k messages by default.
  * See icsneo_getPollingMessageLimit() and icsneo_setPollingMessageLimit() for more information.
- * 
+ *
  * In high traffic situations, the default 20k message limit can be reached very quickly.
  * The client application will have to call icsneo_getMessages() very often to avoid losing messages, or change the limit.
- * 
+ *
  * If the message limit is exceeded before a call to icsneo_getMessages() takes ownership of the messages,
  * the oldest message will be dropped (**LOST**) and an icsneo::APIEvent::PollingMessageOverflow will be flagged for the device.
- * 
+ *
  * This function will succeed even if the device is not open.
  */
 extern bool DLLExport icsneo_enableMessagePolling(const neodevice_t* device);
@@ -192,9 +192,9 @@ extern bool DLLExport icsneo_enableMessagePolling(const neodevice_t* device);
  * \brief Disable buffering of messages for the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if polling could be disabled.
- * 
+ *
  * See icsneo_enableMessagePolling() for more information about the message polling system.
- * 
+ *
  * Any messages left in the API managed buffer will be lost upon disabling polling.
  */
 extern bool DLLExport icsneo_disableMessagePolling(const neodevice_t* device);
@@ -203,9 +203,9 @@ extern bool DLLExport icsneo_disableMessagePolling(const neodevice_t* device);
  * \brief Verify message polling status for the specified hardware
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if polling is enabled.
- * 
+ *
  *  This function does not modify the working state of the device at all.
- *  
+ *
  * See icsneo_enableMessagePolling() for an explanation about how polling works.
  */
 extern bool DLLExport icsneo_isMessagePollingEnabled(const neodevice_t* device);
@@ -219,22 +219,22 @@ extern bool DLLExport icsneo_isMessagePollingEnabled(const neodevice_t* device);
  * \param[in] timeout The number of milliseconds to wait for a message to arrive. A value of 0 indicates a non-blocking call.
  * Querying for the current message count is always asynchronous and ignores this value.
  * \returns True if the messages were read out successfully (even if there were no messages to read) or if the count was read successfully.
- * 
+ *
  * Messages are available using this function if icsneo_goOnline() and icsneo_enableMessagePolling() have been called.
  * See those functions for more information.
- * 
+ *
  * Messages are read out of the API managed buffer in order of oldest to newest.
  * As they are read out, they are removed from the API managed buffer.
- * 
+ *
  * If size is too small to contain all messages, as many messages as will fit will be read out.
  * Subsequent calls to icsneo_getMessages() can retrieve any messages which were not read out.
- * 
+ *
  * The memory for the data pointer within the neomessage_t is managed by the API. Do *not* attempt to free the data pointer.
  * The memory will become invalid the next time icsneo_getMessages() is called for this device.
- * 
+ *
  * \warning Do not call icsneo_close() while another thread is waiting on icsneo_getMessages().
  * Always allow the other thread to timeout first!
- * 
+ *
  * ``` C
  * size_t messageCount;
  * bool result = icsneo_getMessages(device, NULL, &messageCount, 0); // Reading the message count
@@ -266,7 +266,7 @@ extern bool DLLExport icsneo_getMessages(const neodevice_t* device, neomessage_t
  * \brief Get the maximum number of messages which will be held in the API managed buffer for the specified hardware.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns Number of messages, or -1 if device is invalid.
- * 
+ *
  * See icsneo_enableMessagePolling() for more information about the message polling system.
  */
 extern int DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device);
@@ -276,9 +276,9 @@ extern int DLLExport icsneo_getPollingMessageLimit(const neodevice_t* device);
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \param[in] newLimit The new limit to be enforced.
  * \returns True if the limit was set successfully.
- * 
+ *
  * See icsneo_enableMessagePolling() for more information about the message polling system.
- * 
+ *
  * Setting the maximum lower than the current number of stored messages will cause the oldest messages
  * to be dropped (**LOST**) and an icsneo::APIEvent::PollingMessageOverflow to be flagged for the device.
  */
@@ -309,16 +309,16 @@ extern bool DLLExport icsneo_removeMessageCallback(const neodevice_t* device, in
  * holds the maximum number of characters to be written (so str must be of size maxLength + 1 to account for the NULL terminator),
  * and after the call holds the number of characters written.
  * \returns True if str was written to
- * 
+ *
  * In the case of a neoVI FIRE 2, this function will write a string "neoVI FIRE 2" with a NULL terminator into str.
- * 
+ *
  * The constant ICSNEO_DEVICETYPE_LONGEST_NAME is defined for the client application to create static buffers of the correct length.
- * 
+ *
  * See also icsneo_describeDevice().
- * 
+ *
  * A query for length (`str == NULL`) will return false.
  * icsneo_getLastError() should be checked to verify that the neodevice_t provided was valid.
- * 
+ *
  * If the size provided is not large enough, the output will be truncated.
  * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.
@@ -333,16 +333,16 @@ extern bool DLLExport icsneo_getProductName(const neodevice_t* device, char* str
  * holds the maximum number of characters to be written (so str must be of size maxLength + 1 to account for the NULL terminator),
  * and after the call holds the number of characters written.
  * \returns True if str was written to
- * 
+ *
  * In the case of a neoVI FIRE 2, this function will write a string "neoVI FIRE 2" with a NULL terminator into str.
- * 
+ *
  * The constant ICSNEO_DEVICETYPE_LONGEST_NAME is defined for the client application to create static buffers of the correct length.
- * 
+ *
  * See also icsneo_describeDevice().
- * 
+ *
  * A query for length (`str == NULL`) will return false.
  * icsneo_getLastError() should be checked to verify that the neodevice_t provided was valid.
- * 
+ *
  * If the size provided is not large enough, the output will be truncated.
  * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.
@@ -360,11 +360,11 @@ extern bool DLLExport icsneo_settingsRefresh(const neodevice_t* device);
  * \brief Commit the settings structure for a specified device to non-volatile storage.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if the settings were applied.
- * 
+ *
  * When modifications are made to the device settings, this function (or icsneo_settingsApplyTemporary()) must be called to send the changes to the device and make them active.
- * 
+ *
  * This function sets the settings such that they will survive device power cycles.
- * 
+ *
  * If the function fails, the settings will be refreshed so that the structure in the API matches the one held by the device.
  */
 extern bool DLLExport icsneo_settingsApply(const neodevice_t* device);
@@ -373,9 +373,9 @@ extern bool DLLExport icsneo_settingsApply(const neodevice_t* device);
  * \brief Apply the settings structure for a specified device temporarily.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if the settings were applied.
- * 
+ *
  * See icsneo_settingsApply() for further information about applying settings.
- * 
+ *
  * This function sets the settings such that they will revert to the values saved in non-volatile storage when the device loses power.
  */
 extern bool DLLExport icsneo_settingsApplyTemporary(const neodevice_t* device);
@@ -384,9 +384,9 @@ extern bool DLLExport icsneo_settingsApplyTemporary(const neodevice_t* device);
  * \brief Apply the default settings structure for a specified device.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if the default settings were applied.
- * 
+ *
  * See icsneo_settingsApply() for further information about applying settings.
- * 
+ *
  * This function sets the default settings such that they will survive device power cycles.
  */
 extern bool DLLExport icsneo_settingsApplyDefaults(const neodevice_t* device);
@@ -395,9 +395,9 @@ extern bool DLLExport icsneo_settingsApplyDefaults(const neodevice_t* device);
  * \brief Apply the default settings structure for a specified device temporarily.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \returns True if the default settings were applied.
- * 
+ *
  * See icsneo_settingsApply() for further information about applying settings. See icsneo_settingsApplyDefaults() for further information about applying default settings.
- * 
+ *
  * This function sets the default settings such that they will revert to the values saved in non-volatile storage when the device loses power.
  */
 extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* device);
@@ -408,11 +408,11 @@ extern bool DLLExport icsneo_settingsApplyDefaultsTemporary(const neodevice_t* d
  * \param[out] structure A pointer to a device settings structure for the current device.
  * \param[in] structureSize The size of the current device settings structure in bytes.
  * \returns Number of bytes written to structure, or -1 if the operation failed.
- * 
+ *
  * See icsneo_settingsApply() for further information about applying settings. See icsneo_settingsApplyDefaults() for further information about applying default settings.
- * 
+ *
  * This function sets the default settings such that they will revert to the values saved in non-volatile storage when the device loses power.
- * 
+ *
  * If possible, use functions specific to the operation you want to acomplish (such as icsneo_setBaudrate()) instead of modifying the structure directly.
  * This allows the client application to work with other hardware.
  */
@@ -424,9 +424,9 @@ extern int DLLExport icsneo_settingsReadStructure(const neodevice_t* device, voi
  * \param[in] structure A pointer to a device settings structure for the current device.
  * \param[in] structureSize The size of the current device settings structure in bytes.
  * \returns True if the settings were applied.
- * 
+ *
  * This function immediately applies the provided settings. See icsneo_settingsApplyTemporary() for further information about applying settings.
- * 
+ *
  * If possible, use functions specific to the operation you want to acomplish (such as icsneo_setBaudrate()) instead of modifying the structure directly.
  * This allows the client application to work with other hardware.
  */
@@ -438,11 +438,11 @@ extern bool DLLExport icsneo_settingsApplyStructure(const neodevice_t* device, c
  * \param[in] structure A pointer to a device settings structure for the current device.
  * \param[in] structureSize The size of the current device settings structure in bytes.
  * \returns True if the settings were applied.
- * 
+ *
  * This function immediately applies the provided settings. See icsneo_settingsApply() for further information about applying settings.
- * 
+ *
  * This function sets the default settings such that they will revert to the values saved in non-volatile storage when the device loses power.
- * 
+ *
  * If possible, use functions specific to the operation you want to acomplish (such as icsneo_setBaudrate()) instead of modifying the structure directly.
  * This allows the client application to work with other hardware.
  */
@@ -453,7 +453,7 @@ extern bool DLLExport icsneo_settingsApplyStructureTemporary(const neodevice_t* 
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \param[in] netid The network for which the baudrate should be retrieved.
  * \returns The value in baud with no multipliers. (i.e. 500k becomes 500000) A negative value is returned if an error occurs.
- * 
+ *
  * In the case of CAN, this function gets the standard CAN baudrate.
  * See icsneo_getFDBaudrate() to get the baudrate for (the baudrate-switched portion of) CAN FD.
  */
@@ -465,10 +465,10 @@ extern int64_t DLLExport icsneo_getBaudrate(const neodevice_t* device, uint16_t 
  * \param[in] netid The network to which the new baudrate should apply.
  * \param[in] newBaudrate The requested baudrate, with no multipliers. (i.e. 500K CAN should be represented as 500000)
  * \returns True if the baudrate could be set.
- * 
+ *
  * In the case of CAN, this function sets the standard CAN baudrate.
  * See icsneo_setFDBaudrate() to set the baudrate for (the baudrate-switched portion of) CAN FD.
- * 
+ *
  * Call icsneo_settingsApply() or similar to make the changes active on the device.
  */
 extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
@@ -478,7 +478,7 @@ extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t net
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \param[in] netid The network for which the baudrate should be retrieved.
  * \returns The value in baud with no multipliers. (i.e. 500k becomes 500000) A negative value is returned if an error occurs.
- * 
+ *
  * See icsneo_getBaudrate() to get the baudrate for the non baudrate-switched portion of CAN FD, classical CAN 2.0, and other network types.
  */
 extern int64_t DLLExport icsneo_getFDBaudrate(const neodevice_t* device, uint16_t netid);
@@ -489,9 +489,9 @@ extern int64_t DLLExport icsneo_getFDBaudrate(const neodevice_t* device, uint16_
  * \param[in] netid The network to which the new baudrate should apply.
  * \param[in] newBaudrate The requested baudrate, with no multipliers. (i.e. 2Mbaud CAN FD should be represented as 2000000)
  * \returns True if the baudrate could be set.
- * 
+ *
  * See icsneo_setBaudrate() to set the baudrate for the non baudrate-switched portion of CAN FD, classical CAN 2.0, and other network types.
- * 
+ *
  * Call icsneo_settingsApply() or similar to make the changes active on the device.
  */
 extern bool DLLExport icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
@@ -501,21 +501,21 @@ extern bool DLLExport icsneo_setFDBaudrate(const neodevice_t* device, uint16_t n
  * \param[in] device A pointer to the neodevice_t structure specifying the device to transmit on.
  * \param[in] message A pointer to the neomessage_t structure defining the message.
  * \returns True if the message was verified transmittable and enqueued for transmit.
- * 
+ *
  * To transmit a message, you must set the `data`, `length`, and `netid` attributes of the neomessage_t.
- * 
+ *
  * The `data` attribute must be set to a pointer to a buffer of at least `length` which holds the payload bytes.
  * This buffer only needs to be valid for the duration of this call, and can safely be deallocated or reused after the return.
- * 
+ *
  * You may also have to set network dependent variables.
  * For CAN, you must set the `arbid` attribute defined in neomessage_can_t.
- * 
+ *
  * Other attributes of the neomessage_t such as `timestamp`, `type` and `reserved` which are not used should be set to 0. Unused status bits should also be set to 0.
- * 
+ *
  * Any types defined `neomessage_*_t` are designed to be binary compatible with neomessage_t.
- * 
+ *
  * For instance, for CAN, it is recommended to use neomessage_can_t as it exposes the `arbid` field.
- * 
+ *
  * ``` C
  * neomessage_can_t mySendMessage = {}; // Zero all before use
  * uint8_t myData[3] = { 0xAA, 0xBB, 0xCC }; // Either heap or stack allocated is okay
@@ -527,7 +527,7 @@ extern bool DLLExport icsneo_setFDBaudrate(const neodevice_t* device, uint16_t n
  * mySendMessage.status.extendedFrame = true; // Extended (29-bit) arbitration IDs
  * mySendMessage.status.canfdBRS = true; // CAN FD Baudrate Switch
  * bool result = icsneo_transmit(device, (neomessage_t*)&mySendMessage);
- * 
+ *
  * myData[1] = 0x55; // The message and buffer can be safely reused for the next message
  * result = icsneo_transmit(device, (neomessage_t*)&mySendMessage);
  * ```
@@ -540,11 +540,11 @@ extern bool DLLExport icsneo_transmit(const neodevice_t* device, const neomessag
  * \param[in] messages A pointer to the neomessage_t structures defining the messages.
  * \param[in] count The number of messages to transmit.
  * \returns True if the messages were verified transmittable and enqueued for transmit.
- * 
+ *
  * See icsneo_transmit() for information regarding transmitting messages.
- * 
+ *
  * On a per-network basis, messages will be transmitted in the order that they were enqueued.
- * 
+ *
  * In this case, messages will be enqueued in order of increasing index.
  */
 extern bool DLLExport icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* messages, size_t count);
@@ -553,7 +553,7 @@ extern bool DLLExport icsneo_transmitMessages(const neodevice_t* device, const n
  * \brief Set the behavior of whether writing is a blocking action or not.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to transmit on.
  * \param[in] blocks Whether or not writing is a blocking action.
- * 
+ *
  * By default, writing is a blocking action.
  */
 extern void DLLExport icsneo_setWriteBlocks(const neodevice_t* device, bool blocks);
@@ -566,16 +566,16 @@ extern void DLLExport icsneo_setWriteBlocks(const neodevice_t* device, bool bloc
  * holds the maximum number of characters to be written (so str must be of size maxLength + 1 to account for the NULL terminator),
  * and after the call holds the number of characters written.
  * \returns True if str was written to
- * 
+ *
  * In the case of a neoVI FIRE 2 with serial number CY2285, this function will write a string "neoVI FIRE 2 CY2285" with a NULL terminator into str.
- * 
+ *
  * The constant ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION is defined for the client application to create static buffers of the correct length.
- * 
+ *
  * See also icsneo_getProductName().
- * 
+ *
  * A query for length (`str == NULL`) will return false.
  * icsneo_getLastError() should be checked to verify that the neodevice_t provided was valid.
- * 
+ *
  * If the size provided is not large enough, the output will be truncated.
  * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.
@@ -593,7 +593,7 @@ extern neoversion_t DLLExport icsneo_getVersion(void);
  * \param[in] callback A function pointer with void return type and a single neoevent_t parameter.
  * \param[in] filter Unused for now. Exists as a placeholder here for future backwards-compatibility.
  * \returns The id of the callback added. Does not error.
- * 
+ *
  * Do not attempt to add or remove callbacks inside of a callback, as the stored callbacks are locked during calls.
  */
 extern int DLLExport icsneo_addEventCallback(void (*callback)(neoevent_t), void*);
@@ -611,16 +611,16 @@ extern bool DLLExport icsneo_removeEventCallback(int id);
  * \param[inout] size A pointer to a size_t which, prior to the call,
  * holds the maximum number of events to be written, and after the call holds the number of events written.
  * \returns True if the events were read out successfully (even if there were no events to report).
- * 
+ *
  * Events contain INFO and WARNINGS, and may potentially contain one TooManyEvents WARNING at the end. No ERRORS are found in Events, see icsneo_getLastError() instead.
- * 
+ *
  * Events can be caused by API usage, such as providing too small of a buffer or disconnecting from a device.
- * 
+ *
  * Events can also occur asynchronously to the client application threads, in the case of a device communication event or similar.
- * 
+ *
  * Events are read out of the API managed buffer in order of oldest to newest.
  * As they are read out, they are removed from the API managed buffer.
- * 
+ *
  * If size is too small to contain all events, as many events as will fit will be read out.
  * Subsequent calls to icsneo_getEvents() can retrieve any events which were not read out.
  */
@@ -633,7 +633,7 @@ extern bool DLLExport icsneo_getEvents(neoevent_t* events, size_t* size);
  * \param[inout] size A pointer to a size_t which, prior to the call,
  * holds the maximum number of events to be written, and after the call holds the number of events written.
  * \returns True if the events were read out successfully (even if there were no events to report).
- * 
+ *
  * See icsneo_getEvents() for more information about the event system.
  */
 extern bool DLLExport icsneo_getDeviceEvents(const neodevice_t* device, neoevent_t* events, size_t* size);
@@ -642,15 +642,15 @@ extern bool DLLExport icsneo_getDeviceEvents(const neodevice_t* device, neoevent
  * \brief Read out the last error which occurred in API operation on this thread.
  * \param[out] error A pointer to a buffer which a neoevent_t structure will be written to.
  * \returns True if an error was read out.
- * 
+ *
  * All errors are stored on a per-thread basis, meaning that calling icsneo_getLastError() will return the last error that occured on the calling thread.
  * Any errors can only be retrieved through this function, and NOT icsneo_getEvents() or similar! Only INFO and WARNING level events are accessible through those.
  * Only the last error is stored, so the intention is for this function to be called immediately following another failed API call.
- * 
+ *
  * The API error system is thread-safe. Only an API error which occurred on the current thread will be returned.
- * 
+ *
  * See icsneo_getEvents() for more information about the event system.
- * 
+ *
  * This operation removes the returned error from the buffer, so subsequent calls to error functions will not include the error.
  */
 extern bool DLLExport icsneo_getLastError(neoevent_t* error);
@@ -670,9 +670,9 @@ extern void DLLExport icsneo_discardDeviceEvents(const neodevice_t* device);
 /**
  * \brief Set the number of events which will be held in the API managed buffer before icsneo::APIEvent::TooManyEvents
  * \param[in] newLimit The new limit. Must be >10. 1 event slot is always reserved for a potential icsneo::APIEvent::TooManyEvents, so (newLimit - 1) other events can be stored.
- * 
+ *
  * If the event limit is reached, an icsneo::APIEvent::TooManyEvents will be flagged.
- * 
+ *
  * If the `newLimit` is smaller than the current event count,
  * events will be removed in order of decreasing age.
  * This will also flag an icsneo::APIEvent::TooManyEvents.
@@ -693,11 +693,11 @@ extern size_t DLLExport icsneo_getEventLimit(void);
  * holds the maximum number of devicetype_t structures to be written,
  * and after the call holds the number of devicetype_t structures written.
  * \returns True if devices was written to
- * 
+ *
  * See icsneo_getProductNameForType() to get textual descriptions of each device.
- * 
+ *
  * A query for length (`devices == NULL`) will return false.
- * 
+ *
  * If the count provided is not large enough, the output will be truncated.
  * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.

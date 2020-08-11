@@ -144,7 +144,7 @@
 #include <stdio.h>
 
 
-/* Support for throwing C# exceptions from C/C++. There are two types: 
+/* Support for throwing C# exceptions from C/C++. There are two types:
  * Exceptions that take a message and ArgumentExceptions that take a message and a parameter name. */
 typedef enum {
   SWIG_CSharpApplicationException,
@@ -217,19 +217,19 @@ static void SWIGUNUSED SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpExcepti
 
 
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 #endif
 SWIGEXPORT void SWIGSTDCALL SWIGRegisterExceptionCallbacks_icsneocsharp(
                                                 SWIG_CSharpExceptionCallback_t applicationCallback,
                                                 SWIG_CSharpExceptionCallback_t arithmeticCallback,
-                                                SWIG_CSharpExceptionCallback_t divideByZeroCallback, 
-                                                SWIG_CSharpExceptionCallback_t indexOutOfRangeCallback, 
+                                                SWIG_CSharpExceptionCallback_t divideByZeroCallback,
+                                                SWIG_CSharpExceptionCallback_t indexOutOfRangeCallback,
                                                 SWIG_CSharpExceptionCallback_t invalidCastCallback,
                                                 SWIG_CSharpExceptionCallback_t invalidOperationCallback,
                                                 SWIG_CSharpExceptionCallback_t ioCallback,
                                                 SWIG_CSharpExceptionCallback_t nullReferenceCallback,
-                                                SWIG_CSharpExceptionCallback_t outOfMemoryCallback, 
-                                                SWIG_CSharpExceptionCallback_t overflowCallback, 
+                                                SWIG_CSharpExceptionCallback_t outOfMemoryCallback,
+                                                SWIG_CSharpExceptionCallback_t overflowCallback,
                                                 SWIG_CSharpExceptionCallback_t systemCallback) {
   SWIG_csharp_exceptions[SWIG_CSharpApplicationException].callback = applicationCallback;
   SWIG_csharp_exceptions[SWIG_CSharpArithmeticException].callback = arithmeticCallback;
@@ -245,7 +245,7 @@ SWIGEXPORT void SWIGSTDCALL SWIGRegisterExceptionCallbacks_icsneocsharp(
 }
 
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 #endif
 SWIGEXPORT void SWIGSTDCALL SWIGRegisterExceptionArgumentCallbacks_icsneocsharp(
                                                 SWIG_CSharpExceptionArgumentCallback_t argumentCallback,
@@ -263,7 +263,7 @@ static SWIG_CSharpStringHelperCallback SWIG_csharp_string_callback = NULL;
 
 
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 #endif
 SWIGEXPORT void SWIGSTDCALL SWIGRegisterStringCallback_icsneocsharp(SWIG_CSharpStringHelperCallback callback) {
   SWIG_csharp_string_callback = callback;
@@ -298,12 +298,12 @@ static neomessage_t* from_eth_neomessage_t_cast(neomessage_eth_t* msg) {
 }
 
 
-static neodevice_t *new_neodevice_t_array(int nelements) { 
-  return (neodevice_t *) calloc(nelements,sizeof(neodevice_t)); 
+static neodevice_t *new_neodevice_t_array(int nelements) {
+  return (neodevice_t *) calloc(nelements,sizeof(neodevice_t));
 }
 
-static void delete_neodevice_t_array(neodevice_t *ary) { 
-  free(ary); 
+static void delete_neodevice_t_array(neodevice_t *ary) {
+  free(ary);
 }
 
 static neodevice_t neodevice_t_array_getitem(neodevice_t *ary, int index) {
@@ -314,12 +314,12 @@ static void neodevice_t_array_setitem(neodevice_t *ary, int index, neodevice_t v
 }
 
 
-static neoevent_t *new_neoevent_t_array(int nelements) { 
-  return (neoevent_t *) calloc(nelements,sizeof(neoevent_t)); 
+static neoevent_t *new_neoevent_t_array(int nelements) {
+  return (neoevent_t *) calloc(nelements,sizeof(neoevent_t));
 }
 
-static void delete_neoevent_t_array(neoevent_t *ary) { 
-  free(ary); 
+static void delete_neoevent_t_array(neoevent_t *ary) {
+  free(ary);
 }
 
 static neoevent_t neoevent_t_array_getitem(neoevent_t *ary, int index) {
@@ -330,12 +330,12 @@ static void neoevent_t_array_setitem(neoevent_t *ary, int index, neoevent_t valu
 }
 
 
-static neomessage_t *new_neomessage_t_array(int nelements) { 
-  return (neomessage_t *) calloc(nelements,sizeof(neomessage_t)); 
+static neomessage_t *new_neomessage_t_array(int nelements) {
+  return (neomessage_t *) calloc(nelements,sizeof(neomessage_t));
 }
 
-static void delete_neomessage_t_array(neomessage_t *ary) { 
-  free(ary); 
+static void delete_neomessage_t_array(neomessage_t *ary) {
+  free(ary);
 }
 
 static neomessage_t neomessage_t_array_getitem(neomessage_t *ary, int index) {
@@ -353,9 +353,9 @@ extern "C" {
 SWIGEXPORT void SWIGSTDCALL CSharp_icsneo_findAllDevices(void * jarg1, int * jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   size_t *arg2 = (size_t *) 0 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (size_t *)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (size_t *)jarg2;
   icsneo_findAllDevices(arg1,arg2);
 }
 
@@ -371,12 +371,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_serialNumToString(unsigned int
   char *arg2 = (char *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
-  arg1 = (uint32_t)jarg1; 
-  arg2 = (char *)jarg2; 
-  arg3 = (size_t *)jarg3; 
+
+  arg1 = (uint32_t)jarg1;
+  arg2 = (char *)jarg2;
+  arg3 = (size_t *)jarg3;
   result = (bool)icsneo_serialNumToString(arg1,arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -385,10 +385,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_serialStringToNum(char * jarg1
   unsigned int jresult ;
   char *arg1 = (char *) 0 ;
   uint32_t result;
-  
-  arg1 = (char *)jarg1; 
+
+  arg1 = (char *)jarg1;
   result = (uint32_t)icsneo_serialStringToNum((char const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -397,10 +397,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_isValidNeoDevice(void * jarg1)
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_isValidNeoDevice((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -409,10 +409,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_openDevice(void * jarg1) {
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_openDevice((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -421,10 +421,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_closeDevice(void * jarg1) {
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_closeDevice((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -433,10 +433,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_isOpen(void * jarg1) {
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_isOpen((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -445,10 +445,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_goOnline(void * jarg1) {
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_goOnline((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -457,10 +457,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_goOffline(void * jarg1) {
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_goOffline((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -469,10 +469,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_isOnline(void * jarg1) {
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_isOnline((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -481,10 +481,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_enableMessagePolling(void * ja
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_enableMessagePolling((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -493,10 +493,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_disableMessagePolling(void * j
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_disableMessagePolling((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -505,10 +505,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_isMessagePollingEnabled(void *
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_isMessagePollingEnabled((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -520,13 +520,13 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_getMessages(void * jarg1, void
   size_t *arg3 = (size_t *) 0 ;
   uint64_t arg4 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (neomessage_t *)jarg2; 
-  arg3 = (size_t *)jarg3; 
-  arg4 = (uint64_t)jarg4; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (neomessage_t *)jarg2;
+  arg3 = (size_t *)jarg3;
+  arg4 = (uint64_t)jarg4;
   result = (bool)icsneo_getMessages((neodevice_t const *)arg1,arg2,arg3,arg4);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -535,10 +535,10 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_icsneo_getPollingMessageLimit(void *
   unsigned long jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   size_t result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = icsneo_getPollingMessageLimit((neodevice_t const *)arg1);
-  jresult = (unsigned long)result; 
+  jresult = (unsigned long)result;
   return jresult;
 }
 
@@ -548,11 +548,11 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_setPollingMessageLimit(void * 
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   size_t arg2 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (size_t)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (size_t)jarg2;
   result = (bool)icsneo_setPollingMessageLimit((neodevice_t const *)arg1,arg2);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -563,12 +563,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_getProductName(void * jarg1, c
   char *arg2 = (char *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (char *)jarg2; 
-  arg3 = (size_t *)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (char *)jarg2;
+  arg3 = (size_t *)jarg3;
   result = (bool)icsneo_getProductName((neodevice_t const *)arg1,arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -579,12 +579,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_getProductNameForType(unsigned
   char *arg2 = (char *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
-  arg1 = (devicetype_t)jarg1; 
-  arg2 = (char *)jarg2; 
-  arg3 = (size_t *)jarg3; 
+
+  arg1 = (devicetype_t)jarg1;
+  arg2 = (char *)jarg2;
+  arg3 = (size_t *)jarg3;
   result = (bool)icsneo_getProductNameForType(arg1,arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -593,10 +593,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_settingsRefresh(void * jarg1) 
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_settingsRefresh((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -605,10 +605,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_settingsApply(void * jarg1) {
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_settingsApply((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -617,10 +617,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_settingsApplyTemporary(void * 
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_settingsApplyTemporary((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -629,10 +629,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_settingsApplyDefaults(void * j
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_settingsApplyDefaults((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -641,10 +641,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_settingsApplyDefaultsTemporary
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (bool)icsneo_settingsApplyDefaultsTemporary((neodevice_t const *)arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -655,12 +655,12 @@ SWIGEXPORT int SWIGSTDCALL CSharp_icsneo_settingsReadStructure(void * jarg1, voi
   void *arg2 = (void *) 0 ;
   size_t arg3 ;
   int result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (void *)jarg2; 
-  arg3 = (size_t)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (void *)jarg2;
+  arg3 = (size_t)jarg3;
   result = (int)icsneo_settingsReadStructure((neodevice_t const *)arg1,arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -671,12 +671,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_settingsApplyStructure(void * 
   void *arg2 = (void *) 0 ;
   size_t arg3 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (void *)jarg2; 
-  arg3 = (size_t)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (void *)jarg2;
+  arg3 = (size_t)jarg3;
   result = (bool)icsneo_settingsApplyStructure((neodevice_t const *)arg1,(void const *)arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -687,12 +687,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_settingsApplyStructureTemporar
   void *arg2 = (void *) 0 ;
   size_t arg3 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (void *)jarg2; 
-  arg3 = (size_t)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (void *)jarg2;
+  arg3 = (size_t)jarg3;
   result = (bool)icsneo_settingsApplyStructureTemporary((neodevice_t const *)arg1,(void const *)arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -702,11 +702,11 @@ SWIGEXPORT long long SWIGSTDCALL CSharp_icsneo_getBaudrate(void * jarg1, unsigne
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   uint16_t arg2 ;
   int64_t result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
   result = (int64_t)icsneo_getBaudrate((neodevice_t const *)arg1,arg2);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -717,12 +717,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_setBaudrate(void * jarg1, unsi
   uint16_t arg2 ;
   int64_t arg3 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
-  arg3 = (int64_t)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
+  arg3 = (int64_t)jarg3;
   result = (bool)icsneo_setBaudrate((neodevice_t const *)arg1,arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -732,11 +732,11 @@ SWIGEXPORT long long SWIGSTDCALL CSharp_icsneo_getFDBaudrate(void * jarg1, unsig
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   uint16_t arg2 ;
   int64_t result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
   result = (int64_t)icsneo_getFDBaudrate((neodevice_t const *)arg1,arg2);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -747,12 +747,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_setFDBaudrate(void * jarg1, un
   uint16_t arg2 ;
   int64_t arg3 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
-  arg3 = (int64_t)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
+  arg3 = (int64_t)jarg3;
   result = (bool)icsneo_setFDBaudrate((neodevice_t const *)arg1,arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -762,11 +762,11 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_transmit(void * jarg1, void * 
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   neomessage_t *arg2 = (neomessage_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (neomessage_t *)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (neomessage_t *)jarg2;
   result = (bool)icsneo_transmit((neodevice_t const *)arg1,(neomessage_t const *)arg2);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -777,12 +777,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_transmitMessages(void * jarg1,
   neomessage_t *arg2 = (neomessage_t *) 0 ;
   size_t arg3 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (neomessage_t *)jarg2; 
-  arg3 = (size_t)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (neomessage_t *)jarg2;
+  arg3 = (size_t)jarg3;
   result = (bool)icsneo_transmitMessages((neodevice_t const *)arg1,(neomessage_t const *)arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -790,9 +790,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_transmitMessages(void * jarg1,
 SWIGEXPORT void SWIGSTDCALL CSharp_icsneo_setWriteBlocks(void * jarg1, unsigned int jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   bool arg2 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = jarg2 ? true : false; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = jarg2 ? true : false;
   icsneo_setWriteBlocks((neodevice_t const *)arg1,arg2);
 }
 
@@ -803,12 +803,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_describeDevice(void * jarg1, c
   char *arg2 = (char *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (char *)jarg2; 
-  arg3 = (size_t *)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (char *)jarg2;
+  arg3 = (size_t *)jarg3;
   result = (bool)icsneo_describeDevice((neodevice_t const *)arg1,arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -816,7 +816,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_describeDevice(void * jarg1, c
 SWIGEXPORT void * SWIGSTDCALL CSharp_icsneo_getVersion() {
   void * jresult ;
   neoversion_t result;
-  
+
   result = icsneo_getVersion();
   {
     neoversion_t * resultptr = (neoversion_t *) malloc(sizeof(neoversion_t));
@@ -832,11 +832,11 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_getEvents(void * jarg1, int * 
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   size_t *arg2 = (size_t *) 0 ;
   bool result;
-  
-  arg1 = (neoevent_t *)jarg1; 
-  arg2 = (size_t *)jarg2; 
+
+  arg1 = (neoevent_t *)jarg1;
+  arg2 = (size_t *)jarg2;
   result = (bool)icsneo_getEvents(arg1,arg2);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -847,12 +847,12 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_getDeviceEvents(void * jarg1, 
   neoevent_t *arg2 = (neoevent_t *) 0 ;
   size_t *arg3 = (size_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (neoevent_t *)jarg2; 
-  arg3 = (size_t *)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (neoevent_t *)jarg2;
+  arg3 = (size_t *)jarg3;
   result = (bool)icsneo_getDeviceEvents((neodevice_t const *)arg1,arg2,arg3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -861,10 +861,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_getLastError(void * jarg1) {
   unsigned int jresult ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   bool result;
-  
-  arg1 = (neoevent_t *)jarg1; 
+
+  arg1 = (neoevent_t *)jarg1;
   result = (bool)icsneo_getLastError(arg1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -876,16 +876,16 @@ SWIGEXPORT void SWIGSTDCALL CSharp_icsneo_discardAllEvents() {
 
 SWIGEXPORT void SWIGSTDCALL CSharp_icsneo_discardDeviceEvents(void * jarg1) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   icsneo_discardDeviceEvents((neodevice_t const *)arg1);
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_icsneo_setEventLimit(unsigned long jarg1) {
   size_t arg1 ;
-  
-  arg1 = (size_t)jarg1; 
+
+  arg1 = (size_t)jarg1;
   icsneo_setEventLimit(arg1);
 }
 
@@ -893,9 +893,9 @@ SWIGEXPORT void SWIGSTDCALL CSharp_icsneo_setEventLimit(unsigned long jarg1) {
 SWIGEXPORT unsigned long SWIGSTDCALL CSharp_icsneo_getEventLimit() {
   unsigned long jresult ;
   size_t result;
-  
+
   result = icsneo_getEventLimit();
-  jresult = (unsigned long)result; 
+  jresult = (unsigned long)result;
   return jresult;
 }
 
@@ -905,11 +905,11 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_getSupportedDevices(void * jar
   devicetype_t *arg1 = (devicetype_t *) 0 ;
   size_t *arg2 = (size_t *) 0 ;
   bool result;
-  
-  arg1 = (devicetype_t *)jarg1; 
-  arg2 = (size_t *)jarg2; 
+
+  arg1 = (devicetype_t *)jarg1;
+  arg2 = (size_t *)jarg2;
   result = (bool)icsneo_getSupportedDevices(arg1,arg2);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -919,11 +919,11 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_getTimestampResolution(void * 
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   uint16_t *arg2 = (uint16_t *) 0 ;
   bool result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (uint16_t *)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (uint16_t *)jarg2;
   result = (bool)icsneo_getTimestampResolution((neodevice_t const *)arg1,arg2);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -931,9 +931,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_icsneo_getTimestampResolution(void * 
 SWIGEXPORT void SWIGSTDCALL CSharp_neodevice_t_device_set(void * jarg1, void * jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   devicehandle_t arg2 = (devicehandle_t) 0 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (devicehandle_t)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (devicehandle_t)jarg2;
   if (arg1) (arg1)->device = arg2;
 }
 
@@ -942,10 +942,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neodevice_t_device_get(void * jarg1) {
   void * jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   devicehandle_t result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (devicehandle_t) ((arg1)->device);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -953,9 +953,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neodevice_t_device_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neodevice_t_handle_set(void * jarg1, int jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   neodevice_handle_t arg2 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (neodevice_handle_t)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (neodevice_handle_t)jarg2;
   if (arg1) (arg1)->handle = arg2;
 }
 
@@ -964,10 +964,10 @@ SWIGEXPORT int SWIGSTDCALL CSharp_neodevice_t_handle_get(void * jarg1) {
   int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   neodevice_handle_t result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (neodevice_handle_t) ((arg1)->handle);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -975,9 +975,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_neodevice_t_handle_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neodevice_t_type_set(void * jarg1, unsigned int jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   devicetype_t arg2 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (devicetype_t)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (devicetype_t)jarg2;
   if (arg1) (arg1)->type = arg2;
 }
 
@@ -986,10 +986,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neodevice_t_type_get(void * jarg1) {
   unsigned int jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   devicetype_t result;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (devicetype_t) ((arg1)->type);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -997,9 +997,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neodevice_t_type_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neodevice_t_serial_set(void * jarg1, char * jarg2) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   char *arg2 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (char *)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (char *)jarg2;
   {
     if(arg2) {
       strncpy((char*)arg1->serial, (const char *)arg2, 7-1);
@@ -1015,10 +1015,10 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neodevice_t_serial_get(void * jarg1) {
   char * jresult ;
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   char *result = 0 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   result = (char *)(char *) ((arg1)->serial);
-  jresult = SWIG_csharp_string_callback((const char *)result); 
+  jresult = SWIG_csharp_string_callback((const char *)result);
   return jresult;
 }
 
@@ -1026,17 +1026,17 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neodevice_t_serial_get(void * jarg1) {
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_neodevice_t() {
   void * jresult ;
   neodevice_t *result = 0 ;
-  
+
   result = (neodevice_t *)calloc(1, sizeof(neodevice_t));
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neodevice_t(void * jarg1) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   free((char *) arg1);
 }
 
@@ -1044,9 +1044,9 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_neodevice_t(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_globalError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->globalError = arg2;
 }
 
@@ -1055,10 +1055,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_globalErr
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->globalError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1066,9 +1066,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_globalErr
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_transmitMessage_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->transmitMessage = arg2;
 }
 
@@ -1077,10 +1077,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_transmitM
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->transmitMessage);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1088,9 +1088,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_transmitM
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_extendedFrame_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->extendedFrame = arg2;
 }
 
@@ -1099,10 +1099,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_extendedF
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->extendedFrame);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1110,9 +1110,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_extendedF
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_remoteFrame_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->remoteFrame = arg2;
 }
 
@@ -1121,10 +1121,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_remoteFra
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->remoteFrame);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1132,9 +1132,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_remoteFra
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_crcError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->crcError = arg2;
 }
 
@@ -1143,10 +1143,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_crcError_
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->crcError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1154,9 +1154,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_crcError_
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canErrorPassive_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canErrorPassive = arg2;
 }
 
@@ -1165,10 +1165,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canErrorP
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canErrorPassive);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1176,9 +1176,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canErrorP
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_incompleteFrame_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->incompleteFrame = arg2;
 }
 
@@ -1187,10 +1187,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_incomplet
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->incompleteFrame);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1198,9 +1198,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_incomplet
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_lostArbitration_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->lostArbitration = arg2;
 }
 
@@ -1209,10 +1209,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_lostArbit
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->lostArbitration);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1220,9 +1220,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_lostArbit
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_undefinedError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->undefinedError = arg2;
 }
 
@@ -1231,10 +1231,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_undefined
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->undefinedError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1242,9 +1242,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_undefined
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canBusOff_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canBusOff = arg2;
 }
 
@@ -1253,10 +1253,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canBusOff
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canBusOff);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1264,9 +1264,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canBusOff
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canErrorWarning_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canErrorWarning = arg2;
 }
 
@@ -1275,10 +1275,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canErrorW
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canErrorWarning);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1286,9 +1286,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canErrorW
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canBusShortedPlus_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canBusShortedPlus = arg2;
 }
 
@@ -1297,10 +1297,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canBusSho
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canBusShortedPlus);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1308,9 +1308,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canBusSho
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canBusShortedGround_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canBusShortedGround = arg2;
 }
 
@@ -1319,10 +1319,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canBusSho
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canBusShortedGround);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1330,9 +1330,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canBusSho
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_checksumError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->checksumError = arg2;
 }
 
@@ -1341,10 +1341,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_checksumE
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->checksumError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1352,9 +1352,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_checksumE
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_badMessageBitTimeError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->badMessageBitTimeError = arg2;
 }
 
@@ -1363,10 +1363,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_badMessag
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->badMessageBitTimeError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1374,9 +1374,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_badMessag
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_ifrData_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->ifrData = arg2;
 }
 
@@ -1385,10 +1385,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_ifrData_g
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->ifrData);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1396,9 +1396,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_ifrData_g
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_hardwareCommError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->hardwareCommError = arg2;
 }
 
@@ -1407,10 +1407,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_hardwareC
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->hardwareCommError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1418,9 +1418,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_hardwareC
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_expectedLengthError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->expectedLengthError = arg2;
 }
 
@@ -1429,10 +1429,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_expectedL
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->expectedLengthError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1440,9 +1440,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_expectedL
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_incomingNoMatch_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->incomingNoMatch = arg2;
 }
 
@@ -1451,10 +1451,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_incomingN
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->incomingNoMatch);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1462,9 +1462,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_incomingN
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_statusBreak_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->statusBreak = arg2;
 }
 
@@ -1473,10 +1473,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_statusBre
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->statusBreak);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1484,9 +1484,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_statusBre
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_avsiRecOverflow_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->avsiRecOverflow = arg2;
 }
 
@@ -1495,10 +1495,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_avsiRecOv
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->avsiRecOverflow);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1506,9 +1506,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_avsiRecOv
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_testTrigger_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->testTrigger = arg2;
 }
 
@@ -1517,10 +1517,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_testTrigg
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->testTrigger);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1528,9 +1528,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_testTrigg
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_audioComment_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->audioComment = arg2;
 }
 
@@ -1539,10 +1539,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_audioComm
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->audioComment);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1550,9 +1550,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_audioComm
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_gpsData_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->gpsData = arg2;
 }
 
@@ -1561,10 +1561,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_gpsData_g
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->gpsData);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1572,9 +1572,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_gpsData_g
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_analogDigitalInput_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->analogDigitalInput = arg2;
 }
 
@@ -1583,10 +1583,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_analogDig
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->analogDigitalInput);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1594,9 +1594,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_analogDig
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_textComment_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->textComment = arg2;
 }
 
@@ -1605,10 +1605,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_textComme
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->textComment);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1616,9 +1616,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_textComme
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_networkMessageType_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->networkMessageType = arg2;
 }
 
@@ -1627,10 +1627,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_networkMe
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->networkMessageType);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1638,9 +1638,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_networkMe
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_vsiTXUnderrun_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->vsiTXUnderrun = arg2;
 }
 
@@ -1649,10 +1649,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_vsiTXUnde
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->vsiTXUnderrun);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1660,9 +1660,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_vsiTXUnde
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_vsiIFRCRCBit_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->vsiIFRCRCBit = arg2;
 }
 
@@ -1671,10 +1671,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_vsiIFRCRC
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->vsiIFRCRCBit);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1682,9 +1682,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_vsiIFRCRC
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_initMessage_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->initMessage = arg2;
 }
 
@@ -1693,10 +1693,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_initMessa
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->initMessage);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1704,9 +1704,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_initMessa
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_flexraySecondStartupFrame_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->flexraySecondStartupFrame = arg2;
 }
 
@@ -1715,10 +1715,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_flexraySe
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->flexraySecondStartupFrame);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1726,9 +1726,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_flexraySe
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_extended_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->extended = arg2;
 }
 
@@ -1737,10 +1737,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_extended_
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->extended);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1748,9 +1748,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_extended_
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_hasValue_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->hasValue = arg2;
 }
 
@@ -1759,10 +1759,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_hasValue_
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->hasValue);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1770,9 +1770,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_hasValue_
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_valueIsBoolean_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->valueIsBoolean = arg2;
 }
 
@@ -1781,10 +1781,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_valueIsBo
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->valueIsBoolean);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1792,9 +1792,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_valueIsBo
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_highVoltage_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->highVoltage = arg2;
 }
 
@@ -1803,10 +1803,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_highVolta
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->highVoltage);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1814,9 +1814,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_highVolta
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_longMessage_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->longMessage = arg2;
 }
 
@@ -1825,10 +1825,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_longMessa
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->longMessage);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1836,9 +1836,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_longMessa
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_globalChange_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->globalChange = arg2;
 }
 
@@ -1847,10 +1847,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_globalCha
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->globalChange);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1858,9 +1858,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_globalCha
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_errorFrame_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->errorFrame = arg2;
 }
 
@@ -1869,10 +1869,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_errorFram
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->errorFrame);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1880,9 +1880,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_errorFram
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_endOfLongMessage_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->endOfLongMessage = arg2;
 }
 
@@ -1891,10 +1891,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_endOfLong
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->endOfLongMessage);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1902,9 +1902,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_endOfLong
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorRXBreakNotZero_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorRXBreakNotZero = arg2;
 }
 
@@ -1913,10 +1913,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorR
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linErrorRXBreakNotZero);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1924,9 +1924,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorR
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorRXBreakTooShort_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorRXBreakTooShort = arg2;
 }
 
@@ -1935,10 +1935,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorR
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linErrorRXBreakTooShort);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1946,9 +1946,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorR
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorRXSyncNot55_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorRXSyncNot55 = arg2;
 }
 
@@ -1957,10 +1957,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorR
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linErrorRXSyncNot55);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1968,9 +1968,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorR
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorRXDataGreaterEight_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorRXDataGreaterEight = arg2;
 }
 
@@ -1979,10 +1979,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorR
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linErrorRXDataGreaterEight);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -1990,9 +1990,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorR
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorTXRXMismatch_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorTXRXMismatch = arg2;
 }
 
@@ -2001,10 +2001,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorT
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linErrorTXRXMismatch);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2012,9 +2012,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorT
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorMessageIDParity_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linErrorMessageIDParity = arg2;
 }
 
@@ -2023,10 +2023,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorM
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linErrorMessageIDParity);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2034,9 +2034,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linErrorM
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linSyncFrameError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linSyncFrameError = arg2;
 }
 
@@ -2045,10 +2045,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linSyncFr
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linSyncFrameError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2056,9 +2056,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linSyncFr
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linIDFrameError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linIDFrameError = arg2;
 }
 
@@ -2067,10 +2067,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linIDFram
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linIDFrameError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2078,9 +2078,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linIDFram
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linSlaveByteError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linSlaveByteError = arg2;
 }
 
@@ -2089,10 +2089,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linSlaveB
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linSlaveByteError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2100,9 +2100,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linSlaveB
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_rxTimeoutError_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->rxTimeoutError = arg2;
 }
 
@@ -2111,10 +2111,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_rxTimeout
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->rxTimeoutError);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2122,9 +2122,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_rxTimeout
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linNoSlaveData_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->linNoSlaveData = arg2;
 }
 
@@ -2133,10 +2133,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linNoSlav
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->linNoSlaveData);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2144,9 +2144,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_linNoSlav
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdESI_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdESI = arg2;
 }
 
@@ -2155,10 +2155,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdESI_
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canfdESI);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2166,9 +2166,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdESI_
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdIDE_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdIDE = arg2;
 }
 
@@ -2177,10 +2177,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdIDE_
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canfdIDE);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2188,9 +2188,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdIDE_
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdRTR_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdRTR = arg2;
 }
 
@@ -2199,10 +2199,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdRTR_
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canfdRTR);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2210,9 +2210,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdRTR_
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdFDF_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdFDF = arg2;
 }
 
@@ -2221,10 +2221,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdFDF_
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canfdFDF);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2232,9 +2232,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdFDF_
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdBRS_set(void * jarg1, unsigned int jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->canfdBRS = arg2;
 }
 
@@ -2243,10 +2243,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdBRS_
   unsigned int jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t) ((arg1)->canfdBRS);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2254,9 +2254,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_statusbitfield_t_canfdBRS_
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_statusbitfield_t_statusBitfield_set(void * jarg1, void * jarg2) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t *arg2 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
-  arg2 = (uint32_t *)jarg2; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
+  arg2 = (uint32_t *)jarg2;
   {
     size_t ii;
     uint32_t *b = (uint32_t *) arg1->statusBitfield;
@@ -2269,10 +2269,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_statusbitfield_t_statusBitfield_
   void * jresult ;
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
   uint32_t *result = 0 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   result = (uint32_t *)(uint32_t *) ((arg1)->statusBitfield);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2280,17 +2280,17 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_statusbitfield_t_statusBitfield_
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_neomessage_statusbitfield_t() {
   void * jresult ;
   neomessage_statusbitfield_t *result = 0 ;
-  
+
   result = (neomessage_statusbitfield_t *)calloc(1, sizeof(neomessage_statusbitfield_t));
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neomessage_statusbitfield_t(void * jarg1) {
   neomessage_statusbitfield_t *arg1 = (neomessage_statusbitfield_t *) 0 ;
-  
-  arg1 = (neomessage_statusbitfield_t *)jarg1; 
+
+  arg1 = (neomessage_statusbitfield_t *)jarg1;
   free((char *) arg1);
 }
 
@@ -2298,9 +2298,9 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_neomessage_statusbitfield_t(void * jar
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_status_set(void * jarg1, void * jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   neomessage_statusbitfield_t *arg2 = (neomessage_statusbitfield_t *) 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (neomessage_statusbitfield_t *)jarg2; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (neomessage_statusbitfield_t *)jarg2;
   if (arg1) (arg1)->status = *arg2;
 }
 
@@ -2309,10 +2309,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_t_status_get(void * jarg1) {
   void * jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   neomessage_statusbitfield_t *result = 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (neomessage_statusbitfield_t *)& ((arg1)->status);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -2320,9 +2320,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_t_status_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_timestamp_set(void * jarg1, unsigned long long jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint64_t arg2 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (uint64_t)jarg2; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (uint64_t)jarg2;
   if (arg1) (arg1)->timestamp = arg2;
 }
 
@@ -2331,10 +2331,10 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_t_timestamp_get(void
   unsigned long long jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint64_t result;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (uint64_t) ((arg1)->timestamp);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2342,9 +2342,9 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_t_timestamp_get(void
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_timestampReserved_set(void * jarg1, unsigned long long jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint64_t arg2 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (uint64_t)jarg2; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (uint64_t)jarg2;
   if (arg1) (arg1)->timestampReserved = arg2;
 }
 
@@ -2353,10 +2353,10 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_t_timestampReserved_
   unsigned long long jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint64_t result;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (uint64_t) ((arg1)->timestampReserved);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2364,11 +2364,11 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_t_timestampReserved_
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_data_set(void * jarg1, unsigned char * jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *arg2 = (uint8_t *) 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  
+
+  arg1 = (neomessage_t *)jarg1;
+
   arg2 = jarg2;
-  
+
   if (arg1) (arg1)->data = (uint8_t const *)arg2;
 }
 
@@ -2377,10 +2377,10 @@ SWIGEXPORT unsigned char * SWIGSTDCALL CSharp_neomessage_t_data_get(void * jarg1
   unsigned char * jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *result = 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (uint8_t *) ((arg1)->data);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -2388,9 +2388,9 @@ SWIGEXPORT unsigned char * SWIGSTDCALL CSharp_neomessage_t_data_get(void * jarg1
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_length_set(void * jarg1, unsigned long jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   size_t arg2 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (size_t)jarg2; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (size_t)jarg2;
   if (arg1) (arg1)->length = arg2;
 }
 
@@ -2399,10 +2399,10 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_neomessage_t_length_get(void * jarg1
   unsigned long jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   size_t result;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result =  ((arg1)->length);
-  jresult = (unsigned long)result; 
+  jresult = (unsigned long)result;
   return jresult;
 }
 
@@ -2410,9 +2410,9 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_neomessage_t_length_get(void * jarg1
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_header_set(void * jarg1, void * jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *arg2 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (uint8_t *)jarg2; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (uint8_t *)jarg2;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->header;
@@ -2425,10 +2425,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_t_header_get(void * jarg1) {
   void * jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *result = 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->header);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2436,9 +2436,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_t_header_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_netid_set(void * jarg1, unsigned short jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint16_t arg2 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->netid = arg2;
 }
 
@@ -2447,10 +2447,10 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neomessage_t_netid_get(void * jarg1
   unsigned short jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint16_t result;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (uint16_t) ((arg1)->netid);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2458,9 +2458,9 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neomessage_t_netid_get(void * jarg1
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_type_set(void * jarg1, unsigned char jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t arg2 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (uint8_t)jarg2; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->type = arg2;
 }
 
@@ -2469,10 +2469,10 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_t_type_get(void * jarg1) 
   unsigned char jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t result;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (uint8_t) ((arg1)->type);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2480,9 +2480,9 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_t_type_get(void * jarg1) 
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_reserved_set(void * jarg1, void * jarg2) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *arg2 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (uint8_t *)jarg2; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (uint8_t *)jarg2;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reserved;
@@ -2495,10 +2495,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_t_reserved_get(void * jarg1) {
   void * jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   uint8_t *result = 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reserved);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2506,17 +2506,17 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_t_reserved_get(void * jarg1) {
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_neomessage_t() {
   void * jresult ;
   neomessage_t *result = 0 ;
-  
+
   result = (neomessage_t *)calloc(1, sizeof(neomessage_t));
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neomessage_t(void * jarg1) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   free((char *) arg1);
 }
 
@@ -2524,9 +2524,9 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_neomessage_t(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_status_set(void * jarg1, void * jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   neomessage_statusbitfield_t *arg2 = (neomessage_statusbitfield_t *) 0 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  arg2 = (neomessage_statusbitfield_t *)jarg2; 
+
+  arg1 = (neomessage_can_t *)jarg1;
+  arg2 = (neomessage_statusbitfield_t *)jarg2;
   if (arg1) (arg1)->status = *arg2;
 }
 
@@ -2535,10 +2535,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_can_t_status_get(void * jarg1) {
   void * jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   neomessage_statusbitfield_t *result = 0 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (neomessage_statusbitfield_t *)& ((arg1)->status);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -2546,9 +2546,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_can_t_status_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_timestamp_set(void * jarg1, unsigned long long jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint64_t arg2 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  arg2 = (uint64_t)jarg2; 
+
+  arg1 = (neomessage_can_t *)jarg1;
+  arg2 = (uint64_t)jarg2;
   if (arg1) (arg1)->timestamp = arg2;
 }
 
@@ -2557,10 +2557,10 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_can_t_timestamp_get(
   unsigned long long jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint64_t result;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (uint64_t) ((arg1)->timestamp);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2568,9 +2568,9 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_can_t_timestamp_get(
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_timestampReserved_set(void * jarg1, unsigned long long jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint64_t arg2 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  arg2 = (uint64_t)jarg2; 
+
+  arg1 = (neomessage_can_t *)jarg1;
+  arg2 = (uint64_t)jarg2;
   if (arg1) (arg1)->timestampReserved = arg2;
 }
 
@@ -2579,10 +2579,10 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_can_t_timestampReser
   unsigned long long jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint64_t result;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (uint64_t) ((arg1)->timestampReserved);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2590,11 +2590,11 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_can_t_timestampReser
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_data_set(void * jarg1, unsigned char * jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t *arg2 = (uint8_t *) 0 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  
+
+  arg1 = (neomessage_can_t *)jarg1;
+
   arg2 = jarg2;
-  
+
   if (arg1) (arg1)->data = (uint8_t const *)arg2;
 }
 
@@ -2603,10 +2603,10 @@ SWIGEXPORT unsigned char * SWIGSTDCALL CSharp_neomessage_can_t_data_get(void * j
   unsigned char * jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t *result = 0 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (uint8_t *) ((arg1)->data);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -2614,9 +2614,9 @@ SWIGEXPORT unsigned char * SWIGSTDCALL CSharp_neomessage_can_t_data_get(void * j
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_length_set(void * jarg1, unsigned long jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   size_t arg2 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  arg2 = (size_t)jarg2; 
+
+  arg1 = (neomessage_can_t *)jarg1;
+  arg2 = (size_t)jarg2;
   if (arg1) (arg1)->length = arg2;
 }
 
@@ -2625,10 +2625,10 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_neomessage_can_t_length_get(void * j
   unsigned long jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   size_t result;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result =  ((arg1)->length);
-  jresult = (unsigned long)result; 
+  jresult = (unsigned long)result;
   return jresult;
 }
 
@@ -2636,9 +2636,9 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_neomessage_can_t_length_get(void * j
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_arbid_set(void * jarg1, unsigned int jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neomessage_can_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->arbid = arg2;
 }
 
@@ -2647,10 +2647,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_can_t_arbid_get(void * jar
   unsigned int jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (uint32_t) ((arg1)->arbid);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2658,9 +2658,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neomessage_can_t_arbid_get(void * jar
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_netid_set(void * jarg1, unsigned short jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint16_t arg2 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
+
+  arg1 = (neomessage_can_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->netid = arg2;
 }
 
@@ -2669,10 +2669,10 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neomessage_can_t_netid_get(void * j
   unsigned short jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint16_t result;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (uint16_t) ((arg1)->netid);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2680,9 +2680,9 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neomessage_can_t_netid_get(void * j
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_type_set(void * jarg1, unsigned char jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t arg2 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  arg2 = (uint8_t)jarg2; 
+
+  arg1 = (neomessage_can_t *)jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->type = arg2;
 }
 
@@ -2691,10 +2691,10 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_can_t_type_get(void * jar
   unsigned char jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t result;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (uint8_t) ((arg1)->type);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2702,9 +2702,9 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_can_t_type_get(void * jar
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_dlcOnWire_set(void * jarg1, unsigned char jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t arg2 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  arg2 = (uint8_t)jarg2; 
+
+  arg1 = (neomessage_can_t *)jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->dlcOnWire = arg2;
 }
 
@@ -2713,10 +2713,10 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_can_t_dlcOnWire_get(void 
   unsigned char jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t result;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (uint8_t) ((arg1)->dlcOnWire);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2724,9 +2724,9 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_can_t_dlcOnWire_get(void 
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_can_t_reserved_set(void * jarg1, void * jarg2) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t *arg2 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
-  arg2 = (uint8_t *)jarg2; 
+
+  arg1 = (neomessage_can_t *)jarg1;
+  arg2 = (uint8_t *)jarg2;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reserved;
@@ -2739,10 +2739,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_can_t_reserved_get(void * jarg1)
   void * jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   uint8_t *result = 0 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reserved);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2750,17 +2750,17 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_can_t_reserved_get(void * jarg1)
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_neomessage_can_t() {
   void * jresult ;
   neomessage_can_t *result = 0 ;
-  
+
   result = (neomessage_can_t *)calloc(1, sizeof(neomessage_can_t));
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neomessage_can_t(void * jarg1) {
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   free((char *) arg1);
 }
 
@@ -2768,9 +2768,9 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_neomessage_can_t(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_status_set(void * jarg1, void * jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   neomessage_statusbitfield_t *arg2 = (neomessage_statusbitfield_t *) 0 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  arg2 = (neomessage_statusbitfield_t *)jarg2; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
+  arg2 = (neomessage_statusbitfield_t *)jarg2;
   if (arg1) (arg1)->status = *arg2;
 }
 
@@ -2779,10 +2779,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_eth_t_status_get(void * jarg1) {
   void * jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   neomessage_statusbitfield_t *result = 0 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (neomessage_statusbitfield_t *)& ((arg1)->status);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -2790,9 +2790,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_eth_t_status_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_timestamp_set(void * jarg1, unsigned long long jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint64_t arg2 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  arg2 = (uint64_t)jarg2; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
+  arg2 = (uint64_t)jarg2;
   if (arg1) (arg1)->timestamp = arg2;
 }
 
@@ -2801,10 +2801,10 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_eth_t_timestamp_get(
   unsigned long long jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint64_t result;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (uint64_t) ((arg1)->timestamp);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2812,9 +2812,9 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_eth_t_timestamp_get(
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_timestampReserved_set(void * jarg1, unsigned long long jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint64_t arg2 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  arg2 = (uint64_t)jarg2; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
+  arg2 = (uint64_t)jarg2;
   if (arg1) (arg1)->timestampReserved = arg2;
 }
 
@@ -2823,10 +2823,10 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_eth_t_timestampReser
   unsigned long long jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint64_t result;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (uint64_t) ((arg1)->timestampReserved);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2834,11 +2834,11 @@ SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_neomessage_eth_t_timestampReser
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_data_set(void * jarg1, unsigned char * jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *arg2 = (uint8_t *) 0 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  
+
+  arg1 = (neomessage_eth_t *)jarg1;
+
   arg2 = jarg2;
-  
+
   if (arg1) (arg1)->data = (uint8_t const *)arg2;
 }
 
@@ -2847,10 +2847,10 @@ SWIGEXPORT unsigned char * SWIGSTDCALL CSharp_neomessage_eth_t_data_get(void * j
   unsigned char * jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *result = 0 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (uint8_t *) ((arg1)->data);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -2858,9 +2858,9 @@ SWIGEXPORT unsigned char * SWIGSTDCALL CSharp_neomessage_eth_t_data_get(void * j
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_length_set(void * jarg1, unsigned long jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   size_t arg2 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  arg2 = (size_t)jarg2; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
+  arg2 = (size_t)jarg2;
   if (arg1) (arg1)->length = arg2;
 }
 
@@ -2869,10 +2869,10 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_neomessage_eth_t_length_get(void * j
   unsigned long jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   size_t result;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result =  ((arg1)->length);
-  jresult = (unsigned long)result; 
+  jresult = (unsigned long)result;
   return jresult;
 }
 
@@ -2880,9 +2880,9 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_neomessage_eth_t_length_get(void * j
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_preemptionFlags_set(void * jarg1, unsigned char jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t arg2 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  arg2 = (uint8_t)jarg2; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->preemptionFlags = arg2;
 }
 
@@ -2891,10 +2891,10 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_eth_t_preemptionFlags_get
   unsigned char jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t result;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (uint8_t) ((arg1)->preemptionFlags);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2902,9 +2902,9 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_eth_t_preemptionFlags_get
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_reservedHeader_set(void * jarg1, void * jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *arg2 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  arg2 = (uint8_t *)jarg2; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
+  arg2 = (uint8_t *)jarg2;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reservedHeader;
@@ -2917,10 +2917,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_eth_t_reservedHeader_get(void * 
   void * jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *result = 0 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reservedHeader);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2928,9 +2928,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_eth_t_reservedHeader_get(void * 
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_netid_set(void * jarg1, unsigned short jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint16_t arg2 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->netid = arg2;
 }
 
@@ -2939,10 +2939,10 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neomessage_eth_t_netid_get(void * j
   unsigned short jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint16_t result;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (uint16_t) ((arg1)->netid);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2950,9 +2950,9 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neomessage_eth_t_netid_get(void * j
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_type_set(void * jarg1, unsigned char jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t arg2 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  arg2 = (uint8_t)jarg2; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->type = arg2;
 }
 
@@ -2961,10 +2961,10 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_eth_t_type_get(void * jar
   unsigned char jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t result;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (uint8_t) ((arg1)->type);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2972,9 +2972,9 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neomessage_eth_t_type_get(void * jar
 SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_eth_t_reserved_set(void * jarg1, void * jarg2) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *arg2 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
-  arg2 = (uint8_t *)jarg2; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
+  arg2 = (uint8_t *)jarg2;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reserved;
@@ -2987,10 +2987,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_eth_t_reserved_get(void * jarg1)
   void * jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   uint8_t *result = 0 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reserved);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -2998,17 +2998,17 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_eth_t_reserved_get(void * jarg1)
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_neomessage_eth_t() {
   void * jresult ;
   neomessage_eth_t *result = 0 ;
-  
+
   result = (neomessage_eth_t *)calloc(1, sizeof(neomessage_eth_t));
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neomessage_eth_t(void * jarg1) {
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   free((char *) arg1);
 }
 
@@ -3016,9 +3016,9 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_neomessage_eth_t(void * jarg1) {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_DEVICETYPE_LONGEST_NAME_get() {
   int jresult ;
   int result;
-  
+
   result = (int)((35+1));
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3026,9 +3026,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_DEVICETYPE_LONGEST_NAME_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(((35+1) +7));
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3036,9 +3036,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION_get() {
 SWIGEXPORT void SWIGSTDCALL CSharp_neoversion_t_major_set(void * jarg1, unsigned short jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t arg2 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
+
+  arg1 = (neoversion_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->major = arg2;
 }
 
@@ -3047,10 +3047,10 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neoversion_t_major_get(void * jarg1
   unsigned short jresult ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t result;
-  
-  arg1 = (neoversion_t *)jarg1; 
+
+  arg1 = (neoversion_t *)jarg1;
   result = (uint16_t) ((arg1)->major);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3058,9 +3058,9 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neoversion_t_major_get(void * jarg1
 SWIGEXPORT void SWIGSTDCALL CSharp_neoversion_t_minor_set(void * jarg1, unsigned short jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t arg2 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
+
+  arg1 = (neoversion_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->minor = arg2;
 }
 
@@ -3069,10 +3069,10 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neoversion_t_minor_get(void * jarg1
   unsigned short jresult ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t result;
-  
-  arg1 = (neoversion_t *)jarg1; 
+
+  arg1 = (neoversion_t *)jarg1;
   result = (uint16_t) ((arg1)->minor);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3080,9 +3080,9 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neoversion_t_minor_get(void * jarg1
 SWIGEXPORT void SWIGSTDCALL CSharp_neoversion_t_patch_set(void * jarg1, unsigned short jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t arg2 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
-  arg2 = (uint16_t)jarg2; 
+
+  arg1 = (neoversion_t *)jarg1;
+  arg2 = (uint16_t)jarg2;
   if (arg1) (arg1)->patch = arg2;
 }
 
@@ -3091,10 +3091,10 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neoversion_t_patch_get(void * jarg1
   unsigned short jresult ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   uint16_t result;
-  
-  arg1 = (neoversion_t *)jarg1; 
+
+  arg1 = (neoversion_t *)jarg1;
   result = (uint16_t) ((arg1)->patch);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3102,9 +3102,9 @@ SWIGEXPORT unsigned short SWIGSTDCALL CSharp_neoversion_t_patch_get(void * jarg1
 SWIGEXPORT void SWIGSTDCALL CSharp_neoversion_t_metadata_set(void * jarg1, char * jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *arg2 = (char *) 0 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
-  arg2 = (char *)jarg2; 
+
+  arg1 = (neoversion_t *)jarg1;
+  arg2 = (char *)jarg2;
   {
     if (arg2) {
       arg1->metadata = (char const *) malloc(strlen((const char *)arg2)+1);
@@ -3120,10 +3120,10 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoversion_t_metadata_get(void * jarg1) {
   char * jresult ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *result = 0 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
+
+  arg1 = (neoversion_t *)jarg1;
   result = (char *) ((arg1)->metadata);
-  jresult = SWIG_csharp_string_callback((const char *)result); 
+  jresult = SWIG_csharp_string_callback((const char *)result);
   return jresult;
 }
 
@@ -3131,9 +3131,9 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoversion_t_metadata_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neoversion_t_buildBranch_set(void * jarg1, char * jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *arg2 = (char *) 0 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
-  arg2 = (char *)jarg2; 
+
+  arg1 = (neoversion_t *)jarg1;
+  arg2 = (char *)jarg2;
   {
     if (arg2) {
       arg1->buildBranch = (char const *) malloc(strlen((const char *)arg2)+1);
@@ -3149,10 +3149,10 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoversion_t_buildBranch_get(void * jarg1) 
   char * jresult ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *result = 0 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
+
+  arg1 = (neoversion_t *)jarg1;
   result = (char *) ((arg1)->buildBranch);
-  jresult = SWIG_csharp_string_callback((const char *)result); 
+  jresult = SWIG_csharp_string_callback((const char *)result);
   return jresult;
 }
 
@@ -3160,9 +3160,9 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoversion_t_buildBranch_get(void * jarg1) 
 SWIGEXPORT void SWIGSTDCALL CSharp_neoversion_t_buildTag_set(void * jarg1, char * jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *arg2 = (char *) 0 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
-  arg2 = (char *)jarg2; 
+
+  arg1 = (neoversion_t *)jarg1;
+  arg2 = (char *)jarg2;
   {
     if (arg2) {
       arg1->buildTag = (char const *) malloc(strlen((const char *)arg2)+1);
@@ -3178,10 +3178,10 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoversion_t_buildTag_get(void * jarg1) {
   char * jresult ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *result = 0 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
+
+  arg1 = (neoversion_t *)jarg1;
   result = (char *) ((arg1)->buildTag);
-  jresult = SWIG_csharp_string_callback((const char *)result); 
+  jresult = SWIG_csharp_string_callback((const char *)result);
   return jresult;
 }
 
@@ -3189,9 +3189,9 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoversion_t_buildTag_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neoversion_t_reserved_set(void * jarg1, char * jarg2) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *arg2 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
-  arg2 = (char *)jarg2; 
+
+  arg1 = (neoversion_t *)jarg1;
+  arg2 = (char *)jarg2;
   {
     if(arg2) {
       strncpy((char*)arg1->reserved, (const char *)arg2, 32-1);
@@ -3207,10 +3207,10 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoversion_t_reserved_get(void * jarg1) {
   char * jresult ;
   neoversion_t *arg1 = (neoversion_t *) 0 ;
   char *result = 0 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
+
+  arg1 = (neoversion_t *)jarg1;
   result = (char *)(char *) ((arg1)->reserved);
-  jresult = SWIG_csharp_string_callback((const char *)result); 
+  jresult = SWIG_csharp_string_callback((const char *)result);
   return jresult;
 }
 
@@ -3218,17 +3218,17 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoversion_t_reserved_get(void * jarg1) {
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_neoversion_t() {
   void * jresult ;
   neoversion_t *result = 0 ;
-  
+
   result = (neoversion_t *)calloc(1, sizeof(neoversion_t));
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neoversion_t(void * jarg1) {
   neoversion_t *arg1 = (neoversion_t *) 0 ;
-  
-  arg1 = (neoversion_t *)jarg1; 
+
+  arg1 = (neoversion_t *)jarg1;
   free((char *) arg1);
 }
 
@@ -3236,9 +3236,9 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_neoversion_t(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neoevent_t_description_set(void * jarg1, char * jarg2) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   char *arg2 = (char *) 0 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
-  arg2 = (char *)jarg2; 
+
+  arg1 = (neoevent_t *)jarg1;
+  arg2 = (char *)jarg2;
   {
     if (arg2) {
       arg1->description = (char const *) malloc(strlen((const char *)arg2)+1);
@@ -3254,10 +3254,10 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoevent_t_description_get(void * jarg1) {
   char * jresult ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   char *result = 0 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
+
+  arg1 = (neoevent_t *)jarg1;
   result = (char *) ((arg1)->description);
-  jresult = SWIG_csharp_string_callback((const char *)result); 
+  jresult = SWIG_csharp_string_callback((const char *)result);
   return jresult;
 }
 
@@ -3266,14 +3266,14 @@ SWIGEXPORT void SWIGSTDCALL CSharp_neoevent_t_timestamp_set(void * jarg1, void *
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   time_t arg2 ;
   time_t *argp2 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
-  argp2 = (time_t *)jarg2; 
+
+  arg1 = (neoevent_t *)jarg1;
+  argp2 = (time_t *)jarg2;
   if (!argp2) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null time_t", 0);
     return ;
   }
-  arg2 = *argp2; 
+  arg2 = *argp2;
   if (arg1) (arg1)->timestamp = arg2;
 }
 
@@ -3282,8 +3282,8 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neoevent_t_timestamp_get(void * jarg1) {
   void * jresult ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   time_t result;
-  
-  arg1 = (neoevent_t *)jarg1; 
+
+  arg1 = (neoevent_t *)jarg1;
   result =  ((arg1)->timestamp);
   {
     time_t * resultptr = (time_t *) malloc(sizeof(time_t));
@@ -3297,9 +3297,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neoevent_t_timestamp_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neoevent_t_eventNumber_set(void * jarg1, unsigned int jarg2) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint32_t arg2 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
-  arg2 = (uint32_t)jarg2; 
+
+  arg1 = (neoevent_t *)jarg1;
+  arg2 = (uint32_t)jarg2;
   if (arg1) (arg1)->eventNumber = arg2;
 }
 
@@ -3308,10 +3308,10 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neoevent_t_eventNumber_get(void * jar
   unsigned int jresult ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint32_t result;
-  
-  arg1 = (neoevent_t *)jarg1; 
+
+  arg1 = (neoevent_t *)jarg1;
   result = (uint32_t) ((arg1)->eventNumber);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3319,9 +3319,9 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_neoevent_t_eventNumber_get(void * jar
 SWIGEXPORT void SWIGSTDCALL CSharp_neoevent_t_severity_set(void * jarg1, unsigned char jarg2) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint8_t arg2 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
-  arg2 = (uint8_t)jarg2; 
+
+  arg1 = (neoevent_t *)jarg1;
+  arg2 = (uint8_t)jarg2;
   if (arg1) (arg1)->severity = arg2;
 }
 
@@ -3330,10 +3330,10 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neoevent_t_severity_get(void * jarg1
   unsigned char jresult ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint8_t result;
-  
-  arg1 = (neoevent_t *)jarg1; 
+
+  arg1 = (neoevent_t *)jarg1;
   result = (uint8_t) ((arg1)->severity);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3341,9 +3341,9 @@ SWIGEXPORT unsigned char SWIGSTDCALL CSharp_neoevent_t_severity_get(void * jarg1
 SWIGEXPORT void SWIGSTDCALL CSharp_neoevent_t_serial_set(void * jarg1, char * jarg2) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   char *arg2 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
-  arg2 = (char *)jarg2; 
+
+  arg1 = (neoevent_t *)jarg1;
+  arg2 = (char *)jarg2;
   {
     if(arg2) {
       strncpy((char*)arg1->serial, (const char *)arg2, 7-1);
@@ -3359,10 +3359,10 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoevent_t_serial_get(void * jarg1) {
   char * jresult ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   char *result = 0 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
+
+  arg1 = (neoevent_t *)jarg1;
   result = (char *)(char *) ((arg1)->serial);
-  jresult = SWIG_csharp_string_callback((const char *)result); 
+  jresult = SWIG_csharp_string_callback((const char *)result);
   return jresult;
 }
 
@@ -3370,9 +3370,9 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_neoevent_t_serial_get(void * jarg1) {
 SWIGEXPORT void SWIGSTDCALL CSharp_neoevent_t_reserved_set(void * jarg1, void * jarg2) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint8_t *arg2 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
-  arg2 = (uint8_t *)jarg2; 
+
+  arg1 = (neoevent_t *)jarg1;
+  arg2 = (uint8_t *)jarg2;
   {
     size_t ii;
     uint8_t *b = (uint8_t *) arg1->reserved;
@@ -3385,10 +3385,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neoevent_t_reserved_get(void * jarg1) {
   void * jresult ;
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   uint8_t *result = 0 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
+
+  arg1 = (neoevent_t *)jarg1;
   result = (uint8_t *)(uint8_t *) ((arg1)->reserved);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3396,17 +3396,17 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neoevent_t_reserved_get(void * jarg1) {
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_neoevent_t() {
   void * jresult ;
   neoevent_t *result = 0 ;
-  
+
   result = (neoevent_t *)calloc(1, sizeof(neoevent_t));
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neoevent_t(void * jarg1) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
+
+  arg1 = (neoevent_t *)jarg1;
   free((char *) arg1);
 }
 
@@ -3414,9 +3414,9 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_neoevent_t(void * jarg1) {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_DEVICE_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(0);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3424,9 +3424,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_DEVICE_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3434,9 +3434,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MSCAN_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(2);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3444,9 +3444,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MSCAN_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_SWCAN_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3454,9 +3454,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_SWCAN_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LSFTCAN_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(4);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3464,9 +3464,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LSFTCAN_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FORDSCP_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(5);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3474,9 +3474,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FORDSCP_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_J1708_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(6);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3484,9 +3484,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_J1708_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_AUX_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(7);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3494,9 +3494,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_AUX_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_J1850VPW_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(8);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3504,9 +3504,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_J1850VPW_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(9);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3514,9 +3514,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISOPIC_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(10);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3524,9 +3524,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISOPIC_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MAIN51_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(11);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3534,9 +3534,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MAIN51_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(12);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3544,9 +3544,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_SCI_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(13);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3554,9 +3554,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_SCI_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO2_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(14);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3564,9 +3564,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO2_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO14230_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(15);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3574,9 +3574,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO14230_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(16);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3584,9 +3584,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET1_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(17);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3594,9 +3594,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET1_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET2_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(18);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3604,9 +3604,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET2_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET3_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(19);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3614,9 +3614,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET3_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_EXT_MEMORYREAD_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(20);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3624,9 +3624,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_EXT_MEMORYREAD_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_INT_MEMORYREAD_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(21);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3634,9 +3634,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_INT_MEMORYREAD_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_DFLASH_READ_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(22);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3644,9 +3644,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_DFLASH_READ_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_SDCARD_READ_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(23);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3654,9 +3654,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_SDCARD_READ_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_CAN_ERRBITS_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(24);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3664,9 +3664,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_CAN_ERRBITS_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_DFLASH_WRITE_DONE_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(25);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3674,9 +3674,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_DFLASH_WRITE_DONE_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_CAN1_LOGICAL_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(26);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3684,9 +3684,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_CAN1_LOGICAL_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_CAN2_LOGICAL_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(27);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3694,9 +3694,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_CAN2_LOGICAL_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_LIN1_LOGICAL_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(28);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3704,9 +3704,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_LIN1_LOGICAL_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_LIN2_LOGICAL_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(29);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3714,9 +3714,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_LIN2_LOGICAL_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_LIN1_ANALOG_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(30);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3724,9 +3724,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_LIN1_ANALOG_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_LIN2_ANALOG_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(31);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3734,9 +3734,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_LIN2_ANALOG_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_MISC_ANALOG_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(32);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3744,9 +3744,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_MISC_ANALOG_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_MISCDIO2_LOGICAL_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(33);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3754,9 +3754,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_WAVE_MISCDIO2_LOGICAL_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_NETWORK_COM_ENABLE_EX_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(34);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3764,9 +3764,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_NETWORK_COM_ENABLE_EX_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_NEOVI_NETWORK_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(35);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3774,9 +3774,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_NEOVI_NETWORK_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_READ_BAUD_SETTINGS_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(36);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3784,9 +3784,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_READ_BAUD_SETTINGS_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_OLDFORMAT_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(37);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3794,9 +3794,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_OLDFORMAT_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_SCOPE_CAPTURE_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(38);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3804,9 +3804,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_SCOPE_CAPTURE_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_HARDWARE_EXCEP_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(39);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3814,9 +3814,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_HARDWARE_EXCEP_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_GET_RTC_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(40);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3824,9 +3824,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_GET_RTC_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO3_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(41);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3834,9 +3834,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO3_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN2_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(42);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3844,9 +3844,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN2_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN3_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(44);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3854,9 +3854,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN3_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET4_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(45);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3864,9 +3864,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET4_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET5_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(46);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3874,9 +3874,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET5_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO4_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(47);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3884,9 +3884,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO4_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN2_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(48);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3894,9 +3894,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN2_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN3_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(49);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3904,9 +3904,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN3_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN4_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(50);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3914,9 +3914,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN4_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_APP_ERROR_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(52);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3924,9 +3924,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_APP_ERROR_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_CGI_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(53);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3934,9 +3934,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_CGI_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RESET_STATUS_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(54);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3944,9 +3944,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RESET_STATUS_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FB_STATUS_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(55);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3954,9 +3954,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FB_STATUS_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_APP_SIGNAL_STATUS_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(56);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3964,9 +3964,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_APP_SIGNAL_STATUS_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_READ_DATALINK_CM_TX_MSG_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(57);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3974,9 +3974,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_READ_DATALINK_CM_TX_MSG_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_READ_DATALINK_CM_RX_MSG_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(58);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3984,9 +3984,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_READ_DATALINK_CM_RX_MSG_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LOGGING_OVERFLOW_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(59);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -3994,9 +3994,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LOGGING_OVERFLOW_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_READ_SETTINGS_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(60);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4004,9 +4004,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_READ_SETTINGS_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN4_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(61);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4014,9 +4014,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN4_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN5_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(62);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4024,9 +4024,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN5_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RS232_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(63);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4034,9 +4034,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RS232_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_UART_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(64);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4044,9 +4044,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_UART_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_UART2_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(65);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4054,9 +4054,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_UART2_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_UART3_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(66);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4064,9 +4064,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_UART3_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_UART4_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(67);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4074,9 +4074,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_UART4_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_SWCAN2_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(68);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4084,9 +4084,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_SWCAN2_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ETHERNET_DAQ_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(69);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4094,9 +4094,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ETHERNET_DAQ_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_DATA_TO_HOST_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(70);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4104,9 +4104,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_DATA_TO_HOST_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_TEXTAPI_TO_HOST_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(71);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4114,9 +4114,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_TEXTAPI_TO_HOST_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET6_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(73);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4124,9 +4124,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET6_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_VBAT_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(74);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4134,9 +4134,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_RED_VBAT_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET7_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(75);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4144,9 +4144,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET7_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET8_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(76);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4154,9 +4154,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET8_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET9_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(77);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4164,9 +4164,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET9_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET10_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(78);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4174,9 +4174,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET10_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET11_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(79);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4184,9 +4184,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET11_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY1A_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(80);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4194,9 +4194,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY1A_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY1B_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(81);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4204,9 +4204,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY1B_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY2A_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(82);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4214,9 +4214,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY2A_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY2B_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(83);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4224,9 +4224,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY2B_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN5_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(84);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4234,9 +4234,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN5_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(85);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4244,9 +4244,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY2_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(86);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4254,9 +4254,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_FLEXRAY2_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET12_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(87);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4264,9 +4264,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_OP_ETHERNET12_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MOST25_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(90);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4274,9 +4274,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MOST25_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MOST50_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(91);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4284,9 +4284,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MOST50_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MOST150_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(92);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4294,9 +4294,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MOST150_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ETHERNET_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(93);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4304,9 +4304,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ETHERNET_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_GMFSA_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(94);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4314,9 +4314,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_GMFSA_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_TCP_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(95);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4324,9 +4324,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_TCP_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN6_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(96);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4334,9 +4334,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN6_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN7_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(97);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4344,9 +4344,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HSCAN7_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN6_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(98);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4354,9 +4354,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LIN6_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LSFTCAN2_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(99);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4364,9 +4364,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_LSFTCAN2_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HW_COM_LATENCY_TEST_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(512);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4374,9 +4374,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_HW_COM_LATENCY_TEST_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_DEVICE_STATUS_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(513);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4384,9 +4384,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_DEVICE_STATUS_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ANY_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(0xfffe);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4394,9 +4394,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ANY_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_INVALID_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(0xffff);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4404,9 +4404,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_INVALID_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_INVALID_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(0);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4414,9 +4414,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_INVALID_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_INTERNAL_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(1);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4424,9 +4424,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_INTERNAL_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_CAN_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(2);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4434,9 +4434,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_CAN_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_LIN_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(3);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4444,9 +4444,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_LIN_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_FLEXRAY_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(4);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4454,9 +4454,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_FLEXRAY_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_MOST_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(5);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4464,9 +4464,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_MOST_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_ETHERNET_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(6);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4474,9 +4474,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_ETHERNET_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_ANY_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(0xFE);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4484,9 +4484,9 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_ANY_get() {
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETWORK_TYPE_OTHER_get() {
   int jresult ;
   int result;
-  
+
   result = (int)(0xFF);
-  jresult = result; 
+  jresult = result;
   return jresult;
 }
 
@@ -4495,10 +4495,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_can_t_cast(void * jarg1) {
   void * jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   neomessage_can_t *result = 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (neomessage_can_t *)neomessage_can_t_cast(arg1);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -4507,10 +4507,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_eth_t_cast(void * jarg1) {
   void * jresult ;
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   neomessage_eth_t *result = 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   result = (neomessage_eth_t *)neomessage_eth_t_cast(arg1);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -4519,10 +4519,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_from_can_neomessage_t_cast(void * jarg1) {
   void * jresult ;
   neomessage_can_t *arg1 = (neomessage_can_t *) 0 ;
   neomessage_t *result = 0 ;
-  
-  arg1 = (neomessage_can_t *)jarg1; 
+
+  arg1 = (neomessage_can_t *)jarg1;
   result = (neomessage_t *)from_can_neomessage_t_cast(arg1);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -4531,10 +4531,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_from_eth_neomessage_t_cast(void * jarg1) {
   void * jresult ;
   neomessage_eth_t *arg1 = (neomessage_eth_t *) 0 ;
   neomessage_t *result = 0 ;
-  
-  arg1 = (neomessage_eth_t *)jarg1; 
+
+  arg1 = (neomessage_eth_t *)jarg1;
   result = (neomessage_t *)from_eth_neomessage_t_cast(arg1);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
@@ -4543,18 +4543,18 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_new_neodevice_t_array(int jarg1) {
   void * jresult ;
   int arg1 ;
   neodevice_t *result = 0 ;
-  
-  arg1 = (int)jarg1; 
+
+  arg1 = (int)jarg1;
   result = (neodevice_t *)new_neodevice_t_array(arg1);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neodevice_t_array(void * jarg1) {
   neodevice_t *arg1 = (neodevice_t *) 0 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
+
+  arg1 = (neodevice_t *)jarg1;
   delete_neodevice_t_array(arg1);
 }
 
@@ -4564,9 +4564,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neodevice_t_array_getitem(void * jarg1, int
   neodevice_t *arg1 = (neodevice_t *) 0 ;
   int arg2 ;
   neodevice_t result;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (int)jarg2; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (int)jarg2;
   result = neodevice_t_array_getitem(arg1,arg2);
   {
     neodevice_t * resultptr = (neodevice_t *) malloc(sizeof(neodevice_t));
@@ -4582,15 +4582,15 @@ SWIGEXPORT void SWIGSTDCALL CSharp_neodevice_t_array_setitem(void * jarg1, int j
   int arg2 ;
   neodevice_t arg3 ;
   neodevice_t *argp3 ;
-  
-  arg1 = (neodevice_t *)jarg1; 
-  arg2 = (int)jarg2; 
-  argp3 = (neodevice_t *)jarg3; 
+
+  arg1 = (neodevice_t *)jarg1;
+  arg2 = (int)jarg2;
+  argp3 = (neodevice_t *)jarg3;
   if (!argp3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null neodevice_t", 0);
     return ;
   }
-  arg3 = *argp3; 
+  arg3 = *argp3;
   neodevice_t_array_setitem(arg1,arg2,arg3);
 }
 
@@ -4599,18 +4599,18 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_new_neoevent_t_array(int jarg1) {
   void * jresult ;
   int arg1 ;
   neoevent_t *result = 0 ;
-  
-  arg1 = (int)jarg1; 
+
+  arg1 = (int)jarg1;
   result = (neoevent_t *)new_neoevent_t_array(arg1);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neoevent_t_array(void * jarg1) {
   neoevent_t *arg1 = (neoevent_t *) 0 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
+
+  arg1 = (neoevent_t *)jarg1;
   delete_neoevent_t_array(arg1);
 }
 
@@ -4620,9 +4620,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neoevent_t_array_getitem(void * jarg1, int 
   neoevent_t *arg1 = (neoevent_t *) 0 ;
   int arg2 ;
   neoevent_t result;
-  
-  arg1 = (neoevent_t *)jarg1; 
-  arg2 = (int)jarg2; 
+
+  arg1 = (neoevent_t *)jarg1;
+  arg2 = (int)jarg2;
   result = neoevent_t_array_getitem(arg1,arg2);
   {
     neoevent_t * resultptr = (neoevent_t *) malloc(sizeof(neoevent_t));
@@ -4638,15 +4638,15 @@ SWIGEXPORT void SWIGSTDCALL CSharp_neoevent_t_array_setitem(void * jarg1, int ja
   int arg2 ;
   neoevent_t arg3 ;
   neoevent_t *argp3 ;
-  
-  arg1 = (neoevent_t *)jarg1; 
-  arg2 = (int)jarg2; 
-  argp3 = (neoevent_t *)jarg3; 
+
+  arg1 = (neoevent_t *)jarg1;
+  arg2 = (int)jarg2;
+  argp3 = (neoevent_t *)jarg3;
   if (!argp3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null neoevent_t", 0);
     return ;
   }
-  arg3 = *argp3; 
+  arg3 = *argp3;
   neoevent_t_array_setitem(arg1,arg2,arg3);
 }
 
@@ -4655,18 +4655,18 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_new_neomessage_t_array(int jarg1) {
   void * jresult ;
   int arg1 ;
   neomessage_t *result = 0 ;
-  
-  arg1 = (int)jarg1; 
+
+  arg1 = (int)jarg1;
   result = (neomessage_t *)new_neomessage_t_array(arg1);
-  jresult = (void *)result; 
+  jresult = (void *)result;
   return jresult;
 }
 
 
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_neomessage_t_array(void * jarg1) {
   neomessage_t *arg1 = (neomessage_t *) 0 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
+
+  arg1 = (neomessage_t *)jarg1;
   delete_neomessage_t_array(arg1);
 }
 
@@ -4676,9 +4676,9 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_neomessage_t_array_getitem(void * jarg1, in
   neomessage_t *arg1 = (neomessage_t *) 0 ;
   int arg2 ;
   neomessage_t result;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (int)jarg2; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (int)jarg2;
   result = neomessage_t_array_getitem(arg1,arg2);
   {
     neomessage_t * resultptr = (neomessage_t *) malloc(sizeof(neomessage_t));
@@ -4694,15 +4694,15 @@ SWIGEXPORT void SWIGSTDCALL CSharp_neomessage_t_array_setitem(void * jarg1, int 
   int arg2 ;
   neomessage_t arg3 ;
   neomessage_t *argp3 ;
-  
-  arg1 = (neomessage_t *)jarg1; 
-  arg2 = (int)jarg2; 
-  argp3 = (neomessage_t *)jarg3; 
+
+  arg1 = (neomessage_t *)jarg1;
+  arg2 = (int)jarg2;
+  argp3 = (neomessage_t *)jarg3;
   if (!argp3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null neomessage_t", 0);
     return ;
   }
-  arg3 = *argp3; 
+  arg3 = *argp3;
   neomessage_t_array_setitem(arg1,arg2,arg3);
 }
 

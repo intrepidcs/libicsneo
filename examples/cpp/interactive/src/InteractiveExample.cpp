@@ -128,7 +128,7 @@ void printDeviceWarnings(std::shared_ptr<icsneo::Device> device) {
  * \returns the entered character
  *
  * This function repeatedly prompts the user for input until a matching input is entered
- * Example usage: 
+ * Example usage:
  * char input = getCharInput(std::vector<char> {'F', 'u', 'b', 'a', 'r'});
  */
 char getCharInput(std::vector<char> allowed) {
@@ -537,7 +537,7 @@ int main() {
 			case '1':
 			{
 				// Shameless copy-paste from get messages above, demonstrating a callback
-				int callbackID = selectedDevice->addMessageCallback(icsneo::MessageCallback([](std::shared_ptr<icsneo::Message> msg){ 
+				int callbackID = selectedDevice->addMessageCallback(icsneo::MessageCallback([](std::shared_ptr<icsneo::Message> msg){
 					switch(msg->network.getType()) {
 					case icsneo::Network::Type::CAN:
 					{

@@ -78,7 +78,7 @@ TEST_F(EventManagerTest, MultithreadedEventCallbacksTest) {
  */
 TEST_F(EventManagerTest, SingleThreadEventCallbacksTest) {
     int callCounter = 0;
-    
+
 	// increments counter when baudrate events show up
     int id1 = EventManager::GetInstance().addEventCallback(EventCallback([&callCounter](std::shared_ptr<APIEvent>){
         callCounter++;
@@ -125,7 +125,7 @@ TEST_F(EventManagerTest, SingleThreadEventCallbacksTest) {
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::EventInfo));
 
 	EXPECT_EQ(callCounter, 6);
-    
+
     EXPECT_EQ(EventManager::GetInstance().removeEventCallback(id2), false);
 	EXPECT_EQ(EventManager::GetInstance().removeEventCallback(id1), true);
 	
@@ -229,7 +229,7 @@ TEST_F(EventManagerTest, MultithreadedTest) {
         EXPECT_EQ(GetLastError().getType(), APIEvent::Type::BufferInsufficient);
 
         EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
-        
+
         EXPECT_EQ(GetLastError().getType(), APIEvent::Type::OutputTruncated);
     });
 
@@ -252,7 +252,7 @@ TEST_F(EventManagerTest, MultithreadedTest) {
         EXPECT_EQ(GetLastError().getType(), APIEvent::Type::DeviceCurrentlyOffline);
 
         EventManager::GetInstance().add(APIEvent(APIEvent::Type::DeviceCurrentlyOnline, APIEvent::Severity::Error));
-        
+
         EXPECT_EQ(GetLastError().getType(), APIEvent::Type::DeviceCurrentlyOnline);
 
         EventManager::GetInstance().add(APIEvent(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error));
@@ -277,7 +277,7 @@ TEST_F(EventManagerTest, MultithreadedTest) {
         EXPECT_EQ(GetLastError().getType(), APIEvent::Type::SettingsChecksumError);
 
         EventManager::GetInstance().add(APIEvent(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::Error));
-        
+
         EXPECT_EQ(GetLastError().getType(), APIEvent::Type::SWCANSettingsNotAvailable);
     });
 
@@ -294,7 +294,7 @@ TEST_F(EventManagerTest, MultithreadedTest) {
 
     // Should be 500 {OutputTruncated, Warning}, 500 {OutputTruncated, Info}, 1000 {CANFDNotSupported, Warning}, 500 {CANFDSettingsNotAvailable, Info}, 500 {FailedToWrite, Info}
     EXPECT_EQ(EventCount(), 3000);
-    
+
     auto events = GetEvents(EventFilter(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
     EXPECT_EQ(EventCount(), 2500);
     EXPECT_EQ(events.size(), 500);
@@ -327,7 +327,7 @@ TEST_F(EventManagerTest, CountTest) {
 
     // Adds actual event
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
-    
+
     // Manually tries to add some TooManyEvents, these should not be added.
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
     EventManager::GetInstance().add(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventInfo));
@@ -349,7 +349,7 @@ TEST_F(EventManagerTest, CountTest) {
     // default limit is 10000
     for(int i = 0; i < 11000; i++)
         EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
-    
+
     EXPECT_EQ(EventCount(), 10000);
 }
 
@@ -366,10 +366,10 @@ TEST_F(EventManagerTest, GetDefaultTest) {
     }
 
     auto events = EventManager::GetInstance().get();
-    
+
     EXPECT_EQ(events.size(), 10);
     EXPECT_EQ(EventCount(), 0);
-    
+
     for(int i = 0; i < 5; i++) {
         EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::UnexpectedNetworkType);
         EXPECT_EQ(events.at(2 * i).getSeverity(), APIEvent::Severity::EventWarning);
@@ -480,7 +480,7 @@ TEST_F(EventManagerTest, GetFilterTest) {
         EXPECT_EQ(events.at(2 * i + 1).getSeverity(), APIEvent::Severity::EventInfo);
     }
 
-    // (Incorrectly) try to get settings type again. 5 {mismatch, warning} remaining. 
+    // (Incorrectly) try to get settings type again. 5 {mismatch, warning} remaining.
     events = EventManager::GetInstance().get(EventFilter(APIEvent::Type::SWCANSettingsNotAvailable));
     EXPECT_EQ(events.size(), 0);
     EXPECT_EQ(EventCount(), 5);
@@ -556,7 +556,7 @@ TEST_F(EventManagerTest, GetSizeFilterTest) {
         EXPECT_EQ(events.at(2 * i + 1).getSeverity(), APIEvent::Severity::EventInfo);
     }
 
-    // (Incorrectly) try to get settings type again. 5 {mismatch, warning} remaining. 
+    // (Incorrectly) try to get settings type again. 5 {mismatch, warning} remaining.
     events = EventManager::GetInstance().get(-1, EventFilter(APIEvent::Type::SWCANSettingsNotAvailable));
     EXPECT_EQ(events.size(), 0);
     EXPECT_EQ(EventCount(), 5);
@@ -606,7 +606,7 @@ TEST_F(EventManagerTest, GetLastErrorMultipleTest) {
  * Checks that only the latest 49 are kept, and a TooManyEvents warning exists at the end.
  */
 TEST_F(EventManagerTest, TestAddWarningsOverflow) {
-    
+
     // space for 49 normal events, 1 reserved for TooManyEvents
     SetEventLimit(50);
 
@@ -640,7 +640,7 @@ TEST_F(EventManagerTest, TestAddWarningsOverflow) {
  * Checks that only the latest 49 are kept, and a TOoManyEvents warning exists at the end.
  */
 TEST_F(EventManagerTest, TestAddWarningsInfoOverflow) {
-    
+
     // space for 49 normal events, 1 reserved for TooManyEvents
     SetEventLimit(50);
 
@@ -665,7 +665,7 @@ TEST_F(EventManagerTest, TestAddWarningsInfoOverflow) {
 
     for(int i = 2; i < 49; i++)
         EXPECT_EQ(events.at(i).getType(), APIEvent::Type::ParameterOutOfRange);
-    
+
     EXPECT_EQ(events.at(49).getType(), APIEvent::Type::TooManyEvents);
 }
 
@@ -723,14 +723,14 @@ TEST_F(EventManagerTest, SetEventLimitTest) {
     // Test truncating existing list when new limit set
     for(int i = 0; i < 9001; i++)
         EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
-    
+
     EXPECT_EQ(EventCount(), 9001);
 
     // Sets new limit to be exactly full.
     SetEventLimit(9002);
     EXPECT_EQ(GetEventLimit(), 9002);
     EXPECT_EQ(EventCount(), 9001);
-    
+
     // 1 overflowed.
     SetEventLimit(9001);
     EXPECT_EQ(GetEventLimit(), 9001);

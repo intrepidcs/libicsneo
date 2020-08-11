@@ -9,7 +9,7 @@ const PCAPDLL& PCAPDLL::getInstance()
 }
 
 PCAPDLL::~PCAPDLL()
-{ 
+{
 	closeDLL();
 }
 
@@ -20,12 +20,12 @@ void PCAPDLL::closeDLL()
 	dll = nullptr;
 }
 
-bool PCAPDLL::ok() const 
-{ 
-	return dll != nullptr; 
+bool PCAPDLL::ok() const
+{
+	return dll != nullptr;
 }
 
-PCAPDLL::PCAPDLL() 
+PCAPDLL::PCAPDLL()
 {
 #ifdef NPCAP
 	BOOL(WINAPI * SetDllDirectory)(LPCTSTR);
@@ -64,10 +64,10 @@ PCAPDLL::PCAPDLL()
 		if(findalldevs_ex == NULL || open == NULL ||
 			freealldevs == NULL || close == NULL ||
 			stats == NULL || next_ex == NULL ||
-			sendpacket == NULL || 
+			sendpacket == NULL ||
 			sendqueue_alloc == NULL ||
 			sendqueue_queue == NULL || sendqueue_destroy == NULL ||
-			sendqueue_transmit == NULL || 
+			sendqueue_transmit == NULL ||
 			datalink == NULL ||
 			createsrcstr == NULL || setbuff == NULL) {
 			closeDLL();

@@ -46,32 +46,32 @@ public class neomessage_t : global::System.IDisposable {
   public neomessage_statusbitfield_t status {
     set {
       icsneocsharpPINVOKE.neomessage_t_status_set(swigCPtr, neomessage_statusbitfield_t.getCPtr(value));
-    } 
+    }
     get {
       global::System.IntPtr cPtr = icsneocsharpPINVOKE.neomessage_t_status_get(swigCPtr);
       neomessage_statusbitfield_t ret = (cPtr == global::System.IntPtr.Zero) ? null : new neomessage_statusbitfield_t(cPtr, false);
       return ret;
-    } 
+    }
   }
 
   public ulong timestamp {
     set {
       icsneocsharpPINVOKE.neomessage_t_timestamp_set(swigCPtr, value);
-    } 
+    }
     get {
       ulong ret = icsneocsharpPINVOKE.neomessage_t_timestamp_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public ulong timestampReserved {
     set {
       icsneocsharpPINVOKE.neomessage_t_timestampReserved_set(swigCPtr, value);
-    } 
+    }
     get {
       ulong ret = icsneocsharpPINVOKE.neomessage_t_timestampReserved_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public byte[] data {
@@ -80,10 +80,10 @@ public class neomessage_t : global::System.IDisposable {
 	}
 
 	get {
-		byte[] ret = new byte[this.length]; 
-        System.IntPtr data = icsneocsharpPINVOKE.neomessage_t_data_get(swigCPtr); 
+		byte[] ret = new byte[this.length];
+        System.IntPtr data = icsneocsharpPINVOKE.neomessage_t_data_get(swigCPtr);
         System.Runtime.InteropServices.Marshal.Copy(data, ret, 0, (int)this.length);
-		return ret; 
+		return ret;
 	}
 
   }
@@ -91,53 +91,53 @@ public class neomessage_t : global::System.IDisposable {
   public uint length {
     set {
       icsneocsharpPINVOKE.neomessage_t_length_set(swigCPtr, value);
-    } 
+    }
     get {
       uint ret = icsneocsharpPINVOKE.neomessage_t_length_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public SWIGTYPE_p_unsigned_char header {
     set {
       icsneocsharpPINVOKE.neomessage_t_header_set(swigCPtr, SWIGTYPE_p_unsigned_char.getCPtr(value));
-    } 
+    }
     get {
       global::System.IntPtr cPtr = icsneocsharpPINVOKE.neomessage_t_header_get(swigCPtr);
       SWIGTYPE_p_unsigned_char ret = (cPtr == global::System.IntPtr.Zero) ? null : new SWIGTYPE_p_unsigned_char(cPtr, false);
       return ret;
-    } 
+    }
   }
 
   public ushort netid {
     set {
       icsneocsharpPINVOKE.neomessage_t_netid_set(swigCPtr, value);
-    } 
+    }
     get {
       ushort ret = icsneocsharpPINVOKE.neomessage_t_netid_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public byte type {
     set {
       icsneocsharpPINVOKE.neomessage_t_type_set(swigCPtr, value);
-    } 
+    }
     get {
       byte ret = icsneocsharpPINVOKE.neomessage_t_type_get(swigCPtr);
       return ret;
-    } 
+    }
   }
 
   public SWIGTYPE_p_unsigned_char reserved {
     set {
       icsneocsharpPINVOKE.neomessage_t_reserved_set(swigCPtr, SWIGTYPE_p_unsigned_char.getCPtr(value));
-    } 
+    }
     get {
       global::System.IntPtr cPtr = icsneocsharpPINVOKE.neomessage_t_reserved_get(swigCPtr);
       SWIGTYPE_p_unsigned_char ret = (cPtr == global::System.IntPtr.Zero) ? null : new SWIGTYPE_p_unsigned_char(cPtr, false);
       return ret;
-    } 
+    }
   }
 
   public neomessage_t() : this(icsneocsharpPINVOKE.new_neomessage_t(), true) {

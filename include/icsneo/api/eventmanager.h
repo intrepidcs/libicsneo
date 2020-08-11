@@ -117,11 +117,11 @@ public:
 		eventLimit = newLimit;
 		
 		std::lock_guard<std::mutex> eventsLock(eventsMutex);
-		if(enforceLimit()) 
+		if(enforceLimit())
 			add_internal_event(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
 	}
 
-	size_t getEventLimit() const { 
+	size_t getEventLimit() const {
 		std::lock_guard<std::mutex> lk(eventLimitMutex);
 		return eventLimit;
 	}
@@ -180,7 +180,7 @@ private:
 	 * Otherwise, remove the oldest event, push the event to the back and push a APIEvent::TooManyEvents to the back (in that order)
 	 */
 	void add_internal_event(APIEvent event) {
-		// Ensure the event list is at most exactly full (size of eventLimit - 1, leaving room for a potential APIEvent::TooManyEvents) 
+		// Ensure the event list is at most exactly full (size of eventLimit - 1, leaving room for a potential APIEvent::TooManyEvents)
 		// Removes any events of type TooManyEvents from the end before checking to avoid duplicates.
 		enforceLimit();
 

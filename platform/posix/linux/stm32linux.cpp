@@ -92,7 +92,7 @@ std::vector<neodevice_t> STM32::FindByProduct(int product) {
 		/* This directory will have directories (links) for all devices using the cdc_acm driver (as STM32 devices do)
 		 * There will also be other files and directories providing information about the driver in here. We want to ignore them.
 		 * Devices will be named like "7-2:1.0" where 7 is the enumeration for the USB controller, 2 is the device enumeration on
-		 * that specific controller (will change if the device is unplugged and replugged), 1 is the device itself and 0 is 
+		 * that specific controller (will change if the device is unplugged and replugged), 1 is the device itself and 0 is
 		 * enumeration for different services provided by the device. We're looking for the service that provides TTY.
 		 * For now we find the directories with a digit for the first character, these are likely to be our USB devices.
 		 */
