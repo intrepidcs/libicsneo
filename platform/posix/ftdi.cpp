@@ -199,6 +199,5 @@ void FTDI::writeTask() {
 			continue;
 
 		ftdi.write(writeOp.bytes.data(), (int)writeOp.bytes.size());
-		onWrite();
 	}
 }

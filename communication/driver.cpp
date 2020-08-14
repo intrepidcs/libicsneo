@@ -45,9 +45,9 @@ bool Driver::write(const std::vector<uint8_t>& bytes) {
 	}
 
 	if(writeBlocks) {
-		std::unique_lock<std::mutex> lk(writeMutex);
 		if(writeQueue.size_approx() > writeQueueSize)
-			writeCV.wait(lk);
+			while(writeQueue.size_approx() > (writeQueueSize * 3 / 4))
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	} else {
 		if(writeQueue.size_approx() > writeQueueSize) {
 			report(APIEvent::Type::TransmitBufferFull, APIEvent::Severity::Error);

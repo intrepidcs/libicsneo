@@ -297,7 +297,6 @@ void PCAP::writeTask() {
 		auto bs = sendPacket.getBytestream();
 		if(!closing)
 			pcap.sendpacket(interface.fp, bs.data(), (int)bs.size());
-		onWrite();
 		// TODO Handle packet send errors
 	}
 }

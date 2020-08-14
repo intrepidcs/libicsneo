@@ -22,10 +22,6 @@ public:
 	virtual bool read(std::vector<uint8_t>& bytes, size_t limit = 0);
 	virtual bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 0);
 	virtual bool write(const std::vector<uint8_t>& bytes);
-	inline void onWrite() {
-		if(writeQueue.size_approx() < (writeQueueSize * 3/4))
-			writeCV.notify_one();
-	}
 
 	device_eventhandler_t report;
 
@@ -47,8 +43,6 @@ protected:
 	virtual void writeTask() = 0;
 	moodycamel::BlockingConcurrentQueue<uint8_t> readQueue;
 	moodycamel::BlockingConcurrentQueue<WriteOperation> writeQueue;
-	std::mutex writeMutex;
-	std::condition_variable writeCV;
 	std::thread readThread, writeThread;
 	std::atomic<bool> closing{false};
 };
