@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYPACKET_H__
 #define __FLEXRAYPACKET_H__
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/flexray/flexraymessage.h"
 #include "icsneo/api/eventmanager.h"
 #include <cstdint>
@@ -62,5 +64,7 @@ struct HardwareFlexRayPacket {
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

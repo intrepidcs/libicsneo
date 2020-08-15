@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYMESSAGE_H_
 #define __FLEXRAYMESSAGE_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/message.h"
 #include "icsneo/device/extensions/flexray/symbol.h"
 #include "icsneo/device/extensions/flexray/crcstatus.h"
@@ -30,5 +32,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef __VALUECAN4_4_H_
 #define __VALUECAN4_4_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/tree/valuecan4/valuecan4.h"
 #include "icsneo/device/tree/valuecan4/settings/valuecan4-4settings.h"
 #include <string>
@@ -49,5 +51,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

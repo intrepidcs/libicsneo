@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYPOCSTATUS_H_
 #define __FLEXRAYPOCSTATUS_H_
 
+#ifdef __cplusplus
+
 #include <cstdint>
 
 namespace icsneo {
@@ -37,5 +39,7 @@ enum class POCStatus : uint8_t {
 } // namespace FlexRay
 
 } // namespace icsneo
+
+#endif // __cplusplus
 
 #endif // __FLEXRAYPOCSTATUS_H_

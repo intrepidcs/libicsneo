@@ -1,6 +1,8 @@
 #ifndef __RADSTAR2_H_
 #define __RADSTAR2_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/tree/radstar2/radstar2settings.h"
@@ -59,5 +61,7 @@ protected:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

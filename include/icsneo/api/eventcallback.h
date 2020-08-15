@@ -1,6 +1,8 @@
 #ifndef __EVENTCALLBACK_H_
 #define __EVENTCALLBACK_H_
 
+#ifdef __cplusplus
+
 #include <functional>
 #include <memory>
 #include "event.h"
@@ -35,5 +37,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

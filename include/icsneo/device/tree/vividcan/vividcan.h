@@ -1,6 +1,8 @@
 #ifndef __VIVIDCAN_H_
 #define __VIVIDCAN_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/stm32.h"
@@ -32,5 +34,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

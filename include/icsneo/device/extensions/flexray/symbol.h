@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYSYMBOL_H_
 #define __FLEXRAYSYMBOL_H_
 
+#ifdef __cplusplus
+
 #include <cstdint>
 
 namespace icsneo {
@@ -17,5 +19,7 @@ enum class Symbol {
 } // namespace FlexRay
 
 } // namespace icsneo
+
+#endif // __cplusplus
 
 #endif // __FLEXRAYSYMBOL_H_

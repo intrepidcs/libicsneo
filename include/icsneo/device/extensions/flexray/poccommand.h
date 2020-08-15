@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYPOCCOMMAND_H_
 #define __FLEXRAYPOCCOMMAND_H_
 
+#ifdef __cplusplus
+
 #include <cstdint>
 
 namespace icsneo {
@@ -27,5 +29,7 @@ enum class POCCommand : uint8_t {
 } // namespace FlexRay
 
 } // namespace icsneo
+
+#endif // __cplusplus
 
 #endif // __FLEXRAYPOCCOMMAND_H_

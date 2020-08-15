@@ -1,6 +1,8 @@
 #ifndef __MULTICHANNELCOMMUNICATION_H_
 #define __MULTICHANNELCOMMUNICATION_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/driver.h"
 #include "icsneo/communication/command.h"
@@ -166,5 +168,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

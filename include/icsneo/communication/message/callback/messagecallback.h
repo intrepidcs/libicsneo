@@ -1,6 +1,8 @@
 #ifndef __MESSAGECALLBACK_H_
 #define __MESSAGECALLBACK_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/message.h"
 #include "icsneo/communication/message/filter/messagefilter.h"
 #include <memory>
@@ -34,5 +36,7 @@ protected:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef __FTDI_POSIX_H_
 #define __FTDI_POSIX_H_
 
+#ifdef __cplusplus
+
 #include <vector>
 #include <memory>
 #include <string>
@@ -60,5 +62,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

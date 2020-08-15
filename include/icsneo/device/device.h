@@ -1,6 +1,8 @@
 #ifndef __DEVICE_H__
 #define __DEVICE_H__
 
+#ifdef __cplusplus
+
 #include <vector>
 #include <memory>
 #include <utility>
@@ -212,5 +214,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

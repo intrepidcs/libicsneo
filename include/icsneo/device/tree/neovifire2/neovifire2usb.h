@@ -1,6 +1,8 @@
 #ifndef __NEOVIFIRE2USB_H_
 #define __NEOVIFIRE2USB_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/tree/neovifire2/neovifire2.h"
 #include "icsneo/platform/ftdi.h"
 #include "icsneo/device/tree/neovifire2/neovifire2settings.h"
@@ -27,5 +29,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

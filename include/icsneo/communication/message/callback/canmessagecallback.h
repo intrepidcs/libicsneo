@@ -1,6 +1,8 @@
 #ifndef __CANMESSAGECALLBACK_H_
 #define __CANMESSAGECALLBACK_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/callback/messagecallback.h"
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/message/filter/canmessagefilter.h"
@@ -18,6 +20,8 @@ public:
 	CANMessageCallback(CANMessageFilter f, fn_messageCallback cb) : MessageCallback(cb, std::make_shared<CANMessageFilter>(f)) {}
 };
 
-};
+}
+
+#endif // __cplusplus
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef __RADSTAR2ETH_H_
 #define __RADSTAR2ETH_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/tree/radstar2/radstar2.h"
 #include "icsneo/communication/network.h"
 #include "icsneo/communication/message/serialnumbermessage.h"
@@ -50,5 +52,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

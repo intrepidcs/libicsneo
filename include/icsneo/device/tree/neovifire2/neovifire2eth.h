@@ -1,6 +1,8 @@
 #ifndef __NEOVIFIRE2ETH_H_
 #define __NEOVIFIRE2ETH_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/tree/neovifire2/neovifire2.h"
 #include "icsneo/platform/pcap.h"
 #include "icsneo/device/tree/neovifire2/neovifire2settings.h"
@@ -57,5 +59,7 @@ protected:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

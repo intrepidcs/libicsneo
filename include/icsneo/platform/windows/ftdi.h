@@ -1,6 +1,8 @@
 #ifndef __FTDI_WINDOWS_H_
 #define __FTDI_WINDOWS_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/platform/windows/vcp.h"
 
 namespace icsneo {
@@ -12,5 +14,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

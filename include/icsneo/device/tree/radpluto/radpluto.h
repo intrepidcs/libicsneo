@@ -1,6 +1,8 @@
 #ifndef __RADPLUTO_H_
 #define __RADPLUTO_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/communication/packetizer.h"
@@ -54,5 +56,7 @@ protected:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

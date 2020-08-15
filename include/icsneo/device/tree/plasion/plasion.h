@@ -1,6 +1,8 @@
 #ifndef __PLASION_H_
 #define __PLASION_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/device.h"
 #include "icsneo/communication/multichannelcommunication.h"
 #include "icsneo/platform/ftdi.h"
@@ -94,5 +96,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef __NEOVIION_H_
 #define __NEOVIION_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/tree/plasion/plasion.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/ftdi.h"
@@ -29,5 +31,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

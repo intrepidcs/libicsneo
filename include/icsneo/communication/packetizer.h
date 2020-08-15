@@ -1,6 +1,8 @@
 #ifndef __PACKETIZER_H_
 #define __PACKETIZER_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/packet.h"
 #include "icsneo/api/eventmanager.h"
 #include <queue>
@@ -46,5 +48,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

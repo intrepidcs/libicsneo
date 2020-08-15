@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYOPCODE_H_
 #define __FLEXRAYOPCODE_H_
 
+#ifdef __cplusplus
+
 #include <cstdint>
 
 namespace icsneo {
@@ -22,5 +24,7 @@ enum class Opcode : uint8_t {
 } // namespace FlexRay
 
 } // namespace icsneo
+
+#endif // __cplusplus
 
 #endif // __FLEXRAYOPCODE_H_

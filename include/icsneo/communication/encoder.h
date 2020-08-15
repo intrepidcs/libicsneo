@@ -1,6 +1,8 @@
 #ifndef __ENCODER_H_
 #define __ENCODER_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/message.h"
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/packet.h"
@@ -28,5 +30,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

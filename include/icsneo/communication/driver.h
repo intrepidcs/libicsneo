@@ -1,6 +1,8 @@
 #ifndef __DRIVER_H_
 #define __DRIVER_H_
 
+#ifdef __cplusplus
+
 #include <vector>
 #include <chrono>
 #include <atomic>
@@ -48,5 +50,7 @@ protected:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

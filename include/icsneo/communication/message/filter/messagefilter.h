@@ -1,6 +1,8 @@
 #ifndef __MESSAGEFILTER_H_
 #define __MESSAGEFILTER_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/network.h"
 #include "icsneo/communication/message/message.h"
 #include <memory>
@@ -41,5 +43,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

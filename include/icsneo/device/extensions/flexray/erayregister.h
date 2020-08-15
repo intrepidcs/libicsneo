@@ -1,6 +1,8 @@
 #ifndef __ERAYREGISTER_H_
 #define __ERAYREGISTER_H_
 
+#ifdef __cplusplus
+
 #include <cstdint>
 
 namespace icsneo {
@@ -118,5 +120,7 @@ enum class ERAYRegister : uint32_t {
 } // namespace FlexRay
 
 } // namespace icsneo
+
+#endif // __cplusplus
 
 #endif // __ERAYREGISTER_H_

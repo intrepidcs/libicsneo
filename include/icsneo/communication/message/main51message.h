@@ -1,6 +1,8 @@
 #ifndef __MAIN51MESSAGE_H_
 #define __MAIN51MESSAGE_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/message.h"
 #include "icsneo/communication/command.h"
 
@@ -14,5 +16,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

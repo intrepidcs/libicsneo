@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYCRCSTATUS_H_
 #define __FLEXRAYCRCSTATUS_H_
 
+#ifdef __cplusplus
+
 #include <cstdint>
 
 namespace icsneo {
@@ -16,5 +18,7 @@ enum class CRCStatus {
 } // namespace FlexRay
 
 } // namespace icsneo
+
+#endif // __cplusplus
 
 #endif // __FLEXRAYCRCSTATUS_H_

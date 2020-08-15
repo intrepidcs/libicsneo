@@ -1,6 +1,8 @@
 #ifndef __CANMESSAGE_H_
 #define __CANMESSAGE_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/message.h"
 
 namespace icsneo {
@@ -17,5 +19,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

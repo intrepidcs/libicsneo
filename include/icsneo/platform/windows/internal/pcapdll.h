@@ -1,6 +1,8 @@
 #ifndef __PCAPDLL_WINDOWS_H_
 #define __PCAPDLL_WINDOWS_H_
 
+#ifdef __cplusplus
+
 #include <Windows.h>
 #include <winsock2.h>
 #include <pcap.h>
@@ -53,5 +55,7 @@ private:
 	void closeDLL();
 };
 }
+
+#endif // __cplusplus
 
 #endif

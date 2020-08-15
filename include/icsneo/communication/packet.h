@@ -1,6 +1,8 @@
 #ifndef __PACKET_H_
 #define __PACKET_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/network.h"
 #include <vector>
 #include <stdint.h>
@@ -14,5 +16,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef __RADSUPERMOON_H_
 #define __RADSUPERMOON_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/ftdi.h"
@@ -35,5 +37,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

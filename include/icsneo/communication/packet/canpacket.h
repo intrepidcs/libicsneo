@@ -1,6 +1,8 @@
 #ifndef __CANPACKET_H__
 #define __CANPACKET_H__
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/api/eventmanager.h"
 #include <cstdint>
@@ -49,5 +51,7 @@ struct HardwareCANPacket {
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

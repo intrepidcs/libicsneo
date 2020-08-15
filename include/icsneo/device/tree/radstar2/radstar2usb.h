@@ -1,6 +1,8 @@
 #ifndef __RADSTAR2USB_H_
 #define __RADSTAR2USB_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/tree/radstar2/radstar2.h"
 #include "icsneo/platform/ftdi.h"
 
@@ -25,5 +27,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

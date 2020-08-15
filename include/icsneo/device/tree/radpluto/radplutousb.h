@@ -1,6 +1,8 @@
 #ifndef __RADPLUTOUSB_H_
 #define __RADPLUTOUSB_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/tree/radpluto/radpluto.h"
 #include "icsneo/platform/stm32.h"
 
@@ -25,5 +27,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

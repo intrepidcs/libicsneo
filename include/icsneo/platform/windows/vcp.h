@@ -1,6 +1,8 @@
 #ifndef __VCP_WINDOWS_H_
 #define __VCP_WINDOWS_H_
 
+#ifdef __cplusplus
+
 #include <vector>
 #include <string>
 #include <thread>
@@ -45,5 +47,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

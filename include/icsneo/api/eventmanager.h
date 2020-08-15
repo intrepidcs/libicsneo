@@ -1,11 +1,13 @@
 #ifndef __ICSNEO_API_EVENTMANAGER_H_
 #define __ICSNEO_API_EVENTMANAGER_H_
 
+#ifdef __cplusplus
+
 #include <vector>
 #include <list>
 #include <mutex>
 #include <functional>
-#include<map>
+#include <map>
 #include <thread>
 #include <algorithm>
 #include "icsneo/api/event.h"
@@ -205,5 +207,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

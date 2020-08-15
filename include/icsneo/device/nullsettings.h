@@ -1,6 +1,8 @@
 #ifndef __NULL_SETTINGS_H_
 #define __NULL_SETTINGS_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/communication/communication.h"
 #include <memory>
@@ -14,5 +16,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

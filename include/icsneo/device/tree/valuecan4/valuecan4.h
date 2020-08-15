@@ -1,6 +1,8 @@
 #ifndef __VALUECAN4_H_
 #define __VALUECAN4_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/stm32.h"
@@ -23,5 +25,7 @@ protected:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

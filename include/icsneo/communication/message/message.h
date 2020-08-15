@@ -1,6 +1,8 @@
 #ifndef __MESSAGE_H_
 #define __MESSAGE_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/network.h"
 #include <vector>
 
@@ -18,5 +20,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef __RESETSTATUSMESSAGE_H_
 #define __RESETSTATUSMESSAGE_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/main51message.h"
 #include "icsneo/communication/command.h"
 #include <string>
@@ -31,5 +33,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

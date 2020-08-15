@@ -1,6 +1,8 @@
 #ifndef __REGISTRY_WINDOWS_H_
 #define __REGISTRY_WINDOWS_H_
 
+#ifdef __cplusplus
+
 #include <Windows.h>
 #include <string>
 #include <vector>
@@ -32,5 +34,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

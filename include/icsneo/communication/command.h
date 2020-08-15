@@ -1,6 +1,8 @@
 #ifndef __COMMAND_H_
 #define __COMMAND_H_
 
+#ifdef __cplusplus
+
 namespace icsneo {
 
 enum class Command : uint8_t {
@@ -18,5 +20,7 @@ enum class Command : uint8_t {
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

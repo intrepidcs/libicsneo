@@ -1,6 +1,8 @@
 #ifndef __DEVICEFINDER_H_
 #define __DEVICEFINDER_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include <vector>
@@ -15,5 +17,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

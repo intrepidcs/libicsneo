@@ -1,6 +1,8 @@
 #ifndef __PCAP_POSIX_H_
 #define __PCAP_POSIX_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/neodevice.h"
 #include "icsneo/communication/driver.h"
 #include "icsneo/api/eventmanager.h"
@@ -69,5 +71,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

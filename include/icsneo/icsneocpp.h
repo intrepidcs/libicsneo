@@ -1,6 +1,8 @@
 #ifndef __ICSNEOCPP_H_
 #define __ICSNEOCPP_H_
 
+#ifdef __cplusplus
+
 #include <vector>
 #include <memory>
 
@@ -27,5 +29,7 @@ void SetEventLimit(size_t newLimit);
 size_t GetEventLimit();
 
 }
+
+#endif // __cplusplus
 
 #endif

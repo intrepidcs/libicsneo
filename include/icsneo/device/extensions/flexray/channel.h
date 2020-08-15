@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYCHANNEL_H_
 #define __FLEXRAYCHANNEL_H_
 
+#ifdef __cplusplus
+
 #include <cstdint>
 
 namespace icsneo {
@@ -18,5 +20,7 @@ enum class Channel {
 } // namespace FlexRay
 
 } // namespace icsneo
+
+#endif // __cplusplus
 
 #endif // __FLEXRAYCHANNEL_H_

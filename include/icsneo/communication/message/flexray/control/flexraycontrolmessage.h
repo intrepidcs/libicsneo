@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYCONTROLMESSAGE_H_
 #define __FLEXRAYCONTROLMESSAGE_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/message.h"
 #include "icsneo/communication/packet.h"
 #include "icsneo/device/extensions/flexray/opcode.h"
@@ -36,5 +38,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

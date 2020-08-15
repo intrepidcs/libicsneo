@@ -1,6 +1,8 @@
 #ifndef __DEVICEEXTENSION_H_
 #define __DEVICEEXTENSION_H_
 
+#ifdef __cplusplus
+
 #include <memory>
 #include "icsneo/communication/message/message.h"
 #include "icsneo/api/eventmanager.h"
@@ -31,5 +33,6 @@ protected:
 
 } // namespace icsneo
 
+#endif // __cplusplus
 
 #endif // __DEVICEEXTENSION_H_

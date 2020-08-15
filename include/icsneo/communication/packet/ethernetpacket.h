@@ -1,6 +1,8 @@
 #ifndef __ETHERNETPACKET_H__
 #define __ETHERNETPACKET_H__
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/ethernetmessage.h"
 #include "icsneo/api/eventmanager.h"
 #include <cstdint>
@@ -41,5 +43,7 @@ struct HardwareEthernetPacket {
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

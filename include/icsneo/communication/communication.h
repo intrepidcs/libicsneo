@@ -1,6 +1,8 @@
 #ifndef __COMMUNICATION_H_
 #define __COMMUNICATION_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/driver.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/communication/network.h"
@@ -82,5 +84,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

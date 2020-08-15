@@ -1,6 +1,8 @@
 #ifndef __RADGALAXY_H_
 #define __RADGALAXY_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/pcap.h"
@@ -113,5 +115,7 @@ protected:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

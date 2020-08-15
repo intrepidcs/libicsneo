@@ -1,6 +1,8 @@
 #ifndef __MAIN51MESSAGEFILTER_H_
 #define __MAIN51MESSAGEFILTER_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/filter/messagefilter.h"
 #include "icsneo/communication/network.h"
 #include "icsneo/communication/communication.h"
@@ -35,5 +37,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

@@ -446,7 +446,7 @@ private:
 
 }
 
-#endif
+#endif // __cplusplus
 
 #ifdef __ICSNEOC_H_
 #define ICSNEO_NETID_DEVICE 0

@@ -1,6 +1,8 @@
 #ifndef __ETHERNETMESSAGE_H_
 #define __ETHERNETMESSAGE_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/message.h"
 
 // Used for MACAddress.toString() only
@@ -44,5 +46,7 @@ public:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

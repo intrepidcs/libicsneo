@@ -1,6 +1,8 @@
 #ifndef __CANMESSAGEFILTER_H_
 #define __CANMESSAGEFILTER_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/communication/message/filter/messagefilter.h"
 #include "icsneo/communication/network.h"
 #include "icsneo/communication/message/message.h"
@@ -33,6 +35,8 @@ private:
 	}
 };
 
-};
+}
+
+#endif // __cplusplus
 
 #endif

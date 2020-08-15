@@ -1,6 +1,8 @@
 #ifndef __PCAP_WINDOWS_H_
 #define __PCAP_WINDOWS_H_
 
+#ifdef __cplusplus
+
 #include "icsneo/platform/windows/internal/pcapdll.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/communication/driver.h"
@@ -73,5 +75,7 @@ private:
 };
 
 }
+
+#endif // __cplusplus
 
 #endif

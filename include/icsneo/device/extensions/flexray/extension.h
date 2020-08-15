@@ -1,6 +1,8 @@
 #ifndef __FLEXRAYEXTENSION_H_
 #define __FLEXRAYEXTENSION_H_
 
+#ifdef __cplusplus
+
 #include <mutex>
 #include <memory>
 #include <utility>
@@ -39,5 +41,6 @@ private:
 
 } // namespace icsneo
 
+#endif // __cplusplus
 
 #endif // __FLEXRAYEXTENSION_H_
