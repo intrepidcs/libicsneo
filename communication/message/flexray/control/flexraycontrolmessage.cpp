@@ -59,7 +59,7 @@ std::vector<uint8_t> FlexRayControlMessage::BuildWriteMessageBufferArgs(
 		uint8_t(desiredSize / 4)
 	};
 	args.insert(args.end(), data.begin(), data.end());
-	if(args.size() != desiredSize + 2)
+	if((int)args.size() != desiredSize + 2)
 		args.resize(desiredSize + 2);
 	return BuildBaseControlArgs(controller, FlexRay::Opcode::WriteMessageBuffer, args);
 }

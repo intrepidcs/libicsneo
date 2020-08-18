@@ -281,7 +281,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 
 	uint16_t dataPointer = (totalBuffers + 1) * 4;
 	for(auto i = 0; i < totalBuffers; i++) {
-		MessageBuffer& buf = *(i < staticTx.size() ? staticTx[i] : dynamicTx[i - staticTx.size()]);
+		MessageBuffer& buf = *(i < (int)staticTx.size() ? staticTx[i] : dynamicTx[i - staticTx.size()]);
 
 		if(buf.frameID == 0)
 			buf.frameID = i | (1 << 10);
