@@ -248,6 +248,8 @@ if(NOT WIN32)
 	target_link_libraries(icsneocpp PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 	find_package(PCAP REQUIRED)
 	target_link_libraries(icsneocpp PUBLIC ${PCAP_LIBRARY})
+	find_package(LibUSB REQUIRED)
+	target_link_libraries(icsneocpp PUBLIC LibUSB::LibUSB)
 endif()
 
 # googletest
