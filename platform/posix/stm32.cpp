@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/select.h>
 
 using namespace icsneo;
 
@@ -25,7 +26,7 @@ bool STM32::open() {
 		return false;
 	}
 
-	fd = ::open(ttyPath.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
+	fd = ::open(ttyPath.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
 	if(!isOpen()) {
 		//std::cout << "Open of " << ttyPath.c_str() << " failed with " << strerror(errno) << ' ';
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
@@ -113,10 +114,15 @@ bool STM32::close() {
 }
 
 void STM32::readTask() {
-	constexpr size_t READ_BUFFER_SIZE = 8;
+	constexpr size_t READ_BUFFER_SIZE = 2048;
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
+		fd_set rfds = {0};
+		struct timeval tv = {0};
+		FD_SET(fd, &rfds);
+		tv.tv_usec = 50000; // 50ms
+		::select(fd + 1, &rfds, NULL, NULL, &tv);
 		auto bytesRead = ::read(fd, readbuf, READ_BUFFER_SIZE);
 		if(bytesRead > 0)
 			readQueue.enqueue_bulk(readbuf, bytesRead);
