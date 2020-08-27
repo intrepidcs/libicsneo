@@ -13,6 +13,7 @@ using namespace icsneo;
 
 static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 static const uint8_t BROADCAST_MAC[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+static const uint8_t ICS_UNSET_MAC[6] = { 0x00, 0xFC, 0x70, 0xFF, 0xFF, 0xFF };
 
 std::vector<PCAP::NetworkInterface> PCAP::knownInterfaces;
 
@@ -134,7 +135,8 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 			// Is this an ICS response packet (0xCAB2) from an ICS MAC, either to broadcast or directly to us?
 			if(packet.etherType == 0xCAB2 && packet.srcMAC[0] == 0x00 && packet.srcMAC[1] == 0xFC && packet.srcMAC[2] == 0x70 && (
 				memcmp(packet.destMAC, interface.macAddress, sizeof(packet.destMAC)) == 0 ||
-				memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) == 0
+				memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) == 0 ||
+				memcmp(packet.destMAC, ICS_UNSET_MAC, sizeof(packet.destMAC)) == 0
 			)) {
 				/* We have received a packet from a device. We don't know if this is the device we're
 				 * looking for, we don't know if it's actually a response to our RequestSerialNumber
@@ -268,7 +270,8 @@ void PCAP::readTask() {
 			continue; // Not a packet to host
 
 		if(memcmp(packet.destMAC, interface.macAddress, sizeof(packet.destMAC)) != 0 &&
-			memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) != 0)
+			memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) != 0 &&
+			memcmp(packet.destMAC, ICS_UNSET_MAC, sizeof(packet.destMAC)) != 0)
 			continue; // Packet is not addressed to us or broadcast
 
 		if(memcmp(packet.srcMAC, deviceMAC, sizeof(deviceMAC)) != 0)
