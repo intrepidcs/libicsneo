@@ -90,7 +90,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		// 	continue; // Win32 did not find this interface in the previous step
 
 		errbuf[0] = '\0';
-		interface.fp = pcap_open_live(interface.nameFromWinPCAP.c_str(), UINT16_MAX, 1, 0, errbuf);
+		interface.fp = pcap_open_live(interface.nameFromWinPCAP.c_str(), 65536, 1, -1, errbuf);
 		if(strlen(errbuf) != 0) { // This means a warning
 			std::cout << "Warning for " << interface.nameFromWinPCAP << " " << errbuf << std::endl;
 		}
@@ -197,7 +197,7 @@ bool PCAP::open() {
 		return false;
 
 	// Open the interface
-	interface.fp = pcap_open_live(interface.nameFromWinPCAP.c_str(), INT16_MAX, 1, 0, errbuf);
+	interface.fp = pcap_open_live(interface.nameFromWinPCAP.c_str(), 65536, 1, -1, errbuf);
 	if(interface.fp == nullptr) {
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
