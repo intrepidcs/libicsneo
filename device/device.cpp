@@ -205,6 +205,32 @@ bool Device::open() {
 		handleInternalMessage(message);
 	}));
 
+	std::atomic<bool> receivedMessage{false};
+	messageReceivedCallbackID = com->addMessageCallback(MessageCallback(filter, [&](std::shared_ptr<Message> message) {
+		receivedMessage = true;
+	}));
+
+	heartbeatThread = std::thread([&]() {
+		EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+		while(true) {
+			// Wait for 110ms for a possible heartbeat
+			std::this_thread::sleep_for(std::chrono::milliseconds(110));
+			if(!receivedMessage) {
+				// No heartbeat received, request a status
+				com->sendCommand(Command::RequestStatusUpdate);
+				// The response should come back quickly if the com is quiet
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				// Check if we got a message, and if not, if settings are being applied
+				if(!receivedMessage && !settings->applyingSettings) {
+					if(!stopHeartbeatThread)
+						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+					return;
+				}
+			}
+			receivedMessage = false;
+		}
+	});
+
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onDeviceOpen(); return true; });
 	return true;
 }
@@ -215,11 +241,16 @@ bool Device::close() {
 		return false;
 	}
 
+	stopHeartbeatThread = true;
+
 	if(isOnline())
 		goOffline();
 	
 	if(internalHandlerCallbackID)
 		com->removeMessageCallback(internalHandlerCallbackID);
+
+	if(messageReceivedCallbackID)
+		com->removeMessageCallback(messageReceivedCallbackID);
 
 	internalHandlerCallbackID = 0;
 

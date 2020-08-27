@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include <cstring>
+#include <atomic>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/device/idevicesettings.h"
@@ -30,6 +31,8 @@ public:
 		if(isMessagePollingEnabled())
 			disableMessagePolling();
 		close();
+		if(heartbeatThread.joinable())
+			heartbeatThread.join();
 	}
 
 	static std::string SerialNumToString(uint32_t serial);
@@ -100,6 +103,7 @@ protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
+	int messageReceivedCallbackID = 0;
 	device_eventhandler_t report;
 
 	// START Initialization Functions
@@ -211,6 +215,9 @@ private:
 	size_t pollingMessageLimit = 20000;
 	moodycamel::BlockingConcurrentQueue<std::shared_ptr<Message>> pollingContainer;
 	void enforcePollingMessageLimit();
+
+	std::atomic<bool> stopHeartbeatThread{false};
+	std::thread heartbeatThread;
 };
 
 }

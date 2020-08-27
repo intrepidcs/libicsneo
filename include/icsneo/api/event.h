@@ -70,6 +70,7 @@ public:
 		MessageFormattingError = 0x2019,
 		CANFDNotSupported = 0x2020,
 		RTRNotSupported = 0x2021,
+		DeviceDisconnected = 0x2022,
 
 		// Transport Events
 		FailedToRead = 0x3000,

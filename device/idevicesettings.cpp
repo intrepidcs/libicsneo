@@ -210,6 +210,8 @@ bool IDeviceSettings::apply(bool temporary) {
 	bytestream[6] = (uint8_t)(gs_checksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
+	// Pause I/O with the device while the settings are applied
+	applyingSettings = true;
 	
 	std::shared_ptr<Message> msg = com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
@@ -250,6 +252,8 @@ bool IDeviceSettings::apply(bool temporary) {
 		}, Main51MessageFilter(Command::SaveSettings), std::chrono::milliseconds(5000));
 	}
 	
+	applyingSettings = false;
+
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 
 	bool ret = (msg && msg->data[0] == 1); // Device sends 0x01 for success
@@ -269,6 +273,8 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
 		return false;
 	}
+
+	applyingSettings = true;
 
 	std::shared_ptr<Message> msg = com->waitForMessageSync([this]() {
 		return com->sendCommand(Command::SetDefaultSettings);
@@ -317,6 +323,8 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 			return com->sendCommand(Command::SaveSettings);
 		}, Main51MessageFilter(Command::SaveSettings), std::chrono::milliseconds(5000));
 	}
+
+	applyingSettings = false;
 	
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 

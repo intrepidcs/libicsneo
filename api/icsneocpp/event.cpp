@@ -93,6 +93,7 @@ static constexpr const char* NO_DEVICE_RESPONSE = "Expected a response from the 
 static constexpr const char* MESSAGE_FORMATTING = "The message was not properly formed.";
 static constexpr const char* CANFD_NOT_SUPPORTED = "This device does not support CANFD.";
 static constexpr const char* RTR_NOT_SUPPORTED = "RTR is not supported with CANFD.";
+static constexpr const char* DEVICE_DISCONNECTED = "The device was disconnected.";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -184,6 +185,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return CANFD_NOT_SUPPORTED;
 		case Type::RTRNotSupported:
 			return RTR_NOT_SUPPORTED;
+		case Type::DeviceDisconnected:
+			return DEVICE_DISCONNECTED;
 
 		// Transport Errors
 		case Type::FailedToRead:

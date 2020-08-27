@@ -324,6 +324,7 @@ static_assert(sizeof(UART_SETTINGS) == UART_SETTINGS_SIZE, "UART_SETTINGS is the
 #ifdef __cplusplus
 #include "icsneo/communication/communication.h"
 #include <iostream>
+#include <atomic>
 
 namespace icsneo {
 
@@ -404,6 +405,8 @@ public:
 	
 	bool readonly = false;
 	bool disableGSChecksumming = false;
+
+	std::atomic<bool> applyingSettings{false};
 protected:
 	std::shared_ptr<Communication> com;
 	device_eventhandler_t report;
