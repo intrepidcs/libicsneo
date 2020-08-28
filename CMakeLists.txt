@@ -197,6 +197,10 @@ if(WIN32)
 	endif()
 endif(WIN32)
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+	target_link_libraries(icsneocpp PUBLIC "-framework CoreFoundation" "-framework IOKit")
+endif()
+
 if(LIBICSNEO_BUILD_ICSNEOC)
 	add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
 	target_include_directories(icsneoc
