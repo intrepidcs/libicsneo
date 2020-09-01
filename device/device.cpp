@@ -240,7 +240,7 @@ bool Device::open() {
 				if(!receivedMessage && !settings->applyingSettings) {
 					if(!stopHeartbeatThread)
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
-					return;
+					break;
 				}
 			}
 			receivedMessage = false;
