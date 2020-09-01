@@ -108,6 +108,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 			continue; // Could not open the interface
 
 		EthernetPacket requestPacket;
+		memcpy(requestPacket.srcMAC, interface.macAddress, sizeof(requestPacket.srcMAC));
 		requestPacket.payload.reserve(4);
 		requestPacket.payload = {
 			((1 << 4) | (uint8_t)Network::NetID::Main51), // Packet size of 1 on NETID_MAIN51
