@@ -186,7 +186,9 @@ void FTDI::readTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
 		auto readBytes = ftdi.read(readbuf, READ_BUFFER_SIZE);
-		if(readBytes > 0)
+		if(readBytes < 0)
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::EventWarning);
+		else
 			readQueue.enqueue_bulk(readbuf, readBytes);
 	}
 }
@@ -198,6 +200,14 @@ void FTDI::writeTask() {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
-		ftdi.write(writeOp.bytes.data(), (int)writeOp.bytes.size());
+		size_t offset = 0;
+		while(offset < writeOp.bytes.size()) {
+			auto writeBytes = ftdi.write(writeOp.bytes.data() + offset, (int)writeOp.bytes.size() - offset);
+			if(writeBytes < 0)
+				report(APIEvent::Type::FailedToWrite, APIEvent::Severity::EventWarning);
+			else
+				offset += writeBytes;
+		}
+		
 	}
 }
