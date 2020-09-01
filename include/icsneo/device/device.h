@@ -27,13 +27,7 @@ namespace icsneo {
 
 class Device {
 public:
-	virtual ~Device() {
-		if(isMessagePollingEnabled())
-			disableMessagePolling();
-		close();
-		if(heartbeatThread.joinable())
-			heartbeatThread.join();
-	}
+	virtual ~Device();
 
 	static std::string SerialNumToString(uint32_t serial);
 	static uint32_t SerialStringToNum(const std::string& serial);
@@ -103,7 +97,6 @@ protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
-	int messageReceivedCallbackID = 0;
 	device_eventhandler_t report;
 
 	// START Initialization Functions

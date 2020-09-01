@@ -69,6 +69,12 @@ bool Device::SerialStringIsNumeric(const std::string& serial) {
 	return isdigit(serial[0]) && isdigit(serial[1]);
 }
 
+Device::~Device() {
+	if(isMessagePollingEnabled())
+		disableMessagePolling();
+	close();
+}
+
 uint16_t Device::getTimestampResolution() const {
 	return com->decoder->timestampResolution;
 }
@@ -205,14 +211,24 @@ bool Device::open() {
 		handleInternalMessage(message);
 	}));
 
-	std::atomic<bool> receivedMessage{false};
-	messageReceivedCallbackID = com->addMessageCallback(MessageCallback(filter, [&](std::shared_ptr<Message> message) {
-		receivedMessage = true;
-	}));
-
-	heartbeatThread = std::thread([&]() {
+	heartbeatThread = std::thread([this]() {
 		EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-		while(true) {
+
+		MessageFilter filter;
+		filter.includeInternalInAny = true;
+		std::atomic<bool> receivedMessage{false};
+		auto messageReceivedCallbackID = com->addMessageCallback(MessageCallback(filter, [&receivedMessage](std::shared_ptr<Message> message) {
+			receivedMessage = true;
+		}));
+
+		// Give the device time to get situated
+		auto i = 150;
+		while(!stopHeartbeatThread && i != 0) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+			i--;
+		}
+
+		while(!stopHeartbeatThread) {
 			// Wait for 110ms for a possible heartbeat
 			std::this_thread::sleep_for(std::chrono::milliseconds(110));
 			if(!receivedMessage) {
@@ -229,6 +245,8 @@ bool Device::open() {
 			}
 			receivedMessage = false;
 		}
+
+		com->removeMessageCallback(messageReceivedCallbackID);
 	});
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onDeviceOpen(); return true; });
@@ -249,10 +267,11 @@ bool Device::close() {
 	if(internalHandlerCallbackID)
 		com->removeMessageCallback(internalHandlerCallbackID);
 
-	if(messageReceivedCallbackID)
-		com->removeMessageCallback(messageReceivedCallbackID);
-
 	internalHandlerCallbackID = 0;
+
+	if(heartbeatThread.joinable())
+		heartbeatThread.join();
+	stopHeartbeatThread = false;
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onDeviceClose(); return true; });
 	return com->close();
