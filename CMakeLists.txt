@@ -83,22 +83,32 @@ if(LIBICSNEO_BUILD_DOCS)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	file(GLOB PLATFORM_SRC_EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/*.cpp)
-	file(GLOB PLATFORM_SRC_INTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/platform/windows/internal/*.cpp)
-	set(PLATFORM_SRC ${PLATFORM_SRC_EXTERNAL} ${PLATFORM_SRC_INTERNAL})
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-	file(GLOB PLATFORM_SRC_DARWIN ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/darwin/*.cpp)
-	file(GLOB PLATFORM_SRC_POSIX ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/*.cpp)
-	set(PLATFORM_SRC ${PLATFORM_SRC_POSIX} ${PLATFORM_SRC_DARWIN})
-else() # elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-	file(GLOB PLATFORM_SRC_LINUX ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/linux/*.cpp)
-	file(GLOB PLATFORM_SRC_POSIX ${CMAKE_CURRENT_SOURCE_DIR}/platform/posix/*.cpp)
-	set(PLATFORM_SRC ${PLATFORM_SRC_POSIX} ${PLATFORM_SRC_LINUX})
-	if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-		message(WARNING
-			"There is no platform port defined for ${CMAKE_SYSTEM_NAME}!\n"
-			"The Linux platform code will be used, as it will generally allow building, but some devices may not enumerate properly."
+	set(PLATFORM_SRC
+		platform/windows/pcap.cpp
+		platform/windows/registry.cpp
+		platform/windows/vcp.cpp
+		platform/windows/internal/pcapdll.cpp
+	)
+else() # Darwin or Linux
+	set(PLATFORM_SRC
+		platform/posix/ftdi.cpp
+		platform/posix/pcap.cpp
+		platform/posix/stm32.cpp
+	)
+	if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+		list(APPEND PLATFORM_SRC
+			platform/posix/darwin/stm32darwin.cpp
 		)
+	else() # Linux or other
+		list(APPEND PLATFORM_SRC
+			platform/posix/linux/stm32linux.cpp
+		)
+		if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+			message(WARNING
+				"There is no platform port defined for ${CMAKE_SYSTEM_NAME}!\n"
+				"The Linux platform code will be used, as it will generally allow building, but some devices may not enumerate properly."
+			)
+		endif()
 	endif()
 endif()
 
@@ -106,7 +116,7 @@ if(LIBICSNEO_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-set(COMMON_SRC
+set(SRC_FILES
 	communication/message/flexray/control/flexraycontrolmessage.cpp
 	communication/message/neomessage.cpp
 	communication/packet/flexraypacket.cpp
@@ -123,9 +133,8 @@ set(COMMON_SRC
 	device/idevicesettings.cpp
 	device/devicefinder.cpp
 	device/device.cpp
+	${PLATFORM_SRC}
 )
-
-set(SRC_FILES ${COMMON_SRC} ${PLATFORM_SRC})
 
 # Generate build info header
 execute_process(
