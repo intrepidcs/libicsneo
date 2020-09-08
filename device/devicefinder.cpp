@@ -42,6 +42,10 @@ static std::vector<DeviceType> supportedDevices = {
 	RADGalaxy::DEVICE_TYPE,
 	#endif
 
+	#ifdef __RADGIGALOG_ETH_H_
+	RADGigalogETH::DEVICE_TYPE,
+	#endif
+
 	#ifdef __RADPLUTOUSB_H_
 	RADPlutoUSB::DEVICE_TYPE,
 	#endif
@@ -126,6 +130,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 
 	#ifdef __RADGALAXY_H_
 	findResults.push_back(RADGalaxy::Find(pcapDevices));
+	#endif
+
+	#ifdef __RADGIGALOG_ETH_H_
+	findResults.push_back(RADGigalogETH::Find(pcapDevices));
 	#endif
 
 	#ifdef __RADPLUTOUSB_H_
