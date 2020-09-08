@@ -146,7 +146,7 @@ private:
 
 	std::map<int, EventCallback> callbacks;
 
-	int callbackID = 0;
+	int callbackID = 1;
 	
 	bool destructing = false;
 
