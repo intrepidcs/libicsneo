@@ -71,6 +71,7 @@ public:
 		CANFDNotSupported = 0x2020,
 		RTRNotSupported = 0x2021,
 		DeviceDisconnected = 0x2022,
+		OnlineNotSupported = 0x2023,
 
 		// Transport Events
 		FailedToRead = 0x3000,

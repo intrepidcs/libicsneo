@@ -23,7 +23,16 @@ public:
 		return found;
 	}
 
-	bool goOnline() override { return false; }
+	// VividCAN does not go online, you can only set settings
+	bool goOnline() override {
+		report(APIEvent::Type::OnlineNotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+
+	bool goOffline() override {
+		report(APIEvent::Type::OnlineNotSupported, APIEvent::Severity::Error);
+		return false;
+	}
 
 private:
 	VividCAN(neodevice_t neodevice) : Device(neodevice) {
