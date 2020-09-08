@@ -154,6 +154,96 @@ typedef struct
 } TIMESYNC_ICSHARDWARE_SETTINGS;
 #define TIMESYNC_ICSHARDWARE_SETTINGS_SIZE 4
 
+typedef struct DISK_SETTINGS_t
+{
+	uint8_t disk_layout;// RAID0, spanned, etc
+	uint8_t disk_format;// FAT32
+	uint32_t disk_enables;// mask of enabled disks in this layout
+	uint8_t rsvd[8];
+} DISK_SETTINGS;
+#define DISK_SETTINGS_SIZE 14
+
+#define ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX  0x01
+#define ETHERNET_SETTINGS2_FLAG_AUTO_NEG     0x02
+#define ETHERNET_SETTINGS2_FLAG_TCPIP_ENABLE 0x04
+#define ETHERNET_SETTINGS2_FLAG_RTSP_ENABLE  0x08
+#define ETHERNET_SETTINGS2_FLAG_DEVICE_HOSTING_ENABLE  0x10
+#define ETHERNET_SETTINGS2_FLAG_COMM_IN_USE  0x80
+
+typedef struct ETHERNET_SETTINGS2_t
+{
+	/* bit0: 0=half duplex, 1=full duplex
+	 * bit1: auto negot
+	 * bit2: enable tcp/ip stack
+	 * bit3: enable rtsp server
+	 * bit4: enable intepid device hosting (go online and log other devices)
+	 */
+	uint8_t flags;
+	uint8_t link_speed;//0=10, 1=100, 2=1000
+	uint32_t ip_addr;
+	uint32_t netmask;
+	uint32_t gateway;
+	uint8_t rsvd[2];
+} ETHERNET_SETTINGS2;
+#define ETHERNET_SETTINGS2_SIZE 16
+
+#define ETHERNET_SETTINGS10G_FLAG_FULL_DUPLEX  0x01
+#define ETHERNET_SETTINGS10G_FLAG_AUTO_NEG     0x02
+#define ETHERNET_SETTINGS10G_FLAG_TCPIP_ENABLE 0x04
+#define ETHERNET_SETTINGS10G_FLAG_RTSP_ENABLE  0x08
+#define ETHERNET_SETTINGS10G_FLAG_DEVICE_HOSTING_ENABLE  0x10
+#define ETHERNET_SETTINGS10G_FLAG_COMM_IN_USE  0x80000000
+
+typedef struct ETHERNET10G_SETTINGS_t
+{
+	/* bit0: 0=half duplex, 1=full duplex
+	 * bit1: auto negot
+	 * bit2: enable tcp/ip stack
+	 * bit3: enable rtsp server
+	 * bit4: enable intepid device hosting (go online and log other devices)
+	 * bit31: comm in use
+	 */
+	uint32_t flags;
+	uint32_t ip_addr;
+	uint32_t netmask;
+	uint32_t gateway;
+	uint8_t link_speed;//0=10, 1=100, 2=1000, 3=2500, 4=5000, 5=10000
+	uint8_t rsvd2[7];
+} ETHERNET10G_SETTINGS;
+#define ETHERNET10G_SETTINGS_SIZE 24
+
+typedef struct LOGGER_SETTINGS_t
+{
+	/* bit6-0: timeout in seconds
+	 * bit7: 1=disable coremini/logging during extraction for timeout
+	 */
+	uint8_t extraction_timeout;
+	uint8_t rsvd[3];
+} LOGGER_SETTINGS;
+#define LOGGER_SETTINGS_SIZE 4
+
+#define RAD_REPORTING_SETTINGS_FLAG_TEMP_ENABLE 		0x00000001
+#define RAD_REPORTING_SETTINGS_FLAG_MIC2_GPS_ENABLE 	0x00000002 // USB port 1
+#define RAD_REPORTING_SETTINGS_FLAG_INT_GPS_ENABLE 		0x00000004
+#define RAD_REPORTING_SETTINGS_FLAG_MIC2_GPS_ENABLE2 	0x00000008 // USB port 2
+#define RAD_REPORTING_SETTINGS_FLAG_MISC1_DIN 			0x00000010
+#define RAD_REPORTING_SETTINGS_FLAG_MISC2_DIN 			0x00000020
+#define RAD_REPORTING_SETTINGS_FLAG_MISC1_PWMIN 		0x00000040
+#define RAD_REPORTING_SETTINGS_FLAG_MISC2_PWMIN 		0x00000080
+#define RAD_REPORTING_SETTINGS_FLAG_AIN1 				0x00000100
+#define RAD_REPORTING_SETTINGS_FLAG_AIN2 				0x00000200
+
+typedef struct RAD_REPORTING_SETTINGS_t
+{
+	uint32_t flags;
+	uint16_t temp_interval_ms;
+	uint16_t gps_interval_ms;
+	uint16_t serdes_interval_ms;
+	uint16_t io_interval_ms;
+	uint8_t rsvd[4];
+} RAD_REPORTING_SETTINGS;
+#define RAD_REPORTING_SETTINGS_SIZE 16
+
 typedef struct _STextAPISettings
 {
 	uint32_t can1_tx_id;

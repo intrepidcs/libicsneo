@@ -8,6 +8,7 @@
 #include "icsneo/platform/pcap.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/decoder.h"
+#include "icsneo/device/tree/radgalaxy/radgalaxysettings.h"
 
 namespace icsneo {
 
@@ -83,7 +84,7 @@ public:
 	}
 
 	RADGalaxy(neodevice_t neodevice) : Device(neodevice) {
-		initialize<PCAP>();
+		initialize<PCAP, RADGalaxySettings>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
@@ -95,23 +96,23 @@ protected:
 		packetizer.align16bit = false;
 	}
 
-	virtual void setupEncoder(Encoder& encoder) override {
+	void setupEncoder(Encoder& encoder) override {
 		Device::setupEncoder(encoder);
 		encoder.supportCANFD = true;
 	}
 
-	virtual void setupDecoder(Decoder& decoder) override {
+	void setupDecoder(Decoder& decoder) override {
 		Device::setupDecoder(decoder);
 		decoder.timestampResolution = 10; // Timestamps are in 10ns increments instead of the usual 25ns
 	}
 
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 
 	// The supported TX networks are the same as the supported RX networks for this device
-	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 };
 
 }

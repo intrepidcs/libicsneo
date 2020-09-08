@@ -1,5 +1,5 @@
-#ifndef __NEOVIFIRE2SETTINGS_H_
-#define __NEOVIFIRE2SETTINGS_H_
+#ifndef __RADGALAXYSETTINGS_H_
+#define __RADGALAXYSETTINGS_H_
 
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
@@ -13,6 +13,20 @@ namespace icsneo {
 #pragma pack(push, 2)
 typedef struct {
 	uint16_t perf_en;
+
+	OP_ETH_GENERAL_SETTINGS opEthGen;
+	OP_ETH_SETTINGS opEth1;
+	OP_ETH_SETTINGS opEth2;
+	OP_ETH_SETTINGS opEth3;
+	OP_ETH_SETTINGS opEth4;
+	OP_ETH_SETTINGS opEth5;
+	OP_ETH_SETTINGS opEth6;
+	OP_ETH_SETTINGS opEth7;
+	OP_ETH_SETTINGS opEth8;
+	OP_ETH_SETTINGS opEth9;
+	OP_ETH_SETTINGS opEth10;
+	OP_ETH_SETTINGS opEth11;
+	OP_ETH_SETTINGS opEth12;
 
 	CAN_SETTINGS can1;
 	CANFD_SETTINGS canfd1;
@@ -37,18 +51,11 @@ typedef struct {
 	SWCAN_SETTINGS swcan2;
 	uint16_t network_enables_2;
 
-	CAN_SETTINGS lsftcan1;
-	CAN_SETTINGS lsftcan2;
-
 	LIN_SETTINGS lin1;
 	uint16_t misc_io_initial_ddr;
-	LIN_SETTINGS lin2;
 	uint16_t misc_io_initial_latch;
-	LIN_SETTINGS lin3;
 	uint16_t misc_io_report_period;
-	LIN_SETTINGS lin4;
 	uint16_t misc_io_on_report_events;
-	LIN_SETTINGS lin5;
 	uint16_t misc_io_analog_enable;
 	uint16_t ain_sample_period;
 	uint16_t ain_threshold;
@@ -64,59 +71,33 @@ typedef struct {
 	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_1;
 	uint16_t iso_parity_1;
 
-	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_2;
-	uint16_t iso_parity_2;
-
-	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_3;
-	uint16_t iso_parity_3;
-
-	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_4;
-	uint16_t iso_parity_4;
-
 	uint16_t iso_msg_termination_1;
-	uint16_t iso_msg_termination_2;
-	uint16_t iso_msg_termination_3;
-	uint16_t iso_msg_termination_4;
 
 	uint16_t idle_wakeup_network_enables_1;
 	uint16_t idle_wakeup_network_enables_2;
 
-	/* reserved for HSCAN6/7, LSFT2, etc.. */
 	uint16_t network_enables_3;
 	uint16_t idle_wakeup_network_enables_3;
 
 	uint16_t can_switch_mode;
 	STextAPISettings text_api;
-	uint64_t termination_enables;
-	LIN_SETTINGS lin6;
-	ETHERNET_SETTINGS ethernet;
-	uint16_t slaveVnetA;
-	uint16_t slaveVnetB;
-	struct {
-		uint32_t disableUsbCheckOnBoot : 1;
-		uint32_t enableLatencyTest : 1;
-		uint32_t busMessagesToAndroid : 1;
-		uint32_t enablePcEthernetComm : 1;
-		uint32_t enableDefaultLogger : 1;
-		uint32_t enableDefaultUpload : 1;
-		uint32_t reserved : 26;
-	} flags;
-	uint16_t digitalIoThresholdTicks;
-	uint16_t digitalIoThresholdEnable;
-	TIMESYNC_ICSHARDWARE_SETTINGS timeSync;
+	TIMESYNC_ICSHARDWARE_SETTINGS timeSyncSettings;
+	uint16_t hwComLatencyTestEn;
+	RAD_REPORTING_SETTINGS reporting;
 	DISK_SETTINGS disk;
-} neovifire2_settings_t;
+	LOGGER_SETTINGS logger;
+} radgalaxy_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
 #include <iostream>
 
-class NeoVIFIRE2Settings : public IDeviceSettings {
+class RADGalaxySettings : public IDeviceSettings {
 public:
-	NeoVIFIRE2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire2_settings_t)) {}
+	RADGalaxySettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radgalaxy_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<neovifire2_settings_t>();
+		auto cfg = getStructurePointer<radgalaxy_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -136,16 +117,12 @@ public:
 				return &(cfg->can7);
 			case Network::NetID::HSCAN7:
 				return &(cfg->can8);
-			case Network::NetID::LSFTCAN:
-				return &(cfg->lsftcan1);
-			case Network::NetID::LSFTCAN2:
-				return &(cfg->lsftcan2);
 			default:
 				return nullptr;
 		}
 	}
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<neovifire2_settings_t>();
+		auto cfg = getStructurePointer<radgalaxy_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -169,9 +146,8 @@ public:
 				return nullptr;
 		}
 	}
-	const CAN_SETTINGS* getLSFTCANSettingsFor(Network net) const override { return getCANSettingsFor(net); }
 	const SWCAN_SETTINGS* getSWCANSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<neovifire2_settings_t>();
+		auto cfg = getStructurePointer<radgalaxy_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {

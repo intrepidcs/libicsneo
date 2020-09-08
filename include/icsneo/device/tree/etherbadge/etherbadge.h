@@ -8,6 +8,7 @@
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/decoder.h"
 #include "icsneo/platform/stm32.h"
+#include "icsneo/device/tree/etherbadge/etherbadgesettings.h"
 
 namespace icsneo {
 
@@ -30,6 +31,7 @@ public:
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
 			Network::NetID::HSCAN,
+			Network::NetID::HSCAN2,
 
 			Network::NetID::LIN,
 			
@@ -41,7 +43,7 @@ public:
 	EtherBADGE(neodevice_t neodevice) : Device(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
-		initialize<STM32>();
+		initialize<STM32, EtherBADGESettings>();
 	}
 
 protected:

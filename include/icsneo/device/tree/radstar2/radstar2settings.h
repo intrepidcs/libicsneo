@@ -59,6 +59,7 @@ typedef struct {
 	uint16_t pc_com_mode;
 	TIMESYNC_ICSHARDWARE_SETTINGS timeSyncSettings;
 	uint16_t hwComLatencyTestEn;
+	RAD_REPORTING_SETTINGS reporting;
 } radstar2_settings_t;
 #pragma pack(pop)
 

@@ -6,6 +6,7 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/stm32.h"
+#include "icsneo/device/tree/vividcan/vividcansettings.h"
 
 namespace icsneo {
 
@@ -36,7 +37,7 @@ public:
 
 private:
 	VividCAN(neodevice_t neodevice) : Device(neodevice) {
-		initialize<STM32>();
+		initialize<STM32, VividCANSettings>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
