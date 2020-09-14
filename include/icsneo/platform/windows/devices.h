@@ -23,7 +23,8 @@
 #include "icsneo/device/tree/valuecan3/valuecan3.h"
 #include "icsneo/device/tree/valuecan4/valuecan4-1.h"
 #include "icsneo/device/tree/valuecan4/valuecan4-2.h"
-#include "icsneo/device/tree/valuecan4/valuecan4-2el.h"
+#include "icsneo/device/tree/valuecan4/valuecan4-2eleth.h"
+#include "icsneo/device/tree/valuecan4/valuecan4-2elusb.h"
 #include "icsneo/device/tree/valuecan4/valuecan4-4.h"
 #include "icsneo/device/tree/vividcan/vividcan.h"
 

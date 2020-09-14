@@ -5,6 +5,7 @@
 
 #include "icsneo/device/tree/valuecan4/valuecan4.h"
 #include "icsneo/device/tree/valuecan4/settings/valuecan4-2settings.h"
+#include "icsneo/platform/stm32.h"
 #include <string>
 
 namespace icsneo {
@@ -13,11 +14,13 @@ class ValueCAN4_2 : public ValueCAN4 {
 public:
 	// Serial numbers start with V2 for 4-2
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_2;
+	static constexpr const char* SERIAL_START = "V2";
+
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
-		for(auto neodevice : STM32::FindByProduct(PRODUCT_ID)) {
-			if(std::string(neodevice.serial).substr(0, 2) == "V2")
+		for(auto neodevice : STM32::FindByProduct(USB_PRODUCT_ID)) {
+			if(std::string(neodevice.serial).substr(0, 2) == SERIAL_START)
 				found.emplace_back(new ValueCAN4_2(neodevice));
 		}
 
@@ -45,6 +48,7 @@ private:
 	ValueCAN4_2(neodevice_t neodevice) : ValueCAN4(neodevice) {
 		initialize<STM32, ValueCAN4_2Settings>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
+		productId = USB_PRODUCT_ID;
 	}
 };
 

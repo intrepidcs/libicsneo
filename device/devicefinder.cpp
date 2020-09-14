@@ -94,8 +94,12 @@ static std::vector<DeviceType> supportedDevices = {
 	ValueCAN4_2::DEVICE_TYPE,
 	#endif
 
-	#ifdef __VALUECAN4_2EL_H_
-	ValueCAN4_2EL::DEVICE_TYPE,
+	#ifdef __VALUECAN4_2EL_ETH_H_
+	ValueCAN4_2EL_ETH::DEVICE_TYPE,
+	#endif
+
+	#ifdef __VALUECAN4_2EL_USB_H_
+	ValueCAN4_2EL_USB::DEVICE_TYPE,
 	#endif
 
 	#ifdef __VALUECAN4_4_H_
@@ -204,8 +208,12 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	findResults.push_back(ValueCAN4_2::Find());
 	#endif
 
-	#ifdef __VALUECAN4_2EL_H_
-	findResults.push_back(ValueCAN4_2EL::Find());
+	#ifdef __VALUECAN4_2EL_ETH_H_
+	findResults.push_back(ValueCAN4_2EL_ETH::Find(pcapDevices));
+	#endif
+
+	#ifdef __VALUECAN4_2EL_USB_H_
+	findResults.push_back(ValueCAN4_2EL_USB::Find());
 	#endif
 
 	#ifdef __VALUECAN4_4_H_

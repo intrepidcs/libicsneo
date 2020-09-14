@@ -5,13 +5,13 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/platform/stm32.h"
 
 namespace icsneo {
 
 class ValueCAN4 : public Device {
 public:
-	static constexpr const uint16_t PRODUCT_ID = 0x1101;
+	// All ValueCAN 4 devices share a USB PID
+	static constexpr const uint16_t USB_PRODUCT_ID = 0x1101;
 
 protected:
 	virtual void setupEncoder(Encoder& encoder) override {
@@ -19,9 +19,7 @@ protected:
 		encoder.supportCANFD = true;
 	}
 
-	ValueCAN4(neodevice_t neodevice) : Device(neodevice) {
-		productId = PRODUCT_ID;
-	}
+	ValueCAN4(neodevice_t neodevice) : Device(neodevice) {}
 };
 
 }
