@@ -4,7 +4,6 @@
 #include "icsneo/communication/packetizer.h"
 #include <codecvt>
 #include <chrono>
-#include <iostream>
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -20,6 +19,7 @@ static const uint8_t ICS_UNSET_MAC[6] = { 0x00, 0xFC, 0x70, 0xFF, 0xFF, 0xFF };
 std::vector<PCAP::NetworkInterface> PCAP::knownInterfaces;
 
 std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
+	static bool warned = false; // Only warn once for failure to open devices
 	std::vector<PCAPFoundDevice> foundDevices;
 
 	// First we ask WinPCAP to give us all of the devices
@@ -92,12 +92,17 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 
 		errbuf[0] = '\0';
 		interface.fp = pcap_open_live(interface.nameFromWinPCAP.c_str(), 65536, 1, -1, errbuf);
-		if(strlen(errbuf) != 0) { // This means a warning
-			std::cout << "Warning for " << interface.nameFromWinPCAP << " " << errbuf << std::endl;
-		}
+		// TODO Handle warnings
+		// if(strlen(errbuf) != 0) { // This means a warning
+		// 	std::cout << "Warning for " << interface.nameFromWinPCAP << " " << errbuf << std::endl;
+		// }
 
 		if(interface.fp == nullptr) {
-			std::cout << "pcap_open_live failed for " << interface.nameFromWinPCAP << " with " << errbuf << std::endl;
+			if (!warned) {
+				warned = true;
+				EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotFindDevices, APIEvent::Severity::EventWarning);
+				// std::cout << "pcap_open_live failed for " << interface.nameFromWinPCAP << " with " << errbuf << std::endl;
+			}
 			continue; // Could not open the interface
 		}
 
@@ -122,7 +127,11 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 			const uint8_t* data;
 			auto res = pcap_next_ex(interface.fp, &header, &data);
 			if(res < 0) {
-				std::cout << "pcapnextex failed with " << res << std::endl;
+				if (!warned) {
+					warned = true;
+					EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotFindDevices, APIEvent::Severity::EventWarning);
+					// std::cout << "pcapnextex failed with " << res << std::endl;
+				}
 				break;
 			}
 			if(res == 0)
