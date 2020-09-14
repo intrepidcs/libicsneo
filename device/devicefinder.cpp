@@ -106,6 +106,14 @@ static std::vector<DeviceType> supportedDevices = {
 	ValueCAN4_4::DEVICE_TYPE,
 	#endif
 
+	#ifdef __VALUECAN4INDUSTRIAL_ETH_H_
+	ValueCAN4IndustrialETH::DEVICE_TYPE,
+	#endif
+
+	#ifdef __VALUECAN4INDUSTRIAL_USB_H_
+	ValueCAN4IndustrialUSB::DEVICE_TYPE,
+	#endif
+
 	#ifdef __VIVIDCAN_H_
 	VividCAN::DEVICE_TYPE,
 	#endif
@@ -218,6 +226,14 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 
 	#ifdef __VALUECAN4_4_H_
 	findResults.push_back(ValueCAN4_4::Find());
+	#endif
+
+	#ifdef __VALUECAN4INDUSTRIAL_ETH_H_
+	findResults.push_back(ValueCAN4IndustrialETH::Find(pcapDevices));
+	#endif
+
+	#ifdef __VALUECAN4INDUSTRIAL_USB_H_
+	findResults.push_back(ValueCAN4IndustrialUSB::Find());
 	#endif
 
 	#ifdef __VIVIDCAN_H_

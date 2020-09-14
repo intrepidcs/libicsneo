@@ -26,6 +26,8 @@
 #include "icsneo/device/tree/valuecan4/valuecan4-2eleth.h"
 #include "icsneo/device/tree/valuecan4/valuecan4-2elusb.h"
 #include "icsneo/device/tree/valuecan4/valuecan4-4.h"
+#include "icsneo/device/tree/valuecan4/valuecan4industrialeth.h"
+#include "icsneo/device/tree/valuecan4/valuecan4industrialusb.h"
 #include "icsneo/device/tree/vividcan/vividcan.h"
 
 #endif
