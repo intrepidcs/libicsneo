@@ -45,6 +45,13 @@ enum
 	LISTEN_ALL = 7
 };
 
+enum OPEthLinkMode
+{
+	OPETH_LINK_AUTO = 0,
+	OPETH_LINK_MASTER,
+	OPETH_LINK_SLAVE
+};
+
 typedef struct
 {
 	uint8_t Mode;
@@ -162,6 +169,143 @@ typedef struct DISK_SETTINGS_t
 	uint8_t rsvd[8];
 } DISK_SETTINGS;
 #define DISK_SETTINGS_SIZE 14
+
+#define SERDESCAM_SETTINGS_FLAG_ENABLE 0x01
+#define SERDESCAM_SETTINGS_RTSP_ENABLE 0x02
+#define SERDESCAM_SETTINGS_AUTO_DETECT_ENABLE 0x04
+#define SERDESCAM_SETTINGS_CONFIG_ENABLE 0x08
+
+/* mode in SERDESCAM_SETTINGS */
+enum
+{
+	SERDESCAM_MODE_PASSTHROUGH = 0,
+	SERDESCAM_MODE_TAP,
+	SERDESCAM_MODE_PLAYBACK,
+};
+
+/* ucCamConfigMode in SERDESCAM_SETTINGS */
+enum
+{
+	SERDESCAM_CONFIG_MODE_EXTERNAL_OVER_TAP = 0,
+	SERDESCAM_CONFIG_MODE_LOCAL_SCRIPT,
+};
+
+/* bitPos in SERDESCAM_SETTINGS */
+enum
+{
+	SERDESCAM_PIXEL_BIT_POS_0 = 0,
+	SERDESCAM_PIXEL_BIT_POS_1,
+	SERDESCAM_PIXEL_BIT_POS_2,
+	SERDESCAM_PIXEL_BIT_POS_3,
+};
+
+/* videoFormat in SERDESCAM_SETTINGS */
+enum
+{
+	SERDESCAM_VIDEO_FORMAT_NONE = -1,
+	SERDESCAM_VIDEO_FORMAT_UYVY_422_8 = 0, // packed YUV 4:2:2, 16bpp, Cb Y0 Cr Y1
+	SERDESCAM_VIDEO_FORMAT_YUYV_422_8, // packed YUV 4:2:2, 16bpp, Y0 Cb Y1 Cr
+	SERDESCAM_VIDEO_FORMAT_YVYU_422_8, // packed YUV 4:2:2, 16bpp, Y0 Cr Y1 Cb
+	SERDESCAM_VIDEO_FORMAT_VYUY_422_8, // packed YUV 4:2:2, 16bpp, Cr Y0 Cb Y1
+	SERDESCAM_VIDEO_FORMAT_BAYER_BGGR_8,
+	SERDESCAM_VIDEO_FORMAT_RAW_8,  // e.g. bayer 8 bit, gray 8 bit
+	SERDESCAM_VIDEO_FORMAT_RAW_10, // e.g. bayer 10 bit, gray 10 bit
+	SERDESCAM_VIDEO_FORMAT_RAW_12,
+	SERDESCAM_VIDEO_FORMAT_RAW_16, // e.g. planar YUV 4:2:2, 16bpp, 8 bit samples
+	SERDESCAM_VIDEO_FORMAT_RAW_20, // e.g. planar YUV 4:2:2, 20bpp, 10 bit samples
+	SERDESCAM_VIDEO_FORMAT_RAW_24, // e.g. packed RGB 8:8:8 24bpp, 8 bit samples
+	SERDESCAM_VIDEO_FORMAT_RAW_30, // e.g. planar YUV 4:4:4, 30bpp, 10 bit samples
+	SERDESCAM_VIDEO_FORMAT_RAW_32, // e.g. packed ARGB 8:8:8:8, 32bpp, 8 bit samples
+	SERDESCAM_VIDEO_FORMAT_RAW_36,
+	SERDESCAM_VIDEO_FORMAT_RGB888, // packed RGB 8:8:8, 24bpp, RGBRGB...
+	SERDESCAM_VIDEO_FORMAT_UYVY_422_10LE_PACKED,// packed YUV 4:2:2, 20bpp, Cb Y0 Cr Y1, bitpacked
+	SERDESCAM_VIDEO_FORMAT_YUYV_422_10LE_PACKED,// packed YUV 4:2:2, 20bpp, Y0 Cb Y1 Cr, FOURCC Y210 bitpacked
+	SERDESCAM_VIDEO_FORMAT_YVYU_422_10LE_PACKED,// packed YUV 4:2:2, 20bpp, Y0 Cr Y1 Cb, bitpacked
+	SERDESCAM_VIDEO_FORMAT_VYUY_422_10LE_PACKED,// packed YUV 4:2:2, 20bpp, Cr Y0 Cb Y1, bitpacked
+	SERDESCAM_VIDEO_FORMAT_BAYER_BGGR_10LE_PACKED,// 10-bit samples bitpacked into 40-bits little endian
+	SERDESCAM_VIDEO_FORMAT_BAYER_BGGR_12LE_PACKED,// 12-bit samples bitpacked into 40-bits little endian
+	SERDESCAM_VIDEO_FORMAT_BAYER_BGGR_16LE,// 16-bit samples little endian
+	SERDESCAM_VIDEO_FORMAT_BAYER_BGGR_16BE,// 16-bit samples big endian
+	SERDESCAM_VIDEO_FORMAT_JPEG,
+	SERDESCAM_VIDEO_FORMAT_UYVY_422_12LE_PACKED,// packed YUV 4:2:2, 24bpp, Cb Y0 Cr Y1, bitpacked
+	SERDESCAM_VIDEO_FORMAT_YUYV_422_12LE_PACKED,// packed YUV 4:2:2, 24bpp, Y0 Cb Y1 Cr, bitpacked
+	SERDESCAM_VIDEO_FORMAT_YVYU_422_12LE_PACKED,// packed YUV 4:2:2, 24bpp, Y0 Cr Y1 Cb, bitpacked
+	SERDESCAM_VIDEO_FORMAT_VYUY_422_12LE_PACKED,// packed YUV 4:2:2, 24bpp, Cr Y0 Cb Y1, bitpacked
+	SERDESCAM_VIDEO_FORMAT_YUV422_10LE_PLANAR,// planar YUV 4:2:2, 20bpp, (1 Cr & Cb sample per 2x1 Y samples), little-endian
+	SERDESCAM_VIDEO_FORMAT_YUV422_16LE_PLANAR,// planar YUV 4:2:2, 32bpp, (1 Cr & Cb sample per 2x1 Y samples), little-endian
+	SERDESCAM_VIDEO_FORMAT_RGB565, // packed RGB 5:6:5, 16bpp, RGBRGB...
+	SERDESCAM_VIDEO_FORMAT_RGB666, // packed RGB 6:6:6, 18bpp, RGBRGB...
+	SERDESCAM_VIDEO_FORMAT_RAW_11x2,
+	SERDESCAM_VIDEO_FORMAT_RAW_12x2,
+	SERDESCAM_VIDEO_FORMAT_RAW_14,
+	// NOTE: CSI2 formats are only used internal to VSPY
+	// Firmware should flag video as CSI2 source types
+	// Vspy will then convert formats into the proper CSI2 version
+	SERDESCAM_VIDEO_FORMAT_CSI2_UYVY_422_8, // packed YUV 4:2:2, 16bpp, Cb Y0 Cr Y1
+	SERDESCAM_VIDEO_FORMAT_CSI2_YUYV_422_8, // packed YUV 4:2:2, 16bpp, Y0 Cb Y1 Cr
+	SERDESCAM_VIDEO_FORMAT_CSI2_YVYU_422_8, // packed YUV 4:2:2, 16bpp, Y0 Cr Y1 Cb
+	SERDESCAM_VIDEO_FORMAT_CSI2_VYUY_422_8, // packed YUV 4:2:2, 16bpp, Cr Y0 Cb Y1
+	SERDESCAM_VIDEO_FORMAT_CSI2_UYVY_422_10LE_PACKED,// packed YUV 4:2:2, 20bpp, Cb Y0 Cr Y1, bitpacked
+	SERDESCAM_VIDEO_FORMAT_CSI2_YUYV_422_10LE_PACKED,// packed YUV 4:2:2, 20bpp, Y0 Cb Y1 Cr, FOURCC Y210 bitpacked
+	SERDESCAM_VIDEO_FORMAT_CSI2_YVYU_422_10LE_PACKED,// packed YUV 4:2:2, 20bpp, Y0 Cr Y1 Cb, bitpacked
+	SERDESCAM_VIDEO_FORMAT_CSI2_VYUY_422_10LE_PACKED,// packed YUV 4:2:2, 20bpp, Cr Y0 Cb Y1, bitpacked
+	SERDESCAM_VIDEO_FORMAT_CSI2_UYVY_422_12LE_PACKED,// packed YUV 4:2:2, 24bpp, Cb Y0 Cr Y1, bitpacked
+	SERDESCAM_VIDEO_FORMAT_CSI2_YUYV_422_12LE_PACKED,// packed YUV 4:2:2, 24bpp, Y0 Cb Y1 Cr, bitpacked
+	SERDESCAM_VIDEO_FORMAT_CSI2_YVYU_422_12LE_PACKED,// packed YUV 4:2:2, 24bpp, Y0 Cr Y1 Cb, bitpacked
+	SERDESCAM_VIDEO_FORMAT_CSI2_VYUY_422_12LE_PACKED,// packed YUV 4:2:2, 24bpp, Cr Y0 Cb Y1, bitpacked
+	SERDESCAM_VIDEO_FORMAT_CSI2_RGB565, // packed RGB 5:6:5, 16bpp, BGRBGR...
+	SERDESCAM_VIDEO_FORMAT_CSI2_RGB666, // packed RGB 6:6:6, 18bpp, BGRBGR...
+	SERDESCAM_VIDEO_FORMAT_CSI2_RGB888, // packed RGB 8:8:8, 24bpp, BGRBGR...
+	SERDESCAM_VIDEO_FORMAT_CSI2_BAYER_BGGR_8,
+	SERDESCAM_VIDEO_FORMAT_CSI2_BAYER_BGGR_10LE_PACKED,// 10-bit samples bitpacked into 40-bits little endian
+	SERDESCAM_VIDEO_FORMAT_CSI2_BAYER_BGGR_12LE_PACKED,// 12-bit samples bitpacked into 40-bits little endian
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_8,  // e.g. bayer 8 bit, gray 8 bit
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_10, // e.g. bayer 10 bit, gray 10 bit
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_11x2,
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_12,
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_12x2,
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_14,
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_16, // e.g. planar YUV 4:2:2, 16bpp, 8 bit samples
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_20, // e.g. planar YUV 4:2:2, 20bpp, 10 bit samples
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_24, // e.g. packed RGB 8:8:8 24bpp, 8 bit samples
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_30, // e.g. planar YUV 4:4:4, 30bpp, 10 bit samples
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_32, // e.g. packed ARGB 8:8:8:8, 32bpp, 8 bit samples
+	SERDESCAM_VIDEO_FORMAT_CSI2_RAW_36,
+	// NOTE: new entries must be appended to maintain backwards compatibility
+	// insert new entries before this
+	SERDESCAM_VIDEO_FORMAT_COUNT,
+};
+
+typedef struct SERDESCAM_SETTINGS_t
+{
+	/* bit0: enable
+	 * bit1: RTSP stream enable
+	 * bit2: auto detect resolution
+	 */
+	uint32_t flags;
+	uint8_t mode;// passthrough, tap, etc
+	uint8_t rsvd1;
+	uint8_t bitPos;
+	uint8_t videoFormat;// bytes per pixel
+	uint16_t resWidth;
+	uint16_t resHeight;
+	uint8_t frameSkip;// skip every nth frame
+	uint8_t rsvd2[19];
+} SERDESCAM_SETTINGS;
+#define SERDESCAM_SETTINGS_SIZE 32
+
+#define SERDESPOC_SETTINGS_MODE_DISABLED 0x00
+#define SERDESPOC_SETTINGS_MODE_SUPPLY 0x01
+#define SERDESPOC_SETTINGS_MODE_SERIALIZER 0x02
+
+typedef struct SERDESPOC_SETTINGS_t
+{
+	uint8_t mode;// no poc, generated supply, serializer passthrough
+	uint8_t rsvd[6];
+	uint8_t voltage;// generated voltage
+	uint16_t chksum;// checksum to protect settings structure (don't want corrupt voltage settings)
+} SERDESPOC_SETTINGS;
+#define SERDESPOC_SETTINGS_SIZE 10
 
 #define ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX  0x01
 #define ETHERNET_SETTINGS2_FLAG_AUTO_NEG     0x02

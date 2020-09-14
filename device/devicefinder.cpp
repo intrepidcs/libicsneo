@@ -46,6 +46,26 @@ static std::vector<DeviceType> supportedDevices = {
 	RADGigalogETH::DEVICE_TYPE,
 	#endif
 
+	#ifdef __RADGIGALOG_USB_H_
+	RADGigalogUSB::DEVICE_TYPE,
+	#endif
+
+	#ifdef __RADGIGASTAR_ETH_H_
+	RADGigastarETH::DEVICE_TYPE,
+	#endif
+
+	#ifdef __RADGIGASTAR_USB_H_
+	RADGigastarUSB::DEVICE_TYPE,
+	#endif
+
+	#ifdef __RADMOON2_H_
+	RADMoon2::DEVICE_TYPE,
+	#endif
+
+	#ifdef __RADMOONDUO_H_
+	RADMoonDuo::DEVICE_TYPE,
+	#endif
+
 	#ifdef __RADPLUTOUSB_H_
 	RADPlutoUSB::DEVICE_TYPE,
 	#endif
@@ -134,6 +154,26 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 
 	#ifdef __RADGIGALOG_ETH_H_
 	findResults.push_back(RADGigalogETH::Find(pcapDevices));
+	#endif
+
+	#ifdef __RADGIGALOG_USB_H_
+	findResults.push_back(RADGigalogUSB::Find());
+	#endif
+
+	#ifdef __RADGIGASTAR_ETH_H_
+	findResults.push_back(RADGigastarETH::Find(pcapDevices));
+	#endif
+
+	#ifdef __RADGIGASTAR_USB_H_
+	findResults.push_back(RADGigastarUSB::Find());
+	#endif
+
+	#ifdef __RADMOON2_H_
+	findResults.push_back(RADMoon2::Find());
+	#endif
+
+	#ifdef __RADMOONDUO_H_
+	findResults.push_back(RADMoonDuo::Find());
 	#endif
 
 	#ifdef __RADPLUTOUSB_H_

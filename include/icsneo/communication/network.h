@@ -115,6 +115,10 @@ public:
 		FlexRayControl = 243,
 		HW_COM_Latency_Test = 512,
 		Device_Status = 513,
+		I2C2 = 517,
+		I2C3 = 518,
+		I2C4 = 519,
+		Ethernet2 = 520,
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};
@@ -195,6 +199,7 @@ public:
 				return Type::Invalid;
 			case NetID::Ethernet:
 			case NetID::Ethernet_DAQ:
+			case NetID::Ethernet2:
 			case NetID::OP_Ethernet1:
 			case NetID::OP_Ethernet2:
 			case NetID::OP_Ethernet3:
@@ -416,6 +421,14 @@ public:
 				return "HW COM Latency Test";
 			case NetID::Device_Status:
 				return "Device Status";
+			case NetID::I2C2:
+				return "I2C 2";
+			case NetID::I2C3:
+				return "I2C 3";
+			case NetID::I2C4:
+				return "I2C 4";
+			case NetID::Ethernet2:
+				return "Ethernet 2";
 			case NetID::Any:
 			case NetID::Invalid:
 				break;
@@ -552,6 +565,10 @@ private:
 #define ICSNEO_NETID_LSFTCAN2 99
 #define ICSNEO_NETID_HW_COM_LATENCY_TEST 512
 #define ICSNEO_NETID_DEVICE_STATUS 513
+#define ICSNEO_NETID_I2C2 517
+#define ICSNEO_NETID_I2C3 518
+#define ICSNEO_NETID_I2C4 519
+#define ICSNEO_NETID_ETHERNET2 520
 #define ICSNEO_NETID_ANY 0xfffe // Never actually set as type, but used as flag for filtering
 #define ICSNEO_NETID_INVALID 0xffff
 

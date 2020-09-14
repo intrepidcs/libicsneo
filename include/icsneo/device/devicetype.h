@@ -35,7 +35,13 @@ public:
 		RADPluto = (0x00000009),
 		VCAN4_2EL = (0x0000000a),
 		RADIO_CANHUB = (0x0000000b),
+		NEOECU12 = (0x0000000c),
+		OBD2_LCBADGE = (0x0000000d),
+		RADMoonDuo = (0x0000000e),
 		VCAN3 = (0x00000010),
+		RADJupiter = (0x00000011),
+		VCAN4_IND = (0x00000012),
+		RADGigastar = (0x00000013),
 		EtherBADGE = (0x00000016),
 		RED = (0x00000040),
 		ECU = (0x00000080),
@@ -90,9 +96,21 @@ public:
 			case VCAN4_2EL:
 				return "ValueCAN 4-2EL";
 			case RADIO_CANHUB:
-				return "RADIO_CANHUB";
+				return "RAD-IO2 CANHub";
+			case NEOECU12:
+				return "neoECU 12";
+			case OBD2_LCBADGE:
+				return "neoOBD2 LC BADGE";
+			case RADMoonDuo:
+				return "RAD-Moon Duo";
 			case VCAN3:
 				return "ValueCAN 3";
+			case RADJupiter:
+				return "RAD-Jupiter";
+			case VCAN4_IND:
+				return "ValueCAN 4 Industrial";
+			case RADGigastar:
+				return "RAD-Gigastar";
 			case EtherBADGE:
 				return "EtherBADGE";
 			case RED:
@@ -181,7 +199,13 @@ private:
 #define ICSNEO_DEVICETYPE_RADPLUTO ((devicetype_t)0x00000009)
 #define ICSNEO_DEVICETYPE_VCAN4_2EL ((devicetype_t)0x0000000a)
 #define ICSNEO_DEVICETYPE_RADIO_CANHUB ((devicetype_t)0x0000000b)
+#define ICSNEO_DEVICETYPE_NEOECU12 ((devicetype_t)0x0000000c)
+#define ICSNEO_DEVICETYPE_OBD2_LCBADGE ((devicetype_t)0x0000000d)
+#define ICSNEO_DEVICETYPE_RADMOONDUO ((devicetype_t)0x0000000e)
 #define ICSNEO_DEVICETYPE_VCAN3 ((devicetype_t)0x00000010)
+#define ICSNEO_DEVICETYPE_RADJUPITER ((devicetype_t)0x00000011)
+#define ICSNEO_DEVICETYPE_VCAN4_IND ((devicetype_t)0x00000012)
+#define ICSNEO_DEVICETYPE_RADGIGASTAR ((devicetype_t)0x00000013)
 #define ICSNEO_DEVICETYPE_ETHERBADGE ((devicetype_t)0x00000016)
 #define ICSNEO_DEVICETYPE_RED ((devicetype_t)0x00000040)
 #define ICSNEO_DEVICETYPE_ECU ((devicetype_t)0x00000080)

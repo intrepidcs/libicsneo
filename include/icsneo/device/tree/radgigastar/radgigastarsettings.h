@@ -1,5 +1,5 @@
-#ifndef __RADGIGALOGSETTINGS_H_
-#define __RADGIGALOGSETTINGS_H_
+#ifndef __RADGIGASTARSETTINGS_H_
+#define __RADGIGASTARSETTINGS_H_
 
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
@@ -28,10 +28,6 @@ typedef struct {
 	CANFD_SETTINGS canfd5;
 	CAN_SETTINGS can6;
 	CANFD_SETTINGS canfd6;
-	CAN_SETTINGS can7;
-	CANFD_SETTINGS canfd7;
-	CAN_SETTINGS can8;
-	CANFD_SETTINGS canfd8;
 
 	uint16_t network_enables;
 	uint16_t network_enables_2;
@@ -57,8 +53,6 @@ typedef struct {
 
 	STextAPISettings text_api;
 	uint64_t termination_enables;
-	uint8_t rsvd1[8];// previously ETHERNET_SETTINGS
-	uint8_t rsvd2[8];// previously ETHERNET10G_SETTINGS
 
 	DISK_SETTINGS disk;
 
@@ -66,39 +60,39 @@ typedef struct {
 	struct
 	{
 		uint16_t hwComLatencyTestEn : 1;
-		uint16_t disableUsbCheckOnBoot : 1;
-		uint16_t reserved : 14;
+		uint16_t reserved : 15;
 	} flags;
-	ETHERNET_SETTINGS2 ethernet;
-
-	SERDESCAM_SETTINGS serdescam1;
-	ETHERNET10G_SETTINGS ethernet10g;
+	ETHERNET_SETTINGS2 ethernet1;
+	ETHERNET_SETTINGS2 ethernet2;
 
 	LIN_SETTINGS lin1;
 
+    OP_ETH_GENERAL_SETTINGS opEthGen;
+    OP_ETH_SETTINGS opEth1;
+    OP_ETH_SETTINGS opEth2;
+
+	SERDESCAM_SETTINGS serdescam1;
 	SERDESPOC_SETTINGS serdespoc;
 	LOGGER_SETTINGS logger;
 	SERDESCAM_SETTINGS serdescam2;
 	SERDESCAM_SETTINGS serdescam3;
 	SERDESCAM_SETTINGS serdescam4;
-
-	ETHERNET_SETTINGS2 ethernet2;
-	uint16_t network_enables_4;
 	RAD_REPORTING_SETTINGS reporting;
-} radgigalog_settings_t;
+	uint16_t network_enables_4;
+} radgigastar_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-static_assert(sizeof(radgigalog_settings_t) == 666, "RADGigalog settings size mismatch");
+static_assert(sizeof(radgigastar_settings_t) == 634, "RADGigastar settings size mismatch");
 
 #include <iostream>
 
-class RADGigalogSettings : public IDeviceSettings {
+class RADGigastarSettings : public IDeviceSettings {
 public:
-	RADGigalogSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radgigalog_settings_t)) {}
+	RADGigastarSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radgigastar_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<radgigalog_settings_t>();
+		auto cfg = getStructurePointer<radgigastar_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -114,16 +108,12 @@ public:
 				return &(cfg->can5);
 			case Network::NetID::HSCAN5:
 				return &(cfg->can6);
-			case Network::NetID::HSCAN6:
-				return &(cfg->can7);
-			case Network::NetID::HSCAN7:
-				return &(cfg->can8);
 			default:
 				return nullptr;
 		}
 	}
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<radgigalog_settings_t>();
+		auto cfg = getStructurePointer<radgigastar_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -139,10 +129,6 @@ public:
 				return &(cfg->canfd5);
 			case Network::NetID::HSCAN5:
 				return &(cfg->canfd6);
-			case Network::NetID::HSCAN6:
-				return &(cfg->canfd7);
-			case Network::NetID::HSCAN7:
-				return &(cfg->canfd8);
 			default:
 				return nullptr;
 		}
