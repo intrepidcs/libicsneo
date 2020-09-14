@@ -78,21 +78,21 @@ public:
 			case BLUE:
 				return "neoVI BLUE";
 			case ECU_AVB:
-				return "neoECU AVB";
+				return "neoECU AVB/TSN";
 			case RADSupermoon:
-				return "RADSupermoon";
+				return "RAD-Supermoon";
 			case DW_VCAN:
 				return "DW_VCAN";
 			case RADMoon2:
-				return "RADMoon 2";
+				return "RAD-Moon 2";
 			case RADGigalog:
-				return "RADGigalog";
+				return "RAD-Gigalog";
 			case VCAN4_1:
 				return "ValueCAN 4-1";
 			case FIRE:
 				return "neoVI FIRE";
 			case RADPluto:
-				return "RADPluto";
+				return "RAD-Pluto";
 			case VCAN4_2EL:
 				return "ValueCAN 4-2EL";
 			case RADIO_CANHUB:
@@ -134,7 +134,7 @@ public:
 			case ION:
 				return "neoVI ION";
 			case RADStar:
-				return "RADStar";
+				return "RAD-Star";
 			case VCAN4_4:
 				return "ValueCAN 4-4";
 			case VCAN4_2:
@@ -150,9 +150,9 @@ public:
 			case Flex:
 				return "neoVI Flex";
 			case RADGalaxy:
-				return "RADGalaxy";
+				return "RAD-Galaxy";
 			case RADStar2:
-				return "RADStar 2";
+				return "RAD-Star 2";
 			case VividCAN:
 				return "VividCAN";
 			case OBD2_SIM:
