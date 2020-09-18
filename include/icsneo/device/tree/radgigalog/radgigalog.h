@@ -12,7 +12,7 @@ namespace icsneo {
 class RADGigalog : public Device {
 public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADGigalog;
-	static constexpr const char* SERIAL_START = "RG";
+	static constexpr const char* SERIAL_START = "GL";
 
 protected:
 	RADGigalog(neodevice_t neodevice) : Device(neodevice) {
