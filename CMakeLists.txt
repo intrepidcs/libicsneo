@@ -124,6 +124,7 @@ set(SRC_FILES
 	communication/packet/ethernetpacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
+	communication/ethernetpacketizer.cpp
 	communication/packetizer.cpp
 	communication/multichannelcommunication.cpp
 	communication/communication.cpp
