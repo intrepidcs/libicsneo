@@ -56,11 +56,21 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 bool HardwareEthernetPacket::EncodeFromMessage(const EthernetMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t&) {
 	const size_t unpaddedSize = message.data.size();
 	size_t paddedSize = unpaddedSize;
+	uint16_t description = message.description;
 
 	if(!message.noPadding && unpaddedSize < 60)
 		paddedSize = 60; // Pad out short messages
 
-	size_t sizeWithHeader = paddedSize + 5; // DescriptionID and Premption Flags
+	size_t sizeWithHeader = paddedSize + 4; // DescriptionID and Padded Count
+
+	// Description ID Most Significant bit is used to identify preemption frames
+	if(description & 0x8000)
+		return false;
+
+	if(message.preemptionEnabled) {
+		sizeWithHeader++; // Make space for the preemption flags
+		description |= 0x8000;
+	}
 	
 	bytestream.reserve(sizeWithHeader + 8); // Also reserve space for the bytes we'll use later on
 	bytestream.resize(sizeWithHeader);
@@ -71,11 +81,10 @@ bool HardwareEthernetPacket::EncodeFromMessage(const EthernetMessage& message, s
 	bytestream[index++] = uint8_t(paddedSize >> 8);
 
 	// Description ID, big endian
-	bytestream[index++] = uint8_t(message.description >> 8);
-	bytestream[index++] = uint8_t(message.description);
+	bytestream[index++] = uint8_t(description >> 8);
+	bytestream[index++] = uint8_t(description);
 
-	// Yes, we reserved and allocated space for the preemption flags even if we're not putting them there
-	// And yes, the data is intended to move over one byte
+	// The header is one byte larger if preemption is enabled, shifting the data
 	if(message.preemptionEnabled)
 		bytestream[index++] = message.preemptionFlags;
 
