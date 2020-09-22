@@ -75,12 +75,12 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 				packet.network = Network((bytes[5] << 8) | bytes[4]); // Long packets have their netid stored as little endian on bytes 5 and 6
 				currentIndex += 4;
 
-				/* Long packets can't have a length less than 4, because that would indicate a negative payload size.
+				/* Long packets can't have a length less than 6, because that would indicate a negative payload size.
 				 * Unlike the short packet length, the long packet length encompasses everything from the 0xAA to the
 				 * end of the payload. The short packet length, for reference, only encompasses the length of the actual
 				 * payload, and not the header or checksum.
 				 */
-				if(packetLength < 4 || packetLength > 4000) {
+				if(packetLength < 6 || packetLength > 4000) {
 					bytes.pop_front();
 					EventManager::GetInstance().add(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 					state = ReadState::SearchForHeader;
