@@ -42,6 +42,7 @@ static void NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t
 	oldmsg.NumberBytesData = (uint8_t)std::min(newmsg.length, (size_t)255);
 	oldmsg.NumberBytesHeader = 4;
 	oldmsg.ExtraDataPtr = (void*)newmsg.data;
+	oldmsg.ExtraDataPtrEnabled = newmsg.length > 8 ? 1 :0;
 	memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
 	oldmsg.ArbIDOrHeader = *(uint32_t*)newmsg.header;
 	oldmsg.NetworkID = (uint8_t)newmsg.netid; // Note: NetID remapping from the original API is not supported
