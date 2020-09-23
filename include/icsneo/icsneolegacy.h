@@ -56,6 +56,7 @@ extern int DLLExport icsneoGetRADStar2Settings(void* hObject, SRADStar2Settings*
 extern int DLLExport icsneoSetRADStar2Settings(void* hObject, SRADStar2Settings* pSettings, int iNumBytes, int bSaveToEEPROM);
 
 extern int DLLExport icsneoSetBitRate(void* hObject, int BitRate, int NetworkID);
+extern int DLLExport icsneoSetFDBitRate(void* hObject, int BitRate, int NetworkID);
 extern int DLLExport icsneoGetDeviceParameters(void* hObject, char* pParameter, char* pValues, short ValuesLength);
 extern int DLLExport icsneoSetDeviceParameters(void* hObject, char* pParmValue, int* pErrorIndex, int bSaveToEEPROM);
 

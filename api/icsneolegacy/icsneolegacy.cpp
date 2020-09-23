@@ -409,6 +409,15 @@ int icsneoSetBitRate(void* hObject, int BitRate, int NetworkID) {
 	return icsneo_settingsApply(device);
 }
 
+int icsneoSetFDBitRate(void* hObject, int BitRate, int NetworkID) {
+    if(!icsneoValidateHObject(hObject))
+        return false;
+    neodevice_t* device = (neodevice_t*)hObject;
+    if(!icsneo_setFDBaudrate(device, (uint16_t)NetworkID, BitRate))
+        return false;
+    return icsneo_settingsApply(device);
+}
+
 int icsneoGetDeviceParameters(void* hObject, char* pParameter, char* pValues, short ValuesLength) {
 	// TODO Implement
 	return false;
