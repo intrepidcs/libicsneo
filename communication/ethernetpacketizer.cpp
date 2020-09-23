@@ -1,6 +1,7 @@
 #include "icsneo/communication/ethernetpacketizer.h"
 #include <algorithm>
 #include <iterator>
+#include <cstring>
 
 using namespace icsneo;
 
