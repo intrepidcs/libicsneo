@@ -346,7 +346,7 @@ void VCP::readTask() {
 	IOTaskState state = LAUNCH;
 	DWORD bytesRead = 0;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing) {
+	while(!closing && !isDisconnected()) {
 		switch(state) {
 			case LAUNCH: {
 				COMSTAT comStatus;
@@ -365,8 +365,15 @@ void VCP::readTask() {
 				auto lastError = GetLastError();
 				if(lastError == ERROR_IO_PENDING)
 					state = WAIT;
-				else if(lastError != ERROR_SUCCESS)
-					report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+				else if(lastError != ERROR_SUCCESS) {
+					if(lastError == ERROR_ACCESS_DENIED) {
+						if(!isDisconnected()) {
+							disconnected = true;
+							report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+						}
+					} else
+						report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+				}
 			}
 			break;
 			case WAIT: {
@@ -392,7 +399,7 @@ void VCP::writeTask() {
 	VCP::WriteOperation writeOp;
 	DWORD bytesWritten = 0;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing) {
+	while(!closing && !isDisconnected()) {
 		switch(state) {
 			case LAUNCH: {
 				if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
@@ -406,7 +413,12 @@ void VCP::writeTask() {
 				if(winerr == ERROR_IO_PENDING) {
 					state = WAIT;
 				}
-				else
+				else if(winerr == ERROR_ACCESS_DENIED) {
+					if(!isDisconnected()) {
+						disconnected = true;
+						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+					}
+				} else
 					report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 			}
 			break;

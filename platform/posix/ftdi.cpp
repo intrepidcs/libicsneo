@@ -1,3 +1,4 @@
+#include "libusb-1.0/libusb.h"
 #include "icsneo/platform/ftdi.h"
 #include <iostream>
 #include <stdio.h>
@@ -81,7 +82,7 @@ bool FTDI::open() {
 }
 
 bool FTDI::close() {
-	if(!isOpen()) {
+	if(!isOpen() && !isDisconnected()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
@@ -94,9 +95,12 @@ bool FTDI::close() {
 	if(writeThread.joinable())
 		writeThread.join();
 
-	bool ret = ftdi.closeDevice();
-	if(!ret)
-		report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
+	bool ret = true;
+	if(!isDisconnected()) {
+		ret = ftdi.closeDevice();
+		if(!ret)
+			report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
+	}
 	
 	uint8_t flush;
 	WriteOperation flushop;
@@ -184,11 +188,17 @@ void FTDI::readTask() {
 	constexpr size_t READ_BUFFER_SIZE = 8;
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing) {
+	while(!closing && !isDisconnected()) {
 		auto readBytes = ftdi.read(readbuf, READ_BUFFER_SIZE);
-		if(readBytes < 0)
-			report(APIEvent::Type::FailedToRead, APIEvent::Severity::EventWarning);
-		else
+		if(readBytes < 0) {
+			if(readBytes == LIBUSB_ERROR_NO_DEVICE || readBytes == LIBUSB_ERROR_PIPE) {
+				if(!isDisconnected()) {
+					disconnected = true;
+					report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+				}
+			} else
+				report(APIEvent::Type::FailedToRead, APIEvent::Severity::EventWarning);
+		} else
 			readQueue.enqueue_bulk(readbuf, readBytes);
 	}
 }
@@ -196,16 +206,23 @@ void FTDI::readTask() {
 void FTDI::writeTask() {
 	WriteOperation writeOp;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing) {
+	while(!closing && !isDisconnected()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
 		size_t offset = 0;
 		while(offset < writeOp.bytes.size()) {
 			auto writeBytes = ftdi.write(writeOp.bytes.data() + offset, (int)writeOp.bytes.size() - offset);
-			if(writeBytes < 0)
-				report(APIEvent::Type::FailedToWrite, APIEvent::Severity::EventWarning);
-			else
+			if(writeBytes < 0) {
+				if(writeBytes == LIBUSB_ERROR_NO_DEVICE || writeBytes == LIBUSB_ERROR_PIPE) {
+					if(!isDisconnected()) {
+						disconnected = true;
+						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+					}
+					break;
+				} else
+					report(APIEvent::Type::FailedToWrite, APIEvent::Severity::EventWarning);
+			} else
 				offset += writeBytes;
 		}
 		

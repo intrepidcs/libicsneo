@@ -43,7 +43,7 @@ void Communication::joinThreads() {
 bool Communication::close() {
 	joinThreads();
 
-	if(!isOpen()) {
+	if(!isOpen() && !isDisconnected()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
@@ -53,6 +53,10 @@ bool Communication::close() {
 
 bool Communication::isOpen() {
 	return driver->isOpen();
+}
+
+bool Communication::isDisconnected() {
+	return driver->isDisconnected();
 }
 
 bool Communication::sendPacket(std::vector<uint8_t>& bytes) {

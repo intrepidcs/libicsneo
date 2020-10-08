@@ -37,6 +37,7 @@ public:
 	bool open();
 	bool close();
 	bool isOpen();
+	bool isDisconnected();
 	virtual void spawnThreads();
 	virtual void joinThreads();
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return driver->write(bytes); }

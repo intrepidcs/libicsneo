@@ -49,6 +49,7 @@ public:
 	virtual bool close();
 	virtual bool isOnline() const { return online; }
 	virtual bool isOpen() const { return com->isOpen(); }
+	virtual bool isDisconnected() const { return com->isDisconnected(); }
 	virtual bool goOnline();
 	virtual bool goOffline();
 

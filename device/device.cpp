@@ -238,7 +238,7 @@ bool Device::open() {
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				// Check if we got a message, and if not, if settings are being applied
 				if(!receivedMessage && !settings->applyingSettings) {
-					if(!stopHeartbeatThread)
+					if(!stopHeartbeatThread && !isDisconnected())
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 					break;
 				}
@@ -315,6 +315,11 @@ bool Device::goOnline() {
 
 bool Device::goOffline() {
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOffline(); return true; });
+
+	if(isDisconnected()) {
+		online = false;
+		return true;
+	}
 
 	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
 		return false;

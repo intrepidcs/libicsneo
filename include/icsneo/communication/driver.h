@@ -20,6 +20,7 @@ public:
 	virtual ~Driver() {}
 	virtual bool open() = 0;
 	virtual bool isOpen() = 0;
+	virtual bool isDisconnected() { return disconnected; };
 	virtual bool close() = 0;
 	virtual bool read(std::vector<uint8_t>& bytes, size_t limit = 0);
 	virtual bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 0);
@@ -47,6 +48,7 @@ protected:
 	moodycamel::BlockingConcurrentQueue<WriteOperation> writeQueue;
 	std::thread readThread, writeThread;
 	std::atomic<bool> closing{false};
+	std::atomic<bool> disconnected{false};
 };
 
 }

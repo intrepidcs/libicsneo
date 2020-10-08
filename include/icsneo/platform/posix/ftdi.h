@@ -19,7 +19,7 @@ public:
 	static std::vector<neodevice_t> FindByProduct(int product);
 
 	FTDI(const device_eventhandler_t& err, neodevice_t& forDevice);
-	~FTDI() { close(); }
+	~FTDI() { if(isOpen()) close(); }
 	bool open();
 	bool close();
 	bool isOpen() { return ftdi.isOpen(); }

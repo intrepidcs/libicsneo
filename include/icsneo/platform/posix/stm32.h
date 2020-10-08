@@ -24,6 +24,7 @@ public:
 	 * Other POSIX systems (BSDs, QNX, etc) will need bespoke code written in the future
 	 */
 	STM32(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {}
+	~STM32() { if(isOpen()) close(); }
 	static std::vector<neodevice_t> FindByProduct(int product);
 
 	bool open();
@@ -38,6 +39,7 @@ private:
 
 	void readTask();
 	void writeTask();
+	bool fdIsValid();
 };
 
 }

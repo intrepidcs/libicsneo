@@ -26,7 +26,13 @@ bool STM32::open() {
 		return false;
 	}
 
-	fd = ::open(ttyPath.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
+	// Some devices can take a while to boot
+	for(int i = 0; i != 50; ++i) {
+		fd = ::open(ttyPath.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
+		if(fd != -1)
+			break;
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
 	if(!isOpen()) {
 		//std::cout << "Open of " << ttyPath.c_str() << " failed with " << strerror(errno) << ' ';
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
@@ -82,7 +88,7 @@ bool STM32::isOpen() {
 }
 
 bool STM32::close() {
-	if(!isOpen()) {
+	if(!isOpen() && !isDisconnected()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
@@ -117,7 +123,7 @@ void STM32::readTask() {
 	constexpr size_t READ_BUFFER_SIZE = 2048;
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing) {
+	while(!closing && !isDisconnected()) {
 		fd_set rfds = {0};
 		struct timeval tv = {0};
 		FD_SET(fd, &rfds);
@@ -126,19 +132,37 @@ void STM32::readTask() {
 		auto bytesRead = ::read(fd, readbuf, READ_BUFFER_SIZE);
 		if(bytesRead > 0)
 			readQueue.enqueue_bulk(readbuf, bytesRead);
+		else {
+			if(!fdIsValid() && !isDisconnected()) {
+				disconnected = true;
+				report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+			}
+		}
 	}
 }
 
 void STM32::writeTask() {
 	WriteOperation writeOp;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing) {
+	while(!closing && !isDisconnected()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
 		const ssize_t writeSize = (ssize_t)writeOp.bytes.size();
 		ssize_t actualWritten = ::write(fd, writeOp.bytes.data(), writeSize);
-		if(actualWritten != writeSize)
-			report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
+		if(actualWritten != writeSize) {
+			if(!fdIsValid()) {
+				if(!isDisconnected()) {
+					disconnected = true;
+					report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+				}
+			} else
+				report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
+		}
 	}
+}
+
+bool STM32::fdIsValid() {
+	struct termios tty = {};
+	return tcgetattr(fd, &tty) == 0 ? true : false;
 }
