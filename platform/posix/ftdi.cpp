@@ -1,4 +1,3 @@
-#include "libusb-1.0/libusb.h"
 #include "icsneo/platform/ftdi.h"
 #include <iostream>
 #include <stdio.h>
@@ -6,6 +5,7 @@
 #include <memory>
 #include <utility>
 #include <algorithm>
+#include <libusb.h>
 
 using namespace icsneo;
 

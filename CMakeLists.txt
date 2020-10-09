@@ -194,6 +194,7 @@ if(NOT WIN32)
 	set(FTDIPP OFF CACHE INTERNAL "")
 	set(FTDI_EEPROM OFF CACHE INTERNAL "")
 	add_subdirectory(third-party/libftdi)
+	include_directories(${LIBUSB_INCLUDE_DIR})
 endif(NOT WIN32)
 
 # winpcap
