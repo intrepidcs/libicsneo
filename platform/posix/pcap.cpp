@@ -215,7 +215,7 @@ bool PCAP::open() {
 		return false;
 	}
 
-	pcap_setnonblock(interface.fp, 1, errbuf);
+	pcap_setnonblock(interface.fp, 0, errbuf);
 
 	// Create threads
 	readThread = std::thread(&PCAP::readTask, this);
@@ -233,6 +233,7 @@ bool PCAP::close() {
 		return false;
 
 	closing = true; // Signal the threads that we are closing
+	pcap_breakloop(interface.fp);
 	readThread.join();
 	writeThread.join();
 	closing = false;
@@ -249,32 +250,25 @@ bool PCAP::close() {
 }
 
 void PCAP::readTask() {
-	struct pcap_pkthdr* header;
-	const uint8_t* data;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing) {
-		auto readBytes = pcap_next_ex(interface.fp, &header, &data);
-		if(readBytes < 0) {
-			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
-			break;
-		}
-		if(readBytes == 0)
-			continue; // Keep waiting for that packet
+	while (!closing) {
+		pcap_dispatch(interface.fp, -1, [](uint8_t* obj, const struct pcap_pkthdr* header, const uint8_t* data) {
+			PCAP* driver = (PCAP*)obj;
+			EthernetPacket packet(data, header->caplen);
 
-		EthernetPacket packet(data, header->caplen);
+			if(packet.etherType != 0xCAB2)
+				return; // Not a packet to host
 
-		if(packet.etherType != 0xCAB2)
-			continue; // Not a packet to host
+			if(memcmp(packet.destMAC, driver->interface.macAddress, sizeof(packet.destMAC)) != 0 &&
+				memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) != 0 &&
+				memcmp(packet.destMAC, ICS_UNSET_MAC, sizeof(packet.destMAC)) != 0)
+				return; // Packet is not addressed to us or broadcast
 
-		if(memcmp(packet.destMAC, interface.macAddress, sizeof(packet.destMAC)) != 0 &&
-			memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) != 0 &&
-			memcmp(packet.destMAC, ICS_UNSET_MAC, sizeof(packet.destMAC)) != 0)
-			continue; // Packet is not addressed to us or broadcast
+			if(memcmp(packet.srcMAC, driver->deviceMAC, sizeof(driver->deviceMAC)) != 0)
+				return; // Not a packet from the device we're concerned with
 
-		if(memcmp(packet.srcMAC, deviceMAC, sizeof(deviceMAC)) != 0)
-			continue; // Not a packet from the device we're concerned with
-
-		readQueue.enqueue_bulk(packet.payload.data(), packet.payload.size());
+			driver->readQueue.enqueue_bulk(packet.payload.data(), packet.payload.size());
+		}, (uint8_t*)this);
 	}
 }
 
