@@ -46,6 +46,7 @@ static void NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t
 	memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
 	oldmsg.ArbIDOrHeader = *(uint32_t*)newmsg.header;
 	oldmsg.NetworkID = (uint8_t)newmsg.netid; // Note: NetID remapping from the original API is not supported
+	oldmsg.DescriptionID = newmsg.description;
 	oldmsg.StatusBitField = newmsg.status.statusBitfield[0];
 	oldmsg.StatusBitField2 = newmsg.status.statusBitfield[1];
 	oldmsg.StatusBitField3 = newmsg.status.statusBitfield[2];
@@ -221,6 +222,7 @@ int icsneoTxMessagesEx(void* hObject, icsSpyMessage* pMsg, unsigned int lNetwork
 		const icsSpyMessage& oldmsg = pMsg[i];
 		newmsg = {};
 		newmsg.netid = (uint16_t)lNetworkID;
+		newmsg.description = oldmsg.DescriptionID;
 		memcpy(newmsg.header, &oldmsg.ArbIDOrHeader, sizeof(newmsg.header));
 		newmsg.length = oldmsg.NumberBytesData | (oldmsg.NodeID << 8);
 		if (oldmsg.ExtraDataPtr != nullptr)

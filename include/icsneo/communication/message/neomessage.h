@@ -108,7 +108,9 @@ typedef struct {
 	uint8_t header[4];
 	uint16_t netid;
 	uint8_t type;
-	uint8_t reserved[17];
+	uint8_t reserved0;
+	uint16_t description;
+	uint8_t reserved1[14];
 } neomessage_t; // 72 bytes total
 // Any time you add another neomessage_*_t type, make sure to add it to the static_asserts below!
 
@@ -122,7 +124,8 @@ typedef struct {
 	uint16_t netid;
 	uint8_t type;
 	uint8_t dlcOnWire;
-	uint8_t reserved[16];
+	uint16_t description;
+	uint8_t reserved[14];
 } neomessage_can_t;
 
 typedef struct {
@@ -135,7 +138,9 @@ typedef struct {
 	uint8_t reservedHeader[3];
 	uint16_t netid;
 	uint8_t type;
-	uint8_t reserved[17];
+	uint8_t reserved0;
+	uint16_t description;
+	uint8_t reserved1[14];
 } neomessage_eth_t;
 
 #pragma pack(pop)

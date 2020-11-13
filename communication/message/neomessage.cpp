@@ -11,6 +11,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 	neomessage_t neomsg = {}; // Clear out the memory
 	neomsg.netid = (uint32_t)message->network.getNetID();
 	neomsg.type = (uint8_t)type;
+	neomsg.description = message->description;
 	neomsg.length = message->data.size();
 	neomsg.data = message->data.data();
 	neomsg.timestamp = message->timestamp;
@@ -61,6 +62,7 @@ std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t*
 			neomessage_can_t& can = *(neomessage_can_t*)neomessage;
 			auto canmsg = std::make_shared<CANMessage>();
 			canmsg->network = network;
+			canmsg->description = can.description;
 			canmsg->data.insert(canmsg->data.end(), can.data, can.data + can.length);
 			canmsg->arbid = can.arbid;
 			canmsg->isExtended = can.status.extendedFrame;
@@ -74,6 +76,7 @@ std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t*
 			neomessage_eth_t& eth = *(neomessage_eth_t*)neomessage;
 			auto ethmsg = std::make_shared<EthernetMessage>();
 			ethmsg->network = network;
+			ethmsg->description = eth.description;
 			ethmsg->data.insert(ethmsg->data.end(), eth.data, eth.data + eth.length);
 			return ethmsg;
 		}
