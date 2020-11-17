@@ -474,6 +474,8 @@ int main() {
 					for(size_t i = 0; i < canMsg->length; i++) {
 						printf("%02x ", canMsg->data[i]);
 					}
+					if(canMsg->status.transmitMessage)
+						printf("TX%s %04x ", canMsg->status.globalError ? " ERR" : "", canMsg->description);
 					printf("(%"PRIu64")\n", canMsg->timestamp);
 					break;
 				}
@@ -519,6 +521,7 @@ int main() {
 			msg.length = 6;
 			msg.netid = ICSNEO_NETID_HSCAN;
 			msg.data = sendMessageData;
+			msg.description = 0x1c5; // Random description to match the receipt
 			msg.status.canfdFDF = false;
 			msg.status.extendedFrame = false;
 			msg.status.canfdBRS = false;
