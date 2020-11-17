@@ -443,7 +443,7 @@ int main() {
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
 			// Prepare the array of neomessage_t ptrs for reading in the messages
-			neomessage_t* msgs = (neomessage_t*) malloc(msgLimit * sizeof(neomessage_t*));
+			neomessage_t* msgs = (neomessage_t*) malloc(msgLimit * sizeof(neomessage_t));
 
 			// Get messages
 			size_t msgCount = msgLimit;
