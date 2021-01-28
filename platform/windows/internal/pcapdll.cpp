@@ -42,7 +42,7 @@ PCAPDLL::PCAPDLL()
 		}
 	}
 #endif
-	dll = LoadLibrary("wpcap.dll");
+	dll = LoadLibrary(TEXT("wpcap.dll"));
 
 	if(dll == NULL) {
 		closeDLL();
