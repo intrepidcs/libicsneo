@@ -13,10 +13,10 @@
 
 using namespace icsneo;
 
-uint64_t Decoder::GetUInt64FromLEBytes(uint8_t* bytes) {
+uint64_t Decoder::GetUInt64FromLEBytes(const uint8_t* bytes) {
 	uint64_t ret = 0;
 	for(int i = 0; i < 8; i++)
-		ret |= (bytes[i] << (i * 8));
+		ret |= (uint64_t(bytes[i]) << (i * 8));
 	return ret;
 }
 

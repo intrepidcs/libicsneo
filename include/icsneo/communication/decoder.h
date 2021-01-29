@@ -16,7 +16,7 @@ namespace icsneo {
 
 class Decoder {
 public:
-	static uint64_t GetUInt64FromLEBytes(uint8_t* bytes);
+	static uint64_t GetUInt64FromLEBytes(const uint8_t* bytes);
 
 	Decoder(device_eventhandler_t report) : report(report) {}
 	bool decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet);
