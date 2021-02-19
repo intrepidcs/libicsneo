@@ -9,6 +9,7 @@
 #include "icsneo/communication/packet/canpacket.h"
 #include "icsneo/communication/packet/ethernetpacket.h"
 #include "icsneo/communication/packet/flexraypacket.h"
+#include "icsneo/communication/packet/iso9141packet.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -64,6 +65,22 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false; // A nullptr was returned, the packet was malformed
 			}
+			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
+			// The resolution depends on the device
+			result->timestamp *= timestampResolution;
+			result->network = packet->network;
+			return true;
+		}
+		case Network::Type::ISO9141: {
+			if(packet->data.size() < sizeof(HardwareISO9141Packet)) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false;
+			}
+
+			result = iso9141decoder.decodeToMessage(packet->data);
+			if(!result)
+				return false; // A nullptr was returned, more data is required to decode this packet
+
 			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
 			// The resolution depends on the device
 			result->timestamp *= timestampResolution;

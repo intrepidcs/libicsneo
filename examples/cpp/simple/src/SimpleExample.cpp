@@ -176,6 +176,30 @@ int main() {
 					std::cout << std::dec << std::endl;
 					break;
 				}
+				case icsneo::Network::Type::ISO9141: {
+					// Note that the default settings on some devices have ISO9141 disabled by default in favor of LIN
+					// and that this example loads the device defaults at the very end.
+					// A message of type ISO9414 is guaranteed to be an ISO9141Message, so we can static cast safely
+					auto isoMessage = std::static_pointer_cast<icsneo::ISO9141Message>(message);
+
+					std::cout << "\t\tISO 9141-2 ";
+
+					// Print the header bytes
+					std::cout << '(' << std::hex << std::setfill('0') << std::setw(2) << (uint32_t)isoMessage->header[0] << ' ';
+					std::cout << std::setfill('0') << std::setw(2) << (uint32_t)isoMessage->header[1] << ' ';
+					std::cout << std::setfill('0') << std::setw(2) << (uint32_t)isoMessage->header[2] << ") ";
+
+					// Print the data length
+					std::cout << std::dec << " [" << isoMessage->data.size() << "] ";
+
+					// Print the data
+					for(auto& databyte : isoMessage->data)
+						std::cout << std::hex << std::setfill('0') << std::setw(2) << (uint32_t)databyte << ' ';
+
+					// Print the timestamp
+					std::cout << std::dec << '(' << isoMessage->timestamp << " ns since 1/1/2007)\n";
+					break;
+				}
 				default:
 					// Ignoring non-network messages
 					break;

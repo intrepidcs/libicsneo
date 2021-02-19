@@ -122,6 +122,7 @@ set(SRC_FILES
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/ethernetpacket.cpp
+	communication/packet/iso9141packet.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
 	communication/ethernetpacketizer.cpp

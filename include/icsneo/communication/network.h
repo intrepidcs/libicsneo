@@ -20,12 +20,12 @@ public:
 		J1708 = 6,
 		Aux = 7,
 		J1850VPW = 8,
-		ISO = 9,
+		ISO9141 = 9,
 		ISOPIC = 10,
 		Main51 = 11,
 		RED = 12,
 		SCI = 13,
-		ISO2 = 14,
+		ISO9141_2 = 14,
 		ISO14230 = 15,
 		LIN = 16,
 		OP_Ethernet1 = 17,
@@ -57,12 +57,12 @@ public:
 		RED_GET_RTC = 40,
 		// END Device Command Returns
 
-		ISO3 = 41,
+		ISO9141_3 = 41,
 		HSCAN2 = 42,
 		HSCAN3 = 44,
 		OP_Ethernet4 = 45,
 		OP_Ethernet5 = 46,
-		ISO4 = 47,
+		ISO9141_4 = 47,
 		LIN2 = 48,
 		LIN3 = 49,
 		LIN4 = 50,
@@ -132,6 +132,7 @@ public:
 		Ethernet = 6,
 		LSFTCAN = 7,
 		SWCAN = 8,
+		ISO9141 = 9,
 		Any = 0xFE, // Never actually set as type, but used as flag for filtering
 		Other = 0xFF
 	};
@@ -149,6 +150,8 @@ public:
 				return "Other";
 			case Type::Internal:
 				return "Internal";
+			case Type::ISO9141:
+				return "ISO 9141-2";
 			case Type::Ethernet:
 				return "Ethernet";
 			case Type::LSFTCAN:
@@ -219,6 +222,11 @@ public:
 			case NetID::SWCAN:
 			case NetID::SWCAN2:
 				return Type::SWCAN;
+			case NetID::ISO9141:
+			case NetID::ISO9141_2:
+			case NetID::ISO9141_3:
+			case NetID::ISO9141_4:
+				return Type::ISO9141;
 			default:
 				return Type::Other;
 		}
@@ -243,8 +251,8 @@ public:
 				return "Aux";
 			case NetID::J1850VPW:
 				return "J1850 VPW";
-			case NetID::ISO:
-				return "ISO";
+			case NetID::ISO9141:
+				return "ISO 9141";
 			case NetID::ISOPIC:
 				return "ISOPIC";
 			case NetID::Main51:
@@ -253,8 +261,8 @@ public:
 				return "RED";
 			case NetID::SCI:
 				return "SCI";
-			case NetID::ISO2:
-				return "ISO 2";
+			case NetID::ISO9141_2:
+				return "ISO 9141 2";
 			case NetID::ISO14230:
 				return "ISO 14230";
 			case NetID::LIN:
@@ -307,8 +315,8 @@ public:
 				return "RED_HARDWARE_EXCEP";
 			case NetID::RED_GET_RTC:
 				return "RED_GET_RTC";
-			case NetID::ISO3:
-				return "ISO 3";
+			case NetID::ISO9141_3:
+				return "ISO 9141 3";
 			case NetID::HSCAN2:
 				return "HSCAN 2";
 			case NetID::HSCAN3:
@@ -317,8 +325,8 @@ public:
 				return "OP (BR) Ethernet 4";
 			case NetID::OP_Ethernet5:
 				return "OP (BR) Ethernet 5";
-			case NetID::ISO4:
-				return "ISO 4";
+			case NetID::ISO9141_4:
+				return "ISO 9141 4";
 			case NetID::LIN2:
 				return "LIN 2";
 			case NetID::LIN3:
@@ -471,12 +479,12 @@ private:
 #define ICSNEO_NETID_J1708 6
 #define ICSNEO_NETID_AUX 7
 #define ICSNEO_NETID_J1850VPW 8
-#define ICSNEO_NETID_ISO 9
+#define ICSNEO_NETID_ISO9141 9
 #define ICSNEO_NETID_ISOPIC 10
 #define ICSNEO_NETID_MAIN51 11
 #define ICSNEO_NETID_RED 12
 #define ICSNEO_NETID_SCI 13
-#define ICSNEO_NETID_ISO2 14
+#define ICSNEO_NETID_ISO9141_2 14
 #define ICSNEO_NETID_ISO14230 15
 #define ICSNEO_NETID_LIN 16
 #define ICSNEO_NETID_OP_ETHERNET1 17
@@ -508,12 +516,12 @@ private:
 #define ICSNEO_NETID_RED_GET_RTC 40
 // END Device Command Returns
 
-#define ICSNEO_NETID_ISO3 41
+#define ICSNEO_NETID_ISO9141_3 41
 #define ICSNEO_NETID_HSCAN2 42
 #define ICSNEO_NETID_HSCAN3 44
 #define ICSNEO_NETID_OP_ETHERNET4 45
 #define ICSNEO_NETID_OP_ETHERNET5 46
-#define ICSNEO_NETID_ISO4 47
+#define ICSNEO_NETID_ISO9141_4 47
 #define ICSNEO_NETID_LIN2 48
 #define ICSNEO_NETID_LIN3 49
 #define ICSNEO_NETID_LIN4 50
@@ -579,6 +587,9 @@ private:
 #define ICSNEO_NETWORK_TYPE_FLEXRAY 4
 #define ICSNEO_NETWORK_TYPE_MOST 5
 #define ICSNEO_NETWORK_TYPE_ETHERNET 6
+#define ICSNEO_NETWORK_TYPE_LSFTCAN 7
+#define ICSNEO_NETWORK_TYPE_SWCAN 8
+#define ICSNEO_NETWORK_TYPE_ISO9141 9
 #define ICSNEO_NETWORK_TYPE_ANY 0xFE // Never actually set as type, but used as flag for filtering
 #define ICSNEO_NETWORK_TYPE_OTHER 0xFF
 #endif

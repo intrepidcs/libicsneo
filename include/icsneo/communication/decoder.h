@@ -7,6 +7,7 @@
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/packet.h"
 #include "icsneo/communication/network.h"
+#include "icsneo/communication/packet/iso9141packet.h"
 #include "icsneo/api/eventmanager.h"
 #include <queue>
 #include <vector>
@@ -25,6 +26,7 @@ public:
 
 private:
 	device_eventhandler_t report;
+	HardwareISO9141Packet::Decoder iso9141decoder;
 
 #pragma pack(push, 1)
 
