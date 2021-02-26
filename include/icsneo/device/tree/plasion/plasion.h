@@ -11,32 +11,7 @@
 namespace icsneo {
 
 class Plasion : public Device {
-protected:
-	virtual std::shared_ptr<Communication> makeCommunication(
-		std::unique_ptr<Driver> transport,
-		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
-		std::unique_ptr<Encoder> encoder,
-		std::unique_ptr<Decoder> decoder
-	) override {
-		return std::make_shared<MultiChannelCommunication>(
-			report,
-			std::move(transport),
-			makeConfiguredPacketizer,
-			std::move(encoder),
-			std::move(decoder)
-		);
-	}
-
-	// TODO This is done so that Plasion can still transmit it's basic networks, awaiting slave VNET support
-	virtual bool isSupportedRXNetwork(const Network&) const override { return true; }
-	virtual bool isSupportedTXNetwork(const Network&) const override { return true; }
-	virtual void setupExtensions() override {
-		std::vector<Network> flexRayControllers;
-		flexRayControllers.push_back(Network::NetID::FlexRay);
-		flexRayControllers.push_back(Network::NetID::FlexRay); // TODO Becomes FlexRay2 if not in coldstart mode
-		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
-	}
-
+public:
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
 			Network::NetID::HSCAN,
@@ -64,6 +39,32 @@ protected:
 			Network::NetID::FlexRay
 		};
 		return supportedNetworks;
+	}
+
+protected:
+	virtual std::shared_ptr<Communication> makeCommunication(
+		std::unique_ptr<Driver> transport,
+		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
+		std::unique_ptr<Encoder> encoder,
+		std::unique_ptr<Decoder> decoder
+	) override {
+		return std::make_shared<MultiChannelCommunication>(
+			report,
+			std::move(transport),
+			makeConfiguredPacketizer,
+			std::move(encoder),
+			std::move(decoder)
+		);
+	}
+
+	// TODO This is done so that Plasion can still transmit it's basic networks, awaiting slave VNET support
+	virtual bool isSupportedRXNetwork(const Network&) const override { return true; }
+	virtual bool isSupportedTXNetwork(const Network&) const override { return true; }
+	virtual void setupExtensions() override {
+		std::vector<Network> flexRayControllers;
+		flexRayControllers.push_back(Network::NetID::FlexRay);
+		flexRayControllers.push_back(Network::NetID::FlexRay); // TODO Becomes FlexRay2 if not in coldstart mode
+		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
 	}
 
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
