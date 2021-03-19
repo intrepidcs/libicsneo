@@ -3,6 +3,7 @@
 #include <vector>
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
+#include <IOKit/usb/IOUSBLib.h>
 #include <IOKit/serial/IOSerialKeys.h>
 
 using namespace icsneo;
@@ -104,15 +105,12 @@ std::vector<neodevice_t> STM32::FindByProduct(int product) {
 		io_object_t usb = 0;
 		// Need to release every parent we find in the chain, but we should defer that until later
 		std::vector<IOReleaser> releasers;
-		const std::string usbClass = "IOUSBDevice";
 		while(IORegistryEntryGetParentEntry(current, kIOServicePlane, &parent) == KERN_SUCCESS) {
 			releasers.emplace_back(parent);
 			current = parent;
-			io_name_t className;
-			// io_name_t does not need to be freed, it's just a stack char[128]
-			if(IOObjectGetClass(parent, className) != KERN_SUCCESS)
-				continue;
-			if(std::string(className) == usbClass) {
+			// On old macOSes, IOUSBDevice is the type of the class we want
+			// On newer macOSes, IOUSBDevice may further be subclassed as IOUSBHostDevice
+			if(IOObjectConformsTo(parent, kIOUSBDeviceClassName)) {
 				usb = parent;
 				break;
 			}
