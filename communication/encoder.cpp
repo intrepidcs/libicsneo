@@ -2,6 +2,7 @@
 #include "icsneo/communication/message/ethernetmessage.h"
 #include "icsneo/communication/message/main51message.h"
 #include "icsneo/communication/packet/ethernetpacket.h"
+#include "icsneo/communication/packet/iso9141packet.h"
 #include "icsneo/communication/packet/canpacket.h"
 
 using namespace icsneo;
@@ -45,6 +46,17 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 
 			break;
 		} // End of Network::Type::CAN
+		case Network::Type::ISO9141: {
+			auto isomsg = std::dynamic_pointer_cast<ISO9141Message>(message);
+			if(!isomsg) {
+				report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+				return false; // The message was not a properly formed ISO9141Message
+			}
+
+			// Skip the normal message wrapping at the bottom since we need to send multiple
+			// packets to the device. This function just encodes them back to back into `result`
+			return HardwareISO9141Packet::EncodeFromMessage(*isomsg, result, report, packetizer);
+		} // End of Network::Type::ISO9141
 		default:
 			switch(message->network.getNetID()) {
 				case Network::NetID::Device:
@@ -91,6 +103,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			}
 	}
 
+	// Early returns may mean we don't reach this far, check the type you're concerned with
 	auto& buffer = useResultAsBuffer ? result : message->data;
 
 	if(shortFormat) {

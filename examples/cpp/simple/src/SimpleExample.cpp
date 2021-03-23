@@ -182,7 +182,7 @@ int main() {
 					// A message of type ISO9414 is guaranteed to be an ISO9141Message, so we can static cast safely
 					auto isoMessage = std::static_pointer_cast<icsneo::ISO9141Message>(message);
 
-					std::cout << "\t\tISO 9141-2 ";
+					std::cout << "\t\t" << isoMessage->network << ' ';
 
 					// Print the header bytes
 					std::cout << '(' << std::hex << std::setfill('0') << std::setw(2) << (uint32_t)isoMessage->header[0] << ' ';

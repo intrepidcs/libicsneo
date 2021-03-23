@@ -36,7 +36,12 @@ public:
 			Network::NetID::LIN,
 			Network::NetID::LIN2,
 			Network::NetID::LIN3,
-			Network::NetID::LIN4
+			Network::NetID::LIN4,
+
+			Network::NetID::ISO9141,
+			Network::NetID::ISO9141_2,
+			Network::NetID::ISO9141_3,
+			Network::NetID::ISO9141_4
 		};
 		return supportedNetworks;
 	}

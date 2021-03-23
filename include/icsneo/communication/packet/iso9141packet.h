@@ -12,8 +12,12 @@
 namespace icsneo {
 
 typedef uint16_t icscm_bitfield;
+class Packetizer;
 
 struct HardwareISO9141Packet {
+	static bool EncodeFromMessage(const ISO9141Message& message, std::vector<uint8_t>& bytestream,
+		const device_eventhandler_t& report, const Packetizer& packetizer);
+
 	class Decoder {
 	public:
 		std::shared_ptr<ISO9141Message> decodeToMessage(const std::vector<uint8_t>& bytestream);

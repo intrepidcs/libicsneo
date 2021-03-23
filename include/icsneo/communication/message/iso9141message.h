@@ -12,6 +12,7 @@ class ISO9141Message : public Message {
 public:
 	std::array<uint8_t, 3> header;
 	bool isInit = false;
+	bool isBreak = false;
 	bool framingError = false;
 	bool overflowError = false;
 	bool parityError = false;

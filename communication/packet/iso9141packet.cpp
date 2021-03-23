@@ -1,7 +1,78 @@
 #include "icsneo/communication/packet/iso9141packet.h"
+#include "icsneo/communication/packetizer.h"
 #include <algorithm>
 
 using namespace icsneo;
+
+bool HardwareISO9141Packet::EncodeFromMessage(const ISO9141Message& message, std::vector<uint8_t>& bytestream,
+	const device_eventhandler_t& report, const Packetizer& packetizer)
+{
+	size_t bytesToSend = message.data.size();
+	if (message.isInit || message.isBreak)
+		bytesToSend = 0;
+
+	if(bytesToSend > 4200) {
+		report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
+		return false; // Too much data for the protocol
+	}
+
+	bytestream.clear();
+
+	std::vector<uint8_t> packet;
+	packet.reserve(16);
+
+	size_t currentStart = 0;
+	do {
+		const bool firstPacket = currentStart == 0;
+		const uint8_t maxSize = (firstPacket ? 9 : 12);
+		uint8_t currentSize = maxSize;
+		if(bytesToSend - currentStart < maxSize)
+			currentSize = bytesToSend - currentStart;
+
+		packet.insert(packet.begin(), {
+			(uint8_t)Network::NetID::RED, // 0x0C for long message
+			(uint8_t)0, // Size, little endian 16-bit, filled later
+			(uint8_t)0,
+			(uint8_t)message.network.getNetID(), // NetID, little endian 16-bit
+			(uint8_t)(uint16_t(message.network.getNetID()) >> 8)
+		});
+		packet.push_back(uint8_t(message.network.getNetID()) + uint8_t((currentSize + (firstPacket ? 6 : 3)) << 4));
+		packet.push_back(uint8_t(currentSize + (firstPacket ? 5 : 2)));
+		if(bytesToSend - currentStart > maxSize) // More packets are coming
+			packet.back() |= 0x40;
+
+		if(firstPacket) {
+			if(message.isInit)
+				packet.back() |= 0x80;
+			if(message.isBreak)
+				packet.back() |= 0x20;
+		}
+
+		// Two bytes for Description ID, big endian
+		packet.insert(packet.end(), { uint8_t(message.description >> 8), uint8_t(message.description) });
+
+		// If we're the first packet and not init/break only, we should put the header in
+		if(firstPacket && !message.isInit && !message.isBreak)
+			packet.insert(packet.end(), message.header.begin(), message.header.end());
+
+		// Now the data
+		auto dataIt = message.data.begin() + currentStart;
+		if(currentSize)
+			packet.insert(packet.end(), dataIt, dataIt + currentSize);
+
+		// Advance for the next packet
+		currentStart += currentSize;
+
+		const uint16_t size = uint16_t(packet.size()) + 2;
+		packet[1] = uint8_t(size & 0xFF);
+		packet[2] = uint8_t((size >> 8) & 0xFF);
+
+		packetizer.packetWrap(packet, false);
+		bytestream.insert(bytestream.end(), packet.begin(), packet.end());
+		packet.clear();
+	} while(currentStart < bytesToSend);
+	return true;
+}
 
 std::shared_ptr<ISO9141Message> HardwareISO9141Packet::Decoder::decodeToMessage(const std::vector<uint8_t>& bytestream) {
 	const HardwareISO9141Packet* data = (const HardwareISO9141Packet*)bytestream.data();
