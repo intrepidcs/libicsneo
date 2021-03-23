@@ -64,8 +64,6 @@ private:
 	uint16_t reassemblingId = 0;
 	std::vector<uint8_t> reassemblingData;
 	uint16_t sequenceDown = 0;
-	uint16_t sequenceUp = 0;
-	bool gotUp = false; // Mark whether sequenceUp is actually valid
 
 	std::vector<uint8_t> processedUpBytes;
 	std::vector< std::vector<uint8_t> > processedDownPackets;
