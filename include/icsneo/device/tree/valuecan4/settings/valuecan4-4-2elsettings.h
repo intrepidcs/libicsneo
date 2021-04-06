@@ -12,7 +12,7 @@ class ValueCAN4_4_2ELSettings : public IDeviceSettings {
 public:
 	ValueCAN4_4_2ELSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(valuecan4_4_2el_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<valuecan4_1_2_settings_t>();
+		auto cfg = getStructurePointer<valuecan4_4_2el_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -25,7 +25,7 @@ public:
 		}
 	}
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<valuecan4_1_2_settings_t>();
+		auto cfg = getStructurePointer<valuecan4_4_2el_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
