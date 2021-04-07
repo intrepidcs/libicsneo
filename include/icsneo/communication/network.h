@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <ostream>
+#include "icsneo/platform/optional.h"
 
 namespace icsneo {
 
@@ -116,6 +117,8 @@ public:
 		FlexRayControl = 243,
 		HW_COM_Latency_Test = 512,
 		Device_Status = 513,
+		UDP = 514,
+		ForwardedMessage = 516,
 		I2C2 = 517,
 		I2C3 = 518,
 		I2C4 = 519,
@@ -137,6 +140,66 @@ public:
 		I2C = 10,
 		Any = 0xFE, // Never actually set as type, but used as flag for filtering
 		Other = 0xFF
+	};
+	enum class CoreMini : uint8_t {
+		HSCAN = 0,
+		MSCAN = 1,
+		LIN = 2,
+		LIN2 = 3,
+		Virtual = 4,
+		HSCAN2 = 5,
+		LSFTCAN = 6,
+		SWCAN = 7,
+		HSCAN3 = 8,
+		CGI = 9,
+		J1850VPW = 10,
+		LIN3 = 11,
+		LIN4 = 12,
+		J1708 = 13,
+		HSCAN4 = 14,
+		HSCAN5 = 15,
+		KLine1 = 16,
+		KLine2 = 17,
+		KLine3 = 18,
+		KLine4 = 19,
+		FlexRay1a = 20,
+		UART = 21,
+		UART2 = 22,
+		LIN5 = 23,
+		MOST25 = 24,
+		MOST50 = 25,
+		FlexRay1b = 26,
+		SWCAN2 = 27,
+		EthernetDAQ = 28,
+		Ethernet = 29,
+		FlexRay2a = 30,
+		FlexRay2b = 31,
+		HSCAN6 = 32,
+		HSCAN7 = 33,
+		LIN6 = 34,
+		LSFTCAN2 = 35,
+		OP_Ethernet1 = 36,
+		OP_Ethernet2 = 37,
+		OP_Ethernet3 = 38,
+		OP_Ethernet4 = 39,
+		OP_Ethernet5 = 40,
+		OP_Ethernet6 = 41,
+		OP_Ethernet7 = 42,
+		OP_Ethernet8 = 43,
+		OP_Ethernet9 = 44,
+		OP_Ethernet10 = 45,
+		OP_Ethernet11 = 46,
+		OP_Ethernet12 = 47,
+		TCPVirtual = 48,
+		UDPVirtual = 49,
+		FlexRay1 = 50,
+		FlexRay2 = 51,
+		ForwardedMessage = 52,
+		I2C1 = 53,
+		I2C2 = 54,
+		I2C3 = 55,
+		I2C4 = 56,
+		Ethernet2 = 57,
 	};
 	static const char* GetTypeString(Type type) {
 		switch(type) {
@@ -440,6 +503,10 @@ public:
 				return "HW COM Latency Test";
 			case NetID::Device_Status:
 				return "Device Status";
+			case NetID::UDP:
+				return "UDP";
+			case NetID::ForwardedMessage:
+				return "Forwarded Message";
 			case NetID::I2C2:
 				return "I2C 2";
 			case NetID::I2C3:
@@ -454,12 +521,257 @@ public:
 		}
 		return "Invalid Network";
 	}
+	static optional<CoreMini> GetCoreMiniNetworkFromNetID(NetID netid) {
+		switch(netid) {
+			case NetID::HSCAN:
+				return CoreMini::HSCAN;
+			case NetID::MSCAN:
+				return CoreMini::MSCAN;
+			case NetID::LIN:
+				return CoreMini::LIN;
+			case NetID::LIN2:
+				return CoreMini::LIN2;
+			case NetID::Device:
+				return CoreMini::Virtual;
+			case NetID::HSCAN2:
+				return CoreMini::HSCAN2;
+			case NetID::LSFTCAN:
+				return CoreMini::LSFTCAN;
+			case NetID::SWCAN:
+				return CoreMini::SWCAN;
+			case NetID::HSCAN3:
+				return CoreMini::HSCAN3;
+			case NetID::CGI:
+				return CoreMini::CGI;
+			case NetID::J1850VPW:
+				return CoreMini::J1850VPW;
+			case NetID::LIN3:
+				return CoreMini::LIN3;
+			case NetID::LIN4:
+				return CoreMini::LIN4;
+			case NetID::J1708:
+				return CoreMini::J1708;
+			case NetID::HSCAN4:
+				return CoreMini::HSCAN4;
+			case NetID::HSCAN5:
+				return CoreMini::HSCAN5;
+			case NetID::ISO9141:
+				return CoreMini::KLine1;
+			case NetID::ISO9141_2:
+				return CoreMini::KLine2;
+			case NetID::ISO9141_3:
+				return CoreMini::KLine3;
+			case NetID::ISO9141_4:
+				return CoreMini::KLine4;
+			case NetID::FlexRay1a:
+				return CoreMini::FlexRay1a;
+			case NetID::UART:
+				return CoreMini::UART;
+			case NetID::UART2:
+				return CoreMini::UART2;
+			case NetID::LIN5:
+				return CoreMini::LIN5;
+			case NetID::MOST25:
+				return CoreMini::MOST25;
+			case NetID::MOST50:
+				return CoreMini::MOST50;
+			case NetID::FlexRay1b:
+				return CoreMini::FlexRay1b;
+			case NetID::SWCAN2:
+				return CoreMini::SWCAN2;
+			case NetID::Ethernet_DAQ:
+				return CoreMini::EthernetDAQ;
+			case NetID::Ethernet:
+				return CoreMini::Ethernet;
+			case NetID::FlexRay2a:
+				return CoreMini::FlexRay2a;
+			case NetID::FlexRay2b:
+				return CoreMini::FlexRay2b;
+			case NetID::HSCAN6:
+				return CoreMini::HSCAN6;
+			case NetID::HSCAN7:
+				return CoreMini::HSCAN7;
+			case NetID::LIN6:
+				return CoreMini::LIN6;
+			case NetID::LSFTCAN2:
+				return CoreMini::LSFTCAN2;
+			case NetID::OP_Ethernet1:
+				return CoreMini::OP_Ethernet1;
+			case NetID::OP_Ethernet2:
+				return CoreMini::OP_Ethernet2;
+			case NetID::OP_Ethernet3:
+				return CoreMini::OP_Ethernet3;
+			case NetID::OP_Ethernet4:
+				return CoreMini::OP_Ethernet4;
+			case NetID::OP_Ethernet5:
+				return CoreMini::OP_Ethernet5;
+			case NetID::OP_Ethernet6:
+				return CoreMini::OP_Ethernet6;
+			case NetID::OP_Ethernet7:
+				return CoreMini::OP_Ethernet7;
+			case NetID::OP_Ethernet8:
+				return CoreMini::OP_Ethernet8;
+			case NetID::OP_Ethernet9:
+				return CoreMini::OP_Ethernet9;
+			case NetID::OP_Ethernet10:
+				return CoreMini::OP_Ethernet10;
+			case NetID::OP_Ethernet11:
+				return CoreMini::OP_Ethernet11;
+			case NetID::OP_Ethernet12:
+				return CoreMini::OP_Ethernet12;
+			case NetID::TCP:
+				return CoreMini::TCPVirtual;
+			case NetID::UDP:
+				return CoreMini::UDPVirtual;
+			case NetID::FlexRay:
+				return CoreMini::FlexRay1;
+			case NetID::FlexRay2:
+				return CoreMini::FlexRay2;
+			case NetID::ForwardedMessage:
+				return CoreMini::ForwardedMessage;
+			case NetID::I2C:
+				return CoreMini::I2C1;
+			case NetID::I2C2:
+				return CoreMini::I2C2;
+			case NetID::I2C3:
+				return CoreMini::I2C3;
+			case NetID::I2C4:
+				return CoreMini::I2C4;
+			case NetID::Ethernet2:
+				return CoreMini::Ethernet2;
+			default:
+				return nullopt;
+		}
+	}
+	static NetID GetNetIDFromCoreMiniNetwork(CoreMini cm) {
+		switch(cm) {
+			case CoreMini::HSCAN:
+				return NetID::HSCAN;
+			case CoreMini::MSCAN:
+				return NetID::MSCAN;
+			case CoreMini::LIN:
+				return NetID::LIN;
+			case CoreMini::LIN2:
+				return NetID::LIN2;
+			case CoreMini::Virtual:
+				return NetID::Device;
+			case CoreMini::HSCAN2:
+				return NetID::HSCAN2;
+			case CoreMini::LSFTCAN:
+				return NetID::LSFTCAN;
+			case CoreMini::SWCAN:
+				return NetID::SWCAN;
+			case CoreMini::HSCAN3:
+				return NetID::HSCAN3;
+			case CoreMini::CGI:
+				return NetID::CGI;
+			case CoreMini::J1850VPW:
+				return NetID::J1850VPW;
+			case CoreMini::LIN3:
+				return NetID::LIN3;
+			case CoreMini::LIN4:
+				return NetID::LIN4;
+			case CoreMini::J1708:
+				return NetID::J1708;
+			case CoreMini::HSCAN4:
+				return NetID::HSCAN4;
+			case CoreMini::HSCAN5:
+				return NetID::HSCAN5;
+			case CoreMini::KLine1:
+				return NetID::ISO9141;
+			case CoreMini::KLine2:
+				return NetID::ISO9141_2;
+			case CoreMini::KLine3:
+				return NetID::ISO9141_3;
+			case CoreMini::KLine4:
+				return NetID::ISO9141_4;
+			case CoreMini::FlexRay1a:
+				return NetID::FlexRay1a;
+			case CoreMini::UART:
+				return NetID::UART;
+			case CoreMini::UART2:
+				return NetID::UART2;
+			case CoreMini::LIN5:
+				return NetID::LIN5;
+			case CoreMini::MOST25:
+				return NetID::MOST25;
+			case CoreMini::MOST50:
+				return NetID::MOST50;
+			case CoreMini::FlexRay1b:
+				return NetID::FlexRay1b;
+			case CoreMini::SWCAN2:
+				return NetID::SWCAN2;
+			case CoreMini::EthernetDAQ:
+				return NetID::Ethernet_DAQ;
+			case CoreMini::Ethernet:
+				return NetID::Ethernet;
+			case CoreMini::FlexRay2a:
+				return NetID::FlexRay2a;
+			case CoreMini::FlexRay2b:
+				return NetID::FlexRay2b;
+			case CoreMini::HSCAN6:
+				return NetID::HSCAN6;
+			case CoreMini::HSCAN7:
+				return NetID::HSCAN7;
+			case CoreMini::LIN6:
+				return NetID::LIN6;
+			case CoreMini::LSFTCAN2:
+				return NetID::LSFTCAN2;
+			case CoreMini::OP_Ethernet1:
+				return NetID::OP_Ethernet1;
+			case CoreMini::OP_Ethernet2:
+				return NetID::OP_Ethernet2;
+			case CoreMini::OP_Ethernet3:
+				return NetID::OP_Ethernet3;
+			case CoreMini::OP_Ethernet4:
+				return NetID::OP_Ethernet4;
+			case CoreMini::OP_Ethernet5:
+				return NetID::OP_Ethernet5;
+			case CoreMini::OP_Ethernet6:
+				return NetID::OP_Ethernet6;
+			case CoreMini::OP_Ethernet7:
+				return NetID::OP_Ethernet7;
+			case CoreMini::OP_Ethernet8:
+				return NetID::OP_Ethernet8;
+			case CoreMini::OP_Ethernet9:
+				return NetID::OP_Ethernet9;
+			case CoreMini::OP_Ethernet10:
+				return NetID::OP_Ethernet10;
+			case CoreMini::OP_Ethernet11:
+				return NetID::OP_Ethernet11;
+			case CoreMini::OP_Ethernet12:
+				return NetID::OP_Ethernet12;
+			case CoreMini::TCPVirtual:
+				return NetID::TCP;
+			case CoreMini::UDPVirtual:
+				return NetID::UDP;
+			case CoreMini::FlexRay1:
+				return NetID::FlexRay;
+			case CoreMini::FlexRay2:
+				return NetID::FlexRay2;
+			case CoreMini::ForwardedMessage:
+				return NetID::ForwardedMessage;
+			case CoreMini::I2C1:
+				return NetID::I2C;
+			case CoreMini::I2C2:
+				return NetID::I2C2;
+			case CoreMini::I2C3:
+				return NetID::I2C3;
+			case CoreMini::I2C4:
+				return NetID::I2C4;
+			case CoreMini::Ethernet2:
+				return NetID::Ethernet2;
+		}
+		return NetID::Invalid; // Should be unreachable, the compiler should warn about new CoreMini IDs
+	}
 
 	Network() { setValue(NetID::Invalid); }
 	Network(uint16_t netid) { setValue((NetID)netid); }
 	Network(NetID netid) { setValue(netid); }
+	Network(CoreMini cm) { setValue(GetNetIDFromCoreMiniNetwork(cm)); }
 	NetID getNetID() const { return value; }
 	Type getType() const { return type; }
+	optional<CoreMini> getCoreMini() const { return GetCoreMiniNetworkFromNetID(getNetID()); }
 	friend std::ostream& operator<<(std::ostream& os, const Network& network) {
 		os << GetNetIDString(network.getNetID());
 		return os;
