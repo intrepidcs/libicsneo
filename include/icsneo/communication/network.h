@@ -102,6 +102,7 @@ public:
 		FlexRay = 85,
 		FlexRay2 = 86,
 		OP_Ethernet12 = 87,
+		I2C = 88,
 		MOST25 = 90,
 		MOST50 = 91,
 		MOST150 = 92,
@@ -133,6 +134,7 @@ public:
 		LSFTCAN = 7,
 		SWCAN = 8,
 		ISO9141 = 9,
+		I2C = 10,
 		Any = 0xFE, // Never actually set as type, but used as flag for filtering
 		Other = 0xFF
 	};
@@ -158,6 +160,8 @@ public:
 				return "Low Speed Fault Tolerant CAN";
 			case Type::SWCAN:
 				return "Single Wire CAN";
+			case Type::I2C:
+				return "I²C";
 			case Type::Invalid:
 			default:
 				return "Invalid Type";
@@ -227,6 +231,11 @@ public:
 			case NetID::ISO9141_3:
 			case NetID::ISO9141_4:
 				return Type::ISO9141;
+			case NetID::I2C:
+			case NetID::I2C2:
+			case NetID::I2C3:
+			case NetID::I2C4:
+				return Type::I2C;
 			default:
 				return Type::Other;
 		}
@@ -403,6 +412,8 @@ public:
 				return "FlexRay 2";
 			case NetID::OP_Ethernet12:
 				return "OP (BR) Ethernet 12";
+			case NetID::I2C:
+				return "I2C";
 			case NetID::MOST25:
 				return "MOST25";
 			case NetID::MOST50:
