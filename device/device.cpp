@@ -541,7 +541,7 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 		case Network::NetID::Reset_Status:
 			latestResetStatus = std::dynamic_pointer_cast<ResetStatusMessage>(message);
 			break;
-		case Network::NetID::Device_Status:
+		case Network::NetID::DeviceStatus:
 			// Device Status format is unique per device, so the devices need to decode it themselves
 			handleDeviceStatus(message);
 			break;

@@ -116,7 +116,7 @@ public:
 		LSFTCAN2 = 99,
 		FlexRayControl = 243,
 		HW_COM_Latency_Test = 512,
-		Device_Status = 513,
+		DeviceStatus = 513,
 		UDP = 514,
 		ForwardedMessage = 516,
 		I2C2 = 517,
@@ -261,7 +261,7 @@ public:
 				return Type::MOST;
 			case NetID::RED:
 			case NetID::Reset_Status:
-			case NetID::Device_Status:
+			case NetID::DeviceStatus:
 			case NetID::FlexRayControl:
 				return Type::Internal;
 			case NetID::Invalid:
@@ -501,7 +501,7 @@ public:
 				return "FlexRay Control";
 			case NetID::HW_COM_Latency_Test:
 				return "HW COM Latency Test";
-			case NetID::Device_Status:
+			case NetID::DeviceStatus:
 				return "Device Status";
 			case NetID::UDP:
 				return "UDP";
