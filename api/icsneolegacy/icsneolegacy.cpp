@@ -493,6 +493,13 @@ int icsneoGetSerialNumber(void* hObject, unsigned int*iSerialNumber) {
 	return true;
 }
 
+int icsneoEnableDOIPLine(void* hObject, bool enable) {
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = (neodevice_t*)hObject;
+	return icsneo_setDigitalIO(device, ICSNEO_IO_ETH_ACTIVATION, 1, uint8_t(enable));
+}
+
 int icsneoStartSockServer(void* hObject, int iPort) {
 	// TODO Implement
 	return false;

@@ -41,6 +41,9 @@ public:
 		return supportedNetworks;
 	}
 
+	// Until VNET support is added, assume we have one FIRE 2 VNET or FlexRay VNETZ as the main
+	size_t getEthernetActivationLineCount() const override { return 1; }
+
 protected:
 	virtual std::shared_ptr<Communication> makeCommunication(
 		std::unique_ptr<Driver> transport,
@@ -90,6 +93,13 @@ protected:
 			ret.push_back(std::move(ctrl2));
 
 		return ret;
+	}
+
+	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
+		if(!message || message->data.size() < sizeof(fire2vnet_status_t))
+			return;
+		const fire2vnet_status_t* status = reinterpret_cast<const fire2vnet_status_t*>(message->data.data());
+		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
 
 public:

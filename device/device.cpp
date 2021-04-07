@@ -417,6 +417,106 @@ Network Device::getNetworkByNumber(Network::Type type, size_t index) const {
 	return Network::NetID::Invalid;
 }
 
+optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
+	if(number == 0) { // Start counting from 1
+		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+		return false;
+	}
+
+	switch(type) {
+	case IO::EthernetActivation:
+		if(getEthernetActivationLineCount() < number)
+			break; // ParameterOutOfRange
+		assert(number == 1); // If you implement a device with more, you'll need to modify the accessor
+
+		if(!ethActivationStatus.has_value())
+			report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+
+		return ethActivationStatus;
+	case IO::USBHostPower:
+		if(getUSBHostPowerCount() < number)
+			break; // ParameterOutOfRange
+		assert(number == 1); // If you implement a device with more, you'll need to modify the accessor
+
+		if(!usbHostPowerStatus.has_value())
+			report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+
+		return usbHostPowerStatus;
+	case IO::BackupPowerEnabled:
+		if(!getBackupPowerSupported())
+			break; // ParameterOutOfRange
+		assert(number == 1); // If you implement a device with more, you'll need to modify the accessor
+
+		if(!backupPowerEnabled.has_value())
+			report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+
+		return backupPowerEnabled;
+	case IO::BackupPowerGood:
+		if(!getBackupPowerSupported())
+			break; // ParameterOutOfRange
+		assert(number == 1); // If you implement a device with more, you'll need to modify the accessor
+
+		if(!backupPowerGood.has_value())
+			report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+
+		return backupPowerGood;
+	};
+
+	report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+	return nullopt;
+}
+
+bool Device::setDigitalIO(IO type, size_t number, bool value) {
+	if(number == 0) { // Start counting from 1
+		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+		return false;
+	}
+
+	switch(type) {
+	case IO::EthernetActivation:
+		if(getEthernetActivationLineCount() < number)
+			break; // ParameterOutOfRange
+		assert(number == 1); // If you implement a device with more, you'll need to modify the accessor
+
+		ethActivationStatus = value;
+
+		return com->sendCommand(Command::MiscControl, {
+			uint8_t(1), uint8_t(value ? 1 : 0), // enetActivateSet, enetActivateValue
+			uint8_t(0), uint8_t(0), // usbHostPowerSet, usbHostPowerValue
+			uint8_t(0), uint8_t(0) // backupPowerSet, backupPowerValue
+		});
+	case IO::USBHostPower:
+		if(getUSBHostPowerCount() < number)
+			break; // ParameterOutOfRange
+		assert(number == 1); // If you implement a device with more, you'll need to modify the accessor
+
+		usbHostPowerStatus = value;
+
+		return com->sendCommand(Command::MiscControl, {
+			uint8_t(0), uint8_t(0), // enetActivateSet, enetActivateValue
+			uint8_t(1), uint8_t(value ? 1 : 0), // usbHostPowerSet, usbHostPowerValue
+			uint8_t(0), uint8_t(0) // backupPowerSet, backupPowerValue
+		});
+	case IO::BackupPowerEnabled:
+		if(!getBackupPowerSupported())
+			break; // ParameterOutOfRange
+		assert(number == 1); // If you implement a device with more, you'll need to modify the accessor
+
+		backupPowerEnabled = value;
+
+		return com->sendCommand(Command::MiscControl, {
+			uint8_t(0), uint8_t(0), // enetActivateSet, enetActivateValue
+			uint8_t(0), uint8_t(value ? 1 : 0), // usbHostPowerSet, usbHostPowerValue (set to work around firmware bug)
+			uint8_t(1), uint8_t(value ? 1 : 0) // backupPowerSet, backupPowerValue
+		});
+	case IO::BackupPowerGood:
+		break; // Read-only, return ParameterOutOfRange
+	};
+
+	report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+	return false;
+}
+
 void Device::addExtension(std::shared_ptr<DeviceExtension>&& extension) {
 	std::lock_guard<std::mutex> lk(extensionsLock);
 	extensions.push_back(extension);
@@ -440,6 +540,10 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 	switch(message->network.getNetID()) {
 		case Network::NetID::Reset_Status:
 			latestResetStatus = std::dynamic_pointer_cast<ResetStatusMessage>(message);
+			break;
+		case Network::NetID::Device_Status:
+			// Device Status format is unique per device, so the devices need to decode it themselves
+			handleDeviceStatus(message);
 			break;
 		default:
 			break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;

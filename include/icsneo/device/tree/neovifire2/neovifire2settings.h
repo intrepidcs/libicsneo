@@ -106,6 +106,14 @@ typedef struct {
 	TIMESYNC_ICSHARDWARE_SETTINGS timeSync;
 	DISK_SETTINGS disk;
 } neovifire2_settings_t;
+
+typedef struct {
+	uint8_t backupPowerGood;
+	uint8_t backupPowerEnabled;
+	uint8_t usbHostPowerEnabled;
+	uint8_t ethernetActivationLineEnabled;
+	EthernetNetworkStatus ethernetStatus;
+} neovifire2_status_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus

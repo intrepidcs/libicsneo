@@ -5,7 +5,6 @@
 
 #include "icsneo/device/tree/neovifire2/neovifire2.h"
 #include "icsneo/platform/ftdi.h"
-#include "icsneo/device/tree/neovifire2/neovifire2settings.h"
 
 namespace icsneo {
 

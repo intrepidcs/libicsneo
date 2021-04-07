@@ -46,6 +46,7 @@ public:
 		DeviceNotCurrentlyPolling = 0x1010,
 		UnsupportedTXNetwork = 0x1011,
 		MessageMaxLengthExceeded = 0x1012,
+		ValueNotYetPresent = 0x1013,
 		
 		// Device Events
 		PollingMessageOverflow = 0x2000,

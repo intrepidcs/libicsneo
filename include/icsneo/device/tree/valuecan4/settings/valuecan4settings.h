@@ -76,6 +76,12 @@ typedef struct {
 	uint16_t pwr_man_timeout;
 } valuecan4_4_2el_settings_t, valuecan4_4_settings_t, valuecan4_2el_settings_t;
 
+typedef struct
+{
+	uint8_t ethernetActivationLineEnabled;
+	uint8_t unused;
+} valuecan4_4_2el_status_t, valuecan4_4_status_t, valuecan4_2el_status_t;
+
 typedef struct {
 	CAN_SETTINGS can1;
 	CANFD_SETTINGS canfd1;

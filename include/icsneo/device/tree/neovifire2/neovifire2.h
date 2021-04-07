@@ -6,6 +6,7 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/ftdi.h"
+#include "icsneo/device/tree/neovifire2/neovifire2settings.h"
 
 namespace icsneo {
 
@@ -46,6 +47,10 @@ public:
 		return supportedNetworks;
 	}
 
+	size_t getEthernetActivationLineCount() const override { return 1; }
+	size_t getUSBHostPowerCount() const override { return 1; }
+	bool getBackupPowerSupported() const override { return true; }
+
 protected:
 	NeoVIFIRE2(neodevice_t neodevice) : Device(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;
@@ -63,6 +68,16 @@ protected:
 
 	// The supported TX networks are the same as the supported RX networks for this device
 	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+
+	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
+		if(!message || message->data.size() < sizeof(neovifire2_status_t))
+			return;
+		const neovifire2_status_t* status = reinterpret_cast<const neovifire2_status_t*>(message->data.data());
+		backupPowerEnabled = status->backupPowerEnabled;
+		backupPowerGood = status->backupPowerGood;
+		ethActivationStatus = status->ethernetActivationLineEnabled;
+		usbHostPowerStatus = status->usbHostPowerEnabled;
+	}
 };
 
 }

@@ -608,7 +608,7 @@ bool icsneo_getSupportedDevices(devicetype_t* devices, size_t* count) {
 	return true;
 }
 
-extern bool DLLExport icsneo_getTimestampResolution(const neodevice_t* device, uint16_t* resolution) {
+bool icsneo_getTimestampResolution(const neodevice_t* device, uint16_t* resolution) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
@@ -619,4 +619,28 @@ extern bool DLLExport icsneo_getTimestampResolution(const neodevice_t* device, u
 
 	*resolution = device->device->getTimestampResolution();
 	return true;
+}
+
+bool icsneo_getDigitalIO(const neodevice_t* device, neoio_t type, uint32_t number, uint8_t* value) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	if(value == nullptr) {
+		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return false;
+	}
+
+	const optional<bool> val = device->device->getDigitalIO(static_cast<icsneo::IO>(type), number);
+	if(!val.has_value())
+		return false;
+
+	*value = uint8_t(*val);
+	return true;
+}
+
+bool icsneo_setDigitalIO(const neodevice_t* device, neoio_t type, uint32_t number, uint8_t value) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	return device->device->setDigitalIO(static_cast<icsneo::IO>(type), number, bool(value));
 }

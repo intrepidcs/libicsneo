@@ -14,6 +14,8 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADGigalog;
 	static constexpr const char* SERIAL_START = "GL";
 
+	size_t getEthernetActivationLineCount() const override { return 1; }
+
 protected:
 	RADGigalog(neodevice_t neodevice) : Device(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;
@@ -73,6 +75,13 @@ protected:
 			// FlexRay is Receive Only
 		};
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
+	}
+
+	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
+		if(!message || message->data.size() < sizeof(radgigalog_status_t))
+			return;
+		const radgigalog_status_t* status = reinterpret_cast<const radgigalog_status_t*>(message->data.data());
+		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
 };
 

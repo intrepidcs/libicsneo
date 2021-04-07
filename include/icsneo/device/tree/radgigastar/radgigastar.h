@@ -14,6 +14,8 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADGigastar;
 	static constexpr const char* SERIAL_START = "GS";
 
+	size_t getEthernetActivationLineCount() const override { return 1; }
+
 protected:
 	RADGigastar(neodevice_t neodevice) : Device(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;
@@ -77,6 +79,13 @@ protected:
 			// FlexRay is Receive Only
 		};
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
+	}
+
+	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
+		if(!message || message->data.size() < sizeof(radgigastar_status_t))
+			return;
+		const radgigastar_status_t* status = reinterpret_cast<const radgigastar_status_t*>(message->data.data());
+		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
 };
 

@@ -118,6 +118,13 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = msg;
 					return true;
 				}
+				case Network::NetID::Device_Status: {
+					result = std::make_shared<Message>();
+					result->network = packet->network;
+					// Just pass along the data, the device needs to handle this itself
+					result->data = packet->data;
+					return true;
+				}
 				case Network::NetID::FlexRayControl: {
 					auto frResult = std::make_shared<FlexRayControlMessage>(*packet);
 					if(!frResult->decoded) {

@@ -86,6 +86,7 @@ void printMainMenu() {
 	printf("H - Get events\n");
 	printf("I - Set HS CAN to 250K\n");
 	printf("J - Set HS CAN to 500K\n");
+	printf("L - Set Digital IO\n");
 	printf("X - Exit\n");
 }
 
@@ -235,7 +236,7 @@ int main() {
 	while(true) {
 		printMainMenu();
 		printf("\n");
-		char input = getCharInput(22, 'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'X', 'x');
+		char input = getCharInput(24, 'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'L', 'l', 'X', 'x');
 		printf("\n");
 		switch(input) {
 		// List current devices
@@ -595,6 +596,106 @@ int main() {
 				printf("Failed to set HS CAN for %s to 500k!\n\n", productDescription);
 				printLastError();
 				printf("\n");
+			}
+		}
+		break;
+		// Set Digital IO
+		case 'L':
+		case 'l':
+		{
+			// Select a device and get its description
+			if(numDevices == 0) {
+				printf("No devices found! Please scan for new devices.\n\n");
+				break;
+			}
+			selectedDevice = selectDevice();
+
+			printf("Select from the following:\n");
+
+			printf("[1] Ethernet (DoIP) Activation Line");
+			uint8_t val;
+			bool haveVal = icsneo_getDigitalIO(selectedDevice, ICSNEO_IO_ETH_ACTIVATION, 1, &val);
+			if(!haveVal) {
+				neoevent_t event;
+				bool got = icsneo_getLastError(&event);
+				printf(": Unknown (%s)\n", got ? event.description : "No error");
+			} else {
+				if(val)
+					printf(": Enabled\n");
+				else
+					printf(": Disabled\n");
+			}
+
+			printf("[2] USB Host Power");
+			haveVal = icsneo_getDigitalIO(selectedDevice, ICSNEO_IO_USB_HOST_POWER, 1, &val);
+			if(!haveVal) {
+				neoevent_t event;
+				bool got = icsneo_getLastError(&event);
+				printf(": Unknown (%s)\n", got ? event.description : "No error");
+			} else {
+				if(val)
+					printf(": Enabled\n");
+				else
+					printf(": Disabled\n");
+			}
+
+			printf("[3] Backup Power");
+			haveVal = icsneo_getDigitalIO(selectedDevice, ICSNEO_IO_BACKUP_POWER_EN, 1, &val);
+			if(!haveVal) {
+				neoevent_t event;
+				bool got = icsneo_getLastError(&event);
+				printf(": Unknown (%s)\n", got ? event.description : "No error");
+			} else {
+				if(val)
+					printf(": Enabled ");
+				else
+					printf(": Disabled ");
+
+				haveVal = icsneo_getDigitalIO(selectedDevice, ICSNEO_IO_BACKUP_POWER_GOOD, 1, &val);
+				if(!haveVal) {
+					neoevent_t event;
+					bool got = icsneo_getLastError(&event);
+					printf("with unknown status (%s)\n", got ? event.description : "No error");
+				} else {
+					if(val)
+						printf("and Charged\n");
+					else
+						printf("and Not Charged\n");
+				}
+			}
+
+			printf("[4] Cancel\n\n");
+			char selection = getCharInput(4, '1', '2', '3', '4');
+			printf("\n");
+
+			if(selection == '4') {
+				printf("Canceling!\n\n");
+				break;
+			}
+
+			printf("[0] Disable\n[1] Enable\n[2] Cancel\n\n");
+			char selection2 = getCharInput(3, '0', '1', '2');
+			printf("\n");
+
+			if(selection2 == '2') {
+				printf("Canceling!\n\n");
+				break;
+			}
+
+			const bool set = selection2 == '1';
+			neoio_t type;
+			switch (selection)
+			{
+			case '1': type = ICSNEO_IO_ETH_ACTIVATION; break;
+			case '2': type = ICSNEO_IO_USB_HOST_POWER; break;
+			case '3': type = ICSNEO_IO_BACKUP_POWER_EN; break; 
+			};
+			if(icsneo_setDigitalIO(selectedDevice, type, 1, set)) {
+				printf("OK!\n\n");
+			} else {
+				neoevent_t event;
+				bool got = icsneo_getLastError(&event);
+				printf("Failure! (%s)\n\n", got ? event.description : "No error");
 			}
 		}
 		break;

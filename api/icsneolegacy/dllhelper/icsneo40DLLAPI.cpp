@@ -45,6 +45,7 @@ SETVCAN412SETTINGS icsneoSetVCAN412Settings;
 SETBITRATE icsneoSetBitRate;
 GETDEVICEPARMS icsneoGetDeviceParameters;
 SETDEVICEPARMS icsneoSetDeviceParameters;
+ENABLEDOIPACTIVATIONLINE icsneoEnableDOIPLine;
 
 //Error Functions
 GETLASTAPIERROR icsneoGetLastAPIError;
@@ -201,7 +202,7 @@ bool LoadDLLAPI(HINSTANCE &hAPIDLL)
 	icsneoScriptReadAppSignal = (SCRIPTREADAPPSIGNAL) GetProcAddress(hAPIDLL,       "icsneoScriptReadAppSignal");
     icsneoScriptWriteAppSignal = (SCRIPTWRITEAPPSIGNAL) GetProcAddress(hAPIDLL,     "icsneoScriptWriteAppSignal");
 
-	
+	icsneoEnableDOIPLine = (ENABLEDOIPACTIVATIONLINE)GetProcAddress(hAPIDLL, "icsneoEnableDOIPLine");
 
     if(!icsneoFindNeoDevices || !icsneoOpenNeoDevice || !icsneoClosePort || !icsneoFreeObject ||
 	   !icsneoTxMessages || !icsneoGetMessages || !icsneoWaitForRxMessagesWithTimeOut ||
@@ -216,7 +217,7 @@ bool LoadDLLAPI(HINSTANCE &hAPIDLL)
        !icsneoGetErrorInfo || !icsneoScriptLoad || !icsneoScriptStart || !icsneoScriptStop ||
        !icsneoScriptClear || !icsneoScriptStartFBlock || !icsneoScriptStopFBlock ||
        !icsneoScriptGetFBlockStatus || !icsneoScriptGetScriptStatus || !icsneoScriptReadAppSignal ||
-       !icsneoScriptWriteAppSignal || !icsneoGetDLLVersion)
+       !icsneoScriptWriteAppSignal || !icsneoGetDLLVersion || !icsneoEnableDOIPLine)
 	{
 		FreeLibrary(hAPIDLL);
 		return false;

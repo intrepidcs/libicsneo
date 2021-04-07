@@ -86,6 +86,11 @@ typedef struct {
 	uint16_t network_enables_4;
 	RAD_REPORTING_SETTINGS reporting;
 } radgigalog_settings_t;
+
+typedef struct {
+	uint8_t unused[3];
+	uint8_t ethernetActivationLineEnabled;
+} radgigalog_status_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus

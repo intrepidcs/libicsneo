@@ -8,6 +8,7 @@
 #include "icsneo/communication/message/neomessage.h" // For neomessage_t and friends
 #include "icsneo/platform/dynamiclib.h" // Dynamic library loading and exporting
 #include "icsneo/communication/network.h" // Network type and netID defines
+#include "icsneo/communication/io.h" // IO enum defines
 #include "icsneo/api/version.h" // For version info
 #include "icsneo/api/event.h" // For event and error info
 
@@ -713,8 +714,29 @@ extern bool DLLExport icsneo_getSupportedDevices(devicetype_t* devices, size_t* 
  */
 extern bool DLLExport icsneo_getTimestampResolution(const neodevice_t* device, uint16_t* resolution);
 
+/**
+ * \brief Get the value of a digital IO for the given device
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] type The IO type
+ * \param[in] number The index within the IO type, starting from 1
+ * \param[out] value A pointer to the uint8_t which will store the value of the IO port, if successful
+ * \returns True if the value is read successfully
+ *
+ * These values are often not populated if the device is not "online".
+ */
+extern bool DLLExport icsneo_getDigitalIO(const neodevice_t* device, neoio_t type, uint32_t number, uint8_t* value);
 
-
+/**
+ * \brief Get the value of a digital IO for the given device
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] type The IO type
+ * \param[in] number The index within the IO type, starting from 1
+ * \param[in] value The value which will be written to the IO
+ * \returns True if the parameters and connection state are correct to submit the request to the device
+ *
+ * Note that this function is not synchronous with the device confirming the change.
+ */
+extern bool DLLExport icsneo_setDigitalIO(const neodevice_t* device, neoio_t type, uint32_t number, uint8_t value);
 
 #ifdef __cplusplus
 } // extern "C"
@@ -860,6 +882,18 @@ fn_icsneo_setEventLimit icsneo_setEventLimit;
 typedef size_t(*fn_icsneo_getEventLimit)(void);
 fn_icsneo_getEventLimit icsneo_getEventLimit;
 
+typedef bool(*fn_icsneo_getSupportedDevices)(devicetype_t* devices, size_t* count);
+fn_icsneo_getSupportedDevices icsneo_getSupportedDevices;
+
+typedef bool(*fn_icsneo_getTimestampResolution)(const neodevice_t* device, uint16_t* resolution);
+fn_icsneo_getTimestampResolution icsneo_getTimestampResolution;
+
+typedef bool(*fn_icsneo_getDigitalIO)(const neodevice_t* device, neoio_t type, uint32_t number, uint8_t* value);
+fn_icsneo_getDigitalIO icsneo_getDigitalIO;
+
+typedef bool(*fn_icsneo_setDigitalIO)(const neodevice_t* device, neoio_t type, uint32_t number, uint8_t value);
+fn_icsneo_setDigitalIO icsneo_setDigitalIO;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneo_libraryHandle = NULL;
@@ -920,6 +954,10 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_discardDeviceEvents);
 	ICSNEO_IMPORTASSERT(icsneo_setEventLimit);
 	ICSNEO_IMPORTASSERT(icsneo_getEventLimit);
+	ICSNEO_IMPORTASSERT(icsneo_getSupportedDevices);
+	ICSNEO_IMPORTASSERT(icsneo_getTimestampResolution);
+	ICSNEO_IMPORTASSERT(icsneo_getDigitalIO);
+	ICSNEO_IMPORTASSERT(icsneo_setDigitalIO);
 
 	icsneo_initialized = true;
 	return 0;

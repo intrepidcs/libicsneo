@@ -135,6 +135,11 @@ public:
 	}
 };
 
+typedef struct {
+	uint8_t unused[3];
+	uint8_t ethernetActivationLineEnabled;
+} radgigastar_status_t;
+
 }
 
 #endif // __cplusplus

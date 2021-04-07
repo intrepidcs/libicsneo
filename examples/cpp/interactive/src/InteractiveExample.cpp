@@ -42,6 +42,7 @@ void printMainMenu() {
 	std::cout << "I - Set HS CAN to 250K" << std::endl;
 	std::cout << "J - Set LSFT CAN to 250K" << std::endl;
 	std::cout << "K - Add/Remove a message callback" << std::endl;
+	std::cout << "L - Set Digital IO" << std::endl;
 	std::cout << "X - Exit" << std::endl;
 }
 
@@ -191,7 +192,7 @@ int main() {
 	while(true) {
 		printMainMenu();
 		std::cout << std::endl;
-		char input = getCharInput(std::vector<char> {'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'K', 'k', 'X', 'x'});
+		char input = getCharInput(std::vector<char> {'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'K', 'k', 'L', 'l', 'X', 'x'});
 		std::cout << std::endl;
 
 		switch(input) {
@@ -601,6 +602,123 @@ int main() {
 				std::cout << "Canceling!" << std::endl << std::endl;
 				break;
 			}
+		}
+		break;
+		// Set Digital IO
+		case 'L':
+		case 'l':
+		{
+			// Select a device and get its description
+			if(devices.size() == 0) {
+				std::cout << "No devices found! Please scan for new devices." << std::endl << std::endl;
+				break;
+			}
+			selectedDevice = selectDevice(devices);
+
+			const auto ethAct = selectedDevice->getEthernetActivationLineCount();
+			const auto usbHost = selectedDevice->getUSBHostPowerCount();
+			const auto backup = selectedDevice->getBackupPowerSupported();
+
+			if(ethAct == 0 && usbHost == 0 && !backup) {
+				std::cout << "The selected device has no controllable digital IO." << std::endl << std::endl;
+				break;
+			}
+
+			std::vector<char> options = { '1' };
+			std::vector<std::string> names;
+			std::map< char, std::pair<icsneo::IO, size_t> > types;
+
+			std::cout << "Select from the following:" << std::endl;
+			for(size_t i = 1; i <= ethAct; i++) {
+				if(i > 1)
+					options.push_back(options.back() + 1);
+				names.push_back("Ethernet (DoIP) Activation Line");
+				if(ethAct > 1) {
+					names.back() += ' ';
+					names.back() += i;
+				}
+				std::cout << '[' << options.back() << "] " << names.back();
+				const auto val = selectedDevice->getDigitalIO(icsneo::IO::EthernetActivation, i);
+				types[options.back()] = { icsneo::IO::EthernetActivation, i };
+				if(val) {
+					if(*val)
+						std::cout << ": Enabled" << std::endl;
+					else
+						std::cout << ": Disabled" << std::endl;
+				} else {
+					std::cout << ": Unknown (" << icsneo::GetLastError() << ")" << std::endl;
+				}
+			}
+			for(size_t i = 1; i <= usbHost; i++) {
+				options.push_back(options.back() + 1);
+				names.push_back("USB Host Power");
+				if(usbHost > 1) {
+					names.back() += ' ';
+					names.back() += i;
+				}
+				std::cout << '[' << options.back() << "] " << names.back();
+				const auto val = selectedDevice->getDigitalIO(icsneo::IO::USBHostPower, i);
+				types[options.back()] = { icsneo::IO::USBHostPower, i };
+				if(val) {
+					if(*val)
+						std::cout << ": Enabled" << std::endl;
+					else
+						std::cout << ": Disabled" << std::endl;
+				} else {
+					std::cout << ": Unknown (" << icsneo::GetLastError() << ")" << std::endl;
+				}
+			}
+			if(backup) {
+				options.push_back(options.back() + 1);
+				names.push_back("Backup Power");
+				std::cout << '[' << options.back() << "] " << names.back() << ": ";
+				auto val = selectedDevice->getDigitalIO(icsneo::IO::BackupPowerEnabled);
+				types[options.back()] = { icsneo::IO::BackupPowerEnabled, 1 };
+				if(val) {
+					if(*val)
+						std::cout << "Enabled";
+					else
+						std::cout << "Disabled";
+
+					val = selectedDevice->getDigitalIO(icsneo::IO::BackupPowerGood);
+					if(val) {
+						if(*val)
+							std::cout << " and Charged" << std::endl;
+						else
+							std::cout << " and Not Charged" << std::endl;
+					} else {
+						std::cout << "but the status is unknown (" << icsneo::GetLastError() << ")" << std::endl;
+					}
+				} else {
+					std::cout << "Unknown (" << icsneo::GetLastError() << ")" << std::endl;
+				}
+			}
+
+			options.push_back(options.back() + 1);
+			std::cout << '[' << options.back() << "] Cancel" << std::endl << std::endl;
+
+			char selection = getCharInput(options);
+			std::cout << std::endl;
+
+			if(selection == options.back()) {
+				std::cout << "Canceling!" << std::endl << std::endl;
+				break;
+			}
+
+			std::cout << "[0] Disable\n[1] Enable\n[2] Cancel" << std::endl << std::endl;
+			char selection2 = getCharInput({ '0', '1', '2' });
+			std::cout << std::endl;
+
+			if(selection2 == '2') {
+				std::cout << "Canceling!" << std::endl << std::endl;
+				break;
+			}
+
+			const bool val = selection2 == '1';
+			if(selectedDevice->setDigitalIO(types[selection].first, types[selection].second, val))
+				std::cout << "OK!" << std::endl << std::endl;
+			else
+				std::cout << "Failure! (" << icsneo::GetLastError() << ")" << std::endl << std::endl;
 		}
 		break;
 		// Exit

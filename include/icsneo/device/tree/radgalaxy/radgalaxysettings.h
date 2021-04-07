@@ -87,6 +87,11 @@ typedef struct {
 	DISK_SETTINGS disk;
 	LOGGER_SETTINGS logger;
 } radgalaxy_settings_t;
+
+typedef struct {
+	uint8_t unused[3];
+	uint8_t ethernetActivationLineEnabled;
+} radgalaxy_status_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus

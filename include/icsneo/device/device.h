@@ -18,10 +18,12 @@
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
 #include "icsneo/communication/decoder.h"
+#include "icsneo/communication/io.h"
 #include "icsneo/communication/message/resetstatusmessage.h"
 #include "icsneo/device/extensions/flexray/controller.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/third-party/concurrentqueue/concurrentqueue.h"
+#include "icsneo/platform/optional.h"
 
 namespace icsneo {
 
@@ -86,6 +88,48 @@ public:
 	virtual size_t getNetworkCountByType(Network::Type) const;
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
+	/**
+	 * Retrieve the number of Ethernet (DoIP) Activation lines present
+	 * on this device.
+	 */
+	virtual size_t getEthernetActivationLineCount() const { return 0; }
+
+	/**
+	 * Retrieve the number of power-controlled USB Host ports present
+	 * on this device.
+	 */
+	virtual size_t getUSBHostPowerCount() const { return 0; }
+
+	/**
+	 * Tell whether the current device supports controlling a backup
+	 * power source through the API.
+	 */
+	virtual bool getBackupPowerSupported() const { return false; }
+
+	/**
+	 * Get the value of a digital IO, returning an empty optional if the
+	 * value is not present, the specified IO is not valid for this device,
+	 * or if an error occurs.
+	 * 
+	 * The index number starts counting at 1 to keep the numbers in sync
+	 * with the numbering on the device, and is set to 1 by default.
+	 */
+	optional<bool> getDigitalIO(IO type, size_t number = 1);
+
+	/**
+	 * Set a digital IO to either a 1, if value is true, or 0 otherwise.
+	 *
+	 * The index number starts counting at 1 to keep the numbers in sync
+	 * with the numbering on the device.
+	 */
+	bool setDigitalIO(IO type, size_t number, bool value);
+
+	/**
+	 * Set the first digital IO of a given type to either a 1, if value
+	 * is true, or 0 otherwise.
+	 */
+	bool setDigitalIO(IO type, bool value) { return setDigitalIO(type, 1, value); }
+
 	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const { return {}; }
 
 	const device_eventhandler_t& getEventHandler() const { return report; }
@@ -99,6 +143,10 @@ protected:
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
 	device_eventhandler_t report;
+	optional<bool> ethActivationStatus;
+	optional<bool> usbHostPowerStatus;
+	optional<bool> backupPowerEnabled;
+	optional<bool> backupPowerGood;
 
 	// START Initialization Functions
 	Device(neodevice_t neodevice = { 0 }) {
@@ -184,6 +232,8 @@ protected:
 	// END Initialization Functions
 
 	void handleInternalMessage(std::shared_ptr<Message> message);
+
+	virtual void handleDeviceStatus(const std::shared_ptr<Message>& message) {}
 
 	neodevice_t& getWritableNeoDevice() { return data; }
 

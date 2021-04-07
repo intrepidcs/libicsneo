@@ -69,6 +69,7 @@ static constexpr const char* DEVICE_CURRENTLY_POLLING = "The device is currently
 static constexpr const char* DEVICE_NOT_CURRENTLY_POLLING = "The device is not currently polling for messages.";
 static constexpr const char* UNSUPPORTED_TX_NETWORK = "Message network is not a supported TX network.";
 static constexpr const char* MESSAGE_MAX_LENGTH_EXCEEDED = "The message was too long.";
+static constexpr const char* VALUE_NOT_YET_PRESENT = "The value is not yet present.";
 
 // Device Errors
 static constexpr const char* POLLING_MESSAGE_OVERFLOW = "Too many messages have been recieved for the polling message buffer, some have been lost!";
@@ -140,6 +141,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return UNSUPPORTED_TX_NETWORK;
 		case Type::MessageMaxLengthExceeded:
 			return MESSAGE_MAX_LENGTH_EXCEEDED;
+		case Type::ValueNotYetPresent:
+			return VALUE_NOT_YET_PRESENT;
 
 		// Device Errors
 		case Type::PollingMessageOverflow:

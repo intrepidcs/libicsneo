@@ -47,10 +47,27 @@ enum
 
 enum OPEthLinkMode
 {
+	OPETH_LINK_INVALID = -1,
 	OPETH_LINK_AUTO = 0,
 	OPETH_LINK_MASTER,
 	OPETH_LINK_SLAVE
 };
+
+enum EthLinkSpeed
+{
+	ETH_SPEED_10 = 0,
+	ETH_SPEED_100,
+	ETH_SPEED_1000,
+};
+
+typedef struct
+{
+	uint16_t networkId;
+	uint8_t linkStatus;
+	uint8_t linkFullDuplex;
+	uint8_t linkSpeed; // see EthLinkSpeed
+	int8_t linkMode; // for automotive networks - see OPEthLinkMode
+} EthernetNetworkStatus;
 
 typedef struct
 {
@@ -553,6 +570,12 @@ typedef struct _UART_SETTINGS
 #define UART_SETTINGS_SIZE 16
 static_assert(sizeof(UART_SETTINGS) == UART_SETTINGS_SIZE, "UART_SETTINGS is the wrong size!");
 
+typedef struct {
+	uint8_t ethernetActivationLineEnabled;
+	EthernetNetworkStatus ethernetStatus;
+	uint8_t unused;
+} fire2vnet_status_t, flexray_vnetz_status_t;
+
 #pragma pack(pop)
 
 #ifdef __cplusplus
@@ -592,7 +615,7 @@ public:
 		const uint8_t* offset = (const uint8_t*)getCANSettingsFor(net);
 		if(offset == nullptr)
 			return nullptr;
-		return static_cast<CAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+		return reinterpret_cast<CAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
 	virtual const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const { (void)net; return nullptr; }
@@ -602,7 +625,7 @@ public:
 		const uint8_t* offset = (const uint8_t*)getCANFDSettingsFor(net);
 		if(offset == nullptr)
 			return nullptr;
-		return static_cast<CANFD_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+		return reinterpret_cast<CANFD_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
 	virtual const CAN_SETTINGS* getLSFTCANSettingsFor(Network net) const { (void)net; return nullptr; }
@@ -612,7 +635,7 @@ public:
 		const uint8_t* offset = (const uint8_t*)getLSFTCANSettingsFor(net);
 		if(offset == nullptr)
 			return nullptr;
-		return static_cast<CAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+		return reinterpret_cast<CAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
 	virtual const SWCAN_SETTINGS* getSWCANSettingsFor(Network net) const { (void)net; return nullptr; }
@@ -622,13 +645,13 @@ public:
 		const uint8_t* offset = (const uint8_t*)getSWCANSettingsFor(net);
 		if(offset == nullptr)
 			return nullptr;
-		return static_cast<SWCAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+		return reinterpret_cast<SWCAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }
-	template<typename T> const T* getStructurePointer() const { return static_cast<const T*>(getRawStructurePointer()); }
-	template<typename T> T* getMutableStructurePointer() { return static_cast<T*>(getMutableRawStructurePointer()); }
+	template<typename T> const T* getStructurePointer() const { return reinterpret_cast<const T*>(getRawStructurePointer()); }
+	template<typename T> T* getMutableStructurePointer() { return reinterpret_cast<T*>(getMutableRawStructurePointer()); }
 	template<typename T> T getStructure() const { return *getStructurePointer<T>(); }
 	template<typename T> bool applyStructure(const T& newStructure);
 

@@ -91,6 +91,8 @@ public:
 		productId = PRODUCT_ID;
 	}
 
+	size_t getEthernetActivationLineCount() const override { return 1; }
+
 protected:
 	void setupPacketizer(Packetizer& packetizer) override {
 		Device::setupPacketizer(packetizer);
@@ -115,6 +117,13 @@ protected:
 
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+
+	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
+		if(!message || message->data.size() < sizeof(radgalaxy_status_t))
+			return;
+		const radgalaxy_status_t* status = reinterpret_cast<const radgalaxy_status_t*>(message->data.data());
+		ethActivationStatus = status->ethernetActivationLineEnabled;
+	}
 };
 
 }

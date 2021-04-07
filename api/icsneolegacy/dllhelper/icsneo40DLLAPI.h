@@ -62,6 +62,7 @@ typedef int (__stdcall *SETRADSTAR2SETTINGS)(void * hObject, SRADStar2Settings *
 typedef int (__stdcall *SETBITRATE)(void * hObject, int BitRate, int NetworkID);
 typedef int (__stdcall *GETDEVICEPARMS)(void * hObject, char *pParameter, char *pValues, short ValuesLength);
 typedef int (__stdcall *SETDEVICEPARMS)(void * hObject, char *pParmValue, int *pErrorIndex, int bSaveToEEPROM);
+typedef int(__stdcall *ENABLEDOIPACTIVATIONLINE)(void * hObject, bool Val);
 
 //Error Functions
 typedef int (__stdcall *GETLASTAPIERROR)(void * hObject, unsigned long *pErrorNumber);
@@ -157,6 +158,7 @@ extern SETVCAN412SETTINGS icsneoSetVCAN412Settings;
 extern SETBITRATE icsneoSetBitRate;
 extern GETDEVICEPARMS icsneoGetDeviceParameters;
 extern SETDEVICEPARMS icsneoSetDeviceParameters;
+extern ENABLEDOIPACTIVATIONLINE icsneoEnableDOIPLine;
 
 //Error Functions
 extern GETLASTAPIERROR icsneoGetLastAPIError;
