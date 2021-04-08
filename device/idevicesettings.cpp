@@ -449,6 +449,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 int64_t IDeviceSettings::getFDBaudrateFor(Network net) const {
 	if(disabled) {
 		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return -1;
 	}
 
 	if(!settingsLoaded) {
