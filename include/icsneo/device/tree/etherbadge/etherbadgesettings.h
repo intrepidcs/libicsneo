@@ -73,8 +73,6 @@ public:
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:
 				return &(cfg->can1);
-			case Network::NetID::HSCAN2:
-				return &(cfg->can2);
 			default:
 				return nullptr;
 		}
@@ -86,8 +84,6 @@ public:
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:
 				return &(cfg->canfd1);
-			case Network::NetID::HSCAN2:
-				return &(cfg->canfd2);
 			default:
 				return nullptr;
 		}
