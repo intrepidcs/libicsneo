@@ -81,7 +81,7 @@ uint16_t Device::getTimestampResolution() const {
 
 std::string Device::describe() const {
 	std::stringstream ss;
-	ss << getType() << ' ' << getSerial();
+	ss << getProductName() << ' ' << getSerial();
 	return ss.str();
 }
 

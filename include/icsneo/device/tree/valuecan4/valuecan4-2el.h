@@ -15,6 +15,39 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_2EL;
 	static constexpr const char* SERIAL_START = "VE";
 
+	enum class SKU {
+		Standard,
+		AP04E0A_D26, // HDB26, USB A, and Keysight Branding
+		AP04E0A_MUL, // Multi-connectors, USB A, and Keysight Branding
+		AP04E0A_OBD, // OBD, USB A, and Keysight Branding
+	};
+
+	SKU getSKU() const {
+		switch(getSerial().back()) {
+			case 'A':
+				return SKU::AP04E0A_D26;
+			case 'B':
+				return SKU::AP04E0A_MUL;
+			case 'C':
+				return SKU::AP04E0A_OBD;
+			default:
+				return SKU::Standard;
+		}
+	}
+
+	std::string getProductName() const override {
+		switch(getSKU()) {
+			case SKU::Standard: break;
+			case SKU::AP04E0A_D26:
+				return "Keysight AP04E0A-D26";
+			case SKU::AP04E0A_MUL:
+				return "Keysight AP04E0A-MUL";
+			case SKU::AP04E0A_OBD:
+				return "Keysight AP04E0A-OBD";
+		}
+		return Device::getProductName();
+	}
+
 protected:
 	ValueCAN4_2EL(neodevice_t neodevice) : ValueCAN4(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;

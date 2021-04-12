@@ -16,6 +16,11 @@ public:
 	static constexpr const uint16_t PRODUCT_ID = 0x1201;
 	static constexpr const char* SERIAL_START = "SM";
 
+	enum class SKU {
+		Standard,
+		APM1000ET, // Keysight Branding
+	};
+
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
@@ -32,6 +37,24 @@ public:
 			Network::NetID::OP_Ethernet2
 		};
 		return supportedNetworks;
+	}
+
+	SKU getSKU() const {
+		switch(getSerial().back()) {
+			case 'A':
+				return SKU::APM1000ET;
+			default:
+				return SKU::Standard;
+		}
+	}
+
+	std::string getProductName() const override {
+		switch(getSKU()) {
+			case SKU::Standard: break;
+			case SKU::APM1000ET:
+				return "Keysight APM1000ET";
+		}
+		return Device::getProductName();
 	}
 
 protected:

@@ -16,6 +16,12 @@ public:
 	static constexpr const uint16_t PRODUCT_ID = 0x1202;
 	static constexpr const char* SERIAL_START = "RM";
 
+	enum class SKU {
+		Standard,
+		APM1000E, // Keysight Branding
+		APM1000E_CLK, // Clock Option and Keysight Branding
+	};
+
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
@@ -23,6 +29,30 @@ public:
 			found.emplace_back(new RADMoon2(neodevice));
 
 		return found;
+	}
+
+	SKU getSKU() const {
+		switch(getSerial().back()) {
+			case 'A':
+			case 'B':
+				return SKU::APM1000E;
+			case 'C':
+			case 'D':
+				return SKU::APM1000E_CLK;
+			default:
+				return SKU::Standard;
+		}
+	}
+
+	std::string getProductName() const override {
+		switch(getSKU()) {
+			case SKU::Standard: break;
+			case SKU::APM1000E:
+				return "Keysight APM1000E";
+			case SKU::APM1000E_CLK:
+				return "Keysight APM1000E-CLK";
+		}
+		return Device::getProductName();
 	}
 
 	// RADMoon 2 does not go online, you can only set settings and

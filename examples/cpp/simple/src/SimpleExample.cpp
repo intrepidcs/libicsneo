@@ -11,7 +11,7 @@ int main() {
 	
 	std::cout<< "Supported devices:" << std::endl;
 	for(auto& dev : icsneo::GetSupportedDevices())
-		std::cout << '\t' << dev << std::endl;
+		std::cout << '\t' << dev.getGenericProductName() << std::endl;
 
 	std::cout << "\nFinding devices... " << std::flush;
 	auto devices = icsneo::FindAllDevices(); // This is type std::vector<std::shared_ptr<icsneo::Device>>
@@ -20,11 +20,11 @@ int main() {
 
 	// List off the devices
 	for(auto& device : devices)
-		std::cout << '\t' << device->getType() << " - " << device->getSerial() << " @ Handle " << device->getNeoDevice().handle << std::endl;
+		std::cout << '\t' << device->describe() << " @ Handle " << device->getNeoDevice().handle << std::endl;
 	std::cout << std::endl;
 
 	for(auto& device : devices) {
-		std::cout << "Connecting to " << device->getType() << ' ' << device->getSerial() << "... ";
+		std::cout << "Connecting to " << device->describe() << "... ";
 		bool ret = device->open();
 		if(!ret) { // Failed to open
 			std::cout << "FAIL" << std::endl;

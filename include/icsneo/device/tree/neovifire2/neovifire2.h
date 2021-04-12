@@ -15,6 +15,11 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::FIRE2;
 	static constexpr const char* SERIAL_START = "CY";
 
+	enum class SKU {
+		Standard,
+		AP1200A, // Keysight Branding
+	};
+
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
 			Network::NetID::HSCAN,
@@ -45,6 +50,24 @@ public:
 			Network::NetID::ISO9141_4
 		};
 		return supportedNetworks;
+	}
+
+	SKU getSKU() const {
+		switch(getSerial().back()) {
+			case 'A':
+				return SKU::AP1200A;
+			default:
+				return SKU::Standard;
+		}
+	}
+
+	std::string getProductName() const override {
+		switch(getSKU()) {
+			case SKU::Standard: break;
+			case SKU::AP1200A:
+				return "Keysight AP1200A";
+		}
+		return Device::getProductName();
 	}
 
 	size_t getEthernetActivationLineCount() const override { return 1; }

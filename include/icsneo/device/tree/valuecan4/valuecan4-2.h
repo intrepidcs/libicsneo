@@ -16,6 +16,11 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_2;
 	static constexpr const char* SERIAL_START = "V2";
 
+	enum class SKU {
+		Standard,
+		AP0200A, // USB A and Keysight Branding
+	};
+
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
@@ -33,6 +38,25 @@ public:
 			Network::NetID::HSCAN2
 		};
 		return supportedNetworks;
+	}
+
+	SKU getSKU() const {
+		switch(getSerial().back()) {
+			case 'A':
+			case 'B':
+				return SKU::AP0200A;
+			default:
+				return SKU::Standard;
+		}
+	}
+
+	std::string getProductName() const override {
+		switch(getSKU()) {
+			case SKU::Standard: break;
+			case SKU::AP0200A:
+				return "Keysight AP0200A";
+		}
+		return Device::getProductName();
 	}
 
 protected:

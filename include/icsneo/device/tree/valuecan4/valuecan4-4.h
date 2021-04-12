@@ -16,6 +16,13 @@ public:
 	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_4;
 	static constexpr const char* SERIAL_START = "V4";
 
+	enum class SKU {
+		Standard,
+		AP0400A_D26, // HDB26, USB A, and Keysight Branding
+		AP0400A_DB9, // 4xDB9, USB A, and Keysight Branding
+		AP0400A_OBD, // OBD, USB A, and Keysight Branding
+	};
+
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
@@ -35,6 +42,32 @@ public:
 			Network::NetID::HSCAN4
 		};
 		return supportedNetworks;
+	}
+
+	SKU getSKU() const {
+		switch(getSerial().back()) {
+			case 'A':
+				return SKU::AP0400A_D26;
+			case 'B':
+				return SKU::AP0400A_DB9;
+			case 'C':
+				return SKU::AP0400A_OBD;
+			default:
+				return SKU::Standard;
+		}
+	}
+
+	std::string getProductName() const override {
+		switch(getSKU()) {
+			case SKU::Standard: break;
+			case SKU::AP0400A_D26:
+				return "Keysight AP0400A-D26";
+			case SKU::AP0400A_DB9:
+				return "Keysight AP0400A-DB9";
+			case SKU::AP0400A_OBD:
+				return "Keysight AP0400A-OBD";
+		}
+		return Device::getProductName();
 	}
 
 protected:

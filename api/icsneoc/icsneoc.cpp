@@ -272,7 +272,7 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
-	std::string output = device->device->getType().toString();
+	std::string output = device->device->getProductName();
 
 	if(str == nullptr) {
 		*maxLength = output.length();
@@ -295,7 +295,7 @@ bool icsneo_getProductNameForType(devicetype_t type, char* str, size_t* maxLengt
 		return false;
 	}
 
-	std::string output = DeviceType(type).toString();
+	std::string output = DeviceType(type).getGenericProductName();
 
 	if(str == nullptr) {
 		*maxLength = output.length();

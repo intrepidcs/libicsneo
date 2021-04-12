@@ -70,7 +70,15 @@ public:
 		VividCAN = (0x40000000),
 		OBD2_SIM = (0x80000000)
 	};
-	static const char* GetDeviceTypeString(DeviceType::Enum type) {
+
+	/**
+	 * Get the generic product name for this device type.
+	 * 
+	 * Note that device->getProductName() should always be preferred where available,
+	 * as the product name may change based on device-specific factors, such as serial
+	 * number.
+	 */
+	static const char* GetGenericProductName(DeviceType::Enum type) {
 		// Adding something? Make sure you update DEVICE_TYPE_LONGEST_NAME at the top!
 		switch(type) {
 			case Unknown:
@@ -171,11 +179,7 @@ public:
 	DeviceType(devicetype_t netid) { value = (DeviceType::Enum)netid; }
 	DeviceType(DeviceType::Enum netid) { value = netid; }
 	DeviceType::Enum getDeviceType() const { return value; }
-	std::string toString() const { return GetDeviceTypeString(getDeviceType()); }
-	friend std::ostream& operator<<(std::ostream& os, const DeviceType& type) {
-		os << type.toString().c_str();
-		return os;
-	}
+	std::string getGenericProductName() const { return GetGenericProductName(getDeviceType()); }
 	operator devicetype_t() const { return getDeviceType(); }
 
 private:

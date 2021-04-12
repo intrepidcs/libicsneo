@@ -41,6 +41,7 @@ public:
 	std::string getSerial() const { return data.serial; }
 	uint32_t getSerialNumber() const { return Device::SerialStringToNum(getSerial()); }
 	const neodevice_t& getNeoDevice() const { return data; }
+	virtual std::string getProductName() const { return getType().getGenericProductName(); }
 	std::string describe() const;
 	friend std::ostream& operator<<(std::ostream& os, const Device& device) {
 		os << device.describe();

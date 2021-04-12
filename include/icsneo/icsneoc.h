@@ -337,6 +337,9 @@ extern bool DLLExport icsneo_getProductName(const neodevice_t* device, char* str
  *
  * In the case of a neoVI FIRE 2, this function will write a string "neoVI FIRE 2" with a NULL terminator into str.
  *
+ * Note that icsneo_getProductName should *always* be preferred where available, as the product name may change based on device-specific
+ * factors, such as the serial number.
+ *
  * The constant ICSNEO_DEVICETYPE_LONGEST_NAME is defined for the client application to create static buffers of the correct length.
  *
  * See also icsneo_describeDevice().
