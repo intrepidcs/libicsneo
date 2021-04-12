@@ -202,8 +202,17 @@ bool Device::open() {
 		return false;
 	}
 	
-	if(!settings->disabled)
+	if(!settings->disabled) {
+		// Since we will not fail the open if a settings read fails,
+		// downgrade any errors to warnings. Otherwise the error will
+		// go unnoticed in the opening thread's getLastError buffer.
+		const bool downgrading = EventManager::GetInstance().isDowngradingErrorsOnCurrentThread();
+		if(!downgrading)
+			EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 		settings->refresh();
+		if(!downgrading)
+			EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
+	}
 
 	MessageFilter filter;
 	filter.includeInternalInAny = true;
