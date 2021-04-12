@@ -613,7 +613,7 @@ int main() {
 			printf("Select from the following:\n");
 
 			printf("[1] Ethernet (DoIP) Activation Line");
-			uint8_t val;
+			bool val;
 			bool haveVal = icsneo_getDigitalIO(selectedDevice, ICSNEO_IO_ETH_ACTIVATION, 1, &val);
 			if(!haveVal) {
 				neoevent_t event;

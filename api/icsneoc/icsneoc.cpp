@@ -621,7 +621,7 @@ bool icsneo_getTimestampResolution(const neodevice_t* device, uint16_t* resoluti
 	return true;
 }
 
-bool icsneo_getDigitalIO(const neodevice_t* device, neoio_t type, uint32_t number, uint8_t* value) {
+bool icsneo_getDigitalIO(const neodevice_t* device, neoio_t type, uint32_t number, bool* value) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
@@ -634,13 +634,13 @@ bool icsneo_getDigitalIO(const neodevice_t* device, neoio_t type, uint32_t numbe
 	if(!val.has_value())
 		return false;
 
-	*value = uint8_t(*val);
+	*value = *val;
 	return true;
 }
 
-bool icsneo_setDigitalIO(const neodevice_t* device, neoio_t type, uint32_t number, uint8_t value) {
+bool icsneo_setDigitalIO(const neodevice_t* device, neoio_t type, uint32_t number, bool value) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
-	return device->device->setDigitalIO(static_cast<icsneo::IO>(type), number, bool(value));
+	return device->device->setDigitalIO(static_cast<icsneo::IO>(type), number, value);
 }
