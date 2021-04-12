@@ -644,3 +644,31 @@ bool icsneo_setDigitalIO(const neodevice_t* device, neoio_t type, uint32_t numbe
 
 	return device->device->setDigitalIO(static_cast<icsneo::IO>(type), number, value);
 }
+
+bool icsneo_isTerminationSupportedFor(const neodevice_t* device, uint16_t netid) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	return device->device->settings->isTerminationSupportedFor(Network(netid));
+}
+
+bool icsneo_canTerminationBeEnabledFor(const neodevice_t* device, uint16_t netid) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	return device->device->settings->canTerminationBeEnabledFor(Network(netid));
+}
+
+bool icsneo_isTerminationEnabledFor(const neodevice_t* device, uint16_t netid) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	return device->device->settings->isTerminationEnabledFor(Network(netid)).value_or(false);
+}
+
+bool icsneo_setTerminationFor(const neodevice_t* device, uint16_t netid, bool enabled) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	return device->device->settings->setTerminationFor(Network(netid), enabled);
+}

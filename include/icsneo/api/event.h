@@ -73,6 +73,9 @@ public:
 		RTRNotSupported = 0x2021,
 		DeviceDisconnected = 0x2022,
 		OnlineNotSupported = 0x2023,
+		TerminationNotSupportedDevice = 0x2024,
+		TerminationNotSupportedNetwork = 0x2025,
+		AnotherInTerminationGroupEnabled = 0x2026,
 
 		// Transport Events
 		FailedToRead = 0x3000,

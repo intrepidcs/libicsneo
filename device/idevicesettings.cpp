@@ -517,6 +517,140 @@ bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
 	}
 }
 
+bool IDeviceSettings::isTerminationSupportedFor(Network net) const {
+	for(const auto& group : getTerminationGroups()) {
+		for(const auto& supportedNet : group) {
+			if(net == supportedNet)
+				return true;
+		}
+	}
+	return false;
+}
+
+bool IDeviceSettings::canTerminationBeEnabledFor(Network net) const {
+	if(!settingsLoaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return false;
+	}
+
+	// Even though we will not be writing here, if the settings are read only the termination will not be enablable
+	if(readonly) {
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+		return false;
+	}
+
+	// Reference the mutable termination enables as we want to allow a disable/enable within a group without applying
+	const uint64_t* currentQueuedTerminationEnables = const_cast<IDeviceSettings*>(this)->getMutableTerminationEnables();
+	if(currentQueuedTerminationEnables == nullptr) {
+		report(APIEvent::Type::TerminationNotSupportedDevice, APIEvent::Severity::Error);
+		return false;
+	}
+
+	for(const auto& group : getTerminationGroups()) {
+		bool found = false;
+		for(const auto& supportedNet : group) {
+			if(net == supportedNet) {
+				found = true;
+				break;
+			}
+		}
+
+		if(found) {
+			for(const auto& supportedNet : group) {
+				// Allow termination on the current network even if it's already enabled
+				if(net == supportedNet)
+					continue;
+
+				const auto cmNet = supportedNet.getCoreMini();
+				if(!cmNet.has_value() || uint64_t(*cmNet) >= 64) {
+					// Hitting this assert means that a supported network has an invalid CoreMini Network ID
+					assert(false);
+					continue;
+				}
+
+				// If this network is enabled, it excludes the queried network from being enabled
+				if((*currentQueuedTerminationEnables >> uint64_t(*cmNet)) & 0x1) {
+					report(APIEvent::Type::AnotherInTerminationGroupEnabled, APIEvent::Severity::Error);
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+optional<bool> IDeviceSettings::isTerminationEnabledFor(Network net) const {
+	if(!settingsLoaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	const uint64_t* terminationEnables = getTerminationEnables();
+	if(terminationEnables == nullptr) {
+		report(APIEvent::Type::TerminationNotSupportedDevice, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	const auto cmNet = net.getCoreMini();
+	if(!cmNet.has_value() || uint64_t(*cmNet) >= 64 || !isTerminationSupportedFor(net)) {
+		report(APIEvent::Type::TerminationNotSupportedNetwork, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	return (*terminationEnables >> uint64_t(*cmNet)) & 0x1;
+}
+
+bool IDeviceSettings::setTerminationFor(Network net, bool enabled) {
+	if(!settingsLoaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(readonly) {
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+		return false;
+	}
+
+	uint64_t* terminationEnables = getMutableTerminationEnables();
+	if(terminationEnables == nullptr) {
+		report(APIEvent::Type::TerminationNotSupportedDevice, APIEvent::Severity::Error);
+		return false;
+	}
+
+	// This function reports its own error statuses
+	if(!canTerminationBeEnabledFor(net))
+		return false;
+
+	const auto cmNet = net.getCoreMini();
+	if(!cmNet.has_value() || uint8_t(*cmNet) >= 64) {
+		report(APIEvent::Type::TerminationNotSupportedNetwork, APIEvent::Severity::Error);
+		return false;
+	}
+
+	const uint64_t mask = 1ull << uint8_t(*cmNet);
+	if(enabled)
+		*terminationEnables |= mask;
+	else
+		*terminationEnables &= ~mask;
+	return true;
+}
+
 template<typename T> bool IDeviceSettings::applyStructure(const T& newStructure) {
 	if(!settingsLoaded) {
 		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);

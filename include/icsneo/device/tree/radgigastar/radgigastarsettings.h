@@ -133,6 +133,29 @@ public:
 				return nullptr;
 		}
 	}
+
+	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
+		return {
+			{
+				Network(Network::NetID::HSCAN),
+				Network(Network::NetID::HSCAN2),
+				Network(Network::NetID::HSCAN3),
+				Network(Network::NetID::HSCAN4)
+			},
+			{
+				Network(Network::NetID::MSCAN),
+				Network(Network::NetID::HSCAN5)
+			}
+		};
+	}
+
+protected:
+	const uint64_t* getTerminationEnables() const override {
+		auto cfg = getStructurePointer<radgigastar_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		return &cfg->termination_enables;
+	}
 };
 
 typedef struct {

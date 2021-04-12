@@ -580,6 +580,7 @@ typedef struct {
 
 #ifdef __cplusplus
 #include "icsneo/communication/communication.h"
+#include "icsneo/platform/optional.h"
 #include <iostream>
 #include <atomic>
 
@@ -587,6 +588,8 @@ namespace icsneo {
 
 class IDeviceSettings {
 public:
+	using TerminationGroup = std::vector<Network>;
+
 	static constexpr uint16_t GS_VERSION = 5;
 	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
 	static CANBaudrate GetEnumValueForBaudrate(int64_t baudrate);
@@ -595,11 +598,11 @@ public:
 	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), report(com->report), structSize(size) {}
 	virtual ~IDeviceSettings() {}
 	bool ok() { return !disabled && settingsLoaded; }
-	
-	bool refresh(bool ignoreChecksum = false); // Get from device
+
+	virtual bool refresh(bool ignoreChecksum = false); // Get from device
 
 	// Send to device, if temporary device keeps settings in volatile RAM until power cycle, otherwise saved to EEPROM
-	bool apply(bool temporary = false);
+	virtual bool apply(bool temporary = false);
 	bool applyDefaults(bool temporary = false);
 
 	virtual int64_t getBaudrateFor(Network net) const;
@@ -648,6 +651,59 @@ public:
 		return reinterpret_cast<SWCAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
+	/**
+	 * Some devices have groupings of networks, where software
+	 * switchable termination can only be applied to one network
+	 * in the group at a time. This function returns those groups
+	 * for the given device.
+	 *
+	 * If a device does not support CAN Termination, an empty vector
+	 * is returned.
+	 */
+	virtual std::vector<TerminationGroup> getTerminationGroups() const { return {}; }
+
+	/**
+	 * Check whether software switchable termination is supported
+	 * for a given network on this device.
+	 *
+	 * This does not check whether another network in the termination
+	 * group has termination enabled, check canTerminationBeEnabledFor
+	 * for that.
+	 */
+	bool isTerminationSupportedFor(Network net) const;
+
+	/**
+	 * Check whether software switchable termination can currently
+	 * be enabled for a given network. If another network in the
+	 * group is already enabled, or if termination is not supported
+	 * on this network, false is returned and an error will have
+	 * been reported in icsneo::getLastError().
+	 */
+	bool canTerminationBeEnabledFor(Network net) const;
+
+	/**
+	 * Check whether software switchable termination is currently
+	 * enabled for a given network in the currently active device settings.
+	 *
+	 * Note that if the termination status is set, but not yet
+	 * applied to the device, the current device status will be
+	 * reflected here rather than the pending status.
+	 */
+	optional<bool> isTerminationEnabledFor(Network net) const;
+
+	/**
+	 * Enable or disable software switchable termination for a
+	 * given network.
+	 *
+	 * All other networks in the termination group must be disabled
+	 * prior to the call, but the change does not need to be applied
+	 * to the device before enqueing the enable.
+	 *
+	 * Returns true if the call was successful, otherwise an error
+	 * will have been reported in icsneo::getLastError().
+	 */
+	bool setTerminationFor(Network net, bool enabled);
+
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }
 	template<typename T> const T* getStructurePointer() const { return reinterpret_cast<const T*>(getRawStructurePointer()); }
@@ -659,7 +715,7 @@ public:
 
 	// if settings are disabled for this device. always false unless constructed null
 	bool disabled = false;
-	
+
 	bool readonly = false;
 	bool disableGSChecksumming = false;
 
@@ -679,6 +735,16 @@ protected:
 	typedef void* warn_t;
 	IDeviceSettings(warn_t createInoperableSettings, std::shared_ptr<Communication> com)
 		: disabled(true), readonly(true), report(com->report), structSize(0) { (void)createInoperableSettings; }
+
+	virtual const uint64_t* getTerminationEnables() const { return nullptr; }
+	virtual uint64_t* getMutableTerminationEnables() {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = (const uint8_t*)getTerminationEnables();
+		if(offset == nullptr)
+			return nullptr;
+		return reinterpret_cast<uint64_t*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+	}
 };
 
 }

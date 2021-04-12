@@ -738,6 +738,60 @@ extern bool DLLExport icsneo_getDigitalIO(const neodevice_t* device, neoio_t typ
  */
 extern bool DLLExport icsneo_setDigitalIO(const neodevice_t* device, neoio_t type, uint32_t number, bool value);
 
+/**
+ * \brief Check whether software switchable termination is supported for a given network on this device.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] netid The network ID to check
+ * \returns True if software switchable termination is supported
+ *
+ * This does not check whether another network in the termination
+ * group has termination enabled, check canTerminationBeEnabledFor
+ * for that.
+ */
+extern bool DLLExport icsneo_isTerminationSupportedFor(const neodevice_t* device, uint16_t netid);
+
+/**
+ * \brief Check whether software switchable termination can currently be enabled for a given network.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] netid The network ID to check
+ * \returns True if software switchable termination can currently be enabled
+ * 
+ * If another network in the group is already enabled, or if
+ * termination is not supported on this network, false is
+ * returned and an error will have been reported in
+ * icsneo_getLastError().
+ */
+extern bool DLLExport icsneo_canTerminationBeEnabledFor(const neodevice_t* device, uint16_t netid);
+
+/**
+ * \brief Check whether software switchable termination is currently
+ * enabled for a given network in the currently active device settings.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] netid The network ID to check
+ * \returns True if software switchable termination is currently enabled
+ *
+ * Note that if the termination status is set, but not yet
+ * applied to the device, the current device status will be
+ * reflected here rather than the pending status.
+ * 
+ * False will be returned and an error will be set in
+ * icsneo_getLastError if the setting is unreadable.
+ */
+extern bool DLLExport icsneo_isTerminationEnabledFor(const neodevice_t* device, uint16_t netid);
+
+/**
+ * \brief Enable or disable software switchable termination for a given network.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] netid The network ID to affect
+ * \param[in] enabled Whether to enable or disable switchable termination
+ * \returns True if if the call was successful, otherwise an error will have been reported in icsneo_getLastError().
+ *
+ * All other networks in the termination group must be disabled
+ * prior to the call, but the change does not need to be applied
+ * to the device before enqueing the enable.
+ */
+extern bool DLLExport icsneo_setTerminationFor(const neodevice_t* device, uint16_t netid, bool enabled);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
@@ -894,6 +948,18 @@ fn_icsneo_getDigitalIO icsneo_getDigitalIO;
 typedef bool(*fn_icsneo_setDigitalIO)(const neodevice_t* device, neoio_t type, uint32_t number, bool value);
 fn_icsneo_setDigitalIO icsneo_setDigitalIO;
 
+typedef bool(*fn_icsneo_isTerminationSupportedFor)(const neodevice_t* device, uint16_t netid);
+fn_icsneo_isTerminationSupportedFor icsneo_isTerminationSupportedFor;
+
+typedef bool(*fn_icsneo_canTerminationBeEnabledFor)(const neodevice_t* device, uint16_t netid);
+fn_icsneo_canTerminationBeEnabledFor icsneo_canTerminationBeEnabledFor;
+
+typedef bool(*fn_icsneo_isTerminationEnabledFor)(const neodevice_t* device, uint16_t netid);
+fn_icsneo_isTerminationEnabledFor icsneo_isTerminationEnabledFor;
+
+typedef bool(*fn_icsneo_setTerminationFor)(const neodevice_t* device, uint16_t netid, bool enabled);
+fn_icsneo_setTerminationFor icsneo_setTerminationFor;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneo_libraryHandle = NULL;
@@ -958,6 +1024,10 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_getTimestampResolution);
 	ICSNEO_IMPORTASSERT(icsneo_getDigitalIO);
 	ICSNEO_IMPORTASSERT(icsneo_setDigitalIO);
+	ICSNEO_IMPORTASSERT(icsneo_isTerminationSupportedFor);
+	ICSNEO_IMPORTASSERT(icsneo_canTerminationBeEnabledFor);
+	ICSNEO_IMPORTASSERT(icsneo_isTerminationEnabledFor);
+	ICSNEO_IMPORTASSERT(icsneo_setTerminationFor);
 
 	icsneo_initialized = true;
 	return 0;

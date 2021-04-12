@@ -87,6 +87,7 @@ void printMainMenu() {
 	printf("I - Set HS CAN to 250K\n");
 	printf("J - Set HS CAN to 500K\n");
 	printf("L - Set Digital IO\n");
+	printf("M - Set HS CAN termination\n");
 	printf("X - Exit\n");
 }
 
@@ -236,7 +237,7 @@ int main() {
 	while(true) {
 		printMainMenu();
 		printf("\n");
-		char input = getCharInput(24, 'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'L', 'l', 'X', 'x');
+		char input = getCharInput(26, 'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'L', 'l', 'M', 'm', 'X', 'x');
 		printf("\n");
 		switch(input) {
 		// List current devices
@@ -696,6 +697,50 @@ int main() {
 				neoevent_t event;
 				bool got = icsneo_getLastError(&event);
 				printf("Failure! (%s)\n\n", got ? event.description : "No error");
+			}
+		}
+		break;
+		// Set HS CAN termination
+		case 'M':
+		case 'm':
+		{
+			// Select a device and get its description
+			if(numDevices == 0) {
+				printf("No devices found! Please scan for new devices.\n\n");
+				break;
+			}
+			selectedDevice = selectDevice();
+
+			// Get the product description for the device
+			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = {};
+			size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
+			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
+
+			printf("Termination is ");
+			const bool val = icsneo_isTerminationEnabledFor(selectedDevice, ICSNEO_NETID_HSCAN);
+			neoevent_t err = {};
+			if(icsneo_getLastError(&err)) {
+				printf("not available at this time: %s\n\n", err.description);
+				break;
+			}
+			printf(val ? "currently enabled\n" : "currently disabled\n");
+
+			printf("[0] Disable\n[1] Enable\n[2] Cancel\n\n");
+			char selection2 = getCharInput(3, '0', '1', '2');
+			printf("\n");
+
+			if(selection2 == '2') {
+				printf("Canceling!\n\n");
+				break;
+			}
+
+			// Attempt to set baudrate and apply settings
+			if(icsneo_setTerminationFor(selectedDevice, ICSNEO_NETID_HSCAN, selection2 == '1') && icsneo_settingsApply(selectedDevice)) {
+				printf("Successfully set HS CAN termination for %s!\n\n", productDescription);
+			} else {
+				printf("Failed to set HS CAN termination for %s!\n\n", productDescription);
+				printLastError();
+				printf("\n");
 			}
 		}
 		break;

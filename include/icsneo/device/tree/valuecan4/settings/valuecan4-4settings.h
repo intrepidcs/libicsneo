@@ -45,6 +45,27 @@ public:
 				return nullptr;
 		}
 	}
+
+	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
+		return {
+			{
+				Network(Network::NetID::HSCAN),
+				Network(Network::NetID::HSCAN3)
+			},
+			{
+				Network(Network::NetID::HSCAN2),
+				Network(Network::NetID::HSCAN4)
+			}
+		};
+	}
+
+protected:
+	const uint64_t* getTerminationEnables() const override {
+		auto cfg = getStructurePointer<valuecan4_4_2el_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		return &cfg->termination_enables;
+	}
 };
 
 }

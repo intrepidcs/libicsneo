@@ -82,6 +82,55 @@ public:
 				return nullptr;
 		}
 	}
+
+	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
+		return {
+			{ Network(Network::NetID::HSCAN) }
+		};
+	}
+
+	bool refresh(bool ignoreChecksum = false) override {
+		// Because VividCAN uses a nonstandard 16-bit termination_enables
+		// we need to keep the standard 64-bit values in memory and update
+		// the structure when applying
+		if(!IDeviceSettings::refresh(ignoreChecksum))
+			return false;
+		auto cfg = getStructurePointer<vividcan_settings_t>();
+		if(cfg == nullptr)
+			return false;
+		activeTerminationEnables = queuedTerminationEnables = cfg->termination_enables;
+		return true;
+	}
+
+	bool apply(bool permanent = true) override {
+		auto cfg = getMutableStructurePointer<vividcan_settings_t>();
+		if(cfg)
+			cfg->termination_enables = uint16_t(queuedTerminationEnables & 0xFFFF);
+
+		const bool success = IDeviceSettings::apply(permanent);
+		if(success)
+			activeTerminationEnables = cfg->termination_enables;
+		return success;
+	}
+
+protected:
+	const uint64_t* getTerminationEnables() const override {
+		// Check the structure pointer even though we're not using it so
+		// all of the other checks that go along with it are performed
+		if(getStructurePointer<vividcan_settings_t>() == nullptr)
+			return nullptr;
+		return &activeTerminationEnables;
+	}
+
+	uint64_t* getMutableTerminationEnables() override {
+		if(getMutableStructurePointer<vividcan_settings_t>() == nullptr)
+			return nullptr;
+		return &queuedTerminationEnables;
+	}
+
+private:
+	uint64_t queuedTerminationEnables = 0;
+	uint64_t activeTerminationEnables = 0;
 };
 
 }

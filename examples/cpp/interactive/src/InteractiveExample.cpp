@@ -43,6 +43,7 @@ void printMainMenu() {
 	std::cout << "J - Set LSFT CAN to 250K" << std::endl;
 	std::cout << "K - Add/Remove a message callback" << std::endl;
 	std::cout << "L - Set Digital IO" << std::endl;
+	std::cout << "M - Set HS CAN termination" << std::endl;
 	std::cout << "X - Exit" << std::endl;
 }
 
@@ -192,7 +193,7 @@ int main() {
 	while(true) {
 		printMainMenu();
 		std::cout << std::endl;
-		char input = getCharInput(std::vector<char> {'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'K', 'k', 'L', 'l', 'X', 'x'});
+		char input = getCharInput(std::vector<char> {'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'K', 'k', 'L', 'l', 'M', 'm', 'X', 'x'});
 		std::cout << std::endl;
 
 		switch(input) {
@@ -719,6 +720,44 @@ int main() {
 				std::cout << "OK!" << std::endl << std::endl;
 			else
 				std::cout << "Failure! (" << icsneo::GetLastError() << ")" << std::endl << std::endl;
+		}
+		break;
+		// Set HS CAN termination
+		case 'M':
+		case 'm':
+		{
+			// Select a device and get its description
+			if(devices.size() == 0) {
+				std::cout << "No devices found! Please scan for new devices." << std::endl << std::endl;
+				break;
+			}
+			selectedDevice = selectDevice(devices);
+
+			std::cout << "Termination is ";
+			const auto val = selectedDevice->settings->isTerminationEnabledFor(icsneo::Network::NetID::HSCAN);
+			if(!val.has_value()) {
+				std::cout << "not available at this time: " << icsneo::GetLastError() << std::endl << std::endl;
+				break;
+			}
+			std::cout << (*val ? "currently enabled" : "currently disabled") << std::endl;
+
+			std::cout << "[0] Disable\n[1] Enable\n[2] Cancel" << std::endl << std::endl;
+			char selection2 = getCharInput({ '0', '1', '2' });
+			std::cout << std::endl;
+
+			if(selection2 == '2') {
+				std::cout << "Canceling!" << std::endl << std::endl;
+				break;
+			}
+
+			// Attempt to set termination and apply settings
+			if(selectedDevice->settings->setTerminationFor(icsneo::Network::NetID::HSCAN, selection2 == '1') && selectedDevice->settings->apply()) {
+				std::cout << "Successfully set HS CAN termination for " << selectedDevice->describe() << std::endl;
+			} else {
+				std::cout << "Failed to set HS CAN termination for " << selectedDevice->describe() << std::endl;
+				std::cout << icsneo::GetLastError() << std::endl;;
+			}
+			std::cout << std::endl;
 		}
 		break;
 		// Exit
