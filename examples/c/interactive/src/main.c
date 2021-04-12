@@ -31,7 +31,7 @@ void printAllDevices() {
 		printf("No devices found! Please scan for new devices.\n");
 	}
 	for(int i = 0; i < numDevices; i++) {
-		char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION];
+		char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = {};
 		size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
 
 		// Updates productDescription and descriptionLength for each device
@@ -271,7 +271,7 @@ int main() {
 			selectedDevice = selectDevice();
 
 			// Get the product description for the device
-			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION];
+			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = {};
 			size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
@@ -332,7 +332,7 @@ int main() {
 			selectedDevice = selectDevice();
 
 			// Get the product description for the device
-			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION];
+			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = {};
 			size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
@@ -380,7 +380,7 @@ int main() {
 			selectedDevice = selectDevice();
 
 			// Get the product description for the device
-			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION];
+			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = {};
 			size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
@@ -439,7 +439,7 @@ int main() {
 			selectedDevice = selectDevice();
 
 			// Get the product description for the device
-			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION];
+			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = {};
 			size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
@@ -504,7 +504,7 @@ int main() {
 			selectedDevice = selectDevice();
 
 			// Get the product description for the device
-			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION];
+			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = {};
 			size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
@@ -559,7 +559,7 @@ int main() {
 			selectedDevice = selectDevice();
 
 			// Get the product description for the device
-			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION];
+			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = {};
 			size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
@@ -585,7 +585,7 @@ int main() {
 			selectedDevice = selectDevice();
 
 			// Get the product description for the device
-			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION];
+			char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = {};
 			size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
