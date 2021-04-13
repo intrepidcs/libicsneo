@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "icsneo/communication/network.h"
 
 #pragma pack(push, 1)
 
@@ -106,8 +107,8 @@ typedef struct {
 	const uint8_t* data;
 	size_t length;
 	uint8_t header[4];
-	uint16_t netid;
-	uint8_t type;
+	neonetid_t netid;
+	neonettype_t type;
 	uint8_t reserved0;
 	uint16_t description;
 	uint8_t reserved1[14];
@@ -121,8 +122,8 @@ typedef struct {
 	const uint8_t* data;
 	size_t length;
 	uint32_t arbid;
-	uint16_t netid;
-	uint8_t type;
+	neonetid_t netid;
+	neonettype_t type;
 	uint8_t dlcOnWire;
 	uint16_t description;
 	uint8_t reserved[14];
@@ -136,8 +137,8 @@ typedef struct {
 	size_t length;
 	uint8_t preemptionFlags;
 	uint8_t reservedHeader[3];
-	uint16_t netid;
-	uint8_t type;
+	neonetid_t netid;
+	neonettype_t type;
 	uint8_t reserved0;
 	uint16_t description;
 	uint8_t reserved1[14];

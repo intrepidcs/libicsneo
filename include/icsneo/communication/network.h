@@ -1,9 +1,12 @@
 #ifndef __NETWORKID_H_
 #define __NETWORKID_H_
 
+#include <stdint.h>
+typedef uint16_t neonetid_t;
+typedef uint8_t neonettype_t;
+
 #ifdef __cplusplus
 
-#include <cstdint>
 #include <ostream>
 #include "icsneo/platform/optional.h"
 
@@ -11,7 +14,7 @@ namespace icsneo {
 
 class Network {
 public:
-	enum class NetID : uint16_t {
+	enum class NetID : neonetid_t {
 		Device = 0,
 		HSCAN = 1,
 		MSCAN = 2,
@@ -126,7 +129,7 @@ public:
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};
-	enum class Type : uint8_t {
+	enum class Type : neonettype_t {
 		Invalid = 0,
 		Internal = 1, // Used for statuses that don't actually need to be transferred to the client application
 		CAN = 2,
@@ -766,7 +769,7 @@ public:
 	}
 
 	Network() { setValue(NetID::Invalid); }
-	Network(uint16_t netid) { setValue((NetID)netid); }
+	Network(neonetid_t netid) { setValue((NetID)netid); }
 	Network(NetID netid) { setValue(netid); }
 	Network(CoreMini cm) { setValue(GetNetIDFromCoreMiniNetwork(cm)); }
 	NetID getNetID() const { return value; }

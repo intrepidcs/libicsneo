@@ -461,7 +461,7 @@ extern bool DLLExport icsneo_settingsApplyStructureTemporary(const neodevice_t* 
  * In the case of CAN, this function gets the standard CAN baudrate.
  * See icsneo_getFDBaudrate() to get the baudrate for (the baudrate-switched portion of) CAN FD.
  */
-extern int64_t DLLExport icsneo_getBaudrate(const neodevice_t* device, uint16_t netid);
+extern int64_t DLLExport icsneo_getBaudrate(const neodevice_t* device, neonetid_t netid);
 
 /**
  * \brief Set the network baudrate for a specified device.
@@ -475,7 +475,7 @@ extern int64_t DLLExport icsneo_getBaudrate(const neodevice_t* device, uint16_t 
  *
  * Call icsneo_settingsApply() or similar to make the changes active on the device.
  */
-extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
+extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, neonetid_t netid, int64_t newBaudrate);
 
 /**
  * \brief Get the CAN FD baudrate for a specified device.
@@ -485,7 +485,7 @@ extern bool DLLExport icsneo_setBaudrate(const neodevice_t* device, uint16_t net
  *
  * See icsneo_getBaudrate() to get the baudrate for the non baudrate-switched portion of CAN FD, classical CAN 2.0, and other network types.
  */
-extern int64_t DLLExport icsneo_getFDBaudrate(const neodevice_t* device, uint16_t netid);
+extern int64_t DLLExport icsneo_getFDBaudrate(const neodevice_t* device, neonetid_t netid);
 
 /**
  * \brief Set the CAN FD baudrate for a specified device.
@@ -498,7 +498,7 @@ extern int64_t DLLExport icsneo_getFDBaudrate(const neodevice_t* device, uint16_
  *
  * Call icsneo_settingsApply() or similar to make the changes active on the device.
  */
-extern bool DLLExport icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
+extern bool DLLExport icsneo_setFDBaudrate(const neodevice_t* device, neonetid_t netid, int64_t newBaudrate);
 
 /**
  * \brief Transmit a single message.
@@ -751,7 +751,7 @@ extern bool DLLExport icsneo_setDigitalIO(const neodevice_t* device, neoio_t typ
  * group has termination enabled, check canTerminationBeEnabledFor
  * for that.
  */
-extern bool DLLExport icsneo_isTerminationSupportedFor(const neodevice_t* device, uint16_t netid);
+extern bool DLLExport icsneo_isTerminationSupportedFor(const neodevice_t* device, neonetid_t netid);
 
 /**
  * \brief Check whether software switchable termination can currently be enabled for a given network.
@@ -764,7 +764,7 @@ extern bool DLLExport icsneo_isTerminationSupportedFor(const neodevice_t* device
  * returned and an error will have been reported in
  * icsneo_getLastError().
  */
-extern bool DLLExport icsneo_canTerminationBeEnabledFor(const neodevice_t* device, uint16_t netid);
+extern bool DLLExport icsneo_canTerminationBeEnabledFor(const neodevice_t* device, neonetid_t netid);
 
 /**
  * \brief Check whether software switchable termination is currently
@@ -780,7 +780,7 @@ extern bool DLLExport icsneo_canTerminationBeEnabledFor(const neodevice_t* devic
  * False will be returned and an error will be set in
  * icsneo_getLastError if the setting is unreadable.
  */
-extern bool DLLExport icsneo_isTerminationEnabledFor(const neodevice_t* device, uint16_t netid);
+extern bool DLLExport icsneo_isTerminationEnabledFor(const neodevice_t* device, neonetid_t netid);
 
 /**
  * \brief Enable or disable software switchable termination for a given network.
@@ -793,7 +793,7 @@ extern bool DLLExport icsneo_isTerminationEnabledFor(const neodevice_t* device, 
  * prior to the call, but the change does not need to be applied
  * to the device before enqueing the enable.
  */
-extern bool DLLExport icsneo_setTerminationFor(const neodevice_t* device, uint16_t netid, bool enabled);
+extern bool DLLExport icsneo_setTerminationFor(const neodevice_t* device, neonetid_t netid, bool enabled);
 
 #ifdef __cplusplus
 } // extern "C"
@@ -885,16 +885,16 @@ fn_icsneo_settingsApplyStructure icsneo_settingsApplyStructure;
 typedef bool(*fn_icsneo_settingsApplyStructureTemporary)(const neodevice_t* device, const void* structure, size_t structureSize);
 fn_icsneo_settingsApplyStructureTemporary icsneo_settingsApplyStructureTemporary;
 
-typedef int64_t(*fn_icsneo_getBaudrate)(const neodevice_t* device, uint16_t netid);
+typedef int64_t(*fn_icsneo_getBaudrate)(const neodevice_t* device, neonetid_t netid);
 fn_icsneo_getBaudrate icsneo_getBaudrate;
 
-typedef bool(*fn_icsneo_setBaudrate)(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
+typedef bool(*fn_icsneo_setBaudrate)(const neodevice_t* device, neonetid_t netid, int64_t newBaudrate);
 fn_icsneo_setBaudrate icsneo_setBaudrate;
 
-typedef int64_t(*fn_icsneo_getFDBaudrate)(const neodevice_t* device, uint16_t netid);
+typedef int64_t(*fn_icsneo_getFDBaudrate)(const neodevice_t* device, neonetid_t netid);
 fn_icsneo_getFDBaudrate icsneo_getFDBaudrate;
 
-typedef bool(*fn_icsneo_setFDBaudrate)(const neodevice_t* device, uint16_t netid, int64_t newBaudrate);
+typedef bool(*fn_icsneo_setFDBaudrate)(const neodevice_t* device, neonetid_t netid, int64_t newBaudrate);
 fn_icsneo_setFDBaudrate icsneo_setFDBaudrate;
 
 typedef bool(*fn_icsneo_transmit)(const neodevice_t* device, const neomessage_t* message);
@@ -951,16 +951,16 @@ fn_icsneo_getDigitalIO icsneo_getDigitalIO;
 typedef bool(*fn_icsneo_setDigitalIO)(const neodevice_t* device, neoio_t type, uint32_t number, bool value);
 fn_icsneo_setDigitalIO icsneo_setDigitalIO;
 
-typedef bool(*fn_icsneo_isTerminationSupportedFor)(const neodevice_t* device, uint16_t netid);
+typedef bool(*fn_icsneo_isTerminationSupportedFor)(const neodevice_t* device, neonetid_t netid);
 fn_icsneo_isTerminationSupportedFor icsneo_isTerminationSupportedFor;
 
-typedef bool(*fn_icsneo_canTerminationBeEnabledFor)(const neodevice_t* device, uint16_t netid);
+typedef bool(*fn_icsneo_canTerminationBeEnabledFor)(const neodevice_t* device, neonetid_t netid);
 fn_icsneo_canTerminationBeEnabledFor icsneo_canTerminationBeEnabledFor;
 
-typedef bool(*fn_icsneo_isTerminationEnabledFor)(const neodevice_t* device, uint16_t netid);
+typedef bool(*fn_icsneo_isTerminationEnabledFor)(const neodevice_t* device, neonetid_t netid);
 fn_icsneo_isTerminationEnabledFor icsneo_isTerminationEnabledFor;
 
-typedef bool(*fn_icsneo_setTerminationFor)(const neodevice_t* device, uint16_t netid, bool enabled);
+typedef bool(*fn_icsneo_setTerminationFor)(const neodevice_t* device, neonetid_t netid, bool enabled);
 fn_icsneo_setTerminationFor icsneo_setTerminationFor;
 
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)

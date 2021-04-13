@@ -412,28 +412,28 @@ bool icsneo_settingsApplyStructureTemporary(const neodevice_t* device, const voi
 	return icsneo_settingsWriteStructure(device, structure, structureSize) && icsneo_settingsApplyTemporary(device);
 }
 
-int64_t icsneo_getBaudrate(const neodevice_t* device, uint16_t netid) {
+int64_t icsneo_getBaudrate(const neodevice_t* device, neonetid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return -1;
 
 	return device->device->settings->getBaudrateFor(netid);
 }
 
-bool icsneo_setBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate) {
+bool icsneo_setBaudrate(const neodevice_t* device, neonetid_t netid, int64_t newBaudrate) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->settings->setBaudrateFor(netid, newBaudrate);
 }
 
-int64_t icsneo_getFDBaudrate(const neodevice_t* device, uint16_t netid) {
+int64_t icsneo_getFDBaudrate(const neodevice_t* device, neonetid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return -1;
 
 	return device->device->settings->getFDBaudrateFor(netid);
 }
 
-bool icsneo_setFDBaudrate(const neodevice_t* device, uint16_t netid, int64_t newBaudrate) {
+bool icsneo_setFDBaudrate(const neodevice_t* device, neonetid_t netid, int64_t newBaudrate) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
@@ -645,28 +645,28 @@ bool icsneo_setDigitalIO(const neodevice_t* device, neoio_t type, uint32_t numbe
 	return device->device->setDigitalIO(static_cast<icsneo::IO>(type), number, value);
 }
 
-bool icsneo_isTerminationSupportedFor(const neodevice_t* device, uint16_t netid) {
+bool icsneo_isTerminationSupportedFor(const neodevice_t* device, neonetid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->settings->isTerminationSupportedFor(Network(netid));
 }
 
-bool icsneo_canTerminationBeEnabledFor(const neodevice_t* device, uint16_t netid) {
+bool icsneo_canTerminationBeEnabledFor(const neodevice_t* device, neonetid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->settings->canTerminationBeEnabledFor(Network(netid));
 }
 
-bool icsneo_isTerminationEnabledFor(const neodevice_t* device, uint16_t netid) {
+bool icsneo_isTerminationEnabledFor(const neodevice_t* device, neonetid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->settings->isTerminationEnabledFor(Network(netid)).value_or(false);
 }
 
-bool icsneo_setTerminationFor(const neodevice_t* device, uint16_t netid, bool enabled) {
+bool icsneo_setTerminationFor(const neodevice_t* device, neonetid_t netid, bool enabled) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
