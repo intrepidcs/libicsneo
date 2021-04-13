@@ -262,6 +262,12 @@ bool icsneo_removeMessageCallback(const neodevice_t* device, int id) {
 	return device->device->removeMessageCallback(id);
 }
 
+neonetid_t icsneo_getNetworkByNumber(const neodevice_t* device, neonettype_t type, unsigned int number) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+	return neonetid_t(device->device->getNetworkByNumber(icsneo::Network::Type(type), size_t(number)).getNetID());
+}
+
 bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength) {
 	// TAG String copy function
 	if(maxLength == nullptr) {

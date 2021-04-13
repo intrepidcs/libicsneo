@@ -303,6 +303,19 @@ extern int DLLExport icsneo_addMessageCallback(const neodevice_t* device, void (
 extern bool DLLExport icsneo_removeMessageCallback(const neodevice_t* device, int id);
 
 /**
+ * \brief Get the network ID for the nth network of a specified type on this device
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] type An ICSNEO_NETWORK_TYPE_* constant denoting the network type
+ * \param[in] number The number of this network starting from 1
+ * \returns The netid if the call succeeds, ICSNEO_NETID_INVALID otherwise
+ *
+ * This function is designed so that networks can be enumerated without knowledge of the specific
+ * device. For instance, on a ValueCAN 4-2, the second CAN network is ICSNEO_NETID_HSCAN2, while
+ * on a neoVI FIRE the second CAN network is ICSNEO_NETID_MSCAN.
+ */
+extern neonetid_t DLLExport icsneo_getNetworkByNumber(const neodevice_t* device, neonettype_t type, unsigned int number);
+
+/**
  * \brief Get the friendly product name for a specified device.
  * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
  * \param[out] str A pointer to a buffer where the string will be written. NULL can be passed, which will write a character count to maxLength.
@@ -858,6 +871,9 @@ fn_icsneo_addMessageCallback icsneo_addMessageCallback;
 typedef bool(*fn_icsneo_removeMessageCallback)(const neodevice_t* device, int id);
 fn_icsneo_removeMessageCallback icsneo_removeMessageCallback;
 
+typedef neonetid_t (*fn_icsneo_getNetworkByNumber)(const neodevice_t* device, neonettype_t type, unsigned int number);
+fn_icsneo_getNetworkByNumber icsneo_getNetworkByNumber;
+
 typedef bool(*fn_icsneo_getProductName)(const neodevice_t* device, char* str, size_t* maxLength);
 fn_icsneo_getProductName icsneo_getProductName;
 
@@ -996,6 +1012,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_setPollingMessageLimit);
 	ICSNEO_IMPORTASSERT(icsneo_addMessageCallback);
 	ICSNEO_IMPORTASSERT(icsneo_removeMessageCallback);
+	ICSNEO_IMPORTASSERT(icsneo_getNetworkByNumber);
 	ICSNEO_IMPORTASSERT(icsneo_getProductName);
 	ICSNEO_IMPORTASSERT(icsneo_settingsRefresh);
 	ICSNEO_IMPORTASSERT(icsneo_settingsApply);
