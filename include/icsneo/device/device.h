@@ -144,6 +144,8 @@ protected:
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
 	device_eventhandler_t report;
+
+	std::mutex ioMutex;
 	optional<bool> ethActivationStatus;
 	optional<bool> usbHostPowerStatus;
 	optional<bool> backupPowerEnabled;

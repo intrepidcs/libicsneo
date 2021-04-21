@@ -84,6 +84,7 @@ protected:
 	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
 		if(!message || message->data.size() < sizeof(radgigastar_status_t))
 			return;
+		std::lock_guard<std::mutex> lk(ioMutex);
 		const radgigastar_status_t* status = reinterpret_cast<const radgigastar_status_t*>(message->data.data());
 		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}

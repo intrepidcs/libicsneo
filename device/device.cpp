@@ -432,6 +432,7 @@ optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
 		return false;
 	}
 
+	std::lock_guard<std::mutex> lk(ioMutex);
 	switch(type) {
 	case IO::EthernetActivation:
 		if(getEthernetActivationLineCount() < number)
@@ -481,6 +482,7 @@ bool Device::setDigitalIO(IO type, size_t number, bool value) {
 		return false;
 	}
 
+	std::lock_guard<std::mutex> lk(ioMutex);
 	switch(type) {
 	case IO::EthernetActivation:
 		if(getEthernetActivationLineCount() < number)
