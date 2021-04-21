@@ -108,6 +108,18 @@ public:
 	virtual bool getBackupPowerSupported() const { return false; }
 
 	/**
+	 * Retrieve the information about the misc IOs present on this
+	 * device.
+	 */
+	virtual std::vector<MiscIO> getMiscIO() const { return {}; }
+
+	/**
+	 * Retrieve the information about the emisc IOs present on this
+	 * device.
+	 */
+	virtual std::vector<MiscIO> getEMiscIO() const { return {}; }
+
+	/**
 	 * Get the value of a digital IO, returning an empty optional if the
 	 * value is not present, the specified IO is not valid for this device,
 	 * or if an error occurs.
@@ -131,6 +143,16 @@ public:
 	 */
 	bool setDigitalIO(IO type, bool value) { return setDigitalIO(type, 1, value); }
 
+	/**
+	 * Get the value of an analog IO, returning an empty optional if the
+	 * value is not present, the specified IO is not valid for this device,
+	 * or if an error occurs.
+	 * 
+	 * The index number starts counting at 1 to keep the numbers in sync
+	 * with the numbering on the device, and is set to 1 by default.
+	 */
+	optional<double> getAnalogIO(IO type, size_t number = 1);
+
 	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const { return {}; }
 
 	const device_eventhandler_t& getEventHandler() const { return report; }
@@ -150,6 +172,8 @@ protected:
 	optional<bool> usbHostPowerStatus;
 	optional<bool> backupPowerEnabled;
 	optional<bool> backupPowerGood;
+	std::array<optional<bool>, 6> miscDigital;
+	std::array<optional<double>, 2> miscAnalog;
 
 	// START Initialization Functions
 	Device(neodevice_t neodevice = { 0 }) {
@@ -250,6 +274,8 @@ private:
 
 	std::vector<Network> supportedTXNetworks;
 	std::vector<Network> supportedRXNetworks;
+	
+	void handleNeoVIMessage(std::shared_ptr<CANMessage> message);
 	
 	enum class LEDState : uint8_t {
 		Offline = 0x04,

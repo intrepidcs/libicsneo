@@ -249,6 +249,19 @@ int main() {
 		ret = device->transmit(ethTxMessage); // This will return false if the device does not support OP (BR) Ethernet 2
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
+		std::vector<icsneo::MiscIO> emisc = device->getEMiscIO();
+		if(!emisc.empty()) {
+			std::cout << "\tReading EMisc values..." << std::endl;
+			for(const auto& io : emisc) {
+				icsneo::optional<double> val = device->getAnalogIO(icsneo::IO::EMisc, io.number);
+				std::cout << "\t\tEMISC" << io.number;
+				if(val.has_value())
+					std::cout << " - OK (" << val.value() << "V)" << std::endl;
+				else
+					std::cout << " - FAIL, it may need to be enabled in neoVI Explorer (" << icsneo::GetLastError() << ")" << std::endl;
+			}
+		}
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 		// Go offline, stop sending and receiving traffic

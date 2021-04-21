@@ -118,6 +118,26 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = msg;
 					return true;
 				}
+				case Network::NetID::Device: {
+					// These are neoVI network messages
+					// They come in as CAN but we will handle them in the device rather than
+					// passing them onto the user.
+					if(packet->data.size() < 24) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+						return false;
+					}
+
+					result = HardwareCANPacket::DecodeToMessage(packet->data);
+					if(!result) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+						return false; // A nullptr was returned, the packet was malformed
+					}
+					// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
+					// The resolution depends on the device
+					result->timestamp *= timestampResolution;
+					result->network = packet->network;
+					return true;
+				}
 				case Network::NetID::DeviceStatus: {
 					result = std::make_shared<Message>();
 					result->network = packet->network;

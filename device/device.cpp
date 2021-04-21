@@ -470,6 +470,46 @@ optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
 			report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
 
 		return backupPowerGood;
+	case IO::Misc: {
+		bool found = false;
+		for(const auto& misc : getMiscIO()) {
+			if(misc.number == number) {
+				found = misc.supportsDigitalIn;
+				break;
+			}
+		}
+		if(!found)
+			break; // ParameterOutOfRange
+
+		if(number > miscDigital.size())
+			break; // ParameterOutOfRange
+
+		if(!miscDigital[number - 1].has_value())
+			report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+
+		return miscDigital[number - 1];
+	}
+	case IO::EMisc: {
+		bool found = false;
+		for(const auto& misc : getEMiscIO()) {
+			if(misc.number == number) {
+				found = misc.supportsDigitalIn;
+				break;
+			}
+		}
+		if(!found)
+			break; // ParameterOutOfRange
+
+		if(number > miscDigital.size())
+			break; // ParameterOutOfRange
+
+		// If there is ever a device with overlapping misc IOs and emisc IOs,
+		// you will need to make a new member variable for the emisc IOs.
+		if(!miscDigital[number - 1].has_value())
+			report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+
+		return miscDigital[number - 1];
+	}
 	};
 
 	report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
@@ -522,10 +562,72 @@ bool Device::setDigitalIO(IO type, size_t number, bool value) {
 		});
 	case IO::BackupPowerGood:
 		break; // Read-only, return ParameterOutOfRange
+	case IO::Misc:
+	case IO::EMisc:
+		break; // Read-only for the moment, return ParameterOutOfRange
 	};
 
 	report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 	return false;
+}
+
+optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
+	if(number == 0) { // Start counting from 1
+		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+		return false;
+	}
+
+	std::lock_guard<std::mutex> lk(ioMutex);
+	switch(type) {
+	case IO::EthernetActivation:
+	case IO::USBHostPower:
+	case IO::BackupPowerEnabled:
+	case IO::BackupPowerGood:
+		break;
+	case IO::Misc: {
+		bool found = false;
+		for(const auto& misc : getMiscIO()) {
+			if(misc.number == number) {
+				found = misc.supportsAnalogIn;
+				break;
+			}
+		}
+		if(!found)
+			break; // ParameterOutOfRange
+
+		if(number > miscAnalog.size())
+			break; // ParameterOutOfRange
+
+		if(!miscAnalog[number - 1].has_value())
+			report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+
+		return miscAnalog[number - 1];
+	}
+	case IO::EMisc: {
+		bool found = false;
+		for(const auto& misc : getEMiscIO()) {
+			if(misc.number == number) {
+				found = misc.supportsAnalogIn;
+				break;
+			}
+		}
+		if(!found)
+			break; // ParameterOutOfRange
+
+		if(number > miscAnalog.size())
+			break; // ParameterOutOfRange
+
+		// If there is ever a device with overlapping misc IOs and emisc IOs,
+		// you will need to make a new member variable for the emisc IOs.
+		if(!miscAnalog[number - 1].has_value())
+			report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+
+		return miscAnalog[number - 1];
+	}
+	};
+
+	report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+	return nullopt;
 }
 
 void Device::addExtension(std::shared_ptr<DeviceExtension>&& extension) {
@@ -552,6 +654,12 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 		case Network::NetID::Reset_Status:
 			latestResetStatus = std::dynamic_pointer_cast<ResetStatusMessage>(message);
 			break;
+		case Network::NetID::Device: {
+			auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
+			if(canmsg)
+				handleNeoVIMessage(std::move(canmsg));
+			break;
+		}
 		case Network::NetID::DeviceStatus:
 			// Device Status format is unique per device, so the devices need to decode it themselves
 			handleDeviceStatus(message);
@@ -563,6 +671,27 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 		ext->handleMessage(message);
 		return true; // false breaks out early
 	});
+}
+
+void Device::handleNeoVIMessage(std::shared_ptr<CANMessage> message) {
+	switch(message->arbid) {
+		case 0x103: { // Report Message (neoVI FIRE 2)
+			if(message->data.size() < 34) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
+				return;
+			}
+
+			uint16_t emisc[2];
+			memcpy(emisc, message->data.data() + 24, sizeof(emisc));
+			std::lock_guard<std::mutex> lk(ioMutex);
+			miscAnalog[0] = (message->data[24] | (uint16_t(message->data[25]) << 8)) * 0.01015511; // In volts now
+			miscAnalog[1] = (message->data[26] | (uint16_t(message->data[27]) << 8)) * 0.01015511;
+			miscDigital[0] = message->data[28] & 0x01;
+			miscDigital[1] = message->data[29] & 0x01;
+			miscDigital[4] = message->data[30] & 0x01;
+			miscDigital[5] = message->data[31] & 0x01;
+		}
+	}
 }
 
 void Device::updateLEDState() {

@@ -73,6 +73,18 @@ public:
 	size_t getEthernetActivationLineCount() const override { return 1; }
 	size_t getUSBHostPowerCount() const override { return 1; }
 	bool getBackupPowerSupported() const override { return true; }
+	std::vector<MiscIO> getMiscIO() const override {
+		return {
+			{5, true, true, false},
+			{6, true, true, false}
+		};
+	}
+	std::vector<MiscIO> getEMiscIO() const override {
+		return {
+			{1, true, true, true},
+			{2, true, true, true}
+		};
+	}
 
 protected:
 	NeoVIFIRE2(neodevice_t neodevice) : Device(neodevice) {

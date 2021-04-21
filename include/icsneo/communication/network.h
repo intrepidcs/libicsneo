@@ -263,6 +263,7 @@ public:
 			case NetID::MOST150:
 				return Type::MOST;
 			case NetID::RED:
+			case NetID::Device:
 			case NetID::Reset_Status:
 			case NetID::DeviceStatus:
 			case NetID::FlexRayControl:
@@ -309,7 +310,7 @@ public:
 	static const char* GetNetIDString(NetID netid) {
 		switch(netid) {
 			case NetID::Device:
-				return "Device";
+				return "neoVI";
 			case NetID::HSCAN:
 				return "HSCAN";
 			case NetID::MSCAN:
