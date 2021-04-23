@@ -108,6 +108,7 @@ bool FTDI::close() {
 	while(writeQueue.try_dequeue(flushop)) {}
 
 	closing = false;
+	disconnected = false;
 	return ret;
 }
 

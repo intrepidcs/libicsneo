@@ -102,6 +102,7 @@ bool STM32::close() {
 		writeThread.join();
 
 	closing = false;
+	disconnected = false;
 
 	int ret = ::close(fd);
 	fd = -1;
