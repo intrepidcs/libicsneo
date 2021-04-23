@@ -72,6 +72,14 @@ bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 	return sendPacket(packet);
 }
 
+bool Communication::redirectRead(std::function<void(std::vector<uint8_t>&&)> redirectTo) {
+	if(redirectingRead)
+		return false;
+	redirectionFn = redirectTo;
+	redirectingRead = true;
+	return true;
+}
+
 bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout) {
 	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
 		return sendCommand(Command::ReadSettings, { 0, 0, 0, 1 /* Get Global Settings */, 0, 1 /* Subversion 1 */ });
@@ -181,13 +189,17 @@ void Communication::readTask() {
 	while(!closing) {
 		readBytes.clear();
 		if(driver->readWait(readBytes)) {
-			if(packetizer->input(readBytes)) {
-				for(const auto& packet : packetizer->output()) {
-					std::shared_ptr<Message> msg;
-					if(!decoder->decode(msg, packet))
-						continue;
+			if(redirectingRead) {
+				redirectionFn(std::move(readBytes));
+			} else {
+				if(packetizer->input(readBytes)) {
+					for(const auto& packet : packetizer->output()) {
+						std::shared_ptr<Message> msg;
+						if(!decoder->decode(msg, packet))
+							continue;
 
-					dispatchMessage(msg);
+						dispatchMessage(msg);
+					}
 				}
 			}
 		}

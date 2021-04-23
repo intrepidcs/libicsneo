@@ -42,6 +42,8 @@ public:
 	virtual void joinThreads();
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return driver->write(bytes); }
 	virtual bool sendPacket(std::vector<uint8_t>& bytes);
+	bool redirectRead(std::function<void(std::vector<uint8_t>&&)> redirectTo);
+	void clearRedirectRead() { redirectingRead = false; }
 
 	void setWriteBlocks(bool blocks) { driver->writeBlocks = blocks; }
 
@@ -76,6 +78,8 @@ protected:
 	std::mutex messageCallbacksLock;
 	std::map<int, MessageCallback> messageCallbacks;
 	std::atomic<bool> closing{false};
+	std::atomic<bool> redirectingRead{false};
+	std::function<void(std::vector<uint8_t>&&)> redirectionFn;
 
 	void dispatchMessage(const std::shared_ptr<Message>& msg);
 
