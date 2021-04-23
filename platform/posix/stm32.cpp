@@ -149,16 +149,46 @@ void STM32::writeTask() {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
-		const ssize_t writeSize = (ssize_t)writeOp.bytes.size();
-		ssize_t actualWritten = ::write(fd, writeOp.bytes.data(), writeSize);
-		if(actualWritten != writeSize) {
-			if(!fdIsValid()) {
-				if(!isDisconnected()) {
-					disconnected = true;
-					report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+		const ssize_t totalWriteSize = (ssize_t)writeOp.bytes.size();
+		ssize_t totalWritten = 0;
+		while(totalWritten < totalWriteSize) {
+			const ssize_t writeSize = totalWriteSize - totalWritten;
+			ssize_t actualWritten = ::write(fd, writeOp.bytes.data() + totalWritten, writeSize);
+			if(actualWritten != writeSize) {
+				// If we partially wrote, it's probably EAGAIN but it won't have been set
+				// so don't signal an error unless it's < 0, we'll come back around and
+				// get a -1 to see the real error.
+				if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
+					// We filled the TX FIFO, use select to wait for it to become available again
+					fd_set wfds = {0};
+					struct timeval tv = {0};
+					FD_SET(fd, &wfds);
+					tv.tv_usec = 50000; // 50ms
+					::select(fd + 1, nullptr, &wfds, nullptr, &tv);
+				} else if (actualWritten < 0) {
+					if(!fdIsValid()) {
+						if(!isDisconnected()) {
+							disconnected = true;
+							report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+						}
+					} else
+						report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
+					break;
 				}
-			} else
-				report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
+			}
+			if(actualWritten > 0) {
+#if 0 // Perhaps helpful for debugging :)
+				std::cout << "Wrote data: (" << actualWritten << ')' << std::hex << std::endl;
+				for(int i = 0; i < actualWritten; i += 16) {
+					for(int j = 0; j < std::min<int>(actualWritten - i, 16); j++)
+						std::cout << std::setw(2) << std::setfill('0') << uint32_t(writeOp.bytes[totalWritten+i+j]) << ' ';
+					std::cout << std::endl;
+				}
+				std::cout << std::dec << std::endl;
+#endif
+
+				totalWritten += actualWritten;
+			}
 		}
 	}
 }
