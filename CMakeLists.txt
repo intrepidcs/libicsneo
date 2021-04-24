@@ -209,10 +209,6 @@ if(WIN32)
 	endif()
 endif(WIN32)
 
-# optional-lite
-add_subdirectory(third-party/optional-lite)
-target_link_libraries(icsneocpp PUBLIC optional-lite)
-
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 	target_link_libraries(icsneocpp PUBLIC "-framework CoreFoundation" "-framework IOKit")
 endif()

@@ -1,7 +1,7 @@
 #ifndef __ICSNEO_OPTIONAL_H_
 #define __ICSNEO_OPTIONAL_H_
 
-#include "nonstd/optional.hpp"
+#include "icsneo/third-party/optional-lite/include/nonstd/optional.hpp"
 
 /**
  * We use icsneo::optional throughout the C++ API to allow for polyfilling
