@@ -163,14 +163,7 @@ void MultiChannelCommunication::vnetReadTask(size_t vnetIndex) {
 			if(closing)
 				break;
 			
-			if(vnetPacketizer->input(payloadBytes)) {
-				for(const auto& packet : vnetPacketizer->output()) {
-					std::shared_ptr<Message> msg;
-					if(!decoder->decode(msg, packet))
-						continue; // Error will have been reported from within decoder
-					dispatchMessage(msg);
-				}
-			}
+			handleInput(*vnetPacketizer, payloadBytes);
 		}
 	}
 }
