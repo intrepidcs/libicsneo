@@ -240,13 +240,13 @@ bool Device::open() {
 		while(!stopHeartbeatThread) {
 			// Wait for 110ms for a possible heartbeat
 			std::this_thread::sleep_for(std::chrono::milliseconds(110));
-			if(!receivedMessage) {
+			if(!receivedMessage && !heartbeatSuppressed()) {
 				// No heartbeat received, request a status
 				com->sendCommand(Command::RequestStatusUpdate);
 				// The response should come back quickly if the com is quiet
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				// Check if we got a message, and if not, if settings are being applied
-				if(!receivedMessage && !settings->applyingSettings) {
+				if(!receivedMessage && !heartbeatSuppressed()) {
 					if(!stopHeartbeatThread && !isDisconnected())
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 					break;
@@ -628,6 +628,11 @@ optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 
 	report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 	return nullopt;
+}
+
+Lifetime Device::suppressDisconnects() {
+	heartbeatSuppressedByUser++;
+	return Lifetime([this] { heartbeatSuppressedByUser--; });
 }
 
 void Device::addExtension(std::shared_ptr<DeviceExtension>&& extension) {

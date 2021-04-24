@@ -9,6 +9,7 @@
 #include <cstring>
 #include <atomic>
 #include "icsneo/api/eventmanager.h"
+#include "icsneo/api/lifetime.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/device/nullsettings.h"
@@ -24,6 +25,7 @@
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/third-party/concurrentqueue/concurrentqueue.h"
 #include "icsneo/platform/optional.h"
+#include "icsneo/platform/nodiscard.h"
 
 namespace icsneo {
 
@@ -155,6 +157,12 @@ public:
 
 	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const { return {}; }
 
+	/**
+	 * For use by extensions only.
+	 */
+	NODISCARD("If the Lifetime is not held, disconnects will be immediately unsuppressed")
+	Lifetime suppressDisconnects();
+
 	const device_eventhandler_t& getEventHandler() const { return report; }
 
 	std::shared_ptr<Communication> com;
@@ -275,6 +283,10 @@ private:
 	std::vector<Network> supportedTXNetworks;
 	std::vector<Network> supportedRXNetworks;
 	
+	// Use heartbeatSuppressed instead when reading
+	std::atomic<int> heartbeatSuppressedByUser{0};
+	bool heartbeatSuppressed() const { return heartbeatSuppressedByUser > 0 || (settings && settings->applyingSettings); }
+
 	void handleNeoVIMessage(std::shared_ptr<CANMessage> message);
 	
 	enum class LEDState : uint8_t {
