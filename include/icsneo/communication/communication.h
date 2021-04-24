@@ -32,7 +32,7 @@ public:
 		std::unique_ptr<Decoder>&& md) : makeConfiguredPacketizer(makeConfiguredPacketizer), encoder(std::move(e)), decoder(std::move(md)), report(report), driver(std::move(driver)) {
 		packetizer = makeConfiguredPacketizer();
 	}
-	virtual ~Communication() { close(); }
+	virtual ~Communication();
 
 	bool open();
 	bool close();
@@ -43,7 +43,7 @@ public:
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return driver->write(bytes); }
 	virtual bool sendPacket(std::vector<uint8_t>& bytes);
 	bool redirectRead(std::function<void(std::vector<uint8_t>&&)> redirectTo);
-	void clearRedirectRead() { redirectingRead = false; }
+	void clearRedirectRead();
 
 	void setWriteBlocks(bool blocks) { driver->writeBlocks = blocks; }
 
@@ -80,8 +80,10 @@ protected:
 	std::atomic<bool> closing{false};
 	std::atomic<bool> redirectingRead{false};
 	std::function<void(std::vector<uint8_t>&&)> redirectionFn;
+	std::mutex redirectingReadMutex; // Don't allow read to be disabled while in the redirectionFn
 
 	void dispatchMessage(const std::shared_ptr<Message>& msg);
+	void handleInput(Packetizer& p, std::vector<uint8_t>& readBytes);
 
 private:
 	std::thread readTaskThread;

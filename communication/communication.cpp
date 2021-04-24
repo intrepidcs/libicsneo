@@ -17,6 +17,12 @@ using namespace icsneo;
 
 int Communication::messageCallbackIDCounter = 1;
 
+Communication::~Communication() {
+	if(redirectingRead)
+		clearRedirectRead();
+	close();
+}
+
 bool Communication::open() {
 	if(isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::Error);
@@ -78,6 +84,15 @@ bool Communication::redirectRead(std::function<void(std::vector<uint8_t>&&)> red
 	redirectionFn = redirectTo;
 	redirectingRead = true;
 	return true;
+}
+
+void Communication::clearRedirectRead() {
+	if(!redirectingRead)
+		return;
+	// The mutex is required to clear the redirection, but not to set it
+	std::lock_guard<std::mutex> lk(redirectingReadMutex);
+	redirectingRead = false;
+	redirectionFn = std::function<void(std::vector<uint8_t>&&)>();
 }
 
 bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout) {
@@ -189,18 +204,35 @@ void Communication::readTask() {
 	while(!closing) {
 		readBytes.clear();
 		if(driver->readWait(readBytes)) {
-			if(redirectingRead) {
-				redirectionFn(std::move(readBytes));
-			} else {
-				if(packetizer->input(readBytes)) {
-					for(const auto& packet : packetizer->output()) {
-						std::shared_ptr<Message> msg;
-						if(!decoder->decode(msg, packet))
-							continue;
+			handleInput(*packetizer, readBytes);
+		}
+	}
+}
 
-						dispatchMessage(msg);
-					}
-				}
+void Communication::handleInput(Packetizer& p, std::vector<uint8_t>& readBytes) {
+	if(redirectingRead) {
+		// redirectingRead is an atomic so it can be set without acquiring a mutex
+		// However, we do not clear it without the mutex. The idea is that if another
+		// thread calls clearRedirectRead(), it will block until the redirectionFn
+		// finishes, and after that the redirectionFn will not be called again.
+		std::unique_lock<std::mutex> lk(redirectingReadMutex);
+		// So after we acquire the mutex, we need to check the atomic again, and
+		// if it has become cleared, we *can not* run the redirectionFn.
+		if(redirectingRead) {
+			redirectionFn(std::move(readBytes));
+		} else {
+			// The redirectionFn got cleared while we were acquiring the lock
+			lk.unlock(); // We don't need the lock anymore
+			handleInput(p, readBytes); // and we might as well process this input ourselves
+		}
+	} else {
+		if(p.input(readBytes)) {
+			for(const auto& packet : p.output()) {
+				std::shared_ptr<Message> msg;
+				if(!decoder->decode(msg, packet))
+					continue;
+
+				dispatchMessage(msg);
 			}
 		}
 	}
