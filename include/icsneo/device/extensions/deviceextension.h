@@ -17,7 +17,12 @@ public:
 	virtual ~DeviceExtension() = default;
 	virtual const char* getName() const = 0;
 
-	virtual void onDeviceOpen() {}
+	// Return false to block opening
+	virtual bool onDeviceOpen() { return true; }
+
+	// Return true to indicate that communication should now be back
+	virtual bool onDeviceCommunicationDead() { return false; }
+
 	virtual void onGoOnline() {}
 	virtual void onGoOffline() {}
 	virtual void onDeviceClose() {}

@@ -283,6 +283,8 @@ private:
 	std::vector<Network> supportedTXNetworks;
 	std::vector<Network> supportedRXNetworks;
 	
+	APIEvent::Type attemptToBeginCommunication();
+
 	// Use heartbeatSuppressed instead when reading
 	std::atomic<int> heartbeatSuppressedByUser{0};
 	bool heartbeatSuppressed() const { return heartbeatSuppressedByUser > 0 || (settings && settings->applyingSettings); }

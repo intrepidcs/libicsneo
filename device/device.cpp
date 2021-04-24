@@ -174,34 +174,36 @@ bool Device::open() {
 		return false;
 	}
 
-	if(!afterCommunicationOpen()) {
-		// Very unlikely, at the time of writing this only fails if rawWrite does.
-		// If you're looking for this error, you're probably looking for if(!serial) below.
-		report(APIEvent::Type::NoSerialNumber, APIEvent::Severity::Error); // Communication could not be established with the device. Perhaps it is not powered with 12 volts?
-		com->close();
-		return false;
+	APIEvent::Type attemptErr = attemptToBeginCommunication();
+	if(attemptErr != APIEvent::Type::NoErrorFound) {
+		// We could not communicate with the device, let's see if an extension can
+		bool tryAgain = false;
+		forEachExtension([&tryAgain](const std::shared_ptr<DeviceExtension>& ext) -> bool {
+			if(ext->onDeviceCommunicationDead())
+				tryAgain = true;
+			return true;
+		});
+		if(!tryAgain) {
+			report(attemptErr, APIEvent::Severity::Error);
+			return false; // Extensions couldn't save us
+		}
+		attemptErr = attemptToBeginCommunication();
+		if(attemptErr != APIEvent::Type::NoErrorFound) {
+			report(attemptErr, APIEvent::Severity::Error);
+			return false;
+		}
 	}
 
-	auto serial = com->getSerialNumberSync();
-	int i = 0;
-	while(!serial) {
-		serial = com->getSerialNumberSync();
-		if(i++ > 5)
-			break;
-	}
-	if(!serial) {
-		report(APIEvent::Type::NoSerialNumber, APIEvent::Severity::Error); // Communication could not be established with the device. Perhaps it is not powered with 12 volts?
-		com->close();
+	bool block = false;
+	forEachExtension([&block](const std::shared_ptr<DeviceExtension>& ext) {
+		if(ext->onDeviceOpen())
+			return true;
+		block = true;
 		return false;
-	}
-	
-	std::string currentSerial = getNeoDevice().serial;
-	if(currentSerial != serial->deviceSerial) {
-		report(APIEvent::Type::IncorrectSerialNumber, APIEvent::Severity::Error);
-		com->close();
+	});
+	if(block) // Extensions say no
 		return false;
-	}
-	
+
 	if(!settings->disabled) {
 		// Since we will not fail the open if a settings read fails,
 		// downgrade any errors to warnings. Otherwise the error will
@@ -258,8 +260,38 @@ bool Device::open() {
 		com->removeMessageCallback(messageReceivedCallbackID);
 	});
 
-	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onDeviceOpen(); return true; });
 	return true;
+}
+
+APIEvent::Type Device::attemptToBeginCommunication() {
+	if(!afterCommunicationOpen()) {
+		// Very unlikely, at the time of writing this only fails if rawWrite does.
+		// If you're looking for this error, you're probably looking for if(!serial) below.
+		com->close();
+		// "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
+		return APIEvent::Type::NoSerialNumber;
+	}
+
+	auto serial = com->getSerialNumberSync();
+	int i = 0;
+	while(!serial) {
+		serial = com->getSerialNumberSync();
+		if(i++ > 5)
+			break;
+	}
+	if(!serial) {
+		com->close();
+		// "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
+		return APIEvent::Type::NoSerialNumber;
+	}
+	
+	std::string currentSerial = getNeoDevice().serial;
+	if(currentSerial != serial->deviceSerial) {
+		com->close();
+		return APIEvent::Type::IncorrectSerialNumber;
+	}
+
+	return APIEvent::Type::NoErrorFound;
 }
 
 bool Device::close() {
