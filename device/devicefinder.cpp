@@ -1,5 +1,6 @@
 #include "icsneo/device/devicefinder.h"
 #include "icsneo/platform/devices.h"
+#include "generated/extensions/builtin.h"
 
 using namespace icsneo;
 
@@ -243,6 +244,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	for(auto& results : findResults) {
 		if(results.size())
 			foundDevices.insert(foundDevices.end(), std::make_move_iterator(results.begin()), std::make_move_iterator(results.end()));
+	}
+
+	for(auto& device : foundDevices) {
+		AddBuiltInExtensionsTo(device);
 	}
 
 	return foundDevices;

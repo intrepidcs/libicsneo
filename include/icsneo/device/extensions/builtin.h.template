@@ -1,0 +1,16 @@
+#ifndef __ICSNEO_DEVICE_EXTENSIONS_BUILTIN_H_
+#define __ICSNEO_DEVICE_EXTENSIONS_BUILTIN_H_
+
+@LIBICSNEO_EXT_CODE_INCS@
+#include "icsneo/device/device.h"
+#include <memory>
+
+namespace icsneo {
+
+static void AddBuiltInExtensionsTo([[maybe_unused]] const std::shared_ptr<icsneo::Device>& device) {
+	@LIBICSNEO_EXT_CODE@
+}
+
+}
+
+#endif

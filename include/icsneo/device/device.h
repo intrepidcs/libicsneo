@@ -157,6 +157,8 @@ public:
 
 	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const { return {}; }
 
+	void addExtension(std::shared_ptr<DeviceExtension>&& extension);
+
 	/**
 	 * For use by extensions only.
 	 */
@@ -248,7 +250,6 @@ protected:
 	virtual void setupSupportedTXNetworks(std::vector<Network>&) {}
 
 	virtual void setupExtensions() {}
-	void addExtension(std::shared_ptr<DeviceExtension>&& extension);
 
 	// Hook for devices such as FIRE which need to inject traffic before RequestSerialNumber
 	// Return false to bail

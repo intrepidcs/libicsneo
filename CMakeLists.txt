@@ -116,6 +116,14 @@ if(LIBICSNEO_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
+# Extensions
+set(LIBICSNEO_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+foreach(EXT_PATH ${LIBICSNEO_EXTENSION_DIRS})
+	get_filename_component(EXT_DIR ${EXT_PATH} NAME)
+	message("Adding extension " ${EXT_DIR})
+	add_subdirectory(${EXT_PATH} ${CMAKE_CURRENT_BINARY_DIR}/${EXT_DIR})
+endforeach()
+
 set(SRC_FILES
 	communication/message/flexray/control/flexraycontrolmessage.cpp
 	communication/message/neomessage.cpp
@@ -165,6 +173,18 @@ endif()
 
 configure_file(api/icsneocpp/buildinfo.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated/buildinfo.h)
 configure_file(api/icsneoc/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
+
+foreach(EXTINC ${LIBICSNEO_EXTENSION_INCLUDES})
+	message("Including " ${EXTINC})
+	list(APPEND LIBICSNEO_EXT_CODE_INCS_LIST "#include \"${EXTINC}\"")
+endforeach()
+list(JOIN LIBICSNEO_EXT_CODE_INCS_LIST "\n" LIBICSNEO_EXT_CODE_INCS)
+foreach(EXTCLASS ${LIBICSNEO_EXTENSION_CLASSES})
+	list(APPEND LIBICSNEO_EXT_CODE_LIST "device->addExtension(std::make_shared<${EXTCLASS}>(*device))\;")
+endforeach()
+list(JOIN LIBICSNEO_EXT_CODE_LIST "\n\t" LIBICSNEO_EXT_CODE)
+configure_file(include/icsneo/device/extensions/builtin.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated/extensions/builtin.h)
+
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(icsneocpp
@@ -174,15 +194,19 @@ add_library(icsneocpp
 	api/icsneocpp/version.cpp
 	${SRC_FILES}
 )
+message("Include paths " ${LIBICSNEO_EXTENSION_INCLUDE_PATHS})
 target_include_directories(icsneocpp
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:>
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/include
+		${LIBICSNEO_EXTENSION_INCLUDE_PATHS}
 )
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
+target_link_libraries(icsneocpp PUBLIC ${LIBICSNEO_EXTENSION_TARGETS})
 
 # libftdi
 if(NOT WIN32)
