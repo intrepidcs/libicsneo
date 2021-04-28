@@ -184,11 +184,13 @@ bool Device::open() {
 			return true;
 		});
 		if(!tryAgain) {
+			com->close();
 			report(attemptErr, APIEvent::Severity::Error);
 			return false; // Extensions couldn't save us
 		}
 		attemptErr = attemptToBeginCommunication();
 		if(attemptErr != APIEvent::Type::NoErrorFound) {
+			com->close();
 			report(attemptErr, APIEvent::Severity::Error);
 			return false;
 		}
@@ -267,7 +269,6 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 	if(!afterCommunicationOpen()) {
 		// Very unlikely, at the time of writing this only fails if rawWrite does.
 		// If you're looking for this error, you're probably looking for if(!serial) below.
-		com->close();
 		// "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
 		return APIEvent::Type::NoSerialNumber;
 	}
@@ -279,18 +280,12 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		if(i++ > 5)
 			break;
 	}
-	if(!serial) {
-		com->close();
-		// "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
+	if(!serial) // "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
 		return APIEvent::Type::NoSerialNumber;
-	}
 	
 	std::string currentSerial = getNeoDevice().serial;
-	if(currentSerial != serial->deviceSerial) {
-		com->close();
+	if(currentSerial != serial->deviceSerial)
 		return APIEvent::Type::IncorrectSerialNumber;
-	}
-
 	return APIEvent::Type::NoErrorFound;
 }
 
