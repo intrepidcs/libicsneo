@@ -40,6 +40,8 @@ public:
 	bool isDisconnected();
 	virtual void spawnThreads();
 	virtual void joinThreads();
+	void modeChangeIncoming() { driver->modeChangeIncoming(); }
+	void awaitModeChangeComplete() { driver->awaitModeChangeComplete(); }
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return driver->write(bytes); }
 	virtual bool sendPacket(std::vector<uint8_t>& bytes);
 	bool redirectRead(std::function<void(std::vector<uint8_t>&&)> redirectTo);

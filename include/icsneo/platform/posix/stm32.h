@@ -24,21 +24,28 @@ public:
 	 * Other POSIX systems (BSDs, QNX, etc) will need bespoke code written in the future
 	 */
 	STM32(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {}
-	~STM32() { if(isOpen()) close(); }
+	~STM32();
 	static std::vector<neodevice_t> FindByProduct(int product);
 
-	bool open();
-	bool isOpen();
-	bool close();
+	bool open() override;
+	bool isOpen() override;
+	bool close() override;
+
+	void modeChangeIncoming() override;
+	void awaitModeChangeComplete() override;
 
 private:
 	neodevice_t& device;
 	int fd = -1;
+	std::atomic<bool> modeChanging{false};
+	std::thread modeChangeThread;
+	std::mutex modeChangeMutex;
+	std::condition_variable modeChangeCV;
 
 	static std::string HandleToTTY(neodevice_handle_t handle);
 
-	void readTask();
-	void writeTask();
+	void readTask() override;
+	void writeTask() override;
 	bool fdIsValid();
 };
 

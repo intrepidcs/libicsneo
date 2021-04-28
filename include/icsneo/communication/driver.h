@@ -20,6 +20,8 @@ public:
 	virtual ~Driver() {}
 	virtual bool open() = 0;
 	virtual bool isOpen() = 0;
+	virtual void modeChangeIncoming() {}
+	virtual void awaitModeChangeComplete() {}
 	virtual bool isDisconnected() { return disconnected; };
 	virtual bool close() = 0;
 	virtual bool read(std::vector<uint8_t>& bytes, size_t limit = 0);
