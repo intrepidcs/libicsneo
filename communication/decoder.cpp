@@ -123,8 +123,10 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					// They come in as CAN but we will handle them in the device rather than
 					// passing them onto the user.
 					if(packet->data.size() < 24) {
-						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
-						return false;
+						result = std::make_shared<Message>();
+						result->network = packet->network;
+						result->data = packet->data;
+						return true;
 					}
 
 					result = HardwareCANPacket::DecodeToMessage(packet->data);
