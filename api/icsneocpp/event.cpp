@@ -110,7 +110,7 @@ static constexpr const char* TRANSMIT_BUFFER_FULL = "The transmit buffer is full
 static constexpr const char* DEVICE_IN_USE = "The device is currently in use by another program.";
 static constexpr const char* PCAP_COULD_NOT_START = "The PCAP driver could not be started. Ethernet devices will not be found.";
 static constexpr const char* PCAP_COULD_NOT_FIND_DEVICES = "The PCAP driver failed to find devices. Ethernet devices will not be found.";
-static constexpr const char* PACKET_DECODING = "The packet could not be decoded.";
+static constexpr const char* PACKET_DECODING = "There was an error decoding a packet from the device.";
 
 static constexpr const char* TOO_MANY_EVENTS = "Too many events have occurred. The list has been truncated.";
 static constexpr const char* UNKNOWN = "An unknown internal error occurred.";
