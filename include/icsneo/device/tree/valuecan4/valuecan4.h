@@ -20,6 +20,8 @@ protected:
 	}
 
 	ValueCAN4(neodevice_t neodevice) : Device(neodevice) {}
+
+	bool requiresVehiclePower() const override { return false; }
 };
 
 }

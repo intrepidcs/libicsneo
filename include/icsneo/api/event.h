@@ -76,6 +76,9 @@ public:
 		TerminationNotSupportedDevice = 0x2024,
 		TerminationNotSupportedNetwork = 0x2025,
 		AnotherInTerminationGroupEnabled = 0x2026,
+		NoSerialNumberFW = 0x2027, // A firmware update was already attempted
+		NoSerialNumber12V = 0x2028, // The device must be powered with 12V for communication to be established
+		NoSerialNumberFW12V = 0x2029, // The device must be powered with 12V for communication to be established, a firmware update was already attempted
 
 		// Transport Events
 		FailedToRead = 0x3000,

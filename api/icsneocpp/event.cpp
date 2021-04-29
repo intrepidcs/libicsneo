@@ -73,7 +73,10 @@ static constexpr const char* VALUE_NOT_YET_PRESENT = "The value is not yet prese
 
 // Device Errors
 static constexpr const char* POLLING_MESSAGE_OVERFLOW = "Too many messages have been recieved for the polling message buffer, some have been lost!";
-static constexpr const char* NO_SERIAL_NUMBER = "Communication could not be established with the device. Perhaps it is not powered with 12 volts?";
+static constexpr const char* NO_SERIAL_NUMBER_FW_12V = "Communication could not be established with the device. Perhaps it is not powered with 12 volts?";
+static constexpr const char* NO_SERIAL_NUMBER_FW = "Communication could not be established with the device. Perhaps it is not powered?";
+static constexpr const char* NO_SERIAL_NUMBER_12V = "Communication could not be established with the device. Perhaps it is not powered with 12 volts or requires a firmware update using Vehicle Spy.";
+static constexpr const char* NO_SERIAL_NUMBER = "Communication could not be established with the device. Perhaps it is not powered or requires a firmware update using Vehicle Spy.";
 static constexpr const char* INCORRECT_SERIAL_NUMBER = "The device did not return the expected serial number!";
 static constexpr const char* SETTINGS_READ = "The device settings could not be read.";
 static constexpr const char* SETTINGS_VERSION = "The settings version is incorrect, please update your firmware with neoVI Explorer.";
@@ -202,6 +205,12 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return TERMINATION_NOT_SUPPORTED_NETWORK;
 		case Type::AnotherInTerminationGroupEnabled:
 			return ANOTHER_IN_TERMINATION_GROUP_ENABLED;
+		case Type::NoSerialNumberFW:
+			return NO_SERIAL_NUMBER_FW;
+		case Type::NoSerialNumber12V:
+			return NO_SERIAL_NUMBER_12V;
+		case Type::NoSerialNumberFW12V:
+			return NO_SERIAL_NUMBER_FW_12V;
 
 		// Transport Errors
 		case Type::FailedToRead:

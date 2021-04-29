@@ -270,7 +270,7 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		// Very unlikely, at the time of writing this only fails if rawWrite does.
 		// If you're looking for this error, you're probably looking for if(!serial) below.
 		// "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
-		return APIEvent::Type::NoSerialNumber;
+		return getCommunicationNotEstablishedError();
 	}
 
 	auto serial = com->getSerialNumberSync();
@@ -281,7 +281,7 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 			break;
 	}
 	if(!serial) // "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
-		return APIEvent::Type::NoSerialNumber;
+		return getCommunicationNotEstablishedError();
 	
 	std::string currentSerial = getNeoDevice().serial;
 	if(currentSerial != serial->deviceSerial)
@@ -723,6 +723,32 @@ void Device::handleNeoVIMessage(std::shared_ptr<CANMessage> message) {
 			miscDigital[4] = message->data[30] & 0x01;
 			miscDigital[5] = message->data[31] & 0x01;
 		}
+	}
+}
+
+bool Device::firmwareUpdateSupported() {
+	bool ret = false;
+	forEachExtension([&ret](const std::shared_ptr<DeviceExtension>& ext) {
+		if(ext->providesFirmware()) {
+			ret = true;
+			return false;
+		}
+		return true; // false breaks out early
+	});
+	return ret;
+}
+
+APIEvent::Type Device::getCommunicationNotEstablishedError() {
+	if(firmwareUpdateSupported()) {
+		if(requiresVehiclePower())
+			return APIEvent::Type::NoSerialNumberFW12V;
+		else
+			return APIEvent::Type::NoSerialNumberFW;
+	} else {
+		if(requiresVehiclePower())
+			return APIEvent::Type::NoSerialNumber12V;
+		else
+			return APIEvent::Type::NoSerialNumber;
 	}
 }
 

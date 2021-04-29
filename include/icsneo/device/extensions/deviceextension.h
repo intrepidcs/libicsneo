@@ -27,6 +27,8 @@ public:
 	virtual void onGoOffline() {}
 	virtual void onDeviceClose() {}
 
+	virtual bool providesFirmware() const { return false; }
+
 	virtual void handleMessage(const std::shared_ptr<Message>&) {}
 
 	// Return true to continue transmitting, success should be written to if false is returned

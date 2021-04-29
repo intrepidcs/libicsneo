@@ -84,6 +84,8 @@ protected:
 		Device::setupDecoder(decoder);
 		decoder.timestampResolution = 10; // Timestamps are in 10ns increments instead of the usual 25ns
 	}
+
+	bool requiresVehiclePower() const override { return false; }
 };
 
 }

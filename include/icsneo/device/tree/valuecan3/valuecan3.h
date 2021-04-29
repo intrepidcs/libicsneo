@@ -45,6 +45,8 @@ private:
 
 	// The supported TX networks are the same as the supported RX networks for this device
 	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+
+	bool requiresVehiclePower() const override { return false; }
 };
 
 }

@@ -35,6 +35,9 @@ public:
 		return false;
 	}
 
+protected:
+	bool requiresVehiclePower() const override { return false; }
+
 private:
 	VividCAN(neodevice_t neodevice) : Device(neodevice) {
 		initialize<STM32, VividCANSettings>();

@@ -254,6 +254,8 @@ protected:
 	// Hook for devices such as FIRE which need to inject traffic before RequestSerialNumber
 	// Return false to bail
 	virtual bool afterCommunicationOpen() { return true; }
+
+	virtual bool requiresVehiclePower() const { return true; }
 	
 	template<typename Extension>
 	std::shared_ptr<Extension> getExtension() const {
@@ -291,6 +293,10 @@ private:
 	bool heartbeatSuppressed() const { return heartbeatSuppressedByUser > 0 || (settings && settings->applyingSettings); }
 
 	void handleNeoVIMessage(std::shared_ptr<CANMessage> message);
+
+	bool firmwareUpdateSupported();
+
+	APIEvent::Type getCommunicationNotEstablishedError();
 	
 	enum class LEDState : uint8_t {
 		Offline = 0x04,
