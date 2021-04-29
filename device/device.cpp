@@ -2,6 +2,7 @@
 #include "icsneo/communication/message/callback/messagecallback.h"
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/communication/command.h"
+#include "icsneo/device/extensions/deviceextension.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -164,7 +165,7 @@ void Device::enforcePollingMessageLimit() {
 	}
 }
 
-bool Device::open() {
+bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 	if(!com) {
 		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 		return false;
@@ -178,8 +179,8 @@ bool Device::open() {
 	if(attemptErr != APIEvent::Type::NoErrorFound) {
 		// We could not communicate with the device, let's see if an extension can
 		bool tryAgain = false;
-		forEachExtension([&tryAgain](const std::shared_ptr<DeviceExtension>& ext) -> bool {
-			if(ext->onDeviceCommunicationDead())
+		forEachExtension([&tryAgain, &flags, &handler](const std::shared_ptr<DeviceExtension>& ext) -> bool {
+			if(ext->onDeviceCommunicationDead(flags, handler))
 				tryAgain = true;
 			return true;
 		});
@@ -197,8 +198,8 @@ bool Device::open() {
 	}
 
 	bool block = false;
-	forEachExtension([&block](const std::shared_ptr<DeviceExtension>& ext) {
-		if(ext->onDeviceOpen())
+	forEachExtension([&block, &flags, &handler](const std::shared_ptr<DeviceExtension>& ext) {
+		if(ext->onDeviceOpen(flags, handler))
 			return true;
 		block = true;
 		return false;

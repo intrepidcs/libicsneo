@@ -6,6 +6,7 @@
 #include <memory>
 #include "icsneo/communication/message/message.h"
 #include "icsneo/api/eventmanager.h"
+#include "icsneo/device/device.h"
 
 namespace icsneo {
 
@@ -18,10 +19,10 @@ public:
 	virtual const char* getName() const = 0;
 
 	// Return false to block opening
-	virtual bool onDeviceOpen() { return true; }
+	virtual bool onDeviceOpen(Device::OpenFlags flags, const Device::OpenStatusHandler& handler) { return true; }
 
 	// Return true to indicate that communication should now be back
-	virtual bool onDeviceCommunicationDead() { return false; }
+	virtual bool onDeviceCommunicationDead(Device::OpenFlags flags, const Device::OpenStatusHandler& handler) { return false; }
 
 	virtual void onGoOnline() {}
 	virtual void onGoOffline() {}

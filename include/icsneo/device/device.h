@@ -8,13 +8,13 @@
 #include <utility>
 #include <cstring>
 #include <atomic>
+#include <type_traits>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/api/lifetime.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/device/nullsettings.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/device/extensions/deviceextension.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
@@ -28,6 +28,8 @@
 #include "icsneo/platform/nodiscard.h"
 
 namespace icsneo {
+
+class DeviceExtension;
 
 class Device {
 public:
@@ -50,7 +52,50 @@ public:
 		return os;
 	}
 
-	virtual bool open();
+	class OpenFlags {
+	public:
+		enum Enum {
+			/**
+			 * Even if the firmware does not match the current firmware version,
+			 * the device will not be updated.
+			 * 
+			 * Note: The device may still be flashed if the device has no firmware
+			 * 
+			 * This has no effect if the DFU extension is not present
+			 */
+			SuppressAutoUpdate = 1 << 0,
+
+			/**
+			 * Force reflash the device.
+			 * 
+			 * This has no effect if the DFU extension is not present
+			 */
+			ForceReflash = 1 << 1
+		};
+		using EnumType = std::underlying_type<Enum>::type;
+
+		OpenFlags(Enum e = Enum(0)) : val(e) {}
+		EnumType operator&(Enum e) const { return EnumType(val) & EnumType(e); }
+
+	private:
+		const Enum val;
+	};
+
+	enum class OpenDirective {
+		Continue,
+		Cancel,
+		Skip
+	};
+
+	enum class OpenStatusType {
+		Question,
+		Progress
+	};
+
+	using OpenStatusHandler = std::function<OpenDirective(OpenStatusType type, const std::string& status, optional<double> progress)>;
+
+	bool open(OpenFlags flags = {}, OpenStatusHandler handler =
+		[](OpenStatusType type, const std::string& _s, optional<double> _p) { return OpenDirective::Continue; });
 	virtual bool close();
 	virtual bool isOnline() const { return online; }
 	virtual bool isOpen() const { return com->isOpen(); }
