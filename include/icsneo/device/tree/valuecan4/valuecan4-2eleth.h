@@ -67,7 +67,7 @@ protected:
 
 private:
 	ValueCAN4_2EL_ETH(neodevice_t neodevice) : ValueCAN4_2EL(neodevice) {
-		initialize<CDCACM, ValueCAN4_2ELSettings>();
+		initialize<PCAP, ValueCAN4_2ELSettings>();
 		productId = ETH_PRODUCT_ID;
 	}
 };
