@@ -5,7 +5,7 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/platform/stm32.h"
+#include "icsneo/platform/cdcacm.h"
 #include "icsneo/device/tree/vividcan/vividcansettings.h"
 
 namespace icsneo {
@@ -18,7 +18,7 @@ public:
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
-		for(auto neodevice : STM32::FindByProduct(PRODUCT_ID))
+		for(auto neodevice : CDCACM::FindByProduct(PRODUCT_ID))
 			found.emplace_back(new VividCAN(neodevice));
 
 		return found;
@@ -40,7 +40,7 @@ protected:
 
 private:
 	VividCAN(neodevice_t neodevice) : Device(neodevice) {
-		initialize<STM32, VividCANSettings>();
+		initialize<CDCACM, VividCANSettings>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}

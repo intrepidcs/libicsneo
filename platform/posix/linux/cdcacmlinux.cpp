@@ -1,4 +1,4 @@
-#include "icsneo/platform/stm32.h"
+#include "icsneo/platform/cdcacm.h"
 #include <dirent.h>
 #include <cstring>
 #include <iostream>
@@ -80,16 +80,16 @@ private:
 	std::string serial;
 };
 
-std::vector<neodevice_t> STM32::FindByProduct(int product) {
+std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
 	std::vector<neodevice_t> found;
 
-	Directory directory("/sys/bus/usb/drivers/cdc_acm"); // Query the STM32 driver
+	Directory directory("/sys/bus/usb/drivers/cdc_acm"); // Query the CDCACM driver
 	if(!directory.openedSuccessfully())
 		return found;
 
 	std::vector<std::string> foundusbs;
 	for(auto& entry : directory.ls()) {
-		/* This directory will have directories (links) for all devices using the cdc_acm driver (as STM32 devices do)
+		/* This directory will have directories (links) for all devices using the cdc_acm driver (as CDCACM devices do)
 		 * There will also be other files and directories providing information about the driver in here. We want to ignore them.
 		 * Devices will be named like "7-2:1.0" where 7 is the enumeration for the USB controller, 2 is the device enumeration on
 		 * that specific controller (will change if the device is unplugged and replugged), 1 is the device itself and 0 is
@@ -195,7 +195,7 @@ std::vector<neodevice_t> STM32::FindByProduct(int product) {
 	return found;
 }
 
-std::string STM32::HandleToTTY(neodevice_handle_t handle) {
+std::string CDCACM::HandleToTTY(neodevice_handle_t handle) {
 	std::stringstream ss;
 	ss << "/dev/ttyACM" << (int)(handle - HANDLE_OFFSET);
 	return ss.str();

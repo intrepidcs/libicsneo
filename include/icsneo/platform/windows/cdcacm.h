@@ -1,5 +1,5 @@
-#ifndef __STM32_WINDOWS_H_
-#define __STM32_WINDOWS_H_
+#ifndef __CDCACM_WINDOWS_H_
+#define __CDCACM_WINDOWS_H_
 
 #ifdef __cplusplus
 
@@ -7,9 +7,9 @@
 
 namespace icsneo {
 
-class STM32 : public VCP {
+class CDCACM : public VCP {
 public:
-	STM32(const device_eventhandler_t& err, neodevice_t& forDevice) : VCP(err, forDevice) {}
+	CDCACM(const device_eventhandler_t& err, neodevice_t& forDevice) : VCP(err, forDevice) {}
 	static std::vector<neodevice_t> FindByProduct(int product) { return VCP::FindByProduct(product, { L"usbser" }); }
 };
 

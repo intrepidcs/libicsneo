@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 
 #include "icsneo/device/tree/valuecan4/valuecan4-2el.h"
-#include "icsneo/platform/stm32.h"
+#include "icsneo/platform/cdcacm.h"
 #include <string>
 
 namespace icsneo {
@@ -14,7 +14,7 @@ public:
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
-		for(auto neodevice : STM32::FindByProduct(USB_PRODUCT_ID)) {
+		for(auto neodevice : CDCACM::FindByProduct(USB_PRODUCT_ID)) {
 			if(std::string(neodevice.serial).substr(0, 2) == SERIAL_START)
 				found.emplace_back(new ValueCAN4_2EL_USB(neodevice));
 		}
@@ -43,7 +43,7 @@ protected:
 
 private:
 	ValueCAN4_2EL_USB(neodevice_t neodevice) : ValueCAN4_2EL(neodevice) {
-		initialize<STM32, ValueCAN4_2ELSettings>();
+		initialize<CDCACM, ValueCAN4_2ELSettings>();
 		productId = USB_PRODUCT_ID;
 	}
 };

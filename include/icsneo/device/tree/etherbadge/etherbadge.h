@@ -7,7 +7,7 @@
 #include "icsneo/device/devicetype.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/decoder.h"
-#include "icsneo/platform/stm32.h"
+#include "icsneo/platform/cdcacm.h"
 #include "icsneo/device/tree/etherbadge/etherbadgesettings.h"
 
 namespace icsneo {
@@ -22,7 +22,7 @@ public:
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
-		for(auto neodevice : STM32::FindByProduct(PRODUCT_ID))
+		for(auto neodevice : CDCACM::FindByProduct(PRODUCT_ID))
 			found.emplace_back(new EtherBADGE(neodevice));
 
 		return found;
@@ -42,7 +42,7 @@ public:
 	EtherBADGE(neodevice_t neodevice) : Device(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
-		initialize<STM32, EtherBADGESettings>();
+		initialize<CDCACM, EtherBADGESettings>();
 	}
 
 protected:

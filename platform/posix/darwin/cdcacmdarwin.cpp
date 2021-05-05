@@ -1,4 +1,4 @@
-#include "icsneo/platform/stm32.h"
+#include "icsneo/platform/cdcacm.h"
 #include <mutex>
 #include <vector>
 #include <CoreFoundation/CoreFoundation.h>
@@ -79,7 +79,7 @@ private:
 	io_object_t toRelease;
 };
 
-std::vector<neodevice_t> STM32::FindByProduct(int product) {
+std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
 	std::vector<neodevice_t> found;
 
 	CFMutableDictionaryRef ref = IOServiceMatching(kIOSerialBSDServiceValue);
@@ -179,10 +179,10 @@ std::vector<neodevice_t> STM32::FindByProduct(int product) {
 	return found;
 }
 
-std::string STM32::HandleToTTY(neodevice_handle_t handle) {
+std::string CDCACM::HandleToTTY(neodevice_handle_t handle) {
 	std::lock_guard<std::mutex> lk(ttyTableMutex);
 	const size_t index = size_t(handle - HANDLE_OFFSET);
 	if(index >= ttyTable.size())
-		return ""; // Not found, generic driver (stm32.cpp) will throw an error
+		return ""; // Not found, generic driver (cdcacm.cpp) will throw an error
 	return ttyTable[index];
 }

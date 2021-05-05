@@ -6,7 +6,7 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/tree/radmoonduo/radmoonduosettings.h"
-#include "icsneo/platform/stm32.h"
+#include "icsneo/platform/cdcacm.h"
 
 namespace icsneo {
 
@@ -19,7 +19,7 @@ public:
 	static std::vector<std::shared_ptr<Device>> Find() {
 		std::vector<std::shared_ptr<Device>> found;
 
-		for(auto neodevice : STM32::FindByProduct(PRODUCT_ID))
+		for(auto neodevice : CDCACM::FindByProduct(PRODUCT_ID))
 			found.emplace_back(new RADMoonDuo(neodevice));
 
 		return found;
@@ -35,7 +35,7 @@ public:
 
 protected:
 	RADMoonDuo(neodevice_t neodevice) : Device(neodevice) {
-		initialize<STM32, RADMoonDuoSettings>();
+		initialize<CDCACM, RADMoonDuoSettings>();
 		productId = PRODUCT_ID;
 		getWritableNeoDevice().type = DEVICE_TYPE;
 	}

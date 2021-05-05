@@ -95,15 +95,15 @@ else() # Darwin or Linux
 	set(PLATFORM_SRC
 		platform/posix/ftdi.cpp
 		platform/posix/pcap.cpp
-		platform/posix/stm32.cpp
+		platform/posix/cdcacm.cpp
 	)
 	if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 		list(APPEND PLATFORM_SRC
-			platform/posix/darwin/stm32darwin.cpp
+			platform/posix/darwin/cdcacmdarwin.cpp
 		)
 	else() # Linux or other
 		list(APPEND PLATFORM_SRC
-			platform/posix/linux/stm32linux.cpp
+			platform/posix/linux/cdcacmlinux.cpp
 		)
 		if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 			message(WARNING

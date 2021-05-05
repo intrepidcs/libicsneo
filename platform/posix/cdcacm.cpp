@@ -1,4 +1,4 @@
-#include "icsneo/platform/stm32.h"
+#include "icsneo/platform/cdcacm.h"
 #include <dirent.h>
 #include <cstring>
 #include <iostream>
@@ -14,13 +14,13 @@
 
 using namespace icsneo;
 
-STM32::~STM32() {
+CDCACM::~CDCACM() {
 	awaitModeChangeComplete();
 	if(isOpen())
 		close();
 }
 
-bool STM32::open() {
+bool CDCACM::open() {
 	if(isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::Error);
 		return false;
@@ -101,17 +101,17 @@ bool STM32::open() {
 	}
 
 	// Create threads
-	readThread = std::thread(&STM32::readTask, this);
-	writeThread = std::thread(&STM32::writeTask, this);
+	readThread = std::thread(&CDCACM::readTask, this);
+	writeThread = std::thread(&CDCACM::writeTask, this);
 	
 	return true;
 }
 
-bool STM32::isOpen() {
+bool CDCACM::isOpen() {
 	return fd >= 0; // Negative fd indicates error or not opened yet
 }
 
-bool STM32::close() {
+bool CDCACM::close() {
 	if(!isOpen() && !isDisconnected()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
@@ -158,11 +158,11 @@ bool STM32::close() {
 	}
 }
 
-void STM32::modeChangeIncoming() {
+void CDCACM::modeChangeIncoming() {
 	modeChanging = true;
 }
 
-void STM32::awaitModeChangeComplete() {
+void CDCACM::awaitModeChangeComplete() {
 	std::unique_lock<std::mutex> lk(modeChangeMutex);
 	if(modeChanging && !modeChangeThread.joinable()) // Waiting for the thread to start
 		modeChangeCV.wait_for(lk, std::chrono::seconds(1), [this] { return modeChangeThread.joinable(); });
@@ -170,7 +170,7 @@ void STM32::awaitModeChangeComplete() {
 		modeChangeThread.join();
 }
 
-void STM32::readTask() {
+void CDCACM::readTask() {
 	constexpr size_t READ_BUFFER_SIZE = 2048;
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
@@ -209,7 +209,7 @@ void STM32::readTask() {
 	}
 }
 
-void STM32::writeTask() {
+void CDCACM::writeTask() {
 	WriteOperation writeOp;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing && !isDisconnected()) {
@@ -260,7 +260,7 @@ void STM32::writeTask() {
 	}
 }
 
-bool STM32::fdIsValid() {
+bool CDCACM::fdIsValid() {
 	struct termios tty = {};
 	return tcgetattr(fd, &tty) == 0 ? true : false;
 }
