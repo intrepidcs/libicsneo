@@ -114,7 +114,7 @@ public:
 	}
 
 protected:
-	const uint64_t* getTerminationEnables() const override {
+	ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const override {
 		// Check the structure pointer even though we're not using it so
 		// all of the other checks that go along with it are performed
 		if(getStructurePointer<vividcan_settings_t>() == nullptr)
@@ -122,7 +122,7 @@ protected:
 		return &activeTerminationEnables;
 	}
 
-	uint64_t* getMutableTerminationEnables() override {
+	ICSNEO_UNALIGNED(uint64_t*) getMutableTerminationEnables() override {
 		if(getMutableStructurePointer<vividcan_settings_t>() == nullptr)
 			return nullptr;
 		return &queuedTerminationEnables;

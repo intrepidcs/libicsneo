@@ -2,6 +2,7 @@
 #define __IDEVICESETTINGS_H_
 
 #include <stdint.h>
+#include "icsneo/platform/unaligned.h"
 
 #pragma pack(push, 2)
 
@@ -736,14 +737,14 @@ protected:
 	IDeviceSettings(warn_t createInoperableSettings, std::shared_ptr<Communication> com)
 		: disabled(true), readonly(true), report(com->report), structSize(0) { (void)createInoperableSettings; }
 
-	virtual const uint64_t* getTerminationEnables() const { return nullptr; }
-	virtual uint64_t* getMutableTerminationEnables() {
+	virtual ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const { return nullptr; }
+	virtual ICSNEO_UNALIGNED(uint64_t*) getMutableTerminationEnables() {
 		if(disabled || readonly)
 			return nullptr;
-		const uint8_t* offset = (const uint8_t*)getTerminationEnables();
+		const auto offset = reinterpret_cast<ICSNEO_UNALIGNED(const uint8_t*)>(getTerminationEnables());
 		if(offset == nullptr)
 			return nullptr;
-		return reinterpret_cast<uint64_t*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+		return reinterpret_cast<ICSNEO_UNALIGNED(uint64_t*)>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 };
 

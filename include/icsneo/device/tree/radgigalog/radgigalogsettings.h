@@ -171,7 +171,7 @@ public:
 	}
 
 protected:
-	const uint64_t* getTerminationEnables() const override {
+	ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const override {
 		auto cfg = getStructurePointer<radgigalog_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
