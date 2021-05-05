@@ -50,6 +50,8 @@ public:
 		productId = PRODUCT_ID;
 	}
 
+	bool currentDriverSupportsDFU() const override { return false; }
+
 protected:
 	void setupSettings(IDeviceSettings& ssettings) override {
 		// TODO Check firmware version, old firmwares will reset Ethernet settings on settings send

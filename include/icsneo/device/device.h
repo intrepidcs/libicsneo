@@ -210,6 +210,11 @@ public:
 	NODISCARD("If the Lifetime is not held, disconnects will be immediately unsuppressed")
 	Lifetime suppressDisconnects();
 
+	/**
+	 * Some alternate communication protocols do not support DFU
+	 */
+	virtual bool currentDriverSupportsDFU() const { return true; }
+
 	const device_eventhandler_t& getEventHandler() const { return report; }
 
 	std::shared_ptr<Communication> com;

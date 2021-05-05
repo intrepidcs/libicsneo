@@ -56,6 +56,8 @@ public:
 		return supportedNetworks;
 	}
 
+	bool currentDriverSupportsDFU() const override { return false; }
+
 protected:
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
