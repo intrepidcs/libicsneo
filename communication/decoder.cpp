@@ -157,12 +157,6 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = frResult;
 					return true;
 				}
-				default:
-					break;//return false;
-			}
-		}
-		default:
-			switch(packet->network.getNetID()) {
 				case Network::NetID::Main51: {
 					switch((Command)packet->data[0]) {
 						case Command::RequestSerialNumber: {
@@ -242,7 +236,10 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = msg;
 					return true;
 				}
+				default:
+					break;
 			}
+		}
 	}
 
 	// For the moment other types of messages will automatically be decoded as raw messages

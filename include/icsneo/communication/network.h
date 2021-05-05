@@ -263,10 +263,13 @@ public:
 			case NetID::MOST150:
 				return Type::MOST;
 			case NetID::RED:
+			case NetID::RED_OLDFORMAT:
 			case NetID::Device:
 			case NetID::Reset_Status:
 			case NetID::DeviceStatus:
 			case NetID::FlexRayControl:
+			case NetID::Main51:
+			case NetID::ReadSettings:
 				return Type::Internal;
 			case NetID::Invalid:
 			case NetID::Any:
