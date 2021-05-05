@@ -1,7 +1,7 @@
 #ifndef __UNALIGNED_H_
 #define __UNALIGNED_H_
 
-#if defined(MSVC)
+#if defined(_MSC_VER)
 #define ICSNEO_UNALIGNED(x) __unaligned x
 #else
 #define ICSNEO_UNALIGNED(x) x
