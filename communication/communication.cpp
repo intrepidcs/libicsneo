@@ -12,6 +12,7 @@
 #include "icsneo/communication/message/serialnumbermessage.h"
 #include "icsneo/communication/message/filter/main51messagefilter.h"
 #include "icsneo/communication/message/readsettingsmessage.h"
+#include "icsneo/communication/message/versionmessage.h"
 
 using namespace icsneo;
 
@@ -118,7 +119,6 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 }
 
 std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chrono::milliseconds timeout) {
-	sendCommand(Command::RequestSerialNumber);
 	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
 		return sendCommand(Command::RequestSerialNumber);
 	}, Main51MessageFilter(Command::RequestSerialNumber), timeout);
@@ -130,6 +130,37 @@ std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chr
 		return std::shared_ptr<SerialNumberMessage>();
 	
 	return std::dynamic_pointer_cast<SerialNumberMessage>(m51);
+}
+
+optional< std::vector< optional<DeviceAppVersion> > > Communication::getVersionsSync(std::chrono::milliseconds timeout) {
+	std::vector< optional<DeviceAppVersion> > ret;
+
+	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
+		return sendCommand(Command::GetMainVersion);
+	}, Main51MessageFilter(Command::GetMainVersion), timeout);
+	if(!msg) // Did not receive a message
+		return nullopt;
+
+	auto ver = std::dynamic_pointer_cast<VersionMessage>(msg);
+	if(!ver) // Could not upcast for some reason
+		return nullopt;
+
+	if(!ver->MainChip || ver->Versions.size() != 1)
+		return nullopt;
+
+	ret.push_back(ver->Versions.front());
+
+	msg = waitForMessageSync([this]() {
+		return sendCommand(Command::GetSecondaryVersions);
+	}, Main51MessageFilter(Command::GetSecondaryVersions), timeout);
+	if(msg) { // This one is allowed to fail
+		ver = std::dynamic_pointer_cast<VersionMessage>(msg);
+		if(ver && !ver->MainChip) {
+			ret.insert(ret.end(), ver->Versions.begin(), ver->Versions.end());
+		}
+	}
+
+	return ret;
 }
 
 int Communication::addMessageCallback(const MessageCallback& cb) {

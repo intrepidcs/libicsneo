@@ -153,6 +153,8 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			case Command::RequestSerialNumber:
 			case Command::EnableNetworkCommunication:
 			case Command::EnableNetworkCommunicationEx:
+			case Command::GetMainVersion:
+			case Command::GetSecondaryVersions:
 				// There is a firmware handling idiosyncrasy with these commands
 				// They must be encoded in the short format
 				m51msg->forceShortFormat = true;

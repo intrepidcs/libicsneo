@@ -10,6 +10,7 @@
 #include "icsneo/communication/packet/ethernetpacket.h"
 #include "icsneo/communication/packet/flexraypacket.h"
 #include "icsneo/communication/packet/iso9141packet.h"
+#include "icsneo/communication/packet/versionpacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -177,6 +178,24 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							if(msg->hasPCBSerial)
 								memcpy(msg->pcbSerial, packet->data.data() + 15, sizeof(msg->pcbSerial));
 							result = msg;
+							return true;
+						}
+						case Command::GetMainVersion: {
+							result = HardwareVersionPacket::DecodeMainToMessage(packet->data);
+							if(!result) {
+								report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+								return false;
+							}
+
+							return true;
+						}
+						case Command::GetSecondaryVersions: {
+							result = HardwareVersionPacket::DecodeSecondaryToMessage(packet->data);
+							if(!result) {
+								report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+								return false;
+							}
+
 							return true;
 						}
 						default:

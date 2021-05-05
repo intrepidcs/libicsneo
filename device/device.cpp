@@ -267,6 +267,8 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 }
 
 APIEvent::Type Device::attemptToBeginCommunication() {
+	versions.clear();
+
 	if(!afterCommunicationOpen()) {
 		// Very unlikely, at the time of writing this only fails if rawWrite does.
 		// If you're looking for this error, you're probably looking for if(!serial) below.
@@ -287,6 +289,13 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 	std::string currentSerial = getNeoDevice().serial;
 	if(currentSerial != serial->deviceSerial)
 		return APIEvent::Type::IncorrectSerialNumber;
+
+	auto maybeVersions = com->getVersionsSync();
+	if(!maybeVersions)
+		return getCommunicationNotEstablishedError();
+	else
+		versions = std::move(*maybeVersions);
+
 	return APIEvent::Type::NoErrorFound;
 }
 

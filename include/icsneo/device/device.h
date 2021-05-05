@@ -15,6 +15,7 @@
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/device/nullsettings.h"
 #include "icsneo/device/devicetype.h"
+#include "icsneo/device/deviceversion.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
@@ -211,6 +212,11 @@ public:
 	Lifetime suppressDisconnects();
 
 	/**
+	 * For use by extensions only. A more stable API will be provided in the future.
+	 */
+	const std::vector<optional<DeviceAppVersion>>& getVersions() const { return versions; }
+
+	/**
 	 * Some alternate communication protocols do not support DFU
 	 */
 	virtual bool currentDriverSupportsDFU() const { return true; }
@@ -328,6 +334,7 @@ protected:
 private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
+	std::vector<optional<DeviceAppVersion>> versions;
 
 	mutable std::mutex extensionsLock;
 	std::vector<std::shared_ptr<DeviceExtension>> extensions;
