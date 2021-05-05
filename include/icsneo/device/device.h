@@ -97,7 +97,7 @@ public:
 	using OpenStatusHandler = std::function<Device::OpenDirective(OpenStatusType type, const std::string& status, optional<double> progress)>;
 
 	bool open(OpenFlags flags = {}, OpenStatusHandler handler =
-		[](OpenStatusType type, const std::string& _s, optional<double> _p) { return Device::OpenDirective::Continue; });
+		[](OpenStatusType, const std::string&, optional<double>) { return Device::OpenDirective::Continue; });
 	virtual bool close();
 	virtual bool isOnline() const { return online; }
 	virtual bool isOpen() const { return com->isOpen(); }
@@ -328,7 +328,7 @@ protected:
 
 	void handleInternalMessage(std::shared_ptr<Message> message);
 
-	virtual void handleDeviceStatus(const std::shared_ptr<Message>& message) {}
+	virtual void handleDeviceStatus(const std::shared_ptr<Message>&) {}
 
 	neodevice_t& getWritableNeoDevice() { return data; }
 

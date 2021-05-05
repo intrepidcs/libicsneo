@@ -19,10 +19,10 @@ public:
 	virtual const char* getName() const = 0;
 
 	// Return false to block opening
-	virtual bool onDeviceOpen(Device::OpenFlags flags, const Device::OpenStatusHandler& handler) { return true; }
+	virtual bool onDeviceOpen(Device::OpenFlags, const Device::OpenStatusHandler&) { return true; }
 
 	// Return true to indicate that communication should now be back
-	virtual bool onDeviceCommunicationDead(Device::OpenFlags flags, const Device::OpenStatusHandler& handler) { return false; }
+	virtual bool onDeviceCommunicationDead(Device::OpenFlags, const Device::OpenStatusHandler&) { return false; }
 
 	virtual void onGoOnline() {}
 	virtual void onGoOffline() {}
