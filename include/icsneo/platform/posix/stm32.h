@@ -6,7 +6,9 @@
 #include "icsneo/communication/driver.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/api/eventmanager.h"
+#include "icsneo/platform/optional.h"
 #include <chrono>
+#include <sys/stat.h>
 #include <stdint.h>
 
 namespace icsneo {
@@ -37,6 +39,7 @@ public:
 private:
 	neodevice_t& device;
 	int fd = -1;
+	optional<ino_t> disallowedInode;
 	std::atomic<bool> modeChanging{false};
 	std::thread modeChangeThread;
 	std::mutex modeChangeMutex;

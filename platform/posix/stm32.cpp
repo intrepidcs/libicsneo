@@ -35,10 +35,28 @@ bool STM32::open() {
 	// Some devices can take a while to boot
 	for(int i = 0; i != 50; ++i) {
 		fd = ::open(ttyPath.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
-		if(fd != -1)
-			break;
+
+		if(fd != -1) {
+			// Opened successfully, check if it's the same inode as the disallowed one
+			// The inode is disallowed if we're expecting the device to re-enumerate (modeChanging)
+			if(disallowedInode.has_value()) {
+				struct stat fileStat = {};
+				if(fstat(fd, &fileStat) >= 0) {
+					if(fileStat.st_ino != *disallowedInode)
+						break;
+				}
+			} else {
+				break;
+			}
+
+			// This is still the old device, wait and try again
+			::close(fd);
+			fd = -1;
+		}
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
+	disallowedInode.reset();
 	if(!isOpen()) {
 		//std::cout << "Open of " << ttyPath.c_str() << " failed with " << strerror(errno) << ' ';
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
@@ -110,6 +128,15 @@ bool STM32::close() {
 	closing = false;
 	disconnected = false;
 
+	if(modeChanging) {
+		// We're expecting this inode to go away after we close the device
+		// In order to block waiting for this to happen, we first need to
+		// get the inode.
+		struct stat fileStat = {};
+		if(fstat(fd, &fileStat) >= 0)
+			disallowedInode = fileStat.st_ino;
+	}
+
 	int ret = ::close(fd);
 	fd = -1;
 
@@ -120,7 +147,6 @@ bool STM32::close() {
 
 	if(modeChanging) {
 		modeChanging = false;
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 		return open(); // Reopen the reenumerated device
 	}
 	
