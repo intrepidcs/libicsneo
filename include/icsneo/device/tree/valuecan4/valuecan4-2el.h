@@ -48,10 +48,28 @@ public:
 		return Device::getProductName();
 	}
 
+	static const std::vector<Network>& GetSupportedNetworks() {
+		static std::vector<Network> supportedNetworks = {
+			Network::NetID::HSCAN,
+			Network::NetID::HSCAN2,
+
+			Network::NetID::Ethernet
+		};
+		return supportedNetworks;
+	}
+
 protected:
 	ValueCAN4_2EL(neodevice_t neodevice) : ValueCAN4(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;
 	}
+
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+		for(auto& netid : GetSupportedNetworks())
+			rxNetworks.emplace_back(netid);
+	}
+
+	// The supported TX networks are the same as the supported RX networks for this device
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
 

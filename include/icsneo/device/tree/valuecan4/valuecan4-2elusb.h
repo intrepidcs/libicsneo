@@ -22,25 +22,6 @@ public:
 		return found;
 	}
 
-	static const std::vector<Network>& GetSupportedNetworks() {
-		static std::vector<Network> supportedNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::HSCAN2,
-
-			Network::NetID::Ethernet
-		};
-		return supportedNetworks;
-	}
-
-protected:
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
-		for(auto& netid : GetSupportedNetworks())
-			rxNetworks.emplace_back(netid);
-	}
-
-	// The supported TX networks are the same as the supported RX networks for this device
-	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
-
 private:
 	ValueCAN4_2EL_USB(neodevice_t neodevice) : ValueCAN4_2EL(neodevice) {
 		initialize<CDCACM, ValueCAN4_2ELSettings>();
