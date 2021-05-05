@@ -13,8 +13,8 @@ namespace icsneo {
 typedef uint16_t icscm_bitfield;
 
 struct HardwareEthernetPacket {
-	static std::shared_ptr<EthernetMessage> DecodeToMessage(const std::vector<uint8_t>& bytestream);
-	static bool EncodeFromMessage(const EthernetMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t& err);
+	static std::shared_ptr<EthernetMessage> DecodeToMessage(const std::vector<uint8_t>& bytestream, const device_eventhandler_t& report);
+	static bool EncodeFromMessage(const EthernetMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t& report);
 
 	struct {
 		icscm_bitfield FCS_AVAIL : 1;

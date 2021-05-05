@@ -4,7 +4,7 @@
 
 using namespace icsneo;
 
-std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
+std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream, const device_eventhandler_t& report) {
 	const HardwareEthernetPacket* packet = (const HardwareEthernetPacket*)((const void*)bytestream.data());
 	const uint16_t* rawWords = (const uint16_t*)bytestream.data();
 	
@@ -16,12 +16,15 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	if(packet->Length < 4)
 		return nullptr;
 	
-	size_t bytesOnWire = packet->Length - (sizeof(uint16_t) * 2);
-	if(bytestream.size() < sizeof(HardwareEthernetPacket) + bytesOnWire)
+	const size_t ethernetFrameSize = packet->Length - (sizeof(uint16_t) * 2);
+	const size_t bytestreamExpectedSize = sizeof(HardwareEthernetPacket) + ethernetFrameSize;
+	const size_t bytestreamActualSize = bytestream.size();
+	if(bytestreamActualSize < bytestreamExpectedSize)
 		return nullptr;
 
-	if(bytestream.size() > sizeof(HardwareEthernetPacket) + bytesOnWire)
-		std::cout << "There is an extra " << (sizeof(HardwareEthernetPacket) + bytesOnWire) << " bytes at the end" << std::endl;
+	// Check for oversized packets, noting that some devices will send an extra byte to have an even number of bytes
+	if(bytestreamActualSize > bytestreamExpectedSize + 1)
+		report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
 
 	auto messagePtr = std::make_shared<EthernetMessage>();
 	EthernetMessage& message = *messagePtr;
@@ -47,7 +50,7 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	// Network ID is also not set, this will be fixed in the Decoder as well
 
 	const std::vector<uint8_t>::const_iterator databegin = bytestream.begin() + (sizeof(HardwareEthernetPacket) - (sizeof(uint16_t) * 2));
-	const std::vector<uint8_t>::const_iterator dataend = databegin + bytesOnWire;
+	const std::vector<uint8_t>::const_iterator dataend = databegin + ethernetFrameSize;
 	message.data.insert(message.data.begin(), databegin, dataend);
 
 	return messagePtr;
