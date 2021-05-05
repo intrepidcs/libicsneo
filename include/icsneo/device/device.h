@@ -89,14 +89,15 @@ public:
 	};
 
 	enum class OpenStatusType {
-		Question,
+		QuestionContinueSkipCancel,
+		QuestionContinueCancel,
 		Progress
 	};
 
-	using OpenStatusHandler = std::function<OpenDirective(OpenStatusType type, const std::string& status, optional<double> progress)>;
+	using OpenStatusHandler = std::function<Device::OpenDirective(OpenStatusType type, const std::string& status, optional<double> progress)>;
 
 	bool open(OpenFlags flags = {}, OpenStatusHandler handler =
-		[](OpenStatusType type, const std::string& _s, optional<double> _p) { return OpenDirective::Continue; });
+		[](OpenStatusType type, const std::string& _s, optional<double> _p) { return Device::OpenDirective::Continue; });
 	virtual bool close();
 	virtual bool isOnline() const { return online; }
 	virtual bool isOpen() const { return com->isOpen(); }
