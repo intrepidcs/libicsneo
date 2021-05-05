@@ -4,14 +4,14 @@
 
 using namespace icsneo;
 
-uint16_t IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settings) {
-	uint16_t gs_crc = 0;
-	const uint16_t* p = (const uint16_t*)settings.data();
-	size_t words = settings.size();
+optional<uint16_t> IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settings, optional<size_t> knownSize) {
+	const uint16_t* p = reinterpret_cast<const uint16_t*>(settings.data());
+	size_t words = std::min(knownSize.value_or(0), settings.size());
 	if(words % 2 == 1)
-		return 0xFFFF; // Somehow settings is not word aligned
+		return nullopt; // Somehow settings is not word aligned
 	words /= 2;
 
+	uint16_t gsCrc = 0;
 	while(words--) {
 		uint16_t temp = *p;
 
@@ -20,7 +20,7 @@ uint16_t IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settin
 			
 			int iCrcNxt;
 			//CRCNXT = NXTBIT EXOR CRC_RG(15);
-			if (gs_crc & (1 << 15))
+			if (gsCrc & (1 << 15))
 				iCrcNxt = iBit ^ 1;
 			else
 				iCrcNxt = iBit;
@@ -28,18 +28,18 @@ uint16_t IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settin
 
 
 			// CRC_RG(15:1) = CRC_RG(14:0); // shift left by
-			gs_crc = gs_crc << 1;
-			gs_crc = gs_crc & 0xFFFE;// clear first bit
+			gsCrc = gsCrc << 1;
+			gsCrc = gsCrc & 0xFFFE;// clear first bit
 
 			if (iCrcNxt)//CRC_RG(14:0) = CRC_RG(14:0) EXOR (4599hex);
-				gs_crc = gs_crc ^ 0xa001;
+				gsCrc = gsCrc ^ 0xa001;
 
 			temp >>= 1;
 		}
 
 		p++;
 	}
-	return gs_crc;
+	return gsCrc;
 }
 
 CANBaudrate IDeviceSettings::GetEnumValueForBaudrate(int64_t baudrate) {
@@ -144,30 +144,40 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 		return false;
 	}
 
-	if(rxSettings.size() < 6) { // We need to at least have the header of GLOBAL_SETTINGS
+	constexpr size_t GsSize = 3 * sizeof(uint16_t);
+	if(rxSettings.size() < GsSize) { // We need to at least have the header of GLOBAL_SETTINGS
 		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
 	}
 
-	constexpr size_t gs_size = 3 * sizeof(uint16_t);
-	size_t rxLen = rxSettings.size() - gs_size;
+	// The length of the settings structure sent to us
+	// This is the length the firmware thinks the current version of the structure is
+	const size_t rxLen = rxSettings.size() - GsSize;
 
-	uint16_t gs_version = rxSettings[0] | (rxSettings[1] << 8);
-	uint16_t gs_len = rxSettings[2] | (rxSettings[3] << 8);
-	uint16_t gs_chksum = rxSettings[4] | (rxSettings[5] << 8);
-	rxSettings.erase(rxSettings.begin(), rxSettings.begin() + gs_size);
+	const uint16_t gsVersion = rxSettings[0] | (rxSettings[1] << 8);
 
-	if(gs_version != 5) {
+	// The length of the settings last saved
+	// If the firmware is updated, it will have either extended (with zeros) or truncated
+	// the structure, but this value will continue to be set to the last saved value
+	const uint16_t gsLen = rxSettings[2] | (rxSettings[3] << 8);
+
+	const uint16_t gsChecksum = rxSettings[4] | (rxSettings[5] << 8);
+	rxSettings.erase(rxSettings.begin(), rxSettings.begin() + GsSize);
+
+	if(gsVersion != GS_VERSION) {
 		report(APIEvent::Type::SettingsVersionError, APIEvent::Severity::Error);
 		return false;
 	}
 
-	if(rxLen != gs_len) {
-		report(APIEvent::Type::SettingsLengthError, APIEvent::Severity::Error);
-		return false;
+	if(rxLen < gsLen) {
+		// We got less data, i.e. the firmware thinks the strucure is smaller than what
+		// was last saved. Usually this is due to a firmware downgrade. We'll ignore the
+		// checksum for now, because it will definitely be wrong.
+		ignoreChecksum = true;
 	}
 
-	if(!ignoreChecksum && gs_chksum != CalculateGSChecksum(rxSettings)) {
+	// We check the checksum against the data last saved
+	if(!ignoreChecksum && gsChecksum != CalculateGSChecksum(rxSettings, gsLen)) {
 		report(APIEvent::Type::SettingsChecksumError, APIEvent::Severity::Error);
 		return false;
 	}
@@ -205,9 +215,14 @@ bool IDeviceSettings::apply(bool temporary) {
 	bytestream[2] = GS_VERSION >> 8;
 	bytestream[3] = (uint8_t)settings.size();
 	bytestream[4] = (uint8_t)(settings.size() >> 8);
-	uint16_t gs_checksum = CalculateGSChecksum(settings);
-	bytestream[5] = (uint8_t)gs_checksum;
-	bytestream[6] = (uint8_t)(gs_checksum >> 8);
+	optional<uint16_t> gsChecksum = CalculateGSChecksum(settings);
+	if(!gsChecksum) {
+		// Could not calculate the checksum for some reason
+		report(APIEvent::Type::SettingsChecksumError, APIEvent::Severity::Error);
+		return false;
+	}
+	bytestream[5] = (uint8_t)*gsChecksum;
+	bytestream[6] = (uint8_t)(*gsChecksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
 	// Pause I/O with the device while the settings are applied
@@ -229,9 +244,14 @@ bool IDeviceSettings::apply(bool temporary) {
 	refresh(true); // Refresh ignoring checksum
 	// The device might modify the settings once they are applied, however in this case it does not update the checksum
 	// We refresh to get these updates, update the checksum, and send it back so it's all in sync
-	gs_checksum = CalculateGSChecksum(settings);
-	bytestream[5] = (uint8_t)gs_checksum;
-	bytestream[6] = (uint8_t)(gs_checksum >> 8);
+	gsChecksum = CalculateGSChecksum(settings);
+	if(!gsChecksum) {
+		// Could not calculate the checksum for some reason
+		report(APIEvent::Type::SettingsChecksumError, APIEvent::Severity::Error);
+		return false;
+	}
+	bytestream[5] = (uint8_t)*gsChecksum;
+	bytestream[6] = (uint8_t)(*gsChecksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
 	msg = com->waitForMessageSync([this, &bytestream]() {
@@ -301,9 +321,14 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	bytestream[2] = GS_VERSION >> 8;
 	bytestream[3] = (uint8_t)settings.size();
 	bytestream[4] = (uint8_t)(settings.size() >> 8);
-	uint16_t gs_checksum = CalculateGSChecksum(settings);
-	bytestream[5] = (uint8_t)gs_checksum;
-	bytestream[6] = (uint8_t)(gs_checksum >> 8);
+	const optional<uint16_t> gsChecksum = CalculateGSChecksum(settings);
+	if(!gsChecksum) {
+		// Could not calculate the checksum for some reason
+		report(APIEvent::Type::SettingsChecksumError, APIEvent::Severity::Error);
+		return false;
+	}
+	bytestream[5] = (uint8_t)*gsChecksum;
+	bytestream[6] = (uint8_t)(*gsChecksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
 	msg = com->waitForMessageSync([this, &bytestream]() {

@@ -591,7 +591,7 @@ public:
 	using TerminationGroup = std::vector<Network>;
 
 	static constexpr uint16_t GS_VERSION = 5;
-	static uint16_t CalculateGSChecksum(const std::vector<uint8_t>& settings);
+	static optional<uint16_t> CalculateGSChecksum(const std::vector<uint8_t>& settings, optional<size_t> knownSize = nullopt);
 	static CANBaudrate GetEnumValueForBaudrate(int64_t baudrate);
 	static int64_t GetBaudrateValueForEnum(CANBaudrate enumValue);
 
