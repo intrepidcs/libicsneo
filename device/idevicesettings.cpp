@@ -570,7 +570,7 @@ bool IDeviceSettings::canTerminationBeEnabledFor(Network net) const {
 	}
 
 	// Reference the mutable termination enables as we want to allow a disable/enable within a group without applying
-	const uint64_t* currentQueuedTerminationEnables = const_cast<IDeviceSettings*>(this)->getMutableTerminationEnables();
+	ICSNEO_UNALIGNED(const uint64_t*) currentQueuedTerminationEnables = const_cast<IDeviceSettings*>(this)->getMutableTerminationEnables();
 	if(currentQueuedTerminationEnables == nullptr) {
 		report(APIEvent::Type::TerminationNotSupportedDevice, APIEvent::Severity::Error);
 		return false;
@@ -621,7 +621,7 @@ optional<bool> IDeviceSettings::isTerminationEnabledFor(Network net) const {
 		return nullopt;
 	}
 
-	const uint64_t* terminationEnables = getTerminationEnables();
+	ICSNEO_UNALIGNED(const uint64_t*) terminationEnables = getTerminationEnables();
 	if(terminationEnables == nullptr) {
 		report(APIEvent::Type::TerminationNotSupportedDevice, APIEvent::Severity::Error);
 		return nullopt;
@@ -652,7 +652,7 @@ bool IDeviceSettings::setTerminationFor(Network net, bool enabled) {
 		return false;
 	}
 
-	uint64_t* terminationEnables = getMutableTerminationEnables();
+	ICSNEO_UNALIGNED(uint64_t*) terminationEnables = getMutableTerminationEnables();
 	if(terminationEnables == nullptr) {
 		report(APIEvent::Type::TerminationNotSupportedDevice, APIEvent::Severity::Error);
 		return false;

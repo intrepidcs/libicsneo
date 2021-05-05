@@ -45,12 +45,12 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 	};
 
 	auto statusPair = getCurrentPOCStatus(timeout);
-	const auto& status = statusPair.second;
+	const auto& pocStatus = statusPair.second;
 	if(!statusPair.first)
 		return false;
 	updateTimeout();
 
-	if(status != POCStatus::Config) {
+	if(pocStatus != POCStatus::Config) {
 		if(!enterConfig(timeout))
 			return false;
 		updateTimeout();
@@ -279,12 +279,12 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		updateTimeout();
 	}
 
-	uint16_t dataPointer = (totalBuffers + 1) * 4;
-	for(auto i = 0; i < totalBuffers; i++) {
+	uint16_t dataPointer = static_cast<uint16_t>((totalBuffers + 1) * 4);
+	for(uint16_t i = 0; i < totalBuffers; i++) {
 		MessageBuffer& buf = *(i < (int)staticTx.size() ? staticTx[i] : dynamicTx[i - staticTx.size()]);
 
 		if(buf.frameID == 0)
-			buf.frameID = i | (1 << 10);
+			buf.frameID = static_cast<uint16_t>(i | (1 << 10));
 
 		uint32_t hs1 = (
 			(buf.frameID) |
@@ -354,19 +354,19 @@ bool FlexRay::Controller::getReady(std::chrono::milliseconds timeout) {
 	updateTimeout();
 
 	auto statusPair = getCurrentPOCStatus(timeout);
-	const auto& status = statusPair.second;
+	const auto& pocStatus = statusPair.second;
 	if(!statusPair.first)
 		return false;
 	updateTimeout();
 
-	if(status == POCStatus::Ready && !configDirty) {
+	if(pocStatus == POCStatus::Ready && !configDirty) {
 		// Already in the desired state
 		if(allowColdstart && !setCurrentPOCCommand(FlexRay::POCCommand::AllowColdstart, true, timeout))
 			return false;
 		return true;
 	}
 
-	if(status != POCStatus::Config) {
+	if(pocStatus != POCStatus::Config) {
 		// Must enter config before continuing
 		if(!enterConfig(timeout))
 			return false;
@@ -523,15 +523,15 @@ bool FlexRay::Controller::enterConfig(std::chrono::milliseconds timeout) {
 	};
 
 	auto statusPair = getCurrentPOCStatus(timeout);
-	const auto& status = statusPair.second;
+	const auto& pocStatus = statusPair.second;
 	if(!statusPair.first)
 		return false;
 	updateTimeout();
 
-	if(status != FlexRay::POCStatus::Ready &&
-		status != FlexRay::POCStatus::Config &&
-		status != FlexRay::POCStatus::DefaultConfig &&
-		status != FlexRay::POCStatus::Halt) {
+	if(pocStatus != FlexRay::POCStatus::Ready &&
+		pocStatus != FlexRay::POCStatus::Config &&
+		pocStatus != FlexRay::POCStatus::DefaultConfig &&
+		pocStatus != FlexRay::POCStatus::Halt) {
 		if(!setCurrentPOCCommand(FlexRay::POCCommand::Freeze, true, timeout))
 			return false;
 		updateTimeout();
