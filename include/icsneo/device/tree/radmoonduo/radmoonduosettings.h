@@ -22,6 +22,7 @@ typedef struct {
 	uint8_t linkMode1;
 	// USB/CM or RJ45 selection (RadMoonDuoConverterMode)
 	uint8_t converter1Mode;
+	uint8_t reserved;
 	// IP Settings if converter is hooked up to Coremini
 	// Currently unused
 	uint32_t ipAddress;

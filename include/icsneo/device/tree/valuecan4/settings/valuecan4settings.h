@@ -13,6 +13,11 @@ namespace icsneo {
 // This is where the actual settings structures for all the ValueCAN 4 line live
 // ValueCAN 4-1 and 4-2 share a structure, and 4-4 shares with 4-2EL, Industrial has its own
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
+
 #pragma pack(push, 2)
 typedef struct {
 	/* Performance Test */
@@ -76,8 +81,7 @@ typedef struct {
 	uint16_t pwr_man_timeout;
 } valuecan4_4_2el_settings_t, valuecan4_4_settings_t, valuecan4_2el_settings_t;
 
-typedef struct
-{
+typedef struct {
 	uint8_t ethernetActivationLineEnabled;
 	uint8_t unused;
 } valuecan4_4_2el_status_t, valuecan4_4_status_t, valuecan4_2el_status_t;
@@ -119,6 +123,9 @@ typedef struct {
 	} flags;
 } valuecan4_industrial_settings_t;
 #pragma pack(pop)
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #ifdef __cplusplus
 
