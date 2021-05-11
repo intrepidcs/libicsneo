@@ -61,10 +61,14 @@ typedef struct {
 		uint8_t usbSelect;
 		uint8_t pad;
 	} custom;
+
+	ETHERNET_SETTINGS2 ethernet2;
 } radpluto_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+static_assert(sizeof(radpluto_settings_t) == 322, "RAD-Pluto Settings are not packed correctly!");
 
 #include <iostream>
 

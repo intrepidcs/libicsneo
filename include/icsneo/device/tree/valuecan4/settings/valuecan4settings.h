@@ -79,6 +79,7 @@ typedef struct {
 	} flags;
 	uint16_t pwr_man_enable;
 	uint16_t pwr_man_timeout;
+	ETHERNET_SETTINGS2 ethernet2;
 } valuecan4_4_2el_settings_t, valuecan4_4_settings_t, valuecan4_2el_settings_t;
 
 typedef struct {
@@ -121,6 +122,7 @@ typedef struct {
 		uint32_t enablePcEthernetComm : 1;
 		uint32_t reserved : 28;
 	} flags;
+	ETHERNET_SETTINGS2 ethernet2;
 } valuecan4_industrial_settings_t;
 #pragma pack(pop)
 #ifdef _MSC_VER
@@ -130,8 +132,8 @@ typedef struct {
 #ifdef __cplusplus
 
 static_assert(sizeof(valuecan4_1_2_settings_t) == 148, "ValueCAN 4-1 / 4-2 Settings are not packed correctly!");
-static_assert(sizeof(valuecan4_4_2el_settings_t) == 326, "ValueCAN 4-4 / 4-2EL Settings are not packed correctly!");
-static_assert(sizeof(valuecan4_industrial_settings_t) == 212, "ValueCAN 4 Industrial Settings are not packed correctly!");
+static_assert(sizeof(valuecan4_4_2el_settings_t) == 342, "ValueCAN 4-4 / 4-2EL Settings are not packed correctly!");
+static_assert(sizeof(valuecan4_industrial_settings_t) == 228, "ValueCAN 4 Industrial Settings are not packed correctly!");
 
 } // End of namespace
 
