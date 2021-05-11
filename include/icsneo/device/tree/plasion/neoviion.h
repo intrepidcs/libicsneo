@@ -28,6 +28,22 @@ private:
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}
+
+	virtual std::shared_ptr<Communication> makeCommunication(
+		std::unique_ptr<Driver> transport,
+		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
+		std::unique_ptr<Encoder> encoder,
+		std::unique_ptr<Decoder> decoder
+	) override {
+		return std::make_shared<MultiChannelCommunication>(
+			report,
+			std::move(transport),
+			makeConfiguredPacketizer,
+			std::move(encoder),
+			std::move(decoder),
+			1 // 2
+		);
+	}
 };
 
 }

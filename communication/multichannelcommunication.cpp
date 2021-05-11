@@ -5,8 +5,16 @@
 
 using namespace icsneo;
 
+MultiChannelCommunication::MultiChannelCommunication(device_eventhandler_t err, std::unique_ptr<Driver> com,
+	std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer, std::unique_ptr<Encoder> e,
+	std::unique_ptr<Decoder> md, size_t vnetCount) :
+	Communication(err, std::move(com), makeConfiguredPacketizer, std::move(e), std::move(md)), numVnets(vnetCount) {
+	vnetThreads.resize(numVnets);
+	vnetQueues.resize(numVnets);
+}
+
 void MultiChannelCommunication::spawnThreads() {
-	for(size_t i = 0; i < NUM_SUPPORTED_VNETS; i++) {
+	for(size_t i = 0; i < numVnets; i++) {
 		while(vnetQueues[i].pop()) {} // Ensure the queue is empty
 		vnetThreads[i] = std::thread(&MultiChannelCommunication::vnetReadTask, this, i);
 	}
@@ -119,11 +127,11 @@ void MultiChannelCommunication::hidReadTask() {
 							currentQueue = &vnetQueues[0];
 							break;
 						case CommandType::Vnet2_to_HostPC:
-							if(NUM_SUPPORTED_VNETS >= 2)
+							if(numVnets >= 2)
 								currentQueue = &vnetQueues[1];
 							break;
 						case CommandType::Vnet3_to_HostPC:
-							if(NUM_SUPPORTED_VNETS >= 3)
+							if(numVnets >= 3)
 								currentQueue = &vnetQueues[2];
 							break;
 					}
