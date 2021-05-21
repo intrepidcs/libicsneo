@@ -1,6 +1,30 @@
 #include "icsneo/communication/packet/canpacket.h"
+#include "icsneo/platform/optional.h"
 
 using namespace icsneo;
+
+static optional<uint8_t> CANFD_DLCToLength(uint8_t length) {
+	if (length < 8)
+		return length;
+	
+	switch(length) {
+		case 0x9:
+			return 12;
+		case 0xa:
+			return 16;
+		case 0xb:
+			return 20;
+		case 0xc:
+			return 24;
+		case 0xd:
+			return 32;
+		case 0xe:
+			return 48;
+		case 0xf:
+			return 64;
+	}
+	return nullopt;
+}
 
 std::shared_ptr<CANMessage> HardwareCANPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
 	const HardwareCANPacket* data = (const HardwareCANPacket*)bytestream.data();
@@ -28,33 +52,9 @@ std::shared_ptr<CANMessage> HardwareCANPacket::DecodeToMessage(const std::vector
 		msg->isCANFD = true;
 		msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
 		msg->errorStateIndicator = data->header.ESI;
-		if(length > 8) {
-			switch(length) { // CAN FD Length Decoding
-				case 0x9:
-					length = 12;
-					break;
-				case 0xa:
-					length = 16;
-					break;
-				case 0xb:
-					length = 20;
-					break;
-				case 0xc:
-					length = 24;
-					break;
-				case 0xd:
-					length = 32;
-					break;
-				case 0xe:
-					length = 48;
-					break;
-				case 0xf:
-					length = 64;
-					break;
-				default:
-					return nullptr;
-			}
-		}
+		const optional<uint8_t> lenFromDLC = CANFD_DLCToLength(length);
+		if (lenFromDLC)
+			length = *lenFromDLC;
 	} else if(length > 8) { // This is a standard CAN frame with a length of more than 8
 		// Yes, this is possible. On the wire, the length field is a nibble, and we do want to return an accurate value
 		// We don't want to overread our buffer, though, so make sure we cap the length
@@ -95,7 +95,29 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 		return false; // Too much data for the protocol
 	}
 
+	if(message.dlcOnWire > 0xf) {
+		// The DLC is only a nibble
+		// It is actually possible to transmit a standard CAN frame with a DLC > 8
+		// While it is invalid, most controllers will still pass along the received
+		// frame and 8 bytes of data, so it may be desirable to test behavior with
+		// these frames. We let you do it if you set `message.dlcOnWire` for transmit.
+		report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
+		return false;
+	}
+
 	uint8_t lengthNibble = uint8_t(message.data.size());
+
+	const optional<uint8_t> lenFromDLC = CANFD_DLCToLength(message.dlcOnWire);
+	if (lenFromDLC.has_value() && *lenFromDLC != 0) {
+		if (*lenFromDLC < lengthNibble || *lenFromDLC > 0xF) {
+			report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
+			return false;
+		}
+
+		if (*lenFromDLC > lengthNibble)
+			lengthNibble = *lenFromDLC;
+	}
+
 	uint8_t paddingBytes = 0;
 	if(lengthNibble > 8) {
 		switch(lengthNibble) {
