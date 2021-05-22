@@ -119,11 +119,10 @@ protected:
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
-		const auto& data = message->data;
-		if(data.size() < sizeof(radgalaxy_status_t))
+		if(message->data.size() < sizeof(radgalaxy_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);
-		const radgalaxy_status_t* status = reinterpret_cast<const radgalaxy_status_t*>(data.data());
+		const radgalaxy_status_t* status = reinterpret_cast<const radgalaxy_status_t*>(message->data.data());
 		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
 };

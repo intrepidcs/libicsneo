@@ -105,11 +105,10 @@ protected:
 	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
-		const auto& data = message->data;
-		if(data.size() < sizeof(neovifire2_status_t))
+		if(message->data.size() < sizeof(neovifire2_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);
-		const neovifire2_status_t* status = reinterpret_cast<const neovifire2_status_t*>(data.data());
+		const neovifire2_status_t* status = reinterpret_cast<const neovifire2_status_t*>(message->data.data());
 		backupPowerEnabled = status->backupPowerEnabled;
 		backupPowerGood = status->backupPowerGood;
 		ethActivationStatus = status->ethernetActivationLineEnabled;
