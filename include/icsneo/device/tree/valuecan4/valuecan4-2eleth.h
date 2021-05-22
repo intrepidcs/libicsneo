@@ -25,7 +25,7 @@ public:
 				if (!fakedev->com->decoder->decode(msg, packet))
 					continue; // We failed to decode this packet
 
-				if(!msg || msg->network.getNetID() != Network::NetID::Main51)
+				if(!msg || msg->type != Message::Type::Main51)
 					continue; // Not a message we care about
 				auto sn = std::dynamic_pointer_cast<SerialNumberMessage>(msg);
 				if(!sn)

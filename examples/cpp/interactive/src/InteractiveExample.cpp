@@ -182,6 +182,102 @@ std::shared_ptr<icsneo::Device> selectDevice(const std::vector<std::shared_ptr<i
 	return from.at(selectedDeviceNum - 1);
 }
 
+void printMessage(const std::shared_ptr<icsneo::Message>& message) {
+	switch(message->type) {
+		case icsneo::Message::Type::Frame: {
+			// A message of type Frame is guaranteed to be a Frame, so we can static cast safely
+			auto frame = std::static_pointer_cast<icsneo::Frame>(message);
+			switch(frame->network.getType()) {
+				case icsneo::Network::Type::CAN: {
+					// A message of type CAN is guaranteed to be a CANMessage, so we can static cast safely
+					auto canMessage = std::static_pointer_cast<icsneo::CANMessage>(message);
+
+					std::cout << "\t\t" << frame->network << ' ';
+					if(canMessage->isCANFD) {
+						std::cout << "FD ";
+						if(!canMessage->baudrateSwitch)
+							std::cout << "(No BRS) ";
+					}
+
+					// Print the Arbitration ID
+					std::cout << "0x" << std::hex << std::setw(canMessage->isExtended ? 8 : 3)
+						<< std::setfill('0') << canMessage->arbid;
+
+					// Print the DLC
+					std::cout << std::dec << " [" << canMessage->data.size() << "] ";
+
+					// Print the data
+					for(auto& databyte : canMessage->data)
+						std::cout << std::hex << std::setw(2) << (uint32_t)databyte << ' ';
+
+					// Print the timestamp
+					std::cout << std::dec << '(' << canMessage->timestamp << " ns since 1/1/2007)\n";
+					break;
+				}
+				case icsneo::Network::Type::Ethernet: {
+					auto ethMessage = std::static_pointer_cast<icsneo::EthernetMessage>(message);
+
+					std::cout << "\t\t" << ethMessage->network << " Frame - " << std::dec
+						<< ethMessage->data.size() << " bytes on wire\n";
+					std::cout << "\t\t  Timestamped:\t"<< ethMessage->timestamp << " ns since 1/1/2007\n";
+
+					// The MACAddress may be printed directly or accessed with the `data` member
+					std::cout << "\t\t  Source:\t" << ethMessage->getSourceMAC() << "\n";
+					std::cout << "\t\t  Destination:\t" << ethMessage->getDestinationMAC();
+
+					// Print the data
+					for(size_t i = 0; i < ethMessage->data.size(); i++) {
+						if(i % 8 == 0)
+							std::cout << "\n\t\t  " << std::hex << std::setw(4) << std::setfill('0') << i << '\t';
+						std::cout << std::hex << std::setw(2) << (uint32_t)ethMessage->data[i] << ' ';
+					}
+
+					std::cout << std::dec << std::endl;
+					break;
+				}
+				case icsneo::Network::Type::ISO9141: {
+					// Note that the default settings on some devices have ISO9141 disabled by default in favor of LIN
+					// and that this example loads the device defaults at the very end.
+					// A message of type ISO9414 is guaranteed to be an ISO9141Message, so we can static cast safely
+					auto isoMessage = std::static_pointer_cast<icsneo::ISO9141Message>(message);
+
+					std::cout << "\t\t" << isoMessage->network << ' ';
+
+					// Print the header bytes
+					std::cout << '(' << std::hex << std::setfill('0') << std::setw(2) << (uint32_t)isoMessage->header[0] << ' ';
+					std::cout << std::setfill('0') << std::setw(2) << (uint32_t)isoMessage->header[1] << ' ';
+					std::cout << std::setfill('0') << std::setw(2) << (uint32_t)isoMessage->header[2] << ") ";
+
+					// Print the data length
+					std::cout << std::dec << " [" << isoMessage->data.size() << "] ";
+
+					// Print the data
+					for(auto& databyte : isoMessage->data)
+						std::cout << std::hex << std::setfill('0') << std::setw(2) << (uint32_t)databyte << ' ';
+
+					// Print the timestamp
+					std::cout << std::dec << '(' << isoMessage->timestamp << " ns since 1/1/2007)\n";
+					break;
+				}
+				default:
+					// Ignoring non-network messages
+					break;
+			}
+			break;
+		} // end of icsneo::Message::Type::Frame
+		case icsneo::Message::Type::CANErrorCount: {
+			// A message of type CANErrorCount is guaranteed to be a CANErrorCount, so we can static cast safely
+			auto cec = std::static_pointer_cast<icsneo::CANErrorCountMessage>(message);
+			std::cout << "\t\t" << cec->network << " error counts changed, REC=" << cec->receiveErrorCount
+				<< " TEC=" << cec->transmitErrorCount << " (" << (cec->busOff ? "" : "Not ") << "Bus Off)" << std::endl;
+			break;
+		}
+		default:
+			// Ignoring other types of messages
+			break;
+	}
+}
+
 int main() {
 	std::cout << "Running libicsneo " << icsneo::GetVersion() << std::endl << std::endl;
 
@@ -237,7 +333,7 @@ int main() {
 			std::cout << "[1] Open" << std::endl << "[2] Close" << std::endl <<  "[3] Cancel" << std::endl << std::endl;
 			char selection = getCharInput(std::vector<char> {'1', '2', '3'});
 			std::cout << std::endl;
-			
+
 			switch(selection) {
 			case '1':
 				if(selectedDevice->open()) {
@@ -247,7 +343,7 @@ int main() {
 					std::cout << icsneo::GetLastError() << std::endl;
 					std::cout << std::endl;
 				}
-				
+
 				break;
 			case '2':
 				// Attempt to close the device
@@ -259,7 +355,7 @@ int main() {
 					std::cout << icsneo::GetLastError() << std::endl;;
 					std::cout << std::endl;
 				}
-				
+
 				break;
 			default:
 				std::cout << "Canceling!" << std::endl << std::endl;
@@ -360,7 +456,7 @@ int main() {
 			default:
 				std::cout << "Canceling!" << std::endl << std::endl;
 				break;
-			}			
+			}
 		}
 		break;
 		// Get messages
@@ -392,29 +488,9 @@ int main() {
 			}
 
 			// Print out the received messages
-			for(auto msg : msgs) {
-				switch(msg->network.getType()) {
-				case icsneo::Network::Type::CAN:
-				{
-					// A message of type CAN is guaranteed to be a CANMessage, so we can static cast safely
-					auto canMsg = std::static_pointer_cast<icsneo::CANMessage>(msg);
-					std::cout << "\t0x" << std::setfill('0') << std::setw(3) << std::hex << (int) canMsg->arbid << " [" << canMsg->data.size() << "] " << std::dec;
-					
-					for(auto data : canMsg->data) {
-						std::cout << std::setfill('0') << std::setw(2) << std::hex << (int) data << " " << std::dec;
-					}
+			for(const auto& msg : msgs)
+				printMessage(msg);
 
-					std::cout << canMsg->timestamp << std::endl;
-					break;
-				}
-				default:
-					if(msg->network.getNetID() != icsneo::Network::NetID::Device) {
-						std::cout << "\tMessage on netid " << msg->network.GetNetIDString(msg->network.getNetID()) << " with length " << msg->data.size() << std::endl;
-					}
-					break;
-				}
-			}
-						
 			std::cout << std::endl;
 		}
 
@@ -445,7 +521,7 @@ int main() {
 				std::cout << "Failed to transmit message to " << selectedDevice->describe() << "!" << std::endl << std::endl;
 				std::cout << icsneo::GetLastError() << std::endl;;
 			}
-			
+
 			/** Example of CAN FD
 			std::cout << "Transmitting an extended CAN FD frame... " << std::endl;
 			auto txMessage = std::make_shared<icsneo::CANMessage>();
@@ -538,28 +614,8 @@ int main() {
 			switch(selection) {
 			case '1':
 			{
-				// Shameless copy-paste from get messages above, demonstrating a callback
 				int callbackID = selectedDevice->addMessageCallback(icsneo::MessageCallback([](std::shared_ptr<icsneo::Message> msg){
-					switch(msg->network.getType()) {
-					case icsneo::Network::Type::CAN:
-					{
-						// A message of type CAN is guaranteed to be a CANMessage, so we can static cast safely
-						auto canMsg = std::static_pointer_cast<icsneo::CANMessage>(msg);
-						std::cout << "\t0x" << std::setfill('0') << std::setw(3) << std::hex << (int) canMsg->arbid << " [" << canMsg->data.size() << "] " << std::dec;
-						
-						for(auto data : canMsg->data) {
-							std::cout << std::setfill('0') << std::setw(2) << std::hex << (int) data << " " << std::dec;
-						}
-
-						std::cout << canMsg->timestamp << std::endl;
-						break;
-					}
-					default:
-						if(msg->network.getNetID() != icsneo::Network::NetID::Device) {
-							std::cout << "\tMessage on netid " << msg->network.GetNetIDString(msg->network.getNetID()) << " with length " << msg->data.size() << std::endl;
-						}
-						break;
-					}
+					printMessage(msg);
 				}));
 
 				if(callbackID != -1) {
@@ -578,7 +634,7 @@ int main() {
 					break;
 				} else {
 					std::vector<char> allowed;
-					
+
 					std::cout << "Which id would you like to remove?" << std::endl;
 					for(int id : callbacks.find(selectedDevice)->second) {
 						allowed.push_back(static_cast<char>(id) + '0');
@@ -595,7 +651,7 @@ int main() {
 					} else {
 						std::cout << "Failed to remove message callback id " << removeID << " from " << selectedDevice->describe() << "!" << std::endl << std::endl;
 						std::cout << icsneo::GetLastError() << std::endl;;
-					}					
+					}
 				}
 			}
 			break;

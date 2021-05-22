@@ -26,18 +26,16 @@ void FlexRay::Extension::onGoOffline() {
 }
 
 void FlexRay::Extension::handleMessage(const std::shared_ptr<Message>& message) {
-	switch(message->network.getNetID()) {
-		case Network::NetID::FlexRayControl: {
+	switch(message->type) {
+		case Message::Type::FlexRayControl: {
 			auto msg = std::dynamic_pointer_cast<FlexRayControlMessage>(message);
 			if(!msg || !msg->decoded)
 				return;
 			switch(msg->opcode) {
 				case FlexRay::Opcode::ReadCCStatus:
-					if(auto status = std::dynamic_pointer_cast<FlexRayControlMessage>(message)) { // TODO else report error?
-						if(status->controller >= controllers.size())
-							return; // TODO error
-						controllers[status->controller]->_setStatus(status);
-					}
+					if(msg->controller >= controllers.size())
+						return; // TODO error
+					controllers[msg->controller]->_setStatus(msg);
 					break;
 			}
 			break;
@@ -47,18 +45,18 @@ void FlexRay::Extension::handleMessage(const std::shared_ptr<Message>& message) 
 	}
 }
 
-bool FlexRay::Extension::transmitHook(const std::shared_ptr<Message>& message, bool& success) {
-	if(!message || message->network.getType() != Network::Type::FlexRay)
+bool FlexRay::Extension::transmitHook(const std::shared_ptr<Frame>& frame, bool& success) {
+	if(!frame || frame->network.getType() != Network::Type::FlexRay)
 		return true; // Don't hook non-FlexRay messages
 
 	success = false;
 
-	std::shared_ptr<FlexRayMessage> frmsg = std::dynamic_pointer_cast<FlexRayMessage>(message);
+	std::shared_ptr<FlexRayMessage> frmsg = std::dynamic_pointer_cast<FlexRayMessage>(frame);
 	if(!frmsg)
 		return false;
 
 	for(auto& controller : controllers) {
-		if(controller->getNetwork() != message->network)
+		if(controller->getNetwork() != frame->network)
 			continue;
 		success |= controller->transmit(frmsg);
 	}

@@ -73,11 +73,12 @@ protected:
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
 
-	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
-		if(!message || message->data.size() < sizeof(valuecan4_2el_status_t))
+	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
+		const auto& data = message->data;
+		if(data.size() < sizeof(valuecan4_2el_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);
-		const valuecan4_2el_status_t* status = reinterpret_cast<const valuecan4_2el_status_t*>(message->data.data());
+		const valuecan4_2el_status_t* status = reinterpret_cast<const valuecan4_2el_status_t*>(data.data());
 		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
 };

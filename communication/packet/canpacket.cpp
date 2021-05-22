@@ -1,4 +1,5 @@
 #include "icsneo/communication/packet/canpacket.h"
+#include "icsneo/communication/message/canerrorcountmessage.h"
 #include "icsneo/platform/optional.h"
 
 using namespace icsneo;
@@ -6,7 +7,7 @@ using namespace icsneo;
 static optional<uint8_t> CANFD_DLCToLength(uint8_t length) {
 	if (length < 8)
 		return length;
-	
+
 	switch(length) {
 		case 0x9:
 			return 12;
@@ -26,61 +27,75 @@ static optional<uint8_t> CANFD_DLCToLength(uint8_t length) {
 	return nullopt;
 }
 
-std::shared_ptr<CANMessage> HardwareCANPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
+std::shared_ptr<Message> HardwareCANPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
 	const HardwareCANPacket* data = (const HardwareCANPacket*)bytestream.data();
 
-	auto msg = std::make_shared<CANMessage>();
+	if(data->dlc.RB1) { // Change counts reporting
 
-	// Arb ID
-	if(data->header.IDE) { // Extended 29-bit ID
-		msg->arbid = (data->header.SID & 0x7ff) << 18;
-		msg->arbid |= (data->eid.EID & 0xfff) << 6;
-		msg->arbid |= (data->dlc.EID2 & 0x3f);
-		msg->isExtended = true;
-	} else { // Standard 11-bit ID
-		msg->arbid = data->header.SID;
-	}
+		const bool busOff = data->data[0] & 0b00100000;
 
-	// This timestamp is raw off the device (in timestampResolution increments)
-	// Decoder will fix as it has information about the timestampResolution increments
-	msg->timestamp = data->timestamp.TS;
+		auto msg = std::make_shared<CANErrorCountMessage>(data->data[2], data->data[1], busOff);
 
-	// DLC
-	uint8_t length = data->dlc.DLC;
-	msg->dlcOnWire = length; // This will hold the real DLC on wire 0x0 - 0xF
-	if(data->header.EDL && data->timestamp.IsExtended) { // CAN FD
-		msg->isCANFD = true;
-		msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
-		msg->errorStateIndicator = data->header.ESI;
-		const optional<uint8_t> lenFromDLC = CANFD_DLCToLength(length);
-		if (lenFromDLC)
-			length = *lenFromDLC;
-	} else if(length > 8) { // This is a standard CAN frame with a length of more than 8
-		// Yes, this is possible. On the wire, the length field is a nibble, and we do want to return an accurate value
-		// We don't want to overread our buffer, though, so make sure we cap the length
-		length = 8;
-	}
-	
-	// Data
-	// The first 8 bytes are always in the standard place
-	if((data->dlc.RTR && data->header.IDE) || (!data->header.IDE && data->header.SRR)) { // Remote Request Frame
-		msg->data.resize(length); // This data will be all zeros, but the length will be set
-		msg->isRemote = true;
-	} else {
-		msg->data.reserve(length);
-		msg->data.insert(msg->data.end(), data->data, data->data + (length > 8 ? 8 : length));
-		if(length > 8) { // If there are more than 8 bytes, they come at the end of the message
-			// Messages with extra data are formatted as message, then uint16_t netid, then uint16_t length, then extra data
-			const auto extraDataStart = bytestream.begin() + sizeof(HardwareCANPacket) + 2 + 2;
-			msg->data.insert(msg->data.end(), extraDataStart, extraDataStart + (length - 8));
+		// This timestamp is raw off the device (in timestampResolution increments)
+		// Decoder will fix as it has information about the timestampResolution increments
+		msg->timestamp = data->timestamp.TS;
+
+		return msg;
+
+	} else { // CAN Frame
+		auto msg = std::make_shared<CANMessage>();
+
+		// Arb ID
+		if(data->header.IDE) { // Extended 29-bit ID
+			msg->arbid = (data->header.SID & 0x7ff) << 18;
+			msg->arbid |= (data->eid.EID & 0xfff) << 6;
+			msg->arbid |= (data->dlc.EID2 & 0x3f);
+			msg->isExtended = true;
+		} else { // Standard 11-bit ID
+			msg->arbid = data->header.SID;
 		}
+
+		// This timestamp is raw off the device (in timestampResolution increments)
+		// Decoder will fix as it has information about the timestampResolution increments
+		msg->timestamp = data->timestamp.TS;
+
+		// DLC
+		uint8_t length = data->dlc.DLC;
+		msg->dlcOnWire = length; // This will hold the real DLC on wire 0x0 - 0xF
+		if(data->header.EDL && data->timestamp.IsExtended) { // CAN FD
+			msg->isCANFD = true;
+			msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
+			msg->errorStateIndicator = data->header.ESI;
+			const optional<uint8_t> lenFromDLC = CANFD_DLCToLength(length);
+			if (lenFromDLC)
+				length = *lenFromDLC;
+		} else if(length > 8) { // This is a standard CAN frame with a length of more than 8
+			// Yes, this is possible. On the wire, the length field is a nibble, and we do want to return an accurate value
+			// We don't want to overread our buffer, though, so make sure we cap the length
+			length = 8;
+		}
+
+		// Data
+		// The first 8 bytes are always in the standard place
+		if((data->dlc.RTR && data->header.IDE) || (!data->header.IDE && data->header.SRR)) { // Remote Request Frame
+			msg->data.resize(length); // This data will be all zeros, but the length will be set
+			msg->isRemote = true;
+		} else {
+			msg->data.reserve(length);
+			msg->data.insert(msg->data.end(), data->data, data->data + (length > 8 ? 8 : length));
+			if(length > 8) { // If there are more than 8 bytes, they come at the end of the message
+				// Messages with extra data are formatted as message, then uint16_t netid, then uint16_t length, then extra data
+				const auto extraDataStart = bytestream.begin() + sizeof(HardwareCANPacket) + 2 + 2;
+				msg->data.insert(msg->data.end(), extraDataStart, extraDataStart + (length - 8));
+			}
+		}
+
+		msg->transmitted = data->eid.TXMSG;
+		msg->error = data->eid.TXAborted || data->eid.TXError || data->eid.TXLostArb;
+		msg->description = data->stats;
+
+		return msg;
 	}
-
-	msg->transmitted = data->eid.TXMSG;
-	msg->error = data->eid.TXAborted || data->eid.TXError || data->eid.TXLostArb;
-	msg->description = data->stats;
-
-	return msg;
 }
 
 bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector<uint8_t>& result, const device_eventhandler_t& report) {

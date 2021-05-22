@@ -314,7 +314,7 @@ int main() {
 					printLastError();
 					printf("\n");
 				}
-				
+
 				break;
 			default:
 				printf("Canceling!\n\n");
@@ -425,7 +425,7 @@ int main() {
 				break;
 			default:
 				printf("Canceling!\n\n");
-			}	
+			}
 		}
 		break;
 		// Get messages
@@ -467,24 +467,34 @@ int main() {
 
 			// Print out the received messages
 			for(size_t i = 0; i < msgCount; i++) {
-				neomessage_t* msg = &msgs[i];
-				switch(msg->type) {
-				case ICSNEO_NETWORK_TYPE_CAN: // CAN
-				{
-					neomessage_can_t* canMsg = (neomessage_can_t*) msg;
-					printf("\t0x%03x [%zu] ", canMsg->arbid, canMsg->length);
-					for(size_t i = 0; i < canMsg->length; i++) {
-						printf("%02x ", canMsg->data[i]);
+				const neomessage_t* msg = &msgs[i];
+				switch(msg->messageType) {
+					case ICSNEO_MESSAGE_TYPE_FRAME: {
+						const neomessage_frame_t* frame = (neomessage_frame_t*)msg;
+						switch(frame->type) {
+							case ICSNEO_NETWORK_TYPE_CAN: {
+								neomessage_can_t* canMsg = (neomessage_can_t*)frame;
+								printf("\t0x%03x [%zu] ", canMsg->arbid, canMsg->length);
+								for(size_t i = 0; i < canMsg->length; i++) {
+									printf("%02x ", canMsg->data[i]);
+								}
+								if(canMsg->status.transmitMessage)
+									printf("TX%s %04x ", canMsg->status.globalError ? " ERR" : "", canMsg->description);
+								printf("(%"PRIu64")\n", canMsg->timestamp);
+								break;
+							}
+							default:
+								printf("\tMessage on netid %d with length %zu\n", frame->netid, frame->length);
+								break;
+						}
+						break;
 					}
-					if(canMsg->status.transmitMessage)
-						printf("TX%s %04x ", canMsg->status.globalError ? " ERR" : "", canMsg->description);
-					printf("(%"PRIu64")\n", canMsg->timestamp);
-					break;
-				}
-				default:
-					if(msg->netid != 0)
-						printf("\tMessage on netid %d with length %zu\n", msg->netid, msg->length);
-					break;
+					case ICSNEO_MESSAGE_TYPE_CAN_ERROR_COUNT: {
+						const neomessage_can_error_t* cec = (neomessage_can_error_t*)msg;
+						printf("\tCAN error counts changed, TEC=%d, REC=%d%s", cec->transmitErrorCount, cec->receiveErrorCount,
+							cec->status.canBusOff ? " (Bus Off)" : "");
+						break;
+					}
 				}
 			}
 			printf("\n");
@@ -689,7 +699,7 @@ int main() {
 			{
 			case '1': type = ICSNEO_IO_ETH_ACTIVATION; break;
 			case '2': type = ICSNEO_IO_USB_HOST_POWER; break;
-			case '3': type = ICSNEO_IO_BACKUP_POWER_EN; break; 
+			case '3': type = ICSNEO_IO_BACKUP_POWER_EN; break;
 			};
 			if(icsneo_setDigitalIO(selectedDevice, type, 1, set)) {
 				printf("OK!\n\n");

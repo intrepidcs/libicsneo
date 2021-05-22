@@ -33,7 +33,7 @@ public:
 	virtual void handleMessage(const std::shared_ptr<Message>&) {}
 
 	// Return true to continue transmitting, success should be written to if false is returned
-	virtual bool transmitHook(const std::shared_ptr<Message>& message, bool& success) { (void)message; (void)success; return true; }
+	virtual bool transmitHook(const std::shared_ptr<Frame>& frame, bool& success) { (void)frame; (void)success; return true; }
 
 protected:
 	Device& device;

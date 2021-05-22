@@ -11,13 +11,18 @@ namespace icsneo {
 
 class VersionMessage : public Message {
 public:
-	VersionMessage(bool main) : MainChip(main) { network = Network::NetID::Main51; }
+	enum Chip : uint8_t {
+		MainChip,
+		SecondaryChips
+	};
 
-	// If true, the included version is for the main chip
-	const bool MainChip;
+	VersionMessage(Chip chip) : Message(Message::Type::DeviceVersion), ForChip(chip) {}
 
 	// nullopt here indicates invalid
 	std::vector< optional<DeviceAppVersion> > Versions;
+
+	// What chips the versions are for
+	const Chip ForChip;
 };
 
 }

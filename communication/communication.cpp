@@ -29,7 +29,7 @@ bool Communication::open() {
 		report(APIEvent::Type::DeviceCurrentlyOpen, APIEvent::Severity::Error);
 		return false;
 	}
-	
+
 	if(!driver->open())
 		return false;
 	spawnThreads();
@@ -114,7 +114,7 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 		return false;
 	}
 
-	data = std::move(msg->data);
+	data = std::move(gsmsg->data);
 	return true;
 }
 
@@ -128,7 +128,7 @@ std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chr
 	auto m51 = std::dynamic_pointer_cast<Main51Message>(msg);
 	if(!m51) // Could not upcast for some reason
 		return std::shared_ptr<SerialNumberMessage>();
-	
+
 	return std::dynamic_pointer_cast<SerialNumberMessage>(m51);
 }
 
@@ -145,7 +145,7 @@ optional< std::vector< optional<DeviceAppVersion> > > Communication::getVersions
 	if(!ver) // Could not upcast for some reason
 		return nullopt;
 
-	if(!ver->MainChip || ver->Versions.size() != 1)
+	if(ver->ForChip != VersionMessage::MainChip || ver->Versions.size() != 1)
 		return nullopt;
 
 	ret.push_back(ver->Versions.front());
@@ -155,9 +155,8 @@ optional< std::vector< optional<DeviceAppVersion> > > Communication::getVersions
 	}, Main51MessageFilter(Command::GetSecondaryVersions), timeout);
 	if(msg) { // This one is allowed to fail
 		ver = std::dynamic_pointer_cast<VersionMessage>(msg);
-		if(ver && !ver->MainChip) {
+		if(ver && ver->ForChip != VersionMessage::MainChip)
 			ret.insert(ret.end(), ver->Versions.begin(), ver->Versions.end());
-		}
 	}
 
 	return ret;
@@ -231,7 +230,7 @@ void Communication::readTask() {
 	std::vector<uint8_t> readBytes;
 
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	
+
 	while(!closing) {
 		readBytes.clear();
 		if(driver->readWait(readBytes)) {

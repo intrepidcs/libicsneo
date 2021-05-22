@@ -121,8 +121,8 @@ public:
 	int addMessageCallback(const MessageCallback& cb) { return com->addMessageCallback(cb); }
 	bool removeMessageCallback(int id) { return com->removeMessageCallback(id); }
 
-	bool transmit(std::shared_ptr<Message> message);
-	bool transmit(std::vector<std::shared_ptr<Message>> messages);
+	bool transmit(std::shared_ptr<Frame> frame);
+	bool transmit(std::vector<std::shared_ptr<Frame>> frames);
 
 	void setWriteBlocks(bool blocks);
 
@@ -328,7 +328,7 @@ protected:
 
 	void handleInternalMessage(std::shared_ptr<Message> message);
 
-	virtual void handleDeviceStatus(const std::shared_ptr<Message>&) {}
+	virtual void handleDeviceStatus(const std::shared_ptr<RawMessage>&) {}
 
 	neodevice_t& getWritableNeoDevice() { return data; }
 

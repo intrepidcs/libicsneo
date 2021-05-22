@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(libicsneo VERSION 0.2.0)
+project(libicsneo VERSION 0.3.0)
 
 option(LIBICSNEO_BUILD_TESTS "Build all tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)

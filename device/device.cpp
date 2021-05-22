@@ -117,19 +117,16 @@ std::pair<std::vector<std::shared_ptr<Message>>, bool> Device::getMessages() {
 }
 
 bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit, std::chrono::milliseconds timeout) {
-	// not open
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
-	// not online
 	if(!isOnline()) {
 		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
 		return false;
 	}
 
-	// not currently polling, throw error
 	if(!isMessagePollingEnabled()) {
 		report(APIEvent::Type::DeviceNotCurrentlyPolling, APIEvent::Severity::Error);
 		return false;
@@ -285,7 +282,7 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 	}
 	if(!serial) // "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
 		return getCommunicationNotEstablishedError();
-	
+
 	std::string currentSerial = getNeoDevice().serial;
 	if(currentSerial != serial->deviceSerial)
 		return APIEvent::Type::IncorrectSerialNumber;
@@ -309,7 +306,7 @@ bool Device::close() {
 
 	if(isOnline())
 		goOffline();
-	
+
 	if(internalHandlerCallbackID)
 		com->removeMessageCallback(internalHandlerCallbackID);
 
@@ -352,7 +349,7 @@ bool Device::goOnline() {
 		if(failOut)
 			return false;
 	}
-	
+
 	online = true;
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOnline(); return true; });
@@ -373,9 +370,9 @@ bool Device::goOffline() {
 	auto startTime = std::chrono::system_clock::now();
 
 	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
-	
+
 	updateLEDState();
-	
+
 	MessageFilter filter(Network::NetID::Reset_Status);
 	filter.includeInternalInAny = true;
 
@@ -383,32 +380,30 @@ bool Device::goOffline() {
 	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
 		if(latestResetStatus && !latestResetStatus->comEnabled)
 			break;
-		
+
 		if(!com->sendCommand(Command::RequestStatusUpdate))
 			return false;
 
 		com->waitForMessageSync(filter, std::chrono::milliseconds(100));
 	}
-	
+
 	online = false;
 
 	return true;
 }
 
-bool Device::transmit(std::shared_ptr<Message> message) {
-	// not open
+bool Device::transmit(std::shared_ptr<Frame> frame) {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
-	// not online
 	if(!isOnline()) {
 		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
 		return false;
 	}
 
-	if(!isSupportedTXNetwork(message->network)) {
+	if(!isSupportedTXNetwork(frame->network)) {
 		report(APIEvent::Type::UnsupportedTXNetwork, APIEvent::Severity::Error);
 		return false;
 	}
@@ -416,7 +411,7 @@ bool Device::transmit(std::shared_ptr<Message> message) {
 	bool extensionHookedTransmit = false;
 	bool transmitStatusFromExtension = false;
 	forEachExtension([&](const std::shared_ptr<DeviceExtension>& ext) {
-		if(!ext->transmitHook(message, transmitStatusFromExtension))
+		if(!ext->transmitHook(frame, transmitStatusFromExtension))
 			extensionHookedTransmit = true;
 		return !extensionHookedTransmit; // false breaks out of the loop early
 	});
@@ -424,15 +419,15 @@ bool Device::transmit(std::shared_ptr<Message> message) {
 		return transmitStatusFromExtension;
 
 	std::vector<uint8_t> packet;
-	if(!com->encoder->encode(*com->packetizer, packet, message))
+	if(!com->encoder->encode(*com->packetizer, packet, frame))
 		return false;
-	
+
 	return com->sendPacket(packet);
 }
 
-bool Device::transmit(std::vector<std::shared_ptr<Message>> messages) {
-	for(auto& message : messages) {
-		if(!transmit(message))
+bool Device::transmit(std::vector<std::shared_ptr<Frame>> frames) {
+	for(auto& frame : frames) {
+		if(!transmit(frame))
 			return false;
 	}
 	return true;
@@ -692,22 +687,32 @@ void Device::forEachExtension(std::function<bool(const std::shared_ptr<DeviceExt
 }
 
 void Device::handleInternalMessage(std::shared_ptr<Message> message) {
-	switch(message->network.getNetID()) {
-		case Network::NetID::Reset_Status:
-			latestResetStatus = std::dynamic_pointer_cast<ResetStatusMessage>(message);
+	switch(message->type) {
+		case Message::Type::ResetStatus:
+			latestResetStatus = std::static_pointer_cast<ResetStatusMessage>(message);
 			break;
-		case Network::NetID::Device: {
-			auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
-			if(canmsg)
-				handleNeoVIMessage(std::move(canmsg));
+		case Message::Type::RawMessage: {
+			auto rawMessage = std::static_pointer_cast<RawMessage>(message);
+			switch(rawMessage->network.getNetID()) {
+				case Network::NetID::Device: {
+					// Device is not guaranteed to be a CANMessage, it might be a RawMessage
+					// if it couldn't be decoded to a CANMessage. We only care about the
+					// CANMessage decoding right now.
+					auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
+					if(canmsg)
+						handleNeoVIMessage(std::move(canmsg));
+					break;
+				}
+				case Network::NetID::DeviceStatus:
+					// Device Status format is unique per device, so the devices need to decode it themselves
+					handleDeviceStatus(rawMessage);
+					break;
+				default:
+					break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;
+			}
 			break;
 		}
-		case Network::NetID::DeviceStatus:
-			// Device Status format is unique per device, so the devices need to decode it themselves
-			handleDeviceStatus(message);
-			break;
-		default:
-			break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;
+		default: break;
 	}
 	forEachExtension([&](const std::shared_ptr<DeviceExtension>& ext) {
 		ext->handleMessage(message);

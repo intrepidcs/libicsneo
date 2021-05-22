@@ -11,8 +11,8 @@ namespace icsneo {
 
 class ResetStatusMessage : public Message {
 public:
-	ResetStatusMessage() : Message() {}
-	virtual ~ResetStatusMessage() = default;
+	ResetStatusMessage() : Message(Message::Type::ResetStatus) {}
+
 	uint16_t mainLoopTime;
 	uint16_t maxMainLoopTime;
 	bool justReset;

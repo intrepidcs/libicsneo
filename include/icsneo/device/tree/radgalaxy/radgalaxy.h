@@ -30,7 +30,7 @@ public:
 				if(!fakedev->com->decoder->decode(msg, packet))
 					continue; // We failed to decode this packet
 
-				if(!msg || msg->network.getNetID() != Network::NetID::Main51)
+				if(!msg || msg->type != Message::Type::Main51)
 					continue; // Not a message we care about
 				auto sn = std::dynamic_pointer_cast<SerialNumberMessage>(msg);
 				if(!sn)
@@ -118,11 +118,12 @@ protected:
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
-	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
-		if(!message || message->data.size() < sizeof(radgalaxy_status_t))
+	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
+		const auto& data = message->data;
+		if(data.size() < sizeof(radgalaxy_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);
-		const radgalaxy_status_t* status = reinterpret_cast<const radgalaxy_status_t*>(message->data.data());
+		const radgalaxy_status_t* status = reinterpret_cast<const radgalaxy_status_t*>(data.data());
 		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
 };

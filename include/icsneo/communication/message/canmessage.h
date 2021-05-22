@@ -7,7 +7,7 @@
 
 namespace icsneo {
 
-class CANMessage : public Message {
+class CANMessage : public Frame {
 public:
 	uint32_t arbid;
 	uint8_t dlcOnWire;
