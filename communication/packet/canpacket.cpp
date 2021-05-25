@@ -109,7 +109,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 
 	const optional<uint8_t> lenFromDLC = CANFD_DLCToLength(message.dlcOnWire);
 	if (lenFromDLC.has_value() && *lenFromDLC != 0) {
-		if (*lenFromDLC < lengthNibble || *lenFromDLC > 0xF) {
+		if (*lenFromDLC < lengthNibble) {
 			report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
 			return false;
 		}
