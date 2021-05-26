@@ -4,26 +4,54 @@
 
 using namespace icsneo;
 
-static optional<uint8_t> CANFD_DLCToLength(uint8_t length) {
-	if (length < 8)
+static optional<uint8_t> CAN_DLCToLength(uint8_t length, bool fd) {
+	if (length <= 8)
 		return length;
 
-	switch(length) {
-		case 0x9:
-			return 12;
-		case 0xa:
-			return 16;
-		case 0xb:
-			return 20;
-		case 0xc:
-			return 24;
-		case 0xd:
-			return 32;
-		case 0xe:
-			return 48;
-		case 0xf:
-			return 64;
+	if (fd) {
+		switch(length) {
+			case 0x9:
+				return 12;
+			case 0xa:
+				return 16;
+			case 0xb:
+				return 20;
+			case 0xc:
+				return 24;
+			case 0xd:
+				return 32;
+			case 0xe:
+				return 48;
+			case 0xf:
+				return 64;
+		}
 	}
+
+	return nullopt;
+}
+
+static optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd)
+{
+	if (dataLength <= 8)
+		return dataLength;
+
+	if (fd) {
+		if (dataLength <= 12)
+			return 0x9;
+		else if (dataLength <= 16)
+			return 0xA;
+		else if (dataLength <= 20)
+			return 0xB;
+		else if (dataLength <= 24)
+			return 0xC;
+		else if (dataLength <= 32)
+			return 0xD;
+		else if (dataLength <= 48)
+			return 0xE;
+		else if (dataLength <= 64)
+			return 0xF;
+	}
+
 	return nullopt;
 }
 
@@ -66,7 +94,7 @@ std::shared_ptr<Message> HardwareCANPacket::DecodeToMessage(const std::vector<ui
 			msg->isCANFD = true;
 			msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
 			msg->errorStateIndicator = data->header.ESI;
-			const optional<uint8_t> lenFromDLC = CANFD_DLCToLength(length);
+			const optional<uint8_t> lenFromDLC = CAN_DLCToLength(length, true);
 			if (lenFromDLC)
 				length = *lenFromDLC;
 		} else if(length > 8) { // This is a standard CAN frame with a length of more than 8
@@ -105,112 +133,35 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 	}
 
 	const size_t dataSize = message.data.size();
-	if(dataSize > 64 || (dataSize > 8 && !message.isCANFD)) {
+	optional<uint8_t> dlc = CAN_LengthToDLC(dataSize, message.isCANFD);
+	if (!dlc.has_value()) {
 		report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
 		return false; // Too much data for the protocol
 	}
 
-	if(message.dlcOnWire > 0xf) {
-		// The DLC is only a nibble
-		// It is actually possible to transmit a standard CAN frame with a DLC > 8
-		// While it is invalid, most controllers will still pass along the received
-		// frame and 8 bytes of data, so it may be desirable to test behavior with
-		// these frames. We let you do it if you set `message.dlcOnWire` for transmit.
-		report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
-		return false;
-	}
-
-	uint8_t lengthNibble = uint8_t(message.data.size());
-
-	const optional<uint8_t> lenFromDLC = CANFD_DLCToLength(message.dlcOnWire);
-	if (lenFromDLC.has_value() && *lenFromDLC != 0) {
-		if (*lenFromDLC < lengthNibble) {
+	if (message.dlcOnWire != 0) {
+		if(message.dlcOnWire > 0xf) {
+			// The DLC is only a nibble
+			// It is actually possible to transmit a standard CAN frame with a DLC > 8
+			// While it is invalid, most controllers will still pass along the received
+			// frame and 8 bytes of data, so it may be desirable to test behavior with
+			// these frames. We let you do it if you set `message.dlcOnWire` for transmit.
 			report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
 			return false;
 		}
 
-		if (*lenFromDLC > lengthNibble)
-			lengthNibble = *lenFromDLC;
+		if (message.dlcOnWire < *dlc) {
+			report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
+			return false;
+		}
+
+		if (message.dlcOnWire > *dlc)
+			dlc = message.dlcOnWire;
 	}
 
-	uint8_t paddingBytes = 0;
-	if(lengthNibble > 8) {
-		switch(lengthNibble) {
-			case 9: paddingBytes++;
-			case 10: paddingBytes++;
-			case 11: paddingBytes++;
-			case 12:
-				lengthNibble = 0x9;
-				break;
-			case 13: paddingBytes++;
-			case 14: paddingBytes++;
-			case 15: paddingBytes++;
-			case 16:
-				lengthNibble = 0xA;
-				break;
-			case 17: paddingBytes++;
-			case 18: paddingBytes++;
-			case 19: paddingBytes++;
-			case 20:
-				lengthNibble = 0xB;
-				break;
-			case 21: paddingBytes++;
-			case 22: paddingBytes++;
-			case 23: paddingBytes++;
-			case 24:
-				lengthNibble = 0xC;
-				break;
-			case 25: paddingBytes++;
-			case 26: paddingBytes++;
-			case 27: paddingBytes++;
-			case 28: paddingBytes++;
-			case 29: paddingBytes++;
-			case 30: paddingBytes++;
-			case 31: paddingBytes++;
-			case 32:
-				lengthNibble = 0xD;
-				break;
-			case 33: paddingBytes++;
-			case 34: paddingBytes++;
-			case 35: paddingBytes++;
-			case 36: paddingBytes++;
-			case 37: paddingBytes++;
-			case 38: paddingBytes++;
-			case 39: paddingBytes++;
-			case 40: paddingBytes++;
-			case 41: paddingBytes++;
-			case 42: paddingBytes++;
-			case 43: paddingBytes++;
-			case 44: paddingBytes++;
-			case 45: paddingBytes++;
-			case 46: paddingBytes++;
-			case 47: paddingBytes++;
-			case 48:
-				lengthNibble = 0xE;
-				break;
-			case 49: paddingBytes++;
-			case 50: paddingBytes++;
-			case 51: paddingBytes++;
-			case 52: paddingBytes++;
-			case 53: paddingBytes++;
-			case 54: paddingBytes++;
-			case 55: paddingBytes++;
-			case 56: paddingBytes++;
-			case 57: paddingBytes++;
-			case 58: paddingBytes++;
-			case 59: paddingBytes++;
-			case 60: paddingBytes++;
-			case 61: paddingBytes++;
-			case 62: paddingBytes++;
-			case 63: paddingBytes++;
-			case 64:
-				lengthNibble = 0xF;
-				break;
-			default:
-				report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
-				return false; // CAN FD frame may have had an incorrect byte count
-		}
-	}
+	// The only way this fails is if we're transmitting a DLC > 8 on standard CAN
+	const uint8_t paddedLength = CAN_DLCToLength(*dlc, message.isCANFD).value_or(8);
+	const uint8_t paddingBytes = paddedLength - dataSize;
 
 	// Pre-allocate as much memory as we will possibly need for speed
 	result.reserve(17 + dataSize + paddingBytes);
@@ -248,7 +199,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 	// Status and DLC bits
 	if(message.isCANFD) {
 		result.push_back(0x0F); // FD Frame
-		uint8_t fdStatusByte = lengthNibble;
+		uint8_t fdStatusByte = *dlc;
 		if(message.baudrateSwitch)
 			fdStatusByte |= 0x80; // BRS status bit
 		// The firmware does not yet support transmitting ESI
@@ -256,7 +207,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 	} else {
 		// TODO Support high voltage wakeup, bitwise-or in 0x8 here to enable
 		uint8_t statusNibble = message.isRemote ? 0x4 : 0x0;
-		result.push_back((statusNibble << 4) | lengthNibble);
+		result.push_back((statusNibble << 4) | *dlc);
 	}
 
 	// Now finally the payload
