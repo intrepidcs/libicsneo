@@ -10,6 +10,7 @@
 #include "icsneo/device/tree/neovired2/neovired2.h"
 #include "icsneo/device/tree/plasion/neoviion.h"
 #include "icsneo/device/tree/plasion/neoviplasma.h"
+#include "icsneo/device/tree/radepsilon/radepsilon.h"
 #include "icsneo/device/tree/radgalaxy/radgalaxy.h"
 #include "icsneo/device/tree/radgigalog/radgigalogeth.h"
 #include "icsneo/device/tree/radgigalog/radgigalogusb.h"

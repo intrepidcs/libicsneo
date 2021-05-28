@@ -43,6 +43,10 @@ static std::vector<DeviceType> supportedDevices = {
 	NeoVIPLASMA::DEVICE_TYPE,
 	#endif
 
+	#ifdef __RADEPSILON_H_
+	RADEpsilon::DEVICE_TYPE,
+	#endif
+
 	#ifdef __RADGALAXY_H_
 	RADGalaxy::DEVICE_TYPE,
 	#endif
@@ -167,6 +171,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 
 	#ifdef __NEOVIPLASMA_H_
 	findResults.push_back(NeoVIPLASMA::Find());
+	#endif
+
+	#ifdef __RADEPSILON_H_
+	findResults.push_back(RADEpsilon::Find());
 	#endif
 
 	#ifdef __RADGALAXY_H_
