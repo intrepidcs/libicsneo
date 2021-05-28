@@ -19,6 +19,10 @@ static std::vector<DeviceType> supportedDevices = {
 	NeoOBD2SIM::DEVICE_TYPE,
 	#endif
 
+	#ifdef __NEOVIRED2_H_
+	NeoVIRED2::DEVICE_TYPE,
+	#endif
+
 	#ifdef __NEOVIFIRE_H_
 	NeoVIFIRE::DEVICE_TYPE,
 	#endif
@@ -151,6 +155,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 
 	#ifdef __NEOVIFIRE2USB_H_
 	findResults.push_back(NeoVIFIRE2USB::Find());
+	#endif
+
+	#ifdef __NEOVIRED2_H_
+	findResults.push_back(NeoVIRED2::Find(pcapDevices));
 	#endif
 
 	#ifdef __NEOVIION_H_

@@ -42,6 +42,7 @@ public:
 		RADJupiter = (0x00000011),
 		VCAN4_IND = (0x00000012),
 		RADGigastar = (0x00000013),
+		RED2 = (0x00000014),
 		EtherBADGE = (0x00000016),
 		RED = (0x00000040),
 		ECU = (0x00000080),
@@ -119,6 +120,8 @@ public:
 				return "ValueCAN 4 Industrial";
 			case RADGigastar:
 				return "RAD-Gigastar";
+			case RED2:
+				return "neoVI RED 2";
 			case EtherBADGE:
 				return "EtherBADGE";
 			case RED:
@@ -210,6 +213,7 @@ private:
 #define ICSNEO_DEVICETYPE_RADJUPITER ((devicetype_t)0x00000011)
 #define ICSNEO_DEVICETYPE_VCAN4_IND ((devicetype_t)0x00000012)
 #define ICSNEO_DEVICETYPE_RADGIGASTAR ((devicetype_t)0x00000013)
+#define ICSNEO_DEVICETYPE_RED2 ((devicetype_t)0x00000014)
 #define ICSNEO_DEVICETYPE_ETHERBADGE ((devicetype_t)0x00000016)
 #define ICSNEO_DEVICETYPE_RED ((devicetype_t)0x00000040)
 #define ICSNEO_DEVICETYPE_ECU ((devicetype_t)0x00000080)

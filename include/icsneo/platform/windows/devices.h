@@ -7,6 +7,7 @@
 #include "icsneo/device/tree/neovifire/neovifire.h"
 #include "icsneo/device/tree/neovifire2/neovifire2eth.h"
 #include "icsneo/device/tree/neovifire2/neovifire2usb.h"
+#include "icsneo/device/tree/neovired2/neovired2.h"
 #include "icsneo/device/tree/plasion/neoviion.h"
 #include "icsneo/device/tree/plasion/neoviplasma.h"
 #include "icsneo/device/tree/radgalaxy/radgalaxy.h"
