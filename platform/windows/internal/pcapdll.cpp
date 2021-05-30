@@ -1,4 +1,5 @@
 #include "icsneo/platform/windows/internal/pcapdll.h"
+#include <tchar.h>
 
 using namespace icsneo;
 
@@ -27,22 +28,19 @@ bool PCAPDLL::ok() const
 
 PCAPDLL::PCAPDLL()
 {
+	DLL_DIRECTORY_COOKIE cookie = 0;
 #ifdef NPCAP
-	BOOL(WINAPI * SetDllDirectory)(LPCTSTR);
-	char sysdir_name[512];
-	int len;
-	SetDllDirectory = (BOOL(WINAPI*)(LPCTSTR)) GetProcAddress(GetModuleHandle("kernel32.dll"), "SetDllDirectoryA");
-	if (SetDllDirectory != NULL)
-	{
-		len = GetSystemDirectory(sysdir_name, 480);	//	be safe
-		if (len)
-		{
-			strcat(sysdir_name, "\\Npcap");
-			SetDllDirectory(sysdir_name);
-		}
+	TCHAR dllPath[512] = { 0 };
+	int len = GetSystemDirectory(dllPath, 480); // be safe
+	if (len) {
+		_tcscat_s(dllPath, 512, TEXT("\\Npcap"));
+		cookie = AddDllDirectory(dllPath);
 	}
 #endif
-	dll = LoadLibrary(TEXT("wpcap.dll"));
+	dll = LoadLibraryEx(TEXT("wpcap.dll"), nullptr, LOAD_LIBRARY_SEARCH_USER_DIRS);
+
+	if (cookie)
+		RemoveDllDirectory(cookie);
 
 	if(dll == NULL) {
 		closeDLL();
