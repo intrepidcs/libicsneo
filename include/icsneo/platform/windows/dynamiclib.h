@@ -12,7 +12,7 @@
 // MSVC does not have the ability to specify a destructor
 #define ICSNEO_DESTRUCTOR
 
-#define icsneo_dynamicLibraryLoad() LoadLibrary("icsneoc.dll")
+#define icsneo_dynamicLibraryLoad() LoadLibrary(TEXT("icsneoc.dll"))
 #define icsneo_dynamicLibraryGetFunction(handle, func) GetProcAddress((HMODULE) handle, func)
 #define icsneo_dynamicLibraryClose(handle) FreeLibrary((HMODULE) handle)
 
