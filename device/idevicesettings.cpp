@@ -375,7 +375,35 @@ int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 		case Network::Type::CAN: {
 			const CAN_SETTINGS* cfg = getCANSettingsFor(net);
 			if(cfg == nullptr) {
-				report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
+				report(APIEvent::Type::CANSettingsNotAvailable, APIEvent::Severity::Error);
+				return -1;
+			}
+
+			int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->Baudrate);
+			if(baudrate == -1) {
+				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
+				return -1;
+			}
+			return baudrate;
+		}
+		case Network::Type::SWCAN: {
+			const SWCAN_SETTINGS* cfg = getSWCANSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::Error);
+				return -1;
+			}
+
+			int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->Baudrate);
+			if(baudrate == -1) {
+				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
+				return -1;
+			}
+			return baudrate;
+		}
+		case Network::Type::LSFTCAN: {
+			const CAN_SETTINGS* cfg = getLSFTCANSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::LSFTCANSettingsNotAvailable, APIEvent::Severity::Error);
 				return -1;
 			}
 
