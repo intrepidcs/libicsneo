@@ -11,6 +11,7 @@ void UnloadDLLAPI(HINSTANCE &hAPIDLL);
 //Basic Functions
 typedef int  (__stdcall *FINDNEODEVICES)(unsigned long DeviceTypes, NeoDevice *pNeoDevice, int *pNumDevices);
 typedef int  (__stdcall *OPENNEODEVICE)(NeoDevice *pNeoDevice, void * hObject, unsigned char *bNetworkIDs, int bConfigRead, int bSyncToPC);
+typedef int  (__stdcall *OPENDEVICE)(NeoDeviceEx* pNeoDeviceEx, void** hObject, unsigned char* bNetworkIDs,	int bConfigRead, int iOptions, OptionsOpenNeoEx* stOptionsOpenNeoEx, unsigned long reserved);
 typedef int  (__stdcall *CLOSEPORT)(void * hObject, int *pNumberOfErrors);
 typedef void (__stdcall *FREEOBJECT)(void * hObject);
 typedef int  (__stdcall *OPENPORTEX)(void * lPortNumber, int lPortType, int lDriverType, int lIPAddressMSB, int lIPAddressLSBOrBaudRate,
@@ -115,6 +116,7 @@ typedef int  (__stdcall *SCRIPTWRITEISO15765TXMESSAGE)(void * hObject, unsigned 
 //Basic Functions
 extern FINDNEODEVICES icsneoFindNeoDevices;
 extern OPENNEODEVICE icsneoOpenNeoDevice;
+extern OPENDEVICE icsneoOpenDevice;
 extern CLOSEPORT icsneoClosePort;
 extern FREEOBJECT icsneoFreeObject;
 extern SERIALNUMBERTOSTRING icsneoSerialNumberToString;

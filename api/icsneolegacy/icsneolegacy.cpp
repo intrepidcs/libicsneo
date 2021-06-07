@@ -620,6 +620,35 @@ int LegacyDLLExport icsneoOpenNeoDevice(NeoDevice *pNeoDevice, void **hObject, u
 	return icsneo_setPollingMessageLimit(device, 20000) && icsneo_enableMessagePolling(device) && icsneo_goOnline(device);
 }
 
+int LegacyDLLExport icsneoOpenDevice(
+	NeoDeviceEx* pNeoDeviceEx,
+	void** hObject,
+	unsigned char* bNetworkIDs,
+	int bConfigRead,
+	int iOptions,
+	OptionsOpenNeoEx* stOptionsOpenNeoEx,
+	unsigned long reserved)
+{
+	if (pNeoDeviceEx == nullptr || hObject == nullptr)
+		return false;
+
+	neodevice_t* device;
+	try
+	{
+		device = &neodevices.at(uint64_t(pNeoDeviceEx->neoDevice.Handle) << 32 | pNeoDeviceEx->neoDevice.SerialNumber);
+	}
+	catch (const std::out_of_range&)
+	{
+		return false;
+	}
+
+	*hObject = device;
+	if(!icsneo_openDevice(device))
+		return false;
+	
+	return icsneo_setPollingMessageLimit(device, 20000) && icsneo_enableMessagePolling(device) && icsneo_goOnline(device);
+}
+
 int LegacyDLLExport icsneoClosePort(void *hObject, int *pNumberOfErrors)
 {
 	if (!icsneoValidateHObject(hObject))

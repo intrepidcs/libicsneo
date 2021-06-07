@@ -23,6 +23,7 @@ extern "C" {
 extern int LegacyDLLExport icsneoFindDevices(NeoDeviceEx* pNeoDeviceEx, int* pNumDevices, unsigned int* DeviceTypes, unsigned int numDeviceTypes,POptionsFindNeoEx* pOptionsNeoEx, unsigned int* reserved);
 extern int LegacyDLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* pNumDevices);
 extern int LegacyDLLExport icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC);
+extern int LegacyDLLExport icsneoOpenDevice(NeoDeviceEx* pNeoDeviceEx, void** hObject, unsigned char* bNetworkIDs,	int bConfigRead, int iOptions, OptionsOpenNeoEx* stOptionsOpenNeoEx, unsigned long reserved);
 extern int LegacyDLLExport icsneoClosePort(void* hObject, int* pNumberOfErrors);
 extern void LegacyDLLExport icsneoFreeObject(void* hObject);
 extern int LegacyDLLExport icsneoOpenDevice(NeoDeviceEx* pNeoDeviceEx, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int iOptions, OptionsOpenNeoEx* stOptionsOpenNeoEx, unsigned long reserved);
