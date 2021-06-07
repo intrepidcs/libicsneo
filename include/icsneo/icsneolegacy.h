@@ -16,6 +16,7 @@ extern "C" {
 extern int DLLExport icsneoFindDevices(NeoDeviceEx* pNeoDeviceEx, int* pNumDevices, unsigned int* DeviceTypes, unsigned int numDeviceTypes,POptionsFindNeoEx* pOptionsNeoEx, unsigned int* reserved);
 extern int DLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* pNumDevices);
 extern int DLLExport icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC);
+extern int DLLExport icsneoOpenDevice(NeoDeviceEx* pNeoDeviceEx, void** hObject, unsigned char* bNetworkIDs,	int bConfigRead, int iOptions, OptionsOpenNeoEx* stOptionsOpenNeoEx, unsigned long reserved);
 extern int DLLExport icsneoClosePort(void* hObject, int* pNumberOfErrors);
 extern void DLLExport icsneoFreeObject(void* hObject);
 extern int DLLExport icsneoSerialNumberToString(unsigned long serial, char* data, unsigned long data_size);

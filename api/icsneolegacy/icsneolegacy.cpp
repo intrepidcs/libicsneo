@@ -169,6 +169,25 @@ int icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bN
 	return icsneo_setPollingMessageLimit(device, 20000) && icsneo_enableMessagePolling(device) && icsneo_goOnline(device);
 }
 
+int icsneoOpenDevice(NeoDeviceEx* pNeoDeviceEx, void** hObject, unsigned char* bNetworkIDs,	int bConfigRead, int iOptions, OptionsOpenNeoEx* stOptionsOpenNeoEx, unsigned long reserved) {
+	if(pNeoDeviceEx == nullptr || hObject == nullptr)
+		return false;
+
+	neodevice_t* device;
+	try {
+		device = &neodevices.at(uint64_t(pNeoDeviceEx->neoDevice.Handle) << 32 | pNeoDeviceEx->neoDevice.SerialNumber);
+	} catch(std::out_of_range& e) {
+		(void)e; // Unused
+		return false;
+	}
+
+	*hObject = device;
+	if(!icsneo_openDevice(device))
+		return false;
+	
+	return icsneo_setPollingMessageLimit(device, 20000) && icsneo_enableMessagePolling(device) && icsneo_goOnline(device);
+}
+
 int icsneoClosePort(void* hObject, int* pNumberOfErrors) {
 	if(!icsneoValidateHObject(hObject))
 		return false;
