@@ -27,9 +27,9 @@ using namespace icsneo;
 typedef uint64_t legacymaphandle_t;
 static std::map<legacymaphandle_t, neodevice_t> neodevices;
 
-std::map<const size_t, size_t> mp_netIDToVnetOffSet = {{NETID_HSCAN, 1}, {NETID_MSCAN, 2}, {NETID_HSCAN2, 18}, {NETID_HSCAN3, 19}, {NETID_HSCAN4, 32}, {NETID_HSCAN5, 33}, {NETID_HSCAN6, 47}, {NETID_HSCAN7, 48}};
-std::map<const size_t, size_t> mp_HWnetIDToCMnetID = {{NETID_HSCAN, 0}, {NETID_MSCAN, 1}, {NETID_HSCAN2, 5}, {NETID_HSCAN3, 8}, {NETID_HSCAN4, 14}, {NETID_HSCAN5, 15}, {NETID_HSCAN6, 32}, {NETID_HSCAN7, 33}};
-unsigned long vnet_table[] = {0, PLASMA_SLAVE1_OFFSET, PLASMA_SLAVE2_OFFSET};
+static std::map<const size_t, size_t> mp_netIDToVnetOffSet = {{NETID_HSCAN, 1}, {NETID_MSCAN, 2}, {NETID_HSCAN2, 18}, {NETID_HSCAN3, 19}, {NETID_HSCAN4, 32}, {NETID_HSCAN5, 33}, {NETID_HSCAN6, 47}, {NETID_HSCAN7, 48}};
+static std::map<const size_t, size_t> mp_HWnetIDToCMnetID = {{NETID_HSCAN, 0}, {NETID_MSCAN, 1}, {NETID_HSCAN2, 5}, {NETID_HSCAN3, 8}, {NETID_HSCAN4, 14}, {NETID_HSCAN5, 15}, {NETID_HSCAN6, 32}, {NETID_HSCAN7, 33}};
+static unsigned long vnet_table[] = {0, PLASMA_SLAVE1_OFFSET, PLASMA_SLAVE2_OFFSET};
 
 static NeoDevice OldNeoDeviceFromNew(const neodevice_t *newnd)
 {
@@ -92,431 +92,55 @@ static void NeoMessageToSpyMessage(const neodevice_t *device, const neomessage_t
 	}
 }
 
-inline bool Within(size_t value, size_t min, size_t max)
+static inline bool Within(size_t value, size_t min, size_t max)
 {
 	return ((min <= value) && (value < max));
 }
-inline bool IdIsSlaveARange1(size_t fullNetid)
+
+static inline bool IdIsSlaveARange1(size_t fullNetid)
 {
 	return Within(fullNetid, PLASMA_SLAVE1_OFFSET, PLASMA_SLAVE1_OFFSET + PLASMA_SLAVE_NUM);
 }
-inline bool IdIsSlaveARange2(size_t fullNetid)
+
+static inline bool IdIsSlaveARange2(size_t fullNetid)
 {
 	return Within(fullNetid, PLASMA_SLAVE1_OFFSET_RANGE2, PLASMA_SLAVE2_OFFSET_RANGE2);
 }
-inline bool IdIsSlaveBRange1(size_t fullNetid)
+
+static inline bool IdIsSlaveBRange1(size_t fullNetid)
 {
 	return Within(fullNetid, PLASMA_SLAVE2_OFFSET, PLASMA_SLAVE2_OFFSET + PLASMA_SLAVE_NUM);
 }
-inline bool IdIsSlaveBRange2(unsigned int fullNetid)
+
+static inline bool IdIsSlaveBRange2(unsigned int fullNetid)
 {
 	return Within(fullNetid, PLASMA_SLAVE2_OFFSET_RANGE2, PLASMA_SLAVE3_OFFSET_RANGE2);
 }
 
-/** @return 0 for main vnet, 1 for slave1, 2 for slave2 */
-inline EPlasmaIonVnetChannel_t GetVnetPos(size_t fullNetid)
-{
-	if (IdIsSlaveARange1(fullNetid) || IdIsSlaveARange2(fullNetid))
-	{
-		return PlasmaIonVnetChannelA;
-	}
-
-	if (IdIsSlaveBRange1(fullNetid) || IdIsSlaveBRange2(fullNetid))
-	{
-		return PlasmaIonVnetChannelB;
-	}
-	return PlasmaIonVnetChannelMain;
-}
-
-inline unsigned int GetVnetNetid(size_t simpleNetId, EPlasmaIonVnetChannel_t vnetSlot)
+static inline unsigned int GetVnetNetid(size_t simpleNetId, EPlasmaIonVnetChannel_t vnetSlot)
 {
 	if (vnetSlot == 0 || vnetSlot > 3)
 		return simpleNetId;
 
 	return mp_netIDToVnetOffSet[simpleNetId] + vnet_table[vnetSlot];
 }
+
 /**
  * So if you are passing in the offset from PLASMA_SLAVE1_OFFSET or
  * the offset from PLASMA_SLAVE1_OFFSET2, return the vnet agnostic
  * netid so caller can commonize handlers without caring about WHICH slave.
  */
-inline unsigned int OffsetToSimpleNetworkId(size_t offset)
+static inline unsigned int OffsetToSimpleNetworkId(size_t offset)
 {
-	for (auto &it : mp_netIDToVnetOffSet)
+	for (const auto& it : mp_netIDToVnetOffSet)
 	{
 		if (it.second == offset)
 			return it.first;
 	}
-	return 0; //NETID_DEVICE
+	return NETID_DEVICE;
 }
 
-inline unsigned int GetVnetAgnosticNetid(size_t fullNetid)
-{
-	if (IdIsSlaveARange1(fullNetid))
-	{
-		unsigned int off = fullNetid - PLASMA_SLAVE1_OFFSET;
-		return OffsetToSimpleNetworkId(off);
-	}
-	else if (IdIsSlaveARange2(fullNetid))
-	{
-		return fullNetid - PLASMA_SLAVE1_OFFSET_RANGE2;
-	}
-	else if (IdIsSlaveBRange1(fullNetid))
-	{
-		unsigned int off = fullNetid - PLASMA_SLAVE2_OFFSET;
-		return OffsetToSimpleNetworkId(off);
-	}
-	else if (IdIsSlaveBRange2(fullNetid))
-	{
-		return fullNetid - PLASMA_SLAVE2_OFFSET_RANGE2;
-	}
-	return fullNetid;
-}
-
-/**
- *  So if you are passing in a simple net id such as NETID_LIN4,
- *	return the offset that we can add to PLASMA_SLAVE1_OFFSET or
- * 	PLASMA_SLAVE2_OFFSET to compute the corresponding slave netids.
- */
-inline bool NetworkIdToVnetOffset_Range1(size_t simpleNetId, size_t& offset)
-{
-	switch (simpleNetId)
-	{
-	case NETID_DEVICE:
-		offset = 0;
-		break;
-	case NETID_HSCAN:
-		offset = 1;
-		break;
-	case NETID_MSCAN:
-		offset = 2;
-		break;
-	case NETID_SWCAN:
-		offset = 3;
-		break;
-	case NETID_LSFTCAN:
-		offset = 4;
-		break;
-	case NETID_FORDSCP:
-		offset = 5;
-		break;
-	case NETID_J1708:
-		offset = 6;
-		break;
-	case NETID_AUX:
-		offset = 7;
-		break;
-	case NETID_JVPW:
-		offset = 8;
-		break;
-	case NETID_ISO:
-		offset = 9;
-		break;
-	case NETID_ISOPIC:
-		offset = 10;
-		break;
-	case NETID_MAIN51:
-		offset = 11;
-		break;
-	case NETID_RED:
-		offset = 12;
-		break;
-	case NETID_SCI:
-		offset = 13;
-		break;
-	case NETID_ISO2:
-		offset = 14;
-		break;
-	case NETID_ISO14230:
-		offset = 15;
-		break;
-	case NETID_LIN:
-		offset = 16;
-		break;
-	case NETID_ISO3:
-		offset = 17;
-		break;
-	case NETID_HSCAN2:
-		offset = 18;
-		break;
-	case NETID_HSCAN3:
-		offset = 19;
-		break;
-	case NETID_ISO4:
-		offset = 20;
-		break;
-	case NETID_LIN2:
-		offset = 21;
-		break;
-	case NETID_LIN3:
-		offset = 22;
-		break;
-	case NETID_LIN4:
-		offset = 23;
-		break;
-	case NETID_MOST:
-		offset = 24;
-		break;
-	case NETID_CGI:
-		offset = 25;
-		break;
-	case NETID_I2C1:
-		offset = 26;
-		break;
-	case NETID_SPI1:
-		offset = 27;
-		break;
-	case NETID_FLEXRAY1A:
-		offset = 28;
-		break;
-	case NETID_MOST25:
-		offset = 29;
-		break;
-	case NETID_MOST50:
-		offset = 30;
-		break;
-	case NETID_MOST150:
-		offset = 31;
-		break;
-	case NETID_HSCAN4:
-		offset = 32;
-		break;
-	case NETID_HSCAN5:
-		offset = 33;
-		break;
-	case NETID_RS232:
-		offset = 34;
-		break;
-	case NETID_UART:
-		offset = 35;
-		break;
-	case NETID_UART2:
-		offset = 36;
-		break;
-	case NETID_UART3:
-		offset = 37;
-		break;
-	case NETID_UART4:
-		offset = 38;
-		break;
-	case NETID_SWCAN2:
-		offset = 39;
-		break;
-	case NETID_FLEXRAY1B:
-		offset = 40;
-		break;
-	case NETID_FLEXRAY2A:
-		offset = 41;
-		break;
-	case NETID_FLEXRAY2B:
-		offset = 42;
-		break;
-	case NETID_LIN5:
-		offset = 43;
-		break;
-	case NETID_ETHERNET:
-		offset = 44;
-		break;
-	case NETID_ETHERNET_DAQ:
-		offset = 45;
-		break;
-	case NETID_RED_APP_ERROR:
-		offset = 46;
-		break;
-	case NETID_HSCAN6:
-		offset = 47;
-		break;
-	case NETID_HSCAN7:
-		offset = 48;
-		break;
-	case NETID_LIN6:
-		offset = 49;
-		break;
-	case NETID_LSFTCAN2:
-		offset = 50;
-		break;
-	default:
-		/* there is no decoding for the provided id */
-		offset = 0;
-		return false;
-	}
-	return true;
-}
-
-inline bool Within(size_t value, size_t min, size_t max)
-{
-	return ((min <= value) && (value < max));
-}
-inline bool IdIsSlaveARange1(size_t fullNetid)
-{
-	return Within(fullNetid, PLASMA_SLAVE1_OFFSET, PLASMA_SLAVE1_OFFSET + PLASMA_SLAVE_NUM);
-}
-inline bool IdIsSlaveARange2(size_t fullNetid)
-{
-	return Within(fullNetid, PLASMA_SLAVE1_OFFSET_RANGE2, PLASMA_SLAVE2_OFFSET_RANGE2);
-}
-inline bool IdIsSlaveBRange1(size_t fullNetid)
-{
-	return Within(fullNetid, PLASMA_SLAVE2_OFFSET, PLASMA_SLAVE2_OFFSET + PLASMA_SLAVE_NUM);
-}
-inline bool IdIsSlaveBRange2(unsigned int fullNetid)
-{
-	return Within(fullNetid, PLASMA_SLAVE2_OFFSET_RANGE2, PLASMA_SLAVE3_OFFSET_RANGE2);
-}
-
-/** @return 0 for main vnet, 1 for slave1, 2 for slave2 */
-inline EPlasmaIonVnetChannel_t GetVnetPos(size_t fullNetid)
-{
-	if (IdIsSlaveARange1(fullNetid) || IdIsSlaveARange2(fullNetid))
-	{
-		return PlasmaIonVnetChannelA;
-	}
-
-	if (IdIsSlaveBRange1(fullNetid) || IdIsSlaveBRange2(fullNetid))
-	{
-		return PlasmaIonVnetChannelB;
-	}
-	return PlasmaIonVnetChannelMain;
-}
-
-inline unsigned int GetVnetNetid(size_t simpleNetId, EPlasmaIonVnetChannel_t vnetSlot)
-{
-	if (vnetSlot > 3)
-		return simpleNetId;
-
-	if (vnetSlot == 0)
-		return simpleNetId;
-
-	unsigned int offset = 0;
-	if (NetworkIdToVnetOffset_Range1(simpleNetId, offset))
-	{
-		/* simpleNetId was one of the original networks mapped to slaves */
-		unsigned long table[] = { 0, PLASMA_SLAVE1_OFFSET, PLASMA_SLAVE2_OFFSET };
-		return offset + table[vnetSlot];
-	}
-	else
-	{
-		/* simpleNetid has the simpler offset scheme */
-		unsigned long table[] = { 0, PLASMA_SLAVE1_OFFSET_RANGE2, PLASMA_SLAVE2_OFFSET_RANGE2 };
-		return simpleNetId + table[vnetSlot];
-	}
-}
-/**
- * So if you are passing in the offset from PLASMA_SLAVE1_OFFSET or
- * the offset from PLASMA_SLAVE1_OFFSET2, return the vnet agnostic
- * netid so caller can commonize handlers without caring about WHICH slave.
- */
-inline unsigned int OffsetToSimpleNetworkId(size_t offset)
-{
-	switch (offset)
-	{
-	default:
-	case 0:
-		return NETID_DEVICE;
-	case 1:
-		return NETID_HSCAN;
-	case 2:
-		return NETID_MSCAN;
-	case 3:
-		return NETID_SWCAN;
-	case 4:
-		return NETID_LSFTCAN;
-	case 5:
-		return NETID_FORDSCP;
-	case 6:
-		return NETID_J1708;
-	case 7:
-		return NETID_AUX;
-	case 8:
-		return NETID_JVPW;
-	case 9:
-		return NETID_ISO;
-	case 10:
-		return NETID_ISOPIC;
-	case 11:
-		return NETID_MAIN51;
-	case 12:
-		return NETID_RED;
-	case 13:
-		return NETID_SCI;
-	case 14:
-		return NETID_ISO2;
-	case 15:
-		return NETID_ISO14230;
-	case 16:
-		return NETID_LIN;
-	case 17:
-		return NETID_ISO3;
-	case 18:
-		return NETID_HSCAN2;
-	case 19:
-		return NETID_HSCAN3;
-	case 20:
-		return NETID_ISO4;
-	case 21:
-		return NETID_LIN2;
-	case 22:
-		return NETID_LIN3;
-	case 23:
-		return NETID_LIN4;
-	case 24:
-		return NETID_MOST;
-	case 25:
-		return NETID_CGI;
-	case 26:
-		return NETID_I2C1;
-	case 27:
-		return NETID_SPI1;
-	case 28:
-		return NETID_FLEXRAY1A;
-	case 29:
-		return NETID_MOST25;
-	case 30:
-		return NETID_MOST50;
-	case 31:
-		return NETID_MOST150;
-	case 32:
-		return NETID_HSCAN4;
-	case 33:
-		return NETID_HSCAN5;
-	case 34:
-		return NETID_RS232;
-	case 35:
-		return NETID_UART;
-	case 36:
-		return NETID_UART2;
-	case 37:
-		return NETID_UART3;
-	case 38:
-		return NETID_UART4;
-	case 39:
-		return NETID_SWCAN2;
-	case 40:
-		return NETID_FLEXRAY1B;
-	case 41:
-		return NETID_FLEXRAY2A;
-	case 42:
-		return NETID_FLEXRAY2B;
-	case 43:
-		return NETID_LIN5;
-	case 44:
-		return NETID_ETHERNET;
-	case 45:
-		return NETID_ETHERNET_DAQ;
-	case 46:
-		return NETID_RED_APP_ERROR;
-	case 47:
-		return NETID_HSCAN6;
-	case 48:
-		return NETID_HSCAN7;
-	case 49:
-		return NETID_LIN6;
-	case 50:
-		return NETID_LSFTCAN2;
-	}
-}
-
-inline unsigned int GetVnetAgnosticNetid(size_t fullNetid)
+static inline unsigned int GetVnetAgnosticNetid(size_t fullNetid)
 {
 	if (IdIsSlaveARange1(fullNetid))
 	{
@@ -548,7 +172,7 @@ int LegacyDLLExport icsneoFindDevices(NeoDeviceEx *devs, int *devCount, unsigned
 
 	size_t Count = 0;
 
-	icsneoFindNeoDevices(NULL, Nd, &NumDevices);
+	icsneoFindNeoDevices(0, Nd, &NumDevices);
 
 	if (NumDevices > 0)
 	{
@@ -1018,14 +642,16 @@ int LegacyDLLExport icsneoGetSerialNumber(void *hObject, unsigned int *iSerialNu
 	return true;
 }
 
-int LegacyDLLExport icsneoEnableDOIPLine(void* hObject, bool enable) {
+int LegacyDLLExport icsneoEnableDOIPLine(void* hObject, bool enable)
+{
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;
 	return icsneo_setDigitalIO(device, ICSNEO_IO_ETH_ACTIVATION, 1, enable);
 }
 
-int LegacyDLLExport icsneoStartSockServer(void* hObject, int iPort) {
+int LegacyDLLExport icsneoStartSockServer(void* hObject, int iPort)
+{
 	// TODO Implement
 	return false;
 }
@@ -1134,37 +760,6 @@ int LegacyDLLExport icsneoOpenNeoDeviceByChannels(NeoDevice *pNeoDevice, void **
 	return false;
 }
 
-int LegacyDLLExport icsneoOpenDevice(NeoDeviceEx *pNeoDeviceEx,
-									 void **hObject,
-									 unsigned char *bNetworkIDs,
-									 int bConfigRead,
-									 int iOptions,
-									 OptionsOpenNeoEx *stOptionsOpenNeoEx,
-									 unsigned long reserved)
-{
-	if (pNeoDeviceEx == nullptr || hObject == nullptr)
-		return false;
-
-	neodevice_t *device;
-	try
-	{
-		device = &neodevices.at(uint64_t(pNeoDeviceEx->neoDevice.Handle) << 32 | pNeoDeviceEx->neoDevice.SerialNumber);
-	}
-	catch (std::out_of_range &e)
-	{
-		(void)e; // Unused
-		return false;
-	}
-
-	*hObject = device;
-	if (!icsneo_openDevice(device))
-		return false;
-
-	icsneo_setPollingMessageLimit(device, 20000);
-	icsneo_enableMessagePolling(device);
-	return icsneo_goOnline(device);
-}
-
 int LegacyDLLExport icsneoGetVCAN4Settings(void *hObject, SVCAN4Settings *pSettings, int iNumBytes)
 {
 	if (!icsneoValidateHObject(hObject))
@@ -1196,9 +791,7 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void *hObject, EPlasmaIonVnetCha
 		return 0;
 
 	if ((PlasmaIonVnetChannelMain != vnetSlot) && (ulDeviceType != NEODEVICE_PLASMA) && (ulDeviceType != NEODEVICE_ION))
-	{
 		return 0;
-	}
 
 	switch (ulDeviceType)
 	{
@@ -1415,17 +1008,8 @@ int LegacyDLLExport icsneoGetDLLFirmwareInfoEx(void *hObject, stAPIFirmwareInfo 
 
 int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short Len, void *pVoid)
 {
-	bool bCurrentSetting, bHSSWCANRate, bRetVal, bTermination, bFormat;
-	unsigned long *pTmp, Baud;
-	int iRetVal = 0, NetworkID;
-	ISO9141NetworkParms* pISOParms;
-	EPlasmaIonVnetChannel_t pos;
-
-	unsigned long *pTmp, Baud;
-
-	int iRetVal = 0, NetworkID;
-
-	ISO9141NetworkParms* pISOParms;
+	unsigned long *pTmp = nullptr;
+	int iRetVal = 0, iNumBytes = 0, NetworkID;
 
 	if (!icsneoValidateHObject(hObject))
 		return false;
@@ -1446,7 +1030,6 @@ int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short L
 
 	case J2534NVCMD_GetNetworkBaudRate:
 
-		double dBaud;
 		pTmp = (uint64_t *)&CmdBuf[1];
 		NetworkID = (uint16_t)*pTmp;
 		pTmp = (uint64_t *)&CmdBuf[5];
@@ -1482,7 +1065,6 @@ int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short L
 		NetworkID = (uint16_t)*pTmp;
 		pTmp = (uint64_t *)&CmdBuf[5];
 
-		pos = GetVnetPos(NetworkID);
 		switch (device->type)
 		{
 		case NEODEVICE_FIRE2:
@@ -1504,7 +1086,6 @@ int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short L
 		NetworkID = (uint16_t)*pTmp;
 		pTmp = (uint64_t *)&CmdBuf[5];
 
-		pos = GetVnetPos(NetworkID);
 		switch (device->type)
 		{
 		case NEODEVICE_FIRE2:
@@ -1521,7 +1102,7 @@ int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short L
 				else /*Termination OFF*/
 					Cs.termination_enables &= ~(1ull << CoremininetID);
 
-				iRetVal = icsneoSetFire2Settings(hObject, &Cs, iNumBytes, ConfigurationOptionDoNotSaveToEEPROM);
+				iRetVal = icsneoSetFire2Settings(hObject, &Cs, iNumBytes, 1 /* ConfigurationOptionDoNotSaveToEEPROM */);
 			}
 			break;
 		}
@@ -1575,14 +1156,6 @@ int LegacyDLLExport icsneoFirmwareUpdateRequired(void *hObject)
 	return false;
 }
 
-int LegacyDLLExport icsneoSetFDBitRate(void *hObject, int BitRate, int NetworkID)
-{
-	neodevice_t *device = (neodevice_t *)hObject;
-	if (!icsneo_setFDBaudrate(device, (uint16_t)NetworkID, BitRate))
-		return false;
-	return icsneo_settingsApply(device);
-}
-
 void LegacyDLLExport icsneoGetDLLVersionEx(unsigned long *dwMSVersion, unsigned long *dwLSVersion)
 {
 	return;
@@ -1607,10 +1180,6 @@ int LegacyDLLExport icsneoSerialNumberFromString(unsigned long *serial, char *da
 	return false;
 }
 
-int LegacyDLLExport icsneoEnableDOIPLine(void *hObject, bool bActivate)
-{
-	return false;
-}
 int LegacyDLLExport icsneoGetMiniportAdapterInfo(void *hObject, NETWORK_ADAPTER_INFO *aInfo)
 {
 	return false;
