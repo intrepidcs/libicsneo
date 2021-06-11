@@ -607,9 +607,8 @@ int LegacyDLLExport icsneoOpenNeoDevice(NeoDevice *pNeoDevice, void **hObject, u
 	{
 		device = &neodevices.at(uint64_t(pNeoDevice->Handle) << 32 | pNeoDevice->SerialNumber);
 	}
-	catch (std::out_of_range &e)
+	catch (const std::out_of_range&)
 	{
-		(void)e; // Unused
 		return false;
 	}
 
