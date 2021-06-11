@@ -8,7 +8,7 @@
 #else
 #define DLLExport __declspec(dllimport)
 #endif
-#define LegacyDLLExport _stdcall DLLExport
+#define LegacyDLLExport DLLExport _stdcall
 
 // MSVC does not have the ability to specify a destructor
 #define ICSNEO_DESTRUCTOR
