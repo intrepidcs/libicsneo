@@ -8,7 +8,8 @@ std::shared_ptr<VersionMessage> HardwareVersionPacket::DecodeMainToMessage(const
 
 	auto msg = std::make_shared<VersionMessage>(VersionMessage::MainChip);
 
-	optional<DeviceAppVersion>& version = msg->Versions.emplace_back();
+	msg->Versions.emplace_back();
+	optional<DeviceAppVersion>& version = msg->Versions.back();
 	version.emplace();
 	version->major = bytestream[1];
 	version->minor = bytestream[2];
@@ -24,7 +25,8 @@ std::shared_ptr<VersionMessage> HardwareVersionPacket::DecodeSecondaryToMessage(
 		bytesLeft--; // Disregard command byte
 	while(bytesLeft >= 3) {
 		const bool versionValid = bytestream[bytestream.size() - bytesLeft + 0];
-		optional<DeviceAppVersion>& version = msg->Versions.emplace_back();
+		msg->Versions.emplace_back();
+		optional<DeviceAppVersion>& version = msg->Versions.back();
 		if(versionValid) {
 			version.emplace();
 			version->major = bytestream[bytestream.size() - bytesLeft + 1];

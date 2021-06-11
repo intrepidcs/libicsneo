@@ -11,7 +11,7 @@ EXPORTS
 	icsneoStartSockServer @29
 	icsneoSendConfiguration @30
 	icsneoGetSerialNumber @32
-	icsneoFindAllUSBDevices @33
+	; icsneoFindAllUSBDevices @33
 	icsneoOpenPortEx @34
 	icsneoStopSockServer  @35
 	icsneoGetErrorInfo @36
@@ -20,41 +20,41 @@ EXPORTS
 	icsneoFindAllCOMDevices @39
 	icsneoGetISO15765Status @40
 	icsneoSetISO15765RxParameters @41
-	icsneoSetPerformanceParameters @42
+	; icsneoSetPerformanceParameters @42
 	icsneoEnableNetworkCom @ 43
-	icsneoGetPerformanceParameters @ 44
-	icsneoSetupISO15765HwSupport @ 45
+	; icsneoGetPerformanceParameters @ 44
+	; icsneoSetupISO15765HwSupport @ 45
 	icsneoWaitForRxMessagesWithTimeOut @ 46
-	icsneoGetErrorInfoW @47
-	icsneoGetOpenPorts @ 48
-	icsneoGetPerformanceTimer @ 49
-	icsneoFindFirstFreeDevice @ 50
+	; icsneoGetErrorInfoW @47
+	; icsneoGetOpenPorts @ 48
+	; icsneoGetPerformanceTimer @ 49
+	; icsneoFindFirstFreeDevice @ 50
 	icsneoJ2534Cmd @ 51
 
 	icsneoScriptStartFBlock @ 52
 	icsneoScriptStopFBlock @ 53
 	icsneoScriptGetFBlockStatus @ 54
-	icsneoScriptReadTxMessage @ 55
-	icsneoScriptWriteTxMessage @ 56
+	; icsneoScriptReadTxMessage @ 55
+	; icsneoScriptWriteTxMessage @ 56
 	icsneoScriptStart @ 57
 	icsneoScriptStop @ 58
 
 	icsneoFindNeoDevices @ 62
 	icsneoOpenNeoDevice @ 63
-	icsneoOpenNeoDeviceBySerialNumber @ 64
+	; icsneoOpenNeoDeviceBySerialNumber @ 64
 
 	icsneoForceFirmwareUpdate @ 65
 	icsneoGetHWFirmwareInfo @ 66
 	icsneoGetDLLFirmwareInfo @ 67
 
-	icsneoSetupISO15765HwSupportEx @ 68
+	; icsneoSetupISO15765HwSupportEx @ 68
 
 	icsneoSetBitRate  @ 69
 
-	icsneoReadSDCard  @ 72
+	; icsneoReadSDCard  @ 72
 	icsneoGetTimeStampForMsg @ 73
 
-	icsneoWriteSDCard  @ 76
+	; icsneoWriteSDCard  @ 76
 
 	icsneoScriptLoad @ 77
 	icsneoScriptClear @ 78
@@ -64,10 +64,10 @@ EXPORTS
 	icsneoScriptReadAppSignal @ 81
 	icsneoScriptWriteAppSignal @ 82
 
-	icsneoScriptReadISO15765_2_TxMessage @ 84
-	icsneoScriptWriteISO15765_2_TxMessage @ 85
-	icsneoScriptReadRxMessage @ 86
-	icsneoScriptWriteRxMessage @ 87
+	; icsneoScriptReadISO15765_2_TxMessage @ 84
+	; icsneoScriptWriteISO15765_2_TxMessage @ 85
+	; icsneoScriptReadRxMessage @ 86
+	; icsneoScriptWriteRxMessage @ 87
 
 	icsneoScriptGetScriptStatus @ 91
 
@@ -81,27 +81,27 @@ EXPORTS
 	icsneoGetDeviceParameters @99
 	icsneoSetDeviceParameters @100
 
-	icsneoSetReflashCallback @101
+	; icsneoSetReflashCallback @101
 
-	icsneoSetReflashDisplayCallbacks @102
-	icsneoClearReflashDisplayCallbacks @103
+	; icsneoSetReflashDisplayCallbacks @102
+	; icsneoClearReflashDisplayCallbacks @103
 
-	icsneoGetStoredFirmwareInfo @104
-	icsneoDownloadISO15765_2_TXScript @ 105
-	icsneoTransmitISO15765_2_Message @106
-	icsneoClearISO15765_2_TxScript @ 107
+	; icsneoGetStoredFirmwareInfo @104
+	; icsneoDownloadISO15765_2_TXScript @ 105
+	; icsneoTransmitISO15765_2_Message @106
+	; icsneoClearISO15765_2_TxScript @ 107
 
 	icsneoGetDLLVersionEx @108
 
-	icsneoEnable_ISO15765_2_By_Network @ 111
-	icsneoDisable_ISO15765_2 @ 112
-	icsneoSetISO15765_2_FlowCtlID @ 113
-	icsneoClearISO15765_2_FlowCtlID @ 114
-	icsneoClearAllISO15765_2_FlowCtlIDs @ 115
+	; icsneoEnable_ISO15765_2_By_Network @ 111
+	; icsneoDisable_ISO15765_2 @ 112
+	; icsneoSetISO15765_2_FlowCtlID @ 113
+	; icsneoClearISO15765_2_FlowCtlID @ 114
+	; icsneoClearAllISO15765_2_FlowCtlIDs @ 115
 
-	icsneoSetContext @ 116
-	icsneoFindNeoDevicesEx @ 117
-	icsneoOpenNeoDeviceEx @ 118
+	; icsneoSetContext @ 116
+	; icsneoFindNeoDevicesEx @ 117
+	; icsneoOpenNeoDeviceEx @ 118
 
 	icsneoFindRemoteNeoDevices @ 120
 	icsneoOpenRemoteNeoDevice  @ 121
@@ -113,14 +113,14 @@ EXPORTS
 	icsneoSetCANParameters @130
 	icsneoSetCANParametersPhilipsSJA1000 @131
 
-	icsneoSendTextApi @132
-	icsneoGetTextApi @133
-	icsneoScriptReadISO15765_2_RxMessage @ 134
-	icsneoScriptWriteISO15765_2_RxMessage @ 135
+	; icsneoSendTextApi @132
+	; icsneoGetTextApi @133
+	; icsneoScriptReadISO15765_2_RxMessage @ 134
+	; icsneoScriptWriteISO15765_2_RxMessage @ 135
 
-	icsneoScriptLoadReadBin @ 136
-	icsneoEnableCoreMiniUsbFilter @ 137
-	icsneoConfigureNetworkMsgQueue @ 138
+	; icsneoScriptLoadReadBin @ 136
+	; icsneoEnableCoreMiniUsbFilter @ 137
+	; icsneoConfigureNetworkMsgQueue @ 138
 	icsneoEnableBusVoltageMonitor @ 139
 	icsneoGetBusVoltage @ 140
 	icsneoEnableBitSmash @141
@@ -128,19 +128,19 @@ EXPORTS
 	icsneoReceiveHWTimeResponse @143
 	icsneoSendHWTimeRequest @144
 	icsneoSetUSBLatency     @145
-	icsneoLoadDefaultSettings @146
-	icsneoGetAllChipVersions @149
+	; icsneoLoadDefaultSettings @146
+	; icsneoGetAllChipVersions @149
 	icsneoSetBitRateEx  @ 150
-	icsneoScriptGetScriptStatusEx  @ 151
+	; icsneoScriptGetScriptStatusEx  @ 151
 	icsneoOpenNeoDeviceByChannels @ 152
-	icsneoGetChannelLockStatus @ 153
-	icsneoRequestEnterSleepMode @ 154
+	; icsneoGetChannelLockStatus @ 153
+	; icsneoRequestEnterSleepMode @ 154
 	icsneoEnableNetworkComEx @ 155
-	icsneoLockChannels @ 156
-	icsneoUnlockChannels @ 157
+	; icsneoLockChannels @ 156
+	; icsneoUnlockChannels @ 157
 
-	icsneoGetFireVnetSettings @ 160
-	icsneoSetFireVnetSettings @ 161
+	; icsneoGetFireVnetSettings @ 160
+	; icsneoSetFireVnetSettings @ 161
 
 	icsneoGetFire2Settings @ 162
 	icsneoSetFire2Settings @ 163
@@ -160,19 +160,19 @@ EXPORTS
 	icsneoGetVnetSimpleNetid @173
 	icsneoISO15765_ReceiveMessage @174
 	icsneoGetDLLFirmwareInfoEx @175
-	icsneoBase36enc @176
+	; icsneoBase36enc @176
 	icsneoGetRADStar2Settings @177
 	icsneoSetRADStar2Settings @178
 
-	icsneoGetBackupPowerEnabled @179
-	icsneoSetBackupPowerEnabled @180
-	icsneoGetBackupPowerReady @181
+	; icsneoGetBackupPowerEnabled @179
+	; icsneoSetBackupPowerEnabled @180
+	; icsneoGetBackupPowerReady @181
 	icsneoSerialNumberFromString @182
 	icsneoSerialNumberToString @183
 	icsneoISO15765_TransmitMessageEx @184
 
-	icsneoGetActiveVNETChannel @ 189
-	icsneoSetActiveVNETChannel @ 190
+	; icsneoGetActiveVNETChannel @ 189
+	; icsneoSetActiveVNETChannel @ 190
 
 	icsneoGetDeviceSettings @191
 	icsneoSetDeviceSettings @192
@@ -181,11 +181,11 @@ EXPORTS
 	icsneoGetVCAN412Settings @ 194
 	icsneoSetVCAN412Settings @ 195
 
-	icsneoGetVividCANSettings @ 196
-	icsneoSetVividCANSettings @ 197
-	icsneoFindNeoDevicesNewStyle @ 198
+	; icsneoGetVividCANSettings @ 196
+	; icsneoSetVividCANSettings @ 197
+	; icsneoFindNeoDevicesNewStyle @ 198
 
-	icsneoGetDeviceStatus @ 202
+	; icsneoGetDeviceStatus @ 202
 
 	icsneoFindDevices @ 203
 	icsneoOpenDevice @ 204
@@ -196,16 +196,16 @@ EXPORTS
 	icsneoGetVCAN4Settings @ 207
 	icsneoSetVCAN4Settings @ 208
 
-	icsneoReadWritePHYSettings @ 214
+	; icsneoReadWritePHYSettings @ 214
 
-	icsneoRequestDiskDetails @ 217
-	icsneoRequestDiskFormat @ 218
-	icsneoRequestDiskFormatProgress @ 219
-	icsneoRequestDiskFormatCancel @ 220
+	; icsneoRequestDiskDetails @ 217
+	; icsneoRequestDiskFormat @ 218
+	; icsneoRequestDiskFormatProgress @ 219
+	; icsneoRequestDiskFormatCancel @ 220
 
-	icsneoGetRADGigastarSettings @ 221
-	icsneoSetRADGigastarSettings @ 222
-	icsneoGetRADA2BSettings @ 223
-	icsneoSetRADA2BSettings @ 224
+	; icsneoGetRADGigastarSettings @ 221
+	; icsneoSetRADGigastarSettings @ 222
+	; icsneoGetRADA2BSettings @ 223
+	; icsneoSetRADA2BSettings @ 224
 
-	icsneoScriptClearRxMessage @225
+	; icsneoScriptClearRxMessage @225
