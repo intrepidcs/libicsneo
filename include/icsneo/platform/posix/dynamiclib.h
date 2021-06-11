@@ -9,8 +9,8 @@
 #include "icsneo/platform/posix/linux/dynamiclib.h"
 #endif
 
-// Nothing special is needed to export
-#define DLLExport
+#define DLLExport __attribute__((visibility("default")))
+#define LegacyDLLExport DLLExport
 
 // #ifndef ICSNEO_NO_AUTO_DESTRUCT
 // #define ICSNEO_DESTRUCTOR __attribute__((destructor));

@@ -84,6 +84,9 @@ bool icsneo_serialNumToString(uint32_t num, char* str, size_t* count) {
 }
 
 uint32_t icsneo_serialStringToNum(const char* str) {
+	if(!str)
+		return 0;
+
 	return Device::SerialStringToNum(str);
 }
 

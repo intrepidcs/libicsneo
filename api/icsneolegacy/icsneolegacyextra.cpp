@@ -14,11 +14,11 @@
 using namespace icsneo;
 
 extern "C" {
-extern int DLLExport icsneoValidateHObject(void* hObject);
-extern int DLLExport icsneoWaitForRxMessagesWithTimeOut(void* hObject, unsigned int iTimeOut);
+extern int LegacyDLLExport icsneoValidateHObject(void* hObject);
+extern int LegacyDLLExport icsneoWaitForRxMessagesWithTimeOut(void* hObject, unsigned int iTimeOut);
 }
 
-int icsneoWaitForRxMessagesWithTimeOut(void* hObject, unsigned int iTimeOut) {
+int LegacyDLLExport icsneoWaitForRxMessagesWithTimeOut(void* hObject, unsigned int iTimeOut) {
 	if(!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = (neodevice_t*)hObject;

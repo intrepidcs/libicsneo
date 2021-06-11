@@ -1965,6 +1965,7 @@ typedef enum _EDeviceSettingsType
 	DeviceECU_AVBSettingsType,
 	DeviceRADSuperMoonSettingsType,
 	DeviceRADMoon2SettingsType,
+	DeviceRADGigalogSettingsType,
 	//
 	// add new settings type here
 	// ...
@@ -2421,6 +2422,17 @@ typedef union {
 	icsFire2DeviceStatus fire2Status;
 	icsVcan4DeviceStatus vcan4Status;
 } icsDeviceStatus;
+
+typedef struct
+{
+	int8_t szName[128];				//Adaptor name -  ASCII Null terminated
+	int8_t szDeviceName[64];		//Device name	- ASCII Null terminated
+	uint32_t Status;				//Adaptor Status, 0 for disabled, 1 for enabled
+	uint8_t bMAC_Address[6];		// The Media Access Control (MAC) Address  of the Network interface in the PC that is to be connected to the vehicle.
+	uint8_t bIPV6_Address[16];		//The Ipv6 address assigned to the Network interface. No compressed or short form notation// If not available, all bytes are set to zero to imply the absence of an address.
+	uint8_t bIPV4_Address[4];		// The Ipv4 address assigned to the Network interface. If not available, all bytes are set to zero.
+} NETWORK_ADAPTER_INFO;
+
 #ifndef INTREPID_NO_CHECK_STRUCT_SIZE
 
 #if defined(__cplusplus) && (__cplusplus > 199711L)
