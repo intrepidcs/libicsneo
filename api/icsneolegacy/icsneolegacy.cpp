@@ -1024,7 +1024,7 @@ int LegacyDLLExport icsneoGetDLLFirmwareInfoEx(void *hObject, stAPIFirmwareInfo 
 
 int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short Len, void *pVoid)
 {
-	unsigned long *pTmp = nullptr;
+	uint64_t* pTmp = nullptr;
 	int iRetVal = 0, iNumBytes = 0, NetworkID;
 
 	if (!icsneoValidateHObject(hObject))
@@ -1045,15 +1045,18 @@ int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short L
 		break;
 
 	case J2534NVCMD_GetNetworkBaudRate:
-
+	{
 		pTmp = (uint64_t *)&CmdBuf[1];
 		NetworkID = (uint16_t)*pTmp;
 		pTmp = (uint64_t *)&CmdBuf[5];
 
 		//Ignoring 2G hardwares here - CmdBuf[9]
-		*pTmp = icsneo_getBaudrate(device, NetworkID);
+		int64_t ret = icsneo_getBaudrate(device, NetworkID);
+		if (ret < 0)
+			return false;
+		*pTmp = static_cast<uint64_t>(ret);
 		break;
-
+	}
 	case J2534NVCMD_SetCANFDRate:
 
 		pTmp = (uint64_t *)&CmdBuf[1];
