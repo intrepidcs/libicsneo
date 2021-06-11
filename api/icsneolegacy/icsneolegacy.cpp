@@ -166,25 +166,41 @@ static inline unsigned int GetVnetAgnosticNetid(size_t fullNetid)
 //Basic Functions
 int LegacyDLLExport icsneoFindDevices(NeoDeviceEx *devs, int *devCount, unsigned int *devTypes, unsigned int devTypeCount, POptionsFindNeoEx *POptionsFindNeoEx, unsigned int *zero)
 {
+	if (!devs)
+		return 0;
+
 	constexpr size_t MAX_DEVICES = 255;
 	NeoDevice Nd[MAX_DEVICES];
 	int NumDevices = MAX_DEVICES;
 
-	size_t Count = 0;
+	int Count = 0;
 
-	icsneoFindNeoDevices(0, Nd, &NumDevices);
-
-	if (NumDevices > 0)
-	{
-		for (const auto &element : Nd)
-			for (auto j = 0; j < devTypeCount; j++)
-				if (element.DeviceType == devTypes[j])
-					devs[Count++].neoDevice = element;
-
-		return 1;
-	}
-	else
+	if (!icsneoFindNeoDevices(0, Nd, &NumDevices))
 		return 0;
+
+	for (auto i = 0; i < NumDevices; i++)
+	{
+		if (devTypes && devTypeCount)
+		{
+			for (auto j = 0; j < devTypeCount; j++)
+			{
+				if (Nd[i].DeviceType == devTypes[j])
+				{
+					devs[Count++].neoDevice = Nd[i];
+					break;
+				}
+			}
+		}
+		else
+		{
+			devs[Count++].neoDevice = Nd[i];
+		}
+	}
+
+	if (devCount)
+		*devCount = Count;
+
+	return NumDevices > 0;
 }
 
 int LegacyDLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice *pNeoDevice, int *pNumDevices)
