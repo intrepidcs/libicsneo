@@ -166,41 +166,51 @@ static inline unsigned int GetVnetAgnosticNetid(size_t fullNetid)
 //Basic Functions
 int LegacyDLLExport icsneoFindDevices(NeoDeviceEx *devs, int *devCount, unsigned int *devTypes, unsigned int devTypeCount, POptionsFindNeoEx *POptionsFindNeoEx, unsigned int *zero)
 {
-	if (!devs)
+	if (!devs || !devCount)
 		return 0;
 
-	constexpr size_t MAX_DEVICES = 255;
-	NeoDevice Nd[MAX_DEVICES];
+	if (*devCount < 0 || *devCount > 255)
+		return 0;
+
+	// Find the devices without filtering by the device type
+	// We allow this to find more than the requested number,
+	// as we may filter out some devices.
+	constexpr const size_t MAX_DEVICES = 255;
+	NeoDevice foundDevices[MAX_DEVICES];
 	int NumDevices = MAX_DEVICES;
 
-	int Count = 0;
+	int filteredDeviceCount = 0;
 
-	if (!icsneoFindNeoDevices(0, Nd, &NumDevices))
+	if (!icsneoFindNeoDevices(0, foundDevices, &NumDevices))
 		return 0;
 
 	for (auto i = 0; i < NumDevices; i++)
 	{
+		// Check if the next device would overrun the user's buffer
+		// We check this up here since the documentation allows zero
+		// to be specified.
+		if (filteredDeviceCount >= *devCount)
+			break;
+
 		if (devTypes && devTypeCount)
 		{
 			for (auto j = 0; j < devTypeCount; j++)
 			{
-				if (Nd[i].DeviceType == devTypes[j])
+				if (foundDevices[i].DeviceType == devTypes[j])
 				{
-					devs[Count++].neoDevice = Nd[i];
+					devs[filteredDeviceCount++].neoDevice = foundDevices[i];
 					break;
 				}
 			}
 		}
 		else
 		{
-			devs[Count++].neoDevice = Nd[i];
+			devs[filteredDeviceCount++].neoDevice = foundDevices[i];
 		}
 	}
 
-	if (devCount)
-		*devCount = Count;
-
-	return NumDevices > 0;
+	*devCount = filteredDeviceCount;
+	return 1; // If the function succeeds but no devices are found 1 will still be returned and devCount will equal 0
 }
 
 int LegacyDLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice *pNeoDevice, int *pNumDevices)
