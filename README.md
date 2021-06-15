@@ -117,7 +117,7 @@ Building will require Microsoft Visual Studio 2017+ and CMake to be installed.
 Getting the dependencies is easiest with the Homebrew package manager. You will also need XCode installed. You can then install CMake, an up-to-date version of GCC or Clang, and `libusb-1.0`.
 ### Linux
 The dependencies are as follows
- - CMake 3.2 or above
+ - CMake 3.12 or above
  - GCC 4.7 or above, 4.8+ recommended
  - `libusb-1.0-0-dev`
  - `libpcap0.8-dev`
