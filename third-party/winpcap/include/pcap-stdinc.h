@@ -60,11 +60,13 @@
 
 #define caddr_t char*
 
+#ifdef __MSC_VER
 #if _MSC_VER < 1500
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
 #define strdup _strdup
 #endif
+#endif // __MSC_VER
 
 //#define inline __inline
 
