@@ -39,14 +39,14 @@ private:
 	public:
 		uint8_t uuid;
 		uint8_t macAddress[8];
-		std::string nameFromWinPCAP;
-		std::string descriptionFromWinPCAP;
+		std::string nameFromPCAP;
+		std::string descriptionFromPCAP;
 		std::string fullName;
 		pcap_t* fp = nullptr;
 		pcap_stat stats;
 	};
 	static std::vector<NetworkInterface> knownInterfaces;
-	NetworkInterface interface;
+	NetworkInterface iface;
 
 	class EthernetPacket {
 	public: // Don't worry about endian when setting fields, this is all taken care of in getBytestream
