@@ -33,7 +33,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	bool success = false;
 	// Calling pcap.findalldevs_ex too quickly can cause various errors. Retry a few times in this case.
 	for(auto retry = 0; retry < 10; retry++) {
-        auto ret = pcap.findalldevs_ex((char*)PCAP_SRC_IF_STRING, nullptr, &alldevs, errbuf);
+		auto ret = pcap.findalldevs_ex((char*)PCAP_SRC_IF_STRING, nullptr, &alldevs, errbuf);
 		if(ret == 0) {
 			success = true;
 			break;
@@ -69,48 +69,48 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 	}
 	
 	// aa->AdapterName constains a unique name of the interface like "{3B1D2791-435A-456F-8A7B-9CB0EEE5DAB3}"
-	// interfacevar.nameFromWinPCAP has "rpcap://\Device\NPF_{3B1D2791-435A-456F-8A7B-9CB0EEE5DAB3}"
+	// iface.nameFromWinPCAP has "rpcap://\Device\NPF_{3B1D2791-435A-456F-8A7B-9CB0EEE5DAB3}"
 	// We're comparing strings to match the Win32 info with the WinPCAP info
 	for(IP_ADAPTER_ADDRESSES* aa = (IP_ADAPTER_ADDRESSES*)adapterAddressBuffer.data(); aa != nullptr; aa = aa->Next) {
-        for(auto& interfacevar : interfaces) {
-			if(interfacevar.nameFromWinPCAP.find(aa->AdapterName) == std::string::npos)
+		for(auto& iface : interfaces) {
+			if(iface.nameFromWinPCAP.find(aa->AdapterName) == std::string::npos)
 				continue; // This is not the interface that corresponds
 
-			memcpy(interfacevar.macAddress, aa->PhysicalAddress, sizeof(interfacevar.macAddress));
-			interfacevar.nameFromWin32API = aa->AdapterName;
-			interfacevar.descriptionFromWin32API = converter.to_bytes(aa->Description);
-			interfacevar.friendlyNameFromWin32API = converter.to_bytes(aa->FriendlyName);
-			if(interfacevar.descriptionFromWin32API.find("LAN9512/LAN9514") != std::string::npos) {
+			memcpy(iface.macAddress, aa->PhysicalAddress, sizeof(iface.macAddress));
+			iface.nameFromWin32API = aa->AdapterName;
+			iface.descriptionFromWin32API = converter.to_bytes(aa->Description);
+			iface.friendlyNameFromWin32API = converter.to_bytes(aa->FriendlyName);
+			if(iface.descriptionFromWin32API.find("LAN9512/LAN9514") != std::string::npos) {
 				// This is an Ethernet EVB device
-				interfacevar.fullName = "Intrepid Ethernet EVB ( " + interfacevar.friendlyNameFromWin32API + " : " + interfacevar.descriptionFromWin32API + " )";
+				iface.fullName = "Intrepid Ethernet EVB ( " + iface.friendlyNameFromWin32API + " : " + iface.descriptionFromWin32API + " )";
 			} else {
-				interfacevar.fullName = interfacevar.friendlyNameFromWin32API + " : " + interfacevar.descriptionFromWin32API;
+				iface.fullName = iface.friendlyNameFromWin32API + " : " + iface.descriptionFromWin32API;
 			}
 		}
 	}
 
-    for(auto& interfacevar : interfaces) {
+	for(auto& iface : interfaces) {
 		bool exists = false;
 		for(auto& known : knownInterfaces)
-			if(memcmp(interfacevar.macAddress, known.macAddress, sizeof(interfacevar.macAddress)) == 0)
+			if(memcmp(iface.macAddress, known.macAddress, sizeof(iface.macAddress)) == 0)
 				exists = true;
 		if(!exists)
-            knownInterfaces.emplace_back(interfacevar);
+			knownInterfaces.emplace_back(iface);
 	}
 
 	constexpr auto openflags = (PCAP_OPENFLAG_MAX_RESPONSIVENESS | PCAP_OPENFLAG_NOCAPTURE_LOCAL);
 	for(size_t i = 0; i < knownInterfaces.size(); i++) {
-        auto& interfacevar = knownInterfaces[i];
-		if(interfacevar.fullName.length() == 0)
+		auto& iface = knownInterfaces[i];
+		if(iface.fullName.length() == 0)
 			continue; // Win32 did not find this interface in the previous step
 
-		interfacevar.fp = pcap.open(interfacevar.nameFromWinPCAP.c_str(), 1518, openflags, 1, nullptr, errbuf);
+		iface.fp = pcap.open(iface.nameFromWinPCAP.c_str(), 1518, openflags, 1, nullptr, errbuf);
 
-		if(interfacevar.fp == nullptr)
+		if(iface.fp == nullptr)
 			continue; // Could not open the interface
 
 		EthernetPacketizer::EthernetPacket requestPacket;
-		memcpy(requestPacket.srcMAC, interfacevar.macAddress, sizeof(requestPacket.srcMAC));
+		memcpy(requestPacket.srcMAC, iface.macAddress, sizeof(requestPacket.srcMAC));
 		requestPacket.payload.reserve(4);
 		requestPacket.payload = {
 			((1 << 4) | (uint8_t)Network::NetID::Main51), // Packet size of 1 on NETID_MAIN51
@@ -120,13 +120,13 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		requestPacket.payload.insert(requestPacket.payload.begin(), 0xAA);
 
 		auto bs = requestPacket.getBytestream();
-		pcap.sendpacket(interfacevar.fp, bs.data(), (int)bs.size());
+		pcap.sendpacket(iface.fp, bs.data(), (int)bs.size());
 
 		auto timeout = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(5);
 		while(std::chrono::high_resolution_clock::now() <= timeout) { // Wait up to 5ms for the response
 			struct pcap_pkthdr* header;
 			const uint8_t* data;
-			auto res = pcap.next_ex(interfacevar.fp, &header, &data);
+			auto res = pcap.next_ex(iface.fp, &header, &data);
 			if(res < 0) {
 				//std::cout << "pcapnextex failed with " << res << std::endl;
 				break;
@@ -137,7 +137,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 			EthernetPacketizer::EthernetPacket packet(data, header->caplen);
 			// Is this an ICS response packet (0xCAB2) from an ICS MAC, either to broadcast or directly to us?
 			if(packet.etherType == 0xCAB2 && packet.srcMAC[0] == 0x00 && packet.srcMAC[1] == 0xFC && packet.srcMAC[2] == 0x70 && (
-				memcmp(packet.destMAC, interfacevar.macAddress, sizeof(packet.destMAC)) == 0 ||
+				memcmp(packet.destMAC, iface.macAddress, sizeof(packet.destMAC)) == 0 ||
 				memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) == 0
 			)) {
 				/* We have received a packet from a device. We don't know if this is the device we're
@@ -169,8 +169,8 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 			}
 		}
 
-		pcap.close(interfacevar.fp);
-		interfacevar.fp = nullptr;
+		pcap.close(iface.fp);
+		iface.fp = nullptr;
 	}
 
 	return foundDevices;
@@ -183,8 +183,8 @@ bool PCAP::IsHandleValid(neodevice_handle_t handle) {
 
 PCAP::PCAP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice), pcap(PCAPDLL::getInstance()), ethPacketizer(err) {
 	if(IsHandleValid(device.handle)) {
-		interfacevar = knownInterfaces[(device.handle >> 24) & 0xFF];
-		interfacevar.fp = nullptr; // We're going to open our own connection to the interfacevar. This should already be nullptr but just in case.
+		iface = knownInterfaces[(device.handle >> 24) & 0xFF];
+		iface.fp = nullptr; // We're going to open our own connection to the interface. This should already be nullptr but just in case.
 
 		deviceMAC[0] = 0x00;
 		deviceMAC[1] = 0xFC;
@@ -193,7 +193,7 @@ PCAP::PCAP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(er
 		deviceMAC[4] = (device.handle >> 8) & 0xFF;
 		deviceMAC[5] = device.handle & 0xFF;
 		memcpy(ethPacketizer.deviceMAC, deviceMAC, 6);
-		memcpy(ethPacketizer.hostMAC, interfacevar.macAddress, 6);
+		memcpy(ethPacketizer.hostMAC, iface.macAddress, 6);
 	} else {
 		openable = false;
 	}
@@ -216,8 +216,8 @@ bool PCAP::open() {
 	}	
 
 	// Open the interface
-	interfacevar.fp = pcap.open(interfacevar.nameFromWinPCAP.c_str(), 65536, PCAP_OPENFLAG_MAX_RESPONSIVENESS | PCAP_OPENFLAG_NOCAPTURE_LOCAL, 50, nullptr, errbuf);
-	if(interfacevar.fp == nullptr) {
+	iface.fp = pcap.open(iface.nameFromWinPCAP.c_str(), 65536, PCAP_OPENFLAG_MAX_RESPONSIVENESS | PCAP_OPENFLAG_NOCAPTURE_LOCAL, 50, nullptr, errbuf);
+	if(iface.fp == nullptr) {
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
@@ -231,7 +231,7 @@ bool PCAP::open() {
 }
 
 bool PCAP::isOpen() {
-	return interfacevar.fp != nullptr;
+	return iface.fp != nullptr;
 }
 
 bool PCAP::close() {
@@ -246,8 +246,8 @@ bool PCAP::close() {
 	transmitThread.join();
 	closing = false;
 
-	pcap.close(interfacevar.fp);
-	interfacevar.fp = nullptr;
+	pcap.close(iface.fp);
+	iface.fp = nullptr;
 
 	uint8_t flush;
 	WriteOperation flushop;
@@ -263,7 +263,7 @@ void PCAP::readTask() {
 	const uint8_t* data;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!closing) {
-		auto readBytes = pcap.next_ex(interfacevar.fp, &header, &data);
+		auto readBytes = pcap.next_ex(iface.fp, &header, &data);
 		if(readBytes < 0) {
 			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 			break;
@@ -334,7 +334,7 @@ void PCAP::transmitTask() {
 		if(transmitQueueCV.wait_for(lk, std::chrono::milliseconds(100), [this] { return !!transmitQueue; }) && !closing && transmitQueue) {
 			pcap_send_queue* current = transmitQueue;
 			lk.unlock();
-			pcap.sendqueue_transmit(interfacevar.fp, current, 0);
+			pcap.sendqueue_transmit(iface.fp, current, 0);
 			{
 				std::lock_guard<std::mutex> lk2(transmitQueueMutex);
 				transmitQueue = nullptr;
