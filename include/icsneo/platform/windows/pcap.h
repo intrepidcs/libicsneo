@@ -59,7 +59,7 @@ private:
 		pcap_stat stats;
 	};
 	static std::vector<NetworkInterface> knownInterfaces;
-	NetworkInterface interfacevar;
+	NetworkInterface iface;
 };
 
 }
