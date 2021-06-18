@@ -9,7 +9,7 @@
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/communication/ethernetpacketizer.h"
 #include <string>
-
+#include <vector> 
 namespace icsneo {
 
 class PCAP : public Driver {
@@ -59,7 +59,7 @@ private:
 		pcap_stat stats;
 	};
 	static std::vector<NetworkInterface> knownInterfaces;
-	NetworkInterface interface;
+	NetworkInterface iface;
 };
 
 }

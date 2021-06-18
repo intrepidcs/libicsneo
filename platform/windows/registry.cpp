@@ -1,6 +1,7 @@
 #include "icsneo/platform/windows/registry.h"
 #include <codecvt>
 #include <vector>
+#include <locale>
 
 using namespace icsneo;
 
