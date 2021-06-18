@@ -7,8 +7,10 @@
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
-#ifndef __APPLE__
+#ifdef __linux__
 #include <netpacket/packet.h>
+#else
+#include <net/if_dl.h>
 #endif
 
 using namespace icsneo;
@@ -55,15 +57,23 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		pcap_addr* currentAddress = dev->addresses;
 		bool hasAddress = false;
 		while(!hasAddress && currentAddress != nullptr) {
-#ifndef __APPLE__
+#ifdef __linux__
 			if(currentAddress->addr && currentAddress->addr->sa_family == AF_PACKET) {
 				struct sockaddr_ll* s = (struct sockaddr_ll*)currentAddress->addr;
 				memcpy(netif.macAddress, s->sll_addr, sizeof(netif.macAddress));
 				hasAddress = true;
 				break;
 			}
-#else
-			//TODO: get adapter address on macOS
+#else // macOS and likely other BSDs
+			if(currentAddress->addr && currentAddress->addr->sa_family == AF_LINK) {
+				struct sockaddr_dl* s = (struct sockaddr_dl*)currentAddress->addr;
+				if(s->sdl_alen == 6 && s->sdl_alen + s->sdl_nlen < sizeof(s->sdl_data)) {
+					const uint8_t* mac = (uint8_t*)(s->sdl_data) + s->sdl_nlen;
+					memcpy(netif.macAddress, mac, sizeof(netif.macAddress));
+					hasAddress = true;
+					break;
+				}
+			}
 #endif
 			currentAddress = currentAddress->next;
 		}
@@ -91,7 +101,13 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		// 	continue; // Win32 did not find this interface in the previous step
 
 		errbuf[0] = '\0';
-		iface.fp = pcap_open_live(iface.nameFromPCAP.c_str(), 65536, 1, -1, errbuf);
+		iface.fp = pcap_open_live(iface.nameFromPCAP.c_str(), 65536, 1,
+#ifdef __linux__ // -1 is required for instant reporting of new packets
+			-1, // to_ms
+#else // macOS gives BIOCSRTIMEOUT for -1 and no packets for 0
+			0,
+#endif
+			errbuf);
 		// TODO Handle warnings
 		// if(strlen(errbuf) != 0) { // This means a warning
 		// 	std::cout << "Warning for " << iface.nameFromPCAP << " " << errbuf << std::endl;
@@ -209,13 +225,20 @@ bool PCAP::open() {
 		return false;
 
 	// Open the interface
-	iface.fp = pcap_open_live(iface.nameFromPCAP.c_str(), 65536, 1, -1, errbuf);
+	iface.fp = pcap_open_live(iface.nameFromPCAP.c_str(), 65536, 1,
+#ifdef __linux__ // -1 is required for instant reporting of new packets
+		-1, // to_ms
+#else // macOS gives BIOCSRTIMEOUT for -1 and no packets for 0
+		1,
+#endif
+		errbuf);
 	if(iface.fp == nullptr) {
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 		return false;
 	}
 
 	pcap_setnonblock(iface.fp, 0, errbuf);
+	pcap_set_immediate_mode(iface.fp, 1);
 
 	// Create threads
 	readThread = std::thread(&PCAP::readTask, this);
