@@ -38,7 +38,7 @@ public:
 				
 				auto device = foundDev.device;
 				device.serial[sn->deviceSerial.copy(device.serial, sizeof(device.serial))] = '\0';
-				found.push_back(std::make_shared<RADStar2ETH>(foundDev.device));
+				found.push_back(std::make_shared<RADStar2ETH>(device));
 				break;
 			}
 		}
