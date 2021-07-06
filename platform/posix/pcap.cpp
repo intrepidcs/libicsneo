@@ -105,7 +105,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 #ifdef __linux__ // -1 is required for instant reporting of new packets
 			-1, // to_ms
 #else // macOS gives BIOCSRTIMEOUT for -1 and no packets for 0
-			0,
+			1,
 #endif
 			errbuf);
 		// TODO Handle warnings
