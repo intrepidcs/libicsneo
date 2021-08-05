@@ -5,6 +5,7 @@
 #include "icsneo/platform/tchar.h"
 
 #include <stdint.h>
+#include <stddef.h>
 typedef uint8_t byte; // Typedef helper for the following include
 #include "icsneo/icsnVC40.h" // Definitions for structs
 
