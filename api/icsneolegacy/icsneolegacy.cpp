@@ -870,27 +870,33 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void *hObject, EPlasmaIonVnetCha
 	return 1;
 }
 
-int LegacyDLLExport icsneoSetDeviceSettings(void *hObject, SDeviceSettings *pSettings, int iNumBytes, int bSaveToEEPROM, EPlasmaIonVnetChannel_t vnetSlot)
+int LegacyDLLExport icsneoSetDeviceSettings(void* hObject, SDeviceSettings* pSettings, int iNumBytes, int bSaveToEEPROM, EPlasmaIonVnetChannel_t vnetSlot)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
 
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = (neodevice_t*)hObject;
+
+	const size_t offset = size_t(&pSettings->Settings) - size_t(pSettings);
 
 	if (bSaveToEEPROM)
-		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
-
-	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
+		return icsneo_settingsApplyStructure(device, &pSettings->Settings, iNumBytes - offset);
+	else
+		return icsneo_settingsApplyStructureTemporary(device, &pSettings->Settings, iNumBytes - offset);
 }
 
-int LegacyDLLExport icsneoGetDeviceSettings(void *hObject, SDeviceSettings *pSettings, int iNumBytes, EPlasmaIonVnetChannel_t vnetSlot)
+int LegacyDLLExport icsneoGetDeviceSettings(void* hObject, SDeviceSettings* pSettings, int iNumBytes, EPlasmaIonVnetChannel_t vnetSlot)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
 
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = (neodevice_t*)hObject;
 
-	return !!icsneo_settingsReadStructure(device, pSettings, iNumBytes);
+	if (icsneoGetDeviceSettingsType(hObject, vnetSlot, &pSettings->DeviceSettingType) == 0)
+		return false;
+
+	const size_t offset = size_t(&pSettings->Settings) - size_t(pSettings);
+	return !!icsneo_settingsReadStructure(device, &pSettings->Settings, iNumBytes - offset);
 }
 
 int LegacyDLLExport icsneoSetBitRateEx(void *hObject, unsigned long BitRate, int NetworkID, int iOptions)
