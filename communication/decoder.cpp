@@ -91,7 +91,8 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 		case Network::Type::Internal: {
 			switch(packet->network.getNetID()) {
 				case Network::NetID::Reset_Status: {
-					if(packet->data.size() < sizeof(HardwareResetStatusPacket)) {
+					// We can deal with not having the last two fields (voltage and temperature)
+					if(packet->data.size() < (sizeof(HardwareResetStatusPacket) - (sizeof(uint16_t) * 2))) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 						return false;
 					}
@@ -101,8 +102,6 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					msg->network = packet->network;
 					msg->mainLoopTime = data->main_loop_time_25ns * 25;
 					msg->maxMainLoopTime = data->max_main_loop_time_25ns * 25;
-					msg->busVoltage = data->busVoltage;
-					msg->deviceTemperature = data->deviceTemperature;
 					msg->justReset = data->status.just_reset;
 					msg->comEnabled = data->status.com_enabled;
 					msg->cmRunning = data->status.cm_is_running;
@@ -116,6 +115,10 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					msg->cmTooBig = data->status.cm_too_big;
 					msg->hidUsbState = data->status.hidUsbState;
 					msg->fpgaUsbState = data->status.fpgaUsbState;
+					if(packet->data.size() >= sizeof(HardwareResetStatusPacket)) {
+						msg->busVoltage = data->busVoltage;
+						msg->deviceTemperature = data->deviceTemperature;
+					}
 					result = msg;
 					return true;
 				}
