@@ -27,8 +27,9 @@ public:
 		if(!matchMessageType(message->type))
 			return false;
 
-		if(message->type == Message::Type::Frame) {
-			Frame& frame = *static_cast<Frame*>(message.get());
+		if(message->type == Message::Type::Frame || message->type == Message::Type::Main51 || 
+			message->type == Message::Type::RawMessage || message->type == Message::Type::ReadSettings) {
+			RawMessage& frame = *static_cast<RawMessage*>(message.get());
 			if(!matchNetworkType(frame.network.getType()))
 				return false;
 			if(!matchNetID(frame.network.getNetID()))
