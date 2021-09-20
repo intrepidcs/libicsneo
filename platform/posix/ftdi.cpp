@@ -185,6 +185,12 @@ bool FTDI::FTDIContext::closeDevice() {
 	return true;
 }
 
+bool FTDI::ErrorIsDisconnection(int errorCode) {
+	return errorCode == LIBUSB_ERROR_NO_DEVICE ||
+		errorCode == LIBUSB_ERROR_PIPE ||
+		errorCode == LIBUSB_ERROR_IO;
+}
+
 void FTDI::readTask() {
 	constexpr size_t READ_BUFFER_SIZE = 8;
 	uint8_t readbuf[READ_BUFFER_SIZE];
@@ -192,7 +198,7 @@ void FTDI::readTask() {
 	while(!closing && !isDisconnected()) {
 		auto readBytes = ftdi.read(readbuf, READ_BUFFER_SIZE);
 		if(readBytes < 0) {
-			if(readBytes == LIBUSB_ERROR_NO_DEVICE || readBytes == LIBUSB_ERROR_PIPE) {
+			if(ErrorIsDisconnection(readBytes)) {
 				if(!isDisconnected()) {
 					disconnected = true;
 					report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
@@ -215,7 +221,7 @@ void FTDI::writeTask() {
 		while(offset < writeOp.bytes.size()) {
 			auto writeBytes = ftdi.write(writeOp.bytes.data() + offset, (int)writeOp.bytes.size() - offset);
 			if(writeBytes < 0) {
-				if(writeBytes == LIBUSB_ERROR_NO_DEVICE || writeBytes == LIBUSB_ERROR_PIPE) {
+				if(ErrorIsDisconnection(writeBytes)) {
 					if(!isDisconnected()) {
 						disconnected = true;
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);

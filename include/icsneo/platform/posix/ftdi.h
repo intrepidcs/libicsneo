@@ -54,6 +54,7 @@ private:
 
 	static std::vector<std::tuple<int, std::string>> handles;
 
+	static bool ErrorIsDisconnection(int errorCode);
 	void readTask();
 	void writeTask();
 	bool openable; // Set to false in the constructor if the object has not been found in searchResultDevices
