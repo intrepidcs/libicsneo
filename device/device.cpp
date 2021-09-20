@@ -246,7 +246,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 				// No heartbeat received, request a status
 				com->sendCommand(Command::RequestStatusUpdate);
 				// The response should come back quickly if the com is quiet
-				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 				// Check if we got a message, and if not, if settings are being applied
 				if(!receivedMessage && !heartbeatSuppressed()) {
 					if(!stopHeartbeatThread && !isDisconnected())
