@@ -203,6 +203,7 @@ target_include_directories(icsneocpp
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 		${LIBICSNEO_EXTENSION_INCLUDE_PATHS}
+		${LIBUSB_INCLUDE_DIR}
 )
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
@@ -220,7 +221,6 @@ if(NOT WIN32)
 	set(FTDIPP OFF CACHE INTERNAL "")
 	set(FTDI_EEPROM OFF CACHE INTERNAL "")
 	add_subdirectory(third-party/libftdi)
-	include_directories(${LIBUSB_INCLUDE_DIR})
 endif(NOT WIN32)
 
 # winpcap
