@@ -289,6 +289,7 @@ if(NOT WIN32)
 	target_link_libraries(icsneocpp PUBLIC ftdi1-static)
 	target_link_libraries(icsneocpp PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 	find_package(PCAP REQUIRED)
+	target_include_directories(icsneocpp PUBLIC ${PCAP_INCLUDE_DIR})
 	target_link_libraries(icsneocpp PUBLIC ${PCAP_LIBRARY})
 endif()
 
