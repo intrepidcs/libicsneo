@@ -369,6 +369,7 @@ private:
 	void enforcePollingMessageLimit();
 
 	std::atomic<bool> stopHeartbeatThread{false};
+	std::mutex heartbeatMutex;
 	std::thread heartbeatThread;
 };
 

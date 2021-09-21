@@ -242,19 +242,34 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		while(!stopHeartbeatThread) {
 			// Wait for 110ms for a possible heartbeat
 			std::this_thread::sleep_for(std::chrono::milliseconds(110));
-			if(!receivedMessage && !heartbeatSuppressed()) {
+			if(receivedMessage) {
+				receivedMessage = false;
+			} else {
+				// Some communication, such as the bootloader and extractor interfaces, must
+				// redirect the input stream from the device as it will no longer be in the
+				// packet format we expect here. As a result, status updates will not reach
+				// us here and suppressDisconnects() must be used. We don't want to request
+				// a status and then redirect the stream, as we'll then be polluting an
+				// otherwise quiet stream. This lock makes sure suppressDisconnects() will
+				// block until we've either gotten our status update or disconnected from
+				// the device.
+				std::lock_guard lk(heartbeatMutex);
+				if(heartbeatSuppressed())
+					continue;
+
 				// No heartbeat received, request a status
 				com->sendCommand(Command::RequestStatusUpdate);
 				// The response should come back quickly if the com is quiet
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 				// Check if we got a message, and if not, if settings are being applied
-				if(!receivedMessage && !heartbeatSuppressed()) {
+				if(receivedMessage) {
+					receivedMessage = false;
+				} else {
 					if(!stopHeartbeatThread && !isDisconnected())
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 					break;
 				}
 			}
-			receivedMessage = false;
 		}
 
 		com->removeMessageCallback(messageReceivedCallbackID);
@@ -663,8 +678,9 @@ optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 }
 
 Lifetime Device::suppressDisconnects() {
+	std::lock_guard lk(heartbeatMutex);
 	heartbeatSuppressedByUser++;
-	return Lifetime([this] { heartbeatSuppressedByUser--; });
+	return Lifetime([this] { std::lock_guard lk2(heartbeatMutex); heartbeatSuppressedByUser--; });
 }
 
 void Device::addExtension(std::shared_ptr<DeviceExtension>&& extension) {
