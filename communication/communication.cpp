@@ -79,6 +79,21 @@ bool Communication::sendCommand(Command cmd, std::vector<uint8_t> arguments) {
 	return sendPacket(packet);
 }
 
+bool Communication::sendCommand(ExtendedCommand cmd, std::vector<uint8_t> arguments) {
+	const auto size = arguments.size();
+	if (size > std::numeric_limits<uint16_t>::max())
+		return false;
+
+	arguments.insert(arguments.begin(), {
+		uint8_t(uint16_t(cmd) & 0xff),
+		uint8_t((uint16_t(cmd) >> 8) & 0xff),
+		uint8_t(size & 0xff),
+		uint8_t((size >> 8) & 0xff)
+	});
+
+	return sendCommand(Command::Extended, arguments);
+}
+
 bool Communication::redirectRead(std::function<void(std::vector<uint8_t>&&)> redirectTo) {
 	if(redirectingRead)
 		return false;

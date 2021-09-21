@@ -22,7 +22,19 @@ enum class Command : uint8_t {
 	RequestBitSmash = 0xDC, // Previously known as RED_CMD_CM_BITSMASH
     GetVBattReq = 0xDF, // Previously known as RED_CMD_VBATT_REQUEST
 	MiscControl = 0xE7,
+	Extended = 0xF0,
 	FlexRayControl = 0xF3
+};
+
+enum class ExtendedCommand : uint16_t {
+	GetDiskDetails = 0x0010,
+	DiskFormatStart = 0x0011,
+	DiskFormatCancel = 0x0012,
+	DiskFormatProgress = 0x0013,
+	DiskFormatUpdate = 0x0014,
+	Extract = 0x0015,
+	StartDHCPServer = 0x0016,
+	StopDHCPServer = 0x0017,
 };
 
 }

@@ -52,6 +52,7 @@ public:
 
 	virtual bool sendCommand(Command cmd, bool boolean) { return sendCommand(cmd, std::vector<uint8_t>({ (uint8_t)boolean })); }
 	virtual bool sendCommand(Command cmd, std::vector<uint8_t> arguments = {});
+	bool sendCommand(ExtendedCommand cmd, std::vector<uint8_t> arguments = {});
 	bool getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	std::shared_ptr<SerialNumberMessage> getSerialNumberSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	optional< std::vector< optional<DeviceAppVersion> > > getVersionsSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
