@@ -297,24 +297,30 @@ endif()
 if(LIBICSNEO_BUILD_TESTS)
 	if(WIN32)
 		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-	endif()	
+	endif()
 
-	add_subdirectory(third-party/googletest-master)
-	
+	if (NOT TARGET gtest)
+		add_subdirectory(third-party/googletest-master)
+	endif()
+
 	if (CMAKE_VERSION VERSION_LESS 2.8.11)
 		include_directories("${gtest_SOURCE_DIR}/include")
 	endif()
-	
-	add_executable(runTests test/main.cpp test/eventmanagertest.cpp)
-	
-	target_link_libraries(runTests gtest gtest_main)
-	target_link_libraries(runTests icsneocpp)
-	
-	target_include_directories(runTests PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-		
+
+	add_executable(libicsneo-tests
+		test/main.cpp
+		test/eventmanagertest.cpp
+		test/ethernetpacketizertest.cpp
+	)
+
+	target_link_libraries(libicsneo-tests gtest gtest_main)
+	target_link_libraries(libicsneo-tests icsneocpp)
+
+	target_include_directories(libicsneo-tests PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+
 	enable_testing()
-	
-	add_test(NAME testSuite COMMAND runTests)
+
+	add_test(NAME libicsneo-test-suite COMMAND libicsneo-tests)
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
