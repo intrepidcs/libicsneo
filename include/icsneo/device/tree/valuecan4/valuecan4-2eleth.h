@@ -48,6 +48,12 @@ public:
 
 	bool currentDriverSupportsDFU() const override { return false; }
 
+protected:
+	void setupPacketizer(Packetizer& packetizer) override {
+		ValueCAN4_2EL::setupPacketizer(packetizer);
+		packetizer.align16bit = false;
+	}
+
 private:
 	ValueCAN4_2EL_ETH(neodevice_t neodevice) : ValueCAN4_2EL(neodevice) {
 		initialize<PCAP, ValueCAN4_2ELSettings>();
