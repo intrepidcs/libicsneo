@@ -18,6 +18,8 @@ namespace icsneo {
  */
 class EthernetPacketizer {
 public:
+	static const size_t MaxPacketLength;
+
 	EthernetPacketizer(device_eventhandler_t report) : report(report) {}
 
 	/**
@@ -25,7 +27,7 @@ public:
 	 * outputDown to get the results. Passing in multiple
 	 * packets may result in better packing.
 	 */
-	void inputDown(std::vector<uint8_t> bytes);
+	void inputDown(std::vector<uint8_t> bytes, bool first = true);
 	std::vector< std::vector<uint8_t> > outputDown();
 
 	/**
@@ -66,9 +68,11 @@ private:
 	uint16_t sequenceDown = 0;
 
 	std::vector<uint8_t> processedUpBytes;
-	std::vector< std::vector<uint8_t> > processedDownPackets;
+	std::vector<EthernetPacket> processedDownPackets;
 
 	device_eventhandler_t report;
+
+	EthernetPacket& newSendPacket(bool first);
 };
 
 }

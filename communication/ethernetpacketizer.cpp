@@ -2,41 +2,61 @@
 #include <algorithm>
 #include <iterator>
 #include <cstring>
+#include <cassert>
 
 using namespace icsneo;
 
-#define MAX_PACKET_LEN (1490) // MTU - overhead
-
+const size_t EthernetPacketizer::MaxPacketLength = 1490; // MTU - overhead
 static const uint8_t BROADCAST_MAC[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
-void EthernetPacketizer::inputDown(std::vector<uint8_t> bytes) {
-	EthernetPacket sendPacket;
-	std::copy(std::begin(hostMAC), std::end(hostMAC), std::begin(sendPacket.srcMAC));
-	std::copy(std::begin(deviceMAC), std::end(deviceMAC), std::begin(sendPacket.destMAC));
+EthernetPacketizer::EthernetPacket& EthernetPacketizer::newSendPacket(bool first) {
+	processedDownPackets.emplace_back();
+	EthernetPacket& ret = processedDownPackets.back();
+	if(first) {
+		ret.packetNumber = sequenceDown++;
+	} else {
+		ret.firstPiece = false;
+		if(processedDownPackets.size() > 1)
+			ret.packetNumber = (processedDownPackets.rbegin() + 1)->packetNumber;
+		else
+			assert(false); // This should never be called with !first if there are no packets in the queue
+	}
+	std::copy(std::begin(hostMAC), std::end(hostMAC), std::begin(ret.srcMAC));
+	std::copy(std::begin(deviceMAC), std::end(deviceMAC), std::begin(ret.destMAC));
+	return ret;
+}
 
-	sendPacket.packetNumber = sequenceDown++;
-	sendPacket.payload = std::move(bytes);
+void EthernetPacketizer::inputDown(std::vector<uint8_t> bytes, bool first) {
+	EthernetPacket* sendPacket = nullptr;
+	if(first && !processedDownPackets.empty()) {
+		// We have some packets already, let's see if we can add this to the last one
+		if(processedDownPackets.back().payload.size() + bytes.size() <= MaxPacketLength)
+			sendPacket = &processedDownPackets.back();
+	}
+
+	if(sendPacket == nullptr)
+		sendPacket = &newSendPacket(first);
+
+	if(sendPacket->payload.empty())
+		sendPacket->payload = std::move(bytes);
+	else
+		sendPacket->payload.insert(sendPacket->payload.end(), bytes.begin(), bytes.end());
 
 	// Split packets larger than MTU
 	std::vector<uint8_t> extraData;
-	if(sendPacket.payload.size() > MAX_PACKET_LEN) {
-		extraData.insert(extraData.end(), sendPacket.payload.begin() + MAX_PACKET_LEN, sendPacket.payload.end());
-		sendPacket.payload.resize(MAX_PACKET_LEN);
-		sendPacket.lastPiece = false;
-	}
-
-	processedDownPackets.push_back(sendPacket.getBytestream());
-
-	if(!extraData.empty()) {
-		sendPacket.payload = std::move(extraData);
-		sendPacket.firstPiece = false;
-		sendPacket.lastPiece = true;
-		processedDownPackets.push_back(sendPacket.getBytestream());
+	if(sendPacket->payload.size() > MaxPacketLength) {
+		extraData.insert(extraData.end(), sendPacket->payload.begin() + MaxPacketLength, sendPacket->payload.end());
+		sendPacket->payload.resize(MaxPacketLength);
+		sendPacket->lastPiece = false;
+		inputDown(std::move(extraData), false);
 	}
 }
 
 std::vector< std::vector<uint8_t> > EthernetPacketizer::outputDown() {
-	std::vector< std::vector<uint8_t> > ret = std::move(processedDownPackets);
+	std::vector< std::vector<uint8_t> > ret;
+	ret.reserve(processedDownPackets.size());
+	for(auto&& packet : std::move(processedDownPackets))
+		ret.push_back(packet.getBytestream());
 	processedDownPackets.clear();
 	return ret;
 }
