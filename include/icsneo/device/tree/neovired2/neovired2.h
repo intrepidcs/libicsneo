@@ -77,6 +77,11 @@ protected:
 		encoder.supportCANFD = true;
 	}
 
+	void setupPacketizer(Packetizer& packetizer) override {
+		Device::setupPacketizer(packetizer);
+		packetizer.align16bit = false;
+	}
+
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);

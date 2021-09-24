@@ -57,6 +57,11 @@ protected:
 		// TODO Check firmware version, old firmwares will reset Ethernet settings on settings send
 		ssettings.readonly = true;
 	}
+
+	void setupPacketizer(Packetizer& packetizer) override {
+		NeoVIFIRE2::setupPacketizer(packetizer);
+		packetizer.align16bit = false;
+	}
 };
 
 }
