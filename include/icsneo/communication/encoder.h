@@ -22,6 +22,8 @@ public:
 	bool encode(const Packetizer& packetizer, std::vector<uint8_t>& result, Command cmd, std::vector<uint8_t> arguments = {});
 
 	bool supportCANFD = false;
+	bool supportEthPhy = false;
+
 private:
 	device_eventhandler_t report;
 };

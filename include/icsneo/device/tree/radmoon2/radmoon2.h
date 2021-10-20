@@ -67,6 +67,8 @@ public:
 		return false;
 	}
 
+	bool getEthPhyRegControlSupported() const override { return true; }
+
 protected:
 	RADMoon2(neodevice_t neodevice) : Device(neodevice) {
 		initialize<FTDI3, RADMoon2Settings>();
@@ -78,6 +80,11 @@ protected:
 		Device::setupPacketizer(packetizer);
 		packetizer.disableChecksum = true;
 		packetizer.align16bit = false;
+	}
+
+	virtual void setupEncoder(Encoder& encoder) override {
+		Device::setupEncoder(encoder);
+		encoder.supportEthPhy = true;
 	}
 
 	void setupDecoder(Decoder& decoder) override {

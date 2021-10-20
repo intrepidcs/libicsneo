@@ -33,11 +33,18 @@ public:
 		return supportedNetworks;
 	}
 
+	bool getEthPhyRegControlSupported() const override { return true; }
+
 protected:
 	RADMoonDuo(neodevice_t neodevice) : Device(neodevice) {
 		initialize<CDCACM, RADMoonDuoSettings>();
 		productId = PRODUCT_ID;
 		getWritableNeoDevice().type = DEVICE_TYPE;
+	}
+
+	virtual void setupEncoder(Encoder& encoder) override {
+		Device::setupEncoder(encoder);
+		encoder.supportEthPhy = true;
 	}
 
 	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
@@ -49,6 +56,7 @@ protected:
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	bool requiresVehiclePower() const override { return false; }
+
 };
 
 }

@@ -12,6 +12,7 @@
 #include "icsneo/communication/packet/flexraypacket.h"
 #include "icsneo/communication/packet/iso9141packet.h"
 #include "icsneo/communication/packet/versionpacket.h"
+#include "icsneo/communication/packet/ethphyregpacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -261,6 +262,15 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					// We did not get a successful response, so the payload is all of the data
 					msg->data.insert(msg->data.begin(), packet->data.begin(), packet->data.end());
 					result = msg;
+					return true;
+				}
+				case Network::NetID::EthPHYControl: {
+					result = HardwareEthernetPhyRegisterPacket::DecodeToMessage(packet->data, report);
+					if(!result)
+					{
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
+						return false;
+					}
 					return true;
 				}
 				default:

@@ -129,11 +129,13 @@ endforeach()
 set(SRC_FILES
 	communication/message/flexray/control/flexraycontrolmessage.cpp
 	communication/message/neomessage.cpp
+	communication/message/ethphymessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/ethernetpacket.cpp
 	communication/packet/versionpacket.cpp
 	communication/packet/iso9141packet.cpp
+	communication/packet/ethphyregpacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
 	communication/ethernetpacketizer.cpp

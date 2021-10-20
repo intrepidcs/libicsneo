@@ -117,6 +117,7 @@ public:
 		HSCAN7 = 97,
 		LIN6 = 98,
 		LSFTCAN2 = 99,
+		EthPHYControl = 239,
 		FlexRayControl = 243,
 		HW_COM_Latency_Test = 512,
 		DeviceStatus = 513,
@@ -270,6 +271,7 @@ public:
 			case NetID::FlexRayControl:
 			case NetID::Main51:
 			case NetID::ReadSettings:
+			case NetID::EthPHYControl:
 				return Type::Internal;
 			case NetID::Invalid:
 			case NetID::Any:
@@ -504,6 +506,8 @@ public:
 				return "LIN 6";
 			case NetID::LSFTCAN2:
 				return "LSFTCAN 2";
+			case NetID::EthPHYControl:
+				return "Ethernet PHY Register Control";
 			case NetID::FlexRayControl:
 				return "FlexRay Control";
 			case NetID::HW_COM_Latency_Test:
@@ -902,6 +906,7 @@ private:
 #define ICSNEO_NETID_HSCAN7 97
 #define ICSNEO_NETID_LIN6 98
 #define ICSNEO_NETID_LSFTCAN2 99
+#define ICSNEO_NETID_ETH_PHY_CONTROL 239
 #define ICSNEO_NETID_FLEXRAY_CONTROL 243
 #define ICSNEO_NETID_HW_COM_LATENCY_TEST 512
 #define ICSNEO_NETID_DEVICE_STATUS 513

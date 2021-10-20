@@ -40,10 +40,13 @@ public:
 		productId = PRODUCT_ID;
 	}
 
+	bool getEthPhyRegControlSupported() const override { return true; }
+
 protected:
 	virtual void setupEncoder(Encoder& encoder) override {
 		Device::setupEncoder(encoder);
 		encoder.supportCANFD = true;
+		encoder.supportEthPhy = true;
 	}
 
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {

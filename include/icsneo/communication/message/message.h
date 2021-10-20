@@ -26,6 +26,7 @@ public:
 		DeviceVersion = 0x8004,
 		Main51 = 0x8005,
 		FlexRayControl = 0x8006,
+		EthernetPhyRegister = 0x8007,
 	};
 
 	Message(Type t) : type(t) {}

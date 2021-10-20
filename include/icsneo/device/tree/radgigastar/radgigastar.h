@@ -16,6 +16,8 @@ public:
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
 
+	bool getEthPhyRegControlSupported() const override { return true; }
+
 protected:
 	RADGigastar(neodevice_t neodevice) : Device(neodevice) {
 		getWritableNeoDevice().type = DEVICE_TYPE;
@@ -35,6 +37,7 @@ protected:
 	void setupEncoder(Encoder& encoder) override {
 		Device::setupEncoder(encoder);
 		encoder.supportCANFD = true;
+		encoder.supportEthPhy = true;
 	}
 
 	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {

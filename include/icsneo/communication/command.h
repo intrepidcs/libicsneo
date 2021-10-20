@@ -23,7 +23,8 @@ enum class Command : uint8_t {
     GetVBattReq = 0xDF, // Previously known as RED_CMD_VBATT_REQUEST
 	MiscControl = 0xE7,
 	Extended = 0xF0,
-	FlexRayControl = 0xF3
+	FlexRayControl = 0xF3,
+	PHYControlRegisters = 0xEF
 };
 
 enum class ExtendedCommand : uint16_t {

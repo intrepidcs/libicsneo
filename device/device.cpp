@@ -3,6 +3,7 @@
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/extensions/deviceextension.h"
+#include "icsneo/platform/optional.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -786,4 +787,35 @@ APIEvent::Type Device::getCommunicationNotEstablishedError() {
 void Device::updateLEDState() {
 	std::vector<uint8_t> args {(uint8_t) ledState};
 	com->sendCommand(Command::UpdateLEDState, args);
+}
+
+optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout) {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+	if(!getEthPhyRegControlSupported()) {
+		report(APIEvent::Type::EthPhyRegisterControlNotAvailable, APIEvent::Severity::Error);
+		return nullopt;
+	}
+	if(!isOnline()) {
+		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	std::vector<uint8_t> bytes;
+	HardwareEthernetPhyRegisterPacket::EncodeFromMessage(message, bytes, report);
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, bytes](){ return com->sendCommand(Command::PHYControlRegisters, bytes); },
+		std::make_shared<MessageFilter>(Network::NetID::EthPHYControl), timeout);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return nullopt;
+	}
+	auto retMsg = std::static_pointer_cast<EthPhyMessage>(response);
+	if(!retMsg) {
+		return nullopt;
+	}
+	return make_optional<EthPhyMessage>(*retMsg);
 }

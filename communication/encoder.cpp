@@ -4,6 +4,7 @@
 #include "icsneo/communication/packet/ethernetpacket.h"
 #include "icsneo/communication/packet/iso9141packet.h"
 #include "icsneo/communication/packet/canpacket.h"
+#include "icsneo/communication/packet/ethphyregpacket.h"
 
 using namespace icsneo;
 
@@ -126,6 +127,21 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 				m51msg->data.insert(m51msg->data.begin(), { uint8_t(m51msg->command) });
 				shortFormat = true;
 			}
+			break;
+		}
+		case Message::Type::EthernetPhyRegister: {
+			if(!supportEthPhy) {
+				report(APIEvent::Type::EthPhyRegisterControlNotAvailable, APIEvent::Severity::Error);
+				return false;
+			}
+			auto ethPhyMessage = std::dynamic_pointer_cast<EthPhyMessage>(message);
+			if(!ethPhyMessage) {
+				report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+				return false;
+			}
+			if(!HardwareEthernetPhyRegisterPacket::EncodeFromMessage(*ethPhyMessage, result, report))
+				return false;
+			break;
 		}
 		break;
 	}

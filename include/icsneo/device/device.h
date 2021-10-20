@@ -24,6 +24,7 @@
 #include "icsneo/communication/message/resetstatusmessage.h"
 #include "icsneo/device/extensions/flexray/controller.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
+#include "icsneo/communication/message/ethphymessage.h"
 #include "icsneo/third-party/concurrentqueue/concurrentqueue.h"
 #include "icsneo/platform/optional.h"
 #include "icsneo/platform/nodiscard.h"
@@ -223,6 +224,14 @@ public:
 	virtual bool currentDriverSupportsDFU() const { return true; }
 
 	const device_eventhandler_t& getEventHandler() const { return report; }
+
+	/**
+	 * Tell whether the current device supports reading and writing
+	 * Ethernet PHY registers through MDIO.
+	 */
+	virtual bool getEthPhyRegControlSupported() const { return false; }
+
+	optional<EthPhyMessage> sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	std::shared_ptr<Communication> com;
 	std::unique_ptr<IDeviceSettings> settings;
