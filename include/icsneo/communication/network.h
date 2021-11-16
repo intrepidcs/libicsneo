@@ -41,7 +41,7 @@ public:
 		RED_EXT_MEMORYREAD = 20,
 		RED_INT_MEMORYREAD = 21,
 		RED_DFLASH_READ = 22,
-		RED_SDCARD_READ = 23,
+		NeoMemorySDRead = 23, // Response from NeoMemory (MemoryTypeSD)
 		CAN_ERRBITS = 24,
 		RED_DFLASH_WRITE_DONE = 25,
 		RED_WAVE_CAN1_LOGICAL = 26,
@@ -272,6 +272,7 @@ public:
 			case NetID::Main51:
 			case NetID::ReadSettings:
 			case NetID::EthPHYControl:
+			case NetID::NeoMemorySDRead:
 				return Type::Internal;
 			case NetID::Invalid:
 			case NetID::Any:
@@ -360,8 +361,8 @@ public:
 				return "RED_INT_MEMORYREAD";
 			case NetID::RED_DFLASH_READ:
 				return "RED_DFLASH_READ";
-			case NetID::RED_SDCARD_READ:
-				return "RED_SDCARD_READ";
+			case NetID::NeoMemorySDRead:
+				return "NeoMemorySDRead";
 			case NetID::CAN_ERRBITS:
 				return "CAN_ERRBITS";
 			case NetID::RED_DFLASH_WRITE_DONE:

@@ -1,5 +1,5 @@
-#ifndef __NULLDISKREADDRIVER_H__
-#define __NULLDISKREADDRIVER_H__
+#ifndef __NEOMEMORYDISKREADDRIVER_H__
+#define __NEOMEMORYDISKREADDRIVER_H__
 
 #ifdef __cplusplus
 
@@ -9,15 +9,13 @@
 namespace icsneo {
 
 /**
- * A disk driver which always returns the requested disk as unsupported
+ * A disk read driver which uses the neoMemory command to read from the disk
  * 
- * Used for devices which do not have a disk, or do not provide any means for accessing it
+ * This can only request reads by sector, so it will be very slow, but is likely supported by any device with a disk
  */
-class NullDiskReadDriver : public DiskReadDriver {
+class NeoMemoryDiskReadDriver : public DiskReadDriver {
 public:
-	optional<uint64_t> readLogicalDisk(Communication& com, device_eventhandler_t report,
-		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout = DefaultTimeout) override;
-	Access getAccess() const override { return Access::None; }
+	Access getAccess() const override { return Access::VSA; }
 	std::pair<uint32_t, uint32_t> getBlockSizeBounds() const override {
 		static_assert(SectorSize <= std::numeric_limits<uint32_t>::max(), "Incorrect sector size");
 		static_assert(SectorSize >= std::numeric_limits<uint32_t>::min(), "Incorrect sector size");
@@ -25,6 +23,8 @@ public:
 	}
 
 private:
+	static constexpr const uint8_t MemoryTypeSD = 0x01; // Logical Disk
+
 	optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) override;
 };
@@ -32,4 +32,4 @@ private:
 }
 
 #endif // __cplusplus
-#endif // __NULLDISKREADDRIVER_H__
+#endif // __NEOMEMORYDISKREADDRIVER_H__
