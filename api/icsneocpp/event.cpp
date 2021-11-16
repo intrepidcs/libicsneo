@@ -70,6 +70,7 @@ static constexpr const char* DEVICE_NOT_CURRENTLY_POLLING = "The device is not c
 static constexpr const char* UNSUPPORTED_TX_NETWORK = "Message network is not a supported TX network.";
 static constexpr const char* MESSAGE_MAX_LENGTH_EXCEEDED = "The message was too long.";
 static constexpr const char* VALUE_NOT_YET_PRESENT = "The value is not yet present.";
+static constexpr const char* TIMEOUT = "The timeout was reached.";
 
 // Device Errors
 static constexpr const char* POLLING_MESSAGE_OVERFLOW = "Too many messages have been recieved for the polling message buffer, some have been lost!";
@@ -103,6 +104,8 @@ static constexpr const char* TERMINATION_NOT_SUPPORTED_DEVICE = "This device doe
 static constexpr const char* TERMINATION_NOT_SUPPORTED_NETWORK = "This network does not support software selectable termination on this device.";
 static constexpr const char* ANOTHER_IN_TERMINATION_GROUP_ENABLED = "A mutually exclusive network already has termination enabled.";
 static constexpr const char* ETH_PHY_REGISTER_CONTROL_NOT_AVAILABLE = "Ethernet PHY register control is not available for this device.";
+static constexpr const char* DISK_NOT_SUPPORTED = "This device does not support accessing the specified disk.";
+static constexpr const char* EOF_REACHED = "The requested length exceeds the available data from this disk.";
 static constexpr const char* SETTINGS_DEFAULTS_USED = "The device settings could not be loaded, the default settings have been applied.";
 
 // Transport Errors
@@ -151,6 +154,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return MESSAGE_MAX_LENGTH_EXCEEDED;
 		case Type::ValueNotYetPresent:
 			return VALUE_NOT_YET_PRESENT;
+		case Type::Timeout:
+			return TIMEOUT;
 
 		// Device Errors
 		case Type::PollingMessageOverflow:
@@ -215,6 +220,10 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return NO_SERIAL_NUMBER_FW_12V;
 		case Type::EthPhyRegisterControlNotAvailable:
 			return ETH_PHY_REGISTER_CONTROL_NOT_AVAILABLE;
+		case Type::DiskNotSupported:
+			return DISK_NOT_SUPPORTED;
+		case Type::EOFReached:
+			return EOF_REACHED;
 		case Type::SettingsDefaultsUsed:
 			return SETTINGS_DEFAULTS_USED;
 

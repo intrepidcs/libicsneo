@@ -148,6 +148,8 @@ set(SRC_FILES
 	device/idevicesettings.cpp
 	device/devicefinder.cpp
 	device/device.cpp
+	disk/diskreaddriver.cpp
+	disk/nulldiskreaddriver.cpp
 	${PLATFORM_SRC}
 )
 

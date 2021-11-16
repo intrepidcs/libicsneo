@@ -16,6 +16,8 @@
 #include "icsneo/device/nullsettings.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/deviceversion.h"
+#include "icsneo/disk/diskreaddriver.h"
+#include "icsneo/disk/nulldiskreaddriver.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
@@ -140,6 +142,23 @@ public:
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
 	/**
+	 * Read from the logical disk in this device, starting from byte `pos`
+	 * and reading up to `amount` bytes.
+	 * 
+	 * The number of bytes read will be returned in case of success.
+	 * 
+	 * If the number of bytes read is less than the amount requested,
+	 * an error will be set in icsneo::GetLastError() explaining why.
+	 * Likely, either the end of the logical disk has been reached, or
+	 * the timeout was reached while the read had only partially completed.
+	 *
+	 * Upon failure, icsneo::nullopt will be returned and an error will be
+	 * set in icsneo::GetLastError().
+	 */
+	optional<uint64_t> readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount,
+		std::chrono::milliseconds timeout = DiskReadDriver::DefaultTimeout);
+
+	/**
 	 * Retrieve the number of Ethernet (DoIP) Activation lines present
 	 * on this device.
 	 */
@@ -257,7 +276,7 @@ protected:
 		data.device = this;
 	}
 	
-	template<typename Driver, typename Settings = NullSettings>
+	template<typename Driver, typename Settings = NullSettings, typename DiskRead = NullDiskReadDriver>
 	void initialize() {
 		report = makeEventHandler();
 		auto driver = makeDriver<Driver>();
@@ -270,6 +289,7 @@ protected:
 		setupCommunication(*com);
 		settings = makeSettings<Settings>(com);
 		setupSettings(*settings);
+		diskReadDriver = std::make_unique<DiskRead>();
 		setupSupportedRXNetworks(supportedRXNetworks);
 		setupSupportedTXNetworks(supportedTXNetworks);
 		setupExtensions();
@@ -345,6 +365,7 @@ private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
 	std::vector<optional<DeviceAppVersion>> versions;
+	std::unique_ptr<DiskReadDriver> diskReadDriver;
 
 	mutable std::mutex extensionsLock;
 	std::vector<std::shared_ptr<DeviceExtension>> extensions;
