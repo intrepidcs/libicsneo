@@ -164,7 +164,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 	const uint8_t paddingBytes = paddedLength - dataSize;
 
 	// Pre-allocate as much memory as we will possibly need for speed
-	result.reserve(17 + dataSize + paddingBytes);
+	result.reserve(16 + dataSize + paddingBytes);
 
 	result.push_back(0 /* byte count here later */ << 4 | (uint8_t(message.network.getNetID()) & 0xF));
 
@@ -213,7 +213,6 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 	// Now finally the payload
 	result.insert(result.end(), message.data.begin(), message.data.end());
 	result.resize(result.size() + paddingBytes);
-	result.push_back(0);
 
 	// Fill in the length byte from earlier
 	result[0] |= result.size() << 4;
