@@ -59,6 +59,11 @@ public:
 	bool currentDriverSupportsDFU() const override { return false; }
 
 protected:
+	void setupPacketizer(Packetizer& packetizer) override {
+		ValueCAN4Industrial::setupPacketizer(packetizer);
+		packetizer.align16bit = false;
+	}
+
 	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
