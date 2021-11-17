@@ -109,9 +109,10 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 	if(shortFormat) {
 		buffer.insert(buffer.begin(), (uint8_t(buffer.size()) << 4) | uint8_t(message->network.getNetID()));
 	} else {
-		// Size in long format is the size of the entire packet
+		// Size for the host-to-device long format is the size of the entire packet + 1
 		// So +1 for AA header, +1 for short format header, +2 for long format size, and +2 for long format NetID
-		uint16_t size = uint16_t(buffer.size()) + 1 + 1 + 2 + 2;
+		// Then an extra +1, due to a firmware idiosyncrasy
+		uint16_t size = uint16_t(buffer.size()) + 1 + 1 + 2 + 2 + 1;
 		buffer.insert(buffer.begin(), {
 			(uint8_t)Network::NetID::RED, // 0x0C for long message
 			(uint8_t)size, // Size, little endian 16-bit
