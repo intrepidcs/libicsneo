@@ -60,7 +60,7 @@ public:
 	int addMessageCallback(const MessageCallback& cb);
 	bool removeMessageCallback(int id);
 	std::shared_ptr<Message> waitForMessageSync(
-		MessageFilter f = MessageFilter(),
+		const std::shared_ptr<MessageFilter>& f = {},
 		std::chrono::milliseconds timeout = std::chrono::milliseconds(50)) {
 		return waitForMessageSync([](){ return true; }, f, timeout);
 	}
@@ -68,7 +68,7 @@ public:
 	// Return false to bail early, in case your initial command failed.
 	std::shared_ptr<Message> waitForMessageSync(
 		std::function<bool(void)> onceWaitingDo,
-		MessageFilter f = MessageFilter(),
+		const std::shared_ptr<MessageFilter>& f = {},
 		std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer;

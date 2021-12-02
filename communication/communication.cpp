@@ -112,9 +112,10 @@ void Communication::clearRedirectRead() {
 }
 
 bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout) {
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::ReadSettings);
 	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
 		return sendCommand(Command::ReadSettings, { 0, 0, 0, 1 /* Get Global Settings */, 0, 1 /* Subversion 1 */ });
-	}, MessageFilter(Network::NetID::ReadSettings), timeout);
+	}, filter, timeout);
 	if(!msg)
 		return false;
 
@@ -134,25 +135,35 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 }
 
 std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chrono::milliseconds timeout) {
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<Main51MessageFilter>(Command::RequestSerialNumber);
 	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
 		return sendCommand(Command::RequestSerialNumber);
-	}, Main51MessageFilter(Command::RequestSerialNumber), timeout);
+	}, filter, timeout);
 	if(!msg) // Did not receive a message
+	{
+		std::cout << "didn't get a message" << std::endl;
 		return std::shared_ptr<SerialNumberMessage>();
+	}
 
 	auto m51 = std::dynamic_pointer_cast<Main51Message>(msg);
 	if(!m51) // Could not upcast for some reason
+	{
+		std::cout << "could not upcast" << std::endl;
 		return std::shared_ptr<SerialNumberMessage>();
+	}
 
-	return std::dynamic_pointer_cast<SerialNumberMessage>(m51);
+	auto ret = std::dynamic_pointer_cast<SerialNumberMessage>(m51);
+	std::cout << "returning " << ret.get() << std::endl;
+	return ret;
 }
 
 optional< std::vector< optional<DeviceAppVersion> > > Communication::getVersionsSync(std::chrono::milliseconds timeout) {
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::DeviceVersion);
 	std::vector< optional<DeviceAppVersion> > ret;
 
 	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
 		return sendCommand(Command::GetMainVersion);
-	}, Main51MessageFilter(Command::GetMainVersion), timeout);
+	}, filter, timeout);
 	if(!msg) // Did not receive a message
 		return nullopt;
 
@@ -167,7 +178,7 @@ optional< std::vector< optional<DeviceAppVersion> > > Communication::getVersions
 
 	msg = waitForMessageSync([this]() {
 		return sendCommand(Command::GetSecondaryVersions);
-	}, Main51MessageFilter(Command::GetSecondaryVersions), timeout);
+	}, filter, timeout);
 	if(msg) { // This one is allowed to fail
 		ver = std::dynamic_pointer_cast<VersionMessage>(msg);
 		if(ver && ver->ForChip != VersionMessage::MainChip)
@@ -194,7 +205,8 @@ bool Communication::removeMessageCallback(int id) {
 	}
 }
 
-std::shared_ptr<Message> Communication::waitForMessageSync(std::function<bool(void)> onceWaitingDo, MessageFilter f, std::chrono::milliseconds timeout) {
+std::shared_ptr<Message> Communication::waitForMessageSync(std::function<bool(void)> onceWaitingDo,
+	const std::shared_ptr<MessageFilter>& f, std::chrono::milliseconds timeout) {
 	std::mutex m;
 	std::condition_variable cv;
 	std::shared_ptr<Message> returnedMessage;

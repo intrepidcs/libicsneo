@@ -345,8 +345,8 @@ bool Device::goOnline() {
 
 	updateLEDState();
 
-	MessageFilter filter(Network::NetID::Reset_Status);
-	filter.includeInternalInAny = true;
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
+	filter->includeInternalInAny = true;
 
 	// Wait until communication is enabled or 5 seconds, whichever comes first
 	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
@@ -388,8 +388,8 @@ bool Device::goOffline() {
 
 	updateLEDState();
 
-	MessageFilter filter(Network::NetID::Reset_Status);
-	filter.includeInternalInAny = true;
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
+	filter->includeInternalInAny = true;
 
 	// Wait until communication is disabled or 5 seconds, whichever comes first
 	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {

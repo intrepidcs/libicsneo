@@ -593,6 +593,7 @@ uint16_t FlexRay::Controller::CalculateCycleFilter(uint8_t baseCycle, uint8_t cy
 }
 
 std::pair<bool, uint32_t> FlexRay::Controller::readRegister(ERAYRegister reg, std::chrono::milliseconds timeout) const {
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(icsneo::Network::NetID::FlexRayControl);
 	if(timeout.count() <= 20)
 		return {false, 0}; // Out of time!
 
@@ -611,7 +612,7 @@ std::pair<bool, uint32_t> FlexRay::Controller::readRegister(ERAYRegister reg, st
 				return false; // Command failed to send
 			lastSent = std::chrono::steady_clock::now();
 			return true;
-		}, MessageFilter(icsneo::Network::NetID::FlexRayControl), timeout);
+		}, filter, timeout);
 		if(auto frmsg = std::dynamic_pointer_cast<FlexRayControlMessage>(msg)) {
 			if(frmsg->decoded && frmsg->controller == index && frmsg->opcode == FlexRay::Opcode::ReadCCRegs)
 				resp = frmsg;

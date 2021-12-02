@@ -24,5 +24,5 @@ int LegacyDLLExport icsneoWaitForRxMessagesWithTimeOut(void* hObject, unsigned i
 	neodevice_t* device = (neodevice_t*)hObject;
 	if(device->device->getCurrentMessageCount() != 0)
 		return true;
-	return bool(device->device->com->waitForMessageSync(MessageFilter(), std::chrono::milliseconds(iTimeOut)));
+	return bool(device->device->com->waitForMessageSync({}, std::chrono::milliseconds(iTimeOut)));
 }

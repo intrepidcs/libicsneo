@@ -19,7 +19,7 @@ public:
 	// We still guarantee it's a Main51Message if it matches because of the dynamic_pointer_cast below
 	Main51MessageFilter(Command command) : command(command) { includeInternalInAny = true; }
 
-	bool match(const std::shared_ptr<Message>& message) const {
+	bool match(const std::shared_ptr<Message>& message) const override {
 		if(!MessageFilter::match(message)) {
 			//std::cout << "message filter did not match base for " << message->network << std::endl;
 			return false;
