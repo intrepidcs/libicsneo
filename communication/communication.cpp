@@ -140,21 +140,12 @@ std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chr
 		return sendCommand(Command::RequestSerialNumber);
 	}, filter, timeout);
 	if(!msg) // Did not receive a message
-	{
-		std::cout << "didn't get a message" << std::endl;
 		return std::shared_ptr<SerialNumberMessage>();
-	}
 
 	auto m51 = std::dynamic_pointer_cast<Main51Message>(msg);
 	if(!m51) // Could not upcast for some reason
-	{
-		std::cout << "could not upcast" << std::endl;
 		return std::shared_ptr<SerialNumberMessage>();
-	}
-
-	auto ret = std::dynamic_pointer_cast<SerialNumberMessage>(m51);
-	std::cout << "returning " << ret.get() << std::endl;
-	return ret;
+	return std::dynamic_pointer_cast<SerialNumberMessage>(m51);
 }
 
 optional< std::vector< optional<DeviceAppVersion> > > Communication::getVersionsSync(std::chrono::milliseconds timeout) {
