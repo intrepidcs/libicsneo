@@ -86,6 +86,12 @@ typedef struct {
 	RAD_REPORTING_SETTINGS reporting;
 	DISK_SETTINGS disk;
 	LOGGER_SETTINGS logger;
+
+	ETHERNET_SETTINGS2 ethernet1;// DAQ port on label, NETID_ETHERNET
+	ETHERNET_SETTINGS2 ethernet2;// LAN port on label, NETID_ETHERNET2
+	uint16_t network_enables_4;
+	
+	RAD_GPTP_SETTINGS gPTP;
 } radgalaxy_settings_t;
 
 typedef struct {

@@ -384,6 +384,26 @@ typedef struct LOGGER_SETTINGS_t
 } LOGGER_SETTINGS;
 #define LOGGER_SETTINGS_SIZE 4
 
+#define RAD_GPTP_NUM_PORTS 1 // 1 because only supported as gPTP endpoint
+typedef struct RAD_GPTP_SETTINGS_t
+{
+	uint32_t neighborPropDelayThresh;//ns
+	uint32_t sys_phc_sync_interval;//ns
+	int8_t logPDelayReqInterval;// log2ms
+	int8_t logSyncInterval;// log2ms
+	int8_t logAnnounceInterval;// log2ms
+	uint8_t profile;
+	uint8_t priority1;
+	uint8_t clockclass;
+	uint8_t clockaccuracy;
+	uint8_t priority2;
+	uint16_t offset_scaled_log_variance;
+	uint8_t gPTPportRole[RAD_GPTP_NUM_PORTS];
+	uint8_t portEnable[RAD_GPTP_NUM_PORTS];
+	uint8_t rsvd[16];
+} RAD_GPTP_SETTINGS;//36 Bytes with RAD_GPTP_NUM_PORTS = 1
+#define RAD_GPTP_SETTINGS_SIZE 36
+
 #define RAD_REPORTING_SETTINGS_FLAG_TEMP_ENABLE 		0x00000001
 #define RAD_REPORTING_SETTINGS_FLAG_MIC2_GPS_ENABLE 	0x00000002 // USB port 1
 #define RAD_REPORTING_SETTINGS_FLAG_INT_GPS_ENABLE 		0x00000004
