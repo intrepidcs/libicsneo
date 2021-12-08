@@ -259,7 +259,9 @@ bool PCAP::close() {
 
 	closing = true; // Signal the threads that we are closing
 	pcap_breakloop(iface.fp);
+#ifndef __linux__
 	pthread_cancel(readThread.native_handle());
+#endif
 	readThread.join();
 	writeThread.join();
 	closing = false;
