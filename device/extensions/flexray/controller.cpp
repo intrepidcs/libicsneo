@@ -202,7 +202,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		first->frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
 		first->baseCycle = 0;
 		first->cycleRepetition = 1;
-		first->continuousMode = true;
+		first->continuousMode = false;
 		staticTx.push_back(first);
 		firstUsed = true;
 
@@ -215,7 +215,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 			second->frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
 			second->baseCycle = 0;
 			second->cycleRepetition = 1;
-			second->continuousMode = true;
+			second->continuousMode = false;
 			staticTx.push_back(second);
 			secondUsed = true;
 		}
