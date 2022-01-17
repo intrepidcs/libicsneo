@@ -108,6 +108,7 @@ private:
 	bool startWhenGoingOnline = false;
 	bool allowColdstart = false;
 	bool wakeupBeforeStart = false;
+	bool lastSeenRunning = false;
 
 public:
 #define neoflexray_controller_config_t icsneo::FlexRay::Controller::Configuration

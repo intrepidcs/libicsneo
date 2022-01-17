@@ -436,6 +436,10 @@ bool FlexRay::Controller::transmit(const std::shared_ptr<FlexRayMessage>& frmsg)
 		if(frmsg->channel != bufChannel)
 			continue;
 
+		// If we have added changed our configuration, such as adding a message buffer, we will need to reconfigure
+		if(configDirty && lastSeenRunning)
+			start();
+
 		// This is a message buffer we want to fill
 		if(!device.com->sendCommand(Command::FlexRayControl, FlexRayControlMessage::BuildWriteMessageBufferArgs(index, buf->_id, frmsg->data, buf->frameLengthBytes)))
 			continue;
@@ -474,7 +478,20 @@ bool FlexRay::Controller::setCurrentPOCCommand(FlexRay::POCCommand cmd, bool che
 	const auto writeDuration = std::chrono::steady_clock::now() - beforeWrite;
 	timeout = std::chrono::duration_cast<std::chrono::milliseconds>(timeout - writeDuration);
 
-	return wasCommandSuccessful(timeout);
+	const bool success = wasCommandSuccessful(timeout);
+	if(success) {
+		switch(cmd) {
+			case FlexRay::POCCommand::Run:
+				lastSeenRunning = true;
+				break;
+			case FlexRay::POCCommand::Halt:
+			case FlexRay::POCCommand::Freeze:
+				lastSeenRunning = false;
+				break;
+			default: break;
+		}
+	}
+	return success;
 }
 
 bool FlexRay::Controller::wasCommandSuccessful(std::chrono::milliseconds timeout) const {
