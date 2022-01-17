@@ -225,7 +225,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		if(!buf->isTransmit)
 			continue; // Only transmit frames need to be written to the controller
 
-		if(buf->frameID == controllerConfig.KeySlotID) {
+		if((controllerConfig.KeySlotUsedForSync || controllerConfig.KeySlotOnlyEnabled) && buf->frameID == controllerConfig.KeySlotID) {
 			first = buf;
 			staticTx[0] = buf;
 			// Enforce keyslot rules
