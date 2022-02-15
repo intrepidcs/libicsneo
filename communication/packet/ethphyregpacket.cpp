@@ -36,25 +36,9 @@ std::shared_ptr<EthPhyMessage> HardwareEthernetPhyRegisterPacket::DecodeToMessag
 			phyMessage->Clause45Enable = (pEntry->Clause45Enable != 0u);
 			phyMessage->version = static_cast<uint8_t>(pEntry->version);
 			if(phyMessage->Clause45Enable)
-			{
-				phyMessage->clause45 =
-				{
-					.port = pEntry->clause45.port,
-					.device = pEntry->clause45.device,
-					.regAddr = pEntry->clause45.regAddr,
-					.regVal = pEntry->clause45.regVal
-				};
-			}
+				phyMessage->clause45 = pEntry->clause45;
 			else
-			{
-				phyMessage->clause22 =
-				{
-					.phyAddr = pEntry->clause22.phyAddr,
-					.page = pEntry->clause22.page,
-					.regAddr = pEntry->clause22.regAddr,
-					.regVal = pEntry->clause22.regVal
-				};
-			}
+				phyMessage->clause22 = pEntry->clause22;
 			msg->messages.push_back(phyMessage);
 		}
 	}

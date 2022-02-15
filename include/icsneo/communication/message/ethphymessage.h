@@ -12,34 +12,25 @@
 
 namespace icsneo {
 
-struct Clause22Message
-{
-	uint8_t phyAddr;
-	uint8_t page;
-	uint16_t regAddr;
-	uint16_t regVal;
-};
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
 
-struct Clause45Message
-{
-	uint8_t port;
-	uint8_t device;
-	uint16_t regAddr;
-	uint16_t regVal;
-};
-
-struct PhyMessage
-{
+struct PhyMessage {
 	bool Enabled;
 	bool WriteEnable;
 	bool Clause45Enable;
 	uint8_t version;
-	union
-	{
+	union {
 		Clause22Message clause22;
 		Clause45Message clause45;
 	};
 };
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 //Internal message which provides an interface with device ethernet PHY registers,
 //with Clause22 and Clause45 message support

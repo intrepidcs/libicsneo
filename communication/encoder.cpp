@@ -5,6 +5,7 @@
 #include "icsneo/communication/packet/iso9141packet.h"
 #include "icsneo/communication/packet/canpacket.h"
 #include "icsneo/communication/packet/ethphyregpacket.h"
+#include "icsneo/communication/message/ethphymessage.h"
 
 using namespace icsneo;
 
