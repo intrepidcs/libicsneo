@@ -46,8 +46,8 @@ static NeoDevice OldNeoDeviceFromNew(const neodevice_t *newnd)
 static void NeoMessageToSpyMessage(const neodevice_t *device, const neomessage_t &newmsg, icsSpyMessage &oldmsg)
 {
 	memset(&oldmsg, 0, sizeof(icsSpyMessage));
-	oldmsg.NumberBytesData = (uint8_t)std::min(newmsg.length, (size_t)255);
-	oldmsg.NumberBytesHeader = 4;
+	oldmsg.NumberBytesData = (uint8_t)(newmsg.length & 0xFF);
+	oldmsg.NumberBytesHeader = (uint8_t)(newmsg.length >> 8);
 	oldmsg.ExtraDataPtr = (void*)newmsg.data;
 	oldmsg.ExtraDataPtrEnabled = newmsg.length > 8 ? 1 : 0;
 	memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
