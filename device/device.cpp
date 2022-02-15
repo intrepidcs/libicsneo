@@ -254,7 +254,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 				// otherwise quiet stream. This lock makes sure suppressDisconnects() will
 				// block until we've either gotten our status update or disconnected from
 				// the device.
-				std::lock_guard lk(heartbeatMutex);
+				std::lock_guard<std::mutex> lk(heartbeatMutex);
 				if(heartbeatSuppressed())
 					continue;
 
@@ -679,9 +679,9 @@ optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 }
 
 Lifetime Device::suppressDisconnects() {
-	std::lock_guard lk(heartbeatMutex);
+	std::lock_guard<std::mutex> lk(heartbeatMutex);
 	heartbeatSuppressedByUser++;
-	return Lifetime([this] { std::lock_guard lk2(heartbeatMutex); heartbeatSuppressedByUser--; });
+	return Lifetime([this] { std::lock_guard<std::mutex> lk2(heartbeatMutex); heartbeatSuppressedByUser--; });
 }
 
 void Device::addExtension(std::shared_ptr<DeviceExtension>&& extension) {
