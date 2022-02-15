@@ -28,19 +28,21 @@ bool PCAPDLL::ok() const
 
 PCAPDLL::PCAPDLL()
 {
+#ifdef NPCAP // Use -DLIBICSNEO_NPCAP_INCLUDE_DIR when configuring, point towards the npcap includes
 	DLL_DIRECTORY_COOKIE cookie = 0;
-#ifdef NPCAP
 	TCHAR dllPath[512] = { 0 };
 	int len = GetSystemDirectory(dllPath, 480); // be safe
 	if (len) {
 		_tcscat_s(dllPath, 512, TEXT("\\Npcap"));
 		cookie = AddDllDirectory(dllPath);
 	}
-#endif
 	dll = LoadLibraryEx(TEXT("wpcap.dll"), nullptr, LOAD_LIBRARY_SEARCH_USER_DIRS);
 
 	if (cookie)
 		RemoveDllDirectory(cookie);
+#else // Otherwise we'll use WinPCAP, or npcap in compatibility mode
+	dll = LoadLibrary(TEXT("wpcap.dll"));
+#endif
 
 	if(dll == NULL) {
 		closeDLL();
