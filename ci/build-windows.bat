@@ -1,5 +1,3 @@
-call "%VCVARS64%"
-
 REM clean intermediate directories
 rmdir /s /q build
 mkdir build
