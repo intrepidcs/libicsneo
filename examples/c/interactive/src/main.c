@@ -30,13 +30,13 @@ void printAllDevices() {
 	if(numDevices == 0) {
 		printf("No devices found! Please scan for new devices.\n");
 	}
-	for(int i = 0; i < numDevices; i++) {
+	for(size_t i = 0; i < numDevices; i++) {
 		char productDescription[ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION] = { 0 };
 		size_t descriptionLength = ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION;
 
 		// Updates productDescription and descriptionLength for each device
 		if(icsneo_describeDevice(devices + i, productDescription, &descriptionLength)) {
-			printf("[%d] %s\tConnected: ", i + 1, productDescription);
+			printf("[%zd] %s\tConnected: ", i + 1, productDescription);
 			if(icsneo_isOpen(devices + i)) {
 				printf("Yes\t");
 			} else printf("No\t");
@@ -52,7 +52,7 @@ void printAllDevices() {
 			} else printf("Off\n");
 
 		} else {
-			printf("Description for device %d not available!\n", i + 1);
+			printf("Description for device %zd not available!\n", i + 1);
 		}
 	}
 }
@@ -66,7 +66,7 @@ size_t scanNewDevices() {
 	size_t numNewDevices = 99;
 	icsneo_findAllDevices(newDevices, &numNewDevices);
 
-	for(int i = 0; i < numNewDevices; ++i) {
+	for(size_t i = 0; i < numNewDevices; ++i) {
 		devices[numDevices + i] = newDevices[i];
 	}
 	numDevices += numNewDevices;
@@ -112,7 +112,7 @@ void printAPIEvents() {
 			printf("Event 0x%u: %s\n", events[0].eventNumber, events[0].description);
 		} else {
 			printf("%d API events found!\n", (int) eventCount);
-			for(int i = 0; i < eventCount; ++i) {
+			for(size_t i = 0; i < eventCount; ++i) {
 				printf("Event 0x%u: %s\n", events[i].eventNumber, events[i].description);
 			}
 		}
@@ -134,7 +134,7 @@ void printDeviceEvents(neodevice_t* device) {
 			printf("Event 0x%x: %s\n", events[0].eventNumber, events[0].description);
 		} else {
 			printf("%d device events found!\n", (int) eventCount);
-			for(int i = 0; i < eventCount; ++i) {
+			for(size_t i = 0; i < eventCount; ++i) {
 				printf("Event 0x%x: %s\n", events[i].eventNumber, events[i].description);
 			}
 		}
@@ -196,10 +196,14 @@ const neodevice_t* selectDevice() {
 	printAllDevices();
 	printf("\n");
 
-	int selectedDeviceNum = 10;
+	size_t selectedDeviceNum = 10;
 
 	while(selectedDeviceNum > numDevices) {
 		char deviceSelection = getCharInput(9, '1', '2', '3', '4', '5', '6', '7', '8', '9');
+		if(deviceSelection < '0') {
+			printf("Selected device out of range!\n");
+			continue;
+		}
 		selectedDeviceNum = deviceSelection - '0';
 		if(selectedDeviceNum > numDevices) {
 			printf("Selected device out of range!\n");
@@ -301,7 +305,7 @@ int main() {
 
 					// Shifts everything after the removed device 1 index to the left
 					bool startResizing = false;
-					for(int i = 0; i < numDevices; ++i) {
+					for(size_t i = 0; i < numDevices; ++i) {
 						if(selectedDevice == devices + i)
 							startResizing = true;
 						if(startResizing)
