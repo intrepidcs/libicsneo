@@ -68,38 +68,43 @@ static bool NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t
 {
 	memset(&oldmsg, 0, sizeof(icsSpyMessage));
 
-	switch (Network::Type(newmsg.type))
+	// We currently only deal with frames
+	if (newmsg.messageType != ICSNEO_MESSAGE_TYPE_FRAME)
+		return false;
+
+	const neomessage_frame_t& frame = *reinterpret_cast<const neomessage_frame_t*>(&newmsg);
+	switch (Network::Type(frame.type))
 	{
 	case Network::Type::CAN:
 	case Network::Type::SWCAN:
 	case Network::Type::LSFTCAN:
-		oldmsg.Protocol = newmsg.status.canfdFDF ? SPY_PROTOCOL_CANFD : SPY_PROTOCOL_CAN;
-		oldmsg.NumberBytesData = static_cast<uint8_t>(std::min(newmsg.length, (size_t)255));
+		oldmsg.Protocol = frame.status.canfdFDF ? SPY_PROTOCOL_CANFD : SPY_PROTOCOL_CAN;
+		oldmsg.NumberBytesData = static_cast<uint8_t>(std::min(frame.length, (size_t)255));
 		oldmsg.NumberBytesHeader = 4;
 		break;
 	case Network::Type::Ethernet:
 		oldmsg.Protocol = SPY_PROTOCOL_ETHERNET;
-		oldmsg.NumberBytesData = static_cast<uint8_t>(newmsg.length & 0xFF);
-		oldmsg.NumberBytesHeader = static_cast<uint8_t>(newmsg.length >> 8);
+		oldmsg.NumberBytesData = static_cast<uint8_t>(frame.length & 0xFF);
+		oldmsg.NumberBytesHeader = static_cast<uint8_t>(frame.length >> 8);
 		break;
 	default:
 		return false;
 	}
 
-	oldmsg.ExtraDataPtr = (void*)newmsg.data;
-	oldmsg.ExtraDataPtrEnabled = newmsg.length > 8 ? 1 : 0;
-	memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
-	oldmsg.ArbIDOrHeader = *reinterpret_cast<const uint32_t*>(newmsg.header);
-	oldmsg.NetworkID = static_cast<uint8_t>(newmsg.netid); // Note: NetID remapping from the original API is not supported
-	oldmsg.NetworkID2 = static_cast<uint8_t>(newmsg.netid >> 8);
-	oldmsg.DescriptionID = newmsg.description;
-	oldmsg.StatusBitField = newmsg.status.statusBitfield[0];
-	oldmsg.StatusBitField2 = newmsg.status.statusBitfield[1];
-	oldmsg.StatusBitField3 = newmsg.status.statusBitfield[2];
-	oldmsg.StatusBitField4 = newmsg.status.statusBitfield[3];
+	oldmsg.ExtraDataPtr = (void*)frame.data;
+	oldmsg.ExtraDataPtrEnabled = frame.length > 8 ? 1 : 0;
+	memcpy(oldmsg.Data, frame.data, std::min(frame.length, (size_t)8));
+	oldmsg.ArbIDOrHeader = *reinterpret_cast<const uint32_t*>(frame.header);
+	oldmsg.NetworkID = static_cast<uint8_t>(frame.netid); // Note: NetID remapping from the original API is not supported
+	oldmsg.NetworkID2 = static_cast<uint8_t>(frame.netid >> 8);
+	oldmsg.DescriptionID = frame.description;
+	oldmsg.StatusBitField = frame.status.statusBitfield[0];
+	oldmsg.StatusBitField2 = frame.status.statusBitfield[1];
+	oldmsg.StatusBitField3 = frame.status.statusBitfield[2];
+	oldmsg.StatusBitField4 = frame.status.statusBitfield[3];
 
 	// Timestamp - epoch = 1/1/2007 - 25ns per tick most of the time
-	uint64_t t = newmsg.timestamp;
+	uint64_t t = frame.timestamp;
 	uint16_t res = 0;
 	if (icsneo_getTimestampResolution(device, &res))
 	{
@@ -384,7 +389,7 @@ int LegacyDLLExport icsneoTxMessagesEx(void* hObject, icsSpyMessage* pMsg, unsig
 	if (!icsneoValidateHObject(hObject))
 		return false;
 	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
-	neomessage_t newmsg;
+	neomessage_frame_t newmsg;
 	unsigned int temp = 0;
 	if (NumTxed == nullptr)
 		NumTxed = &temp;
