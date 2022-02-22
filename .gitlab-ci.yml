@@ -5,7 +5,7 @@ stages:
 build windows/x64:
   stage: build
   script:
-    - CMD.EXE /C ci\build-windows.bat
+    - CMD.EXE /C ci\build-windows64.bat
   artifacts:
     when: always
     paths:
@@ -22,6 +22,30 @@ test windows/x64:
     - build windows/x64
   needs:
     - build windows/x64
+  tags:
+    - icsneo-windows
+  timeout: 3m
+
+build windows/x86:
+  stage: build
+  script:
+    - CMD.EXE /C ci\build-windows32.bat
+  artifacts:
+    when: always
+    paths:
+      - build
+    expire_in: 3 days
+  tags:
+    - icsneo-windows
+
+test windows/x86:
+  stage: test
+  script:
+    - build\libicsneo-tests.exe
+  dependencies:
+    - build windows/x86
+  needs:
+    - build windows/x86
   tags:
     - icsneo-windows
   timeout: 3m
