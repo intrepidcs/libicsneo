@@ -51,14 +51,15 @@ static const std::map<size_t, size_t> mp_HWnetIDToCMnetID = {
 
 static unsigned long vnet_table[] = {0, PLASMA_SLAVE1_OFFSET, PLASMA_SLAVE2_OFFSET};
 
-static NeoDevice OldNeoDeviceFromNew(const neodevice_t *newnd)
+static NeoDevice OldNeoDeviceFromNew(const neodevice_t* newnd)
 {
 	NeoDevice oldnd = {0};
 	oldnd.DeviceType = newnd->type;
 	oldnd.SerialNumber = icsneo_serialStringToNum(newnd->serial);
 	oldnd.NumberOfClients = 0;
 	oldnd.MaxAllowedClients = 1;
-	static_assert(sizeof(neodevice_handle_t) == sizeof(oldnd.Handle), "neodevice_handle_t size must be sizeof(int) for compatibility reasons");
+	static_assert(sizeof(neodevice_handle_t) == sizeof(oldnd.Handle),
+		"neodevice_handle_t size must be sizeof(int) for compatibility reasons");
 	oldnd.Handle = newnd->handle;
 	return oldnd;
 }
@@ -197,7 +198,8 @@ static inline unsigned int GetVnetAgnosticNetid(size_t fullNetid)
 }
 
 //Basic Functions
-int LegacyDLLExport icsneoFindDevices(NeoDeviceEx *devs, int *devCount, unsigned int *devTypes, unsigned int devTypeCount, POptionsFindNeoEx *POptionsFindNeoEx, unsigned int *zero)
+int LegacyDLLExport icsneoFindDevices(NeoDeviceEx* devs, int* devCount, unsigned int* devTypes, unsigned int devTypeCount,
+	POptionsFindNeoEx* POptionsFindNeoEx, unsigned int* zero)
 {
 	if (!devs || !devCount)
 		return 0;
@@ -246,7 +248,7 @@ int LegacyDLLExport icsneoFindDevices(NeoDeviceEx *devs, int *devCount, unsigned
 	return 1; // If the function succeeds but no devices are found 1 will still be returned and devCount will equal 0
 }
 
-int LegacyDLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice *pNeoDevice, int *pNumDevices)
+int LegacyDLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* pNumDevices)
 {
 	constexpr size_t MAX_DEVICES = 255;
 	size_t count = MAX_DEVICES;
@@ -280,7 +282,7 @@ int LegacyDLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice *p
 	return 1;
 }
 
-int LegacyDLLExport icsneoOpenNeoDevice(NeoDevice *pNeoDevice, void **hObject, unsigned char *bNetworkIDs, int bConfigRead, int bSyncToPC)
+int LegacyDLLExport icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC)
 {
 	if (pNeoDevice == nullptr || hObject == nullptr)
 		return false;
@@ -331,35 +333,35 @@ int LegacyDLLExport icsneoOpenDevice(
 	return icsneo_setPollingMessageLimit(device, 20000) && icsneo_enableMessagePolling(device) && icsneo_goOnline(device);
 }
 
-int LegacyDLLExport icsneoClosePort(void *hObject, int *pNumberOfErrors)
+int LegacyDLLExport icsneoClosePort(void* hObject, int* pNumberOfErrors)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 
 	return icsneo_closeDevice(device);
 }
 
 // Memory is now managed automatically, this function is unneeded
-void LegacyDLLExport icsneoFreeObject(void *hObject)
+void LegacyDLLExport icsneoFreeObject(void* hObject)
 {
 	(void)hObject;
 	return;
 }
 
-int LegacyDLLExport icsneoSerialNumberToString(unsigned long serial, char *data, unsigned long data_size)
+int LegacyDLLExport icsneoSerialNumberToString(unsigned long serial, char* data, unsigned long data_size)
 {
 	size_t length = (size_t)data_size;
 	return icsneo_serialNumToString((uint32_t)serial, data, &length);
 }
 
 //Message Functions
-int LegacyDLLExport icsneoGetMessages(void *hObject, icsSpyMessage *pMsg, int *pNumberOfMessages, int *pNumberOfErrors)
+int LegacyDLLExport icsneoGetMessages(void* hObject, icsSpyMessage* pMsg, int* pNumberOfMessages, int* pNumberOfErrors)
 {
 	static neomessage_t messages[20000];
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 
 	size_t messageCount = 20000;
 	if (!icsneo_getMessages(device, messages, &messageCount, 0))
@@ -377,16 +379,17 @@ int LegacyDLLExport icsneoGetMessages(void *hObject, icsSpyMessage *pMsg, int *p
 	return true;
 }
 
-int LegacyDLLExport icsneoTxMessages(void *hObject, icsSpyMessage *pMsg, int lNetworkID, int lNumMessages)
+int LegacyDLLExport icsneoTxMessages(void* hObject, icsSpyMessage* pMsg, int lNetworkID, int lNumMessages)
 {
 	return icsneoTxMessagesEx(hObject, pMsg, lNetworkID, lNumMessages, nullptr, 0);
 }
 
-int LegacyDLLExport icsneoTxMessagesEx(void *hObject, icsSpyMessage *pMsg, unsigned int lNetworkID, unsigned int lNumMessages, unsigned int *NumTxed, unsigned int zero2)
+int LegacyDLLExport icsneoTxMessagesEx(void* hObject, icsSpyMessage* pMsg, unsigned int lNetworkID, unsigned int lNumMessages,
+	unsigned int* NumTxed, unsigned int zero2)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	neomessage_t newmsg;
 	unsigned int temp = 0;
 	if (NumTxed == nullptr)
@@ -394,7 +397,7 @@ int LegacyDLLExport icsneoTxMessagesEx(void *hObject, icsSpyMessage *pMsg, unsig
 	*NumTxed = 0;
 	for (unsigned int i = 0; i < lNumMessages; i++)
 	{
-		const icsSpyMessage &oldmsg = pMsg[i];
+		const icsSpyMessage& oldmsg = pMsg[i];
 		newmsg = {};
 		newmsg.netid = (uint16_t)lNetworkID;
 		newmsg.description = oldmsg.DescriptionID;
@@ -413,13 +416,13 @@ int LegacyDLLExport icsneoTxMessagesEx(void *hObject, icsSpyMessage *pMsg, unsig
 		newmsg.status.statusBitfield[3] = oldmsg.StatusBitField4;
 		if (oldmsg.Protocol == SPY_PROTOCOL_CANFD)
 			newmsg.status.canfdFDF = true;
-		if (icsneo_transmit(device, &newmsg))
+		if (icsneo_transmit(device, reinterpret_cast<neomessage_t*>(&newmsg)))
 			(*NumTxed)++;
 	}
 	return lNumMessages == *NumTxed;
 }
 
-int LegacyDLLExport icsneoEnableNetworkRXQueue(void *hObject, int iEnable)
+int LegacyDLLExport icsneoEnableNetworkRXQueue(void* hObject, int iEnable)
 {
 	// TODO Implement
 	return false;
@@ -428,7 +431,7 @@ int LegacyDLLExport icsneoEnableNetworkRXQueue(void *hObject, int iEnable)
 int LegacyDLLExport icsneoGetTimeStampForMsg(void* hObject, icsSpyMessage* pMsg, double* pTimeStamp) {
 	if(!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 
 	uint16_t resolution = 0;
 	if (!icsneo_getTimestampResolution(device, &resolution))
@@ -448,240 +451,245 @@ int LegacyDLLExport icsneoGetTimeStampForMsg(void* hObject, icsSpyMessage* pMsg,
 	return true;
 }
 
-void LegacyDLLExport icsneoGetISO15765Status(void *hObject, int lNetwork, int lClearTxStatus, int lClearRxStatus, int *lTxStatus, int *lRxStatus)
+void LegacyDLLExport icsneoGetISO15765Status(void* hObject, int lNetwork, int lClearTxStatus, int lClearRxStatus,
+	int* lTxStatus, int* lRxStatus)
 {
 	// TODO Implement
 	return;
 }
 
-void LegacyDLLExport icsneoSetISO15765RxParameters(void *hObject, int lNetwork, int lEnable, spyFilterLong *pFF_CFMsgFilter, icsSpyMessage *pTxMsg,
-												   int lCFTimeOutMs, int lFlowCBlockSize, int lUsesExtendedAddressing, int lUseHardwareIfPresent)
+void LegacyDLLExport icsneoSetISO15765RxParameters(void* hObject, int lNetwork, int lEnable, spyFilterLong* pFF_CFMsgFilter,
+	icsSpyMessage* pTxMsg, int lCFTimeOutMs, int lFlowCBlockSize, int lUsesExtendedAddressing, int lUseHardwareIfPresent)
 {
 	// TODO Implement
 	return;
 }
 
 //Device Functions
-int LegacyDLLExport icsneoGetConfiguration(void *hObject, unsigned char *pData, int *lNumBytes)
+int LegacyDLLExport icsneoGetConfiguration(void* hObject, unsigned char* pData, int* lNumBytes)
 {
 	// 2G devices are not supported in the new API
 	return false;
 }
 
-int LegacyDLLExport icsneoSendConfiguration(void *hObject, unsigned char *pData, int lNumBytes)
+int LegacyDLLExport icsneoSendConfiguration(void* hObject, unsigned char* pData, int lNumBytes)
 {
 	// 2G devices are not supported in the new API
 	return false;
 }
 
-int LegacyDLLExport icsneoGetFireSettings(void *hObject, SFireSettings *pSettings, int iNumBytes)
+int LegacyDLLExport icsneoGetFireSettings(void* hObject, SFireSettings* pSettings, int iNumBytes)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
-int LegacyDLLExport icsneoSetFireSettings(void *hObject, SFireSettings *pSettings, int iNumBytes, int bSaveToEEPROM)
+int LegacyDLLExport icsneoSetFireSettings(void* hObject, SFireSettings* pSettings, int iNumBytes, int bSaveToEEPROM)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (bSaveToEEPROM)
 		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
 	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
-int LegacyDLLExport icsneoGetVCAN3Settings(void *hObject, SVCAN3Settings *pSettings, int iNumBytes)
+int LegacyDLLExport icsneoGetVCAN3Settings(void* hObject, SVCAN3Settings* pSettings, int iNumBytes)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
-int LegacyDLLExport icsneoSetVCAN3Settings(void *hObject, SVCAN3Settings *pSettings, int iNumBytes, int bSaveToEEPROM)
+int LegacyDLLExport icsneoSetVCAN3Settings(void* hObject, SVCAN3Settings* pSettings, int iNumBytes, int bSaveToEEPROM)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (bSaveToEEPROM)
 		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
 	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
-int LegacyDLLExport icsneoGetFire2Settings(void *hObject, SFire2Settings *pSettings, int iNumBytes)
+int LegacyDLLExport icsneoGetFire2Settings(void* hObject, SFire2Settings* pSettings, int iNumBytes)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
-int LegacyDLLExport icsneoSetFire2Settings(void *hObject, SFire2Settings *pSettings, int iNumBytes, int bSaveToEEPROM)
+int LegacyDLLExport icsneoSetFire2Settings(void* hObject, SFire2Settings* pSettings, int iNumBytes, int bSaveToEEPROM)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (bSaveToEEPROM)
 		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
 	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
-int LegacyDLLExport icsneoGetVCANRFSettings(void *hObject, SVCANRFSettings *pSettings, int iNumBytes)
+int LegacyDLLExport icsneoGetVCANRFSettings(void* hObject, SVCANRFSettings* pSettings, int iNumBytes)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
-int LegacyDLLExport icsneoSetVCANRFSettings(void *hObject, SVCANRFSettings *pSettings, int iNumBytes, int bSaveToEEPROM)
+int LegacyDLLExport icsneoSetVCANRFSettings(void* hObject, SVCANRFSettings* pSettings, int iNumBytes, int bSaveToEEPROM)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (bSaveToEEPROM)
 		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
 	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
-int LegacyDLLExport icsneoGetVCAN412Settings(void *hObject, SVCAN412Settings *pSettings, int iNumBytes)
+int LegacyDLLExport icsneoGetVCAN412Settings(void* hObject, SVCAN412Settings* pSettings, int iNumBytes)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
-int LegacyDLLExport icsneoSetVCAN412Settings(void *hObject, SVCAN412Settings *pSettings, int iNumBytes, int bSaveToEEPROM)
+int LegacyDLLExport icsneoSetVCAN412Settings(void* hObject, SVCAN412Settings* pSettings, int iNumBytes, int bSaveToEEPROM)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (bSaveToEEPROM)
 		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
 	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
-int LegacyDLLExport icsneoGetRADGalaxySettings(void *hObject, SRADGalaxySettings *pSettings, int iNumBytes)
+int LegacyDLLExport icsneoGetRADGalaxySettings(void* hObject, SRADGalaxySettings* pSettings, int iNumBytes)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
-int LegacyDLLExport icsneoSetRADGalaxySettings(void *hObject, SRADGalaxySettings *pSettings, int iNumBytes, int bSaveToEEPROM)
+int LegacyDLLExport icsneoSetRADGalaxySettings(void* hObject, SRADGalaxySettings* pSettings, int iNumBytes, int bSaveToEEPROM)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (bSaveToEEPROM)
 		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
 	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
-int LegacyDLLExport icsneoGetRADStar2Settings(void *hObject, SRADStar2Settings *pSettings, int iNumBytes)
+int LegacyDLLExport icsneoGetRADStar2Settings(void* hObject, SRADStar2Settings* pSettings, int iNumBytes)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	return !!(icsneo_settingsReadStructure(device, pSettings, iNumBytes) + 1);
 }
 
-int LegacyDLLExport icsneoSetRADStar2Settings(void *hObject, SRADStar2Settings *pSettings, int iNumBytes, int bSaveToEEPROM)
+int LegacyDLLExport icsneoSetRADStar2Settings(void* hObject, SRADStar2Settings* pSettings, int iNumBytes, int bSaveToEEPROM)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (bSaveToEEPROM)
 		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
 	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
-int LegacyDLLExport icsneoSetBitRate(void *hObject, int BitRate, int NetworkID)
+int LegacyDLLExport icsneoSetBitRate(void* hObject, int BitRate, int NetworkID)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (!icsneo_setBaudrate(device, (uint16_t)NetworkID, BitRate))
 		return false;
 	return icsneo_settingsApply(device);
 }
 
-int LegacyDLLExport icsneoSetFDBitRate(void* hObject, int BitRate, int NetworkID) {
-    if(!icsneoValidateHObject(hObject))
-        return false;
-    neodevice_t* device = (neodevice_t*)hObject;
-    if(!icsneo_setFDBaudrate(device, (uint16_t)NetworkID, BitRate))
-        return false;
-    return icsneo_settingsApply(device);
+int LegacyDLLExport icsneoSetFDBitRate(void* hObject, int BitRate, int NetworkID)
+{
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
+	if(!icsneo_setFDBaudrate(device, (uint16_t)NetworkID, BitRate))
+		return false;
+	return icsneo_settingsApply(device);
 }
 
-int LegacyDLLExport icsneoGetDeviceParameters(void* hObject, char* pParameter, char* pValues, short ValuesLength) {
-	// TODO Implement
-	return false;
-}
-
-int LegacyDLLExport icsneoSetDeviceParameters(void *hObject, char *pParmValue, int *pErrorIndex, int bSaveToEEPROM)
+int LegacyDLLExport icsneoGetDeviceParameters(void* hObject, char* pParameter, char* pValues, short ValuesLength)
 {
 	// TODO Implement
 	return false;
 }
 
-//Error Functions
-int LegacyDLLExport icsneoGetLastAPIError(void *hObject, unsigned long *pErrorNumber)
+int LegacyDLLExport icsneoSetDeviceParameters(void* hObject, char* pParmValue, int* pErrorIndex, int bSaveToEEPROM)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoGetErrorMessages(void *hObject, int *pErrorMsgs, int *pNumberOfErrors)
+// Error Functions
+int LegacyDLLExport icsneoGetLastAPIError(void* hObject, unsigned long* pErrorNumber)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoGetErrorInfo(int lErrorNumber, TCHAR *szErrorDescriptionShort, TCHAR *szErrorDescriptionLong, int *lMaxLengthShort, int *lMaxLengthLong, int *lErrorSeverity, int *lRestartNeeded)
+int LegacyDLLExport icsneoGetErrorMessages(void* hObject, int* pErrorMsgs, int* pNumberOfErrors)
+{
+	// TODO Implement
+	return false;
+}
+
+int LegacyDLLExport icsneoGetErrorInfo(int lErrorNumber, TCHAR* szErrorDescriptionShort, TCHAR* szErrorDescriptionLong,
+	int* lMaxLengthShort, int* lMaxLengthLong, int* lErrorSeverity, int* lRestartNeeded)
 {
 	// TODO Implement
 	return false;
 }
 
 //ISO15765-2 Functions
-int LegacyDLLExport icsneoISO15765_EnableNetworks(void *hObject, unsigned long ulNetworks)
+int LegacyDLLExport icsneoISO15765_EnableNetworks(void* hObject, unsigned long ulNetworks)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoISO15765_DisableNetworks(void *hObject)
+int LegacyDLLExport icsneoISO15765_DisableNetworks(void* hObject)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoISO15765_TransmitMessage(void *hObject, unsigned long ulNetworkID, stCM_ISO157652_TxMessage *pMsg, unsigned long ulBlockingTimeout)
+int LegacyDLLExport icsneoISO15765_TransmitMessage(void* hObject, unsigned long ulNetworkID, stCM_ISO157652_TxMessage* pMsg,
+	unsigned long ulBlockingTimeout)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoISO15765_ReceiveMessage(void *hObject, int ulNetworkID, stCM_ISO157652_RxMessage *pMsg)
+int LegacyDLLExport icsneoISO15765_ReceiveMessage(void* hObject, int ulNetworkID, stCM_ISO157652_RxMessage* pMsg)
 {
 	// TODO Implement
 	return false;
 }
 
 //General Utility Functions
-int LegacyDLLExport icsneoValidateHObject(void *hObject)
+int LegacyDLLExport icsneoValidateHObject(void* hObject)
 {
 	for (auto it = neodevices.begin(); it != neodevices.end(); it++)
 	{
 		if (&it->second == hObject)
 		{
-			neodevice_t *device = (neodevice_t *)hObject;
+			neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 			if (icsneo_isValidNeoDevice(device))
 				return true;
 		}
@@ -695,11 +703,11 @@ int LegacyDLLExport icsneoGetDLLVersion(void)
 	return 804;
 }
 
-int LegacyDLLExport icsneoGetSerialNumber(void *hObject, unsigned int *iSerialNumber)
+int LegacyDLLExport icsneoGetSerialNumber(void* hObject, unsigned int* iSerialNumber)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	*iSerialNumber = icsneo_serialStringToNum(device->serial);
 	return true;
 }
@@ -708,7 +716,7 @@ int LegacyDLLExport icsneoEnableDOIPLine(void* hObject, bool enable)
 {
 	if(!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	return icsneo_setDigitalIO(device, ICSNEO_IO_ETH_ACTIVATION, 1, enable);
 }
 
@@ -718,91 +726,93 @@ int LegacyDLLExport icsneoStartSockServer(void* hObject, int iPort)
 	return false;
 }
 
-int LegacyDLLExport icsneoStopSockServer(void *hObject)
+int LegacyDLLExport icsneoStopSockServer(void* hObject)
 {
 	// TODO Implement
 	return false;
 }
 
 //CoreMini Script functions
-int LegacyDLLExport icsneoScriptStart(void *hObject, int iLocation)
+int LegacyDLLExport icsneoScriptStart(void* hObject, int iLocation)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoScriptStop(void *hObject)
+int LegacyDLLExport icsneoScriptStop(void* hObject)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoScriptLoad(void *hObject, const unsigned char *bin, unsigned long len_bytes, int iLocation)
+int LegacyDLLExport icsneoScriptLoad(void* hObject, const unsigned char* bin, unsigned long len_bytes, int iLocation)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoScriptClear(void *hObject, int iLocation)
+int LegacyDLLExport icsneoScriptClear(void* hObject, int iLocation)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoScriptStartFBlock(void *hObject, unsigned int fb_index)
+int LegacyDLLExport icsneoScriptStartFBlock(void* hObject, unsigned int fb_index)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoScriptGetFBlockStatus(void *hObject, unsigned int fb_index, int *piRunStatus)
+int LegacyDLLExport icsneoScriptGetFBlockStatus(void* hObject, unsigned int fb_index, int* piRunStatus)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoScriptStopFBlock(void *hObject, unsigned int fb_index)
+int LegacyDLLExport icsneoScriptStopFBlock(void* hObject, unsigned int fb_index)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoScriptGetScriptStatus(void *hObject, int *piStatus)
+int LegacyDLLExport icsneoScriptGetScriptStatus(void* hObject, int* piStatus)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoScriptReadAppSignal(void *hObject, unsigned int iIndex, double *dValue)
+int LegacyDLLExport icsneoScriptReadAppSignal(void* hObject, unsigned int iIndex, double* dValue)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoScriptWriteAppSignal(void *hObject, unsigned int iIndex, double dValue)
+int LegacyDLLExport icsneoScriptWriteAppSignal(void* hObject, unsigned int iIndex, double dValue)
 {
 	// TODO Implement
 	return false;
 }
 
 //Deprecated (but still suppored in the DLL)
-int LegacyDLLExport icsneoOpenPortEx(void *lPortNumber, int lPortType, int lDriverType, int lIPAddressMSB, int lIPAddressLSBOrBaudRate, int bConfigRead, unsigned char *bNetworkID, int *hObject)
+int LegacyDLLExport icsneoOpenPortEx(void* lPortNumber, int lPortType, int lDriverType, int lIPAddressMSB,
+	int lIPAddressLSBOrBaudRate, int bConfigRead, unsigned char* bNetworkID, int* hObject)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoOpenPort(int lPortNumber, int lPortType, int lDriverType, unsigned char *bNetworkID, unsigned char *bSCPIDs, int *hObject)
+int LegacyDLLExport icsneoOpenPort(int lPortNumber, int lPortType, int lDriverType, unsigned char *bNetworkID,
+	unsigned char* bSCPIDs, int* hObject)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoEnableNetworkCom(void *hObject, int Enable)
+int LegacyDLLExport icsneoEnableNetworkCom(void* hObject, int Enable)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 
 	if (Enable)
 		return icsneo_goOnline(device);
@@ -810,42 +820,44 @@ int LegacyDLLExport icsneoEnableNetworkCom(void *hObject, int Enable)
 		return icsneo_goOffline(device);
 }
 
-int LegacyDLLExport icsneoFindAllCOMDevices(int lDriverType, int lGetSerialNumbers, int lStopAtFirst, int lUSBCommOnly, int *p_lDeviceTypes, int *p_lComPorts, int *p_lSerialNumbers, int *lNumDevices)
+int LegacyDLLExport icsneoFindAllCOMDevices(int lDriverType, int lGetSerialNumbers, int lStopAtFirst, int lUSBCommOnly,
+	int* p_lDeviceTypes, int* p_lComPorts, int* p_lSerialNumbers, int* lNumDevices)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoOpenNeoDeviceByChannels(NeoDevice *pNeoDevice, void **hObject, unsigned char *uChannels, int iSize, int bConfigRead, int iOptions)
+int LegacyDLLExport icsneoOpenNeoDeviceByChannels(NeoDevice* pNeoDevice, void** hObject, unsigned char* uChannels, int iSize,
+	int bConfigRead, int iOptions)
 {
 	// TODO Implement
 	return false;
 }
 
-int LegacyDLLExport icsneoGetVCAN4Settings(void *hObject, SVCAN4Settings *pSettings, int iNumBytes)
+int LegacyDLLExport icsneoGetVCAN4Settings(void* hObject, SVCAN4Settings* pSettings, int iNumBytes)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	return !!icsneo_settingsReadStructure(device, pSettings, iNumBytes);
 }
 
-int LegacyDLLExport icsneoSetVCAN4Settings(void *hObject, SVCAN4Settings *pSettings, int iNumBytes, int bSaveToEEPROM)
+int LegacyDLLExport icsneoSetVCAN4Settings(void* hObject, SVCAN4Settings* pSettings, int iNumBytes, int bSaveToEEPROM)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (bSaveToEEPROM)
 		return icsneo_settingsApplyStructure(device, pSettings, iNumBytes);
 	return icsneo_settingsApplyStructureTemporary(device, pSettings, iNumBytes);
 }
 
-int LegacyDLLExport icsneoGetDeviceSettingsType(void *hObject, EPlasmaIonVnetChannel_t vnetSlot, EDeviceSettingsType *pDeviceSettingsType)
+int LegacyDLLExport icsneoGetDeviceSettingsType(void* hObject, EPlasmaIonVnetChannel_t vnetSlot, EDeviceSettingsType* pDeviceSettingsType)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
 
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 
 	unsigned long ulDeviceType = device->type;
 
@@ -906,12 +918,13 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void *hObject, EPlasmaIonVnetCha
 	return 1;
 }
 
-int LegacyDLLExport icsneoSetDeviceSettings(void* hObject, SDeviceSettings* pSettings, int iNumBytes, int bSaveToEEPROM, EPlasmaIonVnetChannel_t vnetSlot)
+int LegacyDLLExport icsneoSetDeviceSettings(void* hObject, SDeviceSettings* pSettings, int iNumBytes, int bSaveToEEPROM,
+	EPlasmaIonVnetChannel_t vnetSlot)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
 
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 
 	const size_t offset = size_t(&pSettings->Settings) - size_t(pSettings);
 
@@ -926,7 +939,7 @@ int LegacyDLLExport icsneoGetDeviceSettings(void* hObject, SDeviceSettings* pSet
 	if (!icsneoValidateHObject(hObject))
 		return false;
 
-	neodevice_t* device = (neodevice_t*)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 
 	if (icsneoGetDeviceSettingsType(hObject, vnetSlot, &pSettings->DeviceSettingType) == 0)
 		return false;
@@ -935,11 +948,11 @@ int LegacyDLLExport icsneoGetDeviceSettings(void* hObject, SDeviceSettings* pSet
 	return !!icsneo_settingsReadStructure(device, &pSettings->Settings, iNumBytes - offset);
 }
 
-int LegacyDLLExport icsneoSetBitRateEx(void *hObject, unsigned long BitRate, int NetworkID, int iOptions)
+int LegacyDLLExport icsneoSetBitRateEx(void* hObject, unsigned long BitRate, int NetworkID, int iOptions)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 	if (!icsneo_setBaudrate(device, (uint16_t)NetworkID, BitRate))
 		return false;
 
@@ -951,17 +964,17 @@ int LegacyDLLExport icsneoSetBitRateEx(void *hObject, unsigned long BitRate, int
 		return icsneo_settingsApplyTemporary(device);
 }
 
-int LegacyDLLExport icsneoEnableNetworkComEx(void *hObject, int iEnable, int iNetId)
+int LegacyDLLExport icsneoEnableNetworkComEx(void* hObject, int iEnable, int iNetId)
 {
 	return icsneoEnableNetworkCom(hObject, iEnable);
 }
 
-int LegacyDLLExport icsneoForceFirmwareUpdate(void *hObject)
+int LegacyDLLExport icsneoForceFirmwareUpdate(void* hObject)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoGetHWFirmwareInfo(void *hObject, stAPIFirmwareInfo *pInfo)
+int LegacyDLLExport icsneoGetHWFirmwareInfo(void* hObject, stAPIFirmwareInfo *pInfo)
 {
 	return false;
 }
@@ -1036,45 +1049,45 @@ int LegacyDLLExport icsneoSetCANParametersPhilipsSJA1000(void* hObject,
 	return false;
 }
 
-int LegacyDLLExport icsneoEnableBitSmash(void *hObject,
-										 int netId,
-										 unsigned int numWaitBits,
-										 unsigned int numSmashBits,
-										 unsigned int numFrames,
-										 unsigned int timeout_ms,
-										 unsigned int optionBits,
-										 unsigned int numArbIds,
-										 unsigned int arbIds[MAX_BIT_SMASH_ARBIDS])
+int LegacyDLLExport icsneoEnableBitSmash(void* hObject,
+	int netId,
+	unsigned int numWaitBits,
+	unsigned int numSmashBits,
+	unsigned int numFrames,
+	unsigned int timeout_ms,
+	unsigned int optionBits,
+	unsigned int numArbIds,
+	unsigned int arbIds[MAX_BIT_SMASH_ARBIDS])
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoDisableBitSmash(void *hObject, unsigned int reservedZero)
+int LegacyDLLExport icsneoDisableBitSmash(void* hObject, unsigned int reservedZero)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoSendHWTimeRequest(void *hObject)
+int LegacyDLLExport icsneoSendHWTimeRequest(void* hObject)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoReceiveHWTimeResponse(void *hObject, double *TimeHardware, unsigned long TimeOut)
+int LegacyDLLExport icsneoReceiveHWTimeResponse(void* hObject, double* TimeHardware, unsigned long TimeOut)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoGetDLLFirmwareInfo(void *hObject, stAPIFirmwareInfo *pInfo)
+int LegacyDLLExport icsneoGetDLLFirmwareInfo(void* hObject, stAPIFirmwareInfo* pInfo)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoGetDLLFirmwareInfoEx(void *hObject, stAPIFirmwareInfo *pInfo, EPlasmaIonVnetChannel_t vnetSlot)
+int LegacyDLLExport icsneoGetDLLFirmwareInfoEx(void* hObject, stAPIFirmwareInfo* pInfo, EPlasmaIonVnetChannel_t vnetSlot)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short Len, void *pVoid)
+int LegacyDLLExport icsneoJ2534Cmd(void* hObject, unsigned char* CmdBuf, short Len, void* pVoid)
 {
 	uint64_t* pTmp = nullptr;
 	int iRetVal = 0, iNumBytes = 0, NetworkID;
@@ -1082,7 +1095,7 @@ int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short L
 	if (!icsneoValidateHObject(hObject))
 		return false;
 
-	neodevice_t *device = (neodevice_t *)hObject;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
 
 	switch (*CmdBuf)
 	{
@@ -1210,64 +1223,61 @@ int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short L
 	return iRetVal;
 }
 
-int LegacyDLLExport icsneoSendRawCmds(void *hObject, icsneoVICommand *pCmdMsgs, int lNumOfCmds)
+int LegacyDLLExport icsneoSendRawCmds(void* hObject, icsneoVICommand* pCmdMsgs, int lNumOfCmds)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoEnableBusVoltageMonitor(void *hObject, unsigned int enable, unsigned int reserved)
+int LegacyDLLExport icsneoEnableBusVoltageMonitor(void* hObject, unsigned int enable, unsigned int reserved)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoISO15765_TransmitMessageEx(void *hObject,
-													 unsigned long ulNetworkID,
-													 ISO15765_2015_TxMessage *pMsg,
-													 unsigned long ulBlockingTimeout)
+int LegacyDLLExport icsneoISO15765_TransmitMessageEx(void* hObject,
+	unsigned long ulNetworkID,
+	ISO15765_2015_TxMessage* pMsg,
+	unsigned long ulBlockingTimeout)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoGetBusVoltage(void *hObject, unsigned long *pVBusVoltage, unsigned int reserved)
+int LegacyDLLExport icsneoGetBusVoltage(void* hObject, unsigned long* pVBusVoltage, unsigned int reserved)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoOpenRemoteNeoDevice(const char *pIPAddress,
-											  NeoDevice *pNeoDevice,
-											  void **hObject,
-											  unsigned char *bNetworkIDs,
-											  int iOptions)
+int LegacyDLLExport icsneoOpenRemoteNeoDevice(const char* pIPAddress, NeoDevice* pNeoDevice, void** hObject,
+	unsigned char* bNetworkIDs, int iOptions)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoFindRemoteNeoDevices(const char *pIPAddress, NeoDevice *pNeoDevice, int *pNumDevices)
+int LegacyDLLExport icsneoFindRemoteNeoDevices(const char* pIPAddress, NeoDevice* pNeoDevice, int* pNumDevices)
 {
 	return false;
 }
 
-int LegacyDLLExport icsneoFirmwareUpdateRequired(void *hObject)
+int LegacyDLLExport icsneoFirmwareUpdateRequired(void* hObject)
 {
 	return false;
 }
 
-void LegacyDLLExport icsneoGetDLLVersionEx(unsigned long *dwMSVersion, unsigned long *dwLSVersion)
+void LegacyDLLExport icsneoGetDLLVersionEx(unsigned long* dwMSVersion, unsigned long* dwLSVersion)
 {
 	return;
 }
 
-int LegacyDLLExport icsneoGetNetidforSlaveVNETs(size_t *NetworkIndex, EPlasmaIonVnetChannel_t vnetSlot)
+int LegacyDLLExport icsneoGetNetidforSlaveVNETs(size_t* NetworkIndex, EPlasmaIonVnetChannel_t vnetSlot)
 {
 	return GetVnetNetid(*NetworkIndex, vnetSlot);
 }
 
-int LegacyDLLExport icsneoGetVnetSimpleNetid(size_t *FullNetID)
+int LegacyDLLExport icsneoGetVnetSimpleNetid(size_t* FullNetID)
 {
 	return GetVnetAgnosticNetid(*FullNetID);
 }
 
-int LegacyDLLExport icsneoSerialNumberFromString(unsigned long *serial, char *data)
+int LegacyDLLExport icsneoSerialNumberFromString(unsigned long* serial, char* data)
 {
 	if (serial == nullptr)
 		return false;
@@ -1276,7 +1286,7 @@ int LegacyDLLExport icsneoSerialNumberFromString(unsigned long *serial, char *da
 	return false;
 }
 
-int LegacyDLLExport icsneoGetMiniportAdapterInfo(void *hObject, NETWORK_ADAPTER_INFO *aInfo)
+int LegacyDLLExport icsneoGetMiniportAdapterInfo(void* hObject, NETWORK_ADAPTER_INFO* aInfo)
 {
 	return false;
 }
