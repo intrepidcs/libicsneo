@@ -63,32 +63,39 @@ static NeoDevice OldNeoDeviceFromNew(const neodevice_t *newnd)
 	return oldnd;
 }
 
-static void NeoMessageToSpyMessage(const neodevice_t *device, const neomessage_t &newmsg, icsSpyMessage &oldmsg)
+static bool NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t& newmsg, icsSpyMessage& oldmsg)
 {
 	memset(&oldmsg, 0, sizeof(icsSpyMessage));
-	oldmsg.NumberBytesData = (uint8_t)std::min(newmsg.length, (size_t)255);
-	oldmsg.NumberBytesHeader = 4;
-	oldmsg.ExtraDataPtr = (void*)newmsg.data;
-	oldmsg.ExtraDataPtrEnabled = newmsg.length > 8 ? 1 : 0;
-	memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
-	oldmsg.ArbIDOrHeader = *(uint32_t *)newmsg.header;
-	oldmsg.NetworkID = (uint8_t)newmsg.netid; // Note: NetID remapping from the original API is not supported
-	oldmsg.DescriptionID = newmsg.description;
-	oldmsg.StatusBitField = newmsg.status.statusBitfield[0];
-	oldmsg.StatusBitField2 = newmsg.status.statusBitfield[1];
-	oldmsg.StatusBitField3 = newmsg.status.statusBitfield[2];
-	oldmsg.StatusBitField4 = newmsg.status.statusBitfield[3];
+
 	switch (Network::Type(newmsg.type))
 	{
 	case Network::Type::CAN:
 	case Network::Type::SWCAN:
 	case Network::Type::LSFTCAN:
 		oldmsg.Protocol = newmsg.status.canfdFDF ? SPY_PROTOCOL_CANFD : SPY_PROTOCOL_CAN;
+		oldmsg.NumberBytesData = static_cast<uint8_t>(std::min(newmsg.length, (size_t)255));
+		oldmsg.NumberBytesHeader = 4;
 		break;
 	case Network::Type::Ethernet:
 		oldmsg.Protocol = SPY_PROTOCOL_ETHERNET;
+		oldmsg.NumberBytesData = static_cast<uint8_t>(newmsg.length & 0xFF);
+		oldmsg.NumberBytesHeader = static_cast<uint8_t>(newmsg.length >> 8);
 		break;
+	default:
+		return false;
 	}
+
+	oldmsg.ExtraDataPtr = (void*)newmsg.data;
+	oldmsg.ExtraDataPtrEnabled = newmsg.length > 8 ? 1 : 0;
+	memcpy(oldmsg.Data, newmsg.data, std::min(newmsg.length, (size_t)8));
+	oldmsg.ArbIDOrHeader = *reinterpret_cast<const uint32_t*>(newmsg.header);
+	oldmsg.NetworkID = static_cast<uint8_t>(newmsg.netid); // Note: NetID remapping from the original API is not supported
+	oldmsg.NetworkID2 = static_cast<uint8_t>(newmsg.netid >> 8);
+	oldmsg.DescriptionID = newmsg.description;
+	oldmsg.StatusBitField = newmsg.status.statusBitfield[0];
+	oldmsg.StatusBitField2 = newmsg.status.statusBitfield[1];
+	oldmsg.StatusBitField3 = newmsg.status.statusBitfield[2];
+	oldmsg.StatusBitField4 = newmsg.status.statusBitfield[3];
 
 	// Timestamp - epoch = 1/1/2007 - 25ns per tick most of the time
 	uint64_t t = newmsg.timestamp;
@@ -110,6 +117,8 @@ static void NeoMessageToSpyMessage(const neodevice_t *device, const neomessage_t
 			oldmsg.TimeStampHardwareID = HARDWARE_TIMESTAMP_ID_NONE;
 		}
 	}
+
+	return true;
 }
 
 static inline bool Within(size_t value, size_t min, size_t max)
@@ -356,11 +365,14 @@ int LegacyDLLExport icsneoGetMessages(void *hObject, icsSpyMessage *pMsg, int *p
 	if (!icsneo_getMessages(device, messages, &messageCount, 0))
 		return false;
 
-	*pNumberOfMessages = (int)messageCount;
+	*pNumberOfMessages = 0;
 	*pNumberOfErrors = 0;
 
 	for (size_t i = 0; i < messageCount; i++)
-		NeoMessageToSpyMessage(device, messages[i], pMsg[i]);
+	{
+		if (NeoMessageToSpyMessage(device, messages[i], pMsg[*pNumberOfMessages]))
+			(*pNumberOfMessages)++;
+	}
 
 	return true;
 }
