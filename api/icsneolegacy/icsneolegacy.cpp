@@ -27,8 +27,28 @@ using namespace icsneo;
 typedef uint64_t legacymaphandle_t;
 static std::map<legacymaphandle_t, neodevice_t> neodevices;
 
-static std::map<const size_t, size_t> mp_netIDToVnetOffSet = {{NETID_HSCAN, 1}, {NETID_MSCAN, 2}, {NETID_HSCAN2, 18}, {NETID_HSCAN3, 19}, {NETID_HSCAN4, 32}, {NETID_HSCAN5, 33}, {NETID_HSCAN6, 47}, {NETID_HSCAN7, 48}};
-static std::map<const size_t, size_t> mp_HWnetIDToCMnetID = {{NETID_HSCAN, 0}, {NETID_MSCAN, 1}, {NETID_HSCAN2, 5}, {NETID_HSCAN3, 8}, {NETID_HSCAN4, 14}, {NETID_HSCAN5, 15}, {NETID_HSCAN6, 32}, {NETID_HSCAN7, 33}};
+static const std::map<size_t, size_t> mp_netIDToVnetOffSet = {
+	{NETID_HSCAN, 1},
+	{NETID_MSCAN, 2},
+	{NETID_HSCAN2, 18},
+	{NETID_HSCAN3, 19},
+	{NETID_HSCAN4, 32},
+	{NETID_HSCAN5, 33},
+	{NETID_HSCAN6, 47},
+	{NETID_HSCAN7, 48},
+};
+
+static const std::map<size_t, size_t> mp_HWnetIDToCMnetID = {
+	{NETID_HSCAN, 0},
+	{NETID_MSCAN, 1},
+	{NETID_HSCAN2, 5},
+	{NETID_HSCAN3, 8},
+	{NETID_HSCAN4, 14},
+	{NETID_HSCAN5, 15},
+	{NETID_HSCAN6, 32},
+	{NETID_HSCAN7, 33},
+};
+
 static unsigned long vnet_table[] = {0, PLASMA_SLAVE1_OFFSET, PLASMA_SLAVE2_OFFSET};
 
 static NeoDevice OldNeoDeviceFromNew(const neodevice_t *newnd)
@@ -119,10 +139,14 @@ static inline bool IdIsSlaveBRange2(unsigned int fullNetid)
 
 static inline unsigned int GetVnetNetid(size_t simpleNetId, EPlasmaIonVnetChannel_t vnetSlot)
 {
-	if (vnetSlot == 0 || vnetSlot > 3)
+	if (vnetSlot == 0 || vnetSlot >= sizeof(vnet_table)/sizeof(vnet_table[0]))
 		return simpleNetId;
 
-	return mp_netIDToVnetOffSet[simpleNetId] + vnet_table[vnetSlot];
+	const auto offset = mp_netIDToVnetOffSet.find(simpleNetId);
+	if (offset == mp_netIDToVnetOffSet.end())
+		return simpleNetId;
+
+	return offset->second + vnet_table[vnetSlot];
 }
 
 /**
@@ -1107,10 +1131,25 @@ int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short L
 		case NEODEVICE_ION:	//FIRE2 VNETS
 			SFire2Settings Cs;
 			iNumBytes = sizeof(Cs);
-			if (!!icsneoGetFire2Settings(hObject, &Cs, iNumBytes))
-				(Cs.termination_enables & (1ull << mp_HWnetIDToCMnetID[GetVnetAgnosticNetid(NetworkID)])) ? *pTmp = 3 /*Termination ON*/ : *pTmp = 0 /*Termination OFF*/;
+			if (icsneoGetFire2Settings(hObject, &Cs, iNumBytes))
+			{
+				const auto cmId = mp_HWnetIDToCMnetID.find(GetVnetAgnosticNetid(NetworkID));
+				if (cmId != mp_HWnetIDToCMnetID.end())
+				{
+					if (Cs.termination_enables & (1ull << cmId->second))
+						*pTmp = 3; // Termination ON
+					else
+						*pTmp = 0; // Termination OFF
+				}
+				else
+				{
+					iRetVal = 0;
+				}
+			}
 			else
+			{
 				iRetVal = 0;
+			}
 			break;
 		}
 		break;
@@ -1130,14 +1169,24 @@ int LegacyDLLExport icsneoJ2534Cmd(void *hObject, unsigned char *CmdBuf, short L
 			iNumBytes = sizeof(Cs);
 			if (icsneoGetFire2Settings(hObject, &Cs, iNumBytes))
 			{
-				unsigned long long CoremininetID = mp_HWnetIDToCMnetID[GetVnetAgnosticNetid(NetworkID)];
-			
-				if (*pTmp == 3) /*Termination ON*/
-					Cs.termination_enables |= (1ull << CoremininetID);
-				else /*Termination OFF*/
-					Cs.termination_enables &= ~(1ull << CoremininetID);
+				const auto cmId = mp_HWnetIDToCMnetID.find(GetVnetAgnosticNetid(NetworkID));
+				if (cmId != mp_HWnetIDToCMnetID.end())
+				{
+					if (*pTmp == 3) /*Termination ON*/
+						Cs.termination_enables |= (1ull << cmId->second);
+					else /*Termination OFF*/
+						Cs.termination_enables &= ~(1ull << cmId->second);
 
-				iRetVal = icsneoSetFire2Settings(hObject, &Cs, iNumBytes, 1 /* ConfigurationOptionDoNotSaveToEEPROM */);
+					iRetVal = icsneoSetFire2Settings(hObject, &Cs, iNumBytes, 1 /* ConfigurationOptionDoNotSaveToEEPROM */);
+				}
+				else
+				{
+					iRetVal = 0;
+				}
+			}
+			else
+			{
+				iRetVal = 0;
 			}
 			break;
 		}
