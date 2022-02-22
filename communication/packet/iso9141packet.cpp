@@ -27,7 +27,7 @@ bool HardwareISO9141Packet::EncodeFromMessage(const ISO9141Message& message, std
 		const uint8_t maxSize = (firstPacket ? 9 : 12);
 		uint8_t currentSize = maxSize;
 		if(bytesToSend - currentStart < maxSize)
-			currentSize = bytesToSend - currentStart;
+			currentSize = (uint8_t)(bytesToSend - currentStart);
 
 		packet.insert(packet.begin(), {
 			(uint8_t)Network::NetID::RED, // 0x0C for long message
@@ -75,7 +75,7 @@ bool HardwareISO9141Packet::EncodeFromMessage(const ISO9141Message& message, std
 }
 
 std::shared_ptr<ISO9141Message> HardwareISO9141Packet::Decoder::decodeToMessage(const std::vector<uint8_t>& bytestream) {
-	const HardwareISO9141Packet* data = (const HardwareISO9141Packet*)bytestream.data();
+	const HardwareISO9141Packet& packet = *reinterpret_cast<const HardwareISO9141Packet*>(bytestream.data());
 
 	if(!mMsg) {
 		mMsg = std::make_shared<ISO9141Message>();
@@ -84,8 +84,8 @@ std::shared_ptr<ISO9141Message> HardwareISO9141Packet::Decoder::decodeToMessage(
 
 	mGotPackets++;
 
-	const bool morePacketsComing = data->c3.frm == 0;
-	const uint8_t bytesInCurrentMessage = data->c3.len;
+	const bool morePacketsComing = packet.c3.frm == 0;
+	const uint8_t bytesInCurrentMessage = packet.c3.len;
 	if(mMsg->data.size() + bytesInCurrentMessage > 500) {
 		mMsg.reset();
 		return std::shared_ptr<ISO9141Message>();
@@ -93,9 +93,9 @@ std::shared_ptr<ISO9141Message> HardwareISO9141Packet::Decoder::decodeToMessage(
 
 	// This timestamp is raw off the device (in timestampResolution increments)
 	// Decoder will fix as it has information about the timestampResolution increments
-	mMsg->timestamp = data->timestamp.TS;
+	mMsg->timestamp = packet.timestamp.TS;
 
-	auto* dataStart = data->data;
+	auto* dataStart = packet.data;
 	if(mGotPackets == 1) {
 		// Header
 		if(bytesInCurrentMessage < 3) {
@@ -103,31 +103,31 @@ std::shared_ptr<ISO9141Message> HardwareISO9141Packet::Decoder::decodeToMessage(
 			return std::shared_ptr<ISO9141Message>();
 		}
 
-		std::copy(data->data, data->data + 3, mMsg->header.begin());
+		std::copy(packet.data, packet.data + 3, mMsg->header.begin());
 		dataStart += 3;
 	}
 
 	// Data
-	mMsg->data.insert(mMsg->data.end(), dataStart, data->data + (bytesInCurrentMessage > 8 ? 8 : bytesInCurrentMessage));
+	mMsg->data.insert(mMsg->data.end(), dataStart, packet.data + (bytesInCurrentMessage > 8 ? 8 : bytesInCurrentMessage));
 	if(bytesInCurrentMessage > 8)
-		mMsg->data.push_back(data->c1.d8);
+		mMsg->data.push_back(packet.c1.d8);
 	if(bytesInCurrentMessage > 9)
-		mMsg->data.push_back(data->c2.d9);
+		mMsg->data.push_back(packet.c2.d9);
 	if(bytesInCurrentMessage > 10)
-		mMsg->data.push_back(data->c2.d10);
+		mMsg->data.push_back(packet.c2.d10);
 	if(bytesInCurrentMessage > 11)
-		mMsg->data.push_back(data->c3.d11);
+		mMsg->data.push_back(packet.c3.d11);
 
 	if(morePacketsComing)
 		return std::shared_ptr<ISO9141Message>();
 
-	mMsg->transmitted = data->c1.tx;
-	mMsg->isInit = data->c3.init;
-	mMsg->framingError = data->c1.options & 0x1;
-	mMsg->overflowError = data->c1.options & 0x2;
-	mMsg->parityError = data->c1.options & 0x4;
-	mMsg->rxTimeoutError = data->c1.options & 0x8;
-	mMsg->description = data->stats;
+	mMsg->transmitted = packet.c1.tx;
+	mMsg->isInit = packet.c3.init;
+	mMsg->framingError = packet.c1.options & 0x1;
+	mMsg->overflowError = packet.c1.options & 0x2;
+	mMsg->parityError = packet.c1.options & 0x4;
+	mMsg->rxTimeoutError = packet.c1.options & 0x8;
+	mMsg->description = packet.stats;
 
 	auto ret = mMsg;
 	mMsg.reset();

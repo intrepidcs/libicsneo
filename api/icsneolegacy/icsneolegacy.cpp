@@ -142,7 +142,7 @@ static inline bool IdIsSlaveBRange1(size_t fullNetid)
 	return Within(fullNetid, PLASMA_SLAVE2_OFFSET, PLASMA_SLAVE2_OFFSET + PLASMA_SLAVE_NUM);
 }
 
-static inline bool IdIsSlaveBRange2(unsigned int fullNetid)
+static inline bool IdIsSlaveBRange2(size_t fullNetid)
 {
 	return Within(fullNetid, PLASMA_SLAVE2_OFFSET_RANGE2, PLASMA_SLAVE3_OFFSET_RANGE2);
 }
@@ -168,7 +168,7 @@ static inline bool GetVnetNetid(size_t& netId, EPlasmaIonVnetChannel_t vnetSlot)
  * the offset from PLASMA_SLAVE1_OFFSET2, return the vnet agnostic
  * netid so caller can commonize handlers without caring about WHICH slave.
  */
-static inline unsigned int OffsetToSimpleNetworkId(size_t offset)
+static inline size_t OffsetToSimpleNetworkId(size_t offset)
 {
 	for (const auto& it : mp_netIDToVnetOffSet)
 	{
@@ -181,23 +181,13 @@ static inline unsigned int OffsetToSimpleNetworkId(size_t offset)
 static inline size_t GetVnetAgnosticNetid(size_t fullNetid)
 {
 	if (IdIsSlaveARange1(fullNetid))
-	{
-		unsigned int off = fullNetid - PLASMA_SLAVE1_OFFSET;
-		return OffsetToSimpleNetworkId(off);
-	}
+		return OffsetToSimpleNetworkId(fullNetid - PLASMA_SLAVE1_OFFSET);
 	else if (IdIsSlaveARange2(fullNetid))
-	{
 		return fullNetid - PLASMA_SLAVE1_OFFSET_RANGE2;
-	}
 	else if (IdIsSlaveBRange1(fullNetid))
-	{
-		unsigned int off = fullNetid - PLASMA_SLAVE2_OFFSET;
-		return OffsetToSimpleNetworkId(off);
-	}
+		return OffsetToSimpleNetworkId(fullNetid - PLASMA_SLAVE2_OFFSET);
 	else if (IdIsSlaveBRange2(fullNetid))
-	{
 		return fullNetid - PLASMA_SLAVE2_OFFSET_RANGE2;
-	}
 	return fullNetid;
 }
 
@@ -233,7 +223,7 @@ int LegacyDLLExport icsneoFindDevices(NeoDeviceEx* devs, int* devCount, unsigned
 
 		if (devTypes && devTypeCount)
 		{
-			for (auto j = 0; j < devTypeCount; j++)
+			for (unsigned int j = 0; j < devTypeCount; j++)
 			{
 				if (foundDevices[i].DeviceType == devTypes[j])
 				{
@@ -1094,7 +1084,8 @@ int LegacyDLLExport icsneoGetDLLFirmwareInfoEx(void* hObject, stAPIFirmwareInfo*
 int LegacyDLLExport icsneoJ2534Cmd(void* hObject, unsigned char* CmdBuf, short Len, void* pVoid)
 {
 	uint64_t* pTmp = nullptr;
-	int iRetVal = 0, iNumBytes = 0, NetworkID;
+	int iRetVal = 0, iNumBytes = 0;
+	uint16_t NetworkID = 0;
 
 	if (!icsneoValidateHObject(hObject))
 		return false;

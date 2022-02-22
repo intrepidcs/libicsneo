@@ -10,6 +10,11 @@ namespace icsneo {
 
 #endif
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
+
 #pragma pack(push, 2)
 typedef struct {
 	uint16_t perf_en;
@@ -57,8 +62,7 @@ typedef struct {
 	ETHERNET_SETTINGS ethernet;
 	TIMESYNC_ICSHARDWARE_SETTINGS timeSync;
 	STextAPISettings text_api;
-	struct
-	{
+	struct {
 		uint32_t disableUsbCheckOnBoot : 1;
 		uint32_t enableLatencyTest : 1;
 		uint32_t busMessagesToAndroid : 1;
@@ -86,6 +90,10 @@ typedef struct {
 	EthernetNetworkStatus ethernetStatus;
 } neovired2_status_t;
 #pragma pack(pop)
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #ifdef __cplusplus
 

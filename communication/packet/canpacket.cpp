@@ -9,19 +9,19 @@ static optional<uint8_t> CANFD_DLCToLength(uint8_t length) {
 	
 	switch(length) {
 		case 0x9:
-			return 12;
+			return uint8_t(12);
 		case 0xa:
-			return 16;
+			return uint8_t(16);
 		case 0xb:
-			return 20;
+			return uint8_t(20);
 		case 0xc:
-			return 24;
+			return uint8_t(24);
 		case 0xd:
-			return 32;
+			return uint8_t(32);
 		case 0xe:
-			return 48;
+			return uint8_t(48);
 		case 0xf:
-			return 64;
+			return uint8_t(64);
 	}
 	return nullopt;
 }

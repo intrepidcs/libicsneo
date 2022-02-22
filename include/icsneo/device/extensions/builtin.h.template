@@ -7,7 +7,8 @@
 
 namespace icsneo {
 
-static void AddBuiltInExtensionsTo([[maybe_unused]] const std::shared_ptr<icsneo::Device>& device) {
+static void AddBuiltInExtensionsTo(const std::shared_ptr<icsneo::Device>& device) {
+	(void)device; // [[maybe_unused]]
 	@LIBICSNEO_EXT_CODE@
 }
 

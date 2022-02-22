@@ -636,7 +636,7 @@ int main() {
 				names.push_back("Ethernet (DoIP) Activation Line");
 				if(ethAct > 1) {
 					names.back() += ' ';
-					names.back() += i;
+					names.back() += std::to_string(i);
 				}
 				std::cout << '[' << options.back() << "] " << names.back();
 				const auto val = selectedDevice->getDigitalIO(icsneo::IO::EthernetActivation, i);
@@ -655,7 +655,7 @@ int main() {
 				names.push_back("USB Host Power");
 				if(usbHost > 1) {
 					names.back() += ' ';
-					names.back() += i;
+					names.back() += std::to_string(i);
 				}
 				std::cout << '[' << options.back() << "] " << names.back();
 				const auto val = selectedDevice->getDigitalIO(icsneo::IO::USBHostPower, i);

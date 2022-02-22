@@ -557,7 +557,7 @@ TEST_F(EventManagerTest, GetSizeFilterTest) {
 	}
 
 	// (Incorrectly) try to get settings type again. 5 {mismatch, warning} remaining.
-	events = EventManager::GetInstance().get(-1, EventFilter(APIEvent::Type::SWCANSettingsNotAvailable));
+	events = EventManager::GetInstance().get(APIEvent::Type::SWCANSettingsNotAvailable);
 	EXPECT_EQ(events.size(), 0);
 	EXPECT_EQ(EventCount(), 5);
 
