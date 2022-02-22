@@ -17,7 +17,7 @@ build windows/x64:
 test windows/x64:
   stage: test
   script:
-    - CMD.EXE /C build\libicsneo-tests.exe
+    - build\libicsneo-tests.exe
   dependencies:
     - build windows/x64
   needs:
