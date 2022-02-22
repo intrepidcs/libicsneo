@@ -62,13 +62,13 @@ TEST_F(EventManagerTest, MultithreadedEventCallbacksTest) {
 	t1.join();
 	t2.join();
 
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(EventCount(), 0u);
 
 	EXPECT_EQ(callCounter, 2);
 
 	EventManager::GetInstance().add(APIEvent(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo));
 
-	EXPECT_EQ(EventCount(), 1);
+	EXPECT_EQ(EventCount(), 1u);
 
 	EXPECT_EQ(callCounter, 2);
 }
@@ -293,27 +293,27 @@ TEST_F(EventManagerTest, MultithreadedTest) {
 	EXPECT_EQ(GetLastError().getType(), APIEvent::Type::NoErrorFound);
 
 	// Should be 500 {OutputTruncated, Warning}, 500 {OutputTruncated, Info}, 1000 {CANFDNotSupported, Warning}, 500 {CANFDSettingsNotAvailable, Info}, 500 {FailedToWrite, Info}
-	EXPECT_EQ(EventCount(), 3000);
+	EXPECT_EQ(EventCount(), 3000u);
 
 	auto events = GetEvents(EventFilter(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
-	EXPECT_EQ(EventCount(), 2500);
-	EXPECT_EQ(events.size(), 500);
+	EXPECT_EQ(EventCount(), 2500u);
+	EXPECT_EQ(events.size(), 500u);
 
 	events = GetEvents(EventFilter(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventInfo));
-	EXPECT_EQ(EventCount(), 2000);
-	EXPECT_EQ(events.size(), 500);
+	EXPECT_EQ(EventCount(), 2000u);
+	EXPECT_EQ(events.size(), 500u);
 
 	events = GetEvents(EventFilter(APIEvent::Type::CANFDNotSupported, APIEvent::Severity::EventWarning));
-	EXPECT_EQ(EventCount(), 1000);
-	EXPECT_EQ(events.size(), 1000);
+	EXPECT_EQ(EventCount(), 1000u);
+	EXPECT_EQ(events.size(), 1000u);
 
 	events = GetEvents(EventFilter(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::EventInfo));
-	EXPECT_EQ(EventCount(), 500);
-	EXPECT_EQ(events.size(), 500);
+	EXPECT_EQ(EventCount(), 500u);
+	EXPECT_EQ(events.size(), 500u);
 
 	events = GetEvents(EventFilter(APIEvent::Type::FailedToWrite, APIEvent::Severity::EventInfo));
-	EXPECT_EQ(EventCount(), 0);
-	EXPECT_EQ(events.size(), 500);
+	EXPECT_EQ(EventCount(), 0u);
+	EXPECT_EQ(events.size(), 500u);
 }
 
 /**
@@ -323,7 +323,7 @@ TEST_F(EventManagerTest, MultithreadedTest) {
 TEST_F(EventManagerTest, CountTest) {
 	// Add an error event, should not go into events list.
 	EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::Error));
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(EventCount(), 0u);
 
 	// Adds actual event
 	EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
@@ -332,25 +332,25 @@ TEST_F(EventManagerTest, CountTest) {
 	EventManager::GetInstance().add(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
 	EventManager::GetInstance().add(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventInfo));
 
-	EXPECT_EQ(EventCount(), 1);
+	EXPECT_EQ(EventCount(), 1u);
 
 	// Add another actual event
 	EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventInfo));
-	EXPECT_EQ(EventCount(), 2);
+	EXPECT_EQ(EventCount(), 2u);
 
 	// Take all info events (1)
 	GetEvents(EventFilter(APIEvent::Severity::EventInfo));
-	EXPECT_EQ(EventCount(), 1);
+	EXPECT_EQ(EventCount(), 1u);
 
 	// Take all events
 	GetEvents();
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(EventCount(), 0u);
 
 	// default limit is 10000
 	for(int i = 0; i < 11000; i++)
 		EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
 
-	EXPECT_EQ(EventCount(), 10000);
+	EXPECT_EQ(EventCount(), 10000u);
 }
 
 /**
@@ -367,8 +367,8 @@ TEST_F(EventManagerTest, GetDefaultTest) {
 
 	auto events = EventManager::GetInstance().get();
 
-	EXPECT_EQ(events.size(), 10);
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(events.size(), 10u);
+	EXPECT_EQ(EventCount(), 0u);
 
 	for(int i = 0; i < 5; i++) {
 		EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::UnexpectedNetworkType);
@@ -380,8 +380,8 @@ TEST_F(EventManagerTest, GetDefaultTest) {
 
 	// Check getting when 0 events exist doesn't break
 	events = EventManager::GetInstance().get();
-	EXPECT_EQ(events.size(), 0);
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(events.size(), 0u);
+	EXPECT_EQ(EventCount(), 0u);
 }
 
 /**
@@ -401,8 +401,8 @@ TEST_F(EventManagerTest, GetSizeTest) {
 	// Take 3 events, 7 left
 	auto events = EventManager::GetInstance().get(3);
 
-	EXPECT_EQ(events.size(), 3);
-	EXPECT_EQ(EventCount(), 7);
+	EXPECT_EQ(events.size(), 3u);
+	EXPECT_EQ(EventCount(), 7u);
 
 	EXPECT_EQ(events.at(0).getType(), APIEvent::Type::UnexpectedNetworkType);
 	EXPECT_EQ(events.at(0).getSeverity(), APIEvent::Severity::EventWarning);
@@ -414,16 +414,16 @@ TEST_F(EventManagerTest, GetSizeTest) {
 	// Take 1 event, 6 left
 	events = EventManager::GetInstance().get(1);
 
-	EXPECT_EQ(events.size(), 1);
-	EXPECT_EQ(EventCount(), 6);
+	EXPECT_EQ(events.size(), 1u);
+	EXPECT_EQ(EventCount(), 6u);
 
 	EXPECT_EQ(events.at(0).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
 	EXPECT_EQ(events.at(0).getSeverity(), APIEvent::Severity::EventInfo);
 
 	// Try to take 8 events, should actually take the 6 remaining. 0 left.
 	events = EventManager::GetInstance().get(8);
-	EXPECT_EQ(events.size(), 6);
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(events.size(), 6u);
+	EXPECT_EQ(EventCount(), 0u);
 
 	for(int i = 0; i < 3; i++) {
 		EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::UnexpectedNetworkType);
@@ -435,8 +435,8 @@ TEST_F(EventManagerTest, GetSizeTest) {
 
 	// Check getting when 0 events exist doesn't break
 	events = EventManager::GetInstance().get(5);
-	EXPECT_EQ(events.size(), 0);
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(events.size(), 0u);
+	EXPECT_EQ(EventCount(), 0u);
 }
 
 /**
@@ -458,8 +458,8 @@ TEST_F(EventManagerTest, GetFilterTest) {
 	// Get all 5 {network, warning}. 15 left.
 	auto events = EventManager::GetInstance().get(EventFilter(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning));
 
-	EXPECT_EQ(events.size(), 5);
-	EXPECT_EQ(EventCount(), 15);
+	EXPECT_EQ(events.size(), 5u);
+	EXPECT_EQ(EventCount(), 15u);
 
 	for(APIEvent event : events) {
 		EXPECT_EQ(event.getType(), APIEvent::Type::UnexpectedNetworkType);
@@ -469,8 +469,8 @@ TEST_F(EventManagerTest, GetFilterTest) {
 	// Get all 10 infos. 5 {mismatch, warning} remaining.
 	events = EventManager::GetInstance().get(EventFilter(APIEvent::Severity::EventInfo));
 
-	EXPECT_EQ(events.size(), 10);
-	EXPECT_EQ(EventCount(), 5);
+	EXPECT_EQ(events.size(), 10u);
+	EXPECT_EQ(EventCount(), 5u);
 
 	for(int i = 0; i < 5; i++) {
 		EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
@@ -482,13 +482,13 @@ TEST_F(EventManagerTest, GetFilterTest) {
 
 	// (Incorrectly) try to get settings type again. 5 {mismatch, warning} remaining.
 	events = EventManager::GetInstance().get(EventFilter(APIEvent::Type::SWCANSettingsNotAvailable));
-	EXPECT_EQ(events.size(), 0);
-	EXPECT_EQ(EventCount(), 5);
+	EXPECT_EQ(events.size(), 0u);
+	EXPECT_EQ(EventCount(), 5u);
 
 	// Get the 5 {mismatch, warning} remaining.
 	events = EventManager::GetInstance().get(EventFilter(APIEvent::Type::SettingsStructureMismatch));
-	EXPECT_EQ(events.size(), 5);
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(events.size(), 5u);
+	EXPECT_EQ(EventCount(), 0u);
 
 	for(APIEvent event : events) {
 		EXPECT_EQ(event.getType(), APIEvent::Type::SettingsStructureMismatch);
@@ -497,8 +497,8 @@ TEST_F(EventManagerTest, GetFilterTest) {
 
 	// Check getting when 0 events exist doesn't break
 	events = EventManager::GetInstance().get(EventFilter(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning));
-	EXPECT_EQ(events.size(), 0);
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(events.size(), 0u);
+	EXPECT_EQ(EventCount(), 0u);
 }
 
 /**
@@ -520,8 +520,8 @@ TEST_F(EventManagerTest, GetSizeFilterTest) {
 	// Get all 5 {network, warning}. 15 left.
 	auto events = EventManager::GetInstance().get(6, EventFilter(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning));
 
-	EXPECT_EQ(events.size(), 5);
-	EXPECT_EQ(EventCount(), 15);
+	EXPECT_EQ(events.size(), 5u);
+	EXPECT_EQ(EventCount(), 15u);
 
 	for(APIEvent event : events) {
 		EXPECT_EQ(event.getType(), APIEvent::Type::UnexpectedNetworkType);
@@ -531,8 +531,8 @@ TEST_F(EventManagerTest, GetSizeFilterTest) {
 	// Get 6 infos. 4 infos and 5 {mismatch, warning} remaining.
 	events = EventManager::GetInstance().get(6, EventFilter(APIEvent::Severity::EventInfo));
 
-	EXPECT_EQ(events.size(), 6);
-	EXPECT_EQ(EventCount(), 9);
+	EXPECT_EQ(events.size(), 6u);
+	EXPECT_EQ(EventCount(), 9u);
 
 	for(int i = 0; i < 3; i++) {
 		EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
@@ -545,8 +545,8 @@ TEST_F(EventManagerTest, GetSizeFilterTest) {
 	// Get 4 remaining infos. 5 {mismatch, warning} remaining.
 	events = EventManager::GetInstance().get(4, EventFilter(APIEvent::Severity::EventInfo));
 
-	EXPECT_EQ(events.size(), 4);
-	EXPECT_EQ(EventCount(), 5);
+	EXPECT_EQ(events.size(), 4u);
+	EXPECT_EQ(EventCount(), 5u);
 
 	for(int i = 0; i < 2; i++) {
 		EXPECT_EQ(events.at(2 * i).getType(), APIEvent::Type::SWCANSettingsNotAvailable);
@@ -558,13 +558,13 @@ TEST_F(EventManagerTest, GetSizeFilterTest) {
 
 	// (Incorrectly) try to get settings type again. 5 {mismatch, warning} remaining.
 	events = EventManager::GetInstance().get(APIEvent::Type::SWCANSettingsNotAvailable);
-	EXPECT_EQ(events.size(), 0);
-	EXPECT_EQ(EventCount(), 5);
+	EXPECT_EQ(events.size(), 0u);
+	EXPECT_EQ(EventCount(), 5u);
 
 	// Get the 5 {mismatch, warning} remaining.
 	events = EventManager::GetInstance().get(5, EventFilter(APIEvent::Type::SettingsStructureMismatch));
-	EXPECT_EQ(events.size(), 5);
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(events.size(), 5u);
+	EXPECT_EQ(EventCount(), 0u);
 
 	for(APIEvent event : events) {
 		EXPECT_EQ(event.getType(), APIEvent::Type::SettingsStructureMismatch);
@@ -573,8 +573,8 @@ TEST_F(EventManagerTest, GetSizeFilterTest) {
 
 	// Check getting when 0 events exist doesn't break
 	events = EventManager::GetInstance().get(2, EventFilter(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::EventWarning));
-	EXPECT_EQ(events.size(), 0);
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(events.size(), 0u);
+	EXPECT_EQ(EventCount(), 0u);
 }
 
 /**
@@ -608,7 +608,7 @@ TEST_F(EventManagerTest, GetLastErrorMultipleTest) {
 TEST_F(EventManagerTest, TestAddWarningsOverflow) {
 
 	// space for 49 normal events, 1 reserved for TooManyEvents
-	SetEventLimit(50);
+	SetEventLimit(50u);
 
 	// 3 of these
 	for(int i = 0; i < 3; i++)
@@ -642,7 +642,7 @@ TEST_F(EventManagerTest, TestAddWarningsOverflow) {
 TEST_F(EventManagerTest, TestAddWarningsInfoOverflow) {
 
 	// space for 49 normal events, 1 reserved for TooManyEvents
-	SetEventLimit(50);
+	SetEventLimit(50u);
 
 	// Event list filling: 1 warning, 3 info, 47 warning.
 	// Expect to see: 2 info, 47 warning, 1 TooManyEvents
@@ -679,11 +679,11 @@ TEST_F(EventManagerTest, DiscardDefault) {
 		EventManager::GetInstance().add(APIEvent::Type::BufferInsufficient, APIEvent::Severity::EventWarning);
 	}
 
-	EXPECT_EQ(EventCount(), 9000);
+	EXPECT_EQ(EventCount(), 9000u);
 
 	DiscardEvents();
 
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(EventCount(), 0u);
 }
 
 /**
@@ -696,19 +696,19 @@ TEST_F(EventManagerTest, DiscardFilter) {
 		EventManager::GetInstance().add(APIEvent::Type::BufferInsufficient, APIEvent::Severity::EventWarning);
 	}
 
-	EXPECT_EQ(EventCount(), 9000);
+	EXPECT_EQ(EventCount(), 9000u);
 
 	DiscardEvents(EventFilter(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::EventInfo));
 
-	EXPECT_EQ(EventCount(), 6000);
+	EXPECT_EQ(EventCount(), 6000u);
 
 	DiscardEvents(EventFilter(APIEvent::Type::BufferInsufficient, APIEvent::Severity::EventInfo));
 
-	EXPECT_EQ(EventCount(), 6000);
+	EXPECT_EQ(EventCount(), 6000u);
 
 	DiscardEvents(EventFilter(APIEvent::Severity::EventWarning));
 
-	EXPECT_EQ(EventCount(), 0);
+	EXPECT_EQ(EventCount(), 0u);
 }
 
 /**
@@ -716,30 +716,30 @@ TEST_F(EventManagerTest, DiscardFilter) {
  */
 TEST_F(EventManagerTest, SetEventLimitTest) {
 	// Test if event limit too low to be set
-	EventManager::GetInstance().setEventLimit(9);
-	EXPECT_EQ(GetEventLimit(), 10000);
+	EventManager::GetInstance().setEventLimit(9u);
+	EXPECT_EQ(GetEventLimit(), 10000u);
 	EXPECT_EQ(GetLastError().getType(), APIEvent::Type::ParameterOutOfRange);
 
 	// Test truncating existing list when new limit set
 	for(int i = 0; i < 9001; i++)
 		EventManager::GetInstance().add(APIEvent(APIEvent::Type::OutputTruncated, APIEvent::Severity::EventWarning));
 
-	EXPECT_EQ(EventCount(), 9001);
+	EXPECT_EQ(EventCount(), 9001u);
 
 	// Sets new limit to be exactly full.
-	SetEventLimit(9002);
-	EXPECT_EQ(GetEventLimit(), 9002);
-	EXPECT_EQ(EventCount(), 9001);
+	SetEventLimit(9002u);
+	EXPECT_EQ(GetEventLimit(), 9002u);
+	EXPECT_EQ(EventCount(), 9001u);
 
 	// 1 overflowed.
-	SetEventLimit(9001);
-	EXPECT_EQ(GetEventLimit(), 9001);
-	EXPECT_EQ(EventCount(), 9001);
+	SetEventLimit(9001u);
+	EXPECT_EQ(GetEventLimit(), 9001u);
+	EXPECT_EQ(EventCount(), 9001u);
 
 	// Truncate a lot
-	SetEventLimit(5000);
-	EXPECT_EQ(GetEventLimit(), 5000);
-	EXPECT_EQ(EventCount(), 5000);
+	SetEventLimit(5000u);
+	EXPECT_EQ(GetEventLimit(), 5000u);
+	EXPECT_EQ(EventCount(), 5000u);
 
 	auto events = GetEvents();
 	for(int i = 0; i < 4998; i++) {
