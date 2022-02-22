@@ -147,16 +147,20 @@ static inline bool IdIsSlaveBRange2(unsigned int fullNetid)
 	return Within(fullNetid, PLASMA_SLAVE2_OFFSET_RANGE2, PLASMA_SLAVE3_OFFSET_RANGE2);
 }
 
-static inline unsigned int GetVnetNetid(size_t simpleNetId, EPlasmaIonVnetChannel_t vnetSlot)
+static inline bool GetVnetNetid(size_t& netId, EPlasmaIonVnetChannel_t vnetSlot)
 {
-	if (vnetSlot == 0 || vnetSlot >= sizeof(vnet_table)/sizeof(vnet_table[0]))
-		return simpleNetId;
+	if (vnetSlot == 0)
+		return true;
 
-	const auto offset = mp_netIDToVnetOffSet.find(simpleNetId);
+	if (vnetSlot >= sizeof(vnet_table)/sizeof(vnet_table[0]))
+		return false;
+
+	const auto offset = mp_netIDToVnetOffSet.find(netId);
 	if (offset == mp_netIDToVnetOffSet.end())
-		return simpleNetId;
+		return false;
 
-	return offset->second + vnet_table[vnetSlot];
+	netId = offset->second + vnet_table[vnetSlot];
+	return true;
 }
 
 /**
