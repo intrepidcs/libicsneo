@@ -178,7 +178,7 @@ static inline unsigned int OffsetToSimpleNetworkId(size_t offset)
 	return NETID_DEVICE;
 }
 
-static inline unsigned int GetVnetAgnosticNetid(size_t fullNetid)
+static inline size_t GetVnetAgnosticNetid(size_t fullNetid)
 {
 	if (IdIsSlaveARange1(fullNetid))
 	{
@@ -1278,7 +1278,8 @@ int LegacyDLLExport icsneoGetNetidforSlaveVNETs(size_t* NetworkIndex, EPlasmaIon
 
 int LegacyDLLExport icsneoGetVnetSimpleNetid(size_t* FullNetID)
 {
-	return GetVnetAgnosticNetid(*FullNetID);
+	*FullNetID = GetVnetAgnosticNetid(*FullNetID);
+	return true;
 }
 
 int LegacyDLLExport icsneoSerialNumberFromString(unsigned long* serial, char* data)
