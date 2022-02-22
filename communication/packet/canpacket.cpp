@@ -11,19 +11,19 @@ static optional<uint8_t> CAN_DLCToLength(uint8_t length, bool fd) {
 	if (fd) {
 		switch(length) {
 			case 0x9:
-				return 12;
+				return uint8_t(12);
 			case 0xa:
-				return 16;
+				return uint8_t(16);
 			case 0xb:
-				return 20;
+				return uint8_t(20);
 			case 0xc:
-				return 24;
+				return uint8_t(24);
 			case 0xd:
-				return 32;
+				return uint8_t(32);
 			case 0xe:
-				return 48;
+				return uint8_t(48);
 			case 0xf:
-				return 64;
+				return uint8_t(64);
 		}
 	}
 
@@ -33,23 +33,23 @@ static optional<uint8_t> CAN_DLCToLength(uint8_t length, bool fd) {
 static optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd)
 {
 	if (dataLength <= 8)
-		return dataLength;
+		return uint8_t(dataLength);
 
 	if (fd) {
 		if (dataLength <= 12)
-			return 0x9;
+			return uint8_t(0x9);
 		else if (dataLength <= 16)
-			return 0xA;
+			return uint8_t(0xA);
 		else if (dataLength <= 20)
-			return 0xB;
+			return uint8_t(0xB);
 		else if (dataLength <= 24)
-			return 0xC;
+			return uint8_t(0xC);
 		else if (dataLength <= 32)
-			return 0xD;
+			return uint8_t(0xD);
 		else if (dataLength <= 48)
-			return 0xE;
+			return uint8_t(0xE);
 		else if (dataLength <= 64)
-			return 0xF;
+			return uint8_t(0xF);
 	}
 
 	return nullopt;
@@ -161,7 +161,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 
 	// The only way this fails is if we're transmitting a DLC > 8 on standard CAN
 	const uint8_t paddedLength = CAN_DLCToLength(*dlc, message.isCANFD).value_or(8);
-	const uint8_t paddingBytes = paddedLength - dataSize;
+	const uint8_t paddingBytes = uint8_t(paddedLength - dataSize);
 
 	// Pre-allocate as much memory as we will possibly need for speed
 	result.reserve(16 + dataSize + paddingBytes);
