@@ -125,8 +125,10 @@ bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::mil
 		return false;
 	}
 
-	if(gsmsg->response != ReadSettingsMessage::Response::OK) {
-		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
+	if(gsmsg->response == ReadSettingsMessage::Response::OKDefaultsUsed) {
+		report(APIEvent::Type::SettingsDefaultsUsed, APIEvent::Severity::EventInfo);
+	} else if(gsmsg->response != ReadSettingsMessage::Response::OK) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
 	}
 

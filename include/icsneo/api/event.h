@@ -80,6 +80,7 @@ public:
 		NoSerialNumber12V = 0x2028, // The device must be powered with 12V for communication to be established
 		NoSerialNumberFW12V = 0x2029, // The device must be powered with 12V for communication to be established, a firmware update was already attempted
 		EthPhyRegisterControlNotAvailable = 0x2030, //The device doesn't support Ethernet PHY MDIO access
+		SettingsDefaultsUsed = 0x2033,
 
 		// Transport Events
 		FailedToRead = 0x3000,

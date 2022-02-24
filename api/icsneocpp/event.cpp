@@ -103,6 +103,7 @@ static constexpr const char* TERMINATION_NOT_SUPPORTED_DEVICE = "This device doe
 static constexpr const char* TERMINATION_NOT_SUPPORTED_NETWORK = "This network does not support software selectable termination on this device.";
 static constexpr const char* ANOTHER_IN_TERMINATION_GROUP_ENABLED = "A mutually exclusive network already has termination enabled.";
 static constexpr const char* ETH_PHY_REGISTER_CONTROL_NOT_AVAILABLE = "Ethernet PHY register control is not available for this device.";
+static constexpr const char* SETTINGS_DEFAULTS_USED = "The device settings could not be loaded, the default settings have been applied.";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -214,6 +215,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return NO_SERIAL_NUMBER_FW_12V;
 		case Type::EthPhyRegisterControlNotAvailable:
 			return ETH_PHY_REGISTER_CONTROL_NOT_AVAILABLE;
+		case Type::SettingsDefaultsUsed:
+			return SETTINGS_DEFAULTS_USED;
 
 		// Transport Errors
 		case Type::FailedToRead:
