@@ -317,6 +317,8 @@ if(LIBICSNEO_BUILD_TESTS)
 
 	add_executable(libicsneo-tests
 		test/main.cpp
+		test/diskdriverreadtest.cpp
+		test/diskdriverwritetest.cpp
 		test/eventmanagertest.cpp
 		test/ethernetpacketizertest.cpp
 	)
