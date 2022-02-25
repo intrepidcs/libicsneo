@@ -32,7 +32,12 @@ optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_even
 	while(blocksProcessed < blocks && timeout >= std::chrono::milliseconds::zero()) {
 		const uint64_t currentBlock = startBlock + blocksProcessed;
 
-		const uint64_t fromOffset = std::max<uint64_t>((blocksProcessed * idealBlockSize) - posWithinFirstBlock, 0);
+		uint64_t fromOffset = blocksProcessed * idealBlockSize;
+		if(fromOffset < posWithinFirstBlock)
+			fromOffset = 0;
+		else
+			fromOffset -= posWithinFirstBlock;
+
 		const uint32_t posWithinCurrentBlock = (blocksProcessed ? 0 : posWithinFirstBlock);
 		uint32_t curAmt = idealBlockSize - posWithinCurrentBlock;
 		const auto amountLeft = amount - ret.value_or(0);
@@ -54,8 +59,7 @@ optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_even
 
 		const bool useAlignedWriteBuffer = (posWithinCurrentBlock != 0 || curAmt != idealBlockSize);
 		if(useAlignedWriteBuffer) {
-			if(alignedWriteBuffer.size() < idealBlockSize)
-				alignedWriteBuffer.resize(idealBlockSize);
+			alignedWriteBuffer = atomicBuffer;
 			memcpy(alignedWriteBuffer.data() + posWithinCurrentBlock, from + fromOffset, curAmt);
 		}
 

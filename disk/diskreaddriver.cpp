@@ -24,7 +24,12 @@ optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventh
 	while(blocksProcessed < blocks && timeout >= std::chrono::milliseconds::zero()) {
 		const uint64_t currentBlock = startBlock + blocksProcessed;
 
-		const uint64_t intoOffset = std::max<uint64_t>((blocksProcessed * idealBlockSize) - posWithinFirstBlock, 0);
+		uint64_t intoOffset = blocksProcessed * idealBlockSize;;
+		if(intoOffset < posWithinFirstBlock)
+			intoOffset = 0;
+		else
+			intoOffset -= posWithinFirstBlock;
+
 		const uint32_t posWithinCurrentBlock = (blocksProcessed ? 0 : posWithinFirstBlock);
 		uint32_t curAmt = idealBlockSize - posWithinCurrentBlock;
 		const auto amountLeft = amount - ret.value_or(0);
