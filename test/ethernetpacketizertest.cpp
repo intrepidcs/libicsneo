@@ -10,7 +10,7 @@ static const uint8_t correctHostMAC[MAC_SIZE] = {0x12, 0x23, 0x34, 0x45, 0x56, 0
 
 class EthernetPacketizerTest : public ::testing::Test {
 protected:
-	// Start with a clean instance of eventmanager for every test
+	// Start with a clean instance of the packetizer for every test
 	void SetUp() override {
 		onError = [](APIEvent::Type, APIEvent::Severity) {
 			// Unless caught by the test, the packetizer should not throw errors
