@@ -40,17 +40,17 @@ optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_even
 			curAmt = static_cast<uint32_t>(amountLeft);
 
 		auto start = std::chrono::high_resolution_clock::now();
-		auto amount = readDriver.readLogicalDisk(com, report, currentBlock * idealBlockSize, atomicBuffer.data(),
-			idealBlockSize, timeout);
+		const auto reportFromRead = [&report, &blocksProcessed](APIEvent::Type t, APIEvent::Severity s) {
+			if(t == APIEvent::Type::ParameterOutOfRange && blocksProcessed)
+				t = APIEvent::Type::EOFReached;
+			report(t, s);
+		};
+		auto amount = readDriver.readLogicalDisk(com, reportFromRead, currentBlock * idealBlockSize,
+			atomicBuffer.data(), idealBlockSize, timeout);
 		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
 
-		if(amount != idealBlockSize) {
-			if(timeout < std::chrono::milliseconds::zero())
-				report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
-			else
-				report(blocksProcessed ? APIEvent::Type::EOFReached : APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
-			break;
-		}
+		if(amount != idealBlockSize)
+			break; // readLogicalDisk reports its own errors
 
 		const bool useAlignedWriteBuffer = (posWithinCurrentBlock != 0 || curAmt != idealBlockSize);
 		if(useAlignedWriteBuffer) {
@@ -70,11 +70,12 @@ optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_even
 			continue;
 		}
 
-		if(!amount.has_value() || *amount == 0) {
+		if(!amount.has_value() || *amount < curAmt) {
 			if(timeout < std::chrono::milliseconds::zero())
 				report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
 			else
-				report(blocksProcessed ? APIEvent::Type::EOFReached : APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				report((blocksProcessed || amount.value_or(0u) != 0u) ? APIEvent::Type::EOFReached :
+					APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 			break;
 		}
 

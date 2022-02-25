@@ -40,11 +40,12 @@ optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventh
 			useAlignedReadBuffer ? alignedReadBuffer.data() : (into + intoOffset), idealBlockSize, timeout);
 		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
 
-		if(!readAmount.has_value() || *readAmount == 0) {
+		if(!readAmount.has_value() || *readAmount < curAmt) {
 			if(timeout < std::chrono::milliseconds::zero())
 				report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
 			else
-				report(blocksProcessed ? APIEvent::Type::EOFReached : APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				report((blocksProcessed || readAmount.value_or(0u) != 0u) ? APIEvent::Type::EOFReached :
+					APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 			break;
 		}
 
