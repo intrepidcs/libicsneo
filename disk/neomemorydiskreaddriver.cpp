@@ -3,6 +3,7 @@
 #include <cstring>
 
 using namespace icsneo;
+using namespace icsneo::Disk;
 
 optional<uint64_t> NeoMemoryDiskReadDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {

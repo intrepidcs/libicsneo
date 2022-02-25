@@ -84,6 +84,8 @@ public:
 		DiskNotSupported = 0x2031,
 		EOFReached = 0x2032,
 		SettingsDefaultsUsed = 0x2033,
+		AtomicOperationRetried = 0x2034,
+		AtomicOperationCompletedNonatomically = 0x2035,
 
 		// Transport Events
 		FailedToRead = 0x3000,

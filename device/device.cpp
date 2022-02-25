@@ -488,6 +488,20 @@ optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t
 	return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout);
 }
 
+optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
+	if(!from || timeout <= std::chrono::milliseconds(0)) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	return diskWriteDriver->writeLogicalDisk(*com, report, *diskReadDriver, pos, from, amount, timeout);
+}
+
 optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
 	if(number == 0) { // Start counting from 1
 		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);

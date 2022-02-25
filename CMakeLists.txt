@@ -149,7 +149,8 @@ set(SRC_FILES
 	device/devicefinder.cpp
 	device/device.cpp
 	disk/diskreaddriver.cpp
-	disk/nulldiskreaddriver.cpp
+	disk/diskwritedriver.cpp
+	disk/nulldiskdriver.cpp
 	disk/neomemorydiskreaddriver.cpp
 	${PLATFORM_SRC}
 )

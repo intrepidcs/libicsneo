@@ -107,6 +107,8 @@ static constexpr const char* ETH_PHY_REGISTER_CONTROL_NOT_AVAILABLE = "Ethernet 
 static constexpr const char* DISK_NOT_SUPPORTED = "This device does not support accessing the specified disk.";
 static constexpr const char* EOF_REACHED = "The requested length exceeds the available data from this disk.";
 static constexpr const char* SETTINGS_DEFAULTS_USED = "The device settings could not be loaded, the default settings have been applied.";
+static constexpr const char* ATOMIC_OPERATION_RETRIED = "An operation failed to be atomically completed, but will be retried.";
+static constexpr const char* ATOMIC_OPERATION_COMPLETED_NONATOMICALLY = "An ideally-atomic operation was completed nonatomically.";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -226,6 +228,10 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return EOF_REACHED;
 		case Type::SettingsDefaultsUsed:
 			return SETTINGS_DEFAULTS_USED;
+		case Type::AtomicOperationRetried:
+			return ATOMIC_OPERATION_RETRIED;
+		case Type::AtomicOperationCompletedNonatomically:
+			return ATOMIC_OPERATION_COMPLETED_NONATOMICALLY;
 
 		// Transport Errors
 		case Type::FailedToRead:

@@ -8,12 +8,14 @@
 
 namespace icsneo {
 
+namespace Disk {
+
 /**
  * A disk read driver which uses the neoMemory command to read from the disk
  * 
  * This can only request reads by sector, so it will be very slow, but is likely supported by any device with a disk
  */
-class NeoMemoryDiskReadDriver : public DiskReadDriver {
+class NeoMemoryDiskReadDriver : public ReadDriver {
 public:
 	Access getAccess() const override { return Access::VSA; }
 	std::pair<uint32_t, uint32_t> getBlockSizeBounds() const override {
@@ -29,7 +31,9 @@ private:
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) override;
 };
 
-}
+} // namespace Disk
+
+} // namespace icsneo
 
 #endif // __cplusplus
 #endif // __NEOMEMORYDISKREADDRIVER_H__

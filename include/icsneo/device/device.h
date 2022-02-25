@@ -17,7 +17,8 @@
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/deviceversion.h"
 #include "icsneo/disk/diskreaddriver.h"
-#include "icsneo/disk/nulldiskreaddriver.h"
+#include "icsneo/disk/diskwritedriver.h"
+#include "icsneo/disk/nulldiskdriver.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
@@ -156,7 +157,24 @@ public:
 	 * set in icsneo::GetLastError().
 	 */
 	optional<uint64_t> readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount,
-		std::chrono::milliseconds timeout = DiskReadDriver::DefaultTimeout);
+		std::chrono::milliseconds timeout = Disk::DefaultTimeout);
+
+	/**
+	 * Write to the logical disk in this device, starting from byte `pos`
+	 * and writing up to `amount` bytes.
+	 * 
+	 * The number of bytes written will be returned in case of success.
+	 * 
+	 * If the number of bytes written is less than the amount requested,
+	 * an error will be set in icsneo::GetLastError() explaining why.
+	 * Likely, either the end of the logical disk has been reached, or
+	 * the timeout was reached while the write had only partially completed.
+	 *
+	 * Upon failure, icsneo::nullopt will be returned and an error will be
+	 * set in icsneo::GetLastError().
+	 */
+	optional<uint64_t> writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount,
+		std::chrono::milliseconds timeout = Disk::DefaultTimeout);
 
 	/**
 	 * Retrieve the number of Ethernet (DoIP) Activation lines present
@@ -276,7 +294,7 @@ protected:
 		data.device = this;
 	}
 	
-	template<typename Driver, typename Settings = NullSettings, typename DiskRead = NullDiskReadDriver>
+	template<typename Driver, typename Settings = NullSettings, typename DiskRead = Disk::NullDriver, typename DiskWrite = Disk::NullDriver>
 	void initialize() {
 		report = makeEventHandler();
 		auto driver = makeDriver<Driver>();
@@ -289,7 +307,8 @@ protected:
 		setupCommunication(*com);
 		settings = makeSettings<Settings>(com);
 		setupSettings(*settings);
-		diskReadDriver = std::make_unique<DiskRead>();
+		diskReadDriver = std::unique_ptr<DiskRead>(new DiskRead());
+		diskWriteDriver = std::unique_ptr<DiskWrite>(new DiskWrite());
 		setupSupportedRXNetworks(supportedRXNetworks);
 		setupSupportedTXNetworks(supportedTXNetworks);
 		setupExtensions();
@@ -365,7 +384,8 @@ private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
 	std::vector<optional<DeviceAppVersion>> versions;
-	std::unique_ptr<DiskReadDriver> diskReadDriver;
+	std::unique_ptr<Disk::ReadDriver> diskReadDriver;
+	std::unique_ptr<Disk::WriteDriver> diskWriteDriver;
 
 	mutable std::mutex extensionsLock;
 	std::vector<std::shared_ptr<DeviceExtension>> extensions;
