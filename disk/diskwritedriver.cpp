@@ -50,11 +50,11 @@ optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_even
 				t = APIEvent::Type::EOFReached;
 			report(t, s);
 		};
-		auto amount = readDriver.readLogicalDisk(com, reportFromRead, currentBlock * idealBlockSize,
+		auto bytesTransferred = readDriver.readLogicalDisk(com, reportFromRead, currentBlock * idealBlockSize,
 			atomicBuffer.data(), idealBlockSize, timeout);
 		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
 
-		if(amount != idealBlockSize)
+		if(bytesTransferred != idealBlockSize)
 			break; // readLogicalDisk reports its own errors
 
 		const bool useAlignedWriteBuffer = (posWithinCurrentBlock != 0 || curAmt != idealBlockSize);
@@ -64,28 +64,28 @@ optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_even
 		}
 
 		start = std::chrono::high_resolution_clock::now();
-		amount = writeLogicalDiskAligned(com, report, currentBlock * idealBlockSize, atomicBuffer.data(),
+		bytesTransferred = writeLogicalDiskAligned(com, report, currentBlock * idealBlockSize, atomicBuffer.data(),
 			useAlignedWriteBuffer ? alignedWriteBuffer.data() : (from + fromOffset), idealBlockSize, timeout);
 		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
 
-		if(amount == RetryAtomic) {
+		if(bytesTransferred == RetryAtomic) {
 			// The user may want to log these events in order to see how many atomic misses they are getting
 			report(APIEvent::Type::AtomicOperationRetried, APIEvent::Severity::EventInfo);
 			continue;
 		}
 
-		if(!amount.has_value() || *amount < curAmt) {
+		if(!bytesTransferred.has_value() || *bytesTransferred < curAmt) {
 			if(timeout < std::chrono::milliseconds::zero())
 				report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
 			else
-				report((blocksProcessed || amount.value_or(0u) != 0u) ? APIEvent::Type::EOFReached :
+				report((blocksProcessed || bytesTransferred.value_or(0u) != 0u) ? APIEvent::Type::EOFReached :
 					APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 			break;
 		}
 
 		if(!ret)
 			ret.emplace();
-		*ret += std::min<uint64_t>(*amount, curAmt);
+		*ret += std::min<uint64_t>(*bytesTransferred, curAmt);
 		blocksProcessed++;
 	}
 
