@@ -5,6 +5,7 @@
 
 #include "icsneo/disk/diskreaddriver.h"
 #include <limits>
+#include <chrono>
 
 namespace icsneo {
 
@@ -26,6 +27,11 @@ public:
 
 private:
 	static constexpr const uint8_t MemoryTypeSD = 0x01; // Logical Disk
+	static constexpr const std::chrono::duration CacheTime = std::chrono::seconds(1);
+
+	std::array<uint8_t, SectorSize> cache;
+	uint64_t cachePos = 0;
+	std::chrono::time_point<std::chrono::steady_clock> cachedAt;
 
 	optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) override;

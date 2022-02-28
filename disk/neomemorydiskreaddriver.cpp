@@ -12,30 +12,37 @@ optional<uint64_t> NeoMemoryDiskReadDriver::readLogicalDiskAligned(Communication
 	if(amount != SectorSize)
 		return 0;
 
-	const uint64_t currentSector = pos / SectorSize;
-	auto msg = com.waitForMessageSync([&currentSector, &com] {
-		return com.sendCommand(Command::NeoReadMemory, {
-			MemoryTypeSD,
-			uint8_t(currentSector & 0xFF),
-			uint8_t((currentSector >> 8) & 0xFF),
-			uint8_t((currentSector >> 16) & 0xFF),
-			uint8_t((currentSector >> 24) & 0xFF),
-			uint8_t(SectorSize & 0xFF),
-			uint8_t((SectorSize >> 8) & 0xFF),
-			uint8_t((SectorSize >> 16) & 0xFF),
-			uint8_t((SectorSize >> 24) & 0xFF)
-		});
-	}, NeoMemorySDRead, timeout);
+	if(cachePos != pos || std::chrono::steady_clock::now() > cachedAt + CacheTime) {
+		// The cache does not have this data, go get it
+		const uint64_t currentSector = pos / SectorSize;
+		auto msg = com.waitForMessageSync([&currentSector, &com] {
+			return com.sendCommand(Command::NeoReadMemory, {
+				MemoryTypeSD,
+				uint8_t(currentSector & 0xFF),
+				uint8_t((currentSector >> 8) & 0xFF),
+				uint8_t((currentSector >> 16) & 0xFF),
+				uint8_t((currentSector >> 24) & 0xFF),
+				uint8_t(SectorSize & 0xFF),
+				uint8_t((SectorSize >> 8) & 0xFF),
+				uint8_t((SectorSize >> 16) & 0xFF),
+				uint8_t((SectorSize >> 24) & 0xFF)
+			});
+		}, NeoMemorySDRead, timeout);
 
-	if(!msg)
-		return 0;
+		if(!msg)
+			return 0;
 
-	const auto sdmsg = std::dynamic_pointer_cast<NeoReadMemorySDMessage>(msg);
-	if(!sdmsg || sdmsg->data.size() != SectorSize) {
-		report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
-		return nullopt;
+		const auto sdmsg = std::dynamic_pointer_cast<NeoReadMemorySDMessage>(msg);
+		if(!sdmsg || sdmsg->data.size() != SectorSize) {
+			report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+			return nullopt;
+		}
+
+		memcpy(cache.data(), sdmsg->data.data(), SectorSize);
+		cachedAt = std::chrono::steady_clock::now();
+		cachePos = pos;
 	}
 
-	memcpy(into, sdmsg->data.data(), SectorSize);
+	memcpy(into, cache.data(), SectorSize);
 	return SectorSize;
 }
