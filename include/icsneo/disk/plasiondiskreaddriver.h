@@ -25,7 +25,7 @@ public:
 
 private:
 	static constexpr const uint32_t MaxSize = 65024;
-	static constexpr const std::chrono::duration CacheTime = std::chrono::seconds(1);
+	static constexpr const std::chrono::seconds CacheTime = std::chrono::seconds(1);
 
 	std::array<uint8_t, MaxSize> cache;
 	uint64_t cachePos = 0;

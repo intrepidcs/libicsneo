@@ -27,7 +27,7 @@ public:
 
 private:
 	static constexpr const uint8_t MemoryTypeSD = 0x01; // Logical Disk
-	static constexpr const std::chrono::duration CacheTime = std::chrono::seconds(1);
+	static constexpr const std::chrono::seconds CacheTime = std::chrono::seconds(1);
 
 	std::array<uint8_t, SectorSize> cache;
 	uint64_t cachePos = 0;
