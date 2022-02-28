@@ -11,6 +11,15 @@ TEST_F(DiskDriverTest, Read) {
 	EXPECT_EQ(driver->readCalls, 1u);
 }
 
+TEST_F(DiskDriverTest, ReadZero) {
+	uint8_t b = 0xCDu;
+	const auto amountRead = readLogicalDisk(0, &b, 0);
+	EXPECT_TRUE(amountRead.has_value());
+	EXPECT_EQ(amountRead, 0u);
+	EXPECT_EQ(b, 0xCDu);
+	EXPECT_EQ(driver->readCalls, 0u);
+}
+
 TEST_F(DiskDriverTest, ReadUnaligned) {
 	std::array<uint8_t, 120> buf;
 	buf.fill(0u);

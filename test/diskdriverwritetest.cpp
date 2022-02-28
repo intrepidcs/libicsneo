@@ -12,6 +12,17 @@ TEST_F(DiskDriverTest, Write) {
 	EXPECT_EQ(driver->writeCalls, 1u);
 }
 
+TEST_F(DiskDriverTest, WriteZero) {
+	uint8_t b = 0xCDu;
+	const auto amountWritten = writeLogicalDisk(0, &b, 0);
+	EXPECT_TRUE(amountWritten.has_value());
+	EXPECT_EQ(amountWritten, 0u);
+	EXPECT_EQ(driver->mockDisk[0], TEST_STRING[0]);
+	EXPECT_EQ(driver->atomicityChecks, 0u);
+	EXPECT_EQ(driver->readCalls, 0u);
+	EXPECT_EQ(driver->writeCalls, 0u);
+}
+
 TEST_F(DiskDriverTest, WriteNoAtomicityCheck) {
 	driver->supportsAtomic = false;
 	expectedErrors.push({ APIEvent::Type::AtomicOperationCompletedNonatomically, APIEvent::Severity::EventInfo });

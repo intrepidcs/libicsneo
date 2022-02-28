@@ -9,6 +9,9 @@ const APIEvent::Severity WriteDriver::NonatomicSeverity = APIEvent::Severity::Ev
 
 optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
 	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
+	if(amount == 0)
+		return 0;
+
 	optional<uint64_t> ret;
 
 	const uint32_t idealBlockSize = getBlockSizeBounds().second;

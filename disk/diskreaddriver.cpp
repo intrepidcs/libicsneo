@@ -6,6 +6,9 @@ using namespace icsneo::Disk;
 
 optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
+	if(amount == 0)
+		return 0;
+
 	optional<uint64_t> ret;
 
 	// Read into here if we can't read directly into the user buffer
