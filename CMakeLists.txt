@@ -219,6 +219,10 @@ target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas
 message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
 target_link_libraries(icsneocpp PUBLIC ${LIBICSNEO_EXTENSION_TARGETS})
 
+# fatfs
+add_subdirectory(third-party/fatfs)
+target_link_libraries(icsneocpp PRIVATE fatfs)
+
 # libftdi
 if(NOT WIN32)
 	target_include_directories(icsneocpp PUBLIC third-party/libftdi/src)
