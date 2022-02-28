@@ -2,6 +2,7 @@
 #include "icsneo/communication/command.h"
 #include "icsneo/communication/decoder.h"
 #include "icsneo/communication/packetizer.h"
+#include "icsneo/communication/message/neoreadmemorysdmessage.h"
 
 using namespace icsneo;
 
@@ -134,6 +135,12 @@ void MultiChannelCommunication::hidReadTask() {
 							if(numVnets >= 3)
 								currentQueue = &vnetQueues[2];
 							break;
+						case CommandType::SDCC1_to_HostPC: {
+							auto msg = std::make_shared<NeoReadMemorySDMessage>();
+							std::swap(msg->data, payloadBytes);
+							dispatchMessage(msg);
+							break;
+						}
 					}
 
 					if(currentQueue == nullptr) {

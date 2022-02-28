@@ -24,10 +24,6 @@ public:
 	void joinThreads() override;
 	bool sendPacket(std::vector<uint8_t>& bytes) override;
 
-protected:
-	bool preprocessPacket(std::deque<uint8_t>& usbReadFifo);
-
-private:
 	enum class CommandType : uint8_t {
 		PlasmaReadRequest = 0x10, // Status read request to HSC
 		PlasmaStatusResponse = 0x11, // Status response by HSC
@@ -49,6 +45,10 @@ private:
 		Microblaze_to_HostPC = 0x81 // Microblaze processor data to host PC
 	};
 
+protected:
+	bool preprocessPacket(std::deque<uint8_t>& usbReadFifo);
+
+private:
 	static bool CommandTypeIsValid(CommandType cmd) {
 		switch(cmd) {
 			case CommandType::PlasmaReadRequest:
@@ -77,8 +77,10 @@ private:
 	static bool CommandTypeHasAddress(CommandType cmd) {
 		// Check CommandTypeIsValid before this, you will get false on an invalid command
 		switch(cmd) {
-			case CommandType::SDCC1_to_HostPC:
-			case CommandType::SDCC2_to_HostPC:
+			case CommandType::HostPC_to_SDCC1:
+			case CommandType::HostPC_from_SDCC1:
+			case CommandType::HostPC_to_SDCC2:
+			case CommandType::HostPC_from_SDCC2:
 				return true;
 			default:
 				return false;

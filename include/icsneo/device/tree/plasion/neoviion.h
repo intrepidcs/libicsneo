@@ -6,6 +6,7 @@
 #include "icsneo/device/tree/plasion/plasion.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/ftdi.h"
+#include "icsneo/disk/plasiondiskreaddriver.h"
 
 namespace icsneo {
 
@@ -24,7 +25,7 @@ public:
 
 private:
 	NeoVIION(neodevice_t neodevice) : Plasion(neodevice) {
-		initialize<FTDI>();
+		initialize<FTDI, NullSettings, Disk::PlasionDiskReadDriver>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}

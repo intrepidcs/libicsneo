@@ -153,6 +153,7 @@ set(SRC_FILES
 	disk/diskwritedriver.cpp
 	disk/nulldiskdriver.cpp
 	disk/neomemorydiskreaddriver.cpp
+	disk/plasiondiskreaddriver.cpp
 	${PLATFORM_SRC}
 )
 
