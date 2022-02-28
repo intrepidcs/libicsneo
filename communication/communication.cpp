@@ -181,6 +181,18 @@ optional< std::vector< optional<DeviceAppVersion> > > Communication::getVersions
 	return ret;
 }
 
+std::shared_ptr<LogicalDiskInfoMessage> Communication::getLogicalDiskInfoSync(std::chrono::milliseconds timeout) {
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::LogicalDiskInfo);
+
+	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
+		return sendCommand(Command::GetLogicalDiskInfo);
+	}, filter, timeout);
+	if(!msg) // Did not receive a message
+		return {};
+
+	return std::dynamic_pointer_cast<LogicalDiskInfoMessage>(msg);
+}
+
 int Communication::addMessageCallback(const MessageCallback& cb) {
 	std::lock_guard<std::mutex> lk(messageCallbacksLock);
 	messageCallbacks.insert(std::make_pair(messageCallbackIDCounter, cb));

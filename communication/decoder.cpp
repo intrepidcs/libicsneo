@@ -14,6 +14,7 @@
 #include "icsneo/communication/packet/iso9141packet.h"
 #include "icsneo/communication/packet/versionpacket.h"
 #include "icsneo/communication/packet/ethphyregpacket.h"
+#include "icsneo/communication/packet/logicaldiskinfopacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -277,10 +278,17 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = msg;
 					return true;
 				}
+				case Network::NetID::LogicalDiskInfo: {
+					result = LogicalDiskInfoPacket::DecodeToMessage(packet->data);
+					if(!result) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
+						return false;
+					}
+					return true;
+				}
 				case Network::NetID::EthPHYControl: {
 					result = HardwareEthernetPhyRegisterPacket::DecodeToMessage(packet->data, report);
-					if(!result)
-					{
+					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
 						return false;
 					}

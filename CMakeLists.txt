@@ -136,6 +136,7 @@ set(SRC_FILES
 	communication/packet/versionpacket.cpp
 	communication/packet/iso9141packet.cpp
 	communication/packet/ethphyregpacket.cpp
+	communication/packet/logicaldiskinfopacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
 	communication/ethernetpacketizer.cpp

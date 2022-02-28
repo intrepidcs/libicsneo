@@ -27,6 +27,7 @@ public:
 		Main51 = 0x8005,
 		FlexRayControl = 0x8006,
 		EthernetPhyRegister = 0x8007,
+		LogicalDiskInfo = 0x8008,
 	};
 
 	Message(Type t) : type(t) {}

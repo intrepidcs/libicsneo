@@ -177,6 +177,28 @@ public:
 		std::chrono::milliseconds timeout = Disk::DefaultTimeout);
 
 	/**
+	 * Check if the logical disk is connected. This means the disk is inserted,
+	 * and if required (for instance for multi-card configurations), configured
+	 * properly.
+	 * 
+	 * This method is synchronous and contacts the device for the latest status.
+	 * 
+	 * `icsneo::nullopt` will be returned if the device does not respond in a
+	 * timely manner.
+	 */
+	optional<bool> isLogicalDiskConnected();
+
+	/**
+	 * Get the size of the connected logical disk in bytes.
+	 * 
+	 * This method is synchronous and contacts the device for the latest status.
+	 * 
+	 * `icsneo::nullopt` will be returned if the device does not respond in a
+	 * timely manner, or if the disk is disconnected/improperly configured.
+	 */
+	optional<uint64_t> getLogicalDiskSize();
+
+	/**
 	 * Retrieve the number of Ethernet (DoIP) Activation lines present
 	 * on this device.
 	 */

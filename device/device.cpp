@@ -502,6 +502,36 @@ optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* from, u
 	return diskWriteDriver->writeLogicalDisk(*com, report, *diskReadDriver, pos, from, amount, timeout);
 }
 
+optional<bool> Device::isLogicalDiskConnected() {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	const auto info = com->getLogicalDiskInfoSync();
+	if (!info) {
+		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	return info->connected;
+}
+
+optional<uint64_t> Device::getLogicalDiskSize() {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	const auto info = com->getLogicalDiskInfoSync();
+	if (!info) {
+		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	return info->getReportedSize();
+}
+
 optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
 	if(number == 0) { // Start counting from 1
 		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
