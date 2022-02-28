@@ -4,6 +4,7 @@
 #include "icsneo/communication/command.h"
 #include "icsneo/device/extensions/deviceextension.h"
 #include "icsneo/platform/optional.h"
+#include "icsneo/disk/fat.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -530,6 +531,20 @@ optional<uint64_t> Device::getLogicalDiskSize() {
 	}
 
 	return info->getReportedSize();
+}
+
+optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	if (diskReadDriver->getAccess() == Disk::Access::VSA || diskReadDriver->getAccess() == Disk::Access::None)
+		return 0ull;
+	
+	return Disk::FindVSAInFAT([this](uint64_t pos, uint8_t *into, uint64_t amount) {
+		return readLogicalDisk(pos, into, amount);
+	});
 }
 
 optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {

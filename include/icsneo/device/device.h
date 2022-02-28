@@ -199,6 +199,18 @@ public:
 	optional<uint64_t> getLogicalDiskSize();
 
 	/**
+	 * Get the offset to the VSA filesystem within the logical disk, represented
+	 * in bytes.
+	 * 
+	 * This method is synchronous and consacts the device for the latest status
+	 * if necessary.
+	 * 
+	 * `icsneo::nullopt` will be returned if the device does not respond in a
+	 * timely manner, or if the disk is disconnected/improperly configured.
+	 */
+	optional<uint64_t> getVSAOffsetInLogicalDisk();
+
+	/**
 	 * Retrieve the number of Ethernet (DoIP) Activation lines present
 	 * on this device.
 	 */
