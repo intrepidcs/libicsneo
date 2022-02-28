@@ -3,7 +3,6 @@
 
 #ifdef __cplusplus
 
-#include <Windows.h>
 #include <string>
 #include <vector>
 
@@ -20,17 +19,6 @@ public:
 	// Get DWORD value
 	static bool Get(std::wstring path, std::wstring key, uint32_t& value);
 	static bool Get(std::string path, std::string key, uint32_t& value);
-
-private:
-	class Key {
-	public:
-		Key(std::wstring path, bool readwrite = false);
-		~Key();
-		HKEY GetKey() { return key; }
-		bool IsOpen() { return key != nullptr; }
-	private:
-		HKEY key;
-	};
 };
 
 }

@@ -1,3 +1,6 @@
+#include <windows.h>
+#include <winsock2.h>
+
 #include "icsneo/platform/windows/pcap.h"
 #include "icsneo/communication/network.h"
 #include "icsneo/communication/communication.h"

@@ -1,4 +1,5 @@
 #include "icsneo/platform/windows/registry.h"
+#include "icsneo/platform/windows/windows.h"
 #include <codecvt>
 #include <vector>
 #include <locale>
@@ -7,7 +8,17 @@ using namespace icsneo;
 
 static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
-Registry::Key::Key(std::wstring path, bool readwrite) {
+class Key {
+public:
+	Key(std::wstring path, bool readwrite = false);
+	~Key();
+	HKEY GetKey() { return key; }
+	bool IsOpen() { return key != nullptr; }
+private:
+	HKEY key;
+};
+
+Key::Key(std::wstring path, bool readwrite) {
 	DWORD dwDisposition;
 	if(readwrite)
 		RegCreateKeyExW(HKEY_LOCAL_MACHINE, path.c_str(), 0, nullptr, 0, KEY_QUERY_VALUE | KEY_WRITE, nullptr, &key, &dwDisposition);
@@ -15,7 +26,7 @@ Registry::Key::Key(std::wstring path, bool readwrite) {
 		RegOpenKeyExW(HKEY_LOCAL_MACHINE, path.c_str(), 0, KEY_READ, &key);
 }
 
-Registry::Key::~Key() {
+Key::~Key() {
 	if(IsOpen())
 		RegCloseKey(key);
 }

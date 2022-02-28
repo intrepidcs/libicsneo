@@ -1,19 +1,7 @@
 #ifndef __DYNAMICLIB_WINDOWS_H_
 #define __DYNAMICLIB_WINDOWS_H_
 
-#define NOMINMAX
-#ifndef WIN32_LEAN_AND_MEAN
-#define LAM_DEFINED
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <Windows.h>
-#ifdef LAM_DEFINED
-#undef LAM_DEFINED
-#undef WIN32_LEAN_AND_MEAN
-#endif
-#undef NOMINMAX
-#undef near
-#undef far
+#include "icsneo/platform/windows/windows.h"
 
 #ifdef ICSNEOC_MAKEDLL
 #define DLLExport __declspec(dllexport)

@@ -8,7 +8,6 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
-#include <Windows.h>
 #include "icsneo/device/neodevice.h"
 #include "icsneo/communication/driver.h"
 #include "icsneo/api/eventmanager.h"
@@ -22,25 +21,21 @@ public:
 	static bool IsHandleValid(neodevice_handle_t handle);
 	typedef void(*fn_boolCallback)(bool success);
 	
-	VCP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {
-		overlappedRead.hEvent = INVALID_HANDLE_VALUE;
-		overlappedWrite.hEvent = INVALID_HANDLE_VALUE;
-		overlappedWait.hEvent = INVALID_HANDLE_VALUE;
-	}
+	VCP(const device_eventhandler_t& err, neodevice_t& forDevice);
 	~VCP() { close(); }
 	bool open() { return open(false); }
 	void openAsync(fn_boolCallback callback);
 	bool close();
-	bool isOpen() { return handle != INVALID_HANDLE_VALUE; }
+	bool isOpen();
 	
 private:
 	bool open(bool fromAsync);
 	bool opening = false;
 	neodevice_t& device;
-	HANDLE handle = INVALID_HANDLE_VALUE;
-	OVERLAPPED overlappedRead = {};
-	OVERLAPPED overlappedWrite = {};
-	OVERLAPPED overlappedWait = {};
+
+	struct Detail;
+	std::shared_ptr<Detail> detail;
+
 	std::vector<std::shared_ptr<std::thread>> threads;
 	void readTask();
 	void writeTask();
