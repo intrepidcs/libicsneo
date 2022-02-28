@@ -20,6 +20,11 @@ optional<uint64_t> PlasionDiskReadDriver::readLogicalDiskAligned(Communication& 
 		return nullopt;
 
 	if(cachePos != pos || std::chrono::steady_clock::now() > cachedAt + CacheTime) {
+		uint64_t largeSector = pos / SectorSize;
+		uint32_t sector = uint32_t(largeSector);
+		if (largeSector != uint64_t(sector))
+			return nullopt;
+
 		// The cache does not have this data, go get it
 		std::mutex m;
 		std::condition_variable cv;
@@ -41,14 +46,13 @@ optional<uint64_t> PlasionDiskReadDriver::readLogicalDiskAligned(Communication& 
 			cachedAt = std::chrono::steady_clock::time_point();
 
 			memcpy(cache.data() + copied, sdmsg->data.data(), sdmsg->data.size());
-			copied += sdmsg->data.size();
+			copied += uint32_t(sdmsg->data.size());
 			if(copied == amount) {
 				lk.unlock();
 				cv.notify_all();
 			}
 		}, NeoMemorySDRead));
 
-		uint32_t sector = pos / SectorSize;
 		com.rawWrite({
 			uint8_t(MultiChannelCommunication::CommandType::HostPC_from_SDCC1),
 			uint8_t(sector & 0xFF),
@@ -69,6 +73,6 @@ optional<uint64_t> PlasionDiskReadDriver::readLogicalDiskAligned(Communication& 
 		cachePos = pos;
 	}
 
-	memcpy(into, cache.data(), amount);
+	memcpy(into, cache.data(), size_t(amount));
 	return amount;
 }
