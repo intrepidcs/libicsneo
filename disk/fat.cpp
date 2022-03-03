@@ -37,11 +37,11 @@ optional<uint64_t> Disk::FindVSAInFAT(std::function< optional<uint64_t>(uint64_t
 	diskReadFn = diskRead;
 
 	FATFS fs = {};
-	if (f_mount(&fs, "", 0) != FR_OK)
+	if (f_mount(&fs, (const TCHAR*)_TEXT(""), 0) != FR_OK)
 		return nullopt;
 
 	FIL logData = {};
-	if (f_open(&logData, "0:\\LOG_DATA.VSA", FA_READ) != FR_OK)
+	if (f_open(&logData, (const TCHAR*)_TEXT("0:\\LOG_DATA.VSA"), FA_READ) != FR_OK)
 		return nullopt;
 
 	return ClusterToSector(fs, logData.obj.sclust) * uint64_t(Disk::SectorSize);
