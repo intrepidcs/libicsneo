@@ -418,6 +418,8 @@ private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
 	std::vector<optional<DeviceAppVersion>> versions;
+
+	mutable std::mutex diskLock;
 	std::unique_ptr<Disk::ReadDriver> diskReadDriver;
 	std::unique_ptr<Disk::WriteDriver> diskWriteDriver;
 

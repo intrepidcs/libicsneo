@@ -486,6 +486,8 @@ optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t
 		return nullopt;
 	}
 
+	std::lock_guard<std::mutex> lk(diskLock);
+
 	// This is needed for certain read drivers which take over the communication stream
 	const auto lifetime = suppressDisconnects();
 
@@ -503,6 +505,7 @@ optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* from, u
 		return nullopt;
 	}
 
+	std::lock_guard<std::mutex> lk(diskLock);
 	return diskWriteDriver->writeLogicalDisk(*com, report, *diskReadDriver, pos, from, amount, timeout);
 }
 
@@ -542,11 +545,13 @@ optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
 		return nullopt;
 	}
 
+	std::lock_guard<std::mutex> lk(diskLock);
+
 	if (diskReadDriver->getAccess() == Disk::Access::VSA || diskReadDriver->getAccess() == Disk::Access::None)
 		return 0ull;
 	
 	return Disk::FindVSAInFAT([this](uint64_t pos, uint8_t *into, uint64_t amount) {
-		return readLogicalDisk(pos, into, amount);
+		return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount);
 	});
 }
 
