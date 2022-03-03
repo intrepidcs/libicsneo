@@ -4,6 +4,7 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/platform/pcap.h"
+#include "icsneo/disk/extextractordiskreaddriver.h"
 #include "icsneo/device/tree/neovired2/neovired2settings.h"
 
 namespace icsneo {
@@ -67,7 +68,7 @@ public:
 
 protected:
 	NeoVIRED2(neodevice_t neodevice) : Device(neodevice) {
-		initialize<PCAP, NeoVIRED2Settings>();
+		initialize<PCAP, NeoVIRED2Settings, Disk::ExtExtractorDiskReadDriver>();
 		getWritableNeoDevice().type = DEVICE_TYPE;
 		productId = PRODUCT_ID;
 	}

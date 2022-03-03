@@ -486,6 +486,9 @@ optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t
 		return nullopt;
 	}
 
+	// This is needed for certain read drivers which take over the communication stream
+	const auto lifetime = suppressDisconnects();
+
 	return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout);
 }
 
