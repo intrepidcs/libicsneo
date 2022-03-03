@@ -18,7 +18,6 @@ namespace Disk {
  */
 class NeoMemoryDiskReadDriver : public ReadDriver {
 public:
-	Access getAccess() const override { return Access::VSA; }
 	std::pair<uint32_t, uint32_t> getBlockSizeBounds() const override {
 		static_assert(SectorSize <= std::numeric_limits<uint32_t>::max(), "Incorrect sector size");
 		static_assert(SectorSize >= std::numeric_limits<uint32_t>::min(), "Incorrect sector size");
@@ -32,6 +31,8 @@ private:
 	std::array<uint8_t, SectorSize> cache;
 	uint64_t cachePos = 0;
 	std::chrono::time_point<std::chrono::steady_clock> cachedAt;
+
+	Access getPossibleAccess() const override { return Access::VSA; }
 
 	optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) override;

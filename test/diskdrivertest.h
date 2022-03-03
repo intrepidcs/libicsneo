@@ -15,7 +15,6 @@ using namespace icsneo;
 
 class MockDiskDriver : public Disk::ReadDriver, public Disk::WriteDriver {
 public:
-	Disk::Access getAccess() const override { return Disk::Access::EntireCard; }
 	std::pair<uint32_t, uint32_t> getBlockSizeBounds() const override { return { 8, 256 }; }
 
 	optional<uint64_t> readLogicalDiskAligned(Communication&, device_eventhandler_t,
@@ -74,6 +73,9 @@ public:
 	size_t atomicityChecks = 0;
 	bool supportsAtomic = true; // Ability to simulate a driver that doesn't support atomic writes
 	std::function<void(void)> afterReadHook;
+
+private:
+	Disk::Access getPossibleAccess() const override { return Disk::Access::EntireCard; }
 };
 
 class DiskDriverTest : public ::testing::Test {

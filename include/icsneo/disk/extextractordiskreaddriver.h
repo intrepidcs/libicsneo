@@ -16,7 +16,6 @@ namespace Disk {
  */
 class ExtExtractorDiskReadDriver : public ReadDriver {
 public:
-	Access getAccess() const override { return Access::EntireCard; }
 	std::pair<uint32_t, uint32_t> getBlockSizeBounds() const override {
 		static_assert(SectorSize <= std::numeric_limits<uint32_t>::max(), "Incorrect sector size");
 		static_assert(SectorSize >= std::numeric_limits<uint32_t>::min(), "Incorrect sector size");
@@ -35,6 +34,8 @@ private:
 	std::chrono::time_point<std::chrono::steady_clock> cachedAt;
 
 	uint8_t headerLength = 7; // Correct for Ethernet
+
+	Access getPossibleAccess() const override { return Access::EntireCard; }
 
 	optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) override;

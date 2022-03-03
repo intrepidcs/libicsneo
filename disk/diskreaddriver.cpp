@@ -16,6 +16,7 @@ optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventh
 	// beginning or end of the block.
 	std::vector<uint8_t> alignedReadBuffer;
 
+	pos += vsaOffset;
 	const uint32_t idealBlockSize = getBlockSizeBounds().second;
 	const uint64_t startBlock = pos / idealBlockSize;
 	const uint32_t posWithinFirstBlock = static_cast<uint32_t>(pos % idealBlockSize);

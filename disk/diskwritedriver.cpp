@@ -25,6 +25,7 @@ optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_even
 	// ensure an operation is atomic
 	std::vector<uint8_t> atomicBuffer(idealBlockSize);
 
+	pos += vsaOffset;
 	const uint64_t startBlock = pos / idealBlockSize;
 	const uint32_t posWithinFirstBlock = static_cast<uint32_t>(pos % idealBlockSize);
 	uint64_t blocks = amount / idealBlockSize + (amount % idealBlockSize ? 1 : 0);

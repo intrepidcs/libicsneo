@@ -25,8 +25,27 @@ enum class Access {
 class Driver {
 public:
 	virtual ~Driver() = default;
-	virtual Access getAccess() const = 0;
+	Access getAccess() const {
+		if(vsaOffset)
+			return Access::VSA;
+		return getPossibleAccess();
+	}
 	virtual std::pair<uint32_t, uint32_t> getBlockSizeBounds() const = 0;
+
+	void setVSAOffset(uint64_t offset) { vsaOffset = offset; }
+
+protected:
+	uint64_t vsaOffset = 0;
+
+private:
+	/**
+	 * Report the possible access that this driver has
+	 * 
+	 * In some cases, such as a mismatched possible access between
+	 * read and write drivers, this will be overridden in the driver
+	 * layer.
+	 */
+	virtual Access getPossibleAccess() const = 0;
 };
 
 } // namespace Disk

@@ -488,6 +488,19 @@ optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t
 
 	std::lock_guard<std::mutex> lk(diskLock);
 
+	if(diskReadDriver->getAccess() == Disk::Access::EntireCard && diskWriteDriver->getAccess() == Disk::Access::VSA) {
+		// We have mismatched drivers, we need to add an offset to the diskReadDriver
+		const auto offset = Disk::FindVSAInFAT([this, &timeout](uint64_t pos, uint8_t *into, uint64_t amount) {
+			const auto start = std::chrono::steady_clock::now();
+			auto ret = diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout);
+			timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+			return ret;
+		});
+		if(!offset.has_value())
+			return nullopt;
+		diskReadDriver->setVSAOffset(*offset);
+	}
+
 	// This is needed for certain read drivers which take over the communication stream
 	const auto lifetime = suppressDisconnects();
 
@@ -550,9 +563,18 @@ optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
 	if (diskReadDriver->getAccess() == Disk::Access::VSA || diskReadDriver->getAccess() == Disk::Access::None)
 		return 0ull;
 	
-	return Disk::FindVSAInFAT([this](uint64_t pos, uint8_t *into, uint64_t amount) {
+	auto offset = Disk::FindVSAInFAT([this](uint64_t pos, uint8_t *into, uint64_t amount) {
 		return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount);
 	});
+	if(!offset.has_value())
+		return nullopt;
+
+	if(diskReadDriver->getAccess() == Disk::Access::EntireCard && diskWriteDriver->getAccess() == Disk::Access::VSA) {
+		// We have mismatched drivers, we need to add an offset to the diskReadDriver
+		diskReadDriver->setVSAOffset(*offset);
+		return 0ull;
+	}
+	return *offset;
 }
 
 optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
