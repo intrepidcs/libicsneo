@@ -1,7 +1,7 @@
 #ifndef __DYNAMICLIB_WINDOWS_H_
 #define __DYNAMICLIB_WINDOWS_H_
 
-#include "icsneo/platform/windows/windows.h"
+#include "icsneo/platform/windows.h"
 
 #ifdef ICSNEOC_MAKEDLL
 #define DLLExport __declspec(dllexport)
