@@ -49,6 +49,7 @@ public:
 		uint8_t srcMAC[6] = { 0x00, 0xFC, 0x70, 0xFF, 0xFF, 0xFF };
 		uint16_t etherType = 0xCAB1; // Big endian, Should be 0xCAB1 or 0xCAB2
 		uint32_t icsEthernetHeader = 0xAAAA5555; // Big endian, Should be 0xAAAA5555
+		uint16_t payloadSize = 0; // If this is a multi-piece message, this is the size of the expected reassembly
 		// At this point in the packet, there is a 16-bit payload size, little endian
 		// This is calculated from payload size in getBytestream
 		uint16_t packetNumber = 0;

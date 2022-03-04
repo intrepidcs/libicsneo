@@ -93,7 +93,7 @@ bool EthernetPacketizer::inputUp(std::vector<uint8_t> bytes) {
 
 		reassembling = true;
 		reassemblingId = packet.packetNumber;
-		reassemblingData = std::move(bytes);
+		reassemblingData = std::move(packet.payload);
 		return !processedUpBytes.empty(); // If there are other packets in the pipe
 	}
 
@@ -139,7 +139,7 @@ int EthernetPacketizer::EthernetPacket::loadBytestream(const std::vector<uint8_t
 		srcMAC[i] = bytestream[i + 6];
 	etherType = (bytestream[12] << 8) | bytestream[13];
 	icsEthernetHeader = (bytestream[14] << 24) | (bytestream[15] << 16) | (bytestream[16] << 8) | bytestream[17];
-	uint16_t payloadSize = bytestream[18] | (bytestream[19] << 8);
+	payloadSize = bytestream[18] | (bytestream[19] << 8);
 	packetNumber = bytestream[20] | (bytestream[21] << 8);
 	uint16_t packetInfo = bytestream[22] | (bytestream[23] << 8);
 	firstPiece = packetInfo & 1;
@@ -147,17 +147,15 @@ int EthernetPacketizer::EthernetPacket::loadBytestream(const std::vector<uint8_t
 	bufferHalfFull = (packetInfo >> 2) & 2;
 	payload = std::vector<uint8_t>(bytestream.begin() + 24, bytestream.end());
 	size_t payloadActualSize = payload.size();
-	if(payloadActualSize < payloadSize)
-		errorWhileDecodingFromBytestream = 1;
-	else
+	if(payloadActualSize > payloadSize)
 		payload.resize(payloadSize);
 	return errorWhileDecodingFromBytestream;
 }
 
 std::vector<uint8_t> EthernetPacketizer::EthernetPacket::getBytestream() const {
-	size_t payloadSize = payload.size();
+	uint16_t actualPayloadSize = uint16_t(payload.size());
 	std::vector<uint8_t> bytestream;
-	bytestream.reserve(6 + 6 + 2 + 4 + 2 + 2 + 2 + payloadSize);
+	bytestream.reserve(6 + 6 + 2 + 4 + 2 + 2 + 2 + actualPayloadSize);
 	for(size_t i = 0; i < 6; i++)
 		bytestream.push_back(destMAC[i]);
 	for(size_t i = 0; i < 6; i++)
@@ -170,9 +168,10 @@ std::vector<uint8_t> EthernetPacketizer::EthernetPacket::getBytestream() const {
 	bytestream.push_back((uint8_t)(icsEthernetHeader >> 16));
 	bytestream.push_back((uint8_t)(icsEthernetHeader >> 8));
 	bytestream.push_back((uint8_t)(icsEthernetHeader));
+	uint16_t declaredPayloadSize = payloadSize ? payloadSize : actualPayloadSize;
 	// The payload size comes next, it's little endian
-	bytestream.push_back((uint8_t)(payloadSize));
-	bytestream.push_back((uint8_t)(payloadSize >> 8));
+	bytestream.push_back((uint8_t)(declaredPayloadSize));
+	bytestream.push_back((uint8_t)(declaredPayloadSize >> 8));
 	// Packet number is little endian
 	bytestream.push_back((uint8_t)(packetNumber));
 	bytestream.push_back((uint8_t)(packetNumber >> 8));
