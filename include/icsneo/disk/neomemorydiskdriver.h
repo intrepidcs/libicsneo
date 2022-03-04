@@ -1,9 +1,10 @@
-#ifndef __NEOMEMORYDISKREADDRIVER_H__
-#define __NEOMEMORYDISKREADDRIVER_H__
+#ifndef __NEOMEMORYDISKDRIVER_H__
+#define __NEOMEMORYDISKDRIVER_H__
 
 #ifdef __cplusplus
 
 #include "icsneo/disk/diskreaddriver.h"
+#include "icsneo/disk/diskwritedriver.h"
 #include <limits>
 #include <chrono>
 
@@ -12,11 +13,11 @@ namespace icsneo {
 namespace Disk {
 
 /**
- * A disk read driver which uses the neoMemory command to read from the disk
+ * A disk driver which uses the neoMemory command to read from or write to the disk
  * 
- * This can only request reads by sector, so it will be very slow, but is likely supported by any device with a disk
+ * This can only make requests per sector, so it will be very slow, but is likely supported by any device with a disk
  */
-class NeoMemoryDiskReadDriver : public ReadDriver {
+class NeoMemoryDiskDriver : public ReadDriver, public WriteDriver {
 public:
 	std::pair<uint32_t, uint32_t> getBlockSizeBounds() const override {
 		static_assert(SectorSize <= std::numeric_limits<uint32_t>::max(), "Incorrect sector size");
@@ -36,6 +37,9 @@ private:
 
 	optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) override;
+	
+	optional<uint64_t> writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+		uint64_t pos, const uint8_t* atomicBuf, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) override;
 };
 
 } // namespace Disk
@@ -43,4 +47,4 @@ private:
 } // namespace icsneo
 
 #endif // __cplusplus
-#endif // __NEOMEMORYDISKREADDRIVER_H__
+#endif // __NEOMEMORYDISKDRIVER_H__

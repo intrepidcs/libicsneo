@@ -43,7 +43,7 @@ public:
 		RED_DFLASH_READ = 22,
 		NeoMemorySDRead = 23, // Response from NeoMemory (MemoryTypeSD)
 		CAN_ERRBITS = 24,
-		RED_DFLASH_WRITE_DONE = 25,
+		NeoMemoryWriteDone = 25,
 		RED_WAVE_CAN1_LOGICAL = 26,
 		RED_WAVE_CAN2_LOGICAL = 27,
 		RED_WAVE_LIN1_LOGICAL = 28,
@@ -275,6 +275,7 @@ public:
 			case NetID::LogicalDiskInfo:
 			case NetID::EthPHYControl:
 			case NetID::NeoMemorySDRead:
+			case NetID::NeoMemoryWriteDone:
 				return Type::Internal;
 			case NetID::Invalid:
 			case NetID::Any:
@@ -367,8 +368,8 @@ public:
 				return "NeoMemorySDRead";
 			case NetID::CAN_ERRBITS:
 				return "CAN_ERRBITS";
-			case NetID::RED_DFLASH_WRITE_DONE:
-				return "RED_DFLASH_WRITE_DONE";
+			case NetID::NeoMemoryWriteDone:
+				return "NeoMemoryWriteDone";
 			case NetID::RED_WAVE_CAN1_LOGICAL:
 				return "RED_WAVE_CAN1_LOGICAL";
 			case NetID::RED_WAVE_CAN2_LOGICAL:
@@ -835,9 +836,9 @@ private:
 #define ICSNEO_NETID_RED_EXT_MEMORYREAD 20
 #define ICSNEO_NETID_RED_INT_MEMORYREAD 21
 #define ICSNEO_NETID_RED_DFLASH_READ 22
-#define ICSNEO_NETID_RED_SDCARD_READ 23
+#define ICSNEO_NETID_NEOMEMORY_SD_READ 23
 #define ICSNEO_NETID_CAN_ERRBITS 24
-#define ICSNEO_NETID_RED_DFLASH_WRITE_DONE 25
+#define ICSNEO_NETID_NEOMEMORY_WRITE_DONE 25
 #define ICSNEO_NETID_RED_WAVE_CAN1_LOGICAL 26
 #define ICSNEO_NETID_RED_WAVE_CAN2_LOGICAL 27
 #define ICSNEO_NETID_RED_WAVE_LIN1_LOGICAL 28

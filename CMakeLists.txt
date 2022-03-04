@@ -152,7 +152,7 @@ set(SRC_FILES
 	disk/diskreaddriver.cpp
 	disk/diskwritedriver.cpp
 	disk/nulldiskdriver.cpp
-	disk/neomemorydiskreaddriver.cpp
+	disk/neomemorydiskdriver.cpp
 	disk/plasiondiskreaddriver.cpp
 	disk/extextractordiskreaddriver.cpp
 	disk/fat.cpp

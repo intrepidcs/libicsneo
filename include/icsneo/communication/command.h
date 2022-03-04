@@ -9,6 +9,7 @@ enum class Command : uint8_t {
 	EnableNetworkCommunication = 0x07,
 	EnableNetworkCommunicationEx = 0x08,
 	NeoReadMemory = 0x40,
+	NeoWriteMemory = 0x41,
 	RequestSerialNumber = 0xA1,
 	GetMainVersion = 0xA3, // Previously known as RED_CMD_APP_VERSION_REQ
 	SetSettings = 0xA4, // Previously known as RED_CMD_SET_BAUD_REQ, follow up with SaveSettings to write to EEPROM
