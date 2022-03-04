@@ -22,18 +22,14 @@ public:
 		return { static_cast<uint32_t>(SectorSize), static_cast<uint32_t>(MaxSize) };
 	}
 
-	uint8_t getHeaderLength() const { return headerLength; }
-	void setHeaderLength(uint8_t length) { headerLength = length; }
-
 private:
 	static constexpr const uint32_t MaxSize = Disk::SectorSize * 512;
 	static constexpr const std::chrono::seconds CacheTime = std::chrono::seconds(1);
+	static constexpr const uint8_t HeaderLength = 7;
 
 	std::array<uint8_t, MaxSize> cache;
 	uint64_t cachePos = 0;
 	std::chrono::time_point<std::chrono::steady_clock> cachedAt;
-
-	uint8_t headerLength = 7; // Correct for Ethernet
 
 	Access getPossibleAccess() const override { return Access::EntireCard; }
 

@@ -38,44 +38,55 @@ optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Communicat
 		uint16_t receiving = 0; // How much are we about to get before another header or completion
 		uint64_t received = 0;
 		uint16_t receivedCurrent = 0;
-		uint8_t gotHeaderBytes = 0;
+		std::vector<uint8_t> header;
 		std::unique_lock<std::mutex> lk(m);
 		bool error = !com.redirectRead([&](std::vector<uint8_t>&& data) {
 			std::unique_lock<std::mutex> lk2(m);
 			size_t offset = 0;
 			while(offset < data.size()) {
 				size_t left = data.size() - offset;
-				if(gotHeaderBytes != headerLength) {
-					if(gotHeaderBytes == 0 && left && data[offset] != 0xaa) {
+				if(header.size() != HeaderLength) {
+					if(header.empty() && left && data[offset] != 0xaa) {
 						#ifdef ICSNEO_EXTENDED_EXTRACTOR_DEBUG_PRINTS
 						std::cout << "Incorrect header " << int(data[offset]) << ' ' << int(offset) << std::endl;
 						#endif
-						offset++;
-						continue;
-					}
-
-					// Did we get a correct header and at least one byte of data?
-					if(int32_t(left) < (headerLength - gotHeaderBytes)) {
-						#ifdef ICSNEO_EXTENDED_EXTRACTOR_DEBUG_PRINTS
-						std::cout << "Got " << int(left) << " bytes of header at " << offset << std::endl;
-						#endif
-						gotHeaderBytes += uint8_t(left);
+						error = true;
+						lk2.unlock();
+						cv.notify_all();
 						return;
 					}
 
+					// Did we get a correct header and at least one byte of data?
+					const auto begin = data.begin() + offset;
+					int32_t headerLeft = int32_t(HeaderLength - header.size());
+					if(int32_t(left) < headerLeft) {
+						// Not enough data here, grab what header we can and continue
+						header.insert(header.end(), begin, data.end());
+						#ifdef ICSNEO_EXTENDED_EXTRACTOR_DEBUG_PRINTS
+						std::cout << "Got " << int(left) << " bytes of header at " << offset << " (incomplete " <<
+							header.size() << ')' << std::endl;
+						#endif
+						return;
+					}
+					header.insert(header.end(), begin, begin + headerLeft);
+					#ifdef ICSNEO_EXTENDED_EXTRACTOR_DEBUG_PRINTS
+					std::cout << "Got " << int(headerLeft) << " bytes of header at " << offset << " (complete " <<
+						header.size() << ')' << std::endl;
+					#endif
+					offset += headerLeft;
+
 					// The device tells us how much it's sending us before the next header
-					receiving = (data[offset + headerLength-2-gotHeaderBytes] | (data[offset + headerLength-1-gotHeaderBytes] << 8));
+					receiving = (header[5] | (header[6] << 8));
 					#ifdef ICSNEO_EXTENDED_EXTRACTOR_DEBUG_PRINTS
 					std::cout << "Started packet of size " << receiving << " bytes" << std::endl;
 					#endif
-
-					// Skip the header and any bytes necessary for unaligned read
-					offset += headerLength - gotHeaderBytes;
-					gotHeaderBytes = headerLength;
 				}
 
-				const auto available = left - offset;
-				auto count = uint16_t(std::min<uint64_t>(std::min<uint64_t>(receiving - receivedCurrent, available), amount - received));
+				left = data.size() - offset;
+				auto count = uint16_t(std::min<uint64_t>(std::min<uint64_t>(receiving - receivedCurrent, left), amount - received));
+				#ifdef ICSNEO_EXTENDED_EXTRACTOR_DEBUG_PRINTS
+				std::cout << "With " << int(left) << " bytes " << int(offset) << std::endl;
+				#endif
 				memcpy(cache.data() + received, data.data() + offset, count);
 				received += count;
 				receivedCurrent += count;
@@ -84,6 +95,7 @@ optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Communicat
 				if(amount == received) {
 					if(receivedCurrent % 2 == 0)
 						offset++;
+					header.clear(); // Now we will need another header
 					lk2.unlock();
 					cv.notify_all();
 					lk2.lock();
@@ -98,7 +110,7 @@ optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Communicat
 					#endif
 					if(receivedCurrent % 2 == 0)
 						offset++;
-					gotHeaderBytes = 0; // Now we will need another header
+					header.clear(); // Now we will need another header
 					receivedCurrent = 0;
 				} else {
 					#ifdef ICSNEO_EXTENDED_EXTRACTOR_DEBUG_PRINTS
