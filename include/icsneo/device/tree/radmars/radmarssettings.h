@@ -1,5 +1,5 @@
-#ifndef __RADGIGALOGSETTINGS_H_
-#define __RADGIGALOGSETTINGS_H_
+#ifndef __RADMARSSETTINGS_H_
+#define __RADMARSSETTINGS_H_
 
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
@@ -85,25 +85,25 @@ typedef struct {
 	ETHERNET_SETTINGS2 ethernet2;
 	uint16_t network_enables_4;
 	RAD_REPORTING_SETTINGS reporting;
-} radgigalog_settings_t;
+} radmars_settings_t;
 
 typedef struct {
 	uint8_t unused[3];
 	uint8_t ethernetActivationLineEnabled;
-} radgigalog_status_t;
+} radmars_status_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-static_assert(sizeof(radgigalog_settings_t) == 666, "RADGigalog settings size mismatch");
+static_assert(sizeof(radmars_settings_t) == 666, "RAD-Mars settings size mismatch");
 
 #include <iostream>
 
-class RADGigalogSettings : public IDeviceSettings {
+class RADMarsSettings : public IDeviceSettings {
 public:
-	RADGigalogSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radgigalog_settings_t)) {}
+	RADMarsSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radmars_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<radgigalog_settings_t>();
+		auto cfg = getStructurePointer<radmars_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -128,7 +128,7 @@ public:
 		}
 	}
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<radgigalog_settings_t>();
+		auto cfg = getStructurePointer<radmars_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -172,7 +172,7 @@ public:
 
 protected:
 	ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const override {
-		auto cfg = getStructurePointer<radgigalog_settings_t>();
+		auto cfg = getStructurePointer<radmars_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		return &cfg->termination_enables;

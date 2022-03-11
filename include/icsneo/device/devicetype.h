@@ -29,7 +29,7 @@ public:
 		RADSupermoon = (0x00000003),
 		DW_VCAN = (0x00000004),
 		RADMoon2 = (0x00000005),
-		RADGigalog = (0x00000006),
+		RADMars = (0x00000006),
 		VCAN4_1 = (0x00000007),
 		FIRE = (0x00000008),
 		RADPluto = (0x00000009),
@@ -95,8 +95,8 @@ public:
 				return "DW_VCAN";
 			case RADMoon2:
 				return "RAD-Moon 2";
-			case RADGigalog:
-				return "RAD-Gigalog";
+			case RADMars:
+				return "RAD-Mars";
 			case VCAN4_1:
 				return "ValueCAN 4-1";
 			case FIRE:
@@ -203,7 +203,7 @@ private:
 #define ICSNEO_DEVICETYPE_RADSUPERMOON ((devicetype_t)0x00000003)
 #define ICSNEO_DEVICETYPE_DW_VCAN ((devicetype_t)0x00000004)
 #define ICSNEO_DEVICETYPE_RADMOON2 ((devicetype_t)0x00000005)
-#define ICSNEO_DEVICETYPE_RADGIGALOG ((devicetype_t)0x00000006)
+#define ICSNEO_DEVICETYPE_RADMARS ((devicetype_t)0x00000006)
 #define ICSNEO_DEVICETYPE_VCAN4_1 ((devicetype_t)0x00000007)
 #define ICSNEO_DEVICETYPE_FIRE ((devicetype_t)0x00000008)
 #define ICSNEO_DEVICETYPE_RADPLUTO ((devicetype_t)0x00000009)

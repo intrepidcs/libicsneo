@@ -51,12 +51,12 @@ static std::vector<DeviceType> supportedDevices = {
 	RADGalaxy::DEVICE_TYPE,
 	#endif
 
-	#ifdef __RADGIGALOG_ETH_H_
-	RADGigalogETH::DEVICE_TYPE,
+	#ifdef __RADMARS_ETH_H_
+	RADMarsETH::DEVICE_TYPE,
 	#endif
 
-	#ifdef __RADGIGALOG_USB_H_
-	RADGigalogUSB::DEVICE_TYPE,
+	#ifdef __RADMARS_USB_H_
+	RADMarsUSB::DEVICE_TYPE,
 	#endif
 
 	#ifdef __RADGIGASTAR_ETH_H_
@@ -181,12 +181,12 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	findResults.push_back(RADGalaxy::Find(pcapDevices));
 	#endif
 
-	#ifdef __RADGIGALOG_ETH_H_
-	findResults.push_back(RADGigalogETH::Find(pcapDevices));
+	#ifdef __RADMARS_ETH_H_
+	findResults.push_back(RADMarsETH::Find(pcapDevices));
 	#endif
 
-	#ifdef __RADGIGALOG_USB_H_
-	findResults.push_back(RADGigalogUSB::Find());
+	#ifdef __RADMARS_USB_H_
+	findResults.push_back(RADMarsUSB::Find());
 	#endif
 
 	#ifdef __RADGIGASTAR_ETH_H_
