@@ -1,6 +1,7 @@
 #include "icsneo/platform/windows/ftdi.h"
 #include "icsneo/platform/ftdi.h"
 #include "icsneo/platform/registry.h"
+#include "icsneo/device/founddevice.h"
 #include <windows.h>
 #include <iostream>
 #include <iomanip>
@@ -19,8 +20,7 @@ static const std::wstring ALL_ENUM_REG_KEY = L"SYSTEM\\CurrentControlSet\\Enum\\
 static constexpr unsigned int RETRY_TIMES = 5;
 static constexpr unsigned int RETRY_DELAY = 50;
 
-struct VCP::Detail
-{
+struct VCP::Detail {
 	Detail() {
 		overlappedRead.hEvent = INVALID_HANDLE_VALUE;
 		overlappedWrite.hEvent = INVALID_HANDLE_VALUE;
@@ -32,21 +32,22 @@ struct VCP::Detail
 	OVERLAPPED overlappedWait = {};
 };
 
-std::vector<neodevice_t> VCP::FindByProduct(int product, std::vector<std::wstring> driverNames) {
-	std::vector<neodevice_t> found;
-
+void VCP::Find(std::vector<FoundDevice>& found, std::vector<std::wstring> driverNames) {
 	for(auto& driverName : driverNames) {
 		std::wstringstream regss;
 		regss << DRIVER_SERVICES_REG_KEY << driverName << L"\\Enum\\";
 		std::wstring driverEnumRegKey = regss.str();
 
 		uint32_t deviceCount = 0;
-		if(!Registry::Get(driverEnumRegKey, L"Count", deviceCount)) {
-			return found;
-		}
+		if(!Registry::Get(driverEnumRegKey, L"Count", deviceCount))
+			continue;
 
 		for(uint32_t i = 0; i < deviceCount; i++) {
-			neodevice_t device = {};
+			FoundDevice device;
+
+			device.makeDriver = [](const device_eventhandler_t& reportFn, neodevice_t& device) {
+				return std::unique_ptr<Driver>(new VCP(reportFn, device));
+			};
 
 			// First we want to look at what devices FTDI is enumerating (inside driverEnumRegKey)
 			// The entry for a ValueCAN 3 with SN 138635 looks like "FTDIBUS\VID_093C+PID_0601+138635A\0000"
@@ -64,11 +65,10 @@ std::vector<neodevice_t> VCP::FindByProduct(int product, std::vector<std::wstrin
 			if(entry.find(vss.str()) == std::wstring::npos)
 				continue;
 
-			std::wstringstream pss;
-			pss << "PID_" << std::setfill(L'0') << std::setw(4) << std::uppercase << std::hex << product;
-			auto pidpos = entry.find(pss.str());
+			auto pidpos = entry.find(L"PID_");
 			if(pidpos == std::wstring::npos)
 				continue;
+			// We will later use this and startchar to parse the PID
 
 			// Okay, this is a device we want
 			// Get the serial number
@@ -90,13 +90,18 @@ std::vector<neodevice_t> VCP::FindByProduct(int product, std::vector<std::wstrin
 			else
 				oss << sn;
 
+			device.productId = uint16_t(std::wcstol(entry.c_str() + pidpos + 4, nullptr, 16));
+			if(!device.productId)
+				continue;
+
 			std::string serial = converter.to_bytes(oss.str());
 			// The serial number should not have a path slash in it. If it does, that means we don't have the real serial.
 			if(serial.find_first_of('\\') != std::string::npos) {
 				// The serial number was not in the first serenum key where we expected it.
 				// We can try to match the ContainerID with the one in ALL_ENUM\USB and get a serial that way
 				std::wstringstream uess;
-				uess << ALL_ENUM_REG_KEY << L"\\USB\\" << vss.str() << L'&' << pss.str() << L'\\';
+				uess << ALL_ENUM_REG_KEY << L"\\USB\\" << vss.str() << L"&PID_" << std::setfill(L'0') << std::setw(4)
+					<< std::uppercase << std::hex << device.productId << L'\\';
 				std::wstringstream ciss;
 				ciss << ALL_ENUM_REG_KEY << entry;
 				std::wstring containerIDFromEntry, containerIDFromEnum;
@@ -166,7 +171,7 @@ std::vector<neodevice_t> VCP::FindByProduct(int product, std::vector<std::wstrin
 			}
 
 			bool alreadyFound = false;
-			neodevice_t* shouldReplace = nullptr;
+			FoundDevice* shouldReplace = nullptr;
 			for(auto& foundDev : found) {
 				if((foundDev.handle == device.handle || foundDev.handle == 0 || device.handle == 0) && serial == foundDev.serial) {
 					alreadyFound = true;
@@ -182,8 +187,6 @@ std::vector<neodevice_t> VCP::FindByProduct(int product, std::vector<std::wstrin
 				*shouldReplace = device;
 		}
 	}
-
-	return found;
 }
 
 VCP::VCP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {

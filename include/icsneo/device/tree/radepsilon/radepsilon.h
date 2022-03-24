@@ -3,23 +3,14 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/platform/cdcacm.h"
 
 namespace icsneo {
 
 class RADEpsilon : public Device {
 public:
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADEpsilon;
-	static constexpr const char* SERIAL_START = "RE";
-	static constexpr const uint16_t PRODUCT_ID = 0x1109;
-	static std::vector<std::shared_ptr<Device>> Find() {
-		std::vector<std::shared_ptr<Device>> found;
-
-		for(auto neodevice : CDCACM::FindByProduct(PRODUCT_ID))
-			found.emplace_back(new RADEpsilon(neodevice));
-
-		return found;
-	}
+	// Serial numbers start with RE
+	// USB PID is 0x1109, standard driver is CDCACM
+	ICSNEO_FINDABLE_DEVICE(RADEpsilon, DeviceType::RADEpsilon, "RE");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
@@ -34,10 +25,8 @@ public:
 	}
 
 protected:
-	RADEpsilon(neodevice_t neodevice) : Device(neodevice) {
-		initialize<CDCACM>();
-		getWritableNeoDevice().type = DEVICE_TYPE;
-		productId = PRODUCT_ID;
+	RADEpsilon(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize(makeDriver);
 	}
 
 	virtual void setupEncoder(Encoder& encoder) override {
@@ -45,13 +34,13 @@ protected:
 		encoder.supportCANFD = true;
 	}
 
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 
 	// The supported TX networks are the same as the supported RX networks for this device
-	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 };
 
 }

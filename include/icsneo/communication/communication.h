@@ -26,14 +26,14 @@ namespace icsneo {
 
 class Communication {
 public:
+	// Note that the Packetizer is not created by the constructor,
+	// and should be done once the Communication module is in place.
 	Communication(
 		device_eventhandler_t report,
 		std::unique_ptr<Driver>&& driver,
 		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder>&& e,
-		std::unique_ptr<Decoder>&& md) : makeConfiguredPacketizer(makeConfiguredPacketizer), encoder(std::move(e)), decoder(std::move(md)), report(report), driver(std::move(driver)) {
-		packetizer = makeConfiguredPacketizer();
-	}
+		std::unique_ptr<Decoder>&& md) : makeConfiguredPacketizer(makeConfiguredPacketizer), encoder(std::move(e)), decoder(std::move(md)), driver(std::move(driver)), report(report) {}
 	virtual ~Communication();
 
 	bool open();
@@ -77,10 +77,10 @@ public:
 	std::unique_ptr<Packetizer> packetizer;
 	std::unique_ptr<Encoder> encoder;
 	std::unique_ptr<Decoder> decoder;
+	std::unique_ptr<Driver> driver;
 	device_eventhandler_t report;
 
 protected:
-	std::unique_ptr<Driver> driver;
 	static int messageCallbackIDCounter;
 	std::mutex messageCallbacksLock;
 	std::map<int, MessageCallback> messageCallbacks;

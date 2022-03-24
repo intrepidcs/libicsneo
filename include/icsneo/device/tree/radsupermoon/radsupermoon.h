@@ -6,29 +6,19 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/tree/radsupermoon/radsupermoonsettings.h"
-#include "icsneo/platform/ftdi3.h"
 
 namespace icsneo {
 
 class RADSupermoon : public Device {
 public:
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADSupermoon;
-	static constexpr const uint16_t PRODUCT_ID = 0x1201;
-	static constexpr const char* SERIAL_START = "SM";
+	// Serial numbers start with SM
+	// USB PID is 0x1201, standard driver is FTDI3
+	ICSNEO_FINDABLE_DEVICE(RADSupermoon, DeviceType::RADSupermoon, "SM");
 
 	enum class SKU {
 		Standard,
 		APM1000ET, // Keysight Branding
 	};
-
-	static std::vector<std::shared_ptr<Device>> Find() {
-		std::vector<std::shared_ptr<Device>> found;
-
-		for(auto neodevice : FTDI3::FindByProduct(PRODUCT_ID))
-			found.emplace_back(new RADSupermoon(neodevice));
-
-		return found;
-	}
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
@@ -60,10 +50,8 @@ public:
 	bool getEthPhyRegControlSupported() const override { return true; }
 
 protected:
-	RADSupermoon(neodevice_t neodevice) : Device(neodevice) {
-		initialize<FTDI3, RADSupermoonSettings>();
-		productId = PRODUCT_ID;
-		getWritableNeoDevice().type = DEVICE_TYPE;
+	RADSupermoon(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<RADSupermoonSettings>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {

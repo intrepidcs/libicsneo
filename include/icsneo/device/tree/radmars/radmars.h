@@ -11,14 +11,16 @@ namespace icsneo {
 
 class RADMars : public Device {
 public:
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADMars;
-	static constexpr const char* SERIAL_START = "GL";
+	// Serial numbers start with GL (previously, RAD-Gigalog)
+	// USB PID is 0x1203, standard driver is FTDI3
+	// Ethernet MAC allocation is 0x0A, standard driver is Raw
+	ICSNEO_FINDABLE_DEVICE(RADMars, DeviceType::RADMars, "GL");
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
 
 protected:
-	RADMars(neodevice_t neodevice) : Device(neodevice) {
-		getWritableNeoDevice().type = DEVICE_TYPE;
+	RADMars(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<RADMarsSettings>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {

@@ -3,6 +3,7 @@
 #include <iterator>
 #include <cstring>
 #include <cassert>
+#include <iostream>
 
 using namespace icsneo;
 
@@ -74,7 +75,7 @@ bool EthernetPacketizer::inputUp(std::vector<uint8_t> bytes) {
 		memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) != 0)
 		return false; // Packet is not addressed to us or broadcast
 
-	if(memcmp(packet.srcMAC, deviceMAC, sizeof(deviceMAC)) != 0)
+	if(!allowInPacketsFromAnyMAC && memcmp(packet.srcMAC, deviceMAC, sizeof(deviceMAC)) != 0)
 		return false; // Not a packet from the device we're concerned with
 
 	// Handle single packets

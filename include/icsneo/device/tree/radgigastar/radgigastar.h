@@ -11,16 +11,18 @@ namespace icsneo {
 
 class RADGigastar : public Device {
 public:
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADGigastar;
-	static constexpr const char* SERIAL_START = "GS";
+	// Serial numbers start with GS
+	// USB PID is 0x1204, standard driver is FTDI3
+	// Ethernet MAC allocation is 0x0F, standard driver is Raw
+	ICSNEO_FINDABLE_DEVICE(RADGigastar, DeviceType::RADGigastar, "GS");
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
 
 	bool getEthPhyRegControlSupported() const override { return true; }
 
 protected:
-	RADGigastar(neodevice_t neodevice) : Device(neodevice) {
-		getWritableNeoDevice().type = DEVICE_TYPE;
+	RADGigastar(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<RADGigastarSettings>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {

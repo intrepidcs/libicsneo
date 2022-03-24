@@ -10,16 +10,15 @@ namespace icsneo {
 
 class ValueCAN4 : public Device {
 public:
-	// All ValueCAN 4 devices share a USB PID
-	static constexpr const uint16_t USB_PRODUCT_ID = 0x1101;
+	// All ValueCAN 4 devices share a USB PID of 0x1101
 
 protected:
+	using Device::Device;
+
 	virtual void setupEncoder(Encoder& encoder) override {
 		Device::setupEncoder(encoder);
 		encoder.supportCANFD = true;
 	}
-
-	ValueCAN4(neodevice_t neodevice) : Device(neodevice) {}
 
 	bool requiresVehiclePower() const override { return false; }
 };

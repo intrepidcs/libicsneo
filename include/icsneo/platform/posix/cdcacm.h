@@ -27,7 +27,7 @@ public:
 	 */
 	CDCACM(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {}
 	~CDCACM();
-	static std::vector<neodevice_t> FindByProduct(int product);
+	static void Find(std::vector<FoundDevice>& found);
 
 	bool open() override;
 	bool isOpen() override;

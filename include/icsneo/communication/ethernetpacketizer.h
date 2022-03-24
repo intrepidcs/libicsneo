@@ -61,6 +61,7 @@ public:
 
 	uint8_t hostMAC[6] = { 0x00, 0xFC, 0x70, 0xFF, 0xFF, 0xFF };
 	uint8_t deviceMAC[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+	bool allowInPacketsFromAnyMAC = false; // Used when discovering devices
 	
 private:
 	bool reassembling = false;

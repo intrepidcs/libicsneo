@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include <cstring>
+#include <cstdint>
 #include <atomic>
 #include <type_traits>
 #include "icsneo/api/eventmanager.h"
@@ -16,6 +17,7 @@
 #include "icsneo/device/nullsettings.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/deviceversion.h"
+#include "icsneo/device/founddevice.h"
 #include "icsneo/disk/diskreaddriver.h"
 #include "icsneo/disk/diskwritedriver.h"
 #include "icsneo/disk/nulldiskdriver.h"
@@ -32,6 +34,20 @@
 #include "icsneo/platform/optional.h"
 #include "icsneo/platform/nodiscard.h"
 
+#define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
+	static constexpr DeviceType::Enum DEVICE_TYPE = type; \
+	className(const FoundDevice& dev) : className(neodevice_t(dev, DEVICE_TYPE), dev.makeDriver) {}
+
+// Devices which are discernable by the first two characters of their serial
+#define ICSNEO_FINDABLE_DEVICE(className, type, serialStart) \
+	static constexpr const char* SERIAL_START = serialStart; \
+	ICSNEO_FINDABLE_DEVICE_BASE(className, type)
+
+// Devices which are discernable by their USB PID
+#define ICSNEO_FINDABLE_DEVICE_BY_PID(className, type, pid) \
+	static constexpr const uint16_t PRODUCT_ID = pid; \
+	ICSNEO_FINDABLE_DEVICE_BASE(className, type)
+
 namespace icsneo {
 
 class DeviceExtension;
@@ -46,7 +62,6 @@ public:
 
 	uint16_t getTimestampResolution() const;
 	DeviceType getType() const { return DeviceType(data.type); }
-	uint16_t getProductId() const { return productId; }
 	std::string getSerial() const { return data.serial; }
 	uint32_t getSerialNumber() const { return Device::SerialStringToNum(getSerial()); }
 	const neodevice_t& getNeoDevice() const { return data; }
@@ -308,7 +323,6 @@ public:
 	std::unique_ptr<IDeviceSettings> settings;
 
 protected:
-	uint16_t productId = 0;
 	bool online = false;
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
@@ -323,21 +337,23 @@ protected:
 	std::array<optional<double>, 2> miscAnalog;
 
 	// START Initialization Functions
-	Device(neodevice_t neodevice = { 0 }) {
-		data = neodevice;
+	Device(neodevice_t neodevice) : data(neodevice) {
 		data.device = this;
 	}
 	
-	template<typename Driver, typename Settings = NullSettings, typename DiskRead = Disk::NullDriver, typename DiskWrite = Disk::NullDriver>
-	void initialize() {
+	template<typename Settings = NullSettings, typename DiskRead = Disk::NullDriver, typename DiskWrite = Disk::NullDriver>
+	void initialize(const driver_factory_t& makeDriver) {
 		report = makeEventHandler();
-		auto driver = makeDriver<Driver>();
-		setupDriver(*driver);
 		auto encoder = makeEncoder();
 		setupEncoder(*encoder);
 		auto decoder = makeDecoder();
 		setupDecoder(*decoder);
-		com = makeCommunication(std::move(driver), std::bind(&Device::makeConfiguredPacketizer, this), std::move(encoder), std::move(decoder));
+		com = makeCommunication(
+			makeDriver(report, getWritableNeoDevice()),
+			std::bind(&Device::makeConfiguredPacketizer, this),
+			std::move(encoder),
+			std::move(decoder)
+		);
 		setupCommunication(*com);
 		settings = makeSettings<Settings>(com);
 		setupSettings(*settings);
@@ -353,10 +369,6 @@ protected:
 			EventManager::GetInstance().add(type, severity, this);
 		};
 	}
-
-	template<typename Driver>
-	std::unique_ptr<Driver> makeDriver() { return std::unique_ptr<Driver>(new Driver(report, getWritableNeoDevice())); }
-	virtual void setupDriver(Driver&) {}
 
 	virtual std::unique_ptr<Packetizer> makePacketizer() { return std::unique_ptr<Packetizer>(new Packetizer(report)); }
 	virtual void setupPacketizer(Packetizer&) {}
@@ -377,7 +389,9 @@ protected:
 		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder> e,
 		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(report, std::move(t), makeConfiguredPacketizer, std::move(e), std::move(d)); }
-	virtual void setupCommunication(Communication&) {}
+	virtual void setupCommunication(Communication& communication) {
+		communication.packetizer = communication.makeConfiguredPacketizer();
+	}
 
 	template<typename Settings>
 	std::unique_ptr<IDeviceSettings> makeSettings(std::shared_ptr<Communication> com) {

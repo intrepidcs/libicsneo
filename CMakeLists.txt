@@ -8,6 +8,9 @@ option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
+option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw ethernet" ON)
+option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" ON)
+option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" ON)
 
 if(NOT CMAKE_CXX_STANDARD)
 	set(CMAKE_CXX_STANDARD 11)
@@ -86,30 +89,55 @@ endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	set(PLATFORM_SRC
-		platform/windows/pcap.cpp
 		platform/windows/registry.cpp
-		platform/windows/vcp.cpp
-		platform/windows/internal/pcapdll.cpp
 	)
+
+	if(LIBICSNEO_ENABLE_RAW_ETHERNET)
+		list(APPEND PLATFORM_SRC
+			platform/windows/pcap.cpp
+			platform/windows/internal/pcapdll.cpp
+		)
+	endif()
+
+	if(LIBICSNEO_ENABLE_CDCACM OR LIBICSNEO_ENABLE_FTDI)
+		list(APPEND PLATFORM_SRC
+			platform/windows/vcp.cpp
+		)
+	endif()
 else() # Darwin or Linux
-	set(PLATFORM_SRC
-		platform/posix/ftdi.cpp
-		platform/posix/pcap.cpp
-		platform/posix/cdcacm.cpp
-	)
-	if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+	set(PLATFORM_SRC)
+
+	if(LIBICSNEO_ENABLE_RAW_ETHERNET)
 		list(APPEND PLATFORM_SRC
-			platform/posix/darwin/cdcacmdarwin.cpp
+			platform/posix/pcap.cpp
 		)
-	else() # Linux or other
+	endif()
+
+	if(LIBICSNEO_ENABLE_FTDI)
 		list(APPEND PLATFORM_SRC
-			platform/posix/linux/cdcacmlinux.cpp
+			platform/posix/ftdi.cpp
 		)
-		if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-			message(WARNING
-				"There is no platform port defined for ${CMAKE_SYSTEM_NAME}!\n"
-				"The Linux platform code will be used, as it will generally allow building, but some devices may not enumerate properly."
+	endif()
+
+	if(LIBICSNEO_ENABLE_CDCACM)
+		list(APPEND PLATFORM_SRC
+			platform/posix/cdcacm.cpp
+		)
+
+		if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+			list(APPEND PLATFORM_SRC
+				platform/posix/darwin/cdcacmdarwin.cpp
 			)
+		else() # Linux or other
+			list(APPEND PLATFORM_SRC
+				platform/posix/linux/cdcacmlinux.cpp
+			)
+			if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+				message(WARNING
+					"There is no CDCACM platform port defined for ${CMAKE_SYSTEM_NAME}!\n"
+					"The Linux platform code will be used, as it will generally allow building, but some devices may not enumerate properly."
+				)
+			endif()
 		endif()
 	endif()
 endif()
@@ -149,6 +177,7 @@ set(SRC_FILES
 	device/idevicesettings.cpp
 	device/devicefinder.cpp
 	device/device.cpp
+	device/neodevice.cpp
 	disk/diskreaddriver.cpp
 	disk/diskwritedriver.cpp
 	disk/nulldiskdriver.cpp
@@ -220,6 +249,15 @@ set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
 target_link_libraries(icsneocpp PUBLIC ${LIBICSNEO_EXTENSION_TARGETS})
+if(LIBICSNEO_ENABLE_RAW_ETHERNET)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_RAW_ETHERNET)
+endif()
+if(LIBICSNEO_ENABLE_CDCACM)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_CDCACM)
+endif()
+if(LIBICSNEO_ENABLE_FTDI)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FTDI)
+endif()
 
 # fatfs
 add_subdirectory(third-party/fatfs)

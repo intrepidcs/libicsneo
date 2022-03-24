@@ -27,6 +27,7 @@ public:
 	virtual bool read(std::vector<uint8_t>& bytes, size_t limit = 0);
 	virtual bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 0);
 	virtual bool write(const std::vector<uint8_t>& bytes);
+	virtual bool isEthernet() const { return false; }
 
 	device_eventhandler_t report;
 

@@ -5,7 +5,6 @@
 
 #include "icsneo/device/tree/plasion/plasion.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/platform/ftdi.h"
 #include "icsneo/disk/plasiondiskreaddriver.h"
 #include "icsneo/disk/neomemorydiskdriver.h"
 
@@ -13,22 +12,12 @@ namespace icsneo {
 
 class NeoVIION : public Plasion {
 public:
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::ION;
-	static constexpr const uint16_t PRODUCT_ID = 0x0901;
-	static std::vector<std::shared_ptr<Device>> Find() {
-		std::vector<std::shared_ptr<Device>> found;
-
-		for(auto neodevice : FTDI::FindByProduct(PRODUCT_ID))
-			found.emplace_back(new NeoVIION(neodevice));
-
-		return found;
-	}
+	// USB PID is 0x0901, standard driver is FTDI
+	ICSNEO_FINDABLE_DEVICE_BY_PID(NeoVIION, DeviceType::ION, 0x0901);
 
 private:
-	NeoVIION(neodevice_t neodevice) : Plasion(neodevice) {
-		initialize<FTDI, NullSettings, Disk::PlasionDiskReadDriver, Disk::NeoMemoryDiskDriver>();
-		getWritableNeoDevice().type = DEVICE_TYPE;
-		productId = PRODUCT_ID;
+	NeoVIION(neodevice_t neodevice, const driver_factory_t& makeDriver) : Plasion(neodevice) {
+		initialize<NullSettings, Disk::PlasionDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	virtual std::shared_ptr<Communication> makeCommunication(

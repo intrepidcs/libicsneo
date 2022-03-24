@@ -1,7 +1,9 @@
 #include "icsneo/platform/posix/pcap.h"
 #include "icsneo/communication/network.h"
 #include "icsneo/communication/communication.h"
+#include "icsneo/communication/ethernetpacketizer.h"
 #include "icsneo/communication/packetizer.h"
+#include "icsneo/communication/decoder.h"
 #include <codecvt>
 #include <chrono>
 #include <cstring>
@@ -15,14 +17,10 @@
 
 using namespace icsneo;
 
-static const uint8_t BROADCAST_MAC[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-static const uint8_t ICS_UNSET_MAC[6] = { 0x00, 0xFC, 0x70, 0xFF, 0xFF, 0xFF };
-
 std::vector<PCAP::NetworkInterface> PCAP::knownInterfaces;
 
-std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
+void PCAP::Find(std::vector<FoundDevice>& found) {
 	static bool warned = false; // Only warn once for failure to open devices
-	std::vector<PCAPFoundDevice> foundDevices;
 
 	// First we ask PCAP to give us all of the devices
 	pcap_if_t* alldevs;
@@ -39,7 +37,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 
 	if(!success) {
 		EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotFindDevices, APIEvent::Severity::Error);
-		return std::vector<PCAPFoundDevice>();
+		return;
 	}
 
 	std::vector<NetworkInterface> interfaces;
@@ -138,7 +136,7 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 		pcap_sendpacket(iface.fp, bs.data(), (int)bs.size());
 
 		auto timeout = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(50);
-		while(std::chrono::high_resolution_clock::now() <= timeout) { // Wait up to 5ms for the response
+		while(std::chrono::high_resolution_clock::now() <= timeout) { // Wait up to 50ms for the response
 			struct pcap_pkthdr* header;
 			const uint8_t* data;
 			auto res = pcap_next_ex(iface.fp, &header, &data);
@@ -152,48 +150,49 @@ std::vector<PCAP::PCAPFoundDevice> PCAP::FindAll() {
 			}
 			if(res == 0)
 				continue; // Keep waiting for that packet
-			
-			EthernetPacketizer::EthernetPacket packet(data, header->caplen);
-			// Is this an ICS response packet (0xCAB2) from an ICS MAC, either to broadcast or directly to us?
-			if(packet.etherType == 0xCAB2 && packet.srcMAC[0] == 0x00 && packet.srcMAC[1] == 0xFC && packet.srcMAC[2] == 0x70 && (
-				memcmp(packet.destMAC, iface.macAddress, sizeof(packet.destMAC)) == 0 ||
-				memcmp(packet.destMAC, BROADCAST_MAC, sizeof(packet.destMAC)) == 0 ||
-				memcmp(packet.destMAC, ICS_UNSET_MAC, sizeof(packet.destMAC)) == 0
-			)) {
-				/* We have received a packet from a device. We don't know if this is the device we're
-				 * looking for, we don't know if it's actually a response to our RequestSerialNumber
-				 * or not, we just know we got something.
-				 *
-				 * Unlike most transport layers, we can't get the serial number here as we actually
-				 * need to parse this message that has been returned. Some devices parse messages
-				 * differently, so we need to use their communication layer. We could technically
-				 * create a communication layer to parse the packet we have in `payload` here, but
-				 * we'd need to be given a packetizer and decoder for the device. I'm intentionally
-				 * avoiding passing that information down here for code quality's sake. Instead, pass
-				 * the packet we received back up so the device can handle it.
-				 */
-				neodevice_handle_t handle = (neodevice_handle_t)((i << 24) | (packet.srcMAC[3] << 16) | (packet.srcMAC[4] << 8) | (packet.srcMAC[5]));
-				PCAPFoundDevice* alreadyExists = nullptr;
-				for(auto& dev : foundDevices)
-					if(dev.device.handle == handle)
-						alreadyExists = &dev;
 
-				if(alreadyExists == nullptr) {
-					PCAPFoundDevice foundDevice;
-					foundDevice.device.handle = handle;
-					foundDevice.discoveryPackets.push_back(std::move(packet.payload));
-					foundDevices.push_back(foundDevice);
-				} else {
-					alreadyExists->discoveryPackets.push_back(std::move(packet.payload));
-				}
+			EthernetPacketizer ethPacketizer([](APIEvent::Type, APIEvent::Severity) {});
+			memcpy(ethPacketizer.hostMAC, iface.macAddress, sizeof(ethPacketizer.hostMAC));
+			ethPacketizer.allowInPacketsFromAnyMAC = true;
+			if(!ethPacketizer.inputUp({ data, data + header->caplen }))
+				continue; // This packet is not for us
+
+			Packetizer packetizer([](APIEvent::Type, APIEvent::Severity) {});
+			if(!packetizer.input(ethPacketizer.outputUp()))
+				continue; // This packet was not well formed
+
+			EthernetPacketizer::EthernetPacket decoded(data, header->caplen);
+			Decoder decoder([](APIEvent::Type, APIEvent::Severity) {});
+			for(const auto& packet : packetizer.output()) {
+				std::shared_ptr<Message> message;
+				if(!decoder.decode(message, packet))
+					continue;
+
+				const neodevice_handle_t handle = (neodevice_handle_t)((i << 24) | (decoded.srcMAC[3] << 16) | (decoded.srcMAC[4] << 8) | (decoded.srcMAC[5]));
+				if(std::any_of(found.begin(), found.end(), [&handle](const auto& found) { return handle == found.handle; }))
+					continue; // We already have this device on this interface
+
+				const auto serial = std::dynamic_pointer_cast<SerialNumberMessage>(message);
+				if(!serial || serial->deviceSerial.size() != 6)
+					continue;
+
+				FoundDevice foundDevice;
+				foundDevice.handle = handle;
+				foundDevice.productId = decoded.srcMAC[2];
+				memcpy(foundDevice.serial, serial->deviceSerial.c_str(), sizeof(foundDevice.serial) - 1);
+				foundDevice.serial[sizeof(foundDevice.serial) - 1] = '\0';
+
+				foundDevice.makeDriver = [](const device_eventhandler_t& report, neodevice_t& device) {
+					return std::unique_ptr<Driver>(new PCAP(report, device));
+				};
+
+				found.push_back(foundDevice);
 			}
 		}
 
 		pcap_close(iface.fp);
 		iface.fp = nullptr;
 	}
-
-	return foundDevices;
 }
 
 bool PCAP::IsHandleValid(neodevice_handle_t handle) {

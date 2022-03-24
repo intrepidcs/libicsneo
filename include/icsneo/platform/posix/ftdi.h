@@ -16,7 +16,7 @@ namespace icsneo {
 
 class FTDI : public Driver {
 public:
-	static std::vector<neodevice_t> FindByProduct(int product);
+	static void Find(std::vector<FoundDevice>& found);
 
 	FTDI(const device_eventhandler_t& err, neodevice_t& forDevice);
 	~FTDI() { if(isOpen()) close(); }
@@ -34,7 +34,9 @@ private:
 			context = nullptr;
 		}
 
-		std::pair<int, std::vector<std::string>> findDevices(int pid);
+		// A PID of 0 disables filtering by PID
+		std::pair<int, std::vector< std::pair<std::string, uint16_t> > > findDevices(int pid = 0);
+
 		int openDevice(int pid, const char* serial);
 		bool closeDevice();
 		bool isOpen() const { return deviceOpen; }
@@ -52,7 +54,7 @@ private:
 	};
 	FTDIContext ftdi;
 
-	static std::vector<std::tuple<int, std::string>> handles;
+	static std::vector<std::string> handles;
 
 	static bool ErrorIsDisconnection(int errorCode);
 	void readTask();
