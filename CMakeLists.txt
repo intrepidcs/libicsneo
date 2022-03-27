@@ -8,6 +8,12 @@ option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
+
+# Device Drivers
+# You almost certainly don't want firmio for your build,
+# it is only relevant for communication between Linux and
+# CoreMini from the onboard processor of the device.
+option(LIBICSNEO_ENABLE_FIRMIO "Enable communication between Linux and CoreMini within the same device" OFF)
 option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw ethernet" ON)
 option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" ON)
 option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" ON)
@@ -106,6 +112,12 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	endif()
 else() # Darwin or Linux
 	set(PLATFORM_SRC)
+
+	if(LIBICSNEO_ENABLE_FIRMIO)
+		list(APPEND PLATFORM_SRC
+			platform/posix/firmio.cpp
+		)
+	endif()
 
 	if(LIBICSNEO_ENABLE_RAW_ETHERNET)
 		list(APPEND PLATFORM_SRC
@@ -249,6 +261,9 @@ set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
 target_link_libraries(icsneocpp PUBLIC ${LIBICSNEO_EXTENSION_TARGETS})
+if(LIBICSNEO_ENABLE_FIRMIO)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FIRMIO)
+endif()
 if(LIBICSNEO_ENABLE_RAW_ETHERNET)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_RAW_ETHERNET)
 endif()

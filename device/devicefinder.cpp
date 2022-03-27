@@ -3,6 +3,10 @@
 #include "icsneo/device/founddevice.h"
 #include "generated/extensions/builtin.h"
 
+#ifdef ICSNEO_ENABLE_FIRMIO
+#include "icsneo/platform/firmio.h"
+#endif
+
 #ifdef ICSNEO_ENABLE_RAW_ETHERNET
 #include "icsneo/platform/pcap.h"
 #endif
@@ -38,6 +42,10 @@ static void makeIfPIDMatches(const FoundDevice& dev, std::vector<std::shared_ptr
 std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	static std::vector<FoundDevice> driverFoundDevices;
 	driverFoundDevices.clear();
+
+	#ifdef ICSNEO_ENABLE_FIRMIO
+	FirmIO::Find(driverFoundDevices);
+	#endif
 
 	#ifdef ICSNEO_ENABLE_RAW_ETHERNET
 	PCAP::Find(driverFoundDevices);

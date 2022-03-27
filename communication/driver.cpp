@@ -45,17 +45,18 @@ bool Driver::write(const std::vector<uint8_t>& bytes) {
 	}
 
 	if(writeBlocks) {
-		if(writeQueue.size_approx() > writeQueueSize)
-			while(writeQueue.size_approx() > (writeQueueSize * 3 / 4))
+		if(writeQueueFull()) {
+			while(writeQueueAlmostFull()) // Wait until we have some decent amount of space
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
 	} else {
-		if(writeQueue.size_approx() > writeQueueSize) {
+		if(writeQueueFull()) {
 			report(APIEvent::Type::TransmitBufferFull, APIEvent::Severity::Error);
 			return false;
 		}
 	}
 
-	bool ret = writeQueue.enqueue(WriteOperation(bytes));
+	const bool ret = writeInternal(bytes);
 	if(!ret)
 		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 
