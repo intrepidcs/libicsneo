@@ -105,9 +105,44 @@ bool FirmIO::open() {
 	}
 
 	// Swapping the in and out ptrs here, what the device considers out, we consider in
-	out = reinterpret_cast<MsgQueue*>(header->msgqPtrIn.offset + vbase);
-	in = reinterpret_cast<MsgQueue*>(header->msgqPtrOut.offset + vbase);
+	out.emplace(header->msgqPtrIn.offset + vbase, header->msgqIn.offset + vbase);
+	in.emplace(header->msgqPtrOut.offset + vbase, header->msgqOut.offset + vbase);
 	outMemory.emplace(vbase + header->shmIn.offset, header->shmIn.size, vbase, PHY_ADDR_BASE);
+
+	// Flush any messages that are stuck in the pipe
+	Msg msg;
+	std::vector<Msg> toFree;
+
+	int i = 0;
+	while(!in->isEmpty() && i++ < 10000) {
+		if(!in->read(&msg))
+			break;
+
+		switch(msg.command) {
+		case Msg::Command::ComData: {
+			if(toFree.empty() || toFree.back().payload.free.refCount == 6) {
+				toFree.emplace_back();
+				toFree.back().command = Msg::Command::ComFree;
+				toFree.back().payload.free.refCount = 0;
+			}
+
+			// Add this ref to the list of payloads to free
+			// After we process these, we'll send this list back to the device
+			// so that it can free these entries
+			toFree.back().payload.free.ref[toFree.back().payload.free.refCount] = msg.payload.data.ref;
+			toFree.back().payload.free.refCount++;
+			break;
+		}
+		}
+	}
+
+	//std::cout << "Flushed " << std::dec << i << " freeing " << toFree.size() << std::endl;
+
+	while(!toFree.empty()) {
+		std::lock_guard<std::mutex> lk(outMutex);
+		out->write(&toFree.back());
+		toFree.pop_back();
+	}
 
 	// Create thread
 	// No thread for writing since we don't need the extra buffer
@@ -134,16 +169,17 @@ bool FirmIO::close() {
 	closing = false;
 	disconnected = false;
 
-	int ret = munmap(vbase, MMAP_LEN);
-	vbase = nullptr;
+	int ret = 0;
+	if(vbase != nullptr) {
+		ret |= munmap(vbase, MMAP_LEN);
+		vbase = nullptr;
+	}
 
 	ret |= ::close(fd);
 	fd = -1;
 
 	uint8_t flush;
-	WriteOperation flushop;
 	while (readQueue.try_dequeue(flush)) {}
-	while (writeQueue.try_dequeue(flushop)) {}
 
 	if(ret == 0) {
 		return true;
@@ -155,12 +191,16 @@ bool FirmIO::close() {
 
 void FirmIO::readTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+	Msg msg;
+	std::vector<Msg> toFree;
+
 	while(!closing && !isDisconnected()) {
 		fd_set rfds = {0};
 		struct timeval tv = {0};
 		FD_SET(fd, &rfds);
 		tv.tv_usec = 50000; // 50ms
 		int ret = ::select(fd + 1, &rfds, NULL, NULL, &tv);
+		// std::cout << "select returned " << ret << ' ' << errno << std::endl;
 		if(ret < 0)
 			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 		if(ret <= 0)
@@ -170,19 +210,18 @@ void FirmIO::readTask() {
 		ret = ::read(fd, &interruptCount, sizeof(interruptCount));
 		if(ret < 0)
 			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
-		if(ret < sizeof(interruptCount) || interruptCount < 1)
+		if(ret < int(sizeof(interruptCount)) || interruptCount < 1)
 			continue;
 
-		std::vector<Msg> toFree;
-		Msg msg;
+		toFree.clear();
 		int i = 0;
-		while(!in->isEmpty() && i++ < 100) {
+		while(!in->isEmpty() && i++ < 1000) {
 			if(!in->read(&msg))
 				break;
 
 			switch(msg.command) {
 			case Msg::Command::ComData: {
-				if(toFree.empty() || toFree.back().payload.free.refCount == 7) {
+				if(toFree.empty() || toFree.back().payload.free.refCount == 6) {
 					toFree.emplace_back();
 					toFree.back().command = Msg::Command::ComFree;
 					toFree.back().payload.free.refCount = 0;
@@ -194,6 +233,8 @@ void FirmIO::readTask() {
 				toFree.back().payload.free.ref[toFree.back().payload.free.refCount] = msg.payload.data.ref;
 				toFree.back().payload.free.refCount++;
 
+				// std::cout << "Got some data @ 0x" << std::hex << msg.payload.data.addr << " " << std::dec << msg.payload.data.len << std::endl;
+
 				// Translate the physical address back to our virtual address space
 				uint8_t* addr = reinterpret_cast<uint8_t*>(msg.payload.data.addr - PHY_ADDR_BASE + vbase);
 				readQueue.enqueue_bulk(addr, msg.payload.data.len);
@@ -201,6 +242,7 @@ void FirmIO::readTask() {
 			}
 			case Msg::Command::ComFree: {
 				std::lock_guard<std::mutex> lk(outMutex);
+				// std::cout << "Got some free " << std::hex << msg.payload.free.ref[0] << std::endl;
 				for(uint32_t i = 0; i < msg.payload.free.refCount; i++)
 					outMemory->free(reinterpret_cast<uint8_t*>(msg.payload.free.ref[i]));
 				break;
@@ -238,6 +280,7 @@ bool FirmIO::writeInternal(const std::vector<uint8_t>& bytes) {
 	if(sharedData == nullptr)
 		return false;
 
+	// std::cout << "coping " << bytes.size() << " bytes of data" << std::endl;
 	memcpy(sharedData, bytes.data(), bytes.size());
 
 	Msg msg = { Msg::Command::ComData };
@@ -252,38 +295,38 @@ bool FirmIO::writeInternal(const std::vector<uint8_t>& bytes) {
 	return ::write(fd, &genInterrupt, sizeof(genInterrupt)) == sizeof(genInterrupt);
 }
 
-bool FirmIO::MsgQueue::read(Msg* msg) volatile {
+bool FirmIO::MsgQueue::read(Msg* msg) {
 	if(isEmpty()) // Contains memory_barrier()
 		return false;
 
-	memcpy(msg, &msgs[tail], sizeof(*msg));
-	tail = (tail + 1) & (size - 1);
+	memcpy(msg, &msgs[info->tail], sizeof(*msg));
+	info->tail = (info->tail + 1) & (info->size - 1);
 	memory_barrier();
 	return true;
 }
 
-bool FirmIO::MsgQueue::write(const Msg* msg) volatile {
+bool FirmIO::MsgQueue::write(const Msg* msg) {
 	if(isFull()) // Contains memory_barrier()
 		return false;
 
-	memcpy(&msgs[head], msg, sizeof(*msg));
-	head = (head + 1) & (size - 1);
+	memcpy(&msgs[info->head], msg, sizeof(*msg));
+	info->head = (info->head + 1) & (info->size - 1);
 	memory_barrier();
 	return true;
 }
 
-bool FirmIO::MsgQueue::isEmpty() const volatile {
+bool FirmIO::MsgQueue::isEmpty() const {
 	memory_barrier();
-	return head == tail;
+	return info->head == info->tail;
 }
 
-bool FirmIO::MsgQueue::isFull() const volatile {
+bool FirmIO::MsgQueue::isFull() const {
 	memory_barrier();
-	return ((head + 1) & (size - 1)) == tail;
+	return ((info->head + 1) & (info->size - 1)) == info->tail;
 }
 
-FirmIO::Mempool::Mempool(uint8_t* start, uint32_t size, void* virt, uint32_t phys)
-	: startAddress(start), totalSize(size), blocks(size / BlockSize), usedBlocks(0),
+FirmIO::Mempool::Mempool(uint8_t* start, uint32_t size, uint8_t* virt, uint32_t phys)
+	: blocks(size / BlockSize), usedBlocks(0),
 	  virtualAddress(virt), physicalAddress(phys) {
 	size_t idx = 0;
 	for(BlockInfo& block : blocks) {
@@ -325,4 +368,8 @@ bool FirmIO::Mempool::free(uint8_t* addr) {
 	usedBlocks--;
 	found->status = BlockInfo::Status::Free;
 	return true;
+}
+
+uint32_t FirmIO::Mempool::translate(uint8_t* addr) const {
+	return reinterpret_cast<uint32_t>(addr - virtualAddress + physicalAddress);
 }

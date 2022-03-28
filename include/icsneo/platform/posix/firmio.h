@@ -19,7 +19,7 @@ class FirmIO : public Driver {
 public:
 	static void Find(std::vector<FoundDevice>& foundDevices);
 
-	FirmIO(device_eventhandler_t err);
+	using Driver::Driver; // Inherit constructor
 	~FirmIO();
 	bool open() override;
 	bool isOpen() override;
@@ -76,24 +76,30 @@ private:
 
 	class MsgQueue { // mq_t
 	public:
-		bool read(Msg* msg) volatile;
-		bool write(const Msg* msg) volatile;
-		bool isEmpty() const volatile;
-		bool isFull() const volatile;
+		MsgQueue(void* infoPtr, void* msgsPtr)
+			: info(reinterpret_cast<MsgQueueInfo*>(infoPtr)), msgs(reinterpret_cast<Msg*>(msgsPtr)) {}
 
-	private: // These variables are mmaped, don't change their order or add anything
-		uint32_t head;
-		uint32_t tail;
-		uint32_t size;
-		[[maybe_unused]] uint32_t reserved[4];
-		Msg* msgs;
+		bool read(Msg* msg);
+		bool write(const Msg* msg);
+		bool isEmpty() const;
+		bool isFull() const;
+
+	private:
+		struct MsgQueueInfo { // These variables are mmaped, don't change their order or add anything
+			uint32_t head;
+			uint32_t tail;
+			uint32_t size;
+			uint32_t reserved[4];
+		};
+		MsgQueueInfo* const info;
+		Msg* const msgs;
 	};
 
 	class Mempool {
 	public:
 		static constexpr const size_t BlockSize = 4096;
 
-		Mempool(uint8_t* start, uint32_t size, void* virt, uint32_t phys);
+		Mempool(uint8_t* start, uint32_t size, uint8_t* virt, uint32_t phys);
 		uint8_t* alloc(uint32_t size);
 		bool free(uint8_t* addr);
 		uint32_t translate(uint8_t* addr) const;
@@ -108,21 +114,21 @@ private:
 			uint8_t* addr;
 		};
 
-		uint8_t* const startAddress;
-		const uint32_t totalSize;
 		std::vector<BlockInfo> blocks;
 		std::atomic<uint32_t> usedBlocks;
 
-		void* const virtualAddress;
+		uint8_t* const virtualAddress;
 		const uint32_t physicalAddress;
 	};
 
-	int fd = 0;
+	int fd = -1;
 	uint8_t* vbase = nullptr;
 	volatile ComHeader* header = nullptr;
-	volatile MsgQueue* in = nullptr;
+
+	optional<MsgQueue> in;
+
 	std::mutex outMutex;
-	volatile MsgQueue* out = nullptr;
+	optional<MsgQueue> out;
 	optional<Mempool> outMemory;
 };
 
