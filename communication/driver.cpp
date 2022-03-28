@@ -1,5 +1,11 @@
 #include "icsneo/communication/driver.h"
 
+//#define ICSNEO_DRIVER_DEBUG_PRINTS
+#ifdef ICSNEO_DRIVER_DEBUG_PRINTS
+#include <iostream>
+#include <iomanip>
+#endif
+
 using namespace icsneo;
 
 bool Driver::read(std::vector<uint8_t>& bytes, size_t limit) {
@@ -34,6 +40,18 @@ bool Driver::readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds tim
 	size_t actuallyRead = readQueue.wait_dequeue_bulk_timed(bytes.data(), limit, timeout);
 
 	bytes.resize(actuallyRead);
+
+#ifdef ICSNEO_DRIVER_DEBUG_PRINTS
+	if(actuallyRead > 0) {
+		std::cout << "Read data: (" << actuallyRead << ')' << std::hex << std::endl;
+		for(int i = 0; i < actuallyRead; i += 16) {
+			for(int j = 0; j < std::min<int>(actuallyRead - i, 16); j++)
+				std::cout << std::setw(2) << std::setfill('0') << uint32_t(bytes[i+j]) << ' ';
+			std::cout << std::endl;
+		}
+		std::cout << std::dec << std::endl;
+	}
+#endif
 
 	return actuallyRead > 0;
 }
