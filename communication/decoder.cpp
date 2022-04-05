@@ -5,6 +5,7 @@
 #include "icsneo/communication/message/readsettingsmessage.h"
 #include "icsneo/communication/message/canerrorcountmessage.h"
 #include "icsneo/communication/message/neoreadmemorysdmessage.h"
+#include "icsneo/communication/message/extendedresponsemessage.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
@@ -191,6 +192,18 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = msg;
 					msg->startAddress = *reinterpret_cast<uint32_t*>(packet->data.data());
 					msg->data.insert(msg->data.end(), packet->data.begin() + 4, packet->data.end());
+					return true;
+				}
+				case Network::NetID::ExtendedCommand: {
+					if(packet->data.size() < sizeof(ExtendedResponseMessage::PackedGenericResponse))
+						break; // Handle as a raw message, might not be a generic response
+
+					const auto& resp = *reinterpret_cast<ExtendedResponseMessage::PackedGenericResponse*>(packet->data.data());
+					if(resp.header.command != ExtendedCommand::GenericReturn)
+						break; // Handle as a raw message
+
+					const auto msg = std::make_shared<ExtendedResponseMessage>(resp.command, resp.returnCode);
+					result = msg;
 					return true;
 				}
 				case Network::NetID::FlexRayControl: {

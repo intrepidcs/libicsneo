@@ -119,6 +119,7 @@ public:
 		LSFTCAN2 = 99,
 		LogicalDiskInfo = 187,
 		EthPHYControl = 239,
+		ExtendedCommand = 240,
 		FlexRayControl = 243,
 		HW_COM_Latency_Test = 512,
 		DeviceStatus = 513,
@@ -274,6 +275,7 @@ public:
 			case NetID::ReadSettings:
 			case NetID::LogicalDiskInfo:
 			case NetID::EthPHYControl:
+			case NetID::ExtendedCommand:
 			case NetID::NeoMemorySDRead:
 			case NetID::NeoMemoryWriteDone:
 				return Type::Internal;
@@ -514,6 +516,8 @@ public:
 				return "Logical Disk Information";
 			case NetID::EthPHYControl:
 				return "Ethernet PHY Register Control";
+			case NetID::ExtendedCommand:
+				return "Extended Command";
 			case NetID::FlexRayControl:
 				return "FlexRay Control";
 			case NetID::HW_COM_Latency_Test:
@@ -914,6 +918,7 @@ private:
 #define ICSNEO_NETID_LSFTCAN2 99
 #define ICSNEO_NETID_LOGICAL_DISK_INFO 187
 #define ICSNEO_NETID_ETH_PHY_CONTROL 239
+#define ICSNEO_NETID_EXTENDED_COMMAND 240
 #define ICSNEO_NETID_FLEXRAY_CONTROL 243
 #define ICSNEO_NETID_HW_COM_LATENCY_TEST 512
 #define ICSNEO_NETID_DEVICE_STATUS 513

@@ -28,6 +28,7 @@ public:
 		FlexRayControl = 0x8006,
 		EthernetPhyRegister = 0x8007,
 		LogicalDiskInfo = 0x8008,
+		ExtendedResponse = 0x8009,
 	};
 
 	Message(Type t) : type(t) {}
@@ -71,6 +72,9 @@ public:
 #define ICSNEO_MESSAGE_TYPE_DEVICE_VERSION (0x8004)
 #define ICSNEO_MESSAGE_TYPE_MAIN51 (0x8005)
 #define ICSNEO_MESSAGE_TYPE_FLEXRAY_CONTROL (0x8006)
+#define ICSNEO_MESSAGE_TYPE_ETHERNET_PHY_REGISTER (0x8007)
+#define ICSNEO_MESSAGE_TYPE_LOGICAL_DISK_INFO (0x8008)
+#define ICSNEO_MESSAGE_TYPE_EXTENDED_RESPONSE (0x8009)
 
 #endif // __ICSNEOC_H_
 

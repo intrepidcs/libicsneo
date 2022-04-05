@@ -31,6 +31,7 @@ enum class Command : uint8_t {
 };
 
 enum class ExtendedCommand : uint16_t {
+	GenericReturn = 0x0000,
 	GetDiskDetails = 0x0010,
 	DiskFormatStart = 0x0011,
 	DiskFormatCancel = 0x0012,
@@ -39,6 +40,16 @@ enum class ExtendedCommand : uint16_t {
 	Extract = 0x0015,
 	StartDHCPServer = 0x0016,
 	StopDHCPServer = 0x0017,
+	Reboot = 0x001C,
+};
+
+enum class ExtendedResponse : int32_t {
+	OK = 0,
+	InvalidCommand = -1,
+	InvalidState = -2,
+	OperationFailed = -3,
+	OperationPending = -4,
+	InvalidParameter = -5,
 };
 
 }
