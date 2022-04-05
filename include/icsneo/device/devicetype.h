@@ -38,6 +38,7 @@ public:
 		NEOECU12 = (0x0000000c),
 		OBD2_LCBADGE = (0x0000000d),
 		RADMoonDuo = (0x0000000e),
+		FIRE3 = (0x0000000f),
 		VCAN3 = (0x00000010),
 		RADJupiter = (0x00000011),
 		VCAN4_IND = (0x00000012),
@@ -113,6 +114,8 @@ public:
 				return "neoOBD2 LC BADGE";
 			case RADMoonDuo:
 				return "RAD-Moon Duo";
+			case FIRE3:
+				return "neoVI FIRE 3";
 			case VCAN3:
 				return "ValueCAN 3";
 			case RADJupiter:
@@ -212,6 +215,7 @@ private:
 #define ICSNEO_DEVICETYPE_NEOECU12 ((devicetype_t)0x0000000c)
 #define ICSNEO_DEVICETYPE_OBD2_LCBADGE ((devicetype_t)0x0000000d)
 #define ICSNEO_DEVICETYPE_RADMOONDUO ((devicetype_t)0x0000000e)
+#define ICSNEO_DEVICETYPE_FIRE3 ((devicetype_t)0x0000000f)
 #define ICSNEO_DEVICETYPE_VCAN3 ((devicetype_t)0x00000010)
 #define ICSNEO_DEVICETYPE_RADJUPITER ((devicetype_t)0x00000011)
 #define ICSNEO_DEVICETYPE_VCAN4_IND ((devicetype_t)0x00000012)
