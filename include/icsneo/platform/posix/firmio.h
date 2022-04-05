@@ -48,6 +48,7 @@ private:
 	};
 
 	struct Msg {
+		using Ref = uintptr_t;
 		enum class Command : uint32_t {
 			ComData = 0xAA000000,
 			ComFree = 0xAA000001,
@@ -56,15 +57,15 @@ private:
 		struct Data {
 			uint32_t addr;
 			uint32_t len;
-			uint32_t ref;
+			Ref ref;
 			uint32_t addr1;
 			uint32_t len1;
-			uint32_t ref1;
+			Ref ref1;
 			uint32_t reserved;
 		};
 		struct Free {
 			uint32_t refCount;
-			uint32_t ref[6];
+			Ref ref[6];
 		};
 		union Payload {
 			Data data;
@@ -97,12 +98,13 @@ private:
 
 	class Mempool {
 	public:
+		using PhysicalAddress = uintptr_t;
 		static constexpr const size_t BlockSize = 4096;
 
-		Mempool(uint8_t* start, uint32_t size, uint8_t* virt, uint32_t phys);
+		Mempool(uint8_t* start, uint32_t size, uint8_t* virt, PhysicalAddress phys);
 		uint8_t* alloc(uint32_t size);
 		bool free(uint8_t* addr);
-		uint32_t translate(uint8_t* addr) const;
+		PhysicalAddress translate(uint8_t* addr) const;
 
 	private:
 		struct BlockInfo {
@@ -118,7 +120,7 @@ private:
 		std::atomic<uint32_t> usedBlocks;
 
 		uint8_t* const virtualAddress;
-		const uint32_t physicalAddress;
+		const PhysicalAddress physicalAddress;
 	};
 
 	int fd = -1;

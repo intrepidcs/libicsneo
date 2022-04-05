@@ -286,7 +286,7 @@ bool FirmIO::writeInternal(const std::vector<uint8_t>& bytes) {
 	Msg msg = { Msg::Command::ComData };
 	msg.payload.data.addr = outMemory->translate(sharedData);
 	msg.payload.data.len = static_cast<uint32_t>(bytes.size());
-	msg.payload.data.ref = reinterpret_cast<uint32_t>(sharedData);
+	msg.payload.data.ref = reinterpret_cast<Msg::Ref>(sharedData);
 
 	if(!out->write(&msg))
 		return false;
@@ -325,7 +325,7 @@ bool FirmIO::MsgQueue::isFull() const {
 	return ((info->head + 1) & (info->size - 1)) == info->tail;
 }
 
-FirmIO::Mempool::Mempool(uint8_t* start, uint32_t size, uint8_t* virt, uint32_t phys)
+FirmIO::Mempool::Mempool(uint8_t* start, uint32_t size, uint8_t* virt, PhysicalAddress phys)
 	: blocks(size / BlockSize), usedBlocks(0),
 	  virtualAddress(virt), physicalAddress(phys) {
 	size_t idx = 0;
@@ -370,6 +370,6 @@ bool FirmIO::Mempool::free(uint8_t* addr) {
 	return true;
 }
 
-uint32_t FirmIO::Mempool::translate(uint8_t* addr) const {
-	return reinterpret_cast<uint32_t>(addr - virtualAddress + physicalAddress);
+FirmIO::Mempool::PhysicalAddress FirmIO::Mempool::translate(uint8_t* addr) const {
+	return reinterpret_cast<PhysicalAddress>(addr - virtualAddress + physicalAddress);
 }
