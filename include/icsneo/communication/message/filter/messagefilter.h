@@ -34,6 +34,8 @@ public:
 				return false;
 			if(!matchNetID(frame.network.getNetID()))
 				return false;
+		} else if (netid != Network::NetID::Any || networkType != Network::Type::Any) {
+			return false; // Filtering on a NetID or Type, but this message doesn't have one
 		}
 		return true;
 	}
