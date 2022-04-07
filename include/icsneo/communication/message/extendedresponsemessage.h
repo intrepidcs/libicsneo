@@ -16,7 +16,7 @@ public:
 	const ExtendedCommand command;
 	const ExtendedResponse response;
 
-#pragma pack(push, 1)
+#pragma pack(push, 2)
 	struct ResponseHeader {
 		ExtendedCommand command;
 		uint16_t length;
