@@ -9,14 +9,25 @@ optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventh
 	if(amount == 0)
 		return 0;
 
-	optional<uint64_t> ret;
+	pos += vsaOffset;
+
+	// First read from the cache
+	optional<uint64_t> ret = readFromCache(pos, into, amount);
+	if(ret == amount) // Full cache hit, we're done
+		return ret;
+
+	const uint64_t totalAmount = amount;
+	if(ret.has_value()) { // Partial cache hit
+		pos += *ret;
+		into += *ret;
+		amount -= *ret;
+	}
 
 	// Read into here if we can't read directly into the user buffer
 	// That would be the case either if we don't want some at the
 	// beginning or end of the block.
 	std::vector<uint8_t> alignedReadBuffer;
 
-	pos += vsaOffset;
 	const uint32_t idealBlockSize = getBlockSizeBounds().second;
 	const uint64_t startBlock = pos / idealBlockSize;
 	const uint32_t posWithinFirstBlock = static_cast<uint32_t>(pos % idealBlockSize);
@@ -36,7 +47,7 @@ optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventh
 
 		const uint32_t posWithinCurrentBlock = (blocksProcessed ? 0 : posWithinFirstBlock);
 		uint32_t curAmt = idealBlockSize - posWithinCurrentBlock;
-		const auto amountLeft = amount - ret.value_or(0);
+		const auto amountLeft = totalAmount - ret.value_or(0);
 		if(curAmt > amountLeft)
 			curAmt = static_cast<uint32_t>(amountLeft);
 
@@ -65,7 +76,41 @@ optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventh
 			ret.emplace();
 		*ret += std::min<uint64_t>(*readAmount, curAmt);
 		blocksProcessed++;
+
+		if(blocksProcessed == blocks) {
+			// Last block, add to the cache
+			if(useAlignedReadBuffer) {
+				cache = std::move(alignedReadBuffer);
+			} else {
+				if(cache.size() != idealBlockSize)
+					cache.resize(idealBlockSize);
+				memcpy(cache.data(), into + intoOffset, idealBlockSize);
+			}
+			cachePos = currentBlock * idealBlockSize;
+			cachedAt = std::chrono::steady_clock::now();
+		}
 	}
 
 	return ret;
+}
+
+void ReadDriver::invalidateCache(uint64_t pos, uint64_t amount) {
+	if(pos <= cachePos + cache.size() && pos + amount >= cachePos)
+		cache.clear();
+}
+
+optional<uint64_t> ReadDriver::readFromCache(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds staleAfter) {
+	if(cache.empty())
+		return nullopt; // Nothing in the cache
+
+	if(cachedAt + staleAfter < std::chrono::steady_clock::now())
+		return nullopt; // Cache is stale
+	
+	if(pos > cachePos + cache.size() || pos < cachePos)
+		return nullopt; // Cache miss
+
+	const auto cacheOffset = pos - cachePos;
+	const auto copyAmount = std::min<uint64_t>(cache.size() - cacheOffset, amount);
+	memcpy(into, cache.data() + cacheOffset, static_cast<size_t>(copyAmount));
+	return copyAmount;
 }

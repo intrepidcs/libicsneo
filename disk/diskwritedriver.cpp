@@ -75,6 +75,7 @@ optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_even
 		if(bytesTransferred == RetryAtomic) {
 			// The user may want to log these events in order to see how many atomic misses they are getting
 			report(APIEvent::Type::AtomicOperationRetried, APIEvent::Severity::EventInfo);
+			readDriver.invalidateCache(currentBlock * idealBlockSize, idealBlockSize);
 			continue;
 		}
 
@@ -93,5 +94,9 @@ optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_even
 		blocksProcessed++;
 	}
 
+	// No matter how much succeeded, to be safe, we'll invalidate anything
+	// we may have even tried to write, since it may have succeeded without
+	// notifying, etc.
+	readDriver.invalidateCache(pos, amount);
 	return ret;
 }

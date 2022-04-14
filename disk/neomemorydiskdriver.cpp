@@ -15,38 +15,31 @@ optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communication& co
 	if(amount != SectorSize)
 		return nullopt;
 
-	if(cachePos != pos || std::chrono::steady_clock::now() > cachedAt + CacheTime) {
-		// The cache does not have this data, go get it
-		const uint64_t currentSector = pos / SectorSize;
-		auto msg = com.waitForMessageSync([&currentSector, &com] {
-			return com.sendCommand(Command::NeoReadMemory, {
-				MemoryTypeSD,
-				uint8_t(currentSector & 0xFF),
-				uint8_t((currentSector >> 8) & 0xFF),
-				uint8_t((currentSector >> 16) & 0xFF),
-				uint8_t((currentSector >> 24) & 0xFF),
-				uint8_t(SectorSize & 0xFF),
-				uint8_t((SectorSize >> 8) & 0xFF),
-				uint8_t((SectorSize >> 16) & 0xFF),
-				uint8_t((SectorSize >> 24) & 0xFF)
-			});
-		}, NeoMemorySDRead, timeout);
+	const uint64_t currentSector = pos / SectorSize;
+	auto msg = com.waitForMessageSync([&currentSector, &com] {
+		return com.sendCommand(Command::NeoReadMemory, {
+			MemoryTypeSD,
+			uint8_t(currentSector & 0xFF),
+			uint8_t((currentSector >> 8) & 0xFF),
+			uint8_t((currentSector >> 16) & 0xFF),
+			uint8_t((currentSector >> 24) & 0xFF),
+			uint8_t(SectorSize & 0xFF),
+			uint8_t((SectorSize >> 8) & 0xFF),
+			uint8_t((SectorSize >> 16) & 0xFF),
+			uint8_t((SectorSize >> 24) & 0xFF)
+		});
+	}, NeoMemorySDRead, timeout);
 
-		if(!msg)
-			return 0;
+	if(!msg)
+		return 0;
 
-		const auto sdmsg = std::dynamic_pointer_cast<NeoReadMemorySDMessage>(msg);
-		if(!sdmsg || sdmsg->data.size() != SectorSize) {
-			report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
-			return nullopt;
-		}
-
-		memcpy(cache.data(), sdmsg->data.data(), SectorSize);
-		cachedAt = std::chrono::steady_clock::now();
-		cachePos = pos;
+	const auto sdmsg = std::dynamic_pointer_cast<NeoReadMemorySDMessage>(msg);
+	if(!sdmsg || sdmsg->data.size() != SectorSize) {
+		report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+		return nullopt;
 	}
 
-	memcpy(into, cache.data(), SectorSize);
+	memcpy(into, sdmsg->data.data(), SectorSize);
 	return SectorSize;
 }
 
@@ -60,10 +53,6 @@ optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communication& c
 
 	if(amount != SectorSize)
 		return nullopt;
-
-	// Clear the cache if we're writing to the cached sector
-	if(pos == cachePos)
-		cachedAt = std::chrono::time_point<std::chrono::steady_clock>();
 
 	// Requesting an atomic operation, but neoMemory does not support it
 	// Continue on anyway but warn the caller
