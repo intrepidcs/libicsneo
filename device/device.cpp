@@ -528,6 +528,9 @@ optional<bool> Device::isLogicalDiskConnected() {
 		return nullopt;
 	}
 
+	// This doesn't *really* make sense here but because the disk read redirects the parser until it is done, we'll lock this
+	// just to avoid the timeout.
+	std::lock_guard<std::mutex> lg(diskLock);
 	const auto info = com->getLogicalDiskInfoSync();
 	if (!info) {
 		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
@@ -543,6 +546,9 @@ optional<uint64_t> Device::getLogicalDiskSize() {
 		return nullopt;
 	}
 
+	// This doesn't *really* make sense here but because the disk read redirects the parser until it is done, we'll lock this
+	// just to avoid the timeout.
+	std::lock_guard<std::mutex> lg(diskLock);
 	const auto info = com->getLogicalDiskInfoSync();
 	if (!info) {
 		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
