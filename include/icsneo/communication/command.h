@@ -23,6 +23,7 @@ enum class Command : uint8_t {
 	ReadSettings = 0xC7, // Previously known as 3G_READ_SETTINGS_EX
 	SetVBattMonitor = 0xDB, // Previously known as RED_CMD_CM_VBATT_MONITOR
 	RequestBitSmash = 0xDC, // Previously known as RED_CMD_CM_BITSMASH
+	WiVICommand = 0xDD, // Previously known as RED_CMD_WIVI_COMM
 	GetVBattReq = 0xDF, // Previously known as RED_CMD_VBATT_REQUEST
 	MiscControl = 0xE7,
 	Extended = 0xF0,

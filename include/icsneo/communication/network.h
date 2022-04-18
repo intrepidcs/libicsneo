@@ -118,6 +118,7 @@ public:
 		LIN6 = 98,
 		LSFTCAN2 = 99,
 		LogicalDiskInfo = 187,
+		WiVICommand = 221,
 		EthPHYControl = 239,
 		ExtendedCommand = 240,
 		FlexRayControl = 243,
@@ -274,6 +275,7 @@ public:
 			case NetID::Main51:
 			case NetID::ReadSettings:
 			case NetID::LogicalDiskInfo:
+			case NetID::WiVICommand:
 			case NetID::EthPHYControl:
 			case NetID::ExtendedCommand:
 			case NetID::NeoMemorySDRead:
@@ -514,6 +516,8 @@ public:
 				return "LSFTCAN 2";
 			case NetID::LogicalDiskInfo:
 				return "Logical Disk Information";
+			case NetID::WiVICommand:
+				return "WiVI Command";
 			case NetID::EthPHYControl:
 				return "Ethernet PHY Register Control";
 			case NetID::ExtendedCommand:
@@ -917,6 +921,7 @@ private:
 #define ICSNEO_NETID_LIN6 98
 #define ICSNEO_NETID_LSFTCAN2 99
 #define ICSNEO_NETID_LOGICAL_DISK_INFO 187
+#define ICSNEO_NETID_WIVI_COMMAND 221
 #define ICSNEO_NETID_ETH_PHY_CONTROL 239
 #define ICSNEO_NETID_EXTENDED_COMMAND 240
 #define ICSNEO_NETID_FLEXRAY_CONTROL 243

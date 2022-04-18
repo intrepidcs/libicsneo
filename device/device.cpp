@@ -5,6 +5,8 @@
 #include "icsneo/device/extensions/deviceextension.h"
 #include "icsneo/platform/optional.h"
 #include "icsneo/disk/fat.h"
+#include "icsneo/communication/packet/wivicommandpacket.h"
+#include "icsneo/communication/message/wiviresponsemessage.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -785,6 +787,38 @@ optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 
 	report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 	return nullopt;
+}
+
+bool Device::allowSleep(bool remoteWakeup) {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return false;
+	}
+
+	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
+	const auto generic = com->waitForMessageSync([this, remoteWakeup]() {
+		// VSSAL sets bit0 to indicate that it's waiting to sleep, then
+		// it waits for Wireless neoVI to acknowledge by clearing it.
+		// If we set bit1 at the same time we clear bit0, remote wakeup
+		// will be suppressed (assuming the device supported it in the
+		// first place)
+		return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::SetSignal::Encode(
+			WiVI::SignalType::SleepRequest, remoteWakeup ? 0 : 2
+		));
+	}, filter);
+
+	if(!generic || generic->type != Message::Type::WiVICommandResponse) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	const auto resp = std::static_pointer_cast<WiVI::ResponseMessage>(generic);
+	if(!resp->success || !resp->value.has_value()) {
+		report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+		return false;
+	}
+
+	return *resp->value;
 }
 
 Lifetime Device::suppressDisconnects() {

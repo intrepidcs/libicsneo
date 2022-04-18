@@ -6,6 +6,7 @@
 #include "icsneo/communication/message/canerrorcountmessage.h"
 #include "icsneo/communication/message/neoreadmemorysdmessage.h"
 #include "icsneo/communication/message/extendedresponsemessage.h"
+#include "icsneo/communication/message/wiviresponsemessage.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
@@ -16,6 +17,7 @@
 #include "icsneo/communication/packet/versionpacket.h"
 #include "icsneo/communication/packet/ethphyregpacket.h"
 #include "icsneo/communication/packet/logicaldiskinfopacket.h"
+#include "icsneo/communication/packet/wivicommandpacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -293,6 +295,14 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				}
 				case Network::NetID::LogicalDiskInfo: {
 					result = LogicalDiskInfoPacket::DecodeToMessage(packet->data);
+					if(!result) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
+						return false;
+					}
+					return true;
+				}
+				case Network::NetID::WiVICommand: {
+					result = WiVI::CommandPacket::DecodeToMessage(packet->data);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
 						return false;

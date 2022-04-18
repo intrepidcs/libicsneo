@@ -289,6 +289,8 @@ public:
 	 */
 	optional<double> getAnalogIO(IO type, size_t number = 1);
 
+	bool allowSleep(bool remoteWakeup = false);
+
 	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const { return {}; }
 
 	void addExtension(std::shared_ptr<DeviceExtension>&& extension);

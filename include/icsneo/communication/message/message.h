@@ -29,6 +29,7 @@ public:
 		EthernetPhyRegister = 0x8007,
 		LogicalDiskInfo = 0x8008,
 		ExtendedResponse = 0x8009,
+		WiVICommandResponse = 0x800a,
 	};
 
 	Message(Type t) : type(t) {}
