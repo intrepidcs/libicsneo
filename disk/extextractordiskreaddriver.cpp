@@ -25,12 +25,12 @@ optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Communicat
 		return nullopt;
 
 	optional<uint64_t> ret;
-	// timeout loop assuming
-	const auto perAttemptTimeout = std::chrono::milliseconds(500);
-	while(timeout > std::chrono::milliseconds(0) && !ret.has_value()) {
-		auto start = std::chrono::steady_clock::now();
-		ret = attemptReadLogicalDiskAligned(com, report, pos, into, amount, perAttemptTimeout);
-		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+	unsigned int attempts = 4;
+	while (attempts-- > 0)
+	{
+		ret = attemptReadLogicalDiskAligned(com, report, pos, into, amount, timeout);
+		if (ret.has_value())
+			break;
 	}
 	return ret;
 }
