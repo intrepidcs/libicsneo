@@ -8,6 +8,9 @@
 #include <vector>
 
 #pragma pack(push,2)
+#pragma warning(push)
+#pragma warning(disable: 4201) // nonstandard extension used: nameless struct/union
+#pragma warning(disable: 4200) // nonstandard extension used: zero-sized array in struct/union
 
 namespace icsneo {
 
@@ -124,6 +127,7 @@ struct CommandPacket {
 
 } // namespace icsneo
 
+#pragma warning(pop)
 #pragma pack(pop)
 
 #endif // __cplusplus
