@@ -6,6 +6,7 @@
 #include "icsneo/communication/packet.h"
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 #pragma pack(push,2)
 #pragma warning(push)
