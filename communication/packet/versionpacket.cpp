@@ -6,7 +6,7 @@ std::shared_ptr<VersionMessage> HardwareVersionPacket::DecodeMainToMessage(const
 	if(bytestream.size() < 3) // Not enough bytes to decode
 		return std::shared_ptr<VersionMessage>();
 
-	auto msg = std::make_shared<VersionMessage>(true);
+	auto msg = std::make_shared<VersionMessage>(VersionMessage::MainChip);
 
 	msg->Versions.emplace_back();
 	optional<DeviceAppVersion>& version = msg->Versions.back();
@@ -18,7 +18,7 @@ std::shared_ptr<VersionMessage> HardwareVersionPacket::DecodeMainToMessage(const
 }
 
 std::shared_ptr<VersionMessage> HardwareVersionPacket::DecodeSecondaryToMessage(const std::vector<uint8_t>& bytestream) {
-	auto msg = std::make_shared<VersionMessage>(false);
+	auto msg = std::make_shared<VersionMessage>(VersionMessage::SecondaryChips);
 
 	size_t bytesLeft = bytestream.size();
 	if(bytesLeft)

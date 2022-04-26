@@ -18,6 +18,8 @@ namespace icsneo {
  */
 class EthernetPacketizer {
 public:
+	static const size_t MaxPacketLength;
+
 	EthernetPacketizer(device_eventhandler_t report) : report(report) {}
 
 	/**
@@ -25,7 +27,7 @@ public:
 	 * outputDown to get the results. Passing in multiple
 	 * packets may result in better packing.
 	 */
-	void inputDown(std::vector<uint8_t> bytes);
+	void inputDown(std::vector<uint8_t> bytes, bool first = true);
 	std::vector< std::vector<uint8_t> > outputDown();
 
 	/**
@@ -47,6 +49,7 @@ public:
 		uint8_t srcMAC[6] = { 0x00, 0xFC, 0x70, 0xFF, 0xFF, 0xFF };
 		uint16_t etherType = 0xCAB1; // Big endian, Should be 0xCAB1 or 0xCAB2
 		uint32_t icsEthernetHeader = 0xAAAA5555; // Big endian, Should be 0xAAAA5555
+		uint16_t payloadSize = 0; // If this is a multi-piece message, this is the size of the expected reassembly
 		// At this point in the packet, there is a 16-bit payload size, little endian
 		// This is calculated from payload size in getBytestream
 		uint16_t packetNumber = 0;
@@ -58,6 +61,7 @@ public:
 
 	uint8_t hostMAC[6] = { 0x00, 0xFC, 0x70, 0xFF, 0xFF, 0xFF };
 	uint8_t deviceMAC[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+	bool allowInPacketsFromAnyMAC = false; // Used when discovering devices
 	
 private:
 	bool reassembling = false;
@@ -66,9 +70,11 @@ private:
 	uint16_t sequenceDown = 0;
 
 	std::vector<uint8_t> processedUpBytes;
-	std::vector< std::vector<uint8_t> > processedDownPackets;
+	std::vector<EthernetPacket> processedDownPackets;
 
 	device_eventhandler_t report;
+
+	EthernetPacket& newSendPacket(bool first);
 };
 
 }

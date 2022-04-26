@@ -23,7 +23,7 @@ public:
 		uint8_t controller, uint16_t bufferId, const std::vector<uint8_t>& data, uint16_t desiredSize);
 
 	FlexRayControlMessage(const Packet& packet);
-	virtual ~FlexRayControlMessage() = default;
+
 	bool decoded = false;
 	uint8_t controller = 0xff; // Controller index, either 0 or 1
 	FlexRay::Opcode opcode = FlexRay::Opcode::Unknown;

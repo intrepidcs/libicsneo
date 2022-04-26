@@ -5,7 +5,6 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/communication/multichannelcommunication.h"
-#include "icsneo/platform/ftdi.h"
 #include "icsneo/device/extensions/flexray/extension.h"
 
 namespace icsneo {
@@ -45,6 +44,8 @@ public:
 	size_t getEthernetActivationLineCount() const override { return 1; }
 
 protected:
+	using Device::Device;
+
 	// TODO This is done so that Plasion can still transmit it's basic networks, awaiting slave VNET support
 	virtual bool isSupportedRXNetwork(const Network&) const override { return true; }
 	virtual bool isSupportedTXNetwork(const Network&) const override { return true; }
@@ -55,7 +56,7 @@ protected:
 		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
 	}
 
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 		// TODO Check configuration for FlexRay ColdStart mode, disable FlexRay 2 if so
@@ -80,16 +81,13 @@ protected:
 		return ret;
 	}
 
-	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
-		if(!message || message->data.size() < sizeof(fire2vnet_status_t))
+	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
+		if(message->data.size() < sizeof(fire2vnet_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);
 		const fire2vnet_status_t* status = reinterpret_cast<const fire2vnet_status_t*>(message->data.data());
 		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
-
-public:
-	Plasion(neodevice_t neodevice) : Device(neodevice) {}
 };
 
 }

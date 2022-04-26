@@ -17,7 +17,7 @@ optional<uint16_t> IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_
 
 		for (int i = 0; i < 16; i++) {
 			bool iBit = temp & 1;
-			
+
 			int iCrcNxt;
 			//CRCNXT = NXTBIT EXOR CRC_RG(15);
 			if (gsCrc & (1 << 15))
@@ -187,7 +187,7 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 	settingsLoaded = true;
 
 	// TODO Warn user that their API version differs from the device firmware version
-	//if(settings.size() != structSize)	
+	//if(settings.size() != structSize)
 
 	return settingsLoaded;
 }
@@ -227,10 +227,10 @@ bool IDeviceSettings::apply(bool temporary) {
 
 	// Pause I/O with the device while the settings are applied
 	applyingSettings = true;
-	
-	std::shared_ptr<Message> msg = com->waitForMessageSync([this, &bytestream]() {
+
+	std::shared_ptr<Main51Message> msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
-	}, Main51MessageFilter(Command::SetSettings), std::chrono::milliseconds(1000));
+	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000)));
 
 	if(!msg || msg->data[0] != 1) { // We did not receive a response
 		// Attempt to get the settings from the device so we're up to date if possible
@@ -254,9 +254,9 @@ bool IDeviceSettings::apply(bool temporary) {
 	bytestream[6] = (uint8_t)(*gsChecksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
-	msg = com->waitForMessageSync([this, &bytestream]() {
+	msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
-	}, Main51MessageFilter(Command::SetSettings), std::chrono::milliseconds(1000));
+	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) {
@@ -267,11 +267,11 @@ bool IDeviceSettings::apply(bool temporary) {
 	}
 
 	if(!temporary) {
-		msg = com->waitForMessageSync([this]() {
+		msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this]() {
 			return com->sendCommand(Command::SaveSettings);
-		}, Main51MessageFilter(Command::SaveSettings), std::chrono::milliseconds(5000));
+		}, std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000)));
 	}
-	
+
 	applyingSettings = false;
 
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
@@ -296,9 +296,9 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 
 	applyingSettings = true;
 
-	std::shared_ptr<Message> msg = com->waitForMessageSync([this]() {
+	std::shared_ptr<Main51Message> msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this]() {
 		return com->sendCommand(Command::SetDefaultSettings);
-	}, Main51MessageFilter(Command::SetDefaultSettings), std::chrono::milliseconds(1000));
+	}, std::make_shared<Main51MessageFilter>(Command::SetDefaultSettings), std::chrono::milliseconds(1000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) {
@@ -331,9 +331,9 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	bytestream[6] = (uint8_t)(*gsChecksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
-	msg = com->waitForMessageSync([this, &bytestream]() {
+	msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
-	}, Main51MessageFilter(Command::SetSettings), std::chrono::milliseconds(1000));
+	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) {
@@ -344,13 +344,13 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	}
 
 	if(!temporary) {
-		msg = com->waitForMessageSync([this]() {
+		msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this]() {
 			return com->sendCommand(Command::SaveSettings);
-		}, Main51MessageFilter(Command::SaveSettings), std::chrono::milliseconds(5000));
+		}, std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000)));
 	}
 
 	applyingSettings = false;
-	
+
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 
 	bool ret = (msg && msg->data[0] == 1); // Device sends 0x01 for success
@@ -448,7 +448,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 				report(APIEvent::Type::CANSettingsNotAvailable, APIEvent::Severity::Error);
 				return false;
 			}
-								
+
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
 			if(newBaud == (CANBaudrate)-1) {
 				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
@@ -465,7 +465,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 				report(APIEvent::Type::LSFTCANSettingsNotAvailable, APIEvent::Severity::Error);
 				return false;
 			}
-				
+
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
 			if(newBaud == (CANBaudrate)-1) {
 				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
@@ -482,7 +482,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 				report(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::Error);
 				return false;
 			}
-								
+
 			CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
 			if(newBaud == (CANBaudrate)-1) {
 				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
@@ -719,7 +719,7 @@ template<typename T> bool IDeviceSettings::applyStructure(const T& newStructure)
 		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
 		return false;
 	}
-	
+
 	// This function is only called from C++ so the caller's structure size and ours should never differ
 	if(sizeof(T) != structSize) {
 		report(APIEvent::Type::SettingsStructureMismatch, APIEvent::Severity::Error);

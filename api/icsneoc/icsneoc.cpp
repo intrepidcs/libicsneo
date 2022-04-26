@@ -453,7 +453,10 @@ bool icsneo_transmit(const neodevice_t* device, const neomessage_t* message) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
-	return device->device->transmit(CreateMessageFromNeoMessage(message));
+	if(auto frame = std::dynamic_pointer_cast<icsneo::Frame>(CreateMessageFromNeoMessage(message)))
+		return device->device->transmit(frame);
+
+	return false;
 }
 
 bool icsneo_transmitMessages(const neodevice_t* device, const neomessage_t* messages, size_t count) {

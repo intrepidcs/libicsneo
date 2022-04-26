@@ -14,10 +14,12 @@ namespace icsneo {
 
 class Main51MessageFilter : public MessageFilter {
 public:
-	Main51MessageFilter() : MessageFilter(Network::NetID::Main51), command(INVALID_COMMAND) {}
-	Main51MessageFilter(Command command) : MessageFilter(Network::NetID::Main51), command(command) {}
+	Main51MessageFilter() : MessageFilter(Message::Type::Main51), command(INVALID_COMMAND) {}
+	// Don't filter on Type::Main51 for Command as some Commands have their own type
+	// We still guarantee it's a Main51Message if it matches because of the dynamic_pointer_cast below
+	Main51MessageFilter(Command command) : command(command) { includeInternalInAny = true; }
 
-	bool match(const std::shared_ptr<Message>& message) const {
+	bool match(const std::shared_ptr<Message>& message) const override {
 		if(!MessageFilter::match(message)) {
 			//std::cout << "message filter did not match base for " << message->network << std::endl;
 			return false;

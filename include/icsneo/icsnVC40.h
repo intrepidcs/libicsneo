@@ -46,6 +46,11 @@ typedef unsigned __int64 uint64_t;
 #define IS_64BIT_SYSTEM
 #endif
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
+
 /* OpenPort "OpenType" Argument Constants -- deprecated, use OpenNeoDevice */
 #define NEOVI_COMMTYPE_RS232 0
 #define NEOVI_COMMTYPE_USB_BULK 1
@@ -2106,6 +2111,8 @@ typedef struct _stCM_ISO157652_RxMessage
 {
 	uint16_t vs_netid; /* The netid of the message (determines which network to decode receives),  not supported */
 
+	uint8_t reservedPacking;
+
 	uint8_t padding; /* The padding byte to use to fill the unused portion of
 								 * transmitted CAN frames (flow control), see paddingEnable. */
 
@@ -2494,5 +2501,9 @@ CHECK_STRUCT_SIZE(SRADSuperMoonSettings);
 CHECK_STRUCT_SIZE(SRADMoon2Settings);
 
 #endif /* INTREPID_NO_CHECK_STRUCT_SIZE */
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif /* _ICSNVC40_H */

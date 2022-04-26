@@ -11,14 +11,18 @@ namespace icsneo {
 
 class RADGigastar : public Device {
 public:
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADGigastar;
-	static constexpr const char* SERIAL_START = "GS";
+	// Serial numbers start with GS
+	// USB PID is 0x1204, standard driver is FTDI3
+	// Ethernet MAC allocation is 0x0F, standard driver is Raw
+	ICSNEO_FINDABLE_DEVICE(RADGigastar, DeviceType::RADGigastar, "GS");
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
 
+	bool getEthPhyRegControlSupported() const override { return true; }
+
 protected:
-	RADGigastar(neodevice_t neodevice) : Device(neodevice) {
-		getWritableNeoDevice().type = DEVICE_TYPE;
+	RADGigastar(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<RADGigastarSettings>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {
@@ -35,6 +39,7 @@ protected:
 	void setupEncoder(Encoder& encoder) override {
 		Device::setupEncoder(encoder);
 		encoder.supportCANFD = true;
+		encoder.supportEthPhy = true;
 	}
 
 	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
@@ -81,8 +86,8 @@ protected:
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
 	}
 
-	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
-		if(!message || message->data.size() < sizeof(radgigastar_status_t))
+	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
+		if(message->data.size() < sizeof(radgigastar_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);
 		const radgigastar_status_t* status = reinterpret_cast<const radgigastar_status_t*>(message->data.data());

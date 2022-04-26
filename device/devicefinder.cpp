@@ -1,265 +1,163 @@
 #include "icsneo/device/devicefinder.h"
 #include "icsneo/platform/devices.h"
+#include "icsneo/device/founddevice.h"
 #include "generated/extensions/builtin.h"
+
+#ifdef ICSNEO_ENABLE_FIRMIO
+#include "icsneo/platform/firmio.h"
+#endif
+
+#ifdef ICSNEO_ENABLE_RAW_ETHERNET
+#include "icsneo/platform/pcap.h"
+#endif
+
+#ifdef ICSNEO_ENABLE_CDCACM
+#include "icsneo/platform/cdcacm.h"
+#endif
+
+#ifdef ICSNEO_ENABLE_FTDI
+#include "icsneo/platform/ftdi.h"
+#endif
 
 using namespace icsneo;
 
-static bool supportedDevicesCached = false;
-static std::vector<DeviceType> supportedDevices = {
+template<typename T>
+static void makeIfSerialMatches(const FoundDevice& dev, std::vector<std::shared_ptr<Device>>& into) {
+	// Relies on the subclass to have a `static constexpr const char* SERIAL_START = "XX"`
+	// and also a public constructor `T(const FoundDevice& dev)`
+	// Use macro ICSNEO_FINDABLE_DEVICE() to create these
+	if(dev.serial[0] == T::SERIAL_START[0] && dev.serial[1] == T::SERIAL_START[1])
+		into.push_back(std::make_shared<T>(dev));
+}
 
-	#ifdef __ETHERBADGE_H_
-	EtherBADGE::DEVICE_TYPE,
-	#endif
-
-	#ifdef __NEOOBD2PRO_H_
-	NeoOBD2PRO::DEVICE_TYPE,
-	#endif
-
-	#ifdef __NEOOBD2SIM_H_
-	NeoOBD2SIM::DEVICE_TYPE,
-	#endif
-
-	#ifdef __NEOVIRED2_H_
-	NeoVIRED2::DEVICE_TYPE,
-	#endif
-
-	#ifdef __NEOVIFIRE_H_
-	NeoVIFIRE::DEVICE_TYPE,
-	#endif
-
-	#ifdef __NEOVIFIRE2ETH_H_
-	NeoVIFIRE2ETH::DEVICE_TYPE,
-	#endif
-
-	#ifdef __NEOVIFIRE2USB_H_
-	NeoVIFIRE2USB::DEVICE_TYPE,
-	#endif
-
-	#ifdef __NEOVIION_H_
-	NeoVIION::DEVICE_TYPE,
-	#endif
-
-	#ifdef __NEOVIPLASMA_H_
-	NeoVIPLASMA::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADEPSILON_H_
-	RADEpsilon::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADGALAXY_H_
-	RADGalaxy::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADGIGALOG_ETH_H_
-	RADGigalogETH::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADGIGALOG_USB_H_
-	RADGigalogUSB::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADGIGASTAR_ETH_H_
-	RADGigastarETH::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADGIGASTAR_USB_H_
-	RADGigastarUSB::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADMOON2_H_
-	RADMoon2::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADMOONDUO_H_
-	RADMoonDuo::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADPLUTOUSB_H_
-	RADPlutoUSB::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADSTAR2ETH_H_
-	RADStar2ETH::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADSTAR2USB_H_
-	RADStar2USB::DEVICE_TYPE,
-	#endif
-
-	#ifdef __RADSUPERMOON_H_
-	RADSupermoon::DEVICE_TYPE,
-	#endif
-
-	#ifdef __VALUECAN3_H_
-	ValueCAN3::DEVICE_TYPE,
-	#endif
-
-	#ifdef __VALUECAN4_1_H_
-	ValueCAN4_1::DEVICE_TYPE,
-	#endif
-
-	#ifdef __VALUECAN4_2_H_
-	ValueCAN4_2::DEVICE_TYPE,
-	#endif
-
-	#ifdef __VALUECAN4_2EL_ETH_H_
-	ValueCAN4_2EL_ETH::DEVICE_TYPE,
-	#endif
-
-	#ifdef __VALUECAN4_2EL_USB_H_
-	ValueCAN4_2EL_USB::DEVICE_TYPE,
-	#endif
-
-	#ifdef __VALUECAN4_4_H_
-	ValueCAN4_4::DEVICE_TYPE,
-	#endif
-
-	#ifdef __VALUECAN4INDUSTRIAL_ETH_H_
-	ValueCAN4IndustrialETH::DEVICE_TYPE,
-	#endif
-
-	#ifdef __VALUECAN4INDUSTRIAL_USB_H_
-	ValueCAN4IndustrialUSB::DEVICE_TYPE,
-	#endif
-
-	#ifdef __VIVIDCAN_H_
-	VividCAN::DEVICE_TYPE,
-	#endif
-
-};
+template<typename T>
+static void makeIfPIDMatches(const FoundDevice& dev, std::vector<std::shared_ptr<Device>>& into) {
+	// Relies on the subclass to have a `static constexpr uint16_t PRODUCT_ID = 0x1111`
+	// and also a public constructor `T(const FoundDevice& dev)`
+	// Use macro ICSNEO_FINDABLE_DEVICE_BY_PID() to create these
+	if(dev.productId == T::PRODUCT_ID)
+		into.push_back(std::make_shared<T>(dev));
+}
 
 std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
+	static std::vector<FoundDevice> driverFoundDevices;
+	driverFoundDevices.clear();
+
+	#ifdef ICSNEO_ENABLE_FIRMIO
+	FirmIO::Find(driverFoundDevices);
+	#endif
+
+	#ifdef ICSNEO_ENABLE_RAW_ETHERNET
+	PCAP::Find(driverFoundDevices);
+	#endif
+
+	#ifdef ICSNEO_ENABLE_CDCACM
+	CDCACM::Find(driverFoundDevices);
+	#endif
+
+	#ifdef ICSNEO_ENABLE_FTDI
+	FTDI::Find(driverFoundDevices);
+	#endif
+
 	std::vector<std::shared_ptr<Device>> foundDevices;
-	std::vector<std::vector<std::shared_ptr<Device>>> findResults;
 
-#if defined(LIBICSNEO_HAVE_PCAP) && LIBICSNEO_HAVE_PCAP == 1
-	auto pcapDevices = PCAP::FindAll();
-#endif
+	// Offer found devices to each of the subclasses
+	for (const FoundDevice& dev : driverFoundDevices) {
+		#ifdef __ETHERBADGE_H_
+		makeIfSerialMatches<EtherBADGE>(dev, foundDevices);
+		#endif
 
-	#ifdef __ETHERBADGE_H_
-	findResults.push_back(EtherBADGE::Find());
-	#endif
-	
-	#ifdef __NEOOBD2PRO_H_
-	findResults.push_back(NeoOBD2PRO::Find());
-	#endif
+		#ifdef __NEOOBD2PRO_H_
+		makeIfSerialMatches<NeoOBD2PRO>(dev, foundDevices);
+		#endif
 
-	#ifdef __NEOOBD2SIM_H_
-	findResults.push_back(NeoOBD2SIM::Find());
-	#endif
+		#ifdef __NEOOBD2SIM_H_
+		makeIfSerialMatches<NeoOBD2SIM>(dev, foundDevices);
+		#endif
 
-	#ifdef __NEOVIFIRE_H_
-	findResults.push_back(NeoVIFIRE::Find());
-	#endif
+		#ifdef __NEOVIFIRE_H_
+		makeIfPIDMatches<NeoVIFIRE>(dev, foundDevices);
+		#endif
 
-	#ifdef __NEOVIFIRE2ETH_H_
-	findResults.push_back(NeoVIFIRE2ETH::Find(pcapDevices));
-	#endif
+		#ifdef __NEOVIFIRE2_H_
+		makeIfSerialMatches<NeoVIFIRE2>(dev, foundDevices);
+		#endif
 
-	#ifdef __NEOVIFIRE2USB_H_
-	findResults.push_back(NeoVIFIRE2USB::Find());
-	#endif
+		#ifdef __NEOVIRED2_H_
+		makeIfSerialMatches<NeoVIRED2>(dev, foundDevices);
+		#endif
 
-	#ifdef __NEOVIRED2_H_
-	findResults.push_back(NeoVIRED2::Find(pcapDevices));
-	#endif
+		#ifdef __NEOVIION_H_
+		makeIfPIDMatches<NeoVIION>(dev, foundDevices);
+		#endif
 
-	#ifdef __NEOVIION_H_
-	findResults.push_back(NeoVIION::Find());
-	#endif
+		#ifdef __NEOVIPLASMA_H_
+		makeIfPIDMatches<NeoVIPLASMA>(dev, foundDevices);
+		#endif
 
-	#ifdef __NEOVIPLASMA_H_
-	findResults.push_back(NeoVIPLASMA::Find());
-	#endif
+		#ifdef __RADEPSILON_H_
+		makeIfSerialMatches<RADEpsilon>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADEPSILON_H_
-	findResults.push_back(RADEpsilon::Find());
-	#endif
+		#ifdef __RADGALAXY_H_
+		makeIfSerialMatches<RADGalaxy>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADGALAXY_H_
-	findResults.push_back(RADGalaxy::Find(pcapDevices));
-	#endif
+		#ifdef __RADMARS_H_
+		makeIfSerialMatches<RADMars>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADGIGALOG_ETH_H_
-	findResults.push_back(RADGigalogETH::Find(pcapDevices));
-	#endif
+		#ifdef __RADGIGASTAR_H_
+		makeIfSerialMatches<RADGigastar>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADGIGALOG_USB_H_
-	findResults.push_back(RADGigalogUSB::Find());
-	#endif
+		#ifdef __RADMOON2_H_
+		makeIfSerialMatches<RADMoon2>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADGIGASTAR_ETH_H_
-	findResults.push_back(RADGigastarETH::Find(pcapDevices));
-	#endif
+		#ifdef __RADMOONDUO_H_
+		makeIfSerialMatches<RADMoonDuo>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADGIGASTAR_USB_H_
-	findResults.push_back(RADGigastarUSB::Find());
-	#endif
+		#ifdef __RADPLUTO_H_
+		makeIfSerialMatches<RADPluto>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADMOON2_H_
-	findResults.push_back(RADMoon2::Find());
-	#endif
+		#ifdef __RADSTAR2_H_
+		makeIfSerialMatches<RADStar2>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADMOONDUO_H_
-	findResults.push_back(RADMoonDuo::Find());
-	#endif
+		#ifdef __RADSUPERMOON_H_
+		makeIfSerialMatches<RADSupermoon>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADPLUTOUSB_H_
-	findResults.push_back(RADPlutoUSB::Find());
-	#endif
+		#ifdef __VALUECAN3_H_
+		makeIfPIDMatches<ValueCAN3>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADSTAR2ETH_H_
-	findResults.push_back(RADStar2ETH::Find(pcapDevices));
-	#endif
+		#ifdef __VALUECAN4_1_H_
+		makeIfSerialMatches<ValueCAN4_1>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADSTAR2USB_H_
-	findResults.push_back(RADStar2USB::Find());
-	#endif
+		#ifdef __VALUECAN4_2_H_
+		makeIfSerialMatches<ValueCAN4_2>(dev, foundDevices);
+		#endif
 
-	#ifdef __RADSUPERMOON_H_
-	findResults.push_back(RADSupermoon::Find());
-	#endif
+		#ifdef __VALUECAN4_2EL_H_
+		makeIfSerialMatches<ValueCAN4_2EL>(dev, foundDevices);
+		#endif
 
-	#ifdef __VALUECAN3_H_
-	findResults.push_back(ValueCAN3::Find());
-	#endif
+		#ifdef __VALUECAN4_4_H_
+		makeIfSerialMatches<ValueCAN4_4>(dev, foundDevices);
+		#endif
 
-	#ifdef __VALUECAN4_1_H_
-	findResults.push_back(ValueCAN4_1::Find());
-	#endif
+		#ifdef __VALUECAN4INDUSTRIAL_H_
+		makeIfSerialMatches<ValueCAN4Industrial>(dev, foundDevices);
+		#endif
 
-	#ifdef __VALUECAN4_2_H_
-	findResults.push_back(ValueCAN4_2::Find());
-	#endif
-
-	#ifdef __VALUECAN4_2EL_ETH_H_
-	findResults.push_back(ValueCAN4_2EL_ETH::Find(pcapDevices));
-	#endif
-
-	#ifdef __VALUECAN4_2EL_USB_H_
-	findResults.push_back(ValueCAN4_2EL_USB::Find());
-	#endif
-
-	#ifdef __VALUECAN4_4_H_
-	findResults.push_back(ValueCAN4_4::Find());
-	#endif
-
-	#ifdef __VALUECAN4INDUSTRIAL_ETH_H_
-	findResults.push_back(ValueCAN4IndustrialETH::Find(pcapDevices));
-	#endif
-
-	#ifdef __VALUECAN4INDUSTRIAL_USB_H_
-	findResults.push_back(ValueCAN4IndustrialUSB::Find());
-	#endif
-
-	#ifdef __VIVIDCAN_H_
-	findResults.push_back(VividCAN::Find());
-	#endif
-
-	for(auto& results : findResults) {
-		if(results.size())
-			foundDevices.insert(foundDevices.end(), std::make_move_iterator(results.begin()), std::make_move_iterator(results.end()));
+		#ifdef __VIVIDCAN_H_
+		makeIfSerialMatches<VividCAN>(dev, foundDevices);
+		#endif
 	}
 
 	for(auto& device : foundDevices) {
@@ -270,9 +168,105 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 }
 
 const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
-	if(!supportedDevicesCached) {
-		supportedDevices.erase(std::unique(supportedDevices.begin(), supportedDevices.end()), supportedDevices.end());
-		supportedDevicesCached = true;
-	}
+	static std::vector<DeviceType> supportedDevices = {
+
+		#ifdef __ETHERBADGE_H_
+		EtherBADGE::DEVICE_TYPE,
+		#endif
+
+		#ifdef __NEOOBD2PRO_H_
+		NeoOBD2PRO::DEVICE_TYPE,
+		#endif
+
+		#ifdef __NEOOBD2SIM_H_
+		NeoOBD2SIM::DEVICE_TYPE,
+		#endif
+
+		#ifdef __NEOVIRED2_H_
+		NeoVIRED2::DEVICE_TYPE,
+		#endif
+
+		#ifdef __NEOVIFIRE_H_
+		NeoVIFIRE::DEVICE_TYPE,
+		#endif
+
+		#ifdef __NEOVIFIRE2_H_
+		NeoVIFIRE2::DEVICE_TYPE,
+		#endif
+
+		#ifdef __NEOVIION_H_
+		NeoVIION::DEVICE_TYPE,
+		#endif
+
+		#ifdef __NEOVIPLASMA_H_
+		NeoVIPLASMA::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADEPSILON_H_
+		RADEpsilon::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADGALAXY_H_
+		RADGalaxy::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADMARS_H_
+		RADMars::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADGIGASTAR_H_
+		RADGigastar::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADMOON2_H_
+		RADMoon2::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADMOONDUO_H_
+		RADMoonDuo::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADPLUTO_H_
+		RADPluto::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADSTAR2_H_
+		RADStar2::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADSUPERMOON_H_
+		RADSupermoon::DEVICE_TYPE,
+		#endif
+
+		#ifdef __VALUECAN3_H_
+		ValueCAN3::DEVICE_TYPE,
+		#endif
+
+		#ifdef __VALUECAN4_1_H_
+		ValueCAN4_1::DEVICE_TYPE,
+		#endif
+
+		#ifdef __VALUECAN4_2_H_
+		ValueCAN4_2::DEVICE_TYPE,
+		#endif
+
+		#ifdef __VALUECAN4_2EL_H_
+		ValueCAN4_2EL::DEVICE_TYPE,
+		#endif
+
+		#ifdef __VALUECAN4_4_H_
+		ValueCAN4_4::DEVICE_TYPE,
+		#endif
+
+		#ifdef __VALUECAN4INDUSTRIAL_H_
+		ValueCAN4Industrial::DEVICE_TYPE,
+		#endif
+
+		#ifdef __VIVIDCAN_H_
+		VividCAN::DEVICE_TYPE,
+		#endif
+
+	};
+
 	return supportedDevices;
 }

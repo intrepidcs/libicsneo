@@ -8,7 +8,7 @@
 
 namespace icsneo {
 
-class ISO9141Message : public Message {
+class ISO9141Message : public Frame {
 public:
 	std::array<uint8_t, 3> header;
 	bool isInit = false;

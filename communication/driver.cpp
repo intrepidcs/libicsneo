@@ -1,5 +1,11 @@
 #include "icsneo/communication/driver.h"
 
+//#define ICSNEO_DRIVER_DEBUG_PRINTS
+#ifdef ICSNEO_DRIVER_DEBUG_PRINTS
+#include <iostream>
+#include <iomanip>
+#endif
+
 using namespace icsneo;
 
 bool Driver::read(std::vector<uint8_t>& bytes, size_t limit) {
@@ -35,6 +41,18 @@ bool Driver::readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds tim
 
 	bytes.resize(actuallyRead);
 
+#ifdef ICSNEO_DRIVER_DEBUG_PRINTS
+	if(actuallyRead > 0) {
+		std::cout << "Read data: (" << actuallyRead << ')' << std::hex << std::endl;
+		for(int i = 0; i < actuallyRead; i += 16) {
+			for(int j = 0; j < std::min<int>(actuallyRead - i, 16); j++)
+				std::cout << std::setw(2) << std::setfill('0') << uint32_t(bytes[i+j]) << ' ';
+			std::cout << std::endl;
+		}
+		std::cout << std::dec << std::endl;
+	}
+#endif
+
 	return actuallyRead > 0;
 }
 
@@ -45,17 +63,18 @@ bool Driver::write(const std::vector<uint8_t>& bytes) {
 	}
 
 	if(writeBlocks) {
-		if(writeQueue.size_approx() > writeQueueSize)
-			while(writeQueue.size_approx() > (writeQueueSize * 3 / 4))
+		if(writeQueueFull()) {
+			while(writeQueueAlmostFull()) // Wait until we have some decent amount of space
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
 	} else {
-		if(writeQueue.size_approx() > writeQueueSize) {
+		if(writeQueueFull()) {
 			report(APIEvent::Type::TransmitBufferFull, APIEvent::Severity::Error);
 			return false;
 		}
 	}
 
-	bool ret = writeQueue.enqueue(WriteOperation(bytes));
+	const bool ret = writeInternal(bytes);
 	if(!ret)
 		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 

@@ -13,7 +13,7 @@ namespace icsneo {
 typedef uint16_t icscm_bitfield;
 
 struct HardwareCANPacket {
-	static std::shared_ptr<CANMessage> DecodeToMessage(const std::vector<uint8_t>& bytestream);
+	static std::shared_ptr<Message> DecodeToMessage(const std::vector<uint8_t>& bytestream);
 	static bool EncodeFromMessage(const CANMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t& report);
 
 	struct {

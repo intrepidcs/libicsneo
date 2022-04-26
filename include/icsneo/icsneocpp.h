@@ -14,6 +14,8 @@
 #include "icsneo/communication/message/ethernetmessage.h"
 #include "icsneo/communication/message/flexray/flexraymessage.h"
 #include "icsneo/communication/message/iso9141message.h"
+#include "icsneo/communication/message/canerrorcountmessage.h"
+#include "icsneo/communication/message/ethphymessage.h"
 
 namespace icsneo {
 

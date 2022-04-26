@@ -14,12 +14,20 @@ class MessageCallback {
 public:
 	typedef std::function< void( std::shared_ptr<Message> ) > fn_messageCallback;
 
-	MessageCallback(fn_messageCallback cb, std::shared_ptr<MessageFilter> f) : callback(cb), filter(f) {}
-	MessageCallback(fn_messageCallback cb, MessageFilter f = MessageFilter()) : callback(cb), filter(std::make_shared<MessageFilter>(f)) {}
+	MessageCallback(fn_messageCallback cb, std::shared_ptr<MessageFilter> f)
+		: callback(cb), filter(f ? f : std::make_shared<MessageFilter>()) {
+		if(!cb)
+			throw std::bad_function_call();
+	}
+
+	MessageCallback(fn_messageCallback cb, MessageFilter f = MessageFilter())
+		: MessageCallback(cb, std::make_shared<MessageFilter>(f)) {}
 	
 	// Allow the filter to be placed first if the user wants (maybe in the case of a lambda)
-	MessageCallback(std::shared_ptr<MessageFilter> f, fn_messageCallback cb) : callback(cb), filter(f) {}
-	MessageCallback(MessageFilter f, fn_messageCallback cb) : callback(cb), filter(std::make_shared<MessageFilter>(f)) {}
+	MessageCallback(std::shared_ptr<MessageFilter> f, fn_messageCallback cb)
+		: MessageCallback(cb, f) {}
+	MessageCallback(MessageFilter f, fn_messageCallback cb)
+		: MessageCallback(cb, std::make_shared<MessageFilter>(f)) {}
 	
 	virtual bool callIfMatch(const std::shared_ptr<Message>& message) const {
 		bool ret = filter->match(message);
@@ -31,8 +39,8 @@ public:
 	const fn_messageCallback& getCallback() const { return callback; }
 
 protected:
-	fn_messageCallback callback;
-	std::shared_ptr<MessageFilter> filter;
+	const fn_messageCallback callback;
+	const std::shared_ptr<MessageFilter> filter;
 };
 
 }

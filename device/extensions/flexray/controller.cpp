@@ -202,7 +202,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		first->frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
 		first->baseCycle = 0;
 		first->cycleRepetition = 1;
-		first->continuousMode = true;
+		first->continuousMode = false;
 		staticTx.push_back(first);
 		firstUsed = true;
 
@@ -215,7 +215,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 			second->frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
 			second->baseCycle = 0;
 			second->cycleRepetition = 1;
-			second->continuousMode = true;
+			second->continuousMode = false;
 			staticTx.push_back(second);
 			secondUsed = true;
 		}
@@ -225,7 +225,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		if(!buf->isTransmit)
 			continue; // Only transmit frames need to be written to the controller
 
-		if(buf->frameID == controllerConfig.KeySlotID) {
+		if((controllerConfig.KeySlotUsedForSync || controllerConfig.KeySlotOnlyEnabled) && buf->frameID == controllerConfig.KeySlotID) {
 			first = buf;
 			staticTx[0] = buf;
 			// Enforce keyslot rules
@@ -436,6 +436,10 @@ bool FlexRay::Controller::transmit(const std::shared_ptr<FlexRayMessage>& frmsg)
 		if(frmsg->channel != bufChannel)
 			continue;
 
+		// If we have added changed our configuration, such as adding a message buffer, we will need to reconfigure
+		if(configDirty && lastSeenRunning)
+			start();
+
 		// This is a message buffer we want to fill
 		if(!device.com->sendCommand(Command::FlexRayControl, FlexRayControlMessage::BuildWriteMessageBufferArgs(index, buf->_id, frmsg->data, buf->frameLengthBytes)))
 			continue;
@@ -474,7 +478,20 @@ bool FlexRay::Controller::setCurrentPOCCommand(FlexRay::POCCommand cmd, bool che
 	const auto writeDuration = std::chrono::steady_clock::now() - beforeWrite;
 	timeout = std::chrono::duration_cast<std::chrono::milliseconds>(timeout - writeDuration);
 
-	return wasCommandSuccessful(timeout);
+	const bool success = wasCommandSuccessful(timeout);
+	if(success) {
+		switch(cmd) {
+			case FlexRay::POCCommand::Run:
+				lastSeenRunning = true;
+				break;
+			case FlexRay::POCCommand::Halt:
+			case FlexRay::POCCommand::Freeze:
+				lastSeenRunning = false;
+				break;
+			default: break;
+		}
+	}
+	return success;
 }
 
 bool FlexRay::Controller::wasCommandSuccessful(std::chrono::milliseconds timeout) const {
@@ -593,6 +610,7 @@ uint16_t FlexRay::Controller::CalculateCycleFilter(uint8_t baseCycle, uint8_t cy
 }
 
 std::pair<bool, uint32_t> FlexRay::Controller::readRegister(ERAYRegister reg, std::chrono::milliseconds timeout) const {
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(icsneo::Network::NetID::FlexRayControl);
 	if(timeout.count() <= 20)
 		return {false, 0}; // Out of time!
 
@@ -611,7 +629,7 @@ std::pair<bool, uint32_t> FlexRay::Controller::readRegister(ERAYRegister reg, st
 				return false; // Command failed to send
 			lastSent = std::chrono::steady_clock::now();
 			return true;
-		}, MessageFilter(icsneo::Network::NetID::FlexRayControl), timeout);
+		}, filter, timeout);
 		if(auto frmsg = std::dynamic_pointer_cast<FlexRayControlMessage>(msg)) {
 			if(frmsg->decoded && frmsg->controller == index && frmsg->opcode == FlexRay::Opcode::ReadCCRegs)
 				resp = frmsg;

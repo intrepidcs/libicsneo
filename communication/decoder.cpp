@@ -3,6 +3,8 @@
 #include "icsneo/communication/message/serialnumbermessage.h"
 #include "icsneo/communication/message/resetstatusmessage.h"
 #include "icsneo/communication/message/readsettingsmessage.h"
+#include "icsneo/communication/message/canerrorcountmessage.h"
+#include "icsneo/communication/message/neoreadmemorysdmessage.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
@@ -11,6 +13,8 @@
 #include "icsneo/communication/packet/flexraypacket.h"
 #include "icsneo/communication/packet/iso9141packet.h"
 #include "icsneo/communication/packet/versionpacket.h"
+#include "icsneo/communication/packet/ethphyregpacket.h"
+#include "icsneo/communication/packet/logicaldiskinfopacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -24,7 +28,7 @@ uint64_t Decoder::GetUInt64FromLEBytes(const uint8_t* bytes) {
 
 bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet) {
 	switch(packet->network.getType()) {
-		case Network::Type::Ethernet:
+		case Network::Type::Ethernet: {
 			result = HardwareEthernetPacket::DecodeToMessage(packet->data, report);
 			if(!result) {
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
@@ -33,9 +37,11 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 
 			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
 			// The resolution depends on the device
-			result->timestamp *= timestampResolution;
-			result->network = packet->network;
+			EthernetMessage& eth = *static_cast<EthernetMessage*>(result.get());
+			eth.timestamp *= timestampResolution;
+			eth.network = packet->network;
 			return true;
+		}
 		case Network::Type::CAN:
 		case Network::Type::SWCAN:
 		case Network::Type::LSFTCAN: {
@@ -49,10 +55,28 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false; // A nullptr was returned, the packet was malformed
 			}
+
 			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
 			// The resolution depends on the device
 			result->timestamp *= timestampResolution;
-			result->network = packet->network;
+
+			switch(result->type) {
+				case Message::Type::Frame: {
+					CANMessage& can = *static_cast<CANMessage*>(result.get());
+					can.network = packet->network;
+					break;
+				}
+				case Message::Type::CANErrorCount: {
+					CANErrorCountMessage& can = *static_cast<CANErrorCountMessage*>(result.get());
+					can.network = packet->network;
+					break;
+				}
+				default: {
+					report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+					return false; // An unknown type was returned, the packet was malformed
+				}
+			}
+
 			return true;
 		}
 		case Network::Type::FlexRay: {
@@ -66,10 +90,12 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false; // A nullptr was returned, the packet was malformed
 			}
+
 			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
 			// The resolution depends on the device
-			result->timestamp *= timestampResolution;
-			result->network = packet->network;
+			FlexRayMessage& fr = *static_cast<FlexRayMessage*>(result.get());
+			fr.timestamp *= timestampResolution;
+			fr.network = packet->network;
 			return true;
 		}
 		case Network::Type::ISO9141: {
@@ -84,25 +110,24 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 
 			// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
 			// The resolution depends on the device
-			result->timestamp *= timestampResolution;
-			result->network = packet->network;
+			ISO9141Message& iso = *static_cast<ISO9141Message*>(result.get());
+			iso.timestamp *= timestampResolution;
+			iso.network = packet->network;
 			return true;
 		}
 		case Network::Type::Internal: {
 			switch(packet->network.getNetID()) {
 				case Network::NetID::Reset_Status: {
-					if(packet->data.size() < sizeof(HardwareResetStatusPacket)) {
+					// We can deal with not having the last two fields (voltage and temperature)
+					if(packet->data.size() < (sizeof(HardwareResetStatusPacket) - (sizeof(uint16_t) * 2))) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 						return false;
 					}
 
 					HardwareResetStatusPacket* data = (HardwareResetStatusPacket*)packet->data.data();
 					auto msg = std::make_shared<ResetStatusMessage>();
-					msg->network = packet->network;
 					msg->mainLoopTime = data->main_loop_time_25ns * 25;
 					msg->maxMainLoopTime = data->max_main_loop_time_25ns * 25;
-					msg->busVoltage = data->busVoltage;
-					msg->deviceTemperature = data->deviceTemperature;
 					msg->justReset = data->status.just_reset;
 					msg->comEnabled = data->status.com_enabled;
 					msg->cmRunning = data->status.cm_is_running;
@@ -116,6 +141,10 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					msg->cmTooBig = data->status.cm_too_big;
 					msg->hidUsbState = data->status.hidUsbState;
 					msg->fpgaUsbState = data->status.fpgaUsbState;
+					if(packet->data.size() >= sizeof(HardwareResetStatusPacket)) {
+						msg->busVoltage = data->busVoltage;
+						msg->deviceTemperature = data->deviceTemperature;
+					}
 					result = msg;
 					return true;
 				}
@@ -124,9 +153,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					// They come in as CAN but we will handle them in the device rather than
 					// passing them onto the user.
 					if(packet->data.size() < 24) {
-						result = std::make_shared<Message>();
-						result->network = packet->network;
-						result->data = packet->data;
+						auto rawmsg = std::make_shared<RawMessage>(Network::NetID::Device);
+						result = rawmsg;
+						rawmsg->data = packet->data;
 						return true;
 					}
 
@@ -135,17 +164,33 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 						return false; // A nullptr was returned, the packet was malformed
 					}
+
 					// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
 					// The resolution depends on the device
-					result->timestamp *= timestampResolution;
-					result->network = packet->network;
+					auto* raw = dynamic_cast<RawMessage*>(result.get());
+					if(raw == nullptr) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+						return false; // A nullptr was returned, the packet was malformed
+					}
+					raw->timestamp *= timestampResolution;
+					raw->network = packet->network;
 					return true;
 				}
 				case Network::NetID::DeviceStatus: {
-					result = std::make_shared<Message>();
-					result->network = packet->network;
 					// Just pass along the data, the device needs to handle this itself
-					result->data = packet->data;
+					result = std::make_shared<RawMessage>(packet->network, packet->data);
+					return true;
+				}
+				case Network::NetID::NeoMemorySDRead: {
+					if(packet->data.size() != 512 + sizeof(uint32_t)) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+						return false; // Should get enough data for a start address and sector
+					}
+
+					const auto msg = std::make_shared<NeoReadMemorySDMessage>();
+					result = msg;
+					msg->startAddress = *reinterpret_cast<uint32_t*>(packet->data.data());
+					msg->data.insert(msg->data.end(), packet->data.begin() + 4, packet->data.end());
 					return true;
 				}
 				case Network::NetID::FlexRayControl: {
@@ -161,7 +206,6 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					switch((Command)packet->data[0]) {
 						case Command::RequestSerialNumber: {
 							auto msg = std::make_shared<SerialNumberMessage>();
-							msg->network = packet->network;
 							uint64_t serial = GetUInt64FromLEBytes(packet->data.data() + 1);
 							// The device sends 64-bits of serial number, but we never use more than 32-bits.
 							msg->deviceSerial = Device::SerialNumToString((uint32_t)serial);
@@ -194,7 +238,6 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						}
 						default:
 							auto msg = std::make_shared<Main51Message>();
-							msg->network = packet->network;
 							msg->command = Command(packet->data[0]);
 							msg->data.insert(msg->data.begin(), packet->data.begin() + 1, packet->data.end());
 							result = msg;
@@ -218,9 +261,8 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				}
 				case Network::NetID::ReadSettings: {
 					auto msg = std::make_shared<ReadSettingsMessage>();
-					msg->network = packet->network;
 					msg->response = ReadSettingsMessage::Response(packet->data[0]);
-					
+
 					if(msg->response == ReadSettingsMessage::Response::OK) {
 						// The global settings structure is the payload of the message in this case
 						msg->data.insert(msg->data.begin(), packet->data.begin() + 10, packet->data.end());
@@ -236,6 +278,22 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = msg;
 					return true;
 				}
+				case Network::NetID::LogicalDiskInfo: {
+					result = LogicalDiskInfoPacket::DecodeToMessage(packet->data);
+					if(!result) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
+						return false;
+					}
+					return true;
+				}
+				case Network::NetID::EthPHYControl: {
+					result = HardwareEthernetPhyRegisterPacket::DecodeToMessage(packet->data, report);
+					if(!result) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
+						return false;
+					}
+					return true;
+				}
 				default:
 					break;
 			}
@@ -243,9 +301,6 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 	}
 
 	// For the moment other types of messages will automatically be decoded as raw messages
-	auto msg = std::make_shared<Message>();
-	msg->network = packet->network;
-	msg->data = packet->data;
-	result = msg;
+	result = std::make_shared<RawMessage>(packet->network, packet->data);
 	return true;
 }

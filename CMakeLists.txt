@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(libicsneo VERSION 0.2.0)
+project(libicsneo VERSION 0.3.0)
 
 option(LIBICSNEO_BUILD_TESTS "Build all tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
@@ -9,7 +9,18 @@ option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
 
-set(CMAKE_CXX_STANDARD_REQUIRED 11)
+# Device Drivers
+# You almost certainly don't want firmio for your build,
+# it is only relevant for communication between Linux and
+# CoreMini from the onboard processor of the device.
+option(LIBICSNEO_ENABLE_FIRMIO "Enable communication between Linux and CoreMini within the same device" OFF)
+option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw ethernet" ON)
+option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" ON)
+option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" ON)
+
+if(NOT CMAKE_CXX_STANDARD)
+	set(CMAKE_CXX_STANDARD 11)
+endif()
 
 include(GNUInstallDirs)
 
@@ -84,30 +95,61 @@ endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	set(PLATFORM_SRC
-		platform/windows/pcap.cpp
 		platform/windows/registry.cpp
-		platform/windows/vcp.cpp
-		platform/windows/internal/pcapdll.cpp
 	)
+
+	if(LIBICSNEO_ENABLE_RAW_ETHERNET)
+		list(APPEND PLATFORM_SRC
+			platform/windows/pcap.cpp
+			platform/windows/internal/pcapdll.cpp
+		)
+	endif()
+
+	if(LIBICSNEO_ENABLE_CDCACM OR LIBICSNEO_ENABLE_FTDI)
+		list(APPEND PLATFORM_SRC
+			platform/windows/vcp.cpp
+		)
+	endif()
 else() # Darwin or Linux
-	set(PLATFORM_SRC
-		platform/posix/ftdi.cpp
-		platform/posix/pcap.cpp
-		platform/posix/cdcacm.cpp
-	)
-	if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+	set(PLATFORM_SRC)
+
+	if(LIBICSNEO_ENABLE_FIRMIO)
 		list(APPEND PLATFORM_SRC
-			platform/posix/darwin/cdcacmdarwin.cpp
+			platform/posix/firmio.cpp
 		)
-	else() # Linux or other
+	endif()
+
+	if(LIBICSNEO_ENABLE_RAW_ETHERNET)
 		list(APPEND PLATFORM_SRC
-			platform/posix/linux/cdcacmlinux.cpp
+			platform/posix/pcap.cpp
 		)
-		if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-			message(WARNING
-				"There is no platform port defined for ${CMAKE_SYSTEM_NAME}!\n"
-				"The Linux platform code will be used, as it will generally allow building, but some devices may not enumerate properly."
+	endif()
+
+	if(LIBICSNEO_ENABLE_FTDI)
+		list(APPEND PLATFORM_SRC
+			platform/posix/ftdi.cpp
+		)
+	endif()
+
+	if(LIBICSNEO_ENABLE_CDCACM)
+		list(APPEND PLATFORM_SRC
+			platform/posix/cdcacm.cpp
+		)
+
+		if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+			list(APPEND PLATFORM_SRC
+				platform/posix/darwin/cdcacmdarwin.cpp
 			)
+		else() # Linux or other
+			list(APPEND PLATFORM_SRC
+				platform/posix/linux/cdcacmlinux.cpp
+			)
+			if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+				message(WARNING
+					"There is no CDCACM platform port defined for ${CMAKE_SYSTEM_NAME}!\n"
+					"The Linux platform code will be used, as it will generally allow building, but some devices may not enumerate properly."
+				)
+			endif()
 		endif()
 	endif()
 endif()
@@ -127,11 +169,14 @@ endforeach()
 set(SRC_FILES
 	communication/message/flexray/control/flexraycontrolmessage.cpp
 	communication/message/neomessage.cpp
+	communication/message/ethphymessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/ethernetpacket.cpp
 	communication/packet/versionpacket.cpp
 	communication/packet/iso9141packet.cpp
+	communication/packet/ethphyregpacket.cpp
+	communication/packet/logicaldiskinfopacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
 	communication/ethernetpacketizer.cpp
@@ -144,6 +189,14 @@ set(SRC_FILES
 	device/idevicesettings.cpp
 	device/devicefinder.cpp
 	device/device.cpp
+	device/neodevice.cpp
+	disk/diskreaddriver.cpp
+	disk/diskwritedriver.cpp
+	disk/nulldiskdriver.cpp
+	disk/neomemorydiskdriver.cpp
+	disk/plasiondiskreaddriver.cpp
+	disk/extextractordiskreaddriver.cpp
+	disk/fat.cpp
 	${PLATFORM_SRC}
 )
 
@@ -208,6 +261,22 @@ set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
 target_link_libraries(icsneocpp PUBLIC ${LIBICSNEO_EXTENSION_TARGETS})
+if(LIBICSNEO_ENABLE_FIRMIO)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FIRMIO)
+endif()
+if(LIBICSNEO_ENABLE_RAW_ETHERNET)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_RAW_ETHERNET)
+endif()
+if(LIBICSNEO_ENABLE_CDCACM)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_CDCACM)
+endif()
+if(LIBICSNEO_ENABLE_FTDI)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FTDI)
+endif()
+
+# fatfs
+add_subdirectory(third-party/fatfs)
+target_link_libraries(icsneocpp PRIVATE fatfs)
 
 # libftdi
 if(NOT WIN32)
@@ -220,7 +289,7 @@ if(NOT WIN32)
 	set(FTDIPP OFF CACHE INTERNAL "")
 	set(FTDI_EEPROM OFF CACHE INTERNAL "")
 	add_subdirectory(third-party/libftdi)
-	include_directories(${LIBUSB_INCLUDE_DIR})
+	target_include_directories(icsneocpp PRIVATE ${LIBUSB_INCLUDE_DIR})
 endif(NOT WIN32)
 
 # winpcap
@@ -289,6 +358,7 @@ if(NOT WIN32)
 	target_link_libraries(icsneocpp PUBLIC ftdi1-static)
 	target_link_libraries(icsneocpp PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 	find_package(PCAP REQUIRED)
+	target_include_directories(icsneocpp PUBLIC ${PCAP_INCLUDE_DIR})
 	target_link_libraries(icsneocpp PUBLIC ${PCAP_LIBRARY})
 endif()
 
@@ -296,24 +366,32 @@ endif()
 if(LIBICSNEO_BUILD_TESTS)
 	if(WIN32)
 		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-	endif()	
+	endif()
 
-	add_subdirectory(third-party/googletest-master)
-	
+	if (NOT TARGET gtest)
+		add_subdirectory(third-party/googletest-master)
+	endif()
+
 	if (CMAKE_VERSION VERSION_LESS 2.8.11)
 		include_directories("${gtest_SOURCE_DIR}/include")
 	endif()
-	
-	add_executable(runTests test/main.cpp test/eventmanagertest.cpp)
-	
-	target_link_libraries(runTests gtest gtest_main)
-	target_link_libraries(runTests icsneocpp)
-	
-	target_include_directories(runTests PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-		
+
+	add_executable(libicsneo-tests
+		test/main.cpp
+		test/diskdriverreadtest.cpp
+		test/diskdriverwritetest.cpp
+		test/eventmanagertest.cpp
+		test/ethernetpacketizertest.cpp
+	)
+
+	target_link_libraries(libicsneo-tests gtest gtest_main)
+	target_link_libraries(libicsneo-tests icsneocpp)
+
+	target_include_directories(libicsneo-tests PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+
 	enable_testing()
-	
-	add_test(NAME testSuite COMMAND runTests)
+
+	add_test(NAME libicsneo-test-suite COMMAND libicsneo-tests)
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

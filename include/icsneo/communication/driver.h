@@ -24,9 +24,10 @@ public:
 	virtual void awaitModeChangeComplete() {}
 	virtual bool isDisconnected() { return disconnected; };
 	virtual bool close() = 0;
-	virtual bool read(std::vector<uint8_t>& bytes, size_t limit = 0);
-	virtual bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 0);
-	virtual bool write(const std::vector<uint8_t>& bytes);
+	bool read(std::vector<uint8_t>& bytes, size_t limit = 0);
+	bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 0);
+	bool write(const std::vector<uint8_t>& bytes);
+	virtual bool isEthernet() const { return false; }
 
 	device_eventhandler_t report;
 
@@ -44,8 +45,15 @@ protected:
 		LAUNCH,
 		WAIT
 	};
+
 	virtual void readTask() = 0;
 	virtual void writeTask() = 0;
+
+	// Overridable in case the driver doesn't want to use writeTask and writeQueue
+	virtual bool writeQueueFull() { return writeQueue.size_approx() > writeQueueSize; }
+	virtual bool writeQueueAlmostFull() { return writeQueue.size_approx() > (writeQueueSize * 3 / 4); }
+	virtual bool writeInternal(const std::vector<uint8_t>& b) { return writeQueue.enqueue(WriteOperation(b)); }
+
 	moodycamel::BlockingConcurrentQueue<uint8_t> readQueue;
 	moodycamel::BlockingConcurrentQueue<WriteOperation> writeQueue;
 	std::thread readThread, writeThread;

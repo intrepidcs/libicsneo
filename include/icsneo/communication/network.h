@@ -41,9 +41,9 @@ public:
 		RED_EXT_MEMORYREAD = 20,
 		RED_INT_MEMORYREAD = 21,
 		RED_DFLASH_READ = 22,
-		RED_SDCARD_READ = 23,
+		NeoMemorySDRead = 23, // Response from NeoMemory (MemoryTypeSD)
 		CAN_ERRBITS = 24,
-		RED_DFLASH_WRITE_DONE = 25,
+		NeoMemoryWriteDone = 25,
 		RED_WAVE_CAN1_LOGICAL = 26,
 		RED_WAVE_CAN2_LOGICAL = 27,
 		RED_WAVE_LIN1_LOGICAL = 28,
@@ -117,6 +117,8 @@ public:
 		HSCAN7 = 97,
 		LIN6 = 98,
 		LSFTCAN2 = 99,
+		LogicalDiskInfo = 187,
+		EthPHYControl = 239,
 		FlexRayControl = 243,
 		HW_COM_Latency_Test = 512,
 		DeviceStatus = 513,
@@ -270,6 +272,10 @@ public:
 			case NetID::FlexRayControl:
 			case NetID::Main51:
 			case NetID::ReadSettings:
+			case NetID::LogicalDiskInfo:
+			case NetID::EthPHYControl:
+			case NetID::NeoMemorySDRead:
+			case NetID::NeoMemoryWriteDone:
 				return Type::Internal;
 			case NetID::Invalid:
 			case NetID::Any:
@@ -358,12 +364,12 @@ public:
 				return "RED_INT_MEMORYREAD";
 			case NetID::RED_DFLASH_READ:
 				return "RED_DFLASH_READ";
-			case NetID::RED_SDCARD_READ:
-				return "RED_SDCARD_READ";
+			case NetID::NeoMemorySDRead:
+				return "NeoMemorySDRead";
 			case NetID::CAN_ERRBITS:
 				return "CAN_ERRBITS";
-			case NetID::RED_DFLASH_WRITE_DONE:
-				return "RED_DFLASH_WRITE_DONE";
+			case NetID::NeoMemoryWriteDone:
+				return "NeoMemoryWriteDone";
 			case NetID::RED_WAVE_CAN1_LOGICAL:
 				return "RED_WAVE_CAN1_LOGICAL";
 			case NetID::RED_WAVE_CAN2_LOGICAL:
@@ -504,6 +510,10 @@ public:
 				return "LIN 6";
 			case NetID::LSFTCAN2:
 				return "LSFTCAN 2";
+			case NetID::LogicalDiskInfo:
+				return "Logical Disk Information";
+			case NetID::EthPHYControl:
+				return "Ethernet PHY Register Control";
 			case NetID::FlexRayControl:
 				return "FlexRay Control";
 			case NetID::HW_COM_Latency_Test:
@@ -826,9 +836,9 @@ private:
 #define ICSNEO_NETID_RED_EXT_MEMORYREAD 20
 #define ICSNEO_NETID_RED_INT_MEMORYREAD 21
 #define ICSNEO_NETID_RED_DFLASH_READ 22
-#define ICSNEO_NETID_RED_SDCARD_READ 23
+#define ICSNEO_NETID_NEOMEMORY_SD_READ 23
 #define ICSNEO_NETID_CAN_ERRBITS 24
-#define ICSNEO_NETID_RED_DFLASH_WRITE_DONE 25
+#define ICSNEO_NETID_NEOMEMORY_WRITE_DONE 25
 #define ICSNEO_NETID_RED_WAVE_CAN1_LOGICAL 26
 #define ICSNEO_NETID_RED_WAVE_CAN2_LOGICAL 27
 #define ICSNEO_NETID_RED_WAVE_LIN1_LOGICAL 28
@@ -902,6 +912,8 @@ private:
 #define ICSNEO_NETID_HSCAN7 97
 #define ICSNEO_NETID_LIN6 98
 #define ICSNEO_NETID_LSFTCAN2 99
+#define ICSNEO_NETID_LOGICAL_DISK_INFO 187
+#define ICSNEO_NETID_ETH_PHY_CONTROL 239
 #define ICSNEO_NETID_FLEXRAY_CONTROL 243
 #define ICSNEO_NETID_HW_COM_LATENCY_TEST 512
 #define ICSNEO_NETID_DEVICE_STATUS 513

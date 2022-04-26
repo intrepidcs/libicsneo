@@ -23,7 +23,7 @@ public:
 	std::vector<std::shared_ptr<Packet>> output();
 
 	bool disableChecksum = false; // Even for short packets
-	bool align16bit = true; // Not needed for Gigalog, Galaxy, etc and newer
+	bool align16bit = true; // Not needed for Mars, Galaxy, etc and newer
 	
 private:
 	enum class ReadState {

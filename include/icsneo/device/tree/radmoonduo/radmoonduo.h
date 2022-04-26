@@ -6,24 +6,14 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/tree/radmoonduo/radmoonduosettings.h"
-#include "icsneo/platform/cdcacm.h"
 
 namespace icsneo {
 
 class RADMoonDuo : public Device {
 public:
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADMoonDuo;
-	static constexpr const uint16_t PRODUCT_ID = 0x1106;
-	static constexpr const char* SERIAL_START = "MD";
-
-	static std::vector<std::shared_ptr<Device>> Find() {
-		std::vector<std::shared_ptr<Device>> found;
-
-		for(auto neodevice : CDCACM::FindByProduct(PRODUCT_ID))
-			found.emplace_back(new RADMoonDuo(neodevice));
-
-		return found;
-	}
+	// Serial numbers start with MD
+	// USB PID is 1106, standard driver is CDCACM
+	ICSNEO_FINDABLE_DEVICE(RADMoonDuo, DeviceType::RADMoonDuo, "MD");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		// If Converter1 Target is set to USB/CM, OP_Ethernet2 will be exposed to the PC
@@ -33,11 +23,16 @@ public:
 		return supportedNetworks;
 	}
 
+	bool getEthPhyRegControlSupported() const override { return true; }
+
 protected:
-	RADMoonDuo(neodevice_t neodevice) : Device(neodevice) {
-		initialize<CDCACM, RADMoonDuoSettings>();
-		productId = PRODUCT_ID;
-		getWritableNeoDevice().type = DEVICE_TYPE;
+	RADMoonDuo(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<RADMoonDuoSettings>(makeDriver);
+	}
+
+	virtual void setupEncoder(Encoder& encoder) override {
+		Device::setupEncoder(encoder);
+		encoder.supportEthPhy = true;
 	}
 
 	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
@@ -49,6 +44,7 @@ protected:
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	bool requiresVehiclePower() const override { return false; }
+
 };
 
 }

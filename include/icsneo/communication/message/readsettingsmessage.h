@@ -8,9 +8,9 @@
 
 namespace icsneo {
 
-class ReadSettingsMessage : public Message {
+class ReadSettingsMessage : public RawMessage {
 public:
-	virtual ~ReadSettingsMessage() = default;
+	ReadSettingsMessage() : RawMessage(Message::Type::ReadSettings, Network::NetID::ReadSettings) {}
 	
 	enum class Response : uint8_t {
 		OK = 0,
@@ -19,7 +19,8 @@ public:
 		InvalidSubversion = 3,
 		NotEnoughMemory = 4,
 		APIFailure = 5,
-		APIUnsupported = 6
+		APIUnsupported = 6,
+		OKDefaultsUsed = 7, // Got the settings okay, but the defaults were used (after firmware upgrade or a checksum error)
 	};
 
 	Response response;

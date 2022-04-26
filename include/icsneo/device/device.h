@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include <cstring>
+#include <cstdint>
 #include <atomic>
 #include <type_traits>
 #include "icsneo/api/eventmanager.h"
@@ -16,6 +17,10 @@
 #include "icsneo/device/nullsettings.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/deviceversion.h"
+#include "icsneo/device/founddevice.h"
+#include "icsneo/disk/diskreaddriver.h"
+#include "icsneo/disk/diskwritedriver.h"
+#include "icsneo/disk/nulldiskdriver.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
@@ -24,9 +29,24 @@
 #include "icsneo/communication/message/resetstatusmessage.h"
 #include "icsneo/device/extensions/flexray/controller.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
+#include "icsneo/communication/message/ethphymessage.h"
 #include "icsneo/third-party/concurrentqueue/concurrentqueue.h"
 #include "icsneo/platform/optional.h"
 #include "icsneo/platform/nodiscard.h"
+
+#define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
+	static constexpr DeviceType::Enum DEVICE_TYPE = type; \
+	className(const FoundDevice& dev) : className(neodevice_t(dev, DEVICE_TYPE), dev.makeDriver) {}
+
+// Devices which are discernable by the first two characters of their serial
+#define ICSNEO_FINDABLE_DEVICE(className, type, serialStart) \
+	static constexpr const char* SERIAL_START = serialStart; \
+	ICSNEO_FINDABLE_DEVICE_BASE(className, type)
+
+// Devices which are discernable by their USB PID
+#define ICSNEO_FINDABLE_DEVICE_BY_PID(className, type, pid) \
+	static constexpr const uint16_t PRODUCT_ID = pid; \
+	ICSNEO_FINDABLE_DEVICE_BASE(className, type)
 
 namespace icsneo {
 
@@ -42,7 +62,6 @@ public:
 
 	uint16_t getTimestampResolution() const;
 	DeviceType getType() const { return DeviceType(data.type); }
-	uint16_t getProductId() const { return productId; }
 	std::string getSerial() const { return data.serial; }
 	uint32_t getSerialNumber() const { return Device::SerialStringToNum(getSerial()); }
 	const neodevice_t& getNeoDevice() const { return data; }
@@ -121,8 +140,8 @@ public:
 	int addMessageCallback(const MessageCallback& cb) { return com->addMessageCallback(cb); }
 	bool removeMessageCallback(int id) { return com->removeMessageCallback(id); }
 
-	bool transmit(std::shared_ptr<Message> message);
-	bool transmit(std::vector<std::shared_ptr<Message>> messages);
+	bool transmit(std::shared_ptr<Frame> frame);
+	bool transmit(std::vector<std::shared_ptr<Frame>> frames);
 
 	void setWriteBlocks(bool blocks);
 
@@ -137,6 +156,74 @@ public:
 
 	virtual size_t getNetworkCountByType(Network::Type) const;
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
+
+	/**
+	 * Read from the logical disk in this device, starting from byte `pos`
+	 * and reading up to `amount` bytes.
+	 * 
+	 * The number of bytes read will be returned in case of success.
+	 * 
+	 * If the number of bytes read is less than the amount requested,
+	 * an error will be set in icsneo::GetLastError() explaining why.
+	 * Likely, either the end of the logical disk has been reached, or
+	 * the timeout was reached while the read had only partially completed.
+	 *
+	 * Upon failure, icsneo::nullopt will be returned and an error will be
+	 * set in icsneo::GetLastError().
+	 */
+	optional<uint64_t> readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount,
+		std::chrono::milliseconds timeout = Disk::DefaultTimeout);
+
+	/**
+	 * Write to the logical disk in this device, starting from byte `pos`
+	 * and writing up to `amount` bytes.
+	 * 
+	 * The number of bytes written will be returned in case of success.
+	 * 
+	 * If the number of bytes written is less than the amount requested,
+	 * an error will be set in icsneo::GetLastError() explaining why.
+	 * Likely, either the end of the logical disk has been reached, or
+	 * the timeout was reached while the write had only partially completed.
+	 *
+	 * Upon failure, icsneo::nullopt will be returned and an error will be
+	 * set in icsneo::GetLastError().
+	 */
+	optional<uint64_t> writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount,
+		std::chrono::milliseconds timeout = Disk::DefaultTimeout);
+
+	/**
+	 * Check if the logical disk is connected. This means the disk is inserted,
+	 * and if required (for instance for multi-card configurations), configured
+	 * properly.
+	 * 
+	 * This method is synchronous and contacts the device for the latest status.
+	 * 
+	 * `icsneo::nullopt` will be returned if the device does not respond in a
+	 * timely manner.
+	 */
+	optional<bool> isLogicalDiskConnected();
+
+	/**
+	 * Get the size of the connected logical disk in bytes.
+	 * 
+	 * This method is synchronous and contacts the device for the latest status.
+	 * 
+	 * `icsneo::nullopt` will be returned if the device does not respond in a
+	 * timely manner, or if the disk is disconnected/improperly configured.
+	 */
+	optional<uint64_t> getLogicalDiskSize();
+
+	/**
+	 * Get the offset to the VSA filesystem within the logical disk, represented
+	 * in bytes.
+	 * 
+	 * This method is synchronous and consacts the device for the latest status
+	 * if necessary.
+	 * 
+	 * `icsneo::nullopt` will be returned if the device does not respond in a
+	 * timely manner, or if the disk is disconnected/improperly configured.
+	 */
+	optional<uint64_t> getVSAOffsetInLogicalDisk();
 
 	/**
 	 * Retrieve the number of Ethernet (DoIP) Activation lines present
@@ -224,11 +311,18 @@ public:
 
 	const device_eventhandler_t& getEventHandler() const { return report; }
 
+	/**
+	 * Tell whether the current device supports reading and writing
+	 * Ethernet PHY registers through MDIO.
+	 */
+	virtual bool getEthPhyRegControlSupported() const { return false; }
+
+	optional<EthPhyMessage> sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
+
 	std::shared_ptr<Communication> com;
 	std::unique_ptr<IDeviceSettings> settings;
 
 protected:
-	uint16_t productId = 0;
 	bool online = false;
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
@@ -243,24 +337,28 @@ protected:
 	std::array<optional<double>, 2> miscAnalog;
 
 	// START Initialization Functions
-	Device(neodevice_t neodevice = { 0 }) {
-		data = neodevice;
+	Device(neodevice_t neodevice) : data(neodevice) {
 		data.device = this;
 	}
 	
-	template<typename Driver, typename Settings = NullSettings>
-	void initialize() {
+	template<typename Settings = NullSettings, typename DiskRead = Disk::NullDriver, typename DiskWrite = Disk::NullDriver>
+	void initialize(const driver_factory_t& makeDriver) {
 		report = makeEventHandler();
-		auto driver = makeDriver<Driver>();
-		setupDriver(*driver);
 		auto encoder = makeEncoder();
 		setupEncoder(*encoder);
 		auto decoder = makeDecoder();
 		setupDecoder(*decoder);
-		com = makeCommunication(std::move(driver), std::bind(&Device::makeConfiguredPacketizer, this), std::move(encoder), std::move(decoder));
+		com = makeCommunication(
+			makeDriver(report, getWritableNeoDevice()),
+			std::bind(&Device::makeConfiguredPacketizer, this),
+			std::move(encoder),
+			std::move(decoder)
+		);
 		setupCommunication(*com);
 		settings = makeSettings<Settings>(com);
 		setupSettings(*settings);
+		diskReadDriver = std::unique_ptr<DiskRead>(new DiskRead());
+		diskWriteDriver = std::unique_ptr<DiskWrite>(new DiskWrite());
 		setupSupportedRXNetworks(supportedRXNetworks);
 		setupSupportedTXNetworks(supportedTXNetworks);
 		setupExtensions();
@@ -271,10 +369,6 @@ protected:
 			EventManager::GetInstance().add(type, severity, this);
 		};
 	}
-
-	template<typename Driver>
-	std::unique_ptr<Driver> makeDriver() { return std::unique_ptr<Driver>(new Driver(report, getWritableNeoDevice())); }
-	virtual void setupDriver(Driver&) {}
 
 	virtual std::unique_ptr<Packetizer> makePacketizer() { return std::unique_ptr<Packetizer>(new Packetizer(report)); }
 	virtual void setupPacketizer(Packetizer&) {}
@@ -295,7 +389,9 @@ protected:
 		std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer,
 		std::unique_ptr<Encoder> e,
 		std::unique_ptr<Decoder> d) { return std::make_shared<Communication>(report, std::move(t), makeConfiguredPacketizer, std::move(e), std::move(d)); }
-	virtual void setupCommunication(Communication&) {}
+	virtual void setupCommunication(Communication& communication) {
+		communication.packetizer = communication.makeConfiguredPacketizer();
+	}
 
 	template<typename Settings>
 	std::unique_ptr<IDeviceSettings> makeSettings(std::shared_ptr<Communication> com) {
@@ -328,7 +424,7 @@ protected:
 
 	void handleInternalMessage(std::shared_ptr<Message> message);
 
-	virtual void handleDeviceStatus(const std::shared_ptr<Message>&) {}
+	virtual void handleDeviceStatus(const std::shared_ptr<RawMessage>&) {}
 
 	neodevice_t& getWritableNeoDevice() { return data; }
 
@@ -336,6 +432,10 @@ private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
 	std::vector<optional<DeviceAppVersion>> versions;
+
+	mutable std::mutex diskLock;
+	std::unique_ptr<Disk::ReadDriver> diskReadDriver;
+	std::unique_ptr<Disk::WriteDriver> diskWriteDriver;
 
 	mutable std::mutex extensionsLock;
 	std::vector<std::shared_ptr<DeviceExtension>> extensions;
@@ -369,6 +469,7 @@ private:
 	void enforcePollingMessageLimit();
 
 	std::atomic<bool> stopHeartbeatThread{false};
+	std::mutex heartbeatMutex;
 	std::thread heartbeatThread;
 };
 

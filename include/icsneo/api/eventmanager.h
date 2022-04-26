@@ -29,28 +29,10 @@ public:
 
 	// If this thread is not in the map, add it to be ignored
 	// If it is, set it to be ignored
-	void downgradeErrorsOnCurrentThread() {
-		if(destructing)
-			return;
-		std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
-		auto i = downgradedThreads.find(std::this_thread::get_id());
-		if(i != downgradedThreads.end()) {
-			i->second = true;
-		} else {
-			downgradedThreads.insert({std::this_thread::get_id(), true});
-		}
-	}
+	void downgradeErrorsOnCurrentThread();
 	
 	// If this thread exists in the map, turn off downgrading
-	void cancelErrorDowngradingOnCurrentThread() {
-		if(destructing)
-			return;
-		std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
-		auto i = downgradedThreads.find(std::this_thread::get_id());
-		if(i != downgradedThreads.end()) {
-			i->second = false;
-		}
-	}
+	void cancelErrorDowngradingOnCurrentThread();
 
 	bool isDowngradingErrorsOnCurrentThread() const;
 
@@ -59,7 +41,7 @@ public:
 
 	size_t eventCount(EventFilter filter = EventFilter()) const {
 		std::lock_guard<std::mutex> lk(eventsMutex);
-		return count_internal(filter);
+		return countInternal(filter);
 	};
 
 	std::vector<APIEvent> get(EventFilter filter, size_t max = 0) { return get(max, filter); }
@@ -73,65 +55,23 @@ public:
 	
 	APIEvent getLastError();
 
-	void add(APIEvent event) {
-		if(destructing)
-			return;
-		if(event.getSeverity() == APIEvent::Severity::Error) {
-			// if the error was added on a thread that downgrades errors (non-user thread)
-			std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
-			auto i = downgradedThreads.find(std::this_thread::get_id());
-			if(i != downgradedThreads.end() && i->second) {
-				event.downgradeFromError();
-				std::unique_lock<std::mutex> eventsLock(eventsMutex);
-				add_internal_event(event);
-				// free the lock so that callbacks may modify events
-				eventsLock.unlock();
-				runCallbacks(event);
-			} else {
-				std::lock_guard<std::mutex> errorsLock(errorsMutex);
-				add_internal_error(event);
-			}
-		} else {
-			std::unique_lock<std::mutex> eventsLock(eventsMutex);
-			add_internal_event(event);
-			// free the lock so that callbacks may modify events
-			eventsLock.unlock();
-			runCallbacks(event);
-		}
-	}
+	void add(APIEvent event);
 	void add(APIEvent::Type type, APIEvent::Severity severity, const Device* forDevice = nullptr) {
 		add(APIEvent(type, severity, forDevice));
 	}
 
 	void discard(EventFilter filter = EventFilter());
 
-	void setEventLimit(size_t newLimit) {
-		std::lock_guard<std::mutex> eventLimitLock(eventLimitMutex);
-		
-		if(newLimit == eventLimit)
-			return;
-		
-		if(newLimit < 10) {
-			add(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
-			return;
-		}
-	
-		eventLimit = newLimit;
-		
-		std::lock_guard<std::mutex> eventsLock(eventsMutex);
-		if(enforceLimit())
-			add_internal_event(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
-	}
-
 	size_t getEventLimit() const {
 		std::lock_guard<std::mutex> lk(eventLimitMutex);
 		return eventLimit;
 	}
+	void setEventLimit(size_t newLimit);
 
 private:
-	EventManager() : eventsMutex(), errorsMutex(), downgradedThreadsMutex(), callbacksMutex(), callbackIDMutex(), eventLimitMutex(), downgradedThreads(), callbacks(), events(), lastUserErrors(), eventLimit(10000) {}
-	EventManager(const EventManager &other);
-	EventManager& operator=(const EventManager &other);
+	EventManager() : eventLimit(10000) {}
+	EventManager(const EventManager& other); // = delete (not supported everywhere)
+	EventManager& operator=(const EventManager& other); // = delete (not supported everywhere)
 
 	// Used by functions for threadsafety
 	mutable std::mutex eventsMutex;
@@ -155,51 +95,15 @@ private:
 	std::map<std::thread::id, APIEvent> lastUserErrors;
 	size_t eventLimit = 10000;
 
-	size_t count_internal(EventFilter filter = EventFilter()) const;
+	size_t countInternal(EventFilter filter = EventFilter()) const;
 
-	void runCallbacks(APIEvent event) {
-		std::lock_guard<std::mutex> lk(callbacksMutex);
-		for(auto &i : callbacks) {
-			i.second.callIfMatch(std::make_shared<APIEvent>(event));
-		}
-	}
-
-	/**
-	 * Places a {id, event} pair into the lastUserErrors
-	 * If the key id already exists in the map, replace the event of that pair with the new one
-	 */
-	void add_internal_error(APIEvent event) {
-		std::thread::id id = std::this_thread::get_id();
-		auto it = lastUserErrors.find(id);
-		if(it == lastUserErrors.end())
-			lastUserErrors.insert({id, event});
-		else
-			it->second = event;
-	}
+	void runCallbacks(APIEvent event);
 
 	/**
 	 * If events is not full, add the event at the end
 	 * Otherwise, remove the oldest event, push the event to the back and push a APIEvent::TooManyEvents to the back (in that order)
 	 */
-	void add_internal_event(APIEvent event) {
-		// Ensure the event list is at most exactly full (size of eventLimit - 1, leaving room for a potential APIEvent::TooManyEvents)
-		// Removes any events of type TooManyEvents from the end before checking to avoid duplicates.
-		enforceLimit();
-
-		// We are exactly full, either because the list was truncated or because we were simply full before
-		if(events.size() == eventLimit - 1) {
-			// If the event is worth adding
-			if(event.getType() != APIEvent::Type::TooManyEvents) {
-				discardOldest(1);
-				events.push_back(event);	
-			}
-
-			events.push_back(APIEvent(APIEvent::Type::TooManyEvents, APIEvent::Severity::EventWarning));
-		} else {
-			if (event.getType() != APIEvent::Type::TooManyEvents)
-				events.push_back(event);
-		}
-	}
+	void addEventInternal(APIEvent event);
 
 	bool enforceLimit(); // Returns whether the limit enforcement resulted in an overflow
 

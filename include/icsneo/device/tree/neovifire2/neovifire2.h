@@ -5,15 +5,16 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/platform/ftdi.h"
 #include "icsneo/device/tree/neovifire2/neovifire2settings.h"
 
 namespace icsneo {
 
 class NeoVIFIRE2 : public Device {
 public:
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::FIRE2;
-	static constexpr const char* SERIAL_START = "CY";
+	// Serial numbers start with CY
+	// USB PID is 0x1000, standard driver is FTDI
+	// Ethernet MAC allocation is 0x04, standard driver is Raw
+	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE2, DeviceType::FIRE2, "CY");
 
 	enum class SKU {
 		Standard,
@@ -87,8 +88,22 @@ public:
 	}
 
 protected:
-	NeoVIFIRE2(neodevice_t neodevice) : Device(neodevice) {
-		getWritableNeoDevice().type = DEVICE_TYPE;
+	NeoVIFIRE2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<NeoVIFIRE2Settings>(makeDriver);
+	}
+
+	void setupSettings(IDeviceSettings& ssettings) override {
+		if(com->driver->isEthernet()) {
+			// TODO Check firmware version, old firmwares will reset Ethernet settings on settings send
+			ssettings.readonly = true;
+		}
+	}
+
+	bool currentDriverSupportsDFU() const override { return com->driver->isEthernet(); }
+
+	void setupPacketizer(Packetizer& packetizer) override {
+		Device::setupPacketizer(packetizer);
+		packetizer.align16bit = !com->driver->isEthernet();
 	}
 
 	virtual void setupEncoder(Encoder& encoder) override {
@@ -96,16 +111,16 @@ protected:
 		encoder.supportCANFD = true;
 	}
 
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 
 	// The supported TX networks are the same as the supported RX networks for this device
-	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
-	void handleDeviceStatus(const std::shared_ptr<Message>& message) override {
-		if(!message || message->data.size() < sizeof(neovifire2_status_t))
+	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
+		if(message->data.size() < sizeof(neovifire2_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);
 		const neovifire2_status_t* status = reinterpret_cast<const neovifire2_status_t*>(message->data.data());

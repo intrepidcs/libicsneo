@@ -12,26 +12,45 @@ namespace icsneo {
 class MessageFilter {
 public:
 	MessageFilter() {}
-	MessageFilter(Network::Type type) : type(type) {}
-	MessageFilter(Network::NetID netid) : type(Network::GetTypeOfNetID(netid)), netid(netid) {}
-	virtual ~MessageFilter() {}
+	MessageFilter(Message::Type type) : includeInternalInAny(neomessagetype_t(type) & 0x8000), messageType(type) {}
+	MessageFilter(Network::NetID netid) : MessageFilter(Network::GetTypeOfNetID(netid), netid) {}
+	MessageFilter(Network::Type type, Network::NetID net = Network::NetID::Any) : networkType(type), netid(net) {
+		// If a Network::Type::Internal is used, we want to also get internal Message::Types
+		// The NetID we want may be in there
+		includeInternalInAny = (networkType == Network::Type::Internal);
+	}
+	virtual ~MessageFilter() = default;
 	// When getting "all" types of messages, include the ones marked as "internal only"
 	bool includeInternalInAny = false;
 
 	virtual bool match(const std::shared_ptr<Message>& message) const {
-		if(!matchType(message->network.getType()))
+		if(!matchMessageType(message->type))
 			return false;
-		if(!matchNetID(message->network.getNetID()))
-			return false;
+
+		if(message->type == Message::Type::Frame || message->type == Message::Type::Main51 || 
+			message->type == Message::Type::RawMessage || message->type == Message::Type::ReadSettings) {
+			RawMessage& frame = *static_cast<RawMessage*>(message.get());
+			if(!matchNetworkType(frame.network.getType()))
+				return false;
+			if(!matchNetID(frame.network.getNetID()))
+				return false;
+		}
 		return true;
 	}
 
-private:
-	Network::Type type = Network::Type::Any;
-	bool matchType(Network::Type mtype) const {
-		if(type == Network::Type::Any && (mtype != Network::Type::Internal || includeInternalInAny))
+protected:
+	Message::Type messageType = Message::Type::Invalid; // Used here for "any"
+	bool matchMessageType(Message::Type mtype) const {
+		if(messageType == Message::Type::Invalid && ((neomessagetype_t(mtype) & 0x8000) == 0 || includeInternalInAny))
 			return true;
-		return type == mtype;
+		return messageType == mtype;
+	}
+
+	Network::Type networkType = Network::Type::Any;
+	bool matchNetworkType(Network::Type mtype) const {
+		if(networkType == Network::Type::Any && (mtype != Network::Type::Internal || includeInternalInAny))
+			return true;
+		return networkType == mtype;
 	}
 
 	Network::NetID netid = Network::NetID::Any;

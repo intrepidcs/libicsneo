@@ -5,14 +5,15 @@
 
 #include "icsneo/communication/message/main51message.h"
 #include "icsneo/communication/command.h"
+#include "icsneo/platform/optional.h"
 #include <string>
 
 namespace icsneo {
 
 class ResetStatusMessage : public Message {
 public:
-	ResetStatusMessage() : Message() {}
-	virtual ~ResetStatusMessage() = default;
+	ResetStatusMessage() : Message(Message::Type::ResetStatus) {}
+
 	uint16_t mainLoopTime;
 	uint16_t maxMainLoopTime;
 	bool justReset;
@@ -28,8 +29,8 @@ public:
 	bool cmTooBig;
 	bool hidUsbState;
 	bool fpgaUsbState;
-	uint16_t busVoltage;
-	uint16_t deviceTemperature;
+	icsneo::optional<uint16_t> busVoltage;
+	icsneo::optional<uint16_t> deviceTemperature;
 };
 
 }

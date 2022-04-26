@@ -1,4 +1,5 @@
 #include "icsneo/platform/cdcacm.h"
+#include "icsneo/device/founddevice.h"
 #include <dirent.h>
 #include <cstring>
 #include <iostream>
@@ -80,12 +81,10 @@ private:
 	std::string serial;
 };
 
-std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
-	std::vector<neodevice_t> found;
-
+void CDCACM::Find(std::vector<FoundDevice>& found) {
 	Directory directory("/sys/bus/usb/drivers/cdc_acm"); // Query the CDCACM driver
 	if(!directory.openedSuccessfully())
-		return found;
+		return;
 
 	std::vector<std::string> foundusbs;
 	for(auto& entry : directory.ls()) {
@@ -100,8 +99,9 @@ std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
 			foundusbs.emplace_back(entry.getName());
 	}
 
-	// Pair the USB and TTY if found
-	std::map<std::string, std::string> foundttys;
+	// Map the USB directory to the TTY and PID if found
+	// The PID will be filled later
+	std::map< std::string, std::pair<std::string, uint16_t> > foundttys;
 	for(auto& usb : foundusbs) {
 		std::stringstream ss;
 		ss << "/sys/bus/usb/drivers/cdc_acm/" << usb << "/tty";
@@ -113,15 +113,16 @@ std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
 		if(listing.size() != 1) // We either got no serial ports or multiple, either way no good
 			continue;
 
-		foundttys.insert(std::make_pair(usb, listing[0].getName()));
+		foundttys.insert(std::make_pair(usb, std::make_pair(listing[0].getName(), 0)));
 	}
 
 	// We're going to remove from the map if this is not the product we're looking for
 	for(auto iter = foundttys.begin(); iter != foundttys.end(); ) {
-		const auto& dev = *iter;
+		auto& [_, pair] = *iter;
+		auto& [tty, ttyPid] = pair;
 		const std::string matchString = "PRODUCT=";
 		std::stringstream ss;
-		ss << "/sys/class/tty/" << dev.second << "/device/uevent"; // Read the uevent file, which contains should have a line like "PRODUCT=93c/1101/100"
+		ss << "/sys/class/tty/" << tty << "/device/uevent"; // Read the uevent file, which contains should have a line like "PRODUCT=93c/1101/100"
 		std::ifstream fs(ss.str());
 		std::string productLine;
 		size_t pos = std::string::npos;
@@ -153,32 +154,34 @@ std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
 			continue;
 		}
 
-		if(vid != INTREPID_USB_VENDOR_ID || pid != product) {
-			iter = foundttys.erase(iter); // Not the right VID or PID, remove
+		if(vid != INTREPID_USB_VENDOR_ID) {
+			iter = foundttys.erase(iter); // Not the right VID, remove
 			continue;
 		}
+		ttyPid = pid; // Set the PID for this TTY
 		iter++; // If the loop ends without erasing the iter from the map, the item is good
 	}
 
 	// At this point, foundttys contains the the devices we want
 	
 	// Get the serial number, create the neodevice_t
-	for(auto& dev : foundttys) {
-		neodevice_t device;
+	for(auto& [usb, pair] : foundttys) {
+		auto& [tty, ttyPid] = pair;
+		FoundDevice device;
 
-		USBSerialGetter getter(dev.first);
+		USBSerialGetter getter(usb);
 		if(!getter.success())
 			continue; // Failure, could not get serial number
 
 		// In ttyACM0, we want the i to be the first character of the number
 		size_t i;
-		for(i = 0; i < dev.second.length(); i++) {
-			if(isdigit(dev.second[i]))
+		for(i = 0; i < tty.length(); i++) {
+			if(isdigit(tty[i]))
 				break;
 		}
 		// Now we try to parse the number so we have a handle for later
 		try {
-			device.handle = (neodevice_handle_t)std::stoul(dev.second.substr(i));
+			device.handle = (neodevice_handle_t)std::stoul(tty.substr(i));
 			/* The TTY numbering starts at zero, but we want to keep zero for an undefined
 			 * handle, so add a constant, and we'll subtract that constant in the open function.
 			 */
@@ -186,13 +189,17 @@ std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
 		} catch(...) {
 			continue; // Somehow this failed, have to toss the device
 		}
-		
+
+		device.productId = ttyPid;
 		device.serial[getter.getSerial().copy(device.serial, sizeof(device.serial)-1)] = '\0';
+
+		// Add a factory to make the driver
+		device.makeDriver = [](const device_eventhandler_t& report, neodevice_t& device) {
+			return std::unique_ptr<Driver>(new CDCACM(report, device));
+		};
 
 		found.push_back(device); // Finally, add device to search results
 	}
-
-	return found;
 }
 
 std::string CDCACM::HandleToTTY(neodevice_handle_t handle) {

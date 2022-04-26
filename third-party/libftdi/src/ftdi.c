@@ -328,8 +328,9 @@ int ftdi_usb_find_all(struct ftdi_context *ftdi, struct ftdi_device_list **devli
         if (libusb_get_device_descriptor(dev, &desc) < 0)
             ftdi_error_return_free_device_list(-6, "libusb_get_device_descriptor() failed", devs);
 
+        // Intrepid modification: PID 0 returns all devices with the correct VID
         if (((vendor || product) &&
-                desc.idVendor == vendor && desc.idProduct == product) ||
+                desc.idVendor == vendor && (desc.idProduct == product || !product)) ||
                 (!(vendor || product) &&
                  (desc.idVendor == 0x403) && (desc.idProduct == 0x6001 || desc.idProduct == 0x6010
                                               || desc.idProduct == 0x6011 || desc.idProduct == 0x6014
@@ -774,7 +775,8 @@ int ftdi_usb_open_desc_index(struct ftdi_context *ftdi, int vendor, int product,
         if (libusb_get_device_descriptor(dev, &desc) < 0)
             ftdi_error_return_free_device_list(-13, "libusb_get_device_descriptor() failed", devs);
 
-        if (desc.idVendor == vendor && desc.idProduct == product)
+        // Intrepid modification: PID 0 disables filtering by PID
+        if (desc.idVendor == vendor && (desc.idProduct == product || !product))
         {
             if (libusb_open(dev, &ftdi->usb_dev) < 0)
                 ftdi_error_return_free_device_list(-4, "usb_open() failed", devs);

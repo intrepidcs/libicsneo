@@ -64,9 +64,7 @@ std::vector<uint8_t> FlexRayControlMessage::BuildWriteMessageBufferArgs(
 	return BuildBaseControlArgs(controller, FlexRay::Opcode::WriteMessageBuffer, args);
 }
 
-FlexRayControlMessage::FlexRayControlMessage(const Packet& packet) : Message() {
-	network = Network::NetID::FlexRayControl;
-
+FlexRayControlMessage::FlexRayControlMessage(const Packet& packet) : Message(Message::Type::FlexRayControl) {
 	if(packet.data.size() < 2)
 		return; // huh?
 	controller = packet.data[0];
@@ -77,7 +75,7 @@ FlexRayControlMessage::FlexRayControlMessage(const Packet& packet) : Message() {
 	opcode = FlexRay::Opcode(packet.data[1]);
 	if(opcode != FlexRay::Opcode::ReadCCRegs && opcode != FlexRay::Opcode::ReadCCStatus)
 		return;
-	
+
 	// Read out registers
 	size_t bytes = packet.data.size() - 2;
 	const size_t count = bytes / sizeof(uint32_t);

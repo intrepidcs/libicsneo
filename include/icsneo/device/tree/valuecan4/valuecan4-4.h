@@ -5,16 +5,14 @@
 
 #include "icsneo/device/tree/valuecan4/valuecan4.h"
 #include "icsneo/device/tree/valuecan4/settings/valuecan4-4settings.h"
-#include "icsneo/platform/cdcacm.h"
-#include <string>
 
 namespace icsneo {
 
 class ValueCAN4_4 : public ValueCAN4 {
 public:
 	// Serial numbers start with V4 for 4-4
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN4_4;
-	static constexpr const char* SERIAL_START = "V4";
+	// USB PID is 0x1101 (shared by all ValueCAN 4s), standard driver is CDCACM
+	ICSNEO_FINDABLE_DEVICE(ValueCAN4_4, DeviceType::VCAN4_4, "V4");
 
 	enum class SKU {
 		Standard,
@@ -22,17 +20,6 @@ public:
 		AP0400A_DB9, // 4xDB9, USB A, and Keysight Branding
 		AP0400A_OBD, // OBD, USB A, and Keysight Branding
 	};
-
-	static std::vector<std::shared_ptr<Device>> Find() {
-		std::vector<std::shared_ptr<Device>> found;
-
-		for(auto neodevice : CDCACM::FindByProduct(USB_PRODUCT_ID)) {
-			if(std::string(neodevice.serial).substr(0, 2) == SERIAL_START)
-				found.emplace_back(new ValueCAN4_4(neodevice));
-		}
-
-		return found;
-	}
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
@@ -71,20 +58,17 @@ public:
 	}
 
 protected:
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+	ValueCAN4_4(neodevice_t neodevice, const driver_factory_t& makeDriver) : ValueCAN4(neodevice) {
+		initialize<ValueCAN4_4Settings>(makeDriver);
+	}
+
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 
 	// The supported TX networks are the same as the supported RX networks for this device
-	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
-
-private:
-	ValueCAN4_4(neodevice_t neodevice) : ValueCAN4(neodevice) {
-		initialize<CDCACM, ValueCAN4_4Settings>();
-		getWritableNeoDevice().type = DEVICE_TYPE;
-		productId = USB_PRODUCT_ID;
-	}
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 };
 
 }

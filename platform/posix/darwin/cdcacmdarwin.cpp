@@ -1,4 +1,5 @@
 #include "icsneo/platform/cdcacm.h"
+#include "icsneo/device/founddevice.h"
 #include <mutex>
 #include <vector>
 #include <CoreFoundation/CoreFoundation.h>
@@ -79,22 +80,19 @@ private:
 	io_object_t toRelease;
 };
 
-std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
-	std::vector<neodevice_t> found;
-
+void CDCACM::Find(std::vector<FoundDevice>& found) {
 	CFMutableDictionaryRef ref = IOServiceMatching(kIOSerialBSDServiceValue);
 	if(ref == nullptr)
-		return found;
+		return;
 	io_iterator_t matchingServices = 0;
 	kern_return_t kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, ref, &matchingServices);
 	if(KERN_SUCCESS != kernResult || matchingServices == 0)
-		return found;
+		return;
 	IOReleaser matchingServicesReleaser(matchingServices);
 
 	io_object_t serialPort;
 	while((serialPort = IOIteratorNext(matchingServices))) {
 		IOReleaser serialPortReleaser(serialPort);
-		neodevice_t device;
 
 		// First get the parent device
 		// We want to check that it has the right VID/PID
@@ -138,10 +136,10 @@ std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
 		CFReleaser productPropReleaser(productProp);
 		if(CFGetTypeID(productProp) != CFNumberGetTypeID())
 			continue;
-		uint16_t pid = 0;
-		if(!CFNumberGetValue(static_cast<CFNumberRef>(productProp), kCFNumberSInt16Type, &pid))
-			continue;
-		if(pid != product)
+
+		// Read the PID directly into the FoundDevice structure
+		FoundDevice device;
+		if(!CFNumberGetValue(static_cast<CFNumberRef>(productProp), kCFNumberSInt16Type, &device.productId))
 			continue;
 
 		// Now, let's get the "call-out" device (/dev/cu.*)
@@ -173,10 +171,13 @@ std::vector<neodevice_t> CDCACM::FindByProduct(int product) {
 			continue;
 		device.serial[serial.copy(device.serial, sizeof(device.serial)-1)] = '\0';
 
+		// Add a factory to make the driver
+		device.makeDriver = [](const device_eventhandler_t& report, neodevice_t& device) {
+			return std::unique_ptr<Driver>(new CDCACM(report, device));
+		};
+
 		found.push_back(device);
 	}
-
-	return found;
 }
 
 std::string CDCACM::HandleToTTY(neodevice_handle_t handle) {

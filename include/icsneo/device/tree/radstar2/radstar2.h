@@ -12,9 +12,9 @@ namespace icsneo {
 class RADStar2 : public Device {
 public:
 	// Serial numbers start with RS
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::RADStar2;
-	static constexpr const uint16_t PRODUCT_ID = 0x0005;
-	static constexpr const char* SERIAL_START = "RS";
+	// USB PID is 0x0005, standard driver is FTDI
+	// Ethernet MAC allocation is 0x05, standard driver is Raw
+	ICSNEO_FINDABLE_DEVICE(RADStar2, DeviceType::RADStar2, "RS");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
@@ -30,6 +30,10 @@ public:
 	}
 
 protected:
+	RADStar2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<RADStar2Settings>(makeDriver);
+	}
+
 	virtual void setupPacketizer(Packetizer& packetizer) override {
 		Device::setupPacketizer(packetizer);
 		packetizer.disableChecksum = true;
@@ -46,18 +50,13 @@ protected:
 		decoder.timestampResolution = 10; // Timestamps are in 10ns increments instead of the usual 25ns
 	}
 
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 
 	// The supported TX networks are the same as the supported RX networks for this device
-	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
-
-	RADStar2(neodevice_t neodevice) : Device(neodevice) {
-		getWritableNeoDevice().type = DEVICE_TYPE;
-		productId = PRODUCT_ID;
-	}
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 };
 
 }

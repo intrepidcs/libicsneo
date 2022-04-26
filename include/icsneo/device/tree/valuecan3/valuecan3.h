@@ -12,16 +12,8 @@ namespace icsneo {
 
 class ValueCAN3 : public Device {
 public:
-	static constexpr DeviceType::Enum DEVICE_TYPE = DeviceType::VCAN3;
-	static constexpr const uint16_t PRODUCT_ID = 0x0601;
-	static std::vector<std::shared_ptr<Device>> Find() {
-		std::vector<std::shared_ptr<Device>> found;
-
-		for(auto neodevice : FTDI::FindByProduct(PRODUCT_ID))
-			found.emplace_back(new ValueCAN3(neodevice));
-
-		return found;
-	}
+	// USB PID is 0x0601, standard driver is FTDI
+	ICSNEO_FINDABLE_DEVICE_BY_PID(ValueCAN3, DeviceType::VCAN3, 0x0701);
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
@@ -32,19 +24,17 @@ public:
 	}
 
 private:
-	ValueCAN3(neodevice_t neodevice) : Device(neodevice) {
-		initialize<FTDI, ValueCAN3Settings>();
-		getWritableNeoDevice().type = DEVICE_TYPE;
-		productId = PRODUCT_ID;
+	ValueCAN3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<ValueCAN3Settings>(makeDriver);
 	}
 
-	virtual void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		for(auto& netid : GetSupportedNetworks())
 			rxNetworks.emplace_back(netid);
 	}
 
 	// The supported TX networks are the same as the supported RX networks for this device
-	virtual void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	bool requiresVehiclePower() const override { return false; }
 };

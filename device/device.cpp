@@ -3,6 +3,8 @@
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/extensions/deviceextension.h"
+#include "icsneo/platform/optional.h"
+#include "icsneo/disk/fat.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -117,19 +119,16 @@ std::pair<std::vector<std::shared_ptr<Message>>, bool> Device::getMessages() {
 }
 
 bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit, std::chrono::milliseconds timeout) {
-	// not open
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
-	// not online
 	if(!isOnline()) {
 		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
 		return false;
 	}
 
-	// not currently polling, throw error
 	if(!isMessagePollingEnabled()) {
 		report(APIEvent::Type::DeviceNotCurrentlyPolling, APIEvent::Severity::Error);
 		return false;
@@ -245,19 +244,34 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		while(!stopHeartbeatThread) {
 			// Wait for 110ms for a possible heartbeat
 			std::this_thread::sleep_for(std::chrono::milliseconds(110));
-			if(!receivedMessage && !heartbeatSuppressed()) {
+			if(receivedMessage) {
+				receivedMessage = false;
+			} else {
+				// Some communication, such as the bootloader and extractor interfaces, must
+				// redirect the input stream from the device as it will no longer be in the
+				// packet format we expect here. As a result, status updates will not reach
+				// us here and suppressDisconnects() must be used. We don't want to request
+				// a status and then redirect the stream, as we'll then be polluting an
+				// otherwise quiet stream. This lock makes sure suppressDisconnects() will
+				// block until we've either gotten our status update or disconnected from
+				// the device.
+				std::lock_guard<std::mutex> lk(heartbeatMutex);
+				if(heartbeatSuppressed())
+					continue;
+
 				// No heartbeat received, request a status
 				com->sendCommand(Command::RequestStatusUpdate);
 				// The response should come back quickly if the com is quiet
-				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 				// Check if we got a message, and if not, if settings are being applied
-				if(!receivedMessage && !heartbeatSuppressed()) {
+				if(receivedMessage) {
+					receivedMessage = false;
+				} else {
 					if(!stopHeartbeatThread && !isDisconnected())
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 					break;
 				}
 			}
-			receivedMessage = false;
 		}
 
 		com->removeMessageCallback(messageReceivedCallbackID);
@@ -285,7 +299,7 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 	}
 	if(!serial) // "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
 		return getCommunicationNotEstablishedError();
-	
+
 	std::string currentSerial = getNeoDevice().serial;
 	if(currentSerial != serial->deviceSerial)
 		return APIEvent::Type::IncorrectSerialNumber;
@@ -309,7 +323,7 @@ bool Device::close() {
 
 	if(isOnline())
 		goOffline();
-	
+
 	if(internalHandlerCallbackID)
 		com->removeMessageCallback(internalHandlerCallbackID);
 
@@ -333,8 +347,8 @@ bool Device::goOnline() {
 
 	updateLEDState();
 
-	MessageFilter filter(Network::NetID::Reset_Status);
-	filter.includeInternalInAny = true;
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
+	filter->includeInternalInAny = true;
 
 	// Wait until communication is enabled or 5 seconds, whichever comes first
 	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
@@ -352,7 +366,7 @@ bool Device::goOnline() {
 		if(failOut)
 			return false;
 	}
-	
+
 	online = true;
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOnline(); return true; });
@@ -373,42 +387,40 @@ bool Device::goOffline() {
 	auto startTime = std::chrono::system_clock::now();
 
 	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
-	
+
 	updateLEDState();
-	
-	MessageFilter filter(Network::NetID::Reset_Status);
-	filter.includeInternalInAny = true;
+
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
+	filter->includeInternalInAny = true;
 
 	// Wait until communication is disabled or 5 seconds, whichever comes first
 	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
 		if(latestResetStatus && !latestResetStatus->comEnabled)
 			break;
-		
+
 		if(!com->sendCommand(Command::RequestStatusUpdate))
 			return false;
 
 		com->waitForMessageSync(filter, std::chrono::milliseconds(100));
 	}
-	
+
 	online = false;
 
 	return true;
 }
 
-bool Device::transmit(std::shared_ptr<Message> message) {
-	// not open
+bool Device::transmit(std::shared_ptr<Frame> frame) {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
-	// not online
 	if(!isOnline()) {
 		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
 		return false;
 	}
 
-	if(!isSupportedTXNetwork(message->network)) {
+	if(!isSupportedTXNetwork(frame->network)) {
 		report(APIEvent::Type::UnsupportedTXNetwork, APIEvent::Severity::Error);
 		return false;
 	}
@@ -416,7 +428,7 @@ bool Device::transmit(std::shared_ptr<Message> message) {
 	bool extensionHookedTransmit = false;
 	bool transmitStatusFromExtension = false;
 	forEachExtension([&](const std::shared_ptr<DeviceExtension>& ext) {
-		if(!ext->transmitHook(message, transmitStatusFromExtension))
+		if(!ext->transmitHook(frame, transmitStatusFromExtension))
 			extensionHookedTransmit = true;
 		return !extensionHookedTransmit; // false breaks out of the loop early
 	});
@@ -424,15 +436,15 @@ bool Device::transmit(std::shared_ptr<Message> message) {
 		return transmitStatusFromExtension;
 
 	std::vector<uint8_t> packet;
-	if(!com->encoder->encode(*com->packetizer, packet, message))
+	if(!com->encoder->encode(*com->packetizer, packet, frame))
 		return false;
-	
+
 	return com->sendPacket(packet);
 }
 
-bool Device::transmit(std::vector<std::shared_ptr<Message>> messages) {
-	for(auto& message : messages) {
-		if(!transmit(message))
+bool Device::transmit(std::vector<std::shared_ptr<Frame>> frames) {
+	for(auto& frame : frames) {
+		if(!transmit(frame))
 			return false;
 	}
 	return true;
@@ -461,6 +473,108 @@ Network Device::getNetworkByNumber(Network::Type type, size_t index) const {
 		}
 	}
 	return Network::NetID::Invalid;
+}
+
+optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
+	if(!into || timeout <= std::chrono::milliseconds(0)) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	std::lock_guard<std::mutex> lk(diskLock);
+
+	if(diskReadDriver->getAccess() == Disk::Access::EntireCard && diskWriteDriver->getAccess() == Disk::Access::VSA) {
+		// We have mismatched drivers, we need to add an offset to the diskReadDriver
+		const auto offset = Disk::FindVSAInFAT([this, &timeout](uint64_t pos, uint8_t *into, uint64_t amount) {
+			const auto start = std::chrono::steady_clock::now();
+			auto ret = diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout);
+			timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+			return ret;
+		});
+		if(!offset.has_value())
+			return nullopt;
+		diskReadDriver->setVSAOffset(*offset);
+	}
+
+	// This is needed for certain read drivers which take over the communication stream
+	const auto lifetime = suppressDisconnects();
+
+	return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout);
+}
+
+optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
+	if(!from || timeout <= std::chrono::milliseconds(0)) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	std::lock_guard<std::mutex> lk(diskLock);
+	return diskWriteDriver->writeLogicalDisk(*com, report, *diskReadDriver, pos, from, amount, timeout);
+}
+
+optional<bool> Device::isLogicalDiskConnected() {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	const auto info = com->getLogicalDiskInfoSync();
+	if (!info) {
+		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	return info->connected;
+}
+
+optional<uint64_t> Device::getLogicalDiskSize() {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	const auto info = com->getLogicalDiskInfoSync();
+	if (!info) {
+		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	return info->getReportedSize();
+}
+
+optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	std::lock_guard<std::mutex> lk(diskLock);
+
+	if (diskReadDriver->getAccess() == Disk::Access::VSA || diskReadDriver->getAccess() == Disk::Access::None)
+		return 0ull;
+	
+	auto offset = Disk::FindVSAInFAT([this](uint64_t pos, uint8_t *into, uint64_t amount) {
+		return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount);
+	});
+	if(!offset.has_value())
+		return nullopt;
+
+	if(diskReadDriver->getAccess() == Disk::Access::EntireCard && diskWriteDriver->getAccess() == Disk::Access::VSA) {
+		// We have mismatched drivers, we need to add an offset to the diskReadDriver
+		diskReadDriver->setVSAOffset(*offset);
+		return 0ull;
+	}
+	return *offset;
 }
 
 optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
@@ -668,8 +782,9 @@ optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 }
 
 Lifetime Device::suppressDisconnects() {
+	std::lock_guard<std::mutex> lk(heartbeatMutex);
 	heartbeatSuppressedByUser++;
-	return Lifetime([this] { heartbeatSuppressedByUser--; });
+	return Lifetime([this] { std::lock_guard<std::mutex> lk2(heartbeatMutex); heartbeatSuppressedByUser--; });
 }
 
 void Device::addExtension(std::shared_ptr<DeviceExtension>&& extension) {
@@ -692,22 +807,32 @@ void Device::forEachExtension(std::function<bool(const std::shared_ptr<DeviceExt
 }
 
 void Device::handleInternalMessage(std::shared_ptr<Message> message) {
-	switch(message->network.getNetID()) {
-		case Network::NetID::Reset_Status:
-			latestResetStatus = std::dynamic_pointer_cast<ResetStatusMessage>(message);
+	switch(message->type) {
+		case Message::Type::ResetStatus:
+			latestResetStatus = std::static_pointer_cast<ResetStatusMessage>(message);
 			break;
-		case Network::NetID::Device: {
-			auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
-			if(canmsg)
-				handleNeoVIMessage(std::move(canmsg));
+		case Message::Type::RawMessage: {
+			auto rawMessage = std::static_pointer_cast<RawMessage>(message);
+			switch(rawMessage->network.getNetID()) {
+				case Network::NetID::Device: {
+					// Device is not guaranteed to be a CANMessage, it might be a RawMessage
+					// if it couldn't be decoded to a CANMessage. We only care about the
+					// CANMessage decoding right now.
+					auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
+					if(canmsg)
+						handleNeoVIMessage(std::move(canmsg));
+					break;
+				}
+				case Network::NetID::DeviceStatus:
+					// Device Status format is unique per device, so the devices need to decode it themselves
+					handleDeviceStatus(rawMessage);
+					break;
+				default:
+					break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;
+			}
 			break;
 		}
-		case Network::NetID::DeviceStatus:
-			// Device Status format is unique per device, so the devices need to decode it themselves
-			handleDeviceStatus(message);
-			break;
-		default:
-			break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;
+		default: break;
 	}
 	forEachExtension([&](const std::shared_ptr<DeviceExtension>& ext) {
 		ext->handleMessage(message);
@@ -765,4 +890,35 @@ APIEvent::Type Device::getCommunicationNotEstablishedError() {
 void Device::updateLEDState() {
 	std::vector<uint8_t> args {(uint8_t) ledState};
 	com->sendCommand(Command::UpdateLEDState, args);
+}
+
+optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout) {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+	if(!getEthPhyRegControlSupported()) {
+		report(APIEvent::Type::EthPhyRegisterControlNotAvailable, APIEvent::Severity::Error);
+		return nullopt;
+	}
+	if(!isOnline()) {
+		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	std::vector<uint8_t> bytes;
+	HardwareEthernetPhyRegisterPacket::EncodeFromMessage(message, bytes, report);
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, bytes](){ return com->sendCommand(Command::PHYControlRegisters, bytes); },
+		std::make_shared<MessageFilter>(Network::NetID::EthPHYControl), timeout);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return nullopt;
+	}
+	auto retMsg = std::static_pointer_cast<EthPhyMessage>(response);
+	if(!retMsg) {
+		return nullopt;
+	}
+	return make_optional<EthPhyMessage>(*retMsg);
 }
