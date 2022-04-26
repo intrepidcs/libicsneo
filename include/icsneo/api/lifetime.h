@@ -25,6 +25,10 @@ public:
 		rhs.fnOnDeath = std::function<void(void)>();
 		return *this;
 	}
+
+	// Allow checking for empty Lifetimes
+	bool empty() const { return fnOnDeath.operator bool(); }
+	operator bool() const { return empty(); }
 private:
 	std::function<void(void)> fnOnDeath;
 };
