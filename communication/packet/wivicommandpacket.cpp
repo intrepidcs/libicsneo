@@ -35,28 +35,6 @@ std::shared_ptr<WiVI::ResponseMessage> WiVI::CommandPacket::DecodeToMessage(cons
 			msg->value = setSignal.value.ValueInt32;
 			break;
 		}
-		case WiVI::Command::GetAll: {
-			if(bytestream.size() < sizeof(WiVI::CommandPacket::GetAll))
-				return {};
-
-			if(bytestream.size() != sizeof(WiVI::CommandPacket::GetAll) + header.length)
-				return {};
-
-			const auto& getAll = *reinterpret_cast<const WiVI::CommandPacket::GetAll*>(bytestream.data());
-			msg->responseTo = WiVI::Command::GetAll;
-			msg->info.emplace();
-			msg->info->sleepRequest = getAll.sleepRequest;
-			msg->info->connectionTimeoutMinutes = getAll.connectionTimeoutMinutes;
-
-			// Check that we have enough data for the capture infos
-			if(bytestream.size() < sizeof(WiVI::CommandPacket::GetAll) + (sizeof(WiVI::CaptureInfo) * getAll.numCaptureInfos))
-				return {};
-
-			msg->info->captures.resize(getAll.numCaptureInfos);
-			for(uint16_t i = 0; i < getAll.numCaptureInfos; i++)
-				msg->info->captures[i] = getAll.captureInfos[i];
-			break;
-		}
 		default: // Unknown command response
 			return {};
 	}
