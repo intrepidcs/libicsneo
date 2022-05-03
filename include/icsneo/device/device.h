@@ -27,6 +27,7 @@
 #include "icsneo/communication/decoder.h"
 #include "icsneo/communication/io.h"
 #include "icsneo/communication/message/resetstatusmessage.h"
+#include "icsneo/communication/message/wiviresponsemessage.h"
 #include "icsneo/device/extensions/flexray/controller.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/message/ethphymessage.h"
@@ -289,6 +290,46 @@ public:
 	 */
 	optional<double> getAnalogIO(IO type, size_t number = 1);
 
+	typedef std::function< void(uint32_t startSector, uint32_t endSector) > NewCaptureCallback;
+
+	/**
+	 * Add a callback which will be called for all new captures.
+	 *
+	 * This is invalid for devices which are not running the Wireless neoVI stack.
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addNewCaptureCallback(NewCaptureCallback cb);
+
+	typedef std::function< void(uint16_t connectionTimeoutMinutes) > SleepRequestedCallback;
+
+	/**
+	 * Add a callback which will be called when a Wireless neoVI device is
+	 * ready for sleep, pending any uploads we might want to complete first.
+	 *
+	 * Call Device::allowSleep() once ready to signal that status to the device.
+	 * 
+	 * Check Device::isSleepRequested() to check if the sleep request was interrupted.
+	 * In that case, the sleep requested callbacks will be called again.
+	 *
+	 * This is invalid for devices which are not running the Wireless neoVI stack.
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addSleepRequestedCallback(SleepRequestedCallback cb);
+
+	/**
+	 * Check whether sleep has been requested by a VSSAL Wireless neoVI script.
+	 */
+	optional<bool> isSleepRequested() const;
+
+	/**
+	 * Signal to a running VSSAL Wireless neoVI script that we are ready for
+	 * sleep.
+	 *
+	 * If @param remoteWakeup is specified, the modem will be kept running in sleep
+	 * mode, where supported.
+	 *
+	 * This is invalid for devices which are not running the Wireless neoVI stack.
+	 */
 	bool allowSleep(bool remoteWakeup = false);
 
 	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const { return {}; }
@@ -318,6 +359,11 @@ public:
 	 * Ethernet PHY registers through MDIO.
 	 */
 	virtual bool getEthPhyRegControlSupported() const { return false; }
+
+	/**
+	 * Returns true if this device supports the Wireless neoVI featureset
+	 */
+	virtual bool supportsWiVI() const { return false; }
 
 	optional<EthPhyMessage> sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
@@ -411,7 +457,7 @@ protected:
 	virtual bool afterCommunicationOpen() { return true; }
 
 	virtual bool requiresVehiclePower() const { return true; }
-	
+
 	template<typename Extension>
 	std::shared_ptr<Extension> getExtension() const {
 		std::shared_ptr<Extension> ret;
@@ -473,6 +519,17 @@ private:
 	std::atomic<bool> stopHeartbeatThread{false};
 	std::mutex heartbeatMutex;
 	std::thread heartbeatThread;
+
+	// Wireless neoVI Stack
+	std::atomic<bool> stopWiVIThread{false};
+	std::condition_variable stopWiVIcv;
+	mutable std::mutex wiviMutex;
+	std::thread wiviThread;
+	std::atomic<bool> wiviSleepRequested{false};
+	std::vector<NewCaptureCallback> newCaptureCallbacks;
+	std::vector< std::pair<SleepRequestedCallback, bool /* notified */> > sleepRequestedCallbacks;
+	void wiviThreadBody();
+	void stopWiVIThreadIfNecessary(std::unique_lock<std::mutex> lk);
 };
 
 }

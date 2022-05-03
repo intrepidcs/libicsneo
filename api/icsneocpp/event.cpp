@@ -71,6 +71,7 @@ static constexpr const char* UNSUPPORTED_TX_NETWORK = "Message network is not a 
 static constexpr const char* MESSAGE_MAX_LENGTH_EXCEEDED = "The message was too long.";
 static constexpr const char* VALUE_NOT_YET_PRESENT = "The value is not yet present.";
 static constexpr const char* TIMEOUT = "The timeout was reached.";
+static constexpr const char* WIVI_NOT_SUPPORTED = "Wireless neoVI functions are not supported on this device.";
 
 // Device Errors
 static constexpr const char* POLLING_MESSAGE_OVERFLOW = "Too many messages have been recieved for the polling message buffer, some have been lost!";
@@ -109,6 +110,8 @@ static constexpr const char* EOF_REACHED = "The requested length exceeds the ava
 static constexpr const char* SETTINGS_DEFAULTS_USED = "The device settings could not be loaded, the default settings have been applied.";
 static constexpr const char* ATOMIC_OPERATION_RETRIED = "An operation failed to be atomically completed, but will be retried.";
 static constexpr const char* ATOMIC_OPERATION_COMPLETED_NONATOMICALLY = "An ideally-atomic operation was completed nonatomically.";
+static constexpr const char* WIVI_STACK_REFRESH_FAILED = "The Wireless neoVI stack encountered a communication error.";
+static constexpr const char* WIVI_UPLOAD_STACK_OVERFLOW = "The Wireless neoVI upload stack has encountered an overflow condition.";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -158,6 +161,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return VALUE_NOT_YET_PRESENT;
 		case Type::Timeout:
 			return TIMEOUT;
+		case Type::WiVINotSupported:
+			return WIVI_NOT_SUPPORTED;
 
 		// Device Errors
 		case Type::PollingMessageOverflow:
@@ -232,6 +237,10 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return ATOMIC_OPERATION_RETRIED;
 		case Type::AtomicOperationCompletedNonatomically:
 			return ATOMIC_OPERATION_COMPLETED_NONATOMICALLY;
+		case Type::WiVIStackRefreshFailed:
+			return WIVI_STACK_REFRESH_FAILED;
+		case Type::WiVIUploadStackOverflow:
+			return WIVI_UPLOAD_STACK_OVERFLOW;
 
 		// Transport Errors
 		case Type::FailedToRead:

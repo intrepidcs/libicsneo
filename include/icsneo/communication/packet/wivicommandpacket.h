@@ -122,6 +122,24 @@ struct CommandPacket {
 		WiVI::SignalType type;
 		CoreMiniFixedPointValue value;
 	};
+
+	struct GetAll {
+		static std::vector<uint8_t> Encode();
+
+		Header header;
+		uint8_t version;
+		uint8_t sleepRequest;
+		uint16_t connectionTimeoutMinutes;
+		uint16_t numCaptureInfos;
+		CaptureInfo captureInfos[0];
+	};
+
+	struct ClearUploads {
+		static std::vector<uint8_t> Encode(const std::vector<uint8_t>& bitmask);
+
+		Header header;
+		uint8_t bitmask[0];
+	};
 };
 
 } // namespace WiVI

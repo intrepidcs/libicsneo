@@ -88,6 +88,8 @@ protected:
 		const fire2vnet_status_t* status = reinterpret_cast<const fire2vnet_status_t*>(message->data.data());
 		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
+
+	bool supportsWiVI() const override { return true; }
 };
 
 }

@@ -789,13 +789,269 @@ optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 	return nullopt;
 }
 
+void Device::wiviThreadBody() {
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
+	std::unique_lock<std::mutex> lk(wiviMutex);
+
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+
+	bool first = true;
+	while(!stopWiVIThread) {
+		if(first) // Skip the first wait
+			first = false;
+		else
+			stopWiVIcv.wait_for(lk, std::chrono::seconds(3));
+
+		// Use the command GetAll to get a WiVI::Info structure from the device
+		const auto generic = com->waitForMessageSync([this]() {
+			return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetAll::Encode());
+		}, filter);
+
+		if(!generic || generic->type != Message::Type::WiVICommandResponse) {
+			report(APIEvent::Type::WiVIStackRefreshFailed, APIEvent::Severity::Error);
+			continue;
+		}
+
+		const auto resp = std::static_pointer_cast<WiVI::ResponseMessage>(generic);
+		if(!resp->success || !resp->info.has_value()) {
+			report(APIEvent::Type::WiVIStackRefreshFailed, APIEvent::Severity::Error);
+			continue;
+		}
+		
+		// Now we know we have a WiVI::Info structure
+
+		// Don't process captures unless there is a callback attached,
+		// we don't want to clear any while nobody's listening.
+		bool processCaptures = false;
+		for(const auto& cb : newCaptureCallbacks) {
+			if(cb) {
+				processCaptures = true;
+				break;
+			}
+		}
+
+		if(processCaptures) {
+			std::vector<uint8_t> clearMasks;
+			size_t i = 0;
+			for(const auto& capture : resp->info->captures) {
+				i++;
+
+				if(capture.flags.uploadOverflow)
+					report(APIEvent::Type::WiVIUploadStackOverflow, APIEvent::Severity::Error);
+
+				const auto MaxUploads = sizeof(capture.uploadStack) / sizeof(capture.uploadStack[0]);
+				auto uploadCount = capture.flags.uploadStackSize + 1u;
+				if(uploadCount > MaxUploads) {
+					report(APIEvent::Type::WiVIStackRefreshFailed, APIEvent::Severity::Error);
+					uploadCount = MaxUploads;
+				}
+
+				for(size_t j = 0; j < uploadCount; j++) {
+					const auto& upload = capture.uploadStack[j];
+					if(!upload.flags.pending)
+						continue; // Not complete yet, don't notify
+
+					// Schedule this upload to be cleared from the firmware's stack
+					if(clearMasks.size() != resp->info->captures.size())
+						clearMasks.resize(resp->info->captures.size());
+					clearMasks[i] |= (1 << j);
+
+					// Notify the client
+					for(const auto& cb : newCaptureCallbacks) {
+						if(cb) {
+							lk.unlock();
+							try {
+								cb(upload.startSector, upload.endSector);
+							} catch(...) {
+								report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
+							}
+							lk.lock();
+						}
+					}
+				}
+			}
+
+			if(!clearMasks.empty()) {
+				const auto clearMasksGenericResp = com->waitForMessageSync([this, &clearMasks]() {
+					return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::ClearUploads::Encode(clearMasks));
+				}, filter);
+
+				if(!clearMasksGenericResp
+					|| clearMasksGenericResp->type != Message::Type::WiVICommandResponse
+					|| !std::static_pointer_cast<WiVI::ResponseMessage>(clearMasksGenericResp)->success)
+					report(APIEvent::Type::WiVIStackRefreshFailed, APIEvent::Severity::Error);
+			}
+		}
+
+		// Process sleep requests
+		if(resp->info->sleepRequest & 1 /* sleep requested by VSSAL */) {
+			// Notify any callers we haven't notified yet
+			for(auto& cb : sleepRequestedCallbacks) {
+				if(!cb.second && cb.first) {
+					cb.second = true;
+					lk.unlock();
+					try {
+						cb.first(resp->info->connectionTimeoutMinutes);
+					} catch(...) {
+						report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
+					}
+					lk.lock();
+				}
+			}
+		} else {
+			// If the sleepRequest becomes 1 again we will notify again
+			for(auto& cb : sleepRequestedCallbacks)
+				cb.second = false;
+		}
+	}
+}
+
+void Device::stopWiVIThreadIfNecessary(std::unique_lock<std::mutex> lk) {
+	// The callbacks will be empty std::functions if they are removed
+	for(const auto& cb : newCaptureCallbacks) {
+		if(cb)
+			return; // We still need the WiVI Thread
+	}
+
+	for(const auto& cb : sleepRequestedCallbacks) {
+		if(cb.first)
+			return; // We still need the WiVI Thread
+	}
+
+	stopWiVIThread = true;
+	lk.unlock();
+	stopWiVIcv.notify_all();
+	wiviThread.join();
+	wiviThread = std::thread();
+}
+
+Lifetime Device::addNewCaptureCallback(NewCaptureCallback cb) {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return {};
+	}
+
+	if(!supportsWiVI()) {
+		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::Error);
+		return {};
+	}
+
+	std::lock_guard<std::mutex> lk(wiviMutex);
+	if(!wiviThread.joinable()) {
+		// Start the thread
+		stopWiVIThread = false;
+		wiviThread = std::thread([this]() { wiviThreadBody(); });
+	}
+
+	size_t idx = 0;
+	for(; idx < newCaptureCallbacks.size(); idx++) {
+		if(!newCaptureCallbacks[idx]) // Empty space (previously erased callback)
+			break;
+	}
+
+	if(idx == newCaptureCallbacks.size()) // Create a new space
+		newCaptureCallbacks.push_back(std::move(cb));
+	else
+		newCaptureCallbacks[idx] = std::move(cb);
+
+	// Cleanup function to remove this capture callback
+	return Lifetime([this, idx]() {
+		// TODO: Hold a weak ptr to the `this` instead of relying on the user to keep `this` valid
+		std::unique_lock<std::mutex> lk2(wiviMutex);
+		newCaptureCallbacks[idx] = NewCaptureCallback();
+		stopWiVIThreadIfNecessary(std::move(lk2));
+	});
+}
+
+Lifetime Device::addSleepRequestedCallback(SleepRequestedCallback cb) {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return {};
+	}
+
+	if(!supportsWiVI()) {
+		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::Error);
+		return {};
+	}
+
+	std::lock_guard<std::mutex> lk(wiviMutex);
+	if(!wiviThread.joinable()) {
+		// Start the thread
+		stopWiVIThread = false;
+		wiviThread = std::thread([this]() { wiviThreadBody(); });
+	}
+
+	size_t idx = 0;
+	for(; idx < sleepRequestedCallbacks.size(); idx++) {
+		if(!sleepRequestedCallbacks[idx].first) // Empty space (previously erased callback)
+			break;
+	}
+
+	if(idx == sleepRequestedCallbacks.size()) // Create a new space
+		sleepRequestedCallbacks.emplace_back(std::move(cb), false);
+	else
+		sleepRequestedCallbacks[idx] = { std::move(cb), false };
+
+	// Cleanup function to remove this sleep requested callback
+	return Lifetime([this, idx]() {
+		// TODO: Hold a weak ptr to the `this` instead of relying on the user to keep `this` valid
+		std::unique_lock<std::mutex> lk2(wiviMutex);
+		sleepRequestedCallbacks[idx].first = SleepRequestedCallback();
+		stopWiVIThreadIfNecessary(std::move(lk2));
+	});
+}
+
+optional<bool> Device::isSleepRequested() const {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	if(!supportsWiVI()) {
+		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
+	// Hold this lock so the WiVI stack doesn't issue a WiVICommand at the same time as us
+	std::lock_guard<std::mutex> lk(wiviMutex);
+	const auto generic = com->waitForMessageSync([this]() {
+		// VSSAL sets bit0 to indicate that it's waiting to sleep, then
+		// it waits for Wireless neoVI to acknowledge by clearing it.
+		// If we set bit1 at the same time we clear bit0, remote wakeup
+		// will be suppressed (assuming the device supported it in the
+		// first place)
+		return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetSignal::Encode(WiVI::SignalType::SleepRequest));
+	}, filter);
+
+	if(!generic || generic->type != Message::Type::WiVICommandResponse) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	const auto resp = std::static_pointer_cast<WiVI::ResponseMessage>(generic);
+	if(!resp->success || !resp->value.has_value()) {
+		report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+		return nullopt;
+	}
+
+	return *resp->value;
+}
+
 bool Device::allowSleep(bool remoteWakeup) {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
 
+	if(!supportsWiVI()) {
+		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
+	// Hold this lock so the WiVI stack doesn't issue a WiVICommand at the same time as us
+	std::lock_guard<std::mutex> lk(wiviMutex);
 	const auto generic = com->waitForMessageSync([this, remoteWakeup]() {
 		// VSSAL sets bit0 to indicate that it's waiting to sleep, then
 		// it waits for Wireless neoVI to acknowledge by clearing it.
@@ -813,12 +1069,12 @@ bool Device::allowSleep(bool remoteWakeup) {
 	}
 
 	const auto resp = std::static_pointer_cast<WiVI::ResponseMessage>(generic);
-	if(!resp->success || !resp->value.has_value()) {
+	if(!resp->success) {
 		report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
 		return false;
 	}
 
-	return *resp->value;
+	return true;
 }
 
 Lifetime Device::suppressDisconnects() {

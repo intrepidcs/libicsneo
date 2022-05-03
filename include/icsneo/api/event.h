@@ -48,7 +48,8 @@ public:
 		MessageMaxLengthExceeded = 0x1012,
 		ValueNotYetPresent = 0x1013,
 		Timeout = 0x1014,
-		
+		WiVINotSupported = 0x1015,
+
 		// Device Events
 		PollingMessageOverflow = 0x2000,
 		NoSerialNumber = 0x2001, // api
@@ -86,6 +87,8 @@ public:
 		SettingsDefaultsUsed = 0x2033,
 		AtomicOperationRetried = 0x2034,
 		AtomicOperationCompletedNonatomically = 0x2035,
+		WiVIStackRefreshFailed = 0x2036,
+		WiVIUploadStackOverflow = 0x2037,
 
 		// Transport Events
 		FailedToRead = 0x3000,

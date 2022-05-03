@@ -56,6 +56,8 @@ protected:
 
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+
+	bool supportsWiVI() const override { return true; }
 };
 
 }

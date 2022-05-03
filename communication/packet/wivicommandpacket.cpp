@@ -35,6 +35,28 @@ std::shared_ptr<WiVI::ResponseMessage> WiVI::CommandPacket::DecodeToMessage(cons
 			msg->value = setSignal.value.ValueInt32;
 			break;
 		}
+		case WiVI::Command::GetAll: {
+			if(bytestream.size() < sizeof(WiVI::CommandPacket::GetAll))
+				return {};
+
+			if(bytestream.size() != sizeof(WiVI::CommandPacket::GetAll) + header.length)
+				return {};
+
+			const auto& getAll = *reinterpret_cast<const WiVI::CommandPacket::GetAll*>(bytestream.data());
+			msg->responseTo = WiVI::Command::GetAll;
+			msg->info.emplace();
+			msg->info->sleepRequest = getAll.sleepRequest;
+			msg->info->connectionTimeoutMinutes = getAll.connectionTimeoutMinutes;
+
+			// Check that we have enough data for the capture infos
+			if(bytestream.size() < sizeof(WiVI::CommandPacket::GetAll) + (sizeof(WiVI::CaptureInfo) * getAll.numCaptureInfos))
+				return {};
+
+			msg->info->captures.resize(getAll.numCaptureInfos);
+			for(uint16_t i = 0; i < getAll.numCaptureInfos; i++)
+				msg->info->captures[i] = getAll.captureInfos[i];
+			break;
+		}
 		default: // Unknown command response
 			return {};
 	}
@@ -60,6 +82,27 @@ std::vector<uint8_t> WiVI::CommandPacket::SetSignal::Encode(WiVI::SignalType typ
 	frame.header.length = sizeof(frame) - sizeof(frame.header);
 	frame.type = type;
 	frame.value = value;
+
+	return ret;
+}
+
+std::vector<uint8_t> WiVI::CommandPacket::GetAll::Encode() {
+	std::vector<uint8_t> ret(sizeof(WiVI::CommandPacket::GetAll));
+	auto& frame = *reinterpret_cast<WiVI::CommandPacket::GetAll*>(ret.data());
+
+	frame.header.cmd = WiVI::Command::GetAll;
+	frame.header.length = sizeof(frame) - sizeof(frame.header);
+
+	return ret;
+}
+
+std::vector<uint8_t> WiVI::CommandPacket::ClearUploads::Encode(const std::vector<uint8_t>& bitmask) {
+	std::vector<uint8_t> ret(sizeof(WiVI::CommandPacket::ClearUploads) + bitmask.size());
+	auto& frame = *reinterpret_cast<WiVI::CommandPacket::ClearUploads*>(ret.data());
+
+	frame.header.cmd = WiVI::Command::ClearUploads;
+	frame.header.length = uint16_t(ret.size() - sizeof(frame.header));
+	memcpy(frame.bitmask, bitmask.data(), bitmask.size());
 
 	return ret;
 }
