@@ -9,9 +9,11 @@
 #include <memory>
 
 #pragma pack(push,2)
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4201) // nonstandard extension used: nameless struct/union
 #pragma warning(disable: 4200) // nonstandard extension used: zero-sized array in struct/union
+#endif // _MSC_VER
 
 namespace icsneo {
 
@@ -146,7 +148,9 @@ struct CommandPacket {
 
 } // namespace icsneo
 
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif // _MSC_VER
 #pragma pack(pop)
 
 #endif // __cplusplus
