@@ -7,6 +7,7 @@
 #include <fstream>
 #include <map>
 #include <algorithm>
+#include <cctype>
 #include <termios.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -67,6 +68,8 @@ public:
 		try {
 			std::ifstream reader(ss.str());
 			std::getline(reader, serial);
+			for (auto& c : serial)
+				c = toupper(c);
 		} catch(...) {
 			succeeded = false;
 			return;

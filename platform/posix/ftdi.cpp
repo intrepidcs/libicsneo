@@ -5,6 +5,7 @@
 #include <cstring>
 #include <memory>
 #include <utility>
+#include <cctype>
 #include <algorithm>
 #include <libusb.h>
 
@@ -24,6 +25,8 @@ void FTDI::Find(std::vector<FoundDevice>& found) {
 		FoundDevice d;
 		strncpy(d.serial, serial.c_str(), deviceSerialBufferLength - 1);
 		d.serial[deviceSerialBufferLength - 1] = '\0'; // strncpy does not write a null terminator if serial is too long
+		for(size_t i = 0; i < deviceSerialBufferLength - 1; i++)
+			d.serial[i] = toupper(serial[i]);
 		std::string devHandle = serial;
 		auto it = std::find(handles.begin(), handles.end(), devHandle);
 		size_t foundHandle = SIZE_MAX;

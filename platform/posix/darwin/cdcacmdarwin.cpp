@@ -2,6 +2,7 @@
 #include "icsneo/device/founddevice.h"
 #include <mutex>
 #include <vector>
+#include <cctype>
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/usb/IOUSBLib.h>
@@ -166,9 +167,11 @@ void CDCACM::Find(std::vector<FoundDevice>& found) {
 		if(CFGetTypeID(serialProp) != CFStringGetTypeID())
 			continue;
 		// We can static cast here because we have verified the type to be a CFString
-		const std::string serial = CFStringToString(static_cast<CFStringRef>(serialProp));
+		std::string serial = CFStringToString(static_cast<CFStringRef>(serialProp));
 		if(serial.empty())
 			continue;
+		for(char& c : serial)
+			c = static_cast<char>(toupper(c));
 		device.serial[serial.copy(device.serial, sizeof(device.serial)-1)] = '\0';
 
 		// Add a factory to make the driver

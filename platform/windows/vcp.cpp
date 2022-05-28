@@ -9,6 +9,7 @@
 #include <cwctype>
 #include <algorithm>
 #include <codecvt>
+#include <cctype>
 #include <limits>
 #include <stdio.h>
 
@@ -152,6 +153,8 @@ void VCP::Find(std::vector<FoundDevice>& found, std::vector<std::wstring> driver
 				if(serial.find_first_of('\\') != std::string::npos)
 					continue;
 			}
+			for(char& c : serial)
+				c = static_cast<char>(toupper(c));
 			strcpy_s(device.serial, sizeof(device.serial), serial.c_str());
 
 			// Serial number is saved, we want the COM port number now
