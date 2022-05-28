@@ -111,6 +111,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<RADGigastar>(dev, foundDevices);
 		#endif
 
+		#ifdef __RADJUPITER_H_
+		makeIfSerialMatches<RADJupiter>(dev, foundDevices);
+		#endif
+
 		#ifdef __RADMOON2_H_
 		makeIfSerialMatches<RADMoon2>(dev, foundDevices);
 		#endif
