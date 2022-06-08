@@ -1,5 +1,6 @@
 #include "icsneo/communication/packet/wivicommandpacket.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
+#include <cstring>
 
 using namespace icsneo;
 
