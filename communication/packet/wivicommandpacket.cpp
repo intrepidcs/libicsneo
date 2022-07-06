@@ -15,9 +15,6 @@ std::shared_ptr<WiVI::ResponseMessage> WiVI::CommandPacket::DecodeToMessage(cons
 			if(bytestream.size() < sizeof(WiVI::CommandPacket::Result))
 				return {};
 
-			if(bytestream.size() != sizeof(WiVI::CommandPacket::Header) + header.length)
-				return {};
-
 			const auto& decoded = *reinterpret_cast<const WiVI::CommandPacket::Result*>(bytestream.data());
 			msg->responseTo = decoded.responseTo;
 			msg->success = decoded.result != 0;
@@ -28,9 +25,6 @@ std::shared_ptr<WiVI::ResponseMessage> WiVI::CommandPacket::DecodeToMessage(cons
 			if(bytestream.size() < sizeof(WiVI::CommandPacket::SetSignal))
 				return {};
 
-			if(bytestream.size() != sizeof(WiVI::CommandPacket::SetSignal) + header.length)
-				return {};
-
 			const auto& setSignal = *reinterpret_cast<const WiVI::CommandPacket::SetSignal*>(bytestream.data());
 			msg->responseTo = WiVI::Command::GetSignal;
 			msg->value = setSignal.value.ValueInt32;
@@ -38,9 +32,6 @@ std::shared_ptr<WiVI::ResponseMessage> WiVI::CommandPacket::DecodeToMessage(cons
 		}
 		case WiVI::Command::GetAll: {
 			if(bytestream.size() < sizeof(WiVI::CommandPacket::GetAll))
-				return {};
-
-			if(bytestream.size() != sizeof(WiVI::CommandPacket::GetAll) + header.length)
 				return {};
 
 			const auto& getAll = *reinterpret_cast<const WiVI::CommandPacket::GetAll*>(bytestream.data());
