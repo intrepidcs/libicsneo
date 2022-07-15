@@ -40,135 +40,173 @@ static void makeIfPIDMatches(const FoundDevice& dev, std::vector<std::shared_ptr
 }
 
 std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
-	static std::vector<FoundDevice> driverFoundDevices;
-	driverFoundDevices.clear();
+	static std::vector<FoundDevice> newDriverFoundDevices;
+	newDriverFoundDevices.clear();
 
 	#ifdef ICSNEO_ENABLE_FIRMIO
-	FirmIO::Find(driverFoundDevices);
+	FirmIO::Find(newDriverFoundDevices);
 	#endif
 
 	#ifdef ICSNEO_ENABLE_RAW_ETHERNET
-	PCAP::Find(driverFoundDevices);
+	PCAP::Find(newDriverFoundDevices);
 	#endif
 
 	#ifdef ICSNEO_ENABLE_CDCACM
-	CDCACM::Find(driverFoundDevices);
+	CDCACM::Find(newDriverFoundDevices);
 	#endif
 
 	#ifdef ICSNEO_ENABLE_FTDI
-	FTDI::Find(driverFoundDevices);
+	FTDI::Find(newDriverFoundDevices);
 	#endif
 
-	std::vector<std::shared_ptr<Device>> foundDevices;
+	// Weak because we don't want to keep devices open if they go out of scope elsewhere
+	static std::vector<std::weak_ptr<Device>> foundDevices;
 
+	// Remove Devices that have dropped out of scope or are no longer present
+	for (auto it = foundDevices.begin(); it != foundDevices.end(); ) {
+		if (const auto device = it->lock()) {
+			if (std::none_of(newDriverFoundDevices.begin(), newDriverFoundDevices.end(),
+					[&](const auto& driverDevice) {
+						return std::string(driverDevice.serial) == device->getSerial();
+					}
+				)) {
+				it = foundDevices.erase(it); // Device not found by drivers but pointer has a >0 use_count, error?
+			} else {
+				++it; // Valid weak pointer and device found by drivers
+			}
+		} else {
+			it = foundDevices.erase(it); // Weak pointer has a zero use_count
+		}
+	}
+
+	// Remove existing driver devices so we only create new ones
+	for (auto it = newDriverFoundDevices.begin(); it != newDriverFoundDevices.end(); ) {
+		if (std::any_of(foundDevices.begin(), foundDevices.end(),
+				[&](const auto& weakDevice) {
+					const auto device = weakDevice.lock();
+					return device && std::string(it->serial) == device->getSerial();
+				}
+			)) {
+			it = newDriverFoundDevices.erase(it);
+		} else {
+			++it;
+		}
+	}
+
+	std::vector<std::shared_ptr<Device>> newFoundDevices;
+	newFoundDevices.reserve(newDriverFoundDevices.size());
 	// Offer found devices to each of the subclasses
-	for (const FoundDevice& dev : driverFoundDevices) {
+	for (const FoundDevice& dev : newDriverFoundDevices) {
 		#ifdef __ETHERBADGE_H_
-		makeIfSerialMatches<EtherBADGE>(dev, foundDevices);
+		makeIfSerialMatches<EtherBADGE>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __NEOOBD2PRO_H_
-		makeIfSerialMatches<NeoOBD2PRO>(dev, foundDevices);
+		makeIfSerialMatches<NeoOBD2PRO>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __NEOOBD2SIM_H_
-		makeIfSerialMatches<NeoOBD2SIM>(dev, foundDevices);
+		makeIfSerialMatches<NeoOBD2SIM>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __NEOVIFIRE_H_
-		makeIfPIDMatches<NeoVIFIRE>(dev, foundDevices);
+		makeIfPIDMatches<NeoVIFIRE>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __NEOVIFIRE2_H_
-		makeIfSerialMatches<NeoVIFIRE2>(dev, foundDevices);
+		makeIfSerialMatches<NeoVIFIRE2>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __NEOVIRED2_H_
-		makeIfSerialMatches<NeoVIRED2>(dev, foundDevices);
+		makeIfSerialMatches<NeoVIRED2>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __NEOVIION_H_
-		makeIfPIDMatches<NeoVIION>(dev, foundDevices);
+		makeIfPIDMatches<NeoVIION>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __NEOVIPLASMA_H_
-		makeIfPIDMatches<NeoVIPLASMA>(dev, foundDevices);
+		makeIfPIDMatches<NeoVIPLASMA>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADEPSILON_H_
-		makeIfSerialMatches<RADEpsilon>(dev, foundDevices);
+		makeIfSerialMatches<RADEpsilon>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADGALAXY_H_
-		makeIfSerialMatches<RADGalaxy>(dev, foundDevices);
+		makeIfSerialMatches<RADGalaxy>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADMARS_H_
-		makeIfSerialMatches<RADMars>(dev, foundDevices);
+		makeIfSerialMatches<RADMars>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADGIGASTAR_H_
-		makeIfSerialMatches<RADGigastar>(dev, foundDevices);
+		makeIfSerialMatches<RADGigastar>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADJUPITER_H_
-		makeIfSerialMatches<RADJupiter>(dev, foundDevices);
+		makeIfSerialMatches<RADJupiter>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADMOON2_H_
-		makeIfSerialMatches<RADMoon2>(dev, foundDevices);
+		makeIfSerialMatches<RADMoon2>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADMOONDUO_H_
-		makeIfSerialMatches<RADMoonDuo>(dev, foundDevices);
+		makeIfSerialMatches<RADMoonDuo>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADPLUTO_H_
-		makeIfSerialMatches<RADPluto>(dev, foundDevices);
+		makeIfSerialMatches<RADPluto>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADSTAR2_H_
-		makeIfSerialMatches<RADStar2>(dev, foundDevices);
+		makeIfSerialMatches<RADStar2>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADSUPERMOON_H_
-		makeIfSerialMatches<RADSupermoon>(dev, foundDevices);
+		makeIfSerialMatches<RADSupermoon>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __VALUECAN3_H_
-		makeIfPIDMatches<ValueCAN3>(dev, foundDevices);
+		makeIfPIDMatches<ValueCAN3>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __VALUECAN4_1_H_
-		makeIfSerialMatches<ValueCAN4_1>(dev, foundDevices);
+		makeIfSerialMatches<ValueCAN4_1>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __VALUECAN4_2_H_
-		makeIfSerialMatches<ValueCAN4_2>(dev, foundDevices);
+		makeIfSerialMatches<ValueCAN4_2>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __VALUECAN4_2EL_H_
-		makeIfSerialMatches<ValueCAN4_2EL>(dev, foundDevices);
+		makeIfSerialMatches<ValueCAN4_2EL>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __VALUECAN4_4_H_
-		makeIfSerialMatches<ValueCAN4_4>(dev, foundDevices);
+		makeIfSerialMatches<ValueCAN4_4>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __VALUECAN4INDUSTRIAL_H_
-		makeIfSerialMatches<ValueCAN4Industrial>(dev, foundDevices);
+		makeIfSerialMatches<ValueCAN4Industrial>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __VIVIDCAN_H_
-		makeIfSerialMatches<VividCAN>(dev, foundDevices);
+		makeIfSerialMatches<VividCAN>(dev, newFoundDevices);
 		#endif
 	}
 
-	for(auto& device : foundDevices) {
+	for(auto& device : newFoundDevices) {
 		AddBuiltInExtensionsTo(device);
 	}
 
-	return foundDevices;
+	// Grab a weak pointer from the new devices
+	foundDevices.insert(foundDevices.end(), newFoundDevices.begin(), newFoundDevices.end());
+
+	// Upgrade to shared for the return
+	return std::vector<std::shared_ptr<Device>>(foundDevices.begin(), foundDevices.end());
 }
 
 const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
