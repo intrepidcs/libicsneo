@@ -3,7 +3,6 @@
 #include <iterator>
 #include <cstring>
 #include <cassert>
-#include <iostream>
 
 using namespace icsneo;
 
