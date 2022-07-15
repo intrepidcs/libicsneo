@@ -277,6 +277,7 @@ endif()
 
 # fatfs
 add_subdirectory(third-party/fatfs)
+set_property(TARGET fatfs PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(icsneocpp PRIVATE fatfs)
 
 # libftdi
