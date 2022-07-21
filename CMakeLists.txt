@@ -19,7 +19,7 @@ option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC AC
 option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" ON)
 
 if(NOT CMAKE_CXX_STANDARD)
-	set(CMAKE_CXX_STANDARD 11)
+	set(CMAKE_CXX_STANDARD 17)
 endif()
 
 include(GNUInstallDirs)
@@ -34,6 +34,9 @@ if(MSVC)
 	else()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 	endif()
+	# http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0618r0.html
+	# Still supported until a suitable replacement is standardized
+	add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
 else() #if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-switch -Wno-unknown-pragmas")
 endif()
