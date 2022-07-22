@@ -398,7 +398,11 @@ protected:
 		setupDecoder(*decoder);
 		com = makeCommunication(
 			makeDriver(report, getWritableNeoDevice()),
-			std::bind(&Device::makeConfiguredPacketizer, this),
+			[this]() -> std::unique_ptr<Packetizer> {
+				auto packetizer = makePacketizer();
+				setupPacketizer(*packetizer);
+				return packetizer;
+			},
 			std::move(encoder),
 			std::move(decoder)
 		);
@@ -420,11 +424,6 @@ protected:
 
 	virtual std::unique_ptr<Packetizer> makePacketizer() { return std::unique_ptr<Packetizer>(new Packetizer(report)); }
 	virtual void setupPacketizer(Packetizer&) {}
-	std::unique_ptr<Packetizer> makeConfiguredPacketizer() {
-		auto packetizer = makePacketizer();
-		setupPacketizer(*packetizer);
-		return packetizer;
-	}
 
 	virtual std::unique_ptr<Encoder> makeEncoder() { return std::unique_ptr<Encoder>(new Encoder(report)); }
 	virtual void setupEncoder(Encoder&) {}
