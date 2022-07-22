@@ -7,12 +7,12 @@ using namespace icsneo::Disk;
 const uint64_t WriteDriver::RetryAtomic = std::numeric_limits<uint64_t>::max();
 const APIEvent::Severity WriteDriver::NonatomicSeverity = APIEvent::Severity::EventInfo;
 
-optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
+std::optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
 	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
 	if(amount == 0)
 		return 0;
 
-	optional<uint64_t> ret;
+	std::optional<uint64_t> ret;
 
 	const uint32_t idealBlockSize = getBlockSizeBounds().second;
 

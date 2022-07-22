@@ -3,10 +3,10 @@
 
 #include "icsneo/disk/diskreaddriver.h"
 #include "icsneo/disk/diskwritedriver.h"
-#include "icsneo/platform/optional.h"
 #include "gtest/gtest.h"
 #include <queue>
 #include <functional>
+#include <optional>
 
 using namespace icsneo;
 
@@ -17,7 +17,7 @@ class MockDiskDriver : public Disk::ReadDriver, public Disk::WriteDriver {
 public:
 	std::pair<uint32_t, uint32_t> getBlockSizeBounds() const override { return { 8, 256 }; }
 
-	optional<uint64_t> readLogicalDiskAligned(Communication&, device_eventhandler_t,
+	std::optional<uint64_t> readLogicalDiskAligned(Communication&, device_eventhandler_t,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds) override {
 		readCalls++;
 
@@ -26,9 +26,9 @@ public:
 		EXPECT_EQ(amount % getBlockSizeBounds().first, 0);
 
 		if(pos > mockDisk.size()) // EOF
-			return nullopt;
+			return std::nullopt;
 
-		optional<uint64_t> readAmount = std::min(amount, mockDisk.size() - pos);
+		std::optional<uint64_t> readAmount = std::min(amount, mockDisk.size() - pos);
 		if(readAmount > 0u)
 			memcpy(into, mockDisk.data() + pos, static_cast<size_t>(*readAmount));
 
@@ -39,7 +39,7 @@ public:
 		return readAmount;
 	}
 
-	optional<uint64_t> writeLogicalDiskAligned(Communication&, device_eventhandler_t report, uint64_t pos,
+	std::optional<uint64_t> writeLogicalDiskAligned(Communication&, device_eventhandler_t report, uint64_t pos,
 		const uint8_t* atomicBuf, const uint8_t* from, uint64_t amount, std::chrono::milliseconds) override {
 		writeCalls++;
 
@@ -48,9 +48,9 @@ public:
 		EXPECT_EQ(amount % getBlockSizeBounds().first, 0);
 
 		if(pos > mockDisk.size()) // EOF
-			return nullopt;
+			return std::nullopt;
 
-		optional<uint64_t> writeAmount = std::min(amount, mockDisk.size() - pos);
+		std::optional<uint64_t> writeAmount = std::min(amount, mockDisk.size() - pos);
 		if(writeAmount > 0u) {
 			if(atomicBuf) {
 				if(supportsAtomic) {
@@ -107,15 +107,15 @@ protected:
 		driver.reset();
 	}
 
-	optional<uint64_t> readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount) {
+	std::optional<uint64_t> readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount) {
 		return driver->readLogicalDisk(*com, onError, pos, into, amount /* default timeout */);
 	}
 
-	optional<uint64_t> writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount) {
+	std::optional<uint64_t> writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount) {
 		return driver->writeLogicalDisk(*com, onError, *driver, pos, from, amount /* default timeout */);
 	}
 
-	optional<MockDiskDriver> driver;
+	std::optional<MockDiskDriver> driver;
 
 	std::queue< std::pair<APIEvent::Type, APIEvent::Severity> > expectedErrors;
 	device_eventhandler_t onError;

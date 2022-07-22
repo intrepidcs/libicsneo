@@ -18,9 +18,9 @@ namespace Disk {
  */
 class NullDriver : public ReadDriver, public WriteDriver {
 public:
-	optional<uint64_t> readLogicalDisk(Communication& com, device_eventhandler_t report,
+	std::optional<uint64_t> readLogicalDisk(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout = DefaultTimeout) override;
-	optional<uint64_t> writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
+	std::optional<uint64_t> writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
 		uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout = DefaultTimeout) override;
 	std::pair<uint32_t, uint32_t> getBlockSizeBounds() const override {
 		static_assert(SectorSize <= std::numeric_limits<uint32_t>::max(), "Incorrect sector size");
@@ -31,9 +31,9 @@ public:
 private:
 	Access getPossibleAccess() const override { return Access::None; }
 
-	optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+	std::optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) override;
-	optional<uint64_t> writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+	std::optional<uint64_t> writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, const uint8_t* atomicBuf, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) override;
 };
 

@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-#include "icsneo/platform/optional.h"
+#include <optional>
 #include <cstdint>
 #include <array>
 

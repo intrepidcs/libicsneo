@@ -642,7 +642,7 @@ bool icsneo_getDigitalIO(const neodevice_t* device, neoio_t type, uint32_t numbe
 		return false;
 	}
 
-	const optional<bool> val = device->device->getDigitalIO(static_cast<icsneo::IO>(type), number);
+	const std::optional<bool> val = device->device->getDigitalIO(static_cast<icsneo::IO>(type), number);
 	if(!val.has_value())
 		return false;
 

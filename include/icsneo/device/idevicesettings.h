@@ -601,7 +601,7 @@ typedef struct {
 
 #ifdef __cplusplus
 #include "icsneo/communication/communication.h"
-#include "icsneo/platform/optional.h"
+#include <optional>
 #include <iostream>
 #include <atomic>
 
@@ -612,7 +612,7 @@ public:
 	using TerminationGroup = std::vector<Network>;
 
 	static constexpr uint16_t GS_VERSION = 5;
-	static optional<uint16_t> CalculateGSChecksum(const std::vector<uint8_t>& settings, optional<size_t> knownSize = nullopt);
+	static std::optional<uint16_t> CalculateGSChecksum(const std::vector<uint8_t>& settings, std::optional<size_t> knownSize = std::nullopt);
 	static CANBaudrate GetEnumValueForBaudrate(int64_t baudrate);
 	static int64_t GetBaudrateValueForEnum(CANBaudrate enumValue);
 
@@ -710,7 +710,7 @@ public:
 	 * applied to the device, the current device status will be
 	 * reflected here rather than the pending status.
 	 */
-	optional<bool> isTerminationEnabledFor(Network net) const;
+	std::optional<bool> isTerminationEnabledFor(Network net) const;
 
 	/**
 	 * Enable or disable software switchable termination for a

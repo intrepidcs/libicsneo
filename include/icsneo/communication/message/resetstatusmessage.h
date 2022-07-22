@@ -5,7 +5,7 @@
 
 #include "icsneo/communication/message/main51message.h"
 #include "icsneo/communication/command.h"
-#include "icsneo/platform/optional.h"
+#include <optional>
 #include <string>
 
 namespace icsneo {
@@ -29,8 +29,8 @@ public:
 	bool cmTooBig;
 	bool hidUsbState;
 	bool fpgaUsbState;
-	icsneo::optional<uint16_t> busVoltage;
-	icsneo::optional<uint16_t> deviceTemperature;
+	std::optional<uint16_t> busVoltage;
+	std::optional<uint16_t> deviceTemperature;
 };
 
 }

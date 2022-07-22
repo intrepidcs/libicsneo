@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <atomic>
 #include <type_traits>
+#include <optional>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/api/lifetime.h"
 #include "icsneo/device/neodevice.h"
@@ -32,7 +33,6 @@
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/message/ethphymessage.h"
 #include "icsneo/third-party/concurrentqueue/concurrentqueue.h"
-#include "icsneo/platform/optional.h"
 #include "icsneo/platform/nodiscard.h"
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
@@ -114,10 +114,10 @@ public:
 		Progress
 	};
 
-	using OpenStatusHandler = std::function<Device::OpenDirective(OpenStatusType type, const std::string& status, optional<double> progress)>;
+	using OpenStatusHandler = std::function<Device::OpenDirective(OpenStatusType type, const std::string& status, std::optional<double> progress)>;
 
 	bool open(OpenFlags flags = {}, OpenStatusHandler handler =
-		[](OpenStatusType, const std::string&, optional<double>) { return Device::OpenDirective::Continue; });
+		[](OpenStatusType, const std::string&, std::optional<double>) { return Device::OpenDirective::Continue; });
 	virtual bool close();
 	virtual bool isOnline() const { return online; }
 	virtual bool isOpen() const { return com->isOpen(); }
@@ -172,7 +172,7 @@ public:
 	 * Upon failure, icsneo::nullopt will be returned and an error will be
 	 * set in icsneo::GetLastError().
 	 */
-	optional<uint64_t> readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount,
+	std::optional<uint64_t> readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount,
 		std::chrono::milliseconds timeout = Disk::DefaultTimeout);
 
 	/**
@@ -189,7 +189,7 @@ public:
 	 * Upon failure, icsneo::nullopt will be returned and an error will be
 	 * set in icsneo::GetLastError().
 	 */
-	optional<uint64_t> writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount,
+	std::optional<uint64_t> writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount,
 		std::chrono::milliseconds timeout = Disk::DefaultTimeout);
 
 	/**
@@ -202,7 +202,7 @@ public:
 	 * `icsneo::nullopt` will be returned if the device does not respond in a
 	 * timely manner.
 	 */
-	optional<bool> isLogicalDiskConnected();
+	std::optional<bool> isLogicalDiskConnected();
 
 	/**
 	 * Get the size of the connected logical disk in bytes.
@@ -212,7 +212,7 @@ public:
 	 * `icsneo::nullopt` will be returned if the device does not respond in a
 	 * timely manner, or if the disk is disconnected/improperly configured.
 	 */
-	optional<uint64_t> getLogicalDiskSize();
+	std::optional<uint64_t> getLogicalDiskSize();
 
 	/**
 	 * Get the offset to the VSA filesystem within the logical disk, represented
@@ -224,7 +224,7 @@ public:
 	 * `icsneo::nullopt` will be returned if the device does not respond in a
 	 * timely manner, or if the disk is disconnected/improperly configured.
 	 */
-	optional<uint64_t> getVSAOffsetInLogicalDisk();
+	std::optional<uint64_t> getVSAOffsetInLogicalDisk();
 
 	/**
 	 * Retrieve the number of Ethernet (DoIP) Activation lines present
@@ -264,7 +264,7 @@ public:
 	 * The index number starts counting at 1 to keep the numbers in sync
 	 * with the numbering on the device, and is set to 1 by default.
 	 */
-	optional<bool> getDigitalIO(IO type, size_t number = 1);
+	std::optional<bool> getDigitalIO(IO type, size_t number = 1);
 
 	/**
 	 * Set a digital IO to either a 1, if value is true, or 0 otherwise.
@@ -288,7 +288,7 @@ public:
 	 * The index number starts counting at 1 to keep the numbers in sync
 	 * with the numbering on the device, and is set to 1 by default.
 	 */
-	optional<double> getAnalogIO(IO type, size_t number = 1);
+	std::optional<double> getAnalogIO(IO type, size_t number = 1);
 
 	typedef std::function< void(uint32_t startSector, uint32_t endSector) > NewCaptureCallback;
 
@@ -319,7 +319,7 @@ public:
 	/**
 	 * Check whether sleep has been requested by a VSSAL Wireless neoVI script.
 	 */
-	optional<bool> isSleepRequested() const;
+	std::optional<bool> isSleepRequested() const;
 
 	/**
 	 * Signal to a running VSSAL Wireless neoVI script that we are ready for
@@ -345,7 +345,7 @@ public:
 	/**
 	 * For use by extensions only. A more stable API will be provided in the future.
 	 */
-	const std::vector<optional<DeviceAppVersion>>& getVersions() const { return versions; }
+	const std::vector<std::optional<DeviceAppVersion>>& getVersions() const { return versions; }
 
 	/**
 	 * Some alternate communication protocols do not support DFU
@@ -365,7 +365,7 @@ public:
 	 */
 	virtual bool supportsWiVI() const { return false; }
 
-	optional<EthPhyMessage> sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
+	std::optional<EthPhyMessage> sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	std::shared_ptr<Communication> com;
 	std::unique_ptr<IDeviceSettings> settings;
@@ -377,12 +377,12 @@ protected:
 	device_eventhandler_t report;
 
 	std::mutex ioMutex;
-	optional<bool> ethActivationStatus;
-	optional<bool> usbHostPowerStatus;
-	optional<bool> backupPowerEnabled;
-	optional<bool> backupPowerGood;
-	std::array<optional<bool>, 6> miscDigital;
-	std::array<optional<double>, 2> miscAnalog;
+	std::optional<bool> ethActivationStatus;
+	std::optional<bool> usbHostPowerStatus;
+	std::optional<bool> backupPowerEnabled;
+	std::optional<bool> backupPowerGood;
+	std::array<std::optional<bool>, 6> miscDigital;
+	std::array<std::optional<double>, 2> miscAnalog;
 
 	// START Initialization Functions
 	Device(neodevice_t neodevice) : data(neodevice) {
@@ -478,7 +478,7 @@ protected:
 private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
-	std::vector<optional<DeviceAppVersion>> versions;
+	std::vector<std::optional<DeviceAppVersion>> versions;
 
 	mutable std::mutex diskLock;
 	std::unique_ptr<Disk::ReadDriver> diskReadDriver;

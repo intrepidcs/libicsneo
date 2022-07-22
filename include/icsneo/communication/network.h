@@ -8,7 +8,7 @@ typedef uint8_t neonettype_t;
 #ifdef __cplusplus
 
 #include <ostream>
-#include "icsneo/platform/optional.h"
+#include <optional>
 
 namespace icsneo {
 
@@ -546,7 +546,7 @@ public:
 		}
 		return "Invalid Network";
 	}
-	static optional<CoreMini> GetCoreMiniNetworkFromNetID(NetID netid) {
+	static std::optional<CoreMini> GetCoreMiniNetworkFromNetID(NetID netid) {
 		switch(netid) {
 			case NetID::HSCAN:
 				return CoreMini::HSCAN;
@@ -665,7 +665,7 @@ public:
 			case NetID::Ethernet2:
 				return CoreMini::Ethernet2;
 			default:
-				return nullopt;
+				return std::nullopt;
 		}
 	}
 	static NetID GetNetIDFromCoreMiniNetwork(CoreMini cm) {
@@ -796,7 +796,7 @@ public:
 	Network(CoreMini cm) { setValue(GetNetIDFromCoreMiniNetwork(cm)); }
 	NetID getNetID() const { return value; }
 	Type getType() const { return type; }
-	optional<CoreMini> getCoreMini() const { return GetCoreMiniNetworkFromNetID(getNetID()); }
+	std::optional<CoreMini> getCoreMini() const { return GetCoreMiniNetworkFromNetID(getNetID()); }
 	friend std::ostream& operator<<(std::ostream& os, const Network& network) {
 		os << GetNetIDString(network.getNetID());
 		return os;

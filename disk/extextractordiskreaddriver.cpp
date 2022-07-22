@@ -12,19 +12,19 @@
 using namespace icsneo;
 using namespace icsneo::Disk;
 
-optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+std::optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
 
 	if(amount > getBlockSizeBounds().second)
-		return nullopt;
+		return std::nullopt;
 
 	if(amount % getBlockSizeBounds().first != 0)
-		return nullopt;
+		return std::nullopt;
 
 	if(pos % getBlockSizeBounds().first != 0)
-		return nullopt;
+		return std::nullopt;
 
-	optional<uint64_t> ret;
+	std::optional<uint64_t> ret;
 	unsigned int attempts = 4;
 	while (attempts-- > 0)
 	{
@@ -35,7 +35,7 @@ optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Communicat
 	return ret;
 }
 
-optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+std::optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
 	static std::shared_ptr<MessageFilter> NeoMemorySDRead = std::make_shared<MessageFilter>(Network::NetID::NeoMemorySDRead);
 
@@ -44,7 +44,7 @@ optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligned(Com
 	uint64_t largeSectorCount = amount / SectorSize;
 	uint32_t sectorCount = uint32_t(largeSectorCount);
 	if (largeSectorCount != uint64_t(sectorCount))
-		return nullopt;
+		return std::nullopt;
 
 	std::mutex m;
 	std::condition_variable cv;
@@ -181,7 +181,7 @@ optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligned(Com
 	Lifetime clearRedirect([&com, &lk] { lk.unlock(); com.clearRedirectRead(); });
 
 	if(error)
-		return nullopt;
+		return std::nullopt;
 
 	error = !com.sendCommand(ExtendedCommand::Extract, {
 		uint8_t(sector & 0xff),
@@ -198,11 +198,11 @@ optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligned(Com
 		uint8_t((sectorCount >> 24) & 0xff),
 	});
 	if(error)
-		return nullopt;
+		return std::nullopt;
 
 	bool hitTimeout = !cv.wait_for(lk, timeout, [&]() { return error || amount == received; });
 	if(hitTimeout || error)
-		return nullopt;
+		return std::nullopt;
 
 	return amount;
 }

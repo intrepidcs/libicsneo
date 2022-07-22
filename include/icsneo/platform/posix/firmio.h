@@ -7,7 +7,7 @@
 #include "icsneo/device/founddevice.h"
 #include "icsneo/communication/driver.h"
 #include "icsneo/api/eventmanager.h"
-#include "icsneo/platform/optional.h"
+#include <optional>
 #include <string>
 
 namespace icsneo {
@@ -127,11 +127,11 @@ private:
 	uint8_t* vbase = nullptr;
 	volatile ComHeader* header = nullptr;
 
-	optional<MsgQueue> in;
+	std::optional<MsgQueue> in;
 
 	std::mutex outMutex;
-	optional<MsgQueue> out;
-	optional<Mempool> outMemory;
+	std::optional<MsgQueue> out;
+	std::optional<Mempool> outMemory;
 };
 
 }

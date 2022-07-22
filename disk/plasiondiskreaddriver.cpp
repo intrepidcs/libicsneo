@@ -6,23 +6,23 @@
 using namespace icsneo;
 using namespace icsneo::Disk;
 
-optional<uint64_t> PlasionDiskReadDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+std::optional<uint64_t> PlasionDiskReadDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
 	static std::shared_ptr<MessageFilter> NeoMemorySDRead = std::make_shared<MessageFilter>(Network::NetID::NeoMemorySDRead);
 
 	if(amount > getBlockSizeBounds().second)
-		return nullopt;
+		return std::nullopt;
 
 	if(amount % getBlockSizeBounds().first != 0)
-		return nullopt;
+		return std::nullopt;
 
 	if(pos % getBlockSizeBounds().first != 0)
-		return nullopt;
+		return std::nullopt;
 
 	uint64_t largeSector = pos / SectorSize;
 	uint32_t sector = uint32_t(largeSector);
 	if (largeSector != uint64_t(sector))
-		return nullopt;
+		return std::nullopt;
 
 	std::mutex m;
 	std::condition_variable cv;
@@ -62,7 +62,7 @@ optional<uint64_t> PlasionDiskReadDriver::readLogicalDiskAligned(Communication& 
 	com.removeMessageCallback(cb);
 
 	if(hitTimeout)
-		return nullopt;
+		return std::nullopt;
 
 	return amount;
 }

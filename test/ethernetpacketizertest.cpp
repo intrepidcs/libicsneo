@@ -1,6 +1,6 @@
 #include "icsneo/communication/ethernetpacketizer.h"
-#include "icsneo/platform/optional.h"
 #include "gtest/gtest.h"
+#include <optional>
 
 using namespace icsneo;
 
@@ -27,7 +27,7 @@ protected:
 		packetizer.reset();
 	}
 
-	optional<EthernetPacketizer> packetizer;
+	std::optional<EthernetPacketizer> packetizer;
 	device_eventhandler_t onError;
 };
 

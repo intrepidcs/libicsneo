@@ -28,10 +28,10 @@ private:
 
 	Access getPossibleAccess() const override { return Access::EntireCard; }
 
-	optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+	std::optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) override;
 
-	optional<uint64_t> attemptReadLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+	std::optional<uint64_t> attemptReadLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout);
 };
 

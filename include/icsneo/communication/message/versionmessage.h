@@ -5,7 +5,7 @@
 
 #include "icsneo/communication/message/message.h"
 #include "icsneo/device/deviceversion.h"
-#include "icsneo/platform/optional.h"
+#include <optional>
 
 namespace icsneo {
 
@@ -19,7 +19,7 @@ public:
 	VersionMessage(Chip chip) : Message(Message::Type::DeviceVersion), ForChip(chip) {}
 
 	// nullopt here indicates invalid
-	std::vector< optional<DeviceAppVersion> > Versions;
+	std::vector< std::optional<DeviceAppVersion> > Versions;
 
 	// What chips the versions are for
 	const Chip ForChip;

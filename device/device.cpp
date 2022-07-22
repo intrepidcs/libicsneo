@@ -3,7 +3,6 @@
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/extensions/deviceextension.h"
-#include "icsneo/platform/optional.h"
 #include "icsneo/disk/fat.h"
 #include "icsneo/communication/packet/wivicommandpacket.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
@@ -477,15 +476,15 @@ Network Device::getNetworkByNumber(Network::Type type, size_t index) const {
 	return Network::NetID::Invalid;
 }
 
-optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
+std::optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
 	if(!into || timeout <= std::chrono::milliseconds(0)) {
 		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	std::lock_guard<std::mutex> lk(diskLock);
@@ -499,7 +498,7 @@ optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t
 			return ret;
 		});
 		if(!offset.has_value())
-			return nullopt;
+			return std::nullopt;
 		diskReadDriver->setVSAOffset(*offset);
 	}
 
@@ -509,25 +508,25 @@ optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t
 	return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout);
 }
 
-optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
+std::optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
 	if(!from || timeout <= std::chrono::milliseconds(0)) {
 		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	std::lock_guard<std::mutex> lk(diskLock);
 	return diskWriteDriver->writeLogicalDisk(*com, report, *diskReadDriver, pos, from, amount, timeout);
 }
 
-optional<bool> Device::isLogicalDiskConnected() {
+std::optional<bool> Device::isLogicalDiskConnected() {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	// This doesn't *really* make sense here but because the disk read redirects the parser until it is done, we'll lock this
@@ -536,16 +535,16 @@ optional<bool> Device::isLogicalDiskConnected() {
 	const auto info = com->getLogicalDiskInfoSync();
 	if (!info) {
 		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	return info->connected;
 }
 
-optional<uint64_t> Device::getLogicalDiskSize() {
+std::optional<uint64_t> Device::getLogicalDiskSize() {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	// This doesn't *really* make sense here but because the disk read redirects the parser until it is done, we'll lock this
@@ -554,16 +553,16 @@ optional<uint64_t> Device::getLogicalDiskSize() {
 	const auto info = com->getLogicalDiskInfoSync();
 	if (!info) {
 		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	return info->getReportedSize();
 }
 
-optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
+std::optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	std::lock_guard<std::mutex> lk(diskLock);
@@ -575,7 +574,7 @@ optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
 		return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount);
 	});
 	if(!offset.has_value())
-		return nullopt;
+		return std::nullopt;
 
 	if(diskReadDriver->getAccess() == Disk::Access::EntireCard && diskWriteDriver->getAccess() == Disk::Access::VSA) {
 		// We have mismatched drivers, we need to add an offset to the diskReadDriver
@@ -585,7 +584,7 @@ optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
 	return *offset;
 }
 
-optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
+std::optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
 	if(number == 0) { // Start counting from 1
 		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 		return false;
@@ -672,7 +671,7 @@ optional<bool> Device::getDigitalIO(IO type, size_t number /* = 1 */) {
 	};
 
 	report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
-	return nullopt;
+	return std::nullopt;
 }
 
 bool Device::setDigitalIO(IO type, size_t number, bool value) {
@@ -730,7 +729,7 @@ bool Device::setDigitalIO(IO type, size_t number, bool value) {
 	return false;
 }
 
-optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
+std::optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 	if(number == 0) { // Start counting from 1
 		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 		return false;
@@ -786,7 +785,7 @@ optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 	};
 
 	report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
-	return nullopt;
+	return std::nullopt;
 }
 
 void Device::wiviThreadBody() {
@@ -1001,15 +1000,15 @@ Lifetime Device::addSleepRequestedCallback(SleepRequestedCallback cb) {
 	});
 }
 
-optional<bool> Device::isSleepRequested() const {
+std::optional<bool> Device::isSleepRequested() const {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	if(!supportsWiVI()) {
 		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
@@ -1026,13 +1025,13 @@ optional<bool> Device::isSleepRequested() const {
 
 	if(!generic || generic->type != Message::Type::WiVICommandResponse) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	const auto resp = std::static_pointer_cast<WiVI::ResponseMessage>(generic);
 	if(!resp->success || !resp->value.has_value()) {
 		report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	return *resp->value;
@@ -1188,18 +1187,18 @@ void Device::updateLEDState() {
 	com->sendCommand(Command::UpdateLEDState, args);
 }
 
-optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout) {
+std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout) {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 	if(!getEthPhyRegControlSupported()) {
 		report(APIEvent::Type::EthPhyRegisterControlNotAvailable, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 	if(!isOnline()) {
 		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	std::vector<uint8_t> bytes;
@@ -1210,11 +1209,11 @@ optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message, std:
 
 	if(!response) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 	auto retMsg = std::static_pointer_cast<EthPhyMessage>(response);
 	if(!retMsg) {
-		return nullopt;
+		return std::nullopt;
 	}
-	return make_optional<EthPhyMessage>(*retMsg);
+	return std::make_optional<EthPhyMessage>(*retMsg);
 }

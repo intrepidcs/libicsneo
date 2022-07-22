@@ -1,10 +1,9 @@
 #include "icsneo/communication/packet/canpacket.h"
 #include "icsneo/communication/message/canerrorcountmessage.h"
-#include "icsneo/platform/optional.h"
 
 using namespace icsneo;
 
-static optional<uint8_t> CAN_DLCToLength(uint8_t length, bool fd) {
+static std::optional<uint8_t> CAN_DLCToLength(uint8_t length, bool fd) {
 	if (length <= 8)
 		return length;
 
@@ -27,10 +26,10 @@ static optional<uint8_t> CAN_DLCToLength(uint8_t length, bool fd) {
 		}
 	}
 
-	return nullopt;
+	return std::nullopt;
 }
 
-static optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd)
+static std::optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd)
 {
 	if (dataLength <= 8)
 		return uint8_t(dataLength);
@@ -52,7 +51,7 @@ static optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd)
 			return uint8_t(0xF);
 	}
 
-	return nullopt;
+	return std::nullopt;
 }
 
 std::shared_ptr<Message> HardwareCANPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
@@ -94,7 +93,7 @@ std::shared_ptr<Message> HardwareCANPacket::DecodeToMessage(const std::vector<ui
 			msg->isCANFD = true;
 			msg->baudrateSwitch = data->header.BRS; // CAN FD Baudrate Switch
 			msg->errorStateIndicator = data->header.ESI;
-			const optional<uint8_t> lenFromDLC = CAN_DLCToLength(length, true);
+			const std::optional<uint8_t> lenFromDLC = CAN_DLCToLength(length, true);
 			if (lenFromDLC)
 				length = *lenFromDLC;
 		} else if(length > 8) { // This is a standard CAN frame with a length of more than 8
@@ -133,7 +132,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 	}
 
 	const size_t dataSize = message.data.size();
-	optional<uint8_t> dlc = CAN_LengthToDLC(dataSize, message.isCANFD);
+	std::optional<uint8_t> dlc = CAN_LengthToDLC(dataSize, message.isCANFD);
 	if (!dlc.has_value()) {
 		report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
 		return false; // Too much data for the protocol

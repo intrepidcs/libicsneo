@@ -5,15 +5,15 @@
 using namespace icsneo;
 using namespace icsneo::Disk;
 
-optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
 	static std::shared_ptr<MessageFilter> NeoMemorySDRead = std::make_shared<MessageFilter>(Network::NetID::NeoMemorySDRead);
 
 	if(pos % SectorSize != 0)
-		return nullopt;
+		return std::nullopt;
 
 	if(amount != SectorSize)
-		return nullopt;
+		return std::nullopt;
 
 	const uint64_t currentSector = pos / SectorSize;
 	auto msg = com.waitForMessageSync([&currentSector, &com] {
@@ -36,23 +36,23 @@ optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communication& co
 	const auto sdmsg = std::dynamic_pointer_cast<NeoReadMemorySDMessage>(msg);
 	if(!sdmsg || sdmsg->data.size() != SectorSize) {
 		report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	memcpy(into, sdmsg->data.data(), SectorSize);
 	return SectorSize;
 }
 
-optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+std::optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, const uint8_t* atomicBuf, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
 
 	static std::shared_ptr<MessageFilter> NeoMemoryDone = std::make_shared<MessageFilter>(Network::NetID::NeoMemoryWriteDone);
 
 	if(pos % SectorSize != 0)
-		return nullopt;
+		return std::nullopt;
 
 	if(amount != SectorSize)
-		return nullopt;
+		return std::nullopt;
 
 	// Requesting an atomic operation, but neoMemory does not support it
 	// Continue on anyway but warn the caller
@@ -75,7 +75,7 @@ optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communication& c
 	}, NeoMemoryDone, timeout);
 
 	if(!msg)
-		return nullopt;
+		return std::nullopt;
 
 	return SectorSize;
 }

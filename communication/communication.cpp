@@ -150,22 +150,22 @@ std::shared_ptr<SerialNumberMessage> Communication::getSerialNumberSync(std::chr
 	return std::dynamic_pointer_cast<SerialNumberMessage>(m51);
 }
 
-optional< std::vector< optional<DeviceAppVersion> > > Communication::getVersionsSync(std::chrono::milliseconds timeout) {
+std::optional< std::vector< std::optional<DeviceAppVersion> > > Communication::getVersionsSync(std::chrono::milliseconds timeout) {
 	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::DeviceVersion);
-	std::vector< optional<DeviceAppVersion> > ret;
+	std::vector< std::optional<DeviceAppVersion> > ret;
 
 	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
 		return sendCommand(Command::GetMainVersion);
 	}, filter, timeout);
 	if(!msg) // Did not receive a message
-		return nullopt;
+		return std::nullopt;
 
 	auto ver = std::dynamic_pointer_cast<VersionMessage>(msg);
 	if(!ver) // Could not upcast for some reason
-		return nullopt;
+		return std::nullopt;
 
 	if(ver->ForChip != VersionMessage::MainChip || ver->Versions.size() != 1)
-		return nullopt;
+		return std::nullopt;
 
 	ret.push_back(ver->Versions.front());
 

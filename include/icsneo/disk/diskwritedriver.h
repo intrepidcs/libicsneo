@@ -3,12 +3,12 @@
 
 #ifdef __cplusplus
 
-#include "icsneo/platform/optional.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/disk/diskreaddriver.h"
 #include <cstdint>
 #include <chrono>
+#include <optional>
 
 namespace icsneo {
 
@@ -19,7 +19,7 @@ namespace Disk {
  */
 class WriteDriver : public virtual Driver {
 public:
-	virtual optional<uint64_t> writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
+	virtual std::optional<uint64_t> writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
 		uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout = DefaultTimeout);
 
 protected:
@@ -53,7 +53,7 @@ protected:
 	 * is non-null, an APIEvent::AtomicOperationCompletedNonatomically
 	 * should be reported with `NonatomicSeverity`.
 	 */
-	virtual optional<uint64_t> writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+	virtual std::optional<uint64_t> writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, const uint8_t* atomicBuf, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) = 0;
 };
 

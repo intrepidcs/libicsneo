@@ -5,8 +5,8 @@
 
 #include "icsneo/communication/message/message.h"
 #include "icsneo/communication/command.h"
-#include "icsneo/platform/optional.h"
 #include "icsneo/communication/packet/wivicommandpacket.h"
+#include <optional>
 #include <string>
 
 namespace icsneo {
@@ -24,9 +24,9 @@ class ResponseMessage : public Message {
 public:
 	ResponseMessage() : Message(Message::Type::WiVICommandResponse) {}
 	bool success = true;
-	optional<Command> responseTo;
-	optional<int32_t> value;
-	optional<Info> info;
+	std::optional<Command> responseTo;
+	std::optional<int32_t> value;
+	std::optional<Info> info;
 };
 
 } // namespace WiVI

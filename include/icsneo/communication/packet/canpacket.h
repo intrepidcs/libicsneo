@@ -7,6 +7,7 @@
 #include "icsneo/api/eventmanager.h"
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 namespace icsneo {
 

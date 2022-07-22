@@ -3,10 +3,10 @@
 
 #ifdef __cplusplus
 
-#include "icsneo/platform/optional.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/disk/diskdriver.h"
+#include <optional>
 #include <cstdint>
 #include <chrono>
 
@@ -19,7 +19,7 @@ namespace Disk {
  */
 class ReadDriver : public virtual Driver {
 public:
-	virtual optional<uint64_t> readLogicalDisk(Communication& com, device_eventhandler_t report,
+	virtual std::optional<uint64_t> readLogicalDisk(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout = DefaultTimeout);
 
 	void invalidateCache(uint64_t pos = 0,
@@ -32,7 +32,7 @@ protected:
 	 * The `pos` requested must be sector-aligned, and the `amount` must be
 	 * within the block size bounds provided by the driver.
 	 */
-	virtual optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+	virtual std::optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) = 0;
 
 private:
@@ -42,7 +42,7 @@ private:
 
 	static constexpr const std::chrono::milliseconds CacheTime = std::chrono::milliseconds(1000);
 
-	optional<uint64_t> readFromCache(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds staleAfter = CacheTime);
+	std::optional<uint64_t> readFromCache(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds staleAfter = CacheTime);
 };
 
 } // namespace Disk

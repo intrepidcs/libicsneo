@@ -4,11 +4,11 @@
 
 using namespace icsneo;
 
-optional<uint16_t> IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settings, optional<size_t> knownSize) {
+std::optional<uint16_t> IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settings, std::optional<size_t> knownSize) {
 	const uint16_t* p = reinterpret_cast<const uint16_t*>(settings.data());
 	size_t words = std::min(knownSize.value_or(0), settings.size());
 	if(words % 2 == 1)
-		return nullopt; // Somehow settings is not word aligned
+		return std::nullopt; // Somehow settings is not word aligned
 	words /= 2;
 
 	uint16_t gsCrc = 0;
@@ -215,7 +215,7 @@ bool IDeviceSettings::apply(bool temporary) {
 	bytestream[2] = GS_VERSION >> 8;
 	bytestream[3] = (uint8_t)settings.size();
 	bytestream[4] = (uint8_t)(settings.size() >> 8);
-	optional<uint16_t> gsChecksum = CalculateGSChecksum(settings);
+	std::optional<uint16_t> gsChecksum = CalculateGSChecksum(settings);
 	if(!gsChecksum) {
 		// Could not calculate the checksum for some reason
 		report(APIEvent::Type::SettingsChecksumError, APIEvent::Severity::Error);
@@ -321,7 +321,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	bytestream[2] = GS_VERSION >> 8;
 	bytestream[3] = (uint8_t)settings.size();
 	bytestream[4] = (uint8_t)(settings.size() >> 8);
-	const optional<uint16_t> gsChecksum = CalculateGSChecksum(settings);
+	const std::optional<uint16_t> gsChecksum = CalculateGSChecksum(settings);
 	if(!gsChecksum) {
 		// Could not calculate the checksum for some reason
 		report(APIEvent::Type::SettingsChecksumError, APIEvent::Severity::Error);
@@ -638,27 +638,27 @@ bool IDeviceSettings::canTerminationBeEnabledFor(Network net) const {
 	return false;
 }
 
-optional<bool> IDeviceSettings::isTerminationEnabledFor(Network net) const {
+std::optional<bool> IDeviceSettings::isTerminationEnabledFor(Network net) const {
 	if(!settingsLoaded) {
 		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	if(disabled) {
 		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	ICSNEO_UNALIGNED(const uint64_t*) terminationEnables = getTerminationEnables();
 	if(terminationEnables == nullptr) {
 		report(APIEvent::Type::TerminationNotSupportedDevice, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	const auto cmNet = net.getCoreMini();
 	if(!cmNet.has_value() || uint64_t(*cmNet) >= 64 || !isTerminationSupportedFor(net)) {
 		report(APIEvent::Type::TerminationNotSupportedNetwork, APIEvent::Severity::Error);
-		return nullopt;
+		return std::nullopt;
 	}
 
 	return (*terminationEnables >> uint64_t(*cmNet)) & 0x1;

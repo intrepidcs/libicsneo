@@ -56,7 +56,7 @@ public:
 	bool sendCommand(ExtendedCommand cmd, std::vector<uint8_t> arguments = {});
 	bool getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	std::shared_ptr<SerialNumberMessage> getSerialNumberSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
-	optional< std::vector< optional<DeviceAppVersion> > > getVersionsSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
+	std::optional< std::vector< std::optional<DeviceAppVersion> > > getVersionsSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	std::shared_ptr<LogicalDiskInfoMessage> getLogicalDiskInfoSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	int addMessageCallback(const MessageCallback& cb);

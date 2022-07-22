@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-#include "icsneo/platform/optional.h"
+#include <optional>
 #include <cstdint>
 #include <functional>
 
@@ -11,7 +11,7 @@ namespace icsneo {
 
 namespace Disk {
 
-optional<uint64_t> FindVSAInFAT(std::function< optional<uint64_t>(uint64_t pos, uint8_t* into, uint64_t amount) > diskRead);
+std::optional<uint64_t> FindVSAInFAT(std::function< std::optional<uint64_t>(uint64_t pos, uint8_t* into, uint64_t amount) > diskRead);
 
 } // namespace Disk
 

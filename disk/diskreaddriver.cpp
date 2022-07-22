@@ -4,7 +4,7 @@
 using namespace icsneo;
 using namespace icsneo::Disk;
 
-optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventhandler_t report,
+std::optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
 	if(amount == 0)
 		return 0;
@@ -12,7 +12,7 @@ optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventh
 	pos += vsaOffset;
 
 	// First read from the cache
-	optional<uint64_t> ret = readFromCache(pos, into, amount);
+	std::optional<uint64_t> ret = readFromCache(pos, into, amount);
 	if(ret == amount) // Full cache hit, we're done
 		return ret;
 
@@ -99,15 +99,15 @@ void ReadDriver::invalidateCache(uint64_t pos, uint64_t amount) {
 		cache.clear();
 }
 
-optional<uint64_t> ReadDriver::readFromCache(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds staleAfter) {
+std::optional<uint64_t> ReadDriver::readFromCache(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds staleAfter) {
 	if(cache.empty())
-		return nullopt; // Nothing in the cache
+		return std::nullopt; // Nothing in the cache
 
 	if(cachedAt + staleAfter < std::chrono::steady_clock::now())
-		return nullopt; // Cache is stale
+		return std::nullopt; // Cache is stale
 	
 	if(pos > cachePos + cache.size() || pos < cachePos)
-		return nullopt; // Cache miss
+		return std::nullopt; // Cache miss
 
 	const auto cacheOffset = pos - cachePos;
 	const auto copyAmount = std::min<uint64_t>(cache.size() - cacheOffset, amount);

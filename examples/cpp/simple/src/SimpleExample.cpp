@@ -289,7 +289,7 @@ int main() {
 		if(!emisc.empty()) {
 			std::cout << "\tReading EMisc values..." << std::endl;
 			for(const auto& io : emisc) {
-				icsneo::optional<double> val = device->getAnalogIO(icsneo::IO::EMisc, io.number);
+				std::optional<double> val = device->getAnalogIO(icsneo::IO::EMisc, io.number);
 				std::cout << "\t\tEMISC" << io.number;
 				if(val.has_value())
 					std::cout << " - OK (" << val.value() << "V)" << std::endl;
