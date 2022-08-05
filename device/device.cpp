@@ -6,6 +6,7 @@
 #include "icsneo/disk/fat.h"
 #include "icsneo/communication/packet/wivicommandpacket.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
+#include "icsneo/communication/message/scriptstatusmessage.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -408,6 +409,104 @@ bool Device::goOffline() {
 	online = false;
 
 	return true;
+}
+
+int8_t Device::prepareScriptLoad() {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return false;
+	}
+
+	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::CoreMiniPreLoad);
+
+	if(!com->sendCommand(Command::CoreMiniPreload))
+		return false;
+
+	int8_t retVal = 0;
+	while(retVal == 0)
+	{
+		auto generic = com->waitForMessageSync(filter, std::chrono::milliseconds(1000));
+
+		if(!generic) {
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+			return false;
+		}
+
+		const auto resp = std::static_pointer_cast<RawMessage>(generic);
+		retVal = (int8_t)resp->data[0];
+	}
+
+	return retVal;
+}
+
+bool Device::startScript()
+{
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return false;
+	}
+
+	uint8_t LocationSdCard = 1; //Only support starting a coremini in an SDCard
+	auto generic = com->sendCommand(Command::LoadCoreMini, LocationSdCard);
+
+	if(!generic)
+	{
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	return true;
+}
+
+bool Device::stopScript()
+{
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto generic = com->sendCommand(Command::ClearCoreMini);
+
+	if(!generic)
+	{
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	return true;
+}
+
+bool Device::clearScript()
+{
+	if(!stopScript())
+		return false;
+
+	std::vector<uint8_t> clearData(512, 0xCD);
+	uint64_t ScriptLocation = 0; //We only support a coremini in an SDCard, which is at the very beginning of the card
+	auto written = writeLogicalDisk(ScriptLocation, clearData.data(), clearData.size());
+
+	return written > 0;
+}
+
+std::optional<uint16_t> Device::getCoreMiniVersion()
+{
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::ScriptStatus);
+	const auto generic = com->waitForMessageSync([this]() {
+		return com->sendCommand(Command::ScriptStatus);
+	}, filter);
+
+	if (!generic || generic->type != Message::Type::ScriptStatus) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	const auto resp = std::static_pointer_cast<ScriptStatusMessage>(generic);
+	return resp->coreminiVersion;
 }
 
 bool Device::transmit(std::shared_ptr<Frame> frame) {

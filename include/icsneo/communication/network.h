@@ -119,9 +119,11 @@ public:
 		LSFTCAN2 = 99,
 		LogicalDiskInfo = 187,
 		WiVICommand = 221,
+		ScriptStatus = 224,
 		EthPHYControl = 239,
 		ExtendedCommand = 240,
 		FlexRayControl = 243,
+		CoreMiniPreLoad = 244,
 		HW_COM_Latency_Test = 512,
 		DeviceStatus = 513,
 		UDP = 514,
@@ -281,7 +283,9 @@ public:
 			case NetID::ReadSettings:
 			case NetID::LogicalDiskInfo:
 			case NetID::WiVICommand:
+			case NetID::ScriptStatus:
 			case NetID::EthPHYControl:
+			case NetID::CoreMiniPreLoad:
 			case NetID::ExtendedCommand:
 			case NetID::NeoMemorySDRead:
 			case NetID::NeoMemoryWriteDone:
@@ -526,6 +530,10 @@ public:
 				return "Logical Disk Information";
 			case NetID::WiVICommand:
 				return "WiVI Command";
+			case NetID::ScriptStatus:
+				return "Script Status";
+			case NetID::CoreMiniPreLoad:
+				return "CoreMini PreLoad";
 			case NetID::EthPHYControl:
 				return "Ethernet PHY Register Control";
 			case NetID::ExtendedCommand:
@@ -934,9 +942,11 @@ private:
 #define ICSNEO_NETID_LSFTCAN2 99
 #define ICSNEO_NETID_LOGICAL_DISK_INFO 187
 #define ICSNEO_NETID_WIVI_COMMAND 221
+#define ICSNEO_NETID_SCRIPT_STATUS 224
 #define ICSNEO_NETID_ETH_PHY_CONTROL 239
 #define ICSNEO_NETID_EXTENDED_COMMAND 240
 #define ICSNEO_NETID_FLEXRAY_CONTROL 243
+#define ICSNEO_NETID_COREMINI_PRELOAD 244
 #define ICSNEO_NETID_HW_COM_LATENCY_TEST 512
 #define ICSNEO_NETID_DEVICE_STATUS 513
 #define ICSNEO_NETID_UDP 514

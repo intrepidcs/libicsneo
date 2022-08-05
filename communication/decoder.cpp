@@ -7,6 +7,7 @@
 #include "icsneo/communication/message/neoreadmemorysdmessage.h"
 #include "icsneo/communication/message/extendedresponsemessage.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
+#include "icsneo/communication/message/scriptstatusmessage.h"
 #include "icsneo/communication/message/a2bmessage.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/command.h"
@@ -20,6 +21,7 @@
 #include "icsneo/communication/packet/ethphyregpacket.h"
 #include "icsneo/communication/packet/logicaldiskinfopacket.h"
 #include "icsneo/communication/packet/wivicommandpacket.h"
+#include "icsneo/communication/packet/scriptstatuspacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -313,6 +315,14 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				}
 				case Network::NetID::EthPHYControl: {
 					result = HardwareEthernetPhyRegisterPacket::DecodeToMessage(packet->data, report);
+					if(!result) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
+						return false;
+					}
+					return true;
+				}
+				case Network::NetID::ScriptStatus: {
+					result = ScriptStatus::DecodeToMessage(packet->data);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
 						return false;

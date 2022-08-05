@@ -125,6 +125,21 @@ public:
 	virtual bool goOnline();
 	virtual bool goOffline();
 
+	enum class PreloadReturn : uint8_t
+	{
+		Pending,
+		Ok,
+		OKEncrypted,
+		NoScript,
+	};
+
+	int8_t prepareScriptLoad();
+	bool startScript();
+	bool stopScript();
+	bool clearScript();
+
+	std::optional<uint16_t> getCoreMiniVersion();
+
 	// Message polling related functions
 	bool enableMessagePolling();
 	bool disableMessagePolling();

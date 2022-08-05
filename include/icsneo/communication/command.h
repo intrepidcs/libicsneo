@@ -10,6 +10,8 @@ enum class Command : uint8_t {
 	EnableNetworkCommunicationEx = 0x08,
 	NeoReadMemory = 0x40,
 	NeoWriteMemory = 0x41,
+	ClearCoreMini = 0x42,
+	LoadCoreMini = 0x43,
 	RequestSerialNumber = 0xA1,
 	GetMainVersion = 0xA3, // Previously known as RED_CMD_APP_VERSION_REQ
 	SetSettings = 0xA4, // Previously known as RED_CMD_SET_BAUD_REQ, follow up with SaveSettings to write to EEPROM
@@ -25,9 +27,11 @@ enum class Command : uint8_t {
 	RequestBitSmash = 0xDC, // Previously known as RED_CMD_CM_BITSMASH
 	WiVICommand = 0xDD, // Previously known as RED_CMD_WIVI_COMM
 	GetVBattReq = 0xDF, // Previously known as RED_CMD_VBATT_REQUEST
+	ScriptStatus = 0xE0, // Previously known as RED_CMD_SCRIPT_STATUS
 	MiscControl = 0xE7,
 	Extended = 0xF0,
 	FlexRayControl = 0xF3,
+	CoreMiniPreload = 0xF4, // Previously known as RED_CMD_COREMINI_PRELOAD
 	PHYControlRegisters = 0xEF
 };
 

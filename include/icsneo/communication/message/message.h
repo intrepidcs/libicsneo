@@ -30,6 +30,7 @@ public:
 		LogicalDiskInfo = 0x8008,
 		ExtendedResponse = 0x8009,
 		WiVICommandResponse = 0x800a,
+		ScriptStatus = 0x800b,
 	};
 
 	Message(Type t) : type(t) {}

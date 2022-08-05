@@ -182,6 +182,7 @@ set(SRC_FILES
 	communication/packet/ethphyregpacket.cpp
 	communication/packet/logicaldiskinfopacket.cpp
 	communication/packet/wivicommandpacket.cpp
+	communication/packet/scriptstatuspacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
 	communication/ethernetpacketizer.cpp
