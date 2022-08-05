@@ -117,6 +117,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<NeoVIFIRE2>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __NEOVIFIRE3_H_
+		makeIfSerialMatches<NeoVIFIRE3>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __NEOVIRED2_H_
 		makeIfSerialMatches<NeoVIRED2>(dev, newFoundDevices);
 		#endif
