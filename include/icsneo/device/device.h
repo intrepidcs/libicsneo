@@ -11,6 +11,7 @@
 #include <atomic>
 #include <type_traits>
 #include <optional>
+#include <unordered_map>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/api/lifetime.h"
 #include "icsneo/device/neodevice.h"
@@ -29,6 +30,7 @@
 #include "icsneo/communication/io.h"
 #include "icsneo/communication/message/resetstatusmessage.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
+#include "icsneo/communication/message/scriptstatusmessage.h"
 #include "icsneo/device/extensions/flexray/controller.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/message/ethphymessage.h"
@@ -137,8 +139,6 @@ public:
 	bool startScript();
 	bool stopScript();
 	bool clearScript();
-
-	std::optional<uint16_t> getCoreMiniVersion();
 
 	// Message polling related functions
 	bool enableMessagePolling();
@@ -347,6 +347,129 @@ public:
 	 */
 	bool allowSleep(bool remoteWakeup = false);
 
+	enum class ScriptStatus {
+		CoreMiniRunning = 0,
+		SectorOverflow = 1,
+		RemainingSectors = 2,
+		LastSector = 3,
+		ReadBinSize = 4,
+		MinSector = 5,
+		MaxSector = 6,
+		CurrentSector = 7,
+		CoreMiniCreateTime = 8,
+		FileChecksum = 9,
+		CoreMiniVersion = 10,
+		CoreMiniHeaderSize = 11,
+		DiagnosticErrorCode = 12,
+		DiagnosticErrorCodeCount = 13,
+		MaxCoreMiniSize = 14,
+		Logging = 16,
+	};
+
+	typedef std::function< void(uint64_t value) > ScriptStatusCallback;
+
+	/**
+	 * Get all current script status values
+	 */
+	std::shared_ptr<ScriptStatusMessage> getScriptStatus() const;
+
+	/**
+	 * Add a callback to be called when VSSAL script running state changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addCoreMiniRunningCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::CoreMiniRunning, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the number of times a sector was dropped due to lack of space
+	 * in firmware's filesystem buffer changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addSectorOverflowsCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::SectorOverflow, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when number of sectors of space left in firmware's local file system buffer changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addNumberRemainingSectorsCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::RemainingSectors, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when last sector that was written to changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addLastSectorCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::LastSector, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the size of the ReadBin changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addReadBinSizeCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::ReadBinSize, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the first sector address of logged data changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addMinSectorCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::MinSector, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the last sector address of logged data changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addMaxSectorCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::MaxSector, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the sector that is about to be written changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addCurrentSectorCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::CurrentSector, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the VSSAL script create time changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addCoreMiniCreateTimeCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::CoreMiniCreateTime, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the VSSAL script checksum changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addFileChecksumCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::FileChecksum, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the VSSAL script version changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addCoreMiniVersionCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::CoreMiniVersion, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the VSSAL script header size changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addCoreMiniHeaderSizeCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::CoreMiniHeaderSize, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the firmware diagnostic error code changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addDiagnosticErrorCodeCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::DiagnosticErrorCode, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the firmware diagnostic error code count changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addDiagnosticErrorCodeCountCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::DiagnosticErrorCodeCount, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the maximum size a VSSAL script can be changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addMaxCoreMiniSizeCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::MaxCoreMiniSize, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the device logging state changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addLoggingCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::Logging, std::move(cb)); }
+
 	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const { return {}; }
 
 	void addExtension(std::shared_ptr<DeviceExtension>&& extension);
@@ -456,8 +579,8 @@ protected:
 	}
 
 	template<typename Settings>
-	std::unique_ptr<IDeviceSettings> makeSettings(std::shared_ptr<Communication> com) {
-		return std::unique_ptr<IDeviceSettings>(new Settings(com));
+	std::unique_ptr<IDeviceSettings> makeSettings(std::shared_ptr<Communication> comm) {
+		return std::unique_ptr<IDeviceSettings>(new Settings(comm));
 	}
 	virtual void setupSettings(IDeviceSettings&) {}
 
@@ -544,6 +667,20 @@ private:
 	std::vector< std::pair<SleepRequestedCallback, bool /* notified */> > sleepRequestedCallbacks;
 	void wiviThreadBody();
 	void stopWiVIThreadIfNecessary(std::unique_lock<std::mutex> lk);
+
+	//Script status
+	std::atomic<bool> stopScriptStatusThread{false};
+	std::condition_variable stopScriptStatusCv;
+	mutable std::mutex scriptStatusMutex;
+	std::thread scriptStatusThread;
+	std::unordered_map<ScriptStatus, std::vector<ScriptStatusCallback>> scriptStatusCallbacks;
+	std::unordered_map<ScriptStatus, uint64_t> scriptStatusValues;
+	Lifetime addScriptStatusCallback(ScriptStatus, ScriptStatusCallback);
+	bool updateScriptStatusValue(ScriptStatus, uint64_t newValue);
+	void notifyScriptStatusCallback(ScriptStatus, uint64_t);
+	void scriptStatusThreadBody();
+	void stopScriptStatusThreadIfNecessary(std::unique_lock<std::mutex> lk);
+
 };
 
 }

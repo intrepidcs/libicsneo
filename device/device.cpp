@@ -488,27 +488,6 @@ bool Device::clearScript()
 	return written > 0;
 }
 
-std::optional<uint16_t> Device::getCoreMiniVersion()
-{
-	if(!isOpen()) {
-		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return std::nullopt;
-	}
-
-	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::ScriptStatus);
-	const auto generic = com->waitForMessageSync([this]() {
-		return com->sendCommand(Command::ScriptStatus);
-	}, filter);
-
-	if (!generic || generic->type != Message::Type::ScriptStatus) {
-		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
-		return std::nullopt;
-	}
-
-	const auto resp = std::static_pointer_cast<ScriptStatusMessage>(generic);
-	return resp->coreminiVersion;
-}
-
 bool Device::transmit(std::shared_ptr<Frame> frame) {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
@@ -1173,6 +1152,246 @@ bool Device::allowSleep(bool remoteWakeup) {
 	}
 
 	return true;
+}
+
+void Device::scriptStatusThreadBody()
+{
+	std::unique_lock<std::mutex> lk(scriptStatusMutex);
+
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+
+	bool first = true;
+	while(!stopScriptStatusThread)
+	{
+		if(first) // Skip the first wait
+			first = false;
+		else
+			stopScriptStatusCv.wait_for(lk, std::chrono::seconds(10));
+
+		const auto resp = getScriptStatus();
+
+		//If value changed/was inserted, notify callback
+		if(updateScriptStatusValue(ScriptStatus::CoreMiniRunning, resp->isCoreminiRunning))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::CoreMiniRunning, resp->isCoreminiRunning);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::SectorOverflow, resp->sectorOverflows))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::SectorOverflow, resp->sectorOverflows);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::RemainingSectors, resp->numRemainingSectorBuffers))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::RemainingSectors, resp->numRemainingSectorBuffers);
+			lk.lock();
+		}
+
+		bool logging = false;
+		if(updateScriptStatusValue(ScriptStatus::LastSector, resp->lastSector))
+		{
+			logging = true;
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::LastSector, resp->lastSector);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::Logging, logging))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::Logging, logging);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::ReadBinSize, resp->readBinSize))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::ReadBinSize, resp->readBinSize);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::MinSector, resp->minSector))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::MinSector, resp->minSector);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::MaxSector, resp->maxSector))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::MaxSector, resp->maxSector);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::CurrentSector, resp->currentSector))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::CurrentSector, resp->currentSector);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::CoreMiniCreateTime, resp->coreminiCreateTime))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::CoreMiniCreateTime, resp->coreminiCreateTime);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::FileChecksum, resp->fileChecksum))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::FileChecksum, resp->fileChecksum);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::CoreMiniVersion, resp->coreminiVersion))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::CoreMiniVersion, resp->coreminiVersion);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::CoreMiniHeaderSize, resp->coreminiHeaderSize))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::CoreMiniHeaderSize, resp->coreminiHeaderSize);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::DiagnosticErrorCode, resp->diagnosticErrorCode))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::DiagnosticErrorCode, resp->diagnosticErrorCode);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::DiagnosticErrorCodeCount, resp->diagnosticErrorCodeCount))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::DiagnosticErrorCodeCount, resp->diagnosticErrorCodeCount);
+			lk.lock();
+		}
+
+		if(updateScriptStatusValue(ScriptStatus::MaxCoreMiniSize, resp->maxCoreminiSizeKB))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::MaxCoreMiniSize, resp->maxCoreminiSizeKB);
+			lk.lock();
+		}
+	}
+}
+
+std::shared_ptr<ScriptStatusMessage> Device::getScriptStatus() const
+{
+	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::ScriptStatus);
+
+	const auto generic = com->waitForMessageSync([this]() {
+		return com->sendCommand(Command::ScriptStatus);
+	}, filter, std::chrono::milliseconds(3000));
+
+	if(!generic || generic->type != Message::Type::ScriptStatus) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	return std::static_pointer_cast<ScriptStatusMessage>(generic);
+}
+
+bool Device::updateScriptStatusValue(ScriptStatus key, uint64_t value)
+{
+	auto pair = scriptStatusValues.find(key);
+	if(pair != scriptStatusValues.end())
+	{
+		if(pair->second != value)
+		{
+			//Value changed
+			scriptStatusValues[key] = value;
+			return true;
+		}
+		//Value didn't change
+		return false;
+	}
+
+	//Value was inserted
+	scriptStatusValues.insert(std::make_pair(key, value));
+	return true;
+}
+
+void Device::notifyScriptStatusCallback(ScriptStatus key, uint64_t value)
+{
+	auto callbackList = scriptStatusCallbacks.find(key);
+	if(callbackList != scriptStatusCallbacks.end())
+	{
+		for(const auto& callback : callbackList->second)
+		{
+			if(callback) {
+				try {
+					callback(value);
+				} catch(...) {
+					report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
+				}
+			}
+		}
+	}
+}
+
+Lifetime Device::addScriptStatusCallback(ScriptStatus key, ScriptStatusCallback cb)
+{
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return {};
+	}
+
+	std::lock_guard<std::mutex> lk(scriptStatusMutex);
+	if(!scriptStatusThread.joinable()) {
+		// Start the thread
+		stopScriptStatusThread = false;
+		scriptStatusThread = std::thread([this]() { scriptStatusThreadBody(); });
+	}
+
+	size_t idx = 0;
+	std::vector<ScriptStatusCallback> callbackList;
+	auto callbackPair = scriptStatusCallbacks.find(key);
+	if(callbackPair != scriptStatusCallbacks.end())
+		callbackList = callbackPair->second;
+
+	if(idx == callbackList.size())
+		callbackList.push_back(std::move(cb));
+	else callbackList[idx] = std::move(cb);
+
+	scriptStatusCallbacks.insert_or_assign(key, callbackList);
+
+	return Lifetime([this, key, idx](){
+		std::unique_lock<std::mutex> lk2(scriptStatusMutex);
+		auto callbackList = scriptStatusCallbacks.find(key);
+		if(callbackList != scriptStatusCallbacks.end())
+			callbackList->second[idx] = ScriptStatusCallback();
+		stopScriptStatusThreadIfNecessary(std::move(lk2));
+	});
+}
+
+void Device::stopScriptStatusThreadIfNecessary(std::unique_lock<std::mutex> lk)
+{
+	for(const auto& callbackList : scriptStatusCallbacks)
+	{
+		for(const auto& callback : callbackList.second)
+		{
+			if(callback)
+				return;
+		}
+	}
+
+	stopScriptStatusThread = true;
+	lk.unlock();
+	stopScriptStatusCv.notify_all();
+	scriptStatusThread.join();
+	scriptStatusThread = std::thread();
 }
 
 Lifetime Device::suppressDisconnects() {
