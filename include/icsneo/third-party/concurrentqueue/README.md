@@ -91,7 +91,7 @@ The entire queue's implementation is contained in **one header**, [`concurrentqu
 Simply download and include that to use the queue. The blocking version is in a separate header,
 [`blockingconcurrentqueue.h`][blockingconcurrentqueue.h], that depends on [`concurrentqueue.h`][concurrentqueue.h] and
 [`lightweightsemaphore.h`][lightweightsemaphore.h]. The implementation makes use of certain key C++11 features,
-so it requires a fairly recent compiler (e.g. VS2012+ or g++ 4.8; note that g++ 4.6 has a known bug with `std::atomic`
+so it requires a relatively recent compiler (e.g. VS2012+ or g++ 4.8; note that g++ 4.6 has a known bug with `std::atomic`
 and is thus not supported). The algorithm implementations themselves are platform independent.
 
 Use it like you would any other templated queue, with the exception that you can use
@@ -128,8 +128,12 @@ There's usually two versions of each method, one "explicit" version that takes a
 per-consumer token, and one "implicit" version that works without tokens. Using the explicit methods is almost
 always faster (though not necessarily by a huge factor). Apart from performance, the primary distinction between them
 is their sub-queue allocation behaviour for enqueue operations: Using the implicit enqueue methods causes an
-automatically-allocated thread-local producer sub-queue to be allocated (it is marked for reuse once the thread exits).
-Explicit producers, on the other hand, are tied directly to their tokens' lifetimes (and are also recycled as needed).
+automatically-allocated thread-local producer sub-queue to be allocated.
+Explicit producers, on the other hand, are tied directly to their tokens' lifetimes (but are recycled internally).
+
+In order to avoid the number of sub-queues growing without bound, implicit producers are marked for reuse once
+their thread exits. However, this is not supported on all platforms. If using the queue from short-lived threads,
+it is recommended to use explicit producer tokens instead.
 
 Full API (pseudocode):
 
@@ -272,7 +276,7 @@ in order to obtain an effective number of pre-allocated element slots is non-obv
 
 First, be aware that the count passed is rounded up to the next multiple of the block size. Note that the
 default block size is 32 (this can be changed via the traits). Second, once a slot in a block has been
-enqueued to, that slot cannot be re-used until the rest of the block has completely been completely filled
+enqueued to, that slot cannot be re-used until the rest of the block has been completely filled
 up and then completely emptied. This affects the number of blocks you need in order to account for the
 overhead of partially-filled blocks. Third, each producer (whether implicit or explicit) claims and recycles
 blocks in a different manner, which again affects the number of blocks you need to account for a desired number of
@@ -320,7 +324,7 @@ so be sure to reserve enough capacity in the target container first if you do th
 The guarantees are presently as follows:
 - Enqueue operations are rolled back completely if an exception is thrown from an element's constructor.
   For bulk enqueue operations, this means that elements are copied instead of moved (in order to avoid
-  having only some of the objects be moved in the event of an exception). Non-bulk enqueues always use
+  having only some objects moved in the event of an exception). Non-bulk enqueues always use
   the move constructor if one is available.
 - If the assignment operator throws during a dequeue operation (both single and bulk), the element(s) are
   considered dequeued regardless. In such a case, the dequeued elements are all properly destructed before
@@ -426,6 +430,17 @@ written to be platform-independent, however, and should work across all processo
 Due to the complexity of the implementation and the difficult-to-test nature of lock-free code in general,
 there may still be bugs. If anyone is seeing buggy behaviour, I'd like to hear about it! (Especially if
 a unit test for it can be cooked up.) Just open an issue on GitHub.
+	
+## Using vcpkg
+You can download and install `moodycamel::ConcurrentQueue` using the [vcpkg](https://github.com/Microsoft/vcpkg) dependency manager:
+
+    git clone https://github.com/Microsoft/vcpkg.git
+    cd vcpkg
+    ./bootstrap-vcpkg.sh
+    ./vcpkg integrate install
+    vcpkg install concurrentqueue
+	
+The `moodycamel::ConcurrentQueue` port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
 
 ## License
 
@@ -474,6 +489,7 @@ of the queue itself, followed lastly by the free-standing swap functions.
 [source]: https://github.com/cameron314/concurrentqueue
 [concurrentqueue.h]: https://github.com/cameron314/concurrentqueue/blob/master/concurrentqueue.h
 [blockingconcurrentqueue.h]: https://github.com/cameron314/concurrentqueue/blob/master/blockingconcurrentqueue.h
+[lightweightsemaphore.h]: https://github.com/cameron314/concurrentqueue/blob/master/lightweightsemaphore.h
 [unittest-src]: https://github.com/cameron314/concurrentqueue/tree/master/tests/unittests
 [benchmarks]: http://moodycamel.com/blog/2014/a-fast-general-purpose-lock-free-queue-for-c++#benchmarks
 [benchmark-src]: https://github.com/cameron314/concurrentqueue/tree/master/benchmarks
