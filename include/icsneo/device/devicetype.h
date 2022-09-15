@@ -45,6 +45,7 @@ public:
 		RADGigastar = (0x00000013),
 		RED2 = (0x00000014),
 		EtherBADGE = (0x00000016),
+		RAD_A2B = (0x00000017),
 		RADEpsilon = (0x00000018),
 		RED = (0x00000040),
 		ECU = (0x00000080),
@@ -128,6 +129,8 @@ public:
 				return "neoVI RED 2";
 			case EtherBADGE:
 				return "EtherBADGE";
+			case RAD_A2B:
+				return "RAD-A2B";
 			case RADEpsilon:
 				return "RAD-Epsilon";
 			case RED:
@@ -222,6 +225,7 @@ private:
 #define ICSNEO_DEVICETYPE_RADGIGASTAR ((devicetype_t)0x00000013)
 #define ICSNEO_DEVICETYPE_RED2 ((devicetype_t)0x00000014)
 #define ICSNEO_DEVICETYPE_ETHERBADGE ((devicetype_t)0x00000016)
+#define ICSNEO_DEVICETYPE_RAD_A2B ((devicetype_t)0x00000017)
 #define ICSNEO_DEVICETYPE_RADEPSILON ((devicetype_t)0x00000018)
 #define ICSNEO_DEVICETYPE_RED ((devicetype_t)0x00000040)
 #define ICSNEO_DEVICETYPE_ECU ((devicetype_t)0x00000080)

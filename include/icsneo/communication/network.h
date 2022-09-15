@@ -130,6 +130,8 @@ public:
 		I2C3 = 518,
 		I2C4 = 519,
 		Ethernet2 = 520,
+		A2B1 = 522,
+		A2B2 = 523,
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};

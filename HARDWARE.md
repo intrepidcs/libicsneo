@@ -14,6 +14,9 @@
 	- RADStar 2
 		- CAN works
 		- Ethernet works
+	- RADA2B
+		- CAN works
+		- Ethernet works
 
 - Connecting over USB
 	- ValueCAN 4 series
@@ -37,3 +40,6 @@
 		- CAN works
 	- neoVI ION
 		- CAN works
+	- RADA2B
+		- CAN works
+		- Ethernet works

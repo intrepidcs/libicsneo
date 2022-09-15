@@ -129,6 +129,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfPIDMatches<NeoVIPLASMA>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __RADA2B_H_
+		makeIfSerialMatches<RADA2B>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __RADEPSILON_H_
 		makeIfSerialMatches<RADEpsilon>(dev, newFoundDevices);
 		#endif
@@ -242,6 +246,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 
 		#ifdef __NEOVIPLASMA_H_
 		NeoVIPLASMA::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADA2B_H_
+		RADA2B::DEVICE_TYPE,
 		#endif
 
 		#ifdef __RADEPSILON_H_
