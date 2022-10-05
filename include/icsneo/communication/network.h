@@ -542,6 +542,10 @@ public:
 				return "I2C 4";
 			case NetID::Ethernet2:
 				return "Ethernet 2";
+			case NetID::A2B1:
+				return "A2B 1";
+			case NetID::A2B2:
+				return "A2B 2";
 			case NetID::Any:
 			case NetID::Invalid:
 				break;
