@@ -147,6 +147,7 @@ public:
 		SWCAN = 8,
 		ISO9141 = 9,
 		I2C = 10,
+		A2B = 11,
 		Any = 0xFE, // Never actually set as type, but used as flag for filtering
 		Other = 0xFF
 	};
@@ -234,6 +235,8 @@ public:
 				return "Single Wire CAN";
 			case Type::I2C:
 				return "I²C";
+			case Type::A2B:
+				return "A2B";
 			case Type::Invalid:
 			default:
 				return "Invalid Type";
@@ -318,6 +321,9 @@ public:
 			case NetID::I2C3:
 			case NetID::I2C4:
 				return Type::I2C;
+			case NetID::A2B1:
+			case NetID::A2B2:
+				return Type::A2B;
 			default:
 				return Type::Other;
 		}

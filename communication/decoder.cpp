@@ -7,10 +7,12 @@
 #include "icsneo/communication/message/neoreadmemorysdmessage.h"
 #include "icsneo/communication/message/extendedresponsemessage.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
+#include "icsneo/communication/message/a2bmessage.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
+#include "icsneo/communication/packet/a2bpacket.h"
 #include "icsneo/communication/packet/ethernetpacket.h"
 #include "icsneo/communication/packet/flexraypacket.h"
 #include "icsneo/communication/packet/iso9141packet.h"
@@ -320,6 +322,18 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				default:
 					break;
 			}
+		}
+		case Network::Type::A2B: {
+			result = HardwareA2BPacket::DecodeToMessage(packet->data);
+
+			if(!result) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false; // A nullptr was returned, the packet was not long enough to decode
+			}
+
+			A2BMessage& msg = *static_cast<A2BMessage*>(result.get());
+			msg.network = packet->network;
+			return true;
 		}
 	}
 
