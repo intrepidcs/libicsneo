@@ -175,12 +175,14 @@ set(SRC_FILES
 	communication/message/ethphymessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
+	communication/packet/a2bpacket.cpp
 	communication/packet/ethernetpacket.cpp
 	communication/packet/versionpacket.cpp
 	communication/packet/iso9141packet.cpp
 	communication/packet/ethphyregpacket.cpp
 	communication/packet/logicaldiskinfopacket.cpp
 	communication/packet/wivicommandpacket.cpp
+	communication/packet/scriptstatuspacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
 	communication/ethernetpacketizer.cpp
