@@ -505,6 +505,8 @@ public:
 
 	std::optional<EthPhyMessage> sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
+	std::optional<bool> SetCollectionUploaded(uint32_t collectionEntryByteAddress);
+	
 	std::shared_ptr<Communication> com;
 	std::unique_ptr<IDeviceSettings> settings;
 

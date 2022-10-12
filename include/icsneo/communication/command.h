@@ -46,6 +46,7 @@ enum class ExtendedCommand : uint16_t {
 	StartDHCPServer = 0x0016,
 	StopDHCPServer = 0x0017,
 	Reboot = 0x001C,
+	SetUploadedFlag = 0x0027,
 };
 
 enum class ExtendedResponse : int32_t {

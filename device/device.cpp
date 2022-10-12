@@ -7,6 +7,7 @@
 #include "icsneo/communication/packet/wivicommandpacket.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
 #include "icsneo/communication/message/scriptstatusmessage.h"
+#include "icsneo/communication/message/extendedresponsemessage.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -1537,4 +1538,43 @@ std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message,
 		return std::nullopt;
 	}
 	return std::make_optional<EthPhyMessage>(*retMsg);
+}
+
+std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAddress)
+{
+	if (!supportsWiVI())
+	{
+		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	auto timeout = std::chrono::milliseconds(2500);
+	std::vector<uint8_t> args(
+		{(uint8_t)(collectionEntryByteAddress & 0xFF),
+		 (uint8_t)((collectionEntryByteAddress >> 8) & 0xFF),
+		 (uint8_t)((collectionEntryByteAddress >> 16) & 0xFF),
+		 (uint8_t)((collectionEntryByteAddress >> 24) & 0xFF)});
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, args](){ return com->sendCommand(ExtendedCommand::SetUploadedFlag, args); },
+		std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), timeout);
+	if (!response)
+	{
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	auto retMsg = std::static_pointer_cast<ExtendedResponseMessage>(response);
+	if (!retMsg)
+	{
+		// TODO fix this error
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::make_optional<bool>(false);
+	}
+	bool success = retMsg->response == ExtendedResponse::OK;
+	if (!success)
+	{
+		// TODO fix this error
+		report(APIEvent::Type::Unknown, APIEvent::Severity::EventWarning);
+	}
+	// Valid device with a properly formed respose, return success
+	return std::make_optional<bool>(success);
 }
