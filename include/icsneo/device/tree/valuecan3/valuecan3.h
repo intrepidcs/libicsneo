@@ -5,7 +5,6 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/platform/ftdi.h"
 #include "icsneo/device/tree/valuecan3/valuecan3settings.h"
 
 namespace icsneo {
