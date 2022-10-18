@@ -59,7 +59,12 @@ protected:
 
 			Network::NetID::LIN,
 
-			Network::NetID::FlexRay
+			Network::NetID::FlexRay,
+
+			Network::NetID::I2C,
+			Network::NetID::I2C2,
+			Network::NetID::I2C3,
+			Network::NetID::I2C4,
 		};
 		rxNetworks.insert(rxNetworks.end(), supportedRxNetworks.begin(), supportedRxNetworks.end());
 	}

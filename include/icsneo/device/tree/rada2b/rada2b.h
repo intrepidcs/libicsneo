@@ -28,7 +28,10 @@ public:
 			Network::NetID::LIN,
 
 			Network::NetID::A2B1,
-			Network::NetID::A2B2
+			Network::NetID::A2B2,
+
+			Network::NetID::I2C,
+			Network::NetID::I2C2
 		};
 		return supportedNetworks;
 	}

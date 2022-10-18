@@ -9,3 +9,4 @@ third-party/concurrentqueue/benchmarks
 third-party/concurrentqueue/tests
 *.bak
 .vs
+.cache

@@ -182,6 +182,7 @@ set(SRC_FILES
 	communication/packet/ethphyregpacket.cpp
 	communication/packet/logicaldiskinfopacket.cpp
 	communication/packet/wivicommandpacket.cpp
+	communication/packet/i2cpacket.cpp
 	communication/packet/scriptstatuspacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
@@ -389,6 +390,7 @@ if(LIBICSNEO_BUILD_TESTS)
 		test/diskdriverwritetest.cpp
 		test/eventmanagertest.cpp
 		test/ethernetpacketizertest.cpp
+		test/i2cencoderdecodertest.cpp
 	)
 
 	target_link_libraries(libicsneo-tests gtest gtest_main)

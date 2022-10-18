@@ -6,6 +6,8 @@
 #include "icsneo/communication/packet/canpacket.h"
 #include "icsneo/communication/packet/ethphyregpacket.h"
 #include "icsneo/communication/message/ethphymessage.h"
+#include "icsneo/communication/packet/i2cpacket.h"
+#include "icsneo/communication/message/i2cmessage.h"
 
 using namespace icsneo;
 
@@ -68,6 +70,18 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 					// packets to the device. This function just encodes them back to back into `result`
 					return HardwareISO9141Packet::EncodeFromMessage(*isomsg, result, report, packetizer);
 				} // End of Network::Type::ISO9141
+				case Network::Type::I2C: {
+					auto i2cmsg = std::dynamic_pointer_cast<I2CMessage>(message);
+					if(!i2cmsg) {
+						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+						return false;
+					}
+					buffer = &result;
+					if(!HardwareI2CPacket::EncodeFromMessage(*i2cmsg, result, report)) {
+						return false;
+					}
+					break;
+				}
 				default:
 					report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 					return false;

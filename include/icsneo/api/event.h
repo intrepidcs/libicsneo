@@ -89,6 +89,7 @@ public:
 		AtomicOperationCompletedNonatomically = 0x2035,
 		WiVIStackRefreshFailed = 0x2036,
 		WiVIUploadStackOverflow = 0x2037,
+		I2CMessageExceedsMaxLength = 0x2038,
 
 		// Transport Events
 		FailedToRead = 0x3000,

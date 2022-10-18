@@ -10,6 +10,7 @@
 #include "icsneo/communication/message/scriptstatusmessage.h"
 #include "icsneo/communication/message/a2bmessage.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
+#include "icsneo/communication/message/i2cmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -21,6 +22,7 @@
 #include "icsneo/communication/packet/ethphyregpacket.h"
 #include "icsneo/communication/packet/logicaldiskinfopacket.h"
 #include "icsneo/communication/packet/wivicommandpacket.h"
+#include "icsneo/communication/packet/i2cpacket.h"
 #include "icsneo/communication/packet/scriptstatuspacket.h"
 #include <iostream>
 
@@ -120,6 +122,20 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			ISO9141Message& iso = *static_cast<ISO9141Message*>(result.get());
 			iso.timestamp *= timestampResolution;
 			iso.network = packet->network;
+			return true;
+		}
+		case Network::Type::I2C: {
+			if(packet->data.size() < sizeof(HardwareI2CPacket)) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false;
+			}
+
+			result = HardwareI2CPacket::DecodeToMessage(packet->data);
+			if(!result) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false; //malformed packet indicated by a nullptr return
+			}
+
 			return true;
 		}
 		case Network::Type::Internal: {
