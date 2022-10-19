@@ -153,7 +153,7 @@ public:
 		enforcePollingMessageLimit();
 	}
 
-	int addMessageCallback(const MessageCallback& cb) { return com->addMessageCallback(cb); }
+	int addMessageCallback(const std::shared_ptr<MessageCallback>& cb) { return com->addMessageCallback(cb); }
 	bool removeMessageCallback(int id) { return com->removeMessageCallback(id); }
 
 	bool transmit(std::shared_ptr<Frame> frame);

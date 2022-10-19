@@ -100,3 +100,19 @@ Write Blocking Status
 The write blocking status of the device determines the behavior of attempting to transmit to the device (likely via sending messages) with a large backlog of messages.
 If write blocking is enabled, then the transmitting thread will wait for the entire buffer to be transmitted.
 If write blocking is disabled, then the attempt to transmit will simply fail and an error will be logged on the calling thread.
+
+A2B Wave Output
+~~~~~~~~~~~~~~~~~~~~
+Users may add a ``icsneo::A2BWAVOutput`` message callback to their device in order to write A2B PCM data to a WAVE file. The message callback listens for ``icsneo::A2BMessage``
+messages and writes both downstream and upstream channels to a single wave file. If downstream and upstream each have ``32`` channels, the wave file will contain ``2*32 = 64``
+total channels. The first half of the channels, channels ``0-31`` in the outputted wave file, represent downstream channel ``0-31``. Likewise, the second half of the channels, 
+channels ``32-63`` in the outputted wave file, represent upstream channel ``0-31``. Let ``NUM_CHANNELS`` be the total number of channels in a single stream. If we introduce a
+variable ``IS_UPSTREAM`` which is ``0`` when downstream and ``1`` when upstream and desired a channel ``CHANNEL_NUM`` in either downstream or upstream the 
+channel ``IS_UPSTREAM * NUM_CHANNELS + CHANNEL_NUM`` would correspond to the channel in the outputted wave file.
+
+Wave files may be split by channel using programs such as ``FFmpeg``. Consider a file ``out.wav`` which was generated using a ``icsneo::A2BWAVOutput`` object
+and contains ``32`` channels per stream. The ``icsneo::A2BWavoutput`` object injested PCM data with a sample rate of ``44.1 kHz`` and bit depth of ``24``. The corresponding
+channel of upstream channel ``8`` in ``out.wav`` would be  ``1*32 + 8 = 40``. The following ``FFmpeg`` command may be ran in a linux environment to create a new wave 
+file ``out_upstream_ch8.wav`` which contains only PCM samples off of upstream channel ``8``.
+
+``ffmpeg -i out.wav -ar 44100 -acodec pcm_s24le -map_channel 0.0.40 out_upstream_ch8.wav``

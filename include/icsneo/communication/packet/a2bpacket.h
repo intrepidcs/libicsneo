@@ -19,8 +19,7 @@ struct HardwareA2BPacket {
 
 	static std::shared_ptr<Message> DecodeToMessage(const std::vector<uint8_t>& bytestream);
 
-	struct 
-	{
+	struct {
 		// CxA2B
 		icscm_bitfield channelNum : 8;
 		icscm_bitfield channelSize16 : 1;

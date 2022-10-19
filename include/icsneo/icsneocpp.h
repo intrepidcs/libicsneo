@@ -19,6 +19,8 @@
 #include "icsneo/communication/message/i2cmessage.h"
 #include "icsneo/communication/message/a2bmessage.h"
 
+#include "icsneo/communication/message/callback/streamoutput/a2bwavoutput.h"
+
 namespace icsneo {
 
 std::vector<std::shared_ptr<Device>> FindAllDevices();

@@ -141,7 +141,7 @@ int main() {
 		// We can also register a handler
 		std::cout << "\tStreaming messages in for 3 seconds... " << std::endl;
 		// MessageCallbacks are powerful, and can filter on things like ArbID for you. See the documentation
-		auto handler = device->addMessageCallback(icsneo::MessageCallback([](std::shared_ptr<icsneo::Message> message) {
+		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>([](std::shared_ptr<icsneo::Message> message) {
 			switch(message->type) {
 				case icsneo::Message::Type::Frame: {
 					// A message of type Frame is guaranteed to be a Frame, so we can static cast safely

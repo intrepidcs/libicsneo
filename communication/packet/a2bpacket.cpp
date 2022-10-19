@@ -4,8 +4,7 @@
 
 using namespace icsneo;
 
-std::shared_ptr<Message> HardwareA2BPacket::DecodeToMessage(const std::vector<uint8_t> &bytestream)
-{
+std::shared_ptr<Message> HardwareA2BPacket::DecodeToMessage(const std::vector<uint8_t> &bytestream) {
 	
 	constexpr uint8_t coreMiniMessageHeaderSize = 28;
 	
@@ -17,9 +16,8 @@ std::shared_ptr<Message> HardwareA2BPacket::DecodeToMessage(const std::vector<ui
 	auto getSampleFromBytes = [](uint8_t bytesPerSample, const uint8_t *bytes) {
 		A2BPCMSample result = 0;
 
-		for(auto i = 0; i < bytesPerSample; i++)
-		{
-			result |= bytes[i] << (i * 8);
+		for(auto i = 0; i < bytesPerSample; i++) {
+			result |= static_cast<uint32_t>(bytes[i]) << (i * 8);
 		}
 
 		return result;
@@ -42,8 +40,7 @@ std::shared_ptr<Message> HardwareA2BPacket::DecodeToMessage(const std::vector<ui
 
 	uint8_t channel = 0;
 
-	for(uint32_t i = 0; i < totalPackedLength; i += 2 * static_cast<uint32_t>(bytesPerChannel), bytes += 2 * bytesPerChannel, channel = (channel + 1) % numChannels)
-	{
+	for(uint32_t i = 0; i < totalPackedLength; i += 2 * static_cast<uint32_t>(bytesPerChannel), bytes += 2 * bytesPerChannel, channel = (channel + 1) % numChannels) {
 
 		msg->addSample(
 			getSampleFromBytes(bytesPerChannel, bytes),

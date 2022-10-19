@@ -614,7 +614,7 @@ int main() {
 			switch(selection) {
 			case '1':
 			{
-				int callbackID = selectedDevice->addMessageCallback(icsneo::MessageCallback([](std::shared_ptr<icsneo::Message> msg){
+				int callbackID = selectedDevice->addMessageCallback(std::make_shared<icsneo::MessageCallback>([](std::shared_ptr<icsneo::Message> msg){
 					printMessage(msg);
 				}));
 

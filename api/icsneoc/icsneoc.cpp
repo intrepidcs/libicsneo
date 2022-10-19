@@ -251,7 +251,7 @@ int icsneo_addMessageCallback(const neodevice_t* device, void (*callback)(neomes
 		return -1;
 
 	return device->device->addMessageCallback(
-		MessageCallback(
+		std::make_shared<MessageCallback>(
 			[=](std::shared_ptr<icsneo::Message> msg) {
 				return callback(CreateNeoMessage(msg));
 			}

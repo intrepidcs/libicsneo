@@ -59,7 +59,7 @@ public:
 	std::optional< std::vector< std::optional<DeviceAppVersion> > > getVersionsSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	std::shared_ptr<LogicalDiskInfoMessage> getLogicalDiskInfoSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
-	int addMessageCallback(const MessageCallback& cb);
+	int addMessageCallback(const std::shared_ptr<MessageCallback>& cb);
 	bool removeMessageCallback(int id);
 	std::shared_ptr<Message> waitForMessageSync(
 		const std::shared_ptr<MessageFilter>& f = {},
@@ -83,7 +83,7 @@ public:
 protected:
 	static int messageCallbackIDCounter;
 	std::mutex messageCallbacksLock;
-	std::map<int, MessageCallback> messageCallbacks;
+	std::map<int, std::shared_ptr<MessageCallback>> messageCallbacks;
 	std::atomic<bool> closing{false};
 	std::atomic<bool> redirectingRead{false};
 	std::function<void(std::vector<uint8_t>&&)> redirectionFn;

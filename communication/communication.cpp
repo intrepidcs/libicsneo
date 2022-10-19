@@ -193,7 +193,7 @@ std::shared_ptr<LogicalDiskInfoMessage> Communication::getLogicalDiskInfoSync(st
 	return std::dynamic_pointer_cast<LogicalDiskInfoMessage>(msg);
 }
 
-int Communication::addMessageCallback(const MessageCallback& cb) {
+int Communication::addMessageCallback(const std::shared_ptr<MessageCallback>& cb) {
 	std::lock_guard<std::mutex> lk(messageCallbacksLock);
 	messageCallbacks.insert(std::make_pair(messageCallbackIDCounter, cb));
 	return messageCallbackIDCounter++;
@@ -217,7 +217,7 @@ std::shared_ptr<Message> Communication::waitForMessageSync(std::function<bool(vo
 	std::shared_ptr<Message> returnedMessage;
 
 	std::unique_lock<std::mutex> lk(m); // Don't let the callback fire until we're waiting for it
-	int cb = addMessageCallback(MessageCallback([&m, &returnedMessage, &cv](std::shared_ptr<Message> message) {
+	int cb = addMessageCallback(std::make_shared<MessageCallback>([&m, &returnedMessage, &cv](std::shared_ptr<Message> message) {
 		{
 			std::lock_guard<std::mutex> lk(m);
 			returnedMessage = message;
@@ -251,7 +251,7 @@ void Communication::dispatchMessage(const std::shared_ptr<Message>& msg) {
 		EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 	for(auto& cb : messageCallbacks) {
 		if(!closing) { // We might have closed while reading or processing
-			cb.second.callIfMatch(msg);
+			cb.second->callIfMatch(msg);
 		}
 	}
 	if(downgrade)

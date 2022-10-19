@@ -29,7 +29,7 @@ std::optional<uint64_t> PlasionDiskReadDriver::readLogicalDiskAligned(Communicat
 	uint32_t copied = 0;
 	bool error = false;
 	std::unique_lock<std::mutex> lk(m);
-	auto cb = com.addMessageCallback(MessageCallback([&](std::shared_ptr<Message> msg) {
+	auto cb = com.addMessageCallback(std::make_shared<MessageCallback>([&](std::shared_ptr<Message> msg) {
 		std::unique_lock<std::mutex> lk(m);
 
 		const auto sdmsg = std::dynamic_pointer_cast<NeoReadMemorySDMessage>(msg);
@@ -45,6 +45,7 @@ std::optional<uint64_t> PlasionDiskReadDriver::readLogicalDiskAligned(Communicat
 		if(copied == amount) {
 			lk.unlock();
 			cv.notify_all();
+			
 		}
 	}, NeoMemorySDRead));
 

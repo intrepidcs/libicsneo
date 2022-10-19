@@ -95,7 +95,7 @@ bool Device::enableMessagePolling() {
 		report(APIEvent::Type::DeviceCurrentlyPolling, APIEvent::Severity::Error);
 		return false;
 	}
-	messagePollingCallbackID = com->addMessageCallback(MessageCallback([this](std::shared_ptr<Message> message) {
+	messagePollingCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>([this](std::shared_ptr<Message> message) {
 		pollingContainer.enqueue(message);
 		enforcePollingMessageLimit();
 	}));
@@ -222,7 +222,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 
 	MessageFilter filter;
 	filter.includeInternalInAny = true;
-	internalHandlerCallbackID = com->addMessageCallback(MessageCallback(filter, [this](std::shared_ptr<Message> message) {
+	internalHandlerCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [this](std::shared_ptr<Message> message) {
 		handleInternalMessage(message);
 	}));
 
@@ -232,7 +232,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		MessageFilter filter;
 		filter.includeInternalInAny = true;
 		std::atomic<bool> receivedMessage{false};
-		auto messageReceivedCallbackID = com->addMessageCallback(MessageCallback(filter, [&receivedMessage](std::shared_ptr<Message> message) {
+		auto messageReceivedCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&receivedMessage](std::shared_ptr<Message> message) {
 			receivedMessage = true;
 		}));
 
