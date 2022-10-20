@@ -1170,6 +1170,9 @@ void Device::scriptStatusThreadBody()
 
 		const auto resp = getScriptStatus();
 
+		if (!resp)
+			continue;
+
 		//If value changed/was inserted, notify callback
 		if(updateScriptStatusValue(ScriptStatus::CoreMiniRunning, resp->isCoreminiRunning))
 		{
