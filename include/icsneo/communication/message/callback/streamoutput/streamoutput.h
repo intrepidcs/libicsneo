@@ -82,7 +82,7 @@ struct WaveFileHeader {
 class StreamOutput : public MessageCallback {
 public:
 	StreamOutput(std::unique_ptr<std::ostream>&& os, fn_messageCallback cb, std::shared_ptr<MessageFilter> f)
-		: stream(std::move(os)), MessageCallback(cb, f) {}
+		: MessageCallback(cb, f), stream(std::move(os)) {}
 
 	StreamOutput(const char* filename, fn_messageCallback cb, std::shared_ptr<MessageFilter> f)
 		: MessageCallback(cb, f) {
@@ -93,9 +93,7 @@ public:
 		stream = std::make_unique<std::ofstream>(filename, std::ios::binary);
 	}
 
-	StreamOutput(std::unique_ptr<std::ostream>&& os) : stream(std::move(os)), MessageCallback([](std::shared_ptr<Message> msg) {}) {}
-
-	virtual ~StreamOutput() {}
+	StreamOutput(std::unique_ptr<std::ostream>&& os) : MessageCallback([](std::shared_ptr<Message> msg) {}), stream(std::move(os)) {}
 
 protected:
 	std::unique_ptr<std::ostream> stream;

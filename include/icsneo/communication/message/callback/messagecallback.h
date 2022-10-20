@@ -28,6 +28,8 @@ public:
 		: MessageCallback(cb, f) {}
 	MessageCallback(MessageFilter f, fn_messageCallback cb)
 		: MessageCallback(cb, std::make_shared<MessageFilter>(f)) {}
+
+	virtual ~MessageCallback() = default;
 	
 	virtual bool callIfMatch(const std::shared_ptr<Message>& message) const {
 		bool ret = filter->match(message);

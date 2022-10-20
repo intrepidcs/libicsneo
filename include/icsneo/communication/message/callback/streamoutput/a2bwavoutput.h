@@ -13,10 +13,10 @@ namespace icsneo {
 class A2BWAVOutput : public StreamOutput {
 public:
 	A2BWAVOutput(const char* filename, uint32_t sampleRate = A2BPCM_SAMPLERATE_44100) 
-		: wavSampleRate(sampleRate), StreamOutput(filename) {}
+		: StreamOutput(filename), wavSampleRate(sampleRate) {}
 
 	A2BWAVOutput(std::unique_ptr<std::ostream>&& os, uint32_t sampleRate = A2BPCM_SAMPLERATE_44100) 
-		: wavSampleRate(sampleRate), StreamOutput(std::move(os)) {}
+		: StreamOutput(std::move(os)), wavSampleRate(sampleRate) {}
 
 	void writeHeader(const std::shared_ptr<A2BMessage>& firstMsg) const;
 
@@ -24,7 +24,7 @@ public:
 
 	void close() const;
 
-	~A2BWAVOutput() {
+	~A2BWAVOutput() override {
 		if(!closed) {
 			close();
 		}
