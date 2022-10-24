@@ -870,7 +870,9 @@ std::optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 void Device::wiviThreadBody() {
 	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
 	std::unique_lock<std::mutex> lk(wiviMutex);
-
+	// Disk access commands can 
+	std::unique_lock<std::mutex> dl(diskLock);
+	dl.unlock();
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
 	bool first = true;
@@ -881,9 +883,11 @@ void Device::wiviThreadBody() {
 			stopWiVIcv.wait_for(lk, std::chrono::seconds(3));
 
 		// Use the command GetAll to get a WiVI::Info structure from the device
+		dl.lock();
 		const auto generic = com->waitForMessageSync([this]() {
 			return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetAll::Encode());
 		}, filter);
+		dl.unlock();
 
 		if(!generic || generic->type != Message::Type::WiVICommandResponse) {
 			report(APIEvent::Type::WiVIStackRefreshFailed, APIEvent::Severity::Error);
@@ -1295,6 +1299,7 @@ std::shared_ptr<ScriptStatusMessage> Device::getScriptStatus() const
 {
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::ScriptStatus);
 
+	std::lock_guard<std::mutex> lg(diskLock);
 	const auto generic = com->waitForMessageSync([this]() {
 		return com->sendCommand(Command::ScriptStatus);
 	}, filter, std::chrono::milliseconds(3000));
@@ -1554,6 +1559,8 @@ std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAd
 		 (uint8_t)((collectionEntryByteAddress >> 8) & 0xFF),
 		 (uint8_t)((collectionEntryByteAddress >> 16) & 0xFF),
 		 (uint8_t)((collectionEntryByteAddress >> 24) & 0xFF)});
+
+	std::lock_guard<std::mutex> lg(diskLock);
 	std::shared_ptr<Message> response = com->waitForMessageSync(
 		[this, args](){ return com->sendCommand(ExtendedCommand::SetUploadedFlag, args); },
 		std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), timeout);
