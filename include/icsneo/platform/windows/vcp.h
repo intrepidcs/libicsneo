@@ -22,7 +22,7 @@ public:
 	typedef void(*fn_boolCallback)(bool success);
 	
 	VCP(const device_eventhandler_t& err, neodevice_t& forDevice);
-	~VCP() { close(); }
+	virtual ~VCP();
 	bool open() { return open(false); }
 	void openAsync(fn_boolCallback callback);
 	bool close();

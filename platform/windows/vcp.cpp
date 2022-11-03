@@ -196,6 +196,11 @@ VCP::VCP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err)
 	detail = std::make_shared<Detail>();
 }
 
+VCP::~VCP() {
+	if(isOpen())
+		close();
+}
+
 bool VCP::IsHandleValid(neodevice_handle_t handle) {
 	if(handle < 1)
 		return false;

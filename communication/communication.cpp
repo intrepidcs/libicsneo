@@ -21,7 +21,8 @@ int Communication::messageCallbackIDCounter = 1;
 Communication::~Communication() {
 	if(redirectingRead)
 		clearRedirectRead();
-	close();
+	if(isOpen())
+		close();
 }
 
 bool Communication::open() {

@@ -78,7 +78,8 @@ bool Device::SerialStringIsNumeric(const std::string& serial) {
 Device::~Device() {
 	if(isMessagePollingEnabled())
 		disableMessagePolling();
-	close();
+	if(isOpen())
+		close();
 }
 
 uint16_t Device::getTimestampResolution() const {
