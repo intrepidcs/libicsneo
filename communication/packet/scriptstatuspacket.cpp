@@ -11,6 +11,7 @@ std::shared_ptr<ScriptStatusMessage> ScriptStatus::DecodeToMessage(const std::ve
 	auto msg = std::make_shared<ScriptStatusMessage>();
 	const auto& decoded = *reinterpret_cast<const ScriptStatus*>(bytestream.data());
 	msg->isCoreminiRunning = decoded.status.isRunning;
+	msg->isEncrypted = decoded.status.isEncrypted;
 	msg->sectorOverflows = decoded.sectorOverflows;
 	msg->numRemainingSectorBuffers = decoded.numRemainingSectorBuffers;
 	msg->lastSector = decoded.lastSector;

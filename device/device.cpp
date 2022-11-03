@@ -1187,6 +1187,13 @@ void Device::scriptStatusThreadBody()
 			lk.lock();
 		}
 
+		if(updateScriptStatusValue(ScriptStatus::IsEncrypted, resp->isEncrypted))
+		{
+			lk.unlock();
+			notifyScriptStatusCallback(ScriptStatus::IsEncrypted, resp->isEncrypted);
+			lk.lock();
+		}
+
 		if(updateScriptStatusValue(ScriptStatus::SectorOverflow, resp->sectorOverflows))
 		{
 			lk.unlock();

@@ -13,6 +13,7 @@ class ScriptStatusMessage : public Message {
 public:
 	ScriptStatusMessage() : Message( Message::Type::ScriptStatus ) {}
 
+	bool isEncrypted = false;
 	bool isCoreminiRunning = false;
 	uint32_t sectorOverflows = 0;
 	uint32_t numRemainingSectorBuffers = 0;

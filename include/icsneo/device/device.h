@@ -363,7 +363,8 @@ public:
 		DiagnosticErrorCode = 12,
 		DiagnosticErrorCodeCount = 13,
 		MaxCoreMiniSize = 14,
-		Logging = 16,
+		Logging = 15,
+		IsEncrypted = 16,
 	};
 
 	typedef std::function< void(uint64_t value) > ScriptStatusCallback;
@@ -378,6 +379,12 @@ public:
 	 */
 	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
 	Lifetime addCoreMiniRunningCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::CoreMiniRunning, std::move(cb)); }
+
+	/**
+	 * Add a callback to be called when the VSSAL script encryption mode changes
+	 */
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addEncryptedModeCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::IsEncrypted, std::move(cb)); }
 
 	/**
 	 * Add a callback to be called when the number of times a sector was dropped due to lack of space
