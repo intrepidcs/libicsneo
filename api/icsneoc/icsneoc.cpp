@@ -486,6 +486,11 @@ bool icsneo_describeDevice(const neodevice_t* device, char* str, size_t* maxLeng
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
+	if(!str) {
+		*maxLength = device->device->describe().length();
+		return false;
+	}
+
 	std::string output = device->device->describe();
 
 	*maxLength = output.copy(str, *maxLength);
