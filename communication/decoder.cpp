@@ -348,6 +348,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				default:
 					break;
 			}
+			break;
 		}
 		case Network::Type::A2B: {
 			result = HardwareA2BPacket::DecodeToMessage(packet->data);
