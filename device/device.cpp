@@ -421,6 +421,8 @@ int8_t Device::prepareScriptLoad() {
 
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::CoreMiniPreLoad);
 
+	std::lock_guard<std::mutex> lg(diskLock);
+
 	if(!com->sendCommand(Command::CoreMiniPreload))
 		return false;
 
@@ -448,6 +450,8 @@ bool Device::startScript()
 		return false;
 	}
 
+	std::lock_guard<std::mutex> lg(diskLock);
+
 	uint8_t LocationSdCard = 1; //Only support starting a coremini in an SDCard
 	auto generic = com->sendCommand(Command::LoadCoreMini, LocationSdCard);
 
@@ -466,6 +470,8 @@ bool Device::stopScript()
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
+
+	std::lock_guard<std::mutex> lg(diskLock);
 
 	auto generic = com->sendCommand(Command::ClearCoreMini);
 
@@ -955,9 +961,11 @@ void Device::wiviThreadBody() {
 			}
 
 			if(!clearMasks.empty()) {
+				dl.lock();
 				const auto clearMasksGenericResp = com->waitForMessageSync([this, &clearMasks]() {
 					return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::ClearUploads::Encode(clearMasks));
 				}, filter);
+				dl.unlock();
 
 				if(!clearMasksGenericResp
 					|| clearMasksGenericResp->type != Message::Type::WiVICommandResponse
@@ -1098,6 +1106,7 @@ std::optional<bool> Device::isSleepRequested() const {
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
 	// Hold this lock so the WiVI stack doesn't issue a WiVICommand at the same time as us
 	std::lock_guard<std::mutex> lk(wiviMutex);
+	std::lock_guard<std::mutex> lg(diskLock);
 	const auto generic = com->waitForMessageSync([this]() {
 		// VSSAL sets bit0 to indicate that it's waiting to sleep, then
 		// it waits for Wireless neoVI to acknowledge by clearing it.
@@ -1135,6 +1144,7 @@ bool Device::allowSleep(bool remoteWakeup) {
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
 	// Hold this lock so the WiVI stack doesn't issue a WiVICommand at the same time as us
 	std::lock_guard<std::mutex> lk(wiviMutex);
+	std::lock_guard<std::mutex> lg(diskLock);
 	const auto generic = com->waitForMessageSync([this, remoteWakeup]() {
 		// VSSAL sets bit0 to indicate that it's waiting to sleep, then
 		// it waits for Wireless neoVI to acknowledge by clearing it.
