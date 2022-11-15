@@ -27,6 +27,7 @@ public:
 			Network::NetID::HSCAN7,
 
 			Network::NetID::Ethernet,
+			Network::NetID::Ethernet2,
 
 			Network::NetID::LIN,
 			Network::NetID::LIN2
