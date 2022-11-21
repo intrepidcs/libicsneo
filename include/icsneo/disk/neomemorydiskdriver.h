@@ -34,7 +34,7 @@ private:
 		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) override;
 	
 	std::optional<uint64_t> writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
-		uint64_t pos, const uint8_t* atomicBuf, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) override;
+		uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) override;
 };
 
 } // namespace Disk

@@ -44,7 +44,7 @@ std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communicatio
 }
 
 std::optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
-	uint64_t pos, const uint8_t* atomicBuf, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
+	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
 
 	static std::shared_ptr<MessageFilter> NeoMemoryDone = std::make_shared<MessageFilter>(Network::NetID::NeoMemoryWriteDone);
 
@@ -53,11 +53,6 @@ std::optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communicati
 
 	if(amount != SectorSize)
 		return std::nullopt;
-
-	// Requesting an atomic operation, but neoMemory does not support it
-	// Continue on anyway but warn the caller
-	if(atomicBuf != nullptr)
-		report(APIEvent::Type::AtomicOperationCompletedNonatomically, NonatomicSeverity);
 
 	const uint64_t currentSector = pos / SectorSize;
 	auto msg = com.waitForMessageSync([&currentSector, &com, from, amount] {

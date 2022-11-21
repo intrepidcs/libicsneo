@@ -40,7 +40,7 @@ public:
 	}
 
 	std::optional<uint64_t> writeLogicalDiskAligned(Communication&, device_eventhandler_t report, uint64_t pos,
-		const uint8_t* atomicBuf, const uint8_t* from, uint64_t amount, std::chrono::milliseconds) override {
+		const uint8_t* from, uint64_t amount, std::chrono::milliseconds) override {
 		writeCalls++;
 
 		EXPECT_EQ(pos % getBlockSizeBounds().first, 0); // Ensure the alignment rules are respected
@@ -52,16 +52,6 @@ public:
 
 		std::optional<uint64_t> writeAmount = std::min(amount, mockDisk.size() - pos);
 		if(writeAmount > 0u) {
-			if(atomicBuf) {
-				if(supportsAtomic) {
-					atomicityChecks++;
-					if(memcmp(mockDisk.data() + pos, atomicBuf, static_cast<size_t>(*writeAmount)))
-						return RetryAtomic; // Atomic check failed
-				} else {
-					report(APIEvent::Type::AtomicOperationCompletedNonatomically, NonatomicSeverity);
-				}
-			}
-
 			memcpy(mockDisk.data() + pos, from, static_cast<size_t>(*writeAmount));
 		}
 		return writeAmount;
@@ -70,8 +60,6 @@ public:
 	std::array<uint8_t, 1024> mockDisk;
 	size_t readCalls = 0;
 	size_t writeCalls = 0;
-	size_t atomicityChecks = 0;
-	bool supportsAtomic = true; // Ability to simulate a driver that doesn't support atomic writes
 	std::function<void(void)> afterReadHook;
 
 private:

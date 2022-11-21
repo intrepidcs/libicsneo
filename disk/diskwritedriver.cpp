@@ -4,9 +4,6 @@
 using namespace icsneo;
 using namespace icsneo::Disk;
 
-const uint64_t WriteDriver::RetryAtomic = std::numeric_limits<uint64_t>::max();
-const APIEvent::Severity WriteDriver::NonatomicSeverity = APIEvent::Severity::EventInfo;
-
 std::optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
 	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
 	if(amount == 0)
@@ -19,11 +16,7 @@ std::optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device
 	// Write from here if we need to read-modify-write a block
 	// That would be the case either if we don't want some at the
 	// beginning or end of the block.
-	std::vector<uint8_t> alignedWriteBuffer;
-
-	// Read to here, ideally this can be sent back to the device to
-	// ensure an operation is atomic
-	std::vector<uint8_t> atomicBuffer(idealBlockSize);
+	std::vector<uint8_t> alignedWriteBuffer(idealBlockSize);
 
 	pos += vsaOffset;
 	const uint64_t startBlock = pos / idealBlockSize;
@@ -54,30 +47,23 @@ std::optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device
 				t = APIEvent::Type::EOFReached;
 			report(t, s);
 		};
-		auto bytesTransferred = readDriver.readLogicalDisk(com, reportFromRead, currentBlock * idealBlockSize,
-			atomicBuffer.data(), idealBlockSize, timeout);
-		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
-
-		if(bytesTransferred != idealBlockSize)
-			break; // readLogicalDisk reports its own errors
 
 		const bool useAlignedWriteBuffer = (posWithinCurrentBlock != 0 || curAmt != idealBlockSize);
 		if(useAlignedWriteBuffer) {
-			alignedWriteBuffer = atomicBuffer;
+			auto read = readDriver.readLogicalDisk(com, reportFromRead, currentBlock * idealBlockSize,
+				alignedWriteBuffer.data(), idealBlockSize, timeout);
+			timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
+
+			if(read != idealBlockSize)
+				break; // readLogicalDisk reports its own errors
+
 			memcpy(alignedWriteBuffer.data() + posWithinCurrentBlock, from + fromOffset, curAmt);
 		}
 
 		start = std::chrono::high_resolution_clock::now();
-		bytesTransferred = writeLogicalDiskAligned(com, report, currentBlock * idealBlockSize, atomicBuffer.data(),
+		auto bytesTransferred = writeLogicalDiskAligned(com, report, currentBlock * idealBlockSize,
 			useAlignedWriteBuffer ? alignedWriteBuffer.data() : (from + fromOffset), idealBlockSize, timeout);
 		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
-
-		if(bytesTransferred == RetryAtomic) {
-			// The user may want to log these events in order to see how many atomic misses they are getting
-			report(APIEvent::Type::AtomicOperationRetried, APIEvent::Severity::EventInfo);
-			readDriver.invalidateCache(currentBlock * idealBlockSize, idealBlockSize);
-			continue;
-		}
 
 		if(!bytesTransferred.has_value() || *bytesTransferred < curAmt) {
 			if(timeout < std::chrono::milliseconds::zero())

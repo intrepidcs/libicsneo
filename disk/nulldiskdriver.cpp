@@ -22,7 +22,7 @@ std::optional<uint64_t> NullDriver::writeLogicalDisk(Communication&, device_even
 }
 
 std::optional<uint64_t> NullDriver::writeLogicalDiskAligned(Communication&, device_eventhandler_t report,
-	uint64_t, const uint8_t*, const uint8_t*, uint64_t, std::chrono::milliseconds) {
+	uint64_t, const uint8_t*, uint64_t, std::chrono::milliseconds) {
 	report(APIEvent::Type::DiskNotSupported, APIEvent::Severity::Error);
 	return std::nullopt;
 }
