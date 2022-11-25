@@ -638,8 +638,13 @@ int LegacyDLLExport icsneoSetDeviceParameters(void* hObject, char* pParmValue, i
 // Error Functions
 int LegacyDLLExport icsneoGetLastAPIError(void* hObject, unsigned long* pErrorNumber)
 {
-	// TODO Implement
-	return false;
+	if(!icsneoValidateHObject(hObject))
+		return false;
+
+	neoevent_t error;
+	icsneo_getLastError(&error);
+	*pErrorNumber = (unsigned long)error.eventNumber;
+	return true;
 }
 
 int LegacyDLLExport icsneoGetErrorMessages(void* hObject, int* pErrorMsgs, int* pNumberOfErrors)
