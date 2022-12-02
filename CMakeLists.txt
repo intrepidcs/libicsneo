@@ -394,6 +394,7 @@ if(LIBICSNEO_BUILD_TESTS)
 		test/eventmanagertest.cpp
 		test/ethernetpacketizertest.cpp
 		test/i2cencoderdecodertest.cpp
+		test/a2bencoderdecodertest.cpp
 	)
 
 	target_link_libraries(libicsneo-tests gtest gtest_main)

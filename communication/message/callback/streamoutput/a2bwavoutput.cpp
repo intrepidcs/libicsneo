@@ -70,11 +70,11 @@ bool A2BWAVOutput::writeSamples(const std::shared_ptr<A2BMessage>& msg, A2BMessa
 	uint8_t numChannels = msg->getNumChannels();
 
 	uint8_t channel = 0;
-	uint32_t sampleIndex = 0;
+	uint32_t frame = 0;
 	uint8_t bitDepth = msg->getBitDepth();
 
 	while(true) {
-		auto sample = msg->getSample(dir, channel, sampleIndex);
+		auto sample = msg->getSample(dir, channel, frame);
 
 		if(!sample) {
 			if(channel == 0) {
@@ -90,7 +90,7 @@ bool A2BWAVOutput::writeSamples(const std::shared_ptr<A2BMessage>& msg, A2BMessa
 
 		channel = (channel + 1) % numChannels;
 		if(channel == 0) {
-			sampleIndex++;
+			frame++;
 		}
 	}
 

@@ -90,6 +90,7 @@ public:
 		WiVIStackRefreshFailed = 0x2036,
 		WiVIUploadStackOverflow = 0x2037,
 		I2CMessageExceedsMaxLength = 0x2038,
+		A2BMessageIncompleteFrame = 0x2039,
 
 		// Transport Events
 		FailedToRead = 0x3000,

@@ -112,6 +112,7 @@ static constexpr const char* ATOMIC_OPERATION_RETRIED = "An operation failed to 
 static constexpr const char* ATOMIC_OPERATION_COMPLETED_NONATOMICALLY = "An ideally-atomic operation was completed nonatomically.";
 static constexpr const char* WIVI_STACK_REFRESH_FAILED = "The Wireless neoVI stack encountered a communication error.";
 static constexpr const char* WIVI_UPLOAD_STACK_OVERFLOW = "The Wireless neoVI upload stack has encountered an overflow condition.";
+static constexpr const char* A2B_MESSAGE_INCOMPLETE_FRAME = "At least one of the frames of the A2B message does not contain samples for each channel and stream."; 
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -241,6 +242,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return WIVI_STACK_REFRESH_FAILED;
 		case Type::WiVIUploadStackOverflow:
 			return WIVI_UPLOAD_STACK_OVERFLOW;
+		case Type::A2BMessageIncompleteFrame:
+			return A2B_MESSAGE_INCOMPLETE_FRAME;
 
 		// Transport Errors
 		case Type::FailedToRead:

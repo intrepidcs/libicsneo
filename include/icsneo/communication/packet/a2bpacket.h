@@ -7,9 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
-#include "icsneo/communication/message/message.h"
-
-
+#include "icsneo/communication/message/a2bmessage.h"
 
 namespace icsneo {
 
@@ -18,6 +16,7 @@ typedef uint16_t icscm_bitfield;
 struct HardwareA2BPacket {
 
 	static std::shared_ptr<Message> DecodeToMessage(const std::vector<uint8_t>& bytestream);
+	static bool EncodeFromMessage(const A2BMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t& report);
 
 	struct {
 		// CxA2B
@@ -34,6 +33,10 @@ struct HardwareA2BPacket {
 		icscm_bitfield : 11;
 		icscm_bitfield rfu2;
 	} header;
+
+	static const size_t coreMiniMessageHeaderSize;
+	static const size_t a2bMessageMaxLength;
+	static const size_t a2bHeaderSize;
 };
 
 }

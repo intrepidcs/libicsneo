@@ -31,16 +31,15 @@ public:
 
 	A2BMessage() = delete;
 
-	A2BMessage(uint8_t bitDepth, uint8_t bytesPerSample, uint8_t numChannels, bool monitor) : 
-		mBitDepth(bitDepth), 
-		mBytesPerSample(bytesPerSample),
-		mMonitor(monitor)
+	A2BMessage(uint8_t bitDepth, uint8_t bytesPerSample, uint8_t numChannels) : 
+		bDepth(bitDepth), 
+		bps(bytesPerSample)
 	{
 		downstream.resize(numChannels);
 		upstream.resize(numChannels);
 	}
 
-	void addSample(A2BPCMSample &&sample, A2BDirection dir, uint8_t channel) {
+	void addSample(A2BPCMSample&& sample, A2BDirection dir, uint8_t channel) {
 		if(dir == A2BDirection::DownStream) {
 			downstream[channel].push_back(std::move(sample));
 		}
@@ -61,18 +60,18 @@ public:
 		return upstream[channel].data();
 	}
 
-	std::optional<A2BPCMSample> getSample(A2BDirection dir, uint8_t channel, uint32_t sampleIndex) const {
+	std::optional<A2BPCMSample> getSample(A2BDirection dir, uint8_t channel, uint32_t frame) const {
 		const A2BPCMSample* samples = getSamples(dir, channel);
 		auto numSamplesInChannel = getNumSamplesInChannel(dir, channel);
 
 		if(
 			samples == nullptr ||
-			sampleIndex >= numSamplesInChannel.value_or(0)
+			frame >= numSamplesInChannel.value_or(0)
 		) {
 			return std::nullopt;
 		}
 
-		return samples[sampleIndex];
+		return samples[frame];
 	}
 
 	std::optional<size_t> getNumSamplesInChannel(A2BDirection dir, uint8_t channel) const {
@@ -104,25 +103,41 @@ public:
 	}
 
 	uint8_t getBitDepth() const {
-		return mBitDepth;
+		return bDepth;
 	}
 
 	uint8_t getBytesPerSample() const {
-		return mBytesPerSample;
+		return bps;
 	}
 
-	bool isMonitor() const {
-		return mMonitor;
+	// Equals operation for testing.
+	bool operator==(const A2BMessage& rhs) const {
+		return channelSize16 == rhs.channelSize16 &&
+			monitor == rhs.monitor &&
+			txmsg == rhs.txmsg &&
+			errIndicator == rhs.errIndicator &&
+			syncFrame == rhs.syncFrame &&
+			rfu2 == rhs.rfu2 &&
+			downstream == rhs.downstream &&
+			upstream == rhs.upstream &&
+			totalSamples == rhs.totalSamples &&
+			bDepth == rhs.bDepth &&
+			bps == rhs.bps;
 	}
 
+	bool channelSize16;
+	bool monitor;
+	bool txmsg;
+	bool errIndicator;
+	bool syncFrame;
+	uint16_t rfu2;
 private:
 	std::vector<ChannelBuffer> downstream;
 	std::vector<ChannelBuffer> upstream;
 	size_t totalSamples = 0;
 	
-	uint8_t mBitDepth;
-	uint8_t mBytesPerSample;
-	bool mMonitor;
+	uint8_t bDepth;
+	uint8_t bps;
 };
 
 }
