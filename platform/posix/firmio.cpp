@@ -65,8 +65,8 @@ void FirmIO::Find(std::vector<FoundDevice>& found) {
 			memcpy(foundDevice.serial, serial->deviceSerial.c_str(), sizeof(foundDevice.serial) - 1);
 			foundDevice.serial[sizeof(foundDevice.serial) - 1] = '\0';
 
-			foundDevice.makeDriver = [](const device_eventhandler_t& report, neodevice_t&) {
-				return std::unique_ptr<Driver>(new FirmIO(report));
+			foundDevice.makeDriver = [](const device_eventhandler_t& report, neodevice_t& forDevice) {
+				return std::unique_ptr<Driver>(new FirmIO(report, forDevice));
 			};
 
 			found.push_back(foundDevice);

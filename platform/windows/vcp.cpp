@@ -192,7 +192,7 @@ void VCP::Find(std::vector<FoundDevice>& found, std::vector<std::wstring> driver
 	}
 }
 
-VCP::VCP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {
+VCP::VCP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err, forDevice) {
 	detail = std::make_shared<Detail>();
 }
 

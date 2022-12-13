@@ -1,5 +1,11 @@
 #include "icsneo/api/eventmanager.h"
+#include "icsneo/api/event.h"
 #include <memory>
+#include <thread>
+
+#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+#include "icsneo/communication/socket.h"
+#endif
 
 using namespace icsneo;
 
@@ -40,7 +46,7 @@ void EventManager::add(APIEvent event) {
 		if(i != downgradedThreads.end() && i->second) {
 			event.downgradeFromError();
 			{
-				std::lock_guard<std::mutex> eventsLock(eventsMutex);
+				std::lock_guard<std::mutex> eventsLock{eventsMutex};
 				addEventInternal(event);
 			} // free the lock so that callbacks may modify events
 			runCallbacks(event);
@@ -146,23 +152,60 @@ bool EventManager::isDowngradingErrorsOnCurrentThread() const {
 	return false;
 }
 
+#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+std::optional<std::vector<neosocketevent_t>> EventManager::getServerEvents(const size_t& max)
+{
+	auto socket = lockSocket();
+	if(!(socket.writeTyped<RPC>(RPC::GET_EVENTS) && socket.writeTyped<size_t>(max)))
+		return std::nullopt;
+
+	size_t count;
+	if(!socket.readTyped(count) || count < 0 || count > eventLimit)
+		return std::nullopt;
+
+	std::optional<std::vector<neosocketevent_t>> ret;
+	if(count == size_t(0))
+		return ret;
+
+	auto& eventStructs = ret.emplace(count);
+	if(!socket.read(eventStructs.data(), (eventStructs.size() * sizeof(neosocketevent_t))))
+		return std::nullopt;
+
+	return ret;
+}
+#endif // ICSNEO_ENABLE_DEVICE_SHARING
+
 void EventManager::get(std::vector<APIEvent>& eventOutput, size_t max, EventFilter filter) {
-	std::lock_guard<std::mutex> lk(eventsMutex);
-
-	if(max == 0) // A limit of 0 indicates no limit
-		max = (size_t)-1;
-
-	size_t count = 0;
 	eventOutput.clear();
-	auto it = events.begin();
-	while(it != events.end()) {
-		if(filter.match(*it)) {
-			eventOutput.push_back(*it);
-			it = events.erase(it);
-			if(++count >= max)
-				break; // We now have as many written to output as we can
-		} else {
-			it++;
+	#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+	{
+		auto serverEvents = getServerEvents(max);
+		if(serverEvents) {
+			std::scoped_lock eventsLock{eventsMutex};
+			for(neosocketevent_t& event : *serverEvents) {
+				eventOutput.emplace_back(event);
+			}
+			if(max != 0u)
+				max -= eventOutput.size();
+		}
+	}
+	#endif
+	std::scoped_lock eventsLock{eventsMutex};
+	{
+		if(max == 0) // A limit of 0 indicates no limit
+			max = (size_t)-1;
+
+		size_t count = 0;
+		auto it = events.begin();
+		while(it != events.end()) {
+			if(filter.match(*it)) {
+				eventOutput.push_back(*it);
+				it = events.erase(it);
+				if(++count >= max)
+					break; // We now have as many written to output as we can
+			} else {
+				it++;
+			}
 		}
 	}
 }

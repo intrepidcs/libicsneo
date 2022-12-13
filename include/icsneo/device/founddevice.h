@@ -11,7 +11,7 @@ typedef std::function< std::unique_ptr<Driver>(device_eventhandler_t err, neodev
 class FoundDevice {
 public:
 	neodevice_handle_t handle = 0;
-	char serial[7] = {};
+	deviceserial_t serial = {};
 	uint16_t productId = 0;
 	driver_factory_t makeDriver;
 };

@@ -4,7 +4,7 @@
 
 using namespace icsneo;
 
-APIEvent::APIEvent(Type type, APIEvent::Severity severity, const Device* device) : eventStruct({}) {
+APIEvent::APIEvent(Type type, Severity severity, const Device* device) : eventStruct({}) {
 	this->device = device;
 	if(device) {
 		serial = device->getSerial();
@@ -12,6 +12,17 @@ APIEvent::APIEvent(Type type, APIEvent::Severity severity, const Device* device)
 	}
 
 	init(type, severity);
+}
+
+APIEvent::APIEvent(neosocketevent_t evStruct, const Device* device)
+{
+	this->device = device;
+	timepoint = EventClock::from_time_t(evStruct.timestamp);
+	serial = std::string(evStruct.serial);
+	eventStruct.eventNumber = evStruct.eventNumber;
+	eventStruct.severity = evStruct.severity;
+	eventStruct.description = DescriptionForType(APIEvent::getType());
+	eventStruct.timestamp = evStruct.timestamp;
 }
 
 void APIEvent::init(Type event, APIEvent::Severity severity) {
@@ -43,6 +54,15 @@ std::string APIEvent::describe() const noexcept {
 
 	ss << getDescription();
 	return ss.str();
+}
+
+neosocketevent_t APIEvent::getNeoSocketEvent() const noexcept {
+	neosocketevent_t neoSocketEvent;
+	neoSocketEvent.eventNumber = eventStruct.eventNumber;
+	neoSocketEvent.severity = eventStruct.severity;
+	std::memcpy(neoSocketEvent.serial, eventStruct.serial, sizeof(eventStruct.serial));
+	neoSocketEvent.timestamp = eventStruct.timestamp;
+	return neoSocketEvent;
 }
 
 void APIEvent::downgradeFromError() noexcept {
@@ -126,8 +146,31 @@ static constexpr const char* PCAP_COULD_NOT_START = "The PCAP driver could not b
 static constexpr const char* PCAP_COULD_NOT_FIND_DEVICES = "The PCAP driver failed to find devices. Ethernet devices will not be found.";
 static constexpr const char* PACKET_DECODING = "There was an error decoding a packet from the device.";
 
+static constexpr const char* SHARED_MEMORY_DATA_IS_NULL = "data() was called on invalid object.";
+static constexpr const char* SHARED_MEMORY_FAILED_TO_CLOSE = "The server failed to close a shared memory location.";
+static constexpr const char* SHARED_MEMORY_FAILED_TO_OPEN = "The server failed to open a shared memory location.";
+static constexpr const char* SHARED_MEMORY_FAILED_TO_UNLINK = "The server failed to unlink a shared memory location.";
+static constexpr const char* SHARED_MEMORY_FILE_TRUNCATE_ERROR = "The server failed to truncate shared memory file.";
+static constexpr const char* SHARED_MEMORY_MAPPING_ERROR = "The server failed to map a shared memory file.";
+static constexpr const char* SHARED_MEMORY_UNMAP_ERROR = "The server failed to unmap a shared memory file.";
+static constexpr const char* SHARED_SEMAPHORE_FAILED_TO_CLOSE = "The server failed to close a shared semaphore.";
+static constexpr const char* SHARED_SEMAPHORE_FAILED_TO_OPEN = "The server failed to open a shared semaphore.";
+static constexpr const char* SHARED_SEMAPHORE_FAILED_TO_POST = "A post() call failed on a shared semaphore.";
+static constexpr const char* SHARED_SEMAPHORE_FAILED_TO_UNLINK = "The server failed to unlink a shared semaphore.";
+static constexpr const char* SHARED_SEMAPHORE_FAILED_TO_WAIT = "A wait() call failed on a shared semaphore.";
+static constexpr const char* SHARED_SEMAPHORE_NOT_OPEN_FOR_POST = "post() was called on a shared semaphore that is not open.";
+static constexpr const char* SHARED_SEMAPHORE_NOT_OPEN_FOR_WAIT = "wait() was called on a shared semaphore that is not open.";
+static constexpr const char* SOCKET_FAILED_CONNECT = "A socket connection was attempted but failed.";
+static constexpr const char* SOCKET_FAILED_OPEN = "A socket failed to open.";
+static constexpr const char* SOCKET_FAILED_CLOSE = "A socket failed to close.";
+static constexpr const char* SOCKET_FAILED_READ = "A socket read operation failed.";
+static constexpr const char* SOCKET_FAILED_WRITE = "A socket write operation failed.";
+static constexpr const char* ACCEPTOR_FAILED_BIND = "A socket acceptor failed to bind.";
+static constexpr const char* ACCEPTOR_FAILED_LISTEN = "A socket acceptor failed to listen.";
+
 static constexpr const char* TOO_MANY_EVENTS = "Too many events have occurred. The list has been truncated.";
 static constexpr const char* UNKNOWN = "An unknown internal error occurred.";
+static constexpr const char* NO_ERROR_FOUND = "No errors found.";
 static constexpr const char* INVALID = "An invalid internal error occurred.";
 const char* APIEvent::DescriptionForType(Type type) {
 	switch(type) {
@@ -266,12 +309,58 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return PCAP_COULD_NOT_FIND_DEVICES;
 		case Type::PacketDecodingError:
 			return PACKET_DECODING;
-		
+
+		// Device Sharing Server Events
+		case Type::SharedMemoryDataIsNull:
+			return SHARED_MEMORY_DATA_IS_NULL;
+		case Type::SharedMemoryFailedToClose:
+			return SHARED_MEMORY_FAILED_TO_CLOSE;
+		case Type::SharedMemoryFailedToOpen:
+			return SHARED_MEMORY_FAILED_TO_OPEN;
+		case Type::SharedMemoryFailedToUnlink:
+			return SHARED_MEMORY_FAILED_TO_UNLINK;
+		case Type::SharedMemoryFileTruncateError:
+			return SHARED_MEMORY_FILE_TRUNCATE_ERROR;
+		case Type::SharedMemoryMappingError:
+			return SHARED_MEMORY_MAPPING_ERROR;
+		case Type::SharedMemoryUnmapError:
+			return SHARED_MEMORY_UNMAP_ERROR;
+		case Type::SharedSemaphoreFailedToClose:
+			return SHARED_SEMAPHORE_FAILED_TO_CLOSE;
+		case Type::SharedSemaphoreFailedToOpen:
+			return SHARED_SEMAPHORE_FAILED_TO_OPEN;
+		case Type::SharedSemaphoreFailedToPost:
+			return SHARED_SEMAPHORE_FAILED_TO_POST;
+		case Type::SharedSemaphoreFailedToUnlink:
+			return SHARED_SEMAPHORE_FAILED_TO_UNLINK;
+		case Type::SharedSemaphoreFailedToWait:
+			return SHARED_SEMAPHORE_FAILED_TO_WAIT;
+		case Type::SharedSemaphoreNotOpenForPost:
+			return SHARED_SEMAPHORE_NOT_OPEN_FOR_POST;
+		case Type::SharedSemaphoreNotOpenForWait:
+			return SHARED_SEMAPHORE_NOT_OPEN_FOR_WAIT;
+		case Type::SocketFailedToOpen:
+			return SOCKET_FAILED_OPEN;
+		case Type::SocketFailedToClose:
+			return SOCKET_FAILED_CLOSE;
+		case Type::SocketFailedToConnect:
+			return SOCKET_FAILED_CONNECT;
+		case Type::SocketFailedToRead:
+			return SOCKET_FAILED_READ;
+		case Type::SocketFailedToWrite:
+			return SOCKET_FAILED_WRITE;
+		case Type::SocketAcceptorFailedToBind:
+			return ACCEPTOR_FAILED_BIND;
+		case Type::SocketAcceptorFailedToListen:
+			return ACCEPTOR_FAILED_LISTEN;
+
 		// Other Errors
 		case Type::TooManyEvents:
 			return TOO_MANY_EVENTS;
 		case Type::Unknown:
 			return UNKNOWN;
+		case Type::NoErrorFound:
+			return NO_ERROR_FOUND;
 		default:
 			return INVALID;
 	}
@@ -291,4 +380,14 @@ bool EventFilter::match(const APIEvent& event) const noexcept {
 		return false;
 
 	return true;
+}
+
+neosocketeventfilter_t EventFilter::getNeoSocketEventFilter() const noexcept {
+	neosocketeventfilter_t filterStruct;
+	filterStruct.eventNumber = static_cast<decltype(filterStruct.eventNumber)>(type);
+	filterStruct.severity = static_cast<decltype(filterStruct.severity)>(severity);
+	if((serial.length() + 1) == sizeof(filterStruct.serial)) {
+		std::memcpy(&filterStruct.serial[0], serial.c_str(), sizeof(filterStruct.serial));
+	}
+	return filterStruct;
 }

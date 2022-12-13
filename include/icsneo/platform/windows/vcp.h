@@ -31,7 +31,6 @@ public:
 private:
 	bool open(bool fromAsync);
 	bool opening = false;
-	neodevice_t& device;
 
 	struct Detail;
 	std::shared_ptr<Detail> detail;

@@ -1,8 +1,13 @@
+#include <array>
 #include "icsneo/device/devicefinder.h"
 #include "icsneo/platform/devices.h"
 #include "icsneo/device/founddevice.h"
+#include "icsneo/communication/sdio.h"
 #include "generated/extensions/builtin.h"
 
+#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+#include "icsneo/communication/socket.h"
+#else
 #ifdef ICSNEO_ENABLE_FIRMIO
 #include "icsneo/platform/firmio.h"
 #endif
@@ -17,6 +22,7 @@
 
 #ifdef ICSNEO_ENABLE_FTDI
 #include "icsneo/platform/ftdi.h"
+#endif
 #endif
 
 using namespace icsneo;
@@ -43,6 +49,9 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	static std::vector<FoundDevice> newDriverFoundDevices;
 	newDriverFoundDevices.clear();
 
+	#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+	SDIO::Find(newDriverFoundDevices);
+	#else
 	#ifdef ICSNEO_ENABLE_FIRMIO
 	FirmIO::Find(newDriverFoundDevices);
 	#endif
@@ -57,6 +66,7 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 
 	#ifdef ICSNEO_ENABLE_FTDI
 	FTDI::Find(newDriverFoundDevices);
+	#endif
 	#endif
 
 	// Weak because we don't want to keep devices open if they go out of scope elsewhere
@@ -218,7 +228,27 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 }
 
 const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
-	static std::vector<DeviceType> supportedDevices = {
+	static std::vector<DeviceType> supportedDevices;
+
+	if (!supportedDevices.empty())
+		return supportedDevices;
+
+	#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+	{
+		auto socket = lockSocket();
+		if(!socket.writeTyped(RPC::DEVICE_FINDER_GET_SUPORTED_DEVICES))
+			return supportedDevices;
+		uint16_t count;
+		if(!socket.readTyped(count))
+			return supportedDevices;
+		std::vector<devicetype_t> devices(count);
+		socket.read(devices.data(), devices.size() * sizeof(devicetype_t));
+		supportedDevices.reserve(count);
+		for(auto& dev : devices)
+			supportedDevices.emplace_back(DeviceType(dev));
+	}
+	#else
+	supportedDevices = {
 
 		#ifdef __ETHERBADGE_H_
 		EtherBADGE::DEVICE_TYPE,
@@ -321,6 +351,7 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 		#endif
 
 	};
+	#endif
 
 	return supportedDevices;
 }

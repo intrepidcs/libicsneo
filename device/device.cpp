@@ -13,6 +13,10 @@
 #include <sstream>
 #include <chrono>
 
+#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+#include "icsneo/communication/socket.h"
+#endif
+
 using namespace icsneo;
 
 static const uint8_t fromBase36Table[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -178,6 +182,15 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		return false;
 	}
 
+	#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+	{
+		auto socket = lockSocket();
+		if(!(socket.writeTyped(RPC::DEVICE_OPEN) && socket.writeString(getSerial())))
+			return false;
+		if(bool ret; !(socket.readTyped(ret) && ret))
+			return false;
+	}
+	#else
 	APIEvent::Type attemptErr = attemptToBeginCommunication();
 	if(attemptErr != APIEvent::Type::NoErrorFound) {
 		// We could not communicate with the device, let's see if an extension can
@@ -199,6 +212,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 			return false;
 		}
 	}
+	#endif
 
 	bool block = false;
 	forEachExtension([&block, &flags, &handler](const std::shared_ptr<DeviceExtension>& ext) {
@@ -228,59 +242,61 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		handleInternalMessage(message);
 	}));
 
-	heartbeatThread = std::thread([this]() {
-		EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+	if(com->driver->enableHeartbeat()) {
+		heartbeatThread = std::thread([this]() {
+			EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
-		MessageFilter filter;
-		filter.includeInternalInAny = true;
-		std::atomic<bool> receivedMessage{false};
-		auto messageReceivedCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&receivedMessage](std::shared_ptr<Message> message) {
-			receivedMessage = true;
-		}));
+			MessageFilter filter;
+			filter.includeInternalInAny = true;
+			std::atomic<bool> receivedMessage{false};
+			auto messageReceivedCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&receivedMessage](std::shared_ptr<Message> message) {
+				receivedMessage = true;
+			}));
 
-		// Give the device time to get situated
-		auto i = 150;
-		while(!stopHeartbeatThread && i != 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
-			i--;
-		}
-
-		while(!stopHeartbeatThread) {
-			// Wait for 110ms for a possible heartbeat
-			std::this_thread::sleep_for(std::chrono::milliseconds(110));
-			if(receivedMessage) {
-				receivedMessage = false;
-			} else {
-				// Some communication, such as the bootloader and extractor interfaces, must
-				// redirect the input stream from the device as it will no longer be in the
-				// packet format we expect here. As a result, status updates will not reach
-				// us here and suppressDisconnects() must be used. We don't want to request
-				// a status and then redirect the stream, as we'll then be polluting an
-				// otherwise quiet stream. This lock makes sure suppressDisconnects() will
-				// block until we've either gotten our status update or disconnected from
-				// the device.
-				std::lock_guard<std::mutex> lk(heartbeatMutex);
-				if(heartbeatSuppressed())
-					continue;
-
-				// No heartbeat received, request a status
-				com->sendCommand(Command::RequestStatusUpdate);
-				// The response should come back quickly if the com is quiet
+			// Give the device time to get situated
+			auto i = 150;
+			while(!stopHeartbeatThread && i != 0) {
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));
-				// Check if we got a message, and if not, if settings are being applied
+				i--;
+			}
+
+			while(!stopHeartbeatThread) {
+				// Wait for 110ms for a possible heartbeat
+				std::this_thread::sleep_for(std::chrono::milliseconds(110));
 				if(receivedMessage) {
 					receivedMessage = false;
 				} else {
-					if(!stopHeartbeatThread && !isDisconnected())
-						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
-					break;
+					// Some communication, such as the bootloader and extractor interfaces, must
+					// redirect the input stream from the device as it will no longer be in the
+					// packet format we expect here. As a result, status updates will not reach
+					// us here and suppressDisconnects() must be used. We don't want to request
+					// a status and then redirect the stream, as we'll then be polluting an
+					// otherwise quiet stream. This lock makes sure suppressDisconnects() will
+					// block until we've either gotten our status update or disconnected from
+					// the device.
+					std::lock_guard<std::mutex> lk(heartbeatMutex);
+					if(heartbeatSuppressed())
+						continue;
+
+					// No heartbeat received, request a status
+					com->sendCommand(Command::RequestStatusUpdate);
+					// The response should come back quickly if the com is quiet
+					std::this_thread::sleep_for(std::chrono::milliseconds(50));
+					// Check if we got a message, and if not, if settings are being applied
+					if(receivedMessage) {
+						receivedMessage = false;
+					} else {
+						if(!stopHeartbeatThread && !isDisconnected())
+							report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+						break;
+					}
 				}
 			}
-		}
 
-		com->removeMessageCallback(messageReceivedCallbackID);
-	});
-
+			com->removeMessageCallback(messageReceivedCallbackID);
+		});
+	}
+	
 	return true;
 }
 
@@ -338,18 +354,35 @@ bool Device::close() {
 	stopHeartbeatThread = false;
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onDeviceClose(); return true; });
+
+#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+	{
+		auto socket = lockSocket();
+		if(!(socket.writeTyped(RPC::DEVICE_CLOSE) && socket.writeString(getSerial())))
+			return false;
+		if(bool ret; !(socket.readTyped(ret) && ret))
+			return false;
+	}
+#endif
+
 	return com->close();
 }
 
 bool Device::goOnline() {
+#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+	{
+		auto socket = lockSocket();
+		if(!(socket.writeTyped(RPC::DEVICE_GO_ONLINE) && socket.writeString(getSerial())))
+			return false;
+		if(bool ret; !(socket.readTyped(ret) && ret))
+			return false;
+	}
+#else
+	
 	if(!com->sendCommand(Command::EnableNetworkCommunication, true))
 		return false;
 
 	auto startTime = std::chrono::system_clock::now();
-
-	ledState = LEDState::Online;
-
-	updateLEDState();
 
 	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
 	filter->includeInternalInAny = true;
@@ -370,8 +403,12 @@ bool Device::goOnline() {
 		if(failOut)
 			return false;
 	}
-
+#endif
 	online = true;
+
+	ledState = LEDState::Online;
+
+	updateLEDState();
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOnline(); return true; });
 	return true;
@@ -385,14 +422,20 @@ bool Device::goOffline() {
 		return true;
 	}
 
+	#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+	{
+		auto socket = lockSocket();
+		if(!(socket.writeTyped(RPC::DEVICE_GO_OFFLINE) && socket.writeString(getSerial())))
+			return false;
+		if(bool ret; !(socket.readTyped(ret) && ret))
+			return false;
+	}	
+	#else
+	
 	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
 		return false;
 
 	auto startTime = std::chrono::system_clock::now();
-
-	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
-
-	updateLEDState();
 
 	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
 	filter->includeInternalInAny = true;
@@ -407,6 +450,11 @@ bool Device::goOffline() {
 
 		com->waitForMessageSync(filter, std::chrono::milliseconds(100));
 	}
+#endif
+
+	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
+
+	updateLEDState();
 
 	online = false;
 

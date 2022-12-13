@@ -4,14 +4,48 @@
 #include <stdint.h>
 #include <time.h>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
+
 typedef struct {
-	const char* description;
-	time_t timestamp;
 	uint32_t eventNumber;
 	uint8_t severity;
 	char serial[7];
+} neoeventcontext_t;
+
+typedef struct {
+	time_t timestamp;
+	union {
+		struct {
+			uint32_t eventNumber;
+			int8_t severity;
+			char serial[7];
+		};
+		neoeventcontext_t eventContext;
+	};
+} neosocketevent_t;
+
+typedef neoeventcontext_t neosocketeventfilter_t;
+
+typedef struct {
+	const char* description;
+	union {
+		struct {
+			time_t timestamp;
+			uint32_t eventNumber;
+			uint8_t severity;
+			char serial[7];
+		};
+		neosocketevent_t socketEvent;
+	};
 	uint8_t reserved[16];
 } neoevent_t;
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #ifdef __cplusplus
 
@@ -49,6 +83,7 @@ public:
 		ValueNotYetPresent = 0x1013,
 		Timeout = 0x1014,
 		WiVINotSupported = 0x1015,
+		TestEvent = 0x1016,
 
 		// Device Events
 		PollingMessageOverflow = 0x2000,
@@ -103,7 +138,31 @@ public:
 		PCAPCouldNotStart = 0x3102,
 		PCAPCouldNotFindDevices = 0x3103,
 		PacketDecodingError = 0x3104,
-		
+
+		// Device Sharing Server Events
+		SharedMemoryDataIsNull = 0x4001,
+		SharedMemoryFailedToClose = 0x4002,
+		SharedMemoryFailedToOpen = 0x4003,
+		SharedMemoryFailedToUnlink = 0x4004,
+		SharedMemoryFileTruncateError = 0x4005,
+		SharedMemoryMappingError = 0x4006,
+		SharedMemoryUnmapError = 0x4007,
+		SharedSemaphoreFailedToClose = 0x4008,
+		SharedSemaphoreFailedToOpen = 0x4009,
+		SharedSemaphoreFailedToPost = 0x4010,
+		SharedSemaphoreFailedToUnlink = 0x4011,
+		SharedSemaphoreFailedToWait = 0x4012,
+		SharedSemaphoreNotOpenForPost = 0x4013,
+		SharedSemaphoreNotOpenForWait = 0x4014,
+		SocketFailedToOpen = 0x4015,
+		SocketFailedToClose = 0x4016,
+		SocketFailedToConnect = 0x4017,
+		SocketFailedToRead = 0x4018,
+		SocketFailedToWrite = 0x4019,
+		SocketAcceptorFailedToBind = 0x4020,
+		SocketAcceptorFailedToListen = 0x4021,
+
+		// Other Errors
 		NoErrorFound = 0xFFFFFFFD,
 		TooManyEvents = 0xFFFFFFFE,
 		Unknown = 0xFFFFFFFF
@@ -117,8 +176,10 @@ public:
 
 	APIEvent() : eventStruct({}), serial(), timepoint(), device(nullptr) {}
 	APIEvent(APIEvent::Type event, APIEvent::Severity severity, const Device* device = nullptr);
+	APIEvent(neosocketevent_t evStruct, const Device* device = nullptr);
 	
 	const neoevent_t* getNeoEvent() const noexcept { return &eventStruct; }
+	neosocketevent_t getNeoSocketEvent() const noexcept;
 	Type getType() const noexcept { return Type(eventStruct.eventNumber); }
 	Severity getSeverity() const noexcept { return Severity(eventStruct.severity); }
 	std::string getDescription() const noexcept { return std::string(eventStruct.description); }
@@ -157,8 +218,12 @@ public:
 	EventFilter(const Device* device, APIEvent::Severity severity) : severity(severity), matchOnDevicePtr(true), device(device) {}
 	EventFilter(std::string serial, APIEvent::Type type = APIEvent::Type::Any, APIEvent::Severity severity = APIEvent::Severity::Any) : type(type), severity(severity), serial(serial) {}
 	EventFilter(std::string serial, APIEvent::Severity severity) : severity(severity), serial(serial) {}
+	EventFilter(neosocketeventfilter_t evFilterSt) : type(static_cast<APIEvent::Type>(evFilterSt.eventNumber)),
+													 severity(static_cast<APIEvent::Severity>(evFilterSt.severity)),
+													 serial(std::string(evFilterSt.serial)) {}
 
 	bool match(const APIEvent& event) const noexcept;
+	neosocketeventfilter_t getNeoSocketEventFilter() const noexcept;
 
 	APIEvent::Type type = APIEvent::Type::Any;
 	APIEvent::Severity severity = APIEvent::Severity::Any;

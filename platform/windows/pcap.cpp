@@ -166,8 +166,8 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 				memcpy(foundDevice.serial, serial->deviceSerial.c_str(), sizeof(foundDevice.serial) - 1);
 				foundDevice.serial[sizeof(foundDevice.serial) - 1] = '\0';
 
-				foundDevice.makeDriver = [](const device_eventhandler_t& reportFn, neodevice_t& device) {
-					return std::unique_ptr<Driver>(new PCAP(reportFn, device));
+				foundDevice.makeDriver = [](const device_eventhandler_t& reportFn, neodevice_t& forDevice) {
+					return std::unique_ptr<Driver>(new PCAP(reportFn, forDevice));
 				};
 
 				found.push_back(foundDevice);
@@ -184,7 +184,7 @@ bool PCAP::IsHandleValid(neodevice_handle_t handle) {
 	return (netifIndex < knownInterfaces.size());
 }
 
-PCAP::PCAP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice), pcap(PCAPDLL::getInstance()), ethPacketizer(err) {
+PCAP::PCAP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err, forDevice), pcap(PCAPDLL::getInstance()), ethPacketizer(err) {
 	if(IsHandleValid(device.handle)) {
 		iface = knownInterfaces[(device.handle >> 24) & 0xFF];
 		iface.fp = nullptr; // We're going to open our own connection to the interface. This should already be nullptr but just in case.

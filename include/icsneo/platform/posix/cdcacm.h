@@ -25,7 +25,7 @@ public:
 	 * in cdcacmlinux.cpp and cdcacmdarwin.cpp respectively
 	 * Other POSIX systems (BSDs, QNX, etc) will need bespoke code written in the future
 	 */
-	CDCACM(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {}
+	CDCACM(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err, forDevice) {}
 	~CDCACM();
 	static void Find(std::vector<FoundDevice>& found);
 
@@ -37,7 +37,6 @@ public:
 	void awaitModeChangeComplete() override;
 
 private:
-	neodevice_t& device;
 	int fd = -1;
 	std::optional<ino_t> disallowedInode;
 	std::atomic<bool> modeChanging{false};

@@ -9,6 +9,8 @@ option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
 
+option(LIBICSNEO_USE_DEVICE_SHARING "Interact with devices through the sharing server" ON)
+
 # Device Drivers
 # You almost certainly don't want firmio for your build,
 # it is only relevant for communication between Linux and
@@ -18,13 +20,13 @@ option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw 
 option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" ON)
 option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" ON)
 
-if(NOT CMAKE_CXX_STANDARD)
-	set(CMAKE_CXX_STANDARD 17)
-endif()
-
 include(GNUInstallDirs)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Enable Warnings
 if(MSVC)
@@ -113,6 +115,11 @@ if(WIN32)
 			platform/windows/vcp.cpp
 		)
 	endif()
+
+	list(APPEND PLATFORM_SRC
+		platform/windows/sharedmemory.cpp
+		platform/windows/sharedsemaphore.cpp
+	)
 else() # Darwin or Linux
 	set(PLATFORM_SRC)
 
@@ -155,6 +162,11 @@ else() # Darwin or Linux
 			endif()
 		endif()
 	endif()
+
+	list(APPEND PLATFORM_SRC
+		platform/posix/sharedmemory.cpp
+		platform/posix/sharedsemaphore.cpp
+	)
 endif()
 
 if(LIBICSNEO_BUILD_EXAMPLES)
@@ -192,6 +204,9 @@ set(SRC_FILES
 	communication/multichannelcommunication.cpp
 	communication/communication.cpp
 	communication/driver.cpp
+	communication/interprocessmailbox.cpp
+	communication/sdio.cpp
+	communication/socket.cpp
 	device/extensions/flexray/extension.cpp
 	device/extensions/flexray/controller.cpp
 	device/idevicesettings.cpp
@@ -265,8 +280,7 @@ target_include_directories(icsneocpp
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 		${LIBICSNEO_EXTENSION_INCLUDE_PATHS}
 )
-set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+
 message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
 target_link_libraries(icsneocpp PUBLIC ${LIBICSNEO_EXTENSION_TARGETS})
 if(LIBICSNEO_ENABLE_FIRMIO)
@@ -281,10 +295,17 @@ endif()
 if(LIBICSNEO_ENABLE_FTDI)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FTDI)
 endif()
+if(LIBICSNEO_USE_DEVICE_SHARING)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_DEVICE_SHARING)
+endif()
+
+# socket
+if(WIN32)
+	target_link_libraries(icsneocpp PRIVATE ws2_32)
+endif()
 
 # fatfs
 add_subdirectory(third-party/fatfs)
-set_property(TARGET fatfs PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(icsneocpp PRIVATE fatfs)
 
 # libftdi
@@ -327,6 +348,11 @@ endif(LIBICSNEO_ENABLE_RAW_ETHERNET)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 	target_link_libraries(icsneocpp PUBLIC "-framework CoreFoundation" "-framework IOKit")
+endif()
+
+# For SharedMemory and SharedSemaphore
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	target_link_libraries(icsneocpp PUBLIC rt)
 endif()
 
 if(LIBICSNEO_BUILD_ICSNEOC)
@@ -393,6 +419,8 @@ if(LIBICSNEO_BUILD_TESTS)
 		test/diskdriverwritetest.cpp
 		test/eventmanagertest.cpp
 		test/ethernetpacketizertest.cpp
+		test/interprocessmailboxtest.cpp
+		test/sockettest.cpp
 		test/i2cencoderdecodertest.cpp
 		test/a2bencoderdecodertest.cpp
 	)

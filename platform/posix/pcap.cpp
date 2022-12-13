@@ -200,7 +200,7 @@ bool PCAP::IsHandleValid(neodevice_handle_t handle) {
 	return (netifIndex < knownInterfaces.size());
 }
 
-PCAP::PCAP(device_eventhandler_t err, neodevice_t& forDevice) : Driver(err), device(forDevice), ethPacketizer(err) {
+PCAP::PCAP(device_eventhandler_t err, neodevice_t& forDevice) : Driver(err, forDevice), ethPacketizer(err) {
 	if(IsHandleValid(device.handle)) {
 		iface = knownInterfaces[(device.handle >> 24) & 0xFF];
 		iface.fp = nullptr; // We're going to open our own connection to the interface. This should already be nullptr but just in case.

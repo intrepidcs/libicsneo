@@ -10,6 +10,7 @@
 #include <map>
 #include <thread>
 #include <algorithm>
+#include <optional>
 #include "icsneo/api/event.h"
 #include "icsneo/api/eventcallback.h"
 
@@ -33,6 +34,8 @@ public:
 	
 	// If this thread exists in the map, turn off downgrading
 	void cancelErrorDowngradingOnCurrentThread();
+
+	void removeEventMirror(const std::thread::id& id);
 
 	bool isDowngradingErrorsOnCurrentThread() const;
 
@@ -108,6 +111,10 @@ private:
 	bool enforceLimit(); // Returns whether the limit enforcement resulted in an overflow
 
 	void discardOldest(size_t count = 1);
+
+	#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+ 	std::optional<std::vector<neosocketevent_t>> getServerEvents(const size_t& max);
+	#endif
 };
 
 }

@@ -24,10 +24,10 @@ public:
 	bool isOpen() override;
 	bool close() override;
 	bool isEthernet() const override { return true; }
+	bool enableHeartbeat() const override { return true; }
 private:
 	const PCAPDLL& pcap;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };
-	neodevice_t& device;
 	uint8_t deviceMAC[6];
 	bool openable = true;
 	EthernetPacketizer ethPacketizer;

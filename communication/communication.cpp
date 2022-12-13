@@ -14,6 +14,10 @@
 #include "icsneo/communication/message/readsettingsmessage.h"
 #include "icsneo/communication/message/versionmessage.h"
 
+#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+#include "icsneo/communication/socket.h"
+#endif
+
 using namespace icsneo;
 
 int Communication::messageCallbackIDCounter = 1;
@@ -65,6 +69,11 @@ bool Communication::isOpen() {
 
 bool Communication::isDisconnected() {
 	return driver->isDisconnected();
+}
+
+void Communication::modifyRawCallbacks(std::function<void(std::list<Communication::RawCallback>&)>&& cb) {
+	std::scoped_lock lk(rawCallbacksMutex);
+	cb(rawCallbacks);
 }
 
 bool Communication::sendPacket(std::vector<uint8_t>& bytes) {
@@ -217,6 +226,15 @@ std::shared_ptr<Message> Communication::waitForMessageSync(std::function<bool(vo
 	std::condition_variable cv;
 	std::shared_ptr<Message> returnedMessage;
 
+	#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+	auto socket = lockSocket();
+	int64_t ms = timeout.count();
+	if(!(socket.writeTyped(RPC::DEVICE_LOCK) && socket.writeString(driver->device.serial) && socket.writeTyped(ms)))
+		return nullptr;
+	if(bool ret; !(socket.readTyped(ret) && ret))
+		return nullptr;
+	#endif
+	
 	std::unique_lock<std::mutex> fnLk(syncMessageMutex); // Only allow for one sync message at a time
 	std::unique_lock<std::mutex> cvLk(cvMutex); // Don't let the callback fire until we're waiting for it
 	int cb = addMessageCallback(std::make_shared<MessageCallback>([&cvMutex, &returnedMessage, &cv](std::shared_ptr<Message> message) {
@@ -239,6 +257,13 @@ std::shared_ptr<Message> Communication::waitForMessageSync(std::function<bool(vo
 
 	if(fail) // The caller's function failed, so don't return a message
 		returnedMessage.reset();
+	
+	#ifdef ICSNEO_ENABLE_DEVICE_SHARING
+	if(!(socket.writeTyped(RPC::DEVICE_UNLOCK) && socket.writeString(driver->device.serial)))
+		return nullptr;
+	if(bool ret; !(socket.readTyped(ret) && ret))
+		return nullptr;
+	#endif
 
 	// Then we either will return the message we got or we will return the empty shared_ptr, caller responsible for checking
 	return returnedMessage;
@@ -274,6 +299,11 @@ void Communication::readTask() {
 }
 
 void Communication::handleInput(Packetizer& p, std::vector<uint8_t>& readBytes) {
+	{
+		std::lock_guard lk(rawCallbacksMutex);
+		for(auto& cb : rawCallbacks)
+			cb(readBytes);
+	}
 	if(redirectingRead) {
 		// redirectingRead is an atomic so it can be set without acquiring a mutex
 		// However, we do not clear it without the mutex. The idea is that if another

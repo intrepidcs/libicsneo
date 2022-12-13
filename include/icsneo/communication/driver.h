@@ -9,6 +9,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include "icsneo/device/neodevice.h"
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/third-party/concurrentqueue/blockingconcurrentqueue.h"
 
@@ -16,7 +17,7 @@ namespace icsneo {
 
 class Driver {
 public:
-	Driver(const device_eventhandler_t& handler) : report(handler) {}
+	Driver(const device_eventhandler_t& handler, neodevice_t& forDevice) : report(handler), device(forDevice) {}
 	virtual ~Driver() {}
 	virtual bool open() = 0;
 	virtual bool isOpen() = 0;
@@ -24,12 +25,14 @@ public:
 	virtual void awaitModeChangeComplete() {}
 	virtual bool isDisconnected() { return disconnected; };
 	virtual bool close() = 0;
+	virtual bool enableHeartbeat() const { return false; }
 	bool read(std::vector<uint8_t>& bytes, size_t limit = 0);
 	bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 0);
 	bool write(const std::vector<uint8_t>& bytes);
 	virtual bool isEthernet() const { return false; }
 
 	device_eventhandler_t report;
+	neodevice_t& device;
 
 	size_t writeQueueSize = 50;
 	bool writeBlocks = true; // Otherwise it just fails when the queue is full

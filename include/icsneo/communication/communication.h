@@ -21,11 +21,14 @@
 #include <thread>
 #include <queue>
 #include <map>
+#include <list>
 
 namespace icsneo {
 
 class Communication {
 public:
+	typedef std::function<void(std::vector<uint8_t>&)> RawCallback;
+
 	// Note that the Packetizer is not created by the constructor,
 	// and should be done once the Communication module is in place.
 	Communication(
@@ -45,6 +48,7 @@ public:
 	void modeChangeIncoming() { driver->modeChangeIncoming(); }
 	void awaitModeChangeComplete() { driver->awaitModeChangeComplete(); }
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return driver->write(bytes); }
+	void modifyRawCallbacks(std::function<void(std::list<Communication::RawCallback>&)>&& cb);
 	virtual bool sendPacket(std::vector<uint8_t>& bytes);
 	bool redirectRead(std::function<void(std::vector<uint8_t>&&)> redirectTo);
 	void clearRedirectRead();
@@ -88,6 +92,8 @@ protected:
 	std::atomic<bool> redirectingRead{false};
 	std::function<void(std::vector<uint8_t>&&)> redirectionFn;
 	std::mutex redirectingReadMutex; // Don't allow read to be disabled while in the redirectionFn
+	std::mutex rawCallbacksMutex;
+	std::list<std::function<void(std::vector<uint8_t>&)>> rawCallbacks;
 	std::mutex syncMessageMutex;
 
 	void dispatchMessage(const std::shared_ptr<Message>& msg);

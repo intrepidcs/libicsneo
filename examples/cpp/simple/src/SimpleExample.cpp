@@ -9,6 +9,12 @@ int main() {
 	// Print version
 	std::cout << "Running libicsneo " << icsneo::GetVersion() << std::endl;
 
+	// Register an event callback so we can see any errors that come in
+	icsneo::EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+	icsneo::EventManager::GetInstance().addEventCallback(icsneo::EventCallback([](std::shared_ptr<icsneo::APIEvent> evt) {
+		std::cerr << evt->describe() << std::endl;
+	}));
+
 	std::cout<< "Supported devices:" << std::endl;
 	for(auto& dev : icsneo::GetSupportedDevices())
 		std::cout << '\t' << dev.getGenericProductName() << std::endl;
