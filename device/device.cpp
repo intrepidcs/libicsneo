@@ -642,7 +642,12 @@ std::optional<uint64_t> Device::getLogicalDiskSize() {
 		return std::nullopt;
 	}
 
-	return info->getReportedSize();
+	const auto reportedSize = info->getReportedSize();
+
+	if (diskReadDriver->getAccess() == Disk::Access::VSA)
+		return reportedSize - diskReadDriver->getVSAOffset();
+
+	return reportedSize;
 }
 
 std::optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {

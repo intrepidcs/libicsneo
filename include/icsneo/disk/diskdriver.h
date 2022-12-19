@@ -33,6 +33,7 @@ public:
 	virtual std::pair<uint32_t, uint32_t> getBlockSizeBounds() const = 0;
 
 	void setVSAOffset(uint64_t offset) { vsaOffset = offset; }
+	uint64_t getVSAOffset() const { return vsaOffset; }
 
 protected:
 	uint64_t vsaOffset = 0;
