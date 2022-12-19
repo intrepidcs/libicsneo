@@ -140,7 +140,7 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 			struct pcap_pkthdr* header;
 			const uint8_t* data;
 			auto res = pcap_next_ex(iface.fp, &header, &data);
-			if(res < 0) {
+			if(res < 0 || !header || !data) {
 				if (!warned) {
 					warned = true;
 					EventManager::GetInstance().add(APIEvent::Type::PCAPCouldNotFindDevices, APIEvent::Severity::EventWarning);
