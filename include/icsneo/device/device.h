@@ -305,7 +305,19 @@ public:
 	 */
 	std::optional<double> getAnalogIO(IO type, size_t number = 1);
 
-	typedef std::function< void(uint32_t startSector, uint32_t endSector) > NewCaptureCallback;
+	struct WiVIUpload
+	{
+		bool cellular;
+		bool wifi;
+		bool isPrePost;
+		bool isPreTime;
+		uint32_t preTriggerSize;
+		uint16_t priority;
+		uint16_t captureIndex;
+		uint32_t startSector;
+		uint32_t endSector;
+	};
+	typedef std::function< void(WiVIUpload upload) > NewCaptureCallback;
 
 	/**
 	 * Add a callback which will be called for all new captures.

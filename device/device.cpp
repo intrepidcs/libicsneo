@@ -926,9 +926,8 @@ void Device::wiviThreadBody() {
 
 		if(processCaptures) {
 			std::vector<uint8_t> clearMasks;
-			size_t i = 0;
-			for(const auto& capture : resp->info->captures) {
-				i++;
+			for (size_t i = 0; i < resp->info->captures.size(); i++) {
+				const auto capture = resp->info->captures.at(i);
 
 				if(capture.flags.uploadOverflow)
 					report(APIEvent::Type::WiVIUploadStackOverflow, APIEvent::Severity::Error);
@@ -950,12 +949,24 @@ void Device::wiviThreadBody() {
 						clearMasks.resize(resp->info->captures.size());
 					clearMasks[i] |= (1 << j);
 
+					WiVIUpload wiviUpload {};
+					wiviUpload.captureIndex = capture.captureBlockIndex;
+					wiviUpload.cellular = capture.flags.uploadOverCellular;
+					wiviUpload.wifi = capture.flags.uploadOverWiFi;
+					wiviUpload.isPrePost = capture.flags.isPrePost;
+					wiviUpload.isPreTime = capture.flags.isPreTime;
+					wiviUpload.preTriggerSize = capture.preTriggerSize;
+					wiviUpload.priority = capture.flags.uploadPriority;
+					wiviUpload.startSector = upload.startSector;
+					wiviUpload.endSector = upload.endSector;
+
 					// Notify the client
 					for(const auto& cb : newCaptureCallbacks) {
 						if(cb) {
+
 							lk.unlock();
 							try {
-								cb(upload.startSector, upload.endSector);
+								cb(wiviUpload);
 							} catch(...) {
 								report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 							}
@@ -975,7 +986,9 @@ void Device::wiviThreadBody() {
 				if(!clearMasksGenericResp
 					|| clearMasksGenericResp->type != Message::Type::WiVICommandResponse
 					|| !std::static_pointer_cast<WiVI::ResponseMessage>(clearMasksGenericResp)->success)
+				{
 					report(APIEvent::Type::WiVIStackRefreshFailed, APIEvent::Severity::Error);
+				}
 			}
 		}
 
