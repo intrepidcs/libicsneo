@@ -47,6 +47,7 @@ public:
 		EtherBADGE = (0x00000016),
 		RAD_A2B = (0x00000017),
 		RADEpsilon = (0x00000018),
+		FIRE3_FlexRay = (0x00000025),
 		RED = (0x00000040),
 		ECU = (0x00000080),
 		IEVB = (0x00000100),
@@ -177,6 +178,8 @@ public:
 				return "VividCAN";
 			case OBD2_SIM:
 				return "neoOBD2 SIM";
+			case FIRE3_FlexRay:
+				return "neoVI FIRE3 FlexRay";
 			case DONT_REUSE0:
 			case DONT_REUSE1:
 			case DONT_REUSE2:
@@ -227,6 +230,7 @@ private:
 #define ICSNEO_DEVICETYPE_ETHERBADGE ((devicetype_t)0x00000016)
 #define ICSNEO_DEVICETYPE_RAD_A2B ((devicetype_t)0x00000017)
 #define ICSNEO_DEVICETYPE_RADEPSILON ((devicetype_t)0x00000018)
+#define ICSNEO_DEVICETYPE_FIRE3FLEXRAY ((devicetype_t)0x00000025)
 #define ICSNEO_DEVICETYPE_RED ((devicetype_t)0x00000040)
 #define ICSNEO_DEVICETYPE_ECU ((devicetype_t)0x00000080)
 #define ICSNEO_DEVICETYPE_IEVB ((devicetype_t)0x00000100)

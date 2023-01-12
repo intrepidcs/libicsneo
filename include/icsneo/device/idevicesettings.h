@@ -597,6 +597,16 @@ typedef struct {
 	uint8_t unused;
 } fire2vnet_status_t, flexray_vnetz_status_t;
 
+typedef struct
+{
+	uint8_t allowBoot; // 0 - disable booting Linux, 1 - enable booting Linux, Others - Disable booting linux
+	uint8_t useExternalWifiAntenna; // 0 for internal, 1 for external, Others - Internal
+	uint8_t
+		ethConfigurationPort; // 0 - both ports used by logger, 1 - ETH 01 for Linux Configuration, 2 - ETH 02 for Linux Configuration, Others - both ports used by logger. See defines above
+	uint8_t reserved[5];
+} Fire3LinuxSettings;
+#define FIRE3LINUXSETTINGS_SIZE 8
+static_assert(sizeof(Fire3LinuxSettings) == FIRE3LINUXSETTINGS_SIZE, "Fire3LinuxSettings is the wrong size!");
 #pragma pack(pop)
 
 #ifdef __cplusplus

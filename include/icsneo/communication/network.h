@@ -134,6 +134,18 @@ public:
 		Ethernet2 = 520,
 		A2B1 = 522,
 		A2B2 = 523,
+		Ethernet3 = 524,
+		WBMS = 532,
+		DWCAN9 = 534,
+		DWCAN10 = 535,
+		DWCAN11 = 536,
+		DWCAN12 = 537,
+		DWCAN13 = 538,
+		DWCAN14 = 539,
+		DWCAN15 = 540,
+		DWCAN16 = 541,
+		LIN7 = 542,
+		LIN8 = 543,
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};
@@ -212,6 +224,20 @@ public:
 		I2C3 = 55,
 		I2C4 = 56,
 		Ethernet2 = 57,
+		A2B1 = 58,
+		A2B2 = 59,
+		Ethernet3 = 60,
+		WBMS = 61,
+		DWCAN9 = 62,
+		DWCAN10 = 63,
+		DWCAN11 = 64,
+		DWCAN12 = 65,
+		DWCAN13 = 66,
+		DWCAN14 = 67,
+		DWCAN15 = 68,
+		DWCAN16 = 69,
+		LIN7 = 70,
+		LIN8 = 71,
 	};
 	static const char* GetTypeString(Type type) {
 		switch(type) {
@@ -254,6 +280,14 @@ public:
 			case NetID::HSCAN5:
 			case NetID::HSCAN6:
 			case NetID::HSCAN7:
+			case NetID::DWCAN9:
+			case NetID::DWCAN10:
+			case NetID::DWCAN11:
+			case NetID::DWCAN12:
+			case NetID::DWCAN13:
+			case NetID::DWCAN14:
+			case NetID::DWCAN15:
+			case NetID::DWCAN16:
 				return Type::CAN;
 			case NetID::LIN:
 			case NetID::LIN2:
@@ -261,6 +295,8 @@ public:
 			case NetID::LIN4:
 			case NetID::LIN5:
 			case NetID::LIN6:
+			case NetID::LIN7:
+			case NetID::LIN8:
 				return Type::LIN;
 			case NetID::FlexRay:
 			case NetID::FlexRay1a:
@@ -296,6 +332,7 @@ public:
 			case NetID::Ethernet:
 			case NetID::Ethernet_DAQ:
 			case NetID::Ethernet2:
+			case NetID::Ethernet3:
 			case NetID::OP_Ethernet1:
 			case NetID::OP_Ethernet2:
 			case NetID::OP_Ethernet3:
@@ -560,6 +597,30 @@ public:
 				return "A2B 1";
 			case NetID::A2B2:
 				return "A2B 2";
+			case NetID::DWCAN9:
+				return "DWCAN 09";
+			case NetID::DWCAN10:
+				return "DWCAN 10";
+			case NetID::DWCAN11:
+				return "DWCAN 11";
+			case NetID::DWCAN12:
+				return "DWCAN 12";
+			case NetID::DWCAN13:
+				return "DWCAN 13";
+			case NetID::DWCAN14:
+				return "DWCAN 14";
+			case NetID::DWCAN15:
+				return "DWCAN 15";
+			case NetID::DWCAN16:
+				return "DWCAN 16";
+			case NetID::Ethernet3:
+				return "Ethernet 03";
+			case NetID::LIN7:
+				return "LIN 07";
+			case NetID::LIN8:
+				return "LIN 08";
+			case NetID::WBMS:
+				return "WBMS";
 			case NetID::Any:
 			case NetID::Invalid:
 				break;
@@ -684,6 +745,34 @@ public:
 				return CoreMini::I2C4;
 			case NetID::Ethernet2:
 				return CoreMini::Ethernet2;
+			case NetID::A2B1:
+				return CoreMini::A2B1;
+			case NetID::A2B2:
+				return CoreMini::A2B2;
+			case NetID::Ethernet3:
+				return CoreMini::Ethernet3;
+			case NetID::WBMS:
+				return CoreMini::WBMS;
+			case NetID::DWCAN9:
+				return CoreMini::DWCAN9;
+			case NetID::DWCAN10:
+				return CoreMini::DWCAN10;
+			case NetID::DWCAN11:
+				return CoreMini::DWCAN11;
+			case NetID::DWCAN12:
+				return CoreMini::DWCAN12;
+			case NetID::DWCAN13:
+				return CoreMini::DWCAN13;
+			case NetID::DWCAN14:
+				return CoreMini::DWCAN14;
+			case NetID::DWCAN15:
+				return CoreMini::DWCAN15;
+			case NetID::DWCAN16:
+				return CoreMini::DWCAN16;
+			case NetID::LIN7:
+				return CoreMini::LIN7;
+			case NetID::LIN8:
+				return CoreMini::LIN8;
 			default:
 				return std::nullopt;
 		}
@@ -806,6 +895,34 @@ public:
 				return NetID::I2C4;
 			case CoreMini::Ethernet2:
 				return NetID::Ethernet2;
+			case CoreMini::A2B1:
+				return NetID::A2B1;
+			case CoreMini::A2B2:
+				return NetID::A2B2;
+			case CoreMini::Ethernet3:
+				return NetID::Ethernet3;
+			case CoreMini::WBMS:
+				return NetID::WBMS;
+			case CoreMini::DWCAN9:
+				return NetID::DWCAN9;
+			case CoreMini::DWCAN10:
+				return NetID::DWCAN10;
+			case CoreMini::DWCAN11:
+				return NetID::DWCAN11;
+			case CoreMini::DWCAN12:
+				return NetID::DWCAN12;
+			case CoreMini::DWCAN13:
+				return NetID::DWCAN13;
+			case CoreMini::DWCAN14:
+				return NetID::DWCAN14;
+			case CoreMini::DWCAN15:
+				return NetID::DWCAN15;
+			case CoreMini::DWCAN16:
+				return NetID::DWCAN16;
+			case CoreMini::LIN7:
+				return NetID::LIN7;
+			case CoreMini::LIN8:
+				return NetID::LIN8;
 		}
 		return NetID::Invalid; // Should be unreachable, the compiler should warn about new CoreMini IDs
 	}

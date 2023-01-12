@@ -1,5 +1,5 @@
-#ifndef __NEOVIFIRE3SETTINGS_H_
-#define __NEOVIFIRE3SETTINGS_H_
+#ifndef __NEOVIFIRE3FLEXRAYSETTINGS_H_
+#define __NEOVIFIRE3FLEXRAYSETTINGS_H_
 
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
@@ -88,7 +88,7 @@ typedef struct {
 	Fire3LinuxSettings os_settings;
 
 	RAD_GPTP_SETTINGS gPTP;
-	// VEM Networks
+
 	CAN_SETTINGS can9;
 	CANFD_SETTINGS canfd9;
 	CAN_SETTINGS can10;
@@ -103,23 +103,12 @@ typedef struct {
 	CANFD_SETTINGS canfd14;
 	CAN_SETTINGS can15;
 	CANFD_SETTINGS canfd15;
-	CAN_SETTINGS can16;
-	CANFD_SETTINGS canfd16;
-
-	SWCAN_SETTINGS swcan1;
-	SWCAN_SETTINGS swcan2;
-	CAN_SETTINGS lsftcan1;
-	CAN_SETTINGS lsftcan2;
 
 	ETHERNET_SETTINGS ethernet_3;
 	ETHERNET_SETTINGS2 ethernet2_3;
 
 	LIN_SETTINGS lin3;
 	LIN_SETTINGS lin4;
-	LIN_SETTINGS lin5;
-	LIN_SETTINGS lin6;
-	LIN_SETTINGS lin7;
-	LIN_SETTINGS lin8;
 
 	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_3;
 	uint16_t iso_parity_3;
@@ -127,19 +116,13 @@ typedef struct {
 	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_4;
 	uint16_t iso_parity_4;
 	uint16_t iso_msg_termination_4;
-	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_5;
-	uint16_t iso_parity_5;
-	uint16_t iso_msg_termination_5;
-	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_6;
-	uint16_t iso_parity_6;
-	uint16_t iso_msg_termination_6;
-
-	uint16_t selectable_network_1;
-	uint16_t selectable_network_2;
 
 	uint64_t network_enables_2;
 	uint64_t termination_enables_2;
-} neovifire3_settings_t;
+
+	uint16_t flex_mode;
+	uint16_t flex_termination;
+} neovifire3flexray_settings_t;
 
 typedef struct {
 	uint8_t backupPowerGood;
@@ -147,7 +130,7 @@ typedef struct {
 	uint8_t usbHostPowerEnabled;
 	uint8_t ethernetActivationLineEnabled;
 	EthernetNetworkStatus ethernetStatus;
-} neovifire3_status_t;
+} neovifire3flexray_status_t;
 #pragma pack(pop)
 
 #ifdef _MSC_VER
@@ -158,11 +141,11 @@ typedef struct {
 
 #include <iostream>
 
-class NeoVIFIRE3Settings : public IDeviceSettings {
+class NeoVIFIRE3FlexRaySettings : public IDeviceSettings {
 public:
-	NeoVIFIRE3Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire3_settings_t)) {}
+	NeoVIFIRE3FlexRaySettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire3flexray_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		auto cfg = getStructurePointer<neovifire3flexray_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -187,7 +170,7 @@ public:
 		}
 	}
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		auto cfg = getStructurePointer<neovifire3flexray_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -231,7 +214,7 @@ public:
 
 protected:
 	ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const override {
-		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		auto cfg = getStructurePointer<neovifire3flexray_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		return &cfg->termination_enables;

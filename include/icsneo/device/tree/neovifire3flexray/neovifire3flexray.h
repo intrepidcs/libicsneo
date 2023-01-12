@@ -1,19 +1,19 @@
-#ifndef __NEOVIFIRE3_H_
-#define __NEOVIFIRE3_H_
+#ifndef __NEOVIFIRE3FLEXRAY_H_
+#define __NEOVIFIRE3FLEXRAY_H_
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/disk/extextractordiskreaddriver.h"
 #include "icsneo/disk/neomemorydiskdriver.h"
-#include "icsneo/device/tree/neovifire3/neovifire3settings.h"
+#include "icsneo/device/tree/neovifire3flexray/neovifire3flexraysettings.h"
 
 namespace icsneo {
 
-class NeoVIFIRE3 : public Device {
+class NeoVIFIRE3FlexRay : public Device {
 public:
-	// Serial numbers start with ON
-	// Ethernet MAC allocation is 0x0E, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE3, DeviceType::FIRE3, "ON");
+	// Serial numbers start with FF
+	// Ethernet MAC allocation is 1F, standard driver is Raw
+	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE3FlexRay, DeviceType::FIRE3_FlexRay, "FF");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
@@ -32,7 +32,6 @@ public:
 			Network::NetID::DWCAN13,
 			Network::NetID::DWCAN14,
 			Network::NetID::DWCAN15,
-			Network::NetID::DWCAN16,
 
 			Network::NetID::Ethernet,
 			Network::NetID::Ethernet2,
@@ -42,17 +41,20 @@ public:
 			Network::NetID::LIN2,
 			Network::NetID::LIN3,
 			Network::NetID::LIN4,
-			Network::NetID::LIN5,
-			Network::NetID::LIN6,
-			Network::NetID::LIN7,
-			Network::NetID::LIN8,
+
+			Network::NetID::FlexRay,
+			Network::NetID::FlexRay1a,
+			Network::NetID::FlexRay1b,
+			Network::NetID::FlexRay2,
+			Network::NetID::FlexRay2a,
+			Network::NetID::FlexRay2b,
 		};
 		return supportedNetworks;
 	}
 
 protected:
-	NeoVIFIRE3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<NeoVIFIRE3Settings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
+	NeoVIFIRE3FlexRay(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<NeoVIFIRE3FlexRaySettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	virtual void setupEncoder(Encoder& encoder) override {
