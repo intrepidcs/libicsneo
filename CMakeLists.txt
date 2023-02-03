@@ -174,6 +174,7 @@ set(SRC_FILES
 	communication/message/callback/streamoutput/a2bwavoutput.cpp
 	communication/message/neomessage.cpp
 	communication/message/ethphymessage.cpp
+	communication/message/linmessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/a2bpacket.cpp
@@ -184,6 +185,7 @@ set(SRC_FILES
 	communication/packet/logicaldiskinfopacket.cpp
 	communication/packet/wivicommandpacket.cpp
 	communication/packet/i2cpacket.cpp
+	communication/packet/linpacket.cpp
 	communication/packet/scriptstatuspacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
@@ -394,6 +396,7 @@ if(LIBICSNEO_BUILD_TESTS)
 		test/eventmanagertest.cpp
 		test/ethernetpacketizertest.cpp
 		test/i2cencoderdecodertest.cpp
+		test/linencoderdecodertest.cpp
 		test/a2bencoderdecodertest.cpp
 	)
 

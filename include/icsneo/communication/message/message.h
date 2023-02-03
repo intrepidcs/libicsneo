@@ -18,6 +18,9 @@ public:
 
 		CANErrorCount = 0x100,
 
+		LINHeaderOnly = 0x200,
+		LINBreak = 0x201,
+
 		// Past 0x8000 are all for internal use only
 		Invalid = 0x8000,
 		RawMessage = 0x8001,

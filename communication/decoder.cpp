@@ -11,6 +11,7 @@
 #include "icsneo/communication/message/a2bmessage.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/message/i2cmessage.h"
+#include "icsneo/communication/message/linmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -24,6 +25,7 @@
 #include "icsneo/communication/packet/wivicommandpacket.h"
 #include "icsneo/communication/packet/i2cpacket.h"
 #include "icsneo/communication/packet/scriptstatuspacket.h"
+#include "icsneo/communication/packet/linpacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -359,6 +361,18 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			}
 
 			A2BMessage& msg = *static_cast<A2BMessage*>(result.get());
+			msg.network = packet->network;
+			return true;
+		}
+		case Network::Type::LIN: {
+			result = HardwareLINPacket::DecodeToMessage(packet->data);
+
+			if(!result) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false; // A nullptr was returned, the packet was not long enough to decode
+			}
+
+			LINMessage& msg = *static_cast<LINMessage*>(result.get());
 			msg.network = packet->network;
 			return true;
 		}

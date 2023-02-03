@@ -9,7 +9,7 @@
 #include "icsneo/communication/packet/i2cpacket.h"
 #include "icsneo/communication/message/i2cmessage.h"
 #include "icsneo/communication/packet/a2bpacket.h"
-
+#include "icsneo/communication/packet/linpacket.h"
 
 using namespace icsneo;
 
@@ -96,6 +96,18 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 					}
 					break;
 				} // End of Network::Type::I2C
+				case Network::Type::LIN: {
+					auto linmsg = std::dynamic_pointer_cast<LINMessage>(message);
+					if(!linmsg) {
+						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+						return false;
+					}
+					buffer = &result;
+					if(!HardwareLINPacket::EncodeFromMessage(*linmsg, result, report)) {
+						return false;
+					}
+					break;
+				} // End of Network::Type::LIN
 				default:
 					report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 					return false;
@@ -182,7 +194,8 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 		// Size for the host-to-device long format is the size of the entire packet + 1
 		// So +1 for AA header, +1 for short format header, +2 for long format size, and +2 for long format NetID
 		// Then an extra +1, due to a firmware idiosyncrasy
-		uint16_t size = uint16_t(buffer->size()) + 1 + 1 + 2 + 2 + 1;
+		uint16_t size = static_cast<uint16_t>(buffer->size()) + 1 + 1 + 2 + 2 + 1;
+
 		buffer->insert(buffer->begin(), {
 			(uint8_t)Network::NetID::RED, // 0x0C for long message
 			(uint8_t)size, // Size, little endian 16-bit
