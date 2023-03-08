@@ -1,12 +1,13 @@
 #include "icsneo/disk/neomemorydiskdriver.h"
 #include "icsneo/communication/message/neoreadmemorysdmessage.h"
 #include <cstring>
+#include <iostream>
 
 using namespace icsneo;
 using namespace icsneo::Disk;
 
 std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
-	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
+	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType) {
 	static std::shared_ptr<MessageFilter> NeoMemorySDRead = std::make_shared<MessageFilter>(Network::NetID::NeoMemorySDRead);
 
 	if(pos % SectorSize != 0)
@@ -16,9 +17,11 @@ std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communicatio
 		return std::nullopt;
 
 	const uint64_t currentSector = pos / SectorSize;
-	auto msg = com.waitForMessageSync([&currentSector, &com] {
+	const uint8_t memLocation = (uint8_t)memType;
+	
+	auto msg = com.waitForMessageSync([&currentSector, &memLocation, &com] {
 		return com.sendCommand(Command::NeoReadMemory, {
-			MemoryTypeSD,
+			memLocation,
 			uint8_t(currentSector & 0xFF),
 			uint8_t((currentSector >> 8) & 0xFF),
 			uint8_t((currentSector >> 16) & 0xFF),
@@ -44,7 +47,7 @@ std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communicatio
 }
 
 std::optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
-	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
+	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType) {
 
 	static std::shared_ptr<MessageFilter> NeoMemoryDone = std::make_shared<MessageFilter>(Network::NetID::NeoMemoryWriteDone);
 
@@ -55,9 +58,11 @@ std::optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communicati
 		return std::nullopt;
 
 	const uint64_t currentSector = pos / SectorSize;
-	auto msg = com.waitForMessageSync([&currentSector, &com, from, amount] {
+	const uint8_t memLocation = (uint8_t)memType;
+
+	auto msg = com.waitForMessageSync([&currentSector, &memLocation, &com, from, amount] {
 		std::vector<uint8_t> command = {
-			MemoryTypeSD,
+			memLocation,
 			uint8_t(currentSector & 0xFF),
 			uint8_t((currentSector >> 8) & 0xFF),
 			uint8_t((currentSector >> 16) & 0xFF),

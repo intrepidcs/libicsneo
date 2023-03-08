@@ -13,7 +13,7 @@ using namespace icsneo;
 using namespace icsneo::Disk;
 
 std::optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
-	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
+	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType) {
 
 	if(amount > getBlockSizeBounds().second)
 		return std::nullopt;
@@ -28,7 +28,7 @@ std::optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Commu
 	unsigned int attempts = 4;
 	while (attempts-- > 0)
 	{
-		ret = attemptReadLogicalDiskAligned(com, report, pos, into, amount, timeout);
+		ret = attemptReadLogicalDiskAligned(com, report, pos, into, amount, timeout, memType);
 		if (ret.has_value())
 			break;
 	}
@@ -36,7 +36,7 @@ std::optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Commu
 }
 
 std::optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligned(Communication& com, device_eventhandler_t report,
-	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
+	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, MemoryType) {
 	static std::shared_ptr<MessageFilter> NeoMemorySDRead = std::make_shared<MessageFilter>(Network::NetID::NeoMemorySDRead);
 
 	uint64_t sector = pos / SectorSize;

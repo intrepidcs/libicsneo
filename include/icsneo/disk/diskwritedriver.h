@@ -20,7 +20,7 @@ namespace Disk {
 class WriteDriver : public virtual Driver {
 public:
 	virtual std::optional<uint64_t> writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
-		uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout = DefaultTimeout);
+		uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout = DefaultTimeout, MemoryType memType = MemoryType::SD);
 
 protected:
 	/**
@@ -30,7 +30,7 @@ protected:
 	 * within the block size bounds provided by the driver.
 	 */
 	virtual std::optional<uint64_t> writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
-		uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) = 0;
+		uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType = MemoryType::SD) = 0;
 };
 
 } // namespace Disk

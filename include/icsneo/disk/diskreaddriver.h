@@ -20,10 +20,10 @@ namespace Disk {
 class ReadDriver : public virtual Driver {
 public:
 	virtual std::optional<uint64_t> readLogicalDisk(Communication& com, device_eventhandler_t report,
-		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout = DefaultTimeout);
+		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout = DefaultTimeout, MemoryType memType = MemoryType::SD);
 
 	void invalidateCache(uint64_t pos = 0,
-		uint64_t amount = std::numeric_limits<uint32_t>::max() /* large value, but avoid overflow */);
+		uint64_t amount = std::numeric_limits<uint32_t>::max() /* large value, but avoid overflow */, MemoryType memType = MemoryType::SD);
 
 protected:
 	/**
@@ -33,16 +33,19 @@ protected:
 	 * within the block size bounds provided by the driver.
 	 */
 	virtual std::optional<uint64_t> readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
-		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) = 0;
+		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType = MemoryType::SD) = 0;
 
 private:
-	std::vector<uint8_t> cache;
-	uint64_t cachePos = 0;
+	std::vector<uint8_t> cacheSD;
+	std::vector<uint8_t> cacheEEPROM;
+
+	uint64_t cachePosSD = 0;
+	uint64_t cachePosEEPROM = 0;
 	std::chrono::time_point<std::chrono::steady_clock> cachedAt;
 
 	static constexpr const std::chrono::milliseconds CacheTime = std::chrono::milliseconds(1000);
 
-	std::optional<uint64_t> readFromCache(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds staleAfter = CacheTime);
+	std::optional<uint64_t> readFromCache(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds staleAfter = CacheTime, MemoryType memType = MemoryType::SD);
 };
 
 } // namespace Disk

@@ -86,6 +86,14 @@ protected:
 		const radmars_status_t* status = reinterpret_cast<const radmars_status_t*>(message->data.data());
 		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
+		return 512*4;
+	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
+		return 0;
+	}
 };
 
 }

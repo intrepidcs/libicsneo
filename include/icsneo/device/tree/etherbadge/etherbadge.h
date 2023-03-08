@@ -45,6 +45,15 @@ protected:
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	bool requiresVehiclePower() const override { return false; }
+
+	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
+		return 2048 * 512;
+	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
+		return 0;
+	}
+
 };
 
 }

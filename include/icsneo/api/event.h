@@ -91,6 +91,8 @@ public:
 		WiVIUploadStackOverflow = 0x2037,
 		I2CMessageExceedsMaxLength = 0x2038,
 		A2BMessageIncompleteFrame = 0x2039,
+		CoreminiUploadVersionMismatch = 0x2040,
+		DiskNotConnected = 0x2041,
 
 		// Transport Events
 		FailedToRead = 0x3000,

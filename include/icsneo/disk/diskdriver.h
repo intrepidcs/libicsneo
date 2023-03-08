@@ -19,6 +19,12 @@ enum class Access {
 	VSA
 };
 
+enum class MemoryType : uint8_t
+{
+	Flash = 0,
+	SD = 1
+};
+
 /**
  * Interface for drivers which work with block data on devices
  */

@@ -18,7 +18,7 @@ public:
 	std::pair<uint32_t, uint32_t> getBlockSizeBounds() const override { return { 8, 256 }; }
 
 	std::optional<uint64_t> readLogicalDiskAligned(Communication&, device_eventhandler_t,
-		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds) override {
+		uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds, Disk::MemoryType) override {
 		readCalls++;
 
 		EXPECT_EQ(pos % getBlockSizeBounds().first, 0); // Ensure the alignment rules are respected
@@ -40,7 +40,7 @@ public:
 	}
 
 	std::optional<uint64_t> writeLogicalDiskAligned(Communication&, device_eventhandler_t report, uint64_t pos,
-		const uint8_t* from, uint64_t amount, std::chrono::milliseconds) override {
+		const uint8_t* from, uint64_t amount, std::chrono::milliseconds, Disk::MemoryType) override {
 		writeCalls++;
 
 		EXPECT_EQ(pos % getBlockSizeBounds().first, 0); // Ensure the alignment rules are respected

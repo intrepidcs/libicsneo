@@ -5,7 +5,7 @@ using namespace icsneo;
 using namespace icsneo::Disk;
 
 std::optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device_eventhandler_t report, ReadDriver& readDriver,
-	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
+	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType) {
 	if(amount == 0)
 		return 0;
 
@@ -51,7 +51,7 @@ std::optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device
 		const bool useAlignedWriteBuffer = (posWithinCurrentBlock != 0 || curAmt != idealBlockSize);
 		if(useAlignedWriteBuffer) {
 			auto read = readDriver.readLogicalDisk(com, reportFromRead, currentBlock * idealBlockSize,
-				alignedWriteBuffer.data(), idealBlockSize, timeout);
+				alignedWriteBuffer.data(), idealBlockSize, timeout, memType);
 			timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
 
 			if(read != idealBlockSize)
@@ -62,7 +62,7 @@ std::optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device
 
 		start = std::chrono::high_resolution_clock::now();
 		auto bytesTransferred = writeLogicalDiskAligned(com, report, currentBlock * idealBlockSize,
-			useAlignedWriteBuffer ? alignedWriteBuffer.data() : (from + fromOffset), idealBlockSize, timeout);
+			useAlignedWriteBuffer ? alignedWriteBuffer.data() : (from + fromOffset), idealBlockSize, timeout, memType);
 		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
 
 		if(!bytesTransferred.has_value() || *bytesTransferred < curAmt) {
@@ -83,6 +83,6 @@ std::optional<uint64_t> WriteDriver::writeLogicalDisk(Communication& com, device
 	// No matter how much succeeded, to be safe, we'll invalidate anything
 	// we may have even tried to write, since it may have succeeded without
 	// notifying, etc.
-	readDriver.invalidateCache(pos, amount);
+	readDriver.invalidateCache(pos, amount, memType);
 	return ret;
 }

@@ -5,7 +5,11 @@ using namespace icsneo;
 using namespace icsneo::Disk;
 
 std::optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_eventhandler_t report,
-	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
+	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, Disk::MemoryType memType) {
+	
+	std::vector<uint8_t>& cache = memType == Disk::MemoryType::SD ? cacheSD : cacheEEPROM;
+	uint64_t& cachePos = memType == Disk::MemoryType::SD ? cachePosSD : cachePosEEPROM;
+
 	if(amount == 0)
 		return 0;
 
@@ -57,7 +61,7 @@ std::optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_e
 
 		auto start = std::chrono::high_resolution_clock::now();
 		auto readAmount = readLogicalDiskAligned(com, report, currentBlock * idealBlockSize,
-			useAlignedReadBuffer ? alignedReadBuffer.data() : (into + intoOffset), idealBlockSize, timeout);
+			useAlignedReadBuffer ? alignedReadBuffer.data() : (into + intoOffset), idealBlockSize, timeout, memType);
 		timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start);
 
 		if(!readAmount.has_value() || *readAmount < curAmt) {
@@ -94,12 +98,19 @@ std::optional<uint64_t> ReadDriver::readLogicalDisk(Communication& com, device_e
 	return ret;
 }
 
-void ReadDriver::invalidateCache(uint64_t pos, uint64_t amount) {
+void ReadDriver::invalidateCache(uint64_t pos, uint64_t amount, MemoryType memType) {
+	std::vector<uint8_t>& cache = memType == Disk::MemoryType::SD ? cacheSD : cacheEEPROM;
+	uint64_t cachePos = memType == Disk::MemoryType::SD ? cachePosSD : cachePosEEPROM;
+	
 	if(pos <= cachePos + cache.size() && pos + amount >= cachePos)
 		cache.clear();
 }
 
-std::optional<uint64_t> ReadDriver::readFromCache(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds staleAfter) {
+std::optional<uint64_t> ReadDriver::readFromCache(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds staleAfter, MemoryType memType) {
+		
+	std::vector<uint8_t>& cache = memType == Disk::MemoryType::SD ? cacheSD : cacheEEPROM;
+	uint64_t cachePos = memType == Disk::MemoryType::SD ? cachePosSD : cachePosEEPROM;
+
 	if(cache.empty())
 		return std::nullopt; // Nothing in the cache
 

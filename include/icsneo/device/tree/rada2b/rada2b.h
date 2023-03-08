@@ -7,6 +7,7 @@
 #include "icsneo/device/devicetype.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/decoder.h"
+#include "icsneo/disk/neomemorydiskdriver.h"
 #include "icsneo/device/tree/rada2b/rada2bsettings.h"
 
 namespace icsneo {
@@ -40,7 +41,7 @@ public:
 
 protected:
 	RADA2B(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<RADA2BSettings>(makeDriver);
+		initialize<RADA2BSettings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {
@@ -66,6 +67,14 @@ protected:
 
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+
+	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
+		return 15*1024*1024;
+	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
+		return 0;
+	}
 };
 
 }

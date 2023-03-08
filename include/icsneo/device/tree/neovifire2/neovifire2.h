@@ -129,6 +129,14 @@ protected:
 		ethActivationStatus = status->ethernetActivationLineEnabled;
 		usbHostPowerStatus = status->usbHostPowerEnabled;
 	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
+		return 4608 * 512;
+	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
+		return 0;
+	}
 };
 
 }

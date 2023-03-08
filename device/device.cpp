@@ -445,7 +445,7 @@ int8_t Device::prepareScriptLoad() {
 	return retVal;
 }
 
-bool Device::startScript()
+bool Device::startScript(Disk::MemoryType memType)
 {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
@@ -454,8 +454,8 @@ bool Device::startScript()
 
 	std::lock_guard<std::mutex> lg(diskLock);
 
-	uint8_t LocationSdCard = 1; //Only support starting a coremini in an SDCard
-	auto generic = com->sendCommand(Command::LoadCoreMini, LocationSdCard);
+	uint8_t location = static_cast<uint8_t>(memType);
+	auto generic = com->sendCommand(Command::LoadCoreMini, location);
 
 	if(!generic)
 	{
@@ -481,6 +481,68 @@ bool Device::stopScript()
 	{
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		return false;
+	}
+
+	return true;
+}
+
+bool Device::uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::MemoryType memType) {
+	
+	auto startAddress = getCoreminiStartAddress(memType);
+	if(!startAddress) {
+		return false;
+	}
+
+	auto connected = isLogicalDiskConnected();
+	
+	if(!connected) {
+		return false; // Already added an API error
+	}
+	
+	if(!(*connected)) {
+		report(APIEvent::Type::DiskNotConnected, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(!stopScript()) {
+		return false;
+	}
+
+	if(!stream || stream->bad()) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return false;
+	}
+
+	std::vector<char> bin(std::istreambuf_iterator<char>(*stream), {}); // Read the whole stream
+
+	if(bin.size() < 4) {
+		report(APIEvent::Type::BufferInsufficient, APIEvent::Severity::Error);
+		return false;
+	}
+
+	uint16_t scriptVersion = *(uint16_t*)(&bin[2]); // Third and fourth byte are version number stored in little endian
+	
+	auto scriptStatus = getScriptStatus();
+
+	if(!scriptStatus) {
+		return false; // Already added an API error
+	}
+	
+	if(scriptStatus->coreminiVersion != scriptVersion) {
+		// Version on device and script are not the same
+		report(APIEvent::Type::CoreminiUploadVersionMismatch, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto numWritten = writeLogicalDisk(*startAddress, (uint8_t*)bin.data(), static_cast<uint64_t>(bin.size()), std::chrono::milliseconds(2000), memType);
+
+	if(!numWritten) {
+		return false; // Already added an API error
+	}
+	
+	if(*numWritten == 0) {
+		report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
+		return false; // Failed to write
 	}
 
 	return true;
@@ -564,7 +626,8 @@ Network Device::getNetworkByNumber(Network::Type type, size_t index) const {
 	return Network::NetID::Invalid;
 }
 
-std::optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout) {
+
+std::optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, Disk::MemoryType memType) {
 	if(!into || timeout <= std::chrono::milliseconds(0)) {
 		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return std::nullopt;
@@ -579,9 +642,9 @@ std::optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uin
 
 	if(diskReadDriver->getAccess() == Disk::Access::EntireCard && diskWriteDriver->getAccess() == Disk::Access::VSA) {
 		// We have mismatched drivers, we need to add an offset to the diskReadDriver
-		const auto offset = Disk::FindVSAInFAT([this, &timeout](uint64_t pos, uint8_t *into, uint64_t amount) {
+		const auto offset = Disk::FindVSAInFAT([this, &timeout, &memType](uint64_t pos, uint8_t *into, uint64_t amount) {
 			const auto start = std::chrono::steady_clock::now();
-			auto ret = diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout);
+			auto ret = diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout, memType);
 			timeout -= std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
 			return ret;
 		});
@@ -593,10 +656,10 @@ std::optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uin
 	// This is needed for certain read drivers which take over the communication stream
 	const auto lifetime = suppressDisconnects();
 
-	return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout);
+	return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout, memType);
 }
 
-std::optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout) {
+std::optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout, Disk::MemoryType memType) {
 	if(!from || timeout <= std::chrono::milliseconds(0)) {
 		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return std::nullopt;
@@ -608,7 +671,7 @@ std::optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* fr
 	}
 
 	std::lock_guard<std::mutex> lk(diskLock);
-	return diskWriteDriver->writeLogicalDisk(*com, report, *diskReadDriver, pos, from, amount, timeout);
+	return diskWriteDriver->writeLogicalDisk(*com, report, *diskReadDriver, pos, from, amount, timeout, memType);
 }
 
 std::optional<bool> Device::isLogicalDiskConnected() {

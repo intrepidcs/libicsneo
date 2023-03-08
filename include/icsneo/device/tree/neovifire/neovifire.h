@@ -69,6 +69,14 @@ private:
 
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+
+	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
+		return 4 * 512;
+	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
+		return 0;
+	}
 };
 
 }

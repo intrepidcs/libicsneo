@@ -45,6 +45,13 @@ protected:
 
 	bool requiresVehiclePower() const override { return false; }
 
+	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
+		return 512*2048;
+	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
+		return 0;
+	}
 };
 
 }

@@ -55,6 +55,8 @@ namespace icsneo {
 
 class DeviceExtension;
 
+typedef uint64_t MemoryAddress;
+
 class Device {
 public:
 	virtual ~Device();
@@ -135,10 +137,34 @@ public:
 		NoScript,
 	};
 
+
+
 	int8_t prepareScriptLoad();
-	bool startScript();
+	bool startScript(Disk::MemoryType memType = Disk::MemoryType::SD);
 	bool stopScript();
 	bool clearScript();
+	bool uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::MemoryType memType = Disk::MemoryType::SD);
+
+	virtual std::optional<MemoryAddress> getCoreminiStartAddressFlash() const {
+		return std::nullopt;
+	}
+
+	virtual std::optional<MemoryAddress> getCoreminiStartAddressSD() const {
+		return std::nullopt;
+	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddress(Disk::MemoryType memType) const {
+		switch(memType) {
+			case Disk::MemoryType::Flash:
+				return getCoreminiStartAddressFlash();
+			case Disk::MemoryType::SD:
+				return getCoreminiStartAddressSD();
+			default:
+				break;
+		}
+		return std::nullopt;
+	}
+
 
 	// Message polling related functions
 	bool enableMessagePolling();
@@ -173,6 +199,8 @@ public:
 	virtual size_t getNetworkCountByType(Network::Type) const;
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
+
+
 	/**
 	 * Read from the logical disk in this device, starting from byte `pos`
 	 * and reading up to `amount` bytes.
@@ -188,7 +216,7 @@ public:
 	 * set in icsneo::GetLastError().
 	 */
 	std::optional<uint64_t> readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount,
-		std::chrono::milliseconds timeout = Disk::DefaultTimeout);
+		std::chrono::milliseconds timeout = Disk::DefaultTimeout, Disk::MemoryType memType = Disk::MemoryType::SD);
 
 	/**
 	 * Write to the logical disk in this device, starting from byte `pos`
@@ -205,7 +233,7 @@ public:
 	 * set in icsneo::GetLastError().
 	 */
 	std::optional<uint64_t> writeLogicalDisk(uint64_t pos, const uint8_t* from, uint64_t amount,
-		std::chrono::milliseconds timeout = Disk::DefaultTimeout);
+		std::chrono::milliseconds timeout = Disk::DefaultTimeout, Disk::MemoryType memType = Disk::MemoryType::SD);
 
 	/**
 	 * Check if the logical disk is connected. This means the disk is inserted,

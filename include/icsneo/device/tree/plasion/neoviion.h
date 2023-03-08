@@ -35,6 +35,10 @@ private:
 			1 // 2
 		);
 	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
+		return 0;
+	}
 };
 
 }

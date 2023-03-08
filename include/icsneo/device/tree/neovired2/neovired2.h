@@ -59,6 +59,14 @@ protected:
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	bool supportsWiVI() const override { return true; }
+
+	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
+		return 33*1024*1024;
+	}
+
+	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
+		return 0;
+	}
 };
 
 }
