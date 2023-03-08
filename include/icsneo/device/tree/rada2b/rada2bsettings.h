@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
+#include "icsneo/communication/message/a2bmessage.h"
 
 #ifdef __cplusplus
 
@@ -11,6 +12,9 @@ namespace icsneo {
 #endif
 
 #pragma pack(push, 2)
+
+
+
 typedef struct
 {
 	uint8_t tdmMode;
@@ -61,6 +65,34 @@ typedef struct {
 
 class RADA2BSettings : public IDeviceSettings {
 public:
+
+	enum class NodeType : uint8_t {
+		Monitor = 0,
+		Master = 1,
+		Subnode = 2
+	};
+
+	enum class TDMMode : uint8_t {
+		TDM2 = 0,
+		TDM4 = 1,
+		TDM8 = 2,
+		TDM12 = 3,
+		TDM16 = 4,
+		TDM20 = 5,
+		TDM24 = 6,
+		TDM32 = 7,
+	};
+
+	enum class ChannelSize : uint8_t {
+		chSize16 = 0,
+		chSize32 = 1
+	};
+
+	enum class RADA2BDevice : uint8_t {
+		Monitor,
+		Node
+	};
+
 	RADA2BSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(rada2b_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<rada2b_settings_t>();
@@ -88,6 +120,108 @@ public:
 				return nullptr;
 		}
 	}
+
+	TDMMode getTDMMode(RADA2BDevice device) const {
+		auto cfg = getStructurePointer<rada2b_settings_t>();
+		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+
+		return (TDMMode)(deviceSettings.tdmMode);
+	}
+
+	uint8_t getTDMModeInt(RADA2BDevice device) const {
+		return tdmModeToChannelNum(getTDMMode(device));
+	}
+
+	ChannelSize getChannelSize(RADA2BDevice device) const {
+		auto cfg = getStructurePointer<rada2b_settings_t>();
+		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+
+		return (ChannelSize)(~(deviceSettings.flags & a2bSettingsFlag16bit));
+	}
+
+	uint8_t getChannelOffset(RADA2BDevice device, A2BMessage::A2BDirection dir) const {
+		auto cfg = getStructurePointer<rada2b_settings_t>();
+		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+
+		if(dir == A2BMessage::A2BDirection::Upstream) {
+			return deviceSettings.upstreamChannelOffset;
+		}
+
+		return deviceSettings.downstreamChannelOffset;
+	}
+
+	NodeType getNodeType(RADA2BDevice device) const {
+		auto cfg = getStructurePointer<rada2b_settings_t>();
+		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+
+		return (NodeType)(deviceSettings.nodeType);		
+	}
+
+	void setNodeType(RADA2BDevice device, NodeType newType) {
+		auto cfg = getMutableStructurePointer<rada2b_settings_t>();
+		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+
+		deviceSettings.nodeType = static_cast<uint8_t>(newType);
+	}
+
+	void setTDMMode(RADA2BDevice device, TDMMode newMode) {
+		auto cfg = getMutableStructurePointer<rada2b_settings_t>();
+		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+
+		deviceSettings.tdmMode = static_cast<uint8_t>(newMode);
+	}
+
+	void setChannelOffset(RADA2BDevice device, A2BMessage::A2BDirection dir, uint8_t newOffset) {
+		auto cfg = getMutableStructurePointer<rada2b_settings_t>();
+		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+
+		if(dir == A2BMessage::A2BDirection::Upstream) {
+			deviceSettings.upstreamChannelOffset = newOffset;
+		}
+		else {
+			deviceSettings.downstreamChannelOffset = newOffset;
+		}
+	}
+
+	void setChannelSize(RADA2BDevice device, ChannelSize newChannelSize) {
+		auto cfg = getMutableStructurePointer<rada2b_settings_t>();
+		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+
+		if(newChannelSize == ChannelSize::chSize16) {
+			deviceSettings.flags |= a2bSettingsFlag16bit;
+		}
+		else {
+			deviceSettings.flags &= ~a2bSettingsFlag16bit;
+		}
+	}
+
+	static const uint8_t tdmModeToChannelNum(TDMMode mode) {
+
+		switch(mode) {
+			case TDMMode::TDM2:
+				return 4;
+			case TDMMode::TDM4:
+				return 8;
+			case TDMMode::TDM8:
+				return 16;
+			case TDMMode::TDM12:
+				return 24;
+			case TDMMode::TDM16:
+				return 32;
+			case TDMMode::TDM20:
+				return 40;
+			case TDMMode::TDM24:
+				return 48;
+			case TDMMode::TDM32:
+				return 64;
+			default:
+				break;
+		}
+		
+		return 0;
+	}
+
+	static constexpr uint8_t a2bSettingsFlag16bit = 0x01;
 };
 
 }

@@ -5,17 +5,16 @@
 
 #include "icsneo/communication/message/callback/streamoutput/streamoutput.h"
 #include "icsneo/communication/message/a2bmessage.h"
-#include <memory>
-#include <functional>
+#include "icsneo/device/device.h"
 
 namespace icsneo {
 
 class A2BWAVOutput : public StreamOutput {
 public:
-	A2BWAVOutput(const char* filename, uint32_t sampleRate = A2BPCM_SAMPLERATE_44100) 
+	A2BWAVOutput(const char* filename, uint32_t sampleRate = 44100) 
 		: StreamOutput(filename), wavSampleRate(sampleRate) {}
 
-	A2BWAVOutput(std::unique_ptr<std::ostream>&& os, uint32_t sampleRate = A2BPCM_SAMPLERATE_44100) 
+	A2BWAVOutput(std::unique_ptr<std::ostream>&& os, uint32_t sampleRate = 44100) 
 		: StreamOutput(std::move(os)), wavSampleRate(sampleRate) {}
 
 	void writeHeader(const std::shared_ptr<A2BMessage>& firstMsg) const;
@@ -32,12 +31,11 @@ public:
 
 protected:
 
-	bool writeSamples(const std::shared_ptr<A2BMessage>& msg, A2BMessage::A2BDirection dir) const;
-
 	uint32_t wavSampleRate;
 	mutable uint32_t streamStartPos;
 	mutable bool firstMessageFlag = true;
 	mutable bool closed = false;
+
 };
 
 }

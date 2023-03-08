@@ -140,6 +140,30 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 
 			return true;
 		}
+		case Network::Type::A2B: {
+			result = HardwareA2BPacket::DecodeToMessage(packet->data);
+
+			if(!result) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false; // A nullptr was returned, the packet was not long enough to decode
+			}
+
+			A2BMessage& msg = *static_cast<A2BMessage*>(result.get());
+			msg.network = packet->network;
+			return true;
+		}
+		case Network::Type::LIN: {
+			result = HardwareLINPacket::DecodeToMessage(packet->data);
+
+			if(!result) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false; // A nullptr was returned, the packet was not long enough to decode
+			}
+
+			LINMessage& msg = *static_cast<LINMessage*>(result.get());
+			msg.network = packet->network;
+			return true;
+		}
 		case Network::Type::Internal: {
 			switch(packet->network.getNetID()) {
 				case Network::NetID::Reset_Status: {
@@ -351,30 +375,6 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					break;
 			}
 			break;
-		}
-		case Network::Type::A2B: {
-			result = HardwareA2BPacket::DecodeToMessage(packet->data);
-
-			if(!result) {
-				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
-				return false; // A nullptr was returned, the packet was not long enough to decode
-			}
-
-			A2BMessage& msg = *static_cast<A2BMessage*>(result.get());
-			msg.network = packet->network;
-			return true;
-		}
-		case Network::Type::LIN: {
-			result = HardwareLINPacket::DecodeToMessage(packet->data);
-
-			if(!result) {
-				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
-				return false; // A nullptr was returned, the packet was not long enough to decode
-			}
-
-			LINMessage& msg = *static_cast<LINMessage*>(result.get());
-			msg.network = packet->network;
-			return true;
 		}
 	}
 

@@ -1,23 +1,26 @@
 #include "icsneo/communication/message/callback/streamoutput/a2bwavoutput.h"
+#include "icsneo/device/tree/rada2b/rada2b.h"
+#include "icsneo/icsneocpp.h"
 
-namespace icsneo
-{
+namespace icsneo {
 
 void A2BWAVOutput::writeHeader(const std::shared_ptr<A2BMessage>& firstMsg) const {
 
 	WaveFileHeader header = WaveFileHeader(2 * firstMsg->getNumChannels(), wavSampleRate, firstMsg->getBitDepth());
 	header.write(stream);
 	streamStartPos = static_cast<uint32_t>(stream->tellp());
+	
 }
 
 bool A2BWAVOutput::callIfMatch(const std::shared_ptr<Message>& message) const {
-	if(closed)
-	{
+	
+	if(closed) {
 		return false;
 	}
 
-	if(message->type != Message::Type::Frame)
+	if(message->type != Message::Type::Frame) {
 		return false;
+	}
 
 	const auto& frame = std::static_pointer_cast<Frame>(message);
 
@@ -31,23 +34,21 @@ bool A2BWAVOutput::callIfMatch(const std::shared_ptr<Message>& message) const {
 		firstMessageFlag = false;
 	}
 
-	if(!writeSamples(a2bmsg, A2BMessage::A2BDirection::DownStream)) {
-		close();
-
-		return false;
+	// Might need to readd this block of code later if sample alignment fix is necessary
+	/*
+	std::streamsize bps = (std::streamsize)a2bmsg->getBytesPerSample();
+	for(size_t i=0; i<a2bmsg->getNumSamples(); i++) {
+		A2BPCMSample samp = *(a2bmsg->getSample(i));
+		write((void*)&samp, bps);
 	}
+	*/
 
-	if(!writeSamples(a2bmsg, A2BMessage::A2BDirection::UpStream)) {
-		close();
-
-		return false;
-	}
+	write((void*)a2bmsg->getAudioBuffer(), a2bmsg->getAudioBufferSize());
 
 	return true;
 }
 
-void A2BWAVOutput::close() const
-{
+void A2BWAVOutput::close() const {
 	if(closed) {
 		return;
 	}
@@ -63,38 +64,6 @@ void A2BWAVOutput::close() const
 	write((void*)&chunkSize, 4);
 
 	closed = true;
-}
-
-bool A2BWAVOutput::writeSamples(const std::shared_ptr<A2BMessage>& msg, A2BMessage::A2BDirection dir) const
-{
-	uint8_t numChannels = msg->getNumChannels();
-
-	uint8_t channel = 0;
-	uint32_t frame = 0;
-	uint8_t bitDepth = msg->getBitDepth();
-
-	while(true) {
-		auto sample = msg->getSample(dir, channel, frame);
-
-		if(!sample) {
-			if(channel == 0) {
-				break;
-			}
-
-			return false;
-		}
-
-		uint32_t audioSample = sample.value() >> (32 - bitDepth);
-
-		write((void*)(&audioSample), A2BPCM_SAMPLE_SIZE);
-
-		channel = (channel + 1) % numChannels;
-		if(channel == 0) {
-			frame++;
-		}
-	}
-
-	return true;
 }
 
 }
