@@ -271,8 +271,10 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 				if(receivedMessage) {
 					receivedMessage = false;
 				} else {
-					if(!stopHeartbeatThread && !isDisconnected())
+					if(!stopHeartbeatThread && !isDisconnected()) {
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+						com->driver->close();
+					}
 					break;
 				}
 			}

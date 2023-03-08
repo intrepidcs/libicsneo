@@ -103,6 +103,11 @@ public:
 		PCAPCouldNotStart = 0x3102,
 		PCAPCouldNotFindDevices = 0x3103,
 		PacketDecodingError = 0x3104,
+		SocketFailedToOpen = 0x3105,
+		FailedToBind = 0x3106,
+		ErrorSettingSocketOption = 0x3107,
+		GetIfAddrsError = 0x3108,
+		SendToError = 0x3109,
 		
 		NoErrorFound = 0xFFFFFFFD,
 		TooManyEvents = 0xFFFFFFFE,

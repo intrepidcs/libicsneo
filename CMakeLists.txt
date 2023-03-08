@@ -17,6 +17,7 @@ option(LIBICSNEO_ENABLE_FIRMIO "Enable communication between Linux and CoreMini 
 option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw ethernet" ON)
 option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" ON)
 option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" ON)
+option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
 
 if(NOT CMAKE_CXX_STANDARD)
 	set(CMAKE_CXX_STANDARD 17)
@@ -157,6 +158,12 @@ else() # Darwin or Linux
 	endif()
 endif()
 
+if(LIBICSNEO_ENABLE_TCP)
+	list(APPEND PLATFORM_SRC
+		platform/tcp.cpp
+	)
+endif()
+
 if(LIBICSNEO_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
@@ -283,6 +290,12 @@ if(LIBICSNEO_ENABLE_CDCACM)
 endif()
 if(LIBICSNEO_ENABLE_FTDI)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FTDI)
+endif()
+if(LIBICSNEO_ENABLE_TCP)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_TCP)
+	if(WIN32)
+		target_link_libraries(icsneocpp PRIVATE ws2_32)
+	endif()
 endif()
 
 # fatfs

@@ -152,19 +152,18 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 				if(!decoder.decode(message, packet))
 					continue;
 
-				const neodevice_handle_t handle = (neodevice_handle_t)((i << 24) | (decoded.srcMAC[3] << 16) | (decoded.srcMAC[4] << 8) | (decoded.srcMAC[5]));
-				if(std::any_of(found.begin(), found.end(), [&handle](const auto& found) { return handle == found.handle; }))
-					continue; // We already have this device on this interface
-
 				const auto serial = std::dynamic_pointer_cast<SerialNumberMessage>(message);
 				if(!serial || serial->deviceSerial.size() != 6)
 					continue;
 
 				FoundDevice foundDevice;
-				foundDevice.handle = handle;
+				foundDevice.handle = (neodevice_handle_t)((i << 24) | (decoded.srcMAC[3] << 16) | (decoded.srcMAC[4] << 8) | (decoded.srcMAC[5]));
 				foundDevice.productId = decoded.srcMAC[2];
 				memcpy(foundDevice.serial, serial->deviceSerial.c_str(), sizeof(foundDevice.serial) - 1);
 				foundDevice.serial[sizeof(foundDevice.serial) - 1] = '\0';
+
+				if(std::any_of(found.begin(), found.end(), [&](const auto& found) { return ::strncmp(foundDevice.serial, found.serial, sizeof(foundDevice.serial)) == 0; }))
+					continue;
 
 				foundDevice.makeDriver = [](const device_eventhandler_t& reportFn, neodevice_t& device) {
 					return std::unique_ptr<Driver>(new PCAP(reportFn, device));

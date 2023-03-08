@@ -125,6 +125,11 @@ static constexpr const char* DEVICE_IN_USE = "The device is currently in use by 
 static constexpr const char* PCAP_COULD_NOT_START = "The PCAP driver could not be started. Ethernet devices will not be found.";
 static constexpr const char* PCAP_COULD_NOT_FIND_DEVICES = "The PCAP driver failed to find devices. Ethernet devices will not be found.";
 static constexpr const char* PACKET_DECODING = "There was an error decoding a packet from the device.";
+static constexpr const char* SOCKET_FAILED_TO_OPEN = "Unable to open new socket.";
+static constexpr const char* FAILED_TO_BIND = "Unable to bind socket.";
+static constexpr const char* ERROR_SETTING_SOCKET_OPTION = "A call to setsockopt() failed.";
+static constexpr const char* GETIFADDRS_ERROR = "A call to getifaddrs() failed.";
+static constexpr const char* SEND_TO_ERROR = "A call to sendto() failed.";
 
 static constexpr const char* TOO_MANY_EVENTS = "Too many events have occurred. The list has been truncated.";
 static constexpr const char* UNKNOWN = "An unknown internal error occurred.";
@@ -266,6 +271,16 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return PCAP_COULD_NOT_FIND_DEVICES;
 		case Type::PacketDecodingError:
 			return PACKET_DECODING;
+		case Type::SocketFailedToOpen:
+			return SOCKET_FAILED_TO_OPEN;
+		case Type::FailedToBind:
+			return FAILED_TO_BIND;
+		case Type::ErrorSettingSocketOption:
+			return ERROR_SETTING_SOCKET_OPTION;
+		case Type::GetIfAddrsError:
+			return GETIFADDRS_ERROR;
+		case Type::SendToError:
+			return SEND_TO_ERROR;
 		
 		// Other Errors
 		case Type::TooManyEvents:

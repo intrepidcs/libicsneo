@@ -19,6 +19,10 @@
 #include "icsneo/platform/ftdi.h"
 #endif
 
+#ifdef ICSNEO_ENABLE_TCP
+#include "icsneo/platform/tcp.h"
+#endif
+
 using namespace icsneo;
 
 template<typename T>
@@ -45,6 +49,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 
 	#ifdef ICSNEO_ENABLE_FIRMIO
 	FirmIO::Find(newDriverFoundDevices);
+	#endif
+
+	#ifdef ICSNEO_ENABLE_TCP
+	TCP::Find(newDriverFoundDevices);
 	#endif
 
 	#ifdef ICSNEO_ENABLE_RAW_ETHERNET
