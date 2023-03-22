@@ -653,11 +653,43 @@ int LegacyDLLExport icsneoGetErrorMessages(void* hObject, int* pErrorMsgs, int* 
 	return false;
 }
 
-int LegacyDLLExport icsneoGetErrorInfo(int lErrorNumber, TCHAR* szErrorDescriptionShort, TCHAR* szErrorDescriptionLong,
+int LegacyDLLExport icsneoGetErrorInfo(int lErrorNumber, char* szErrorDescriptionShort, char* szErrorDescriptionLong,
 	int* lMaxLengthShort, int* lMaxLengthLong, int* lErrorSeverity, int* lRestartNeeded)
 {
-	// TODO Implement
-	return false;
+	if (szErrorDescriptionShort == nullptr || szErrorDescriptionLong == nullptr 
+		|| lMaxLengthShort == nullptr || lMaxLengthLong == nullptr || lErrorSeverity == nullptr 
+		|| lRestartNeeded == nullptr)
+	{
+		return false;
+	}
+	
+	//Set and send back 0. We will not restart the software.
+	*lRestartNeeded = 0;
+	
+	//Using the error number, get the description from the event.
+	const char* tempDescription = APIEvent::DescriptionForType(APIEvent::Type(lErrorNumber));
+	int descrLength = int(std::strlen(tempDescription));
+	
+	//Check to make sure the length of the error is not >= the buffer.
+	if (descrLength >= *lMaxLengthShort || descrLength >= *lMaxLengthLong)
+	{
+		return false;
+	}
+
+	//Copy the error description to the inout Short and Long arguments.
+	std::copy(tempDescription, tempDescription + descrLength, szErrorDescriptionShort);
+	std::copy(tempDescription, tempDescription + descrLength, szErrorDescriptionLong);
+
+	//Add the null terminator.
+	szErrorDescriptionShort[descrLength] = '\0';
+	szErrorDescriptionLong[descrLength] = '\0';
+
+	//Update the inout lengths to what the actual length of the error is
+	*lMaxLengthShort = *lMaxLengthLong = descrLength;
+	
+	//Update the inout severity argument.
+	*lErrorSeverity = int(APIEvent::Severity::Any);
+	return true;
 }
 
 //ISO15765-2 Functions

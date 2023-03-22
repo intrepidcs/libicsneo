@@ -91,7 +91,7 @@ extern int LegacyDLLExport icsneoFindRemoteNeoDevices(const char* pIPAddress, Ne
 //Error Functions
 extern int LegacyDLLExport icsneoGetLastAPIError(void* hObject, unsigned long* pErrorNumber);
 extern int LegacyDLLExport icsneoGetErrorMessages(void* hObject, int* pErrorMsgs, int* pNumberOfErrors);
-extern int LegacyDLLExport icsneoGetErrorInfo(int lErrorNumber, TCHAR*szErrorDescriptionShort, TCHAR*szErrorDescriptionLong, int* lMaxLengthShort, int* lMaxLengthLong,int* lErrorSeverity,int* lRestartNeeded);
+extern int LegacyDLLExport icsneoGetErrorInfo(int lErrorNumber, char* szErrorDescriptionShort, char* szErrorDescriptionLong, int* lMaxLengthShort, int* lMaxLengthLong,int* lErrorSeverity,int* lRestartNeeded);
 
 //ISO15765-2 Functions
 extern int LegacyDLLExport icsneoISO15765_EnableNetworks(void* hObject, unsigned long ulNetworks);
