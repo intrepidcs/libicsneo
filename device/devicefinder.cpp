@@ -149,6 +149,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<RADA2B>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __RADCOMET_H_
+		makeIfSerialMatches<RADCOMET>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __RADEPSILON_H_
 		makeIfSerialMatches<RADEpsilon>(dev, newFoundDevices);
 		#endif
@@ -276,6 +280,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 		RADA2B::DEVICE_TYPE,
 		#endif
 
+		#ifdef __RADCOMET_H_
+		RADCOMET::DEVICE_TYPE,
+		#endif
+		
 		#ifdef __RADEPSILON_H_
 		RADEpsilon::DEVICE_TYPE,
 		#endif

@@ -349,6 +349,22 @@ typedef struct ETHERNET_SETTINGS2_t
 } ETHERNET_SETTINGS2;
 #define ETHERNET_SETTINGS2_SIZE 16
 
+typedef struct ETHERNET10T1S_SETTINGS_t
+{
+	uint8_t max_burst_count;
+	uint8_t burst_timer;
+	uint8_t max_num_nodes;
+	uint8_t local_id;
+	uint8_t to_timer;
+	uint8_t flags;
+	uint8_t local_id_alternate;
+	uint8_t rsvd[5];
+} ETHERNET10T1S_SETTINGS;
+#define ETHERNET10T1S_SETTINGS_SIZE 12
+
+#define ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA 0x01
+#define ETHERNET10T1S_SETTINGS_FLAG_TERMINATION 0x02
+
 #define ETHERNET_SETTINGS10G_FLAG_FULL_DUPLEX  0x01
 #define ETHERNET_SETTINGS10G_FLAG_AUTO_NEG     0x02
 #define ETHERNET_SETTINGS10G_FLAG_TCPIP_ENABLE 0x04

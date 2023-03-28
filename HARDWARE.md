@@ -17,6 +17,10 @@
 	- RADA2B
 		- CAN works
 		- Ethernet works
+	- RADComet
+		- CAN works
+		- CAN FD works
+		- Ethernet works
 
 - Connecting over USB
 	- ValueCAN 4 series
