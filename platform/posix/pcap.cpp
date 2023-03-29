@@ -140,6 +140,8 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 			struct pcap_pkthdr* header;
 			const uint8_t* data;
 			auto res = pcap_next_ex(iface.fp, &header, &data);
+			if(res == 0)
+				continue;
 			if(res < 0 || !header || !data) {
 				if (!warned) {
 					warned = true;
@@ -148,8 +150,6 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 				}
 				break;
 			}
-			if(res == 0)
-				continue; // Keep waiting for that packet
 
 			EthernetPacketizer ethPacketizer([](APIEvent::Type, APIEvent::Severity) {});
 			memcpy(ethPacketizer.hostMAC, iface.macAddress, sizeof(ethPacketizer.hostMAC));
