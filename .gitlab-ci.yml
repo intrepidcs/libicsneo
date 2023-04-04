@@ -1,6 +1,13 @@
+variables:
+  DEBIAN_FRONTEND: noninteractive
+
 stages:
   - build
   - test
+
+#-------------------------------------------------------------------------------
+# Windows
+#-------------------------------------------------------------------------------
 
 build windows/x64:
   stage: build
@@ -24,7 +31,7 @@ test windows/x64:
     - build windows/x64
   tags:
     - icsneo-windows
-  timeout: 3m
+  timeout: 5m
 
 build windows/x86:
   stage: build
@@ -48,4 +55,196 @@ test windows/x86:
     - build windows/x86
   tags:
     - icsneo-windows
-  timeout: 3m
+  timeout: 5m
+
+#-------------------------------------------------------------------------------
+# Ubuntu
+#-------------------------------------------------------------------------------
+
+.build_linux_ubuntu_gcc: &build_linux_ubuntu_gcc
+  stage: build
+  script:
+    - apt update -y
+    - apt upgrade -y
+    - apt install -y g++ ninja-build cmake libusb-1.0-0-dev libpcap-dev
+    - sh ci/build-posix.sh
+  artifacts:
+    when: always
+    paths:
+      - build
+    expire_in: 3 days
+  tags:
+    - linux-build
+
+.test_linux_ubuntu_gcc: &test_linux_ubuntu_gcc
+  stage: test
+  script:
+    - apt update -y
+    - apt upgrade -y
+    - apt install -y libusb-1.0-0-dev libpcap-dev
+    - build/libicsneo-tests
+  tags:
+    - linux-build
+  timeout: 5m
+
+.build_linux_ubuntu_clang: &build_linux_ubuntu_clang
+  stage: build
+  script:
+    - apt update -y
+    - apt upgrade -y
+    - apt install -y clang lld libc++-dev libc++abi-dev ninja-build cmake libusb-1.0-0-dev libpcap-dev
+    - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld CXXFLAGS=-stdlib=libc++ sh ci/build-posix.sh
+  artifacts:
+    when: always
+    paths:
+      - build
+    expire_in: 3 days
+  tags:
+    - linux-build
+
+.test_linux_ubuntu_clang: &test_linux_ubuntu_clang
+  stage: test
+  script:
+    - apt update -y
+    - apt upgrade -y
+    - apt install -y libusb-1.0-0-dev libpcap-dev libc++-dev libc++abi-dev
+    - build/libicsneo-tests
+  tags:
+    - linux-build
+  timeout: 5m
+
+build linux/ubuntu/2004/amd64/gcc:
+  <<: *build_linux_ubuntu_gcc
+  image: ubuntu:20.04
+
+test linux/ubuntu/2004/amd64/gcc:
+  <<: *test_linux_ubuntu_gcc
+  image: ubuntu:20.04
+  dependencies:
+    - build linux/ubuntu/2004/amd64/gcc
+  needs:
+    - build linux/ubuntu/2004/amd64/gcc
+
+build linux/ubuntu/2004/amd64/clang:
+  <<: *build_linux_ubuntu_clang
+  image: ubuntu:20.04
+
+test linux/ubuntu/2004/amd64/clang:
+  <<: *test_linux_ubuntu_clang
+  image: ubuntu:20.04
+  dependencies:
+    - build linux/ubuntu/2004/amd64/clang
+  needs:
+    - build linux/ubuntu/2004/amd64/clang
+
+build linux/ubuntu/2204/amd64/gcc:
+  <<: *build_linux_ubuntu_gcc
+  image: ubuntu:22.04
+
+test linux/ubuntu/2204/amd64/gcc:
+  <<: *test_linux_ubuntu_gcc
+  image: ubuntu:22.04
+  dependencies:
+    - build linux/ubuntu/2204/amd64/gcc
+  needs:
+    - build linux/ubuntu/2204/amd64/gcc
+
+build linux/ubuntu/2204/amd64/clang:
+  <<: *build_linux_ubuntu_clang
+  image: ubuntu:22.04
+
+test linux/ubuntu/2204/amd64/clang:
+  <<: *test_linux_ubuntu_clang
+  image: ubuntu:22.04
+  dependencies:
+    - build linux/ubuntu/2204/amd64/clang
+  needs:
+    - build linux/ubuntu/2204/amd64/clang
+
+#-------------------------------------------------------------------------------
+# Fedora
+#-------------------------------------------------------------------------------
+
+.build_linux_fedora_gcc: &build_linux_fedora_gcc
+  stage: build
+  cache:
+    paths:
+      - /var/cache/dnf
+  script:
+    - dnf upgrade -y
+    - dnf install -y g++ libpcap-devel cmake ninja-build libusb1-devel
+    - sh ci/build-posix.sh
+  artifacts:
+    when: always
+    paths:
+      - build
+    expire_in: 3 days
+  tags:
+    - linux-build
+
+.test_linux_fedora_gcc: &test_linux_fedora_gcc
+  stage: test
+  cache:
+    paths:
+      - /var/cache/dnf
+  script:
+    - dnf upgrade -y
+    - dnf install -y libpcap-devel libusb1-devel
+    - build/libicsneo-tests
+  tags:
+    - linux-build
+  timeout: 5m
+
+.build_linux_fedora_clang: &build_linux_fedora_clang
+  stage: build
+  cache:
+    paths:
+      - /var/cache/dnf
+  script:
+    - dnf upgrade -y
+    - dnf install -y clang lld libpcap-devel cmake ninja-build libusb1-devel libcxx-devel
+    - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld CXXFLAGS=-stdlib=libc++ sh ci/build-posix.sh
+  artifacts:
+    when: always
+    paths:
+      - build
+    expire_in: 3 days
+  tags:
+    - linux-build
+
+.test_linux_fedora_clang: &test_linux_fedora_clang
+  stage: test
+  cache:
+    paths:
+      - /var/cache/dnf
+  script:
+    - dnf upgrade -y
+    - dnf install -y libpcap-devel libusb1-devel libcxx-devel
+    - build/libicsneo-tests
+  tags:
+    - linux-build
+  timeout: 5m
+
+build linux/fedora/37/amd64/gcc:
+  <<: *build_linux_fedora_gcc
+  image: fedora:37
+
+test linux/fedora/37/amd64/gcc:
+  <<: *test_linux_fedora_gcc
+  image: fedora:37
+  dependencies:
+    - build linux/fedora/37/amd64/gcc
+  needs:
+    - build linux/fedora/37/amd64/gcc
+
+build linux/fedora/37/amd64/clang:
+  <<: *build_linux_fedora_clang
+  image: fedora:37
+
+test linux/fedora/37/amd64/clang:
+  <<: *test_linux_fedora_clang
+  image: fedora:37
+  dependencies:
+    - build linux/fedora/37/amd64/clang
+  needs:
+    - build linux/fedora/37/amd64/clang
