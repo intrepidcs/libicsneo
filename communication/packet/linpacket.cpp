@@ -5,7 +5,6 @@
 namespace icsneo {
 
 std::shared_ptr<Message> HardwareLINPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
-	auto msg = std::make_shared<LINMessage>();
 	const HardwareLINPacket* packet = reinterpret_cast<const HardwareLINPacket*>(bytestream.data());
 	size_t numDataBytes = packet->CoreMiniBitsLIN.len;
 	size_t numHeaderBytes = sizeof(HardwareLINPacket::CoreMiniBitsLIN);
@@ -17,14 +16,13 @@ std::shared_ptr<Message> HardwareLINPacket::DecodeToMessage(const std::vector<ui
 	if(numDataBytes)
 		--numDataBytes; //If data is present, there will be a checksum included
 
+	auto msg = std::make_shared<LINMessage>(static_cast<uint8_t>(packet->CoreMiniBitsLIN.ID));
 	msg->network = Network::GetNetIDFromCoreMiniNetwork(static_cast<Network::CoreMini>(packet->networkID));
-	msg->protectedID = packet->CoreMiniBitsLIN.ID;
-	msg->ID = (packet->CoreMiniBitsLIN.ID & 0x3Fu);
 	msg->isEnhancedChecksum = static_cast<bool>(packet->CoreMiniBitsLIN.TxChkSumEnhanced);
 
 	/* Minimum one responder byte and one checksum byte. */
 	if(2u > packet->CoreMiniBitsLIN.len)
-		msg->type = LINMessage::Type::LIN_ERROR;
+		msg->linMsgType = LINMessage::Type::LIN_ERROR;
 
 	auto dataStart = bytestream.begin() + numHeaderBytes;
 	std::copy(dataStart, (dataStart+numDataBytes), std::back_inserter(msg->data));
@@ -78,16 +76,16 @@ std::shared_ptr<Message> HardwareLINPacket::DecodeToMessage(const std::vector<ui
 		static_cast<bool>(packet->CoreMiniBitsLIN.BreakOnly)
 	};
 	if(msg->statusFlags.TxCommander || msg->statusFlags.TxResponder)
-		msg->type = LINMessage::Type::LIN_COMMANDER_MSG;
+		msg->linMsgType = LINMessage::Type::LIN_COMMANDER_MSG;
 	else if(msg->statusFlags.BreakOnly)
-		msg->type = LINMessage::Type::LIN_BREAK_ONLY;
+		msg->linMsgType = LINMessage::Type::LIN_BREAK_ONLY;
 	if( msg->errFlags.ErrRxBreakOnly     || msg->errFlags.ErrRxBreakSyncOnly ||
 		msg->errFlags.ErrTxRxMismatch    || msg->errFlags.ErrRxBreakNotZero  ||
 		msg->errFlags.ErrRxBreakTooShort || msg->errFlags.ErrRxSyncNot55     ||
 		msg->errFlags.ErrRxDataLenOver8  || msg->errFlags.ErrFrameSync       ||
 		msg->errFlags.ErrFrameMessageID  || msg->errFlags.ErrChecksumMatch   ||
 		msg->errFlags.ErrFrameResponderData )
-		{ msg->type = LINMessage::Type::LIN_ERROR; }
+		{ msg->linMsgType = LINMessage::Type::LIN_ERROR; }
 
 	msg->timestamp = packet->timestamp;
 	return msg;
@@ -97,7 +95,7 @@ bool HardwareLINPacket::EncodeFromMessage(LINMessage& message, std::vector<uint8
 {
 	uint8_t size = ((std::min<size_t>(8ul, message.data.size()) + 3ul) & 0xFu);
 	if(size > 3) { ++size; } // add a checksum byte if there's data
-	switch(message.type) {
+	switch(message.linMsgType) {
 		case LINMessage::Type::LIN_HEADER_ONLY:
 		case LINMessage::Type::LIN_COMMANDER_MSG:
 		{
@@ -117,12 +115,7 @@ bool HardwareLINPacket::EncodeFromMessage(LINMessage& message, std::vector<uint8
 		default:
 			break;
 	}
-
-	message.protectedID = message.ID;
-	auto bit = [&](uint8_t pos)->uint8_t { return ((message.protectedID >> pos) & 0x1u); };
-	message.protectedID |= (~(bit(1) ^ bit(3) ^ bit(4) ^ bit(5)) << 7);
-	message.protectedID |= ((bit(0) ^ bit(1) ^ bit(2) ^ bit(4)) << 6);
-
+	message.calcProtectedID(message.ID);
 	bytestream.insert(bytestream.end(),
 	{
 		static_cast<uint8_t>(0x00u),
@@ -132,7 +125,7 @@ bool HardwareLINPacket::EncodeFromMessage(LINMessage& message, std::vector<uint8
 		static_cast<uint8_t>(message.protectedID)
 	});
 
-	switch(message.type) {
+	switch(message.linMsgType) {
 		case(LINMessage::Type::LIN_COMMANDER_MSG):
 		case(LINMessage::Type::LIN_UPDATE_RESPONDER):
 		{
@@ -144,6 +137,7 @@ bool HardwareLINPacket::EncodeFromMessage(LINMessage& message, std::vector<uint8
 		default:
 			break;
 	}
+
 	if(bytestream.size() % 2)
 		bytestream.push_back(0x41); //padding
 

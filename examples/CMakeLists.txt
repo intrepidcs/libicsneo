@@ -1,4 +1,6 @@
 option(LIBICSNEO_BUILD_C_INTERACTIVE_EXAMPLE "Build the command-line interactive C example." ON)
+option(LIBICSNEO_BUILD_C_SIMPLE_EXAMPLE "Build the command-line simple C example." ON)
+option(LIBICSNEO_BUILD_C_LEGACY_EXAMPLE "Build the command-line simple C example." ON)
 option(LIBICSNEO_BUILD_CPP_SIMPLE_EXAMPLE "Build the simple C++ example." ON)
 option(LIBICSNEO_BUILD_CPP_INTERACTIVE_EXAMPLE "Build the command-line interactive C++ example." ON)
 option(LIBICSNEO_BUILD_CPP_A2B_EXAMPLE "Build the A2B example." ON)
@@ -9,6 +11,14 @@ option(LIBICSNEO_BUILD_CPP_LIN_EXAMPLE "Build the LIN example." ON)
 
 if(LIBICSNEO_BUILD_C_INTERACTIVE_EXAMPLE)
 	add_subdirectory(c/interactive)
+endif()
+
+if(LIBICSNEO_BUILD_C_SIMPLE_EXAMPLE)
+	add_subdirectory(c/simple)
+endif()
+
+if(LIBICSNEO_BUILD_C_LEGACY_EXAMPLE)
+	add_subdirectory(c/legacy)
 endif()
 
 if(LIBICSNEO_BUILD_CPP_SIMPLE_EXAMPLE)

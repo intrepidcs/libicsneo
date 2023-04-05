@@ -99,7 +99,7 @@ int main() {
 		auto lin_r = std::make_shared<icsneo::LINMessage>();
 		lin_r->network = icsneo::Network::NetID::LIN2;
 		lin_r->ID = 0x11;
-		lin_r->type = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
+		lin_r->linMsgType = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
 		lin_r->data = {0xaa, 0xbb, 0xcc, 0xdd, 0x11, 0x22, 0x33, 0x44};
 		ret = device->transmit(lin_r); // This will return false if the device does not support LIN
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
@@ -108,7 +108,7 @@ int main() {
 		auto lin_c = std::make_shared<icsneo::LINMessage>();
 		lin_c->network = icsneo::Network::NetID::LIN;
 		lin_c->ID = 0x11;
-		lin_c->type = icsneo::LINMessage::Type::LIN_HEADER_ONLY;
+		lin_c->linMsgType = icsneo::LINMessage::Type::LIN_HEADER_ONLY;
 		ret = device->transmit(lin_c);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl << std::endl;
 
@@ -117,7 +117,7 @@ int main() {
 		lin_d->network = icsneo::Network::NetID::LIN;
 		lin_d->ID = 0x22;
 		lin_d->isEnhancedChecksum = true;
-		lin_d->type = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;
+		lin_d->linMsgType = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;
 		lin_d->data = {0x11, 0x22, 0x33, 0x44, 0xaa, 0xbb, 0xcc, 0xdd};
 		ret = device->transmit(lin_d);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl << std::endl;

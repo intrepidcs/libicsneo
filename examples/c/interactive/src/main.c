@@ -1,5 +1,5 @@
 // Signal to dynamically load the library
-#define ICSNEOC_DYNAMICLOAD
+//#define ICSNEOC_DYNAMICLOAD
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -219,21 +219,21 @@ int main() {
 
 	// Attempt to initialize the library and access its functions
 	// This call searches for icsneoc.dll according to the standard dynamic-link library search order
-	int ret = icsneo_init();
-	if(ret == 1) {
-		printf("The library was already initialized!\n");
-		return ret;
-	}
-
-	if(ret == 2) {
-		printf("The library could not be found!\n");
-		return ret;
-	}
-
-	if(ret == 3) {
-		printf("The library is missing functions!\n");
-		return ret;
-	}
+	//int ret = icsneo_init();
+	//if(ret == 1) {
+	//	printf("The library was already initialized!\n");
+	//	return ret;
+	//}
+//
+	//if(ret == 2) {
+	//	printf("The library could not be found!\n");
+	//	return ret;
+	//}
+//
+	//if(ret == 3) {
+	//	printf("The library is missing functions!\n");
+	//	return ret;
+	//}
 
 	neoversion_t ver = icsneo_getVersion();
 	printf("ICS icsneoc.dll version %u.%u.%u\n\n", ver.major, ver.minor, ver.patch);
@@ -486,6 +486,31 @@ int main() {
 									printf("TX%s %04x ", canMsg->status.globalError ? " ERR" : "", canMsg->description);
 								printf("(%"PRIu64")\n", canMsg->timestamp);
 								break;
+							}
+							case ICSNEO_NETWORK_TYPE_LIN: {
+								neomessage_lin_t* linMsg = (neomessage_lin_t*)frame;
+								size_t frameLen = linMsg->length;
+								size_t dataLen = (frameLen > 2) ? (frameLen - 2) : 0;
+								size_t numberBytesHeader = (dataLen > 1) ? 3 : 1;
+								size_t numberBytesData = frameLen - numberBytesHeader;
+								if(linMsg->netid == ICSNEO_NETID_LIN) {
+									printf("LIN 1 | ID: 0x%02x [%zu] ", linMsg->header[0], dataLen);
+								}
+								else if (linMsg->netid == ICSNEO_NETID_LIN2) {
+									printf("LIN 2 | ID: 0x%02x [%zu] ", linMsg->header[0], dataLen);
+								}
+
+								for(size_t i = 0; i < dataLen; ++i) {
+									if (i < 2) {
+										printf("%02x ", linMsg->header[i+1]);
+									} else {
+										printf("%02x ", linMsg->data[i-2]);
+									}
+								}
+								if(numberBytesData > 0)
+									printf("| Checksum: 0x%02x\n", linMsg->data[numberBytesData-1]);
+								else
+									printf("| Checksum: 0x%02x\n", linMsg->header[numberBytesHeader-1]);
 							}
 							default:
 								printf("\tMessage on netid %d with length %zu\n", frame->netid, frame->length);
@@ -762,7 +787,7 @@ int main() {
 		case 'X':
 		case 'x':
 			printf("Exiting program\n");
-			return !icsneo_close();
+			return 0;
 		default:
 			printf("Unexpected input, exiting!\n");
 			return 1;

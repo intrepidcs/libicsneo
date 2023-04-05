@@ -73,6 +73,25 @@ static bool NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t
 		return false;
 
 	const neomessage_frame_t& frame = *reinterpret_cast<const neomessage_frame_t*>(&newmsg);
+
+	auto copyStatusData = [&]() {
+		oldmsg.NetworkID = static_cast<uint8_t>(frame.netid); // Note: NetID remapping from the original API is not supported
+		oldmsg.NetworkID2 = static_cast<uint8_t>(frame.netid >> 8);
+		oldmsg.DescriptionID = frame.description;
+		oldmsg.StatusBitField = frame.status.statusBitfield[0];
+		oldmsg.StatusBitField2 = frame.status.statusBitfield[1];
+		oldmsg.StatusBitField3 = frame.status.statusBitfield[2];
+		oldmsg.StatusBitField4 = frame.status.statusBitfield[3];
+	};
+
+	auto copyFrameData = [&]() {
+		oldmsg.ExtraDataPtr = (void*)frame.data;
+		oldmsg.ExtraDataPtrEnabled = frame.length > 8 ? 1 : 0;
+		memcpy(oldmsg.Data, frame.data, std::min(frame.length, (size_t)8));
+		oldmsg.ArbIDOrHeader = *reinterpret_cast<const uint32_t*>(frame.header);
+		copyStatusData();
+	};
+
 	switch (Network::Type(frame.type))
 	{
 	case Network::Type::CAN:
@@ -81,27 +100,41 @@ static bool NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t
 		oldmsg.Protocol = frame.status.canfdFDF ? SPY_PROTOCOL_CANFD : SPY_PROTOCOL_CAN;
 		oldmsg.NumberBytesData = static_cast<uint8_t>(std::min(frame.length, (size_t)255));
 		oldmsg.NumberBytesHeader = 4;
+		copyFrameData();
 		break;
 	case Network::Type::Ethernet:
 		oldmsg.Protocol = SPY_PROTOCOL_ETHERNET;
 		oldmsg.NumberBytesData = static_cast<uint8_t>(frame.length & 0xFF);
 		oldmsg.NumberBytesHeader = static_cast<uint8_t>(frame.length >> 8);
+		copyFrameData();
 		break;
+	case Network::Type::LIN:
+	{
+		const neomessage_lin_t& linFrame = *reinterpret_cast<const neomessage_lin_t*>(&frame);
+		icsSpyMessageJ1850& linSpyMsg = *reinterpret_cast<icsSpyMessageJ1850*>(&oldmsg);
+		linSpyMsg.Protocol = SPY_PROTOCOL_LIN;
+		linSpyMsg.NumberBytesHeader = static_cast<uint8_t>(std::min(linFrame.length, static_cast<size_t>(3)));
+		linSpyMsg.NumberBytesData = static_cast<uint8_t>(linFrame.length - linSpyMsg.NumberBytesHeader);
+		oldmsg.ArbIDOrHeader = *reinterpret_cast<const uint32_t*>(frame.header);
+		copyStatusData();
+		if ((2 < linFrame.length) && (linFrame.length <= 10)) {
+			auto copyBytes = std::min(linSpyMsg.NumberBytesData, static_cast<uint8_t>(6));
+			std::memcpy(oldmsg.Data, frame.data, copyBytes);
+			oldmsg.Data[copyBytes] = linFrame.checksum;
+		} else if (2 == linFrame.length) {
+			std::memset(oldmsg.Data, 0, 8);
+			linSpyMsg.Header[linSpyMsg.NumberBytesHeader] = linFrame.checksum;
+			++linSpyMsg.NumberBytesHeader;
+		} else {
+			std::memset(oldmsg.Data, 0, 8);
+		}
+		if (linFrame.linStatus.txCommander)
+			linSpyMsg.StatusBitField |= SPY_STATUS_INIT_MESSAGE;
+		break;
+	}
 	default:
 		return false;
 	}
-
-	oldmsg.ExtraDataPtr = (void*)frame.data;
-	oldmsg.ExtraDataPtrEnabled = frame.length > 8 ? 1 : 0;
-	memcpy(oldmsg.Data, frame.data, std::min(frame.length, (size_t)8));
-	oldmsg.ArbIDOrHeader = *reinterpret_cast<const uint32_t*>(frame.header);
-	oldmsg.NetworkID = static_cast<uint8_t>(frame.netid); // Note: NetID remapping from the original API is not supported
-	oldmsg.NetworkID2 = static_cast<uint8_t>(frame.netid >> 8);
-	oldmsg.DescriptionID = frame.description;
-	oldmsg.StatusBitField = frame.status.statusBitfield[0];
-	oldmsg.StatusBitField2 = frame.status.statusBitfield[1];
-	oldmsg.StatusBitField3 = frame.status.statusBitfield[2];
-	oldmsg.StatusBitField4 = frame.status.statusBitfield[3];
 
 	// Timestamp - epoch = 1/1/2007 - 25ns per tick most of the time
 	uint64_t t = frame.timestamp;
@@ -124,6 +157,84 @@ static bool NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t
 		}
 	}
 
+	return true;
+}
+
+static bool SpyMessageToNeoMessage(const icsSpyMessage& oldmsg, neomessage_frame_t& frame, unsigned int& lNetworkID)
+{
+	frame.netid = static_cast<uint16_t>(lNetworkID);
+	frame.description = oldmsg.DescriptionID;
+
+	frame.status.statusBitfield[0] = oldmsg.StatusBitField;
+	frame.status.statusBitfield[1] = oldmsg.StatusBitField2;
+	frame.status.statusBitfield[2] = oldmsg.StatusBitField3;
+	frame.status.statusBitfield[3] = oldmsg.StatusBitField4;
+
+	auto copyFrameDataPtr = [&]() {
+		memcpy(frame.header, &oldmsg.ArbIDOrHeader, sizeof(frame.header));
+		if ((oldmsg.ExtraDataPtr != nullptr) && (oldmsg.ExtraDataPtrEnabled == 1))
+			frame.data = reinterpret_cast<const uint8_t *>(oldmsg.ExtraDataPtr);
+		else
+			frame.data = oldmsg.Data;
+	};
+
+	switch(oldmsg.Protocol)
+	{
+		case SPY_PROTOCOL_ETHERNET:
+		{
+			frame.length = ((oldmsg.NumberBytesHeader & 255) << 8) | (oldmsg.NumberBytesData & 255);
+			copyFrameDataPtr();
+			break;
+		}
+		case SPY_PROTOCOL_LIN:
+		{
+			neomessage_lin_t& linFrame = *reinterpret_cast<neomessage_lin_t*>(&frame);
+			const uint8_t numberBytesHeader = std::min(oldmsg.NumberBytesHeader, static_cast<uint8_t>(3));
+			const uint8_t numberBytesData = std::min(oldmsg.NumberBytesData, static_cast<uint8_t>(7));
+			frame.length = numberBytesHeader + numberBytesData;
+			linFrame.type = ICSNEO_NETWORK_TYPE_LIN;
+			if (oldmsg.StatusBitField & SPY_STATUS_INIT_MESSAGE)
+				linFrame.linStatus.txCommander = true;
+			else
+				linFrame.linStatus.txResponder = true;
+
+			copyFrameDataPtr();
+			if (frame.length > 2) {
+				size_t checksum = 0;
+				uint8_t* lastByte = nullptr;
+				for(size_t idx = 1; idx < (frame.length - 1); ++idx) {
+					if (idx < oldmsg.NumberBytesHeader) {
+						checksum += frame.header[idx];
+						lastByte = (frame.header + idx + 1);
+					} else {
+						checksum += frame.data[idx-numberBytesHeader];
+						lastByte = const_cast<uint8_t*>(frame.data) + idx - numberBytesHeader + 1;
+					}
+					if (checksum > 255) { checksum -= 255; }
+				}
+				size_t enhanced = frame.header[0] + checksum;
+				if (enhanced > 255) { enhanced -= 255; }
+				checksum ^= 0xff;
+				enhanced ^= 0xff;
+
+				if ((lastByte != nullptr) && (*lastByte != checksum) && (*lastByte == enhanced))
+					linFrame.linStatus.txChecksumEnhanced = true;
+			}
+			break;
+		}
+		case SPY_PROTOCOL_CANFD:
+		{
+			frame.status.canfdFDF = true;
+			copyFrameDataPtr();
+			break;
+		}
+		default:
+		{
+			frame.length = oldmsg.NumberBytesData;
+			copyFrameDataPtr();
+			break;
+		}
+	} 
 	return true;
 }
 
@@ -396,25 +507,9 @@ int LegacyDLLExport icsneoTxMessagesEx(void* hObject, icsSpyMessage* pMsg, unsig
 	*NumTxed = 0;
 	for (unsigned int i = 0; i < lNumMessages; i++)
 	{
-		const icsSpyMessage& oldmsg = pMsg[i];
 		newmsg = {};
-		newmsg.netid = (uint16_t)lNetworkID;
-		newmsg.description = oldmsg.DescriptionID;
-		memcpy(newmsg.header, &oldmsg.ArbIDOrHeader, sizeof(newmsg.header));
-		if (oldmsg.Protocol != SPY_PROTOCOL_ETHERNET)
-			newmsg.length = oldmsg.NumberBytesData;
-		else
-			newmsg.length = ((oldmsg.NumberBytesHeader & 255) << 8) | (oldmsg.NumberBytesData & 255);
-		if (oldmsg.ExtraDataPtr != nullptr && oldmsg.ExtraDataPtrEnabled == 1)
-			newmsg.data = reinterpret_cast<const uint8_t *>(oldmsg.ExtraDataPtr);
-		else
-			newmsg.data = oldmsg.Data;
-		newmsg.status.statusBitfield[0] = oldmsg.StatusBitField;
-		newmsg.status.statusBitfield[1] = oldmsg.StatusBitField2;
-		newmsg.status.statusBitfield[2] = oldmsg.StatusBitField3;
-		newmsg.status.statusBitfield[3] = oldmsg.StatusBitField4;
-		if (oldmsg.Protocol == SPY_PROTOCOL_CANFD)
-			newmsg.status.canfdFDF = true;
+		const icsSpyMessage& oldMsg = pMsg[i];
+		SpyMessageToNeoMessage(oldMsg, newmsg, lNetworkID);
 		if (icsneo_transmit(device, reinterpret_cast<neomessage_t*>(&newmsg)))
 			(*NumTxed)++;
 	}

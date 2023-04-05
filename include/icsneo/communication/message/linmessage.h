@@ -36,10 +36,8 @@ struct LINStatusFlags {
 
 class LINMessage : public Frame {
 public:
-	static void calcChecksum(LINMessage& message);
-
-	enum class Type {
-		NOT_SET,
+	enum class Type : uint8_t {
+		NOT_SET = 0,
 		LIN_COMMANDER_MSG,
 		LIN_HEADER_ONLY,
 		LIN_BREAK_ONLY,
@@ -48,12 +46,17 @@ public:
 		LIN_ERROR
 	};
 
+	static void calcChecksum(LINMessage& message);
+	uint8_t calcProtectedID(uint8_t& id);
+
+	LINMessage() {};
+	LINMessage(uint8_t id) : ID(id & 0x3Fu), protectedID(calcProtectedID(ID)) {};
+
 	uint8_t ID = 0;
 	uint8_t protectedID = 0;
 	uint8_t checksum = 0;
-	LINMessage::Type type = Type::NOT_SET;
+	LINMessage::Type linMsgType = Type::NOT_SET;
 	bool isEnhancedChecksum = false;
-	bool isLINStd2x = true;
 	LINErrorFlags errFlags;
 	LINStatusFlags statusFlags;
 };

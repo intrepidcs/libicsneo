@@ -86,14 +86,24 @@ typedef union {
 		// ethernetFrameTooShort
 		// ethernetFCSAvailable
 		// ~~~ End of bitfield 2 ~~~
-		//uint32_t linJustBreakSync : 1;
-		//uint32_t linSlaveDataTooShort : 1;
-		//uint32_t linOnlyUpdateSlaveTableOnce : 1;
-		uint32_t canfdESI : 1;
-		uint32_t canfdIDE : 1;
-		uint32_t canfdRTR : 1;
-		uint32_t canfdFDF : 1;
-		uint32_t canfdBRS : 1;
+		union {
+			uint32_t status3;
+			struct {
+				uint32_t canfdESI : 1;
+				uint32_t canfdIDE : 1;
+				uint32_t canfdRTR : 1;
+				uint32_t canfdFDF : 1;
+				uint32_t canfdBRS : 1;
+				uint32_t : 27;
+			};
+			struct {
+				uint32_t linJustBreakSync : 1;
+				uint32_t linSlaveDataTooShort : 1;
+				uint32_t linOnlyUpdateSlaveTableOnce : 1;
+				uint32_t : 29;
+			};
+		};
+		
 	};
 	uint32_t statusBitfield[4];
 } neomessage_statusbitfield_t;
@@ -171,6 +181,33 @@ typedef struct {
 	uint8_t _reserved1[12];
 } neomessage_eth_t;
 
+typedef struct {
+	uint8_t txChecksumEnhanced : 1;
+	uint8_t txCommander : 1;
+	uint8_t txResponder : 1;
+	uint8_t txAborted : 1;
+	uint8_t updateResponderOnce : 1;
+	uint8_t hasUpdatedResponderOnce : 1;
+	uint8_t busRecovered : 1;
+	uint8_t breakOnly : 1;
+} neomessage_linstatus_t;
+
+typedef struct {
+	neomessage_statusbitfield_t status;
+	uint64_t timestamp;
+	uint64_t _reservedTimestamp;
+	const uint8_t* data;
+	size_t length;
+	uint8_t header[4];
+	neonetid_t netid;
+	neonettype_t type;
+	neomessage_linstatus_t linStatus;
+	uint16_t description;
+	neomessagetype_t messageType;
+	uint8_t checksum;
+	uint8_t _reserved1[11];
+} neomessage_lin_t;
+
 #pragma pack(pop)
 
 #ifdef __cplusplus
@@ -182,6 +219,7 @@ static_assert(sizeof(neomessage_frame_t) == sizeof(neomessage_t), "All types of 
 static_assert(sizeof(neomessage_can_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size! (CAN is not)");
 static_assert(sizeof(neomessage_can_error_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size! (CAN error is not)");
 static_assert(sizeof(neomessage_eth_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size! (Ethernet is not)");
+static_assert(sizeof(neomessage_lin_t) == sizeof(neomessage_t), "All types of neomessage_t must be the same size! (LIN is not)");
 
 namespace icsneo {
 

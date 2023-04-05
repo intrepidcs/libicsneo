@@ -86,10 +86,9 @@ std::vector<uint8_t> testControllerWithData =
 
 TEST_F(LINEncoderDecoderTest, ProtectedIDCalcTest) {
 	std::vector<uint8_t> bytestream;
-	auto message = std::make_shared<icsneo::LINMessage>();
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x22u));
 	message->network = icsneo::Network::NetID::LIN;
-	message->ID = 0x22;
-	message->type = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
 	message->isEnhancedChecksum = false;
 	packetEncoder->encode(*packetizer, bytestream, message);
 	EXPECT_EQ(message->protectedID, 0xE2);
@@ -97,10 +96,9 @@ TEST_F(LINEncoderDecoderTest, ProtectedIDCalcTest) {
 
 TEST_F(LINEncoderDecoderTest, ChecksumCalcTestClassic) {
 	std::vector<uint8_t> bytestream;
-	auto message = std::make_shared<icsneo::LINMessage>();
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x22u));
 	message->network = icsneo::Network::NetID::LIN2;
-	message->ID = 0x22;
-	message->type = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
 	message->isEnhancedChecksum = false;
 	message->data = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
 	packetEncoder->encode(*packetizer, bytestream, message);
@@ -109,10 +107,9 @@ TEST_F(LINEncoderDecoderTest, ChecksumCalcTestClassic) {
 
 TEST_F(LINEncoderDecoderTest, ChecksumCalcTestEnhanced) {
 	std::vector<uint8_t> bytestream;
-	auto message = std::make_shared<icsneo::LINMessage>();
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x22u));
 	message->network = icsneo::Network::NetID::LIN2;
-	message->ID = 0x22;
-	message->type = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
 	message->isEnhancedChecksum = true;
 	message->data = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
 	packetEncoder->encode(*packetizer, bytestream, message);
@@ -121,10 +118,9 @@ TEST_F(LINEncoderDecoderTest, ChecksumCalcTestEnhanced) {
 
 TEST_F(LINEncoderDecoderTest, PacketEncoderResponderLoadTest) {
 	std::vector<uint8_t> bytestream;
-	auto message = std::make_shared<icsneo::LINMessage>();
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x22u));
 	message->network = icsneo::Network::NetID::LIN2;
-	message->ID = 0x22;
-	message->type = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
 	message->isEnhancedChecksum = false;
 	message->data = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
 	packetEncoder->encode(*packetizer, bytestream, message);
@@ -133,10 +129,9 @@ TEST_F(LINEncoderDecoderTest, PacketEncoderResponderLoadTest) {
 
 TEST_F(LINEncoderDecoderTest, PacketEncoderControllerHeaderTest) {
 	std::vector<uint8_t> bytestream;
-	auto message = std::make_shared<icsneo::LINMessage>();
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x22u));
 	message->network = icsneo::Network::NetID::LIN;
-	message->ID = 0x22;
-	message->type = icsneo::LINMessage::Type::LIN_HEADER_ONLY;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_HEADER_ONLY;
 	message->isEnhancedChecksum = false;
 	packetEncoder->encode(*packetizer, bytestream, message);
 	EXPECT_EQ(bytestream, testControllerHeaderOnly);
@@ -144,10 +139,9 @@ TEST_F(LINEncoderDecoderTest, PacketEncoderControllerHeaderTest) {
 
 TEST_F(LINEncoderDecoderTest, PacketEncoderControllerWithDataTest) {
 	std::vector<uint8_t> bytestream;
-	auto message = std::make_shared<icsneo::LINMessage>();
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x11u));
 	message->network = icsneo::Network::NetID::LIN;
-	message->ID = 0x11;
-	message->type = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;
 	message->isEnhancedChecksum = false;
 	message->data = {0xaa, 0xbb, 0xcc};
 	packetEncoder->encode(*packetizer, bytestream, message);
@@ -156,19 +150,17 @@ TEST_F(LINEncoderDecoderTest, PacketEncoderControllerWithDataTest) {
 
 TEST_F(LINEncoderDecoderTest, PacketDecoderTest) {
 	std::shared_ptr<icsneo::Message> decodeMsg;
-	auto msg1 = std::make_shared<icsneo::LINMessage>();
-	auto msg2 = std::make_shared<icsneo::LINMessage>();
 
+	auto msg1 = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x22u));
 	msg1->network = icsneo::Network::NetID::LIN2;
-	msg1->ID = 0x22;
-	msg1->type = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;
+	msg1->linMsgType = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;
 	msg1->isEnhancedChecksum = false;
 	msg1->data = {0xaa, 0xbb, 0xcc};
 	msg1->checksum = 0xcc;
 
+	auto msg2 = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x22u));
 	msg2->network = icsneo::Network::NetID::LIN;
-	msg2->ID = 0x22;
-	msg2->type = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;
+	msg2->linMsgType = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;
 	msg2->isEnhancedChecksum = false;
 	msg2->data = {0xaa, 0xbb, 0xcc};
 	msg2->checksum = 0xcc;

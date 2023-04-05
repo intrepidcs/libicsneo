@@ -2,6 +2,7 @@
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/message/ethernetmessage.h"
 #include "icsneo/communication/message/canerrorcountmessage.h"
+#include "icsneo/communication/message/linmessage.h"
 
 using namespace icsneo;
 
@@ -17,6 +18,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 		neomessage_frame_t& frame = *(neomessage_frame_t*)&neomsg;
 		auto framemsg = std::static_pointer_cast<Frame>(message);
 		const auto netType = framemsg->network.getType();
+
 		frame.netid = (neonetid_t)framemsg->network.getNetID();
 		frame.type = (neonettype_t)netType;
 		frame.description = framemsg->description;
@@ -51,6 +53,47 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 				//eth.status.xyz = ethmsg->preemptionEnabled;
 				//eth.status.xyz = ethmsg->fcsAvailable;
 				//eth.status.xyz = ethmsg->noPadding;
+				break;
+			}
+			case Network::Type::LIN: {
+				neomessage_lin_t& lin = *(neomessage_lin_t*)&neomsg;
+				auto linmsg = std::static_pointer_cast<LINMessage>(message);
+				if(!linmsg) { break; }
+				const auto linHdrBytes = std::min(linmsg->data.size(), static_cast<size_t>(2));
+				lin.header[0] = linmsg->protectedID;
+				std::copy(linmsg->data.begin(), linmsg->data.begin() + linHdrBytes, lin.header + 1);
+				linmsg->calcChecksum(*linmsg);
+				lin.checksum = linmsg->checksum;
+				lin.data = linmsg->data.data() + linHdrBytes;
+				if(linmsg->isEnhancedChecksum != linmsg->statusFlags.TxChecksumEnhanced) {
+					linmsg->isEnhancedChecksum = true;
+					linmsg->statusFlags.TxChecksumEnhanced = true;
+				}
+				if(linmsg->data.size())
+					lin.length = linmsg->data.size() + 2;
+				else
+					lin.length = 1;
+				
+				lin.linStatus = {
+					linmsg->statusFlags.TxChecksumEnhanced,
+					linmsg->statusFlags.TxCommander,
+					linmsg->statusFlags.TxResponder,
+					linmsg->statusFlags.UpdateResponderOnce,
+					linmsg->statusFlags.HasUpdatedResponderOnce,
+					linmsg->statusFlags.BusRecovered,
+					linmsg->statusFlags.BreakOnly
+				};
+
+				lin.status.linJustBreakSync = linmsg->errFlags.ErrRxBreakSyncOnly;
+				lin.status.linErrorTXRXMismatch = linmsg->errFlags.ErrTxRxMismatch;
+				lin.status.linErrorRXBreakNotZero = linmsg->errFlags.ErrRxBreakNotZero;
+				lin.status.linErrorRXBreakTooShort = linmsg->errFlags.ErrRxBreakTooShort;
+				lin.status.linErrorRXSyncNot55 = linmsg->errFlags.ErrRxSyncNot55;
+				lin.status.linErrorRXDataGreaterEight = linmsg->errFlags.ErrRxDataLenOver8;
+				lin.status.linSyncFrameError = linmsg->errFlags.ErrFrameSync;
+				lin.status.linIDFrameError = linmsg->errFlags.ErrFrameMessageID;
+				lin.status.linSlaveByteError = linmsg->errFlags.ErrFrameResponderData;
+				lin.status.checksumError = linmsg->errFlags.ErrChecksumMatch;
 				break;
 			}
 			default:
@@ -104,6 +147,53 @@ std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t*
 					ethmsg->description = eth.description;
 					ethmsg->data.insert(ethmsg->data.end(), eth.data, eth.data + eth.length);
 					return ethmsg;
+				}
+				case Network::Type::LIN: {
+					neomessage_lin_t& lin = *(neomessage_lin_t*)neomessage;
+					auto linmsg = std::make_shared<LINMessage>();
+					linmsg->network = network;
+					linmsg->description = lin.description;
+					linmsg->protectedID = lin.header[0];
+					linmsg->ID = linmsg->protectedID & 0x3F;
+					linmsg->statusFlags = {
+						static_cast<bool>(lin.linStatus.txChecksumEnhanced),
+						static_cast<bool>(lin.linStatus.txCommander),
+						static_cast<bool>(lin.linStatus.txResponder),
+						static_cast<bool>(lin.linStatus.updateResponderOnce),
+						static_cast<bool>(lin.linStatus.hasUpdatedResponderOnce),
+						static_cast<bool>(lin.linStatus.busRecovered),
+						static_cast<bool>(lin.linStatus.breakOnly)
+					};
+					linmsg->isEnhancedChecksum = linmsg->statusFlags.TxChecksumEnhanced;
+					linmsg->errFlags = {
+						static_cast<bool>(lin.linStatus.breakOnly),
+						static_cast<bool>(lin.status.linJustBreakSync),
+						static_cast<bool>(lin.status.linErrorTXRXMismatch),
+						static_cast<bool>(lin.status.linErrorRXBreakNotZero),
+						static_cast<bool>(lin.status.linErrorRXBreakTooShort),
+						static_cast<bool>(lin.status.linErrorRXSyncNot55),
+						static_cast<bool>(lin.status.linErrorRXDataGreaterEight),
+						static_cast<bool>(lin.status.linSyncFrameError),
+						static_cast<bool>(lin.status.linIDFrameError),
+						static_cast<bool>(lin.status.linSlaveByteError),
+						static_cast<bool>(lin.status.checksumError)
+					};
+					if(lin.length > 1) {
+						auto numHeaderBytes = std::min(lin.length, static_cast<size_t>(3));
+						linmsg->data.insert(linmsg->data.end(), (lin.header + 1), (lin.header + numHeaderBytes));
+						linmsg->data.insert(linmsg->data.end(), lin.data, (lin.data + (lin.length - numHeaderBytes)));
+						linmsg->checksum = linmsg->data.back();
+						linmsg->data.pop_back();
+					}
+					if (linmsg->statusFlags.TxCommander) {
+						if (linmsg->data.size())
+							linmsg->linMsgType = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;
+						else
+							linmsg->linMsgType = icsneo::LINMessage::Type::LIN_HEADER_ONLY;
+					} else if (linmsg->statusFlags.TxResponder) {
+						linmsg->linMsgType = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
+					}
+					return linmsg;
 				}
 				default: break;
 			}

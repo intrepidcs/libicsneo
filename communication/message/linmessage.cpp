@@ -19,4 +19,12 @@ void LINMessage::calcChecksum(LINMessage& message) {
 	message.checksum ^= 0xFFu;
 }
 
+uint8_t LINMessage::calcProtectedID(uint8_t& id) {
+	uint8_t protID = id;
+	auto bit = [&](uint8_t pos)->uint8_t { return ((protID >> pos) & 0x1u); };
+	protID |= (~(bit(1) ^ bit(3) ^ bit(4) ^ bit(5)) << 7);
+	protID |= ((bit(0) ^ bit(1) ^ bit(2) ^ bit(4)) << 6);
+	return protID;
+}
+
 } //namespace icsneo
