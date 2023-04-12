@@ -10,3 +10,4 @@ third-party/concurrentqueue/tests
 *.bak
 .vs
 .cache
+*.wav

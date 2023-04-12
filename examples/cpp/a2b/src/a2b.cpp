@@ -12,6 +12,7 @@
 #include <icsneo/device/tree/rada2b/rada2bsettings.h>
 #include <icsneo/communication/message/callback/streamoutput/a2bdecoder.h>
 #include <string>
+#include <math.h>
 
 static constexpr size_t numFramesInWave = 48;
 
@@ -70,7 +71,7 @@ void example0(std::shared_ptr<icsneo::Device>& rada2b) {
 
 		decoder.outputAll(rada2b); // Output entire wave file
 
-		elapsedTime += ((double)numFramesInWave) * 1.0/48000.0;
+		elapsedTime += (static_cast<double>(numFramesInWave)) * 1.0/48000.0;
 
 		decoder.stream->clear();
 		decoder.stream->seekg(0, std::ios::beg);
@@ -78,7 +79,7 @@ void example0(std::shared_ptr<icsneo::Device>& rada2b) {
 		while(decoder && elapsedTime < 5.0) {
 			auto msg = decoder.decode();
 			rada2b->transmit(msg);
-			elapsedTime += ((double)msg->getNumFrames())*1.0/48000.0;
+			elapsedTime += (static_cast<double>(msg->getNumFrames()))*1.0/48000.0;
 		}
 
 		decoder.stream->clear();
@@ -105,11 +106,11 @@ void example1(std::shared_ptr<icsneo::Device>& rada2b) {
 
 // Example 2: RADA2B settings 
 void example2(std::shared_ptr<icsneo::Device>& rada2b) {
-	uint32_t tdm;
+	uint8_t numChannels;
 	{
 		// Get device settings
 		auto* settings = rada2b->settings.get();
-		auto* rada2bSettings = (icsneo::RADA2BSettings*)settings;
+		auto* rada2bSettings = static_cast<icsneo::RADA2BSettings*>(settings);
 		
 		// Check if monitor mode is enabled
 		auto type = rada2bSettings->getNodeType(icsneo::RADA2BSettings::RADA2BDevice::Monitor);
@@ -121,9 +122,9 @@ void example2(std::shared_ptr<icsneo::Device>& rada2b) {
 		}
 
 		// Get current tdm mode
-		tdm = rada2bSettings->getTDMModeInt(icsneo::RADA2BSettings::RADA2BDevice::Node);
+		numChannels = rada2bSettings->getNumChannels(icsneo::RADA2BSettings::RADA2BDevice::Node);
 		
-		std::cout << "Current tdm mode: " << tdm << std::endl;
+		std::cout << "Current num channels: " << static_cast<uint32_t>(numChannels) << std::endl;
 		// Set node type to master node.
 		rada2bSettings->setNodeType(icsneo::RADA2BSettings::RADA2BDevice::Node, icsneo::RADA2BSettings::NodeType::Master);
 
@@ -174,6 +175,68 @@ void example3() {
 	std::cout << "Was received from monitor: " << msg.isMonitorMsg() << std::endl;
 }
 
+// Example 4: Packaging and transmitting sine wave using A2BMessage API
+void example4(std::shared_ptr<icsneo::Device>& rada2b) {
+	std::cout << "Transmitting a 1000 hz sine wave." << std::endl;
+
+	float deltaTime = static_cast<float>(1.0/48000.0);
+	float elapsedTime = 0.0;
+	float twoPI = static_cast<float>(2.0*atan(1.0)*4.0);
+	float frequency = 1000;
+	float amplitude = static_cast<float>((1 << 23) - 1);
+
+	uint8_t icsChannel = 0; // Play audio on channel 2, upstream, see docs for details
+
+
+	// Play for roughly 5 seconds
+	while(elapsedTime < 5.0) {
+		// Allocate message
+		std::shared_ptr<icsneo::A2BMessage> a2bmsgPtr = std::make_shared<icsneo::A2BMessage>(static_cast<uint8_t>(4), false, static_cast<size_t>(2048));
+
+		icsneo::A2BMessage& a2bmsg = *a2bmsgPtr.get();
+		a2bmsg.network = icsneo::Network(icsneo::Network::NetID::A2B2);
+
+		for(size_t frame = 0; frame < a2bmsg.getNumFrames(); frame++) {
+		
+			// Sine wave sample, amplitude 1000, frequency 1000 hz
+
+			float contSample = amplitude*sin(twoPI*frequency*elapsedTime);
+			icsneo::A2BPCMSample sample = static_cast<icsneo::A2BPCMSample>(contSample);
+
+			// Set sample for each frame in message
+			a2bmsg[frame][icsChannel] = sample;
+
+			elapsedTime+=deltaTime;
+		}
+
+		// Transmit message to device
+
+		if(!rada2b->transmit(a2bmsgPtr)) {
+			std::cout << "Failed to transmit." << std::endl;
+		}
+	}
+
+
+}
+
+
+// Example 5: Wave loop back
+void example5(std::shared_ptr<icsneo::Device>& rada2b) {
+
+	auto listener = [&rada2b]() {
+		auto handler = rada2b->addMessageCallback(std::make_shared<icsneo::A2BWAVOutput>("looped.wav", 48000));
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+		rada2b->removeMessageCallback(handler);
+	};
+
+	// Listen on another thread
+	std::thread listenerThread{listener};
+
+	// Transmit wave file using example0
+
+	example0(rada2b);
+	listenerThread.join();
+}
 
 void displayUsage() {
 	std::cout << "libicsneo A2B example" << std::endl;
@@ -187,11 +250,13 @@ void displayUsage() {
 	std::cout << "Example options:" << std::endl;
 	std::cout << "0\ttx" << std::endl;
 	std::cout << "1\trx" << std::endl;
-	std::cout << "2\trx split channel" << std::endl;
+	std::cout << "2\tSet RADA2B settings" << std::endl;
 	std::cout << "3\tA2BMessage API" << std::endl;
+	std::cout << "4\tPackaging and transmitting sine wave using A2BMessage API" << std::endl;
+	std::cout << "5\tWave loopback" << std::endl;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 	std::vector<std::string> arguments(argv, argv + argc);
 	if(argc > 4 || argc == 1) {
 		std::cerr << "Invalid usage." << std::endl;
@@ -212,7 +277,7 @@ int main(int argc, char **argv) {
 
 	int option = atoi(arguments[2].c_str());
 
-	if(option < 0 || option > 3) {
+	if(option < 0 || option > 5) {
 		std::cerr << "Invalid usage." << std::endl;
 		displayUsage();
 		return EXIT_FAILURE;
@@ -273,6 +338,12 @@ int main(int argc, char **argv) {
 			break;
 		case 3:
 			example3();
+			break;
+		case 4:
+			example4(rada2b);
+			break;
+		case 5:
+			example5(rada2b);
 			break;
 		default:
 			break;

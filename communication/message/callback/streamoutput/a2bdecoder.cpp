@@ -69,7 +69,7 @@ A2BDecoder::A2BDecoder(
 ) : A2BDecoder(std::make_unique<std::ifstream>(filename, std::ios::binary), chSize16, chMap) { }
 
 A2BDecoder::operator bool() const {
-	return initialized && *stream;
+	return initialized && stream->good() && !stream->eof();
 }
 
 void A2BDecoder::initializeFromHeader() {

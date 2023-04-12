@@ -125,10 +125,10 @@ public:
 		auto cfg = getStructurePointer<rada2b_settings_t>();
 		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
-		return (TDMMode)(deviceSettings.tdmMode);
+		return static_cast<TDMMode>(deviceSettings.tdmMode);
 	}
 
-	uint8_t getTDMModeInt(RADA2BDevice device) const {
+	uint8_t getNumChannels(RADA2BDevice device) const {
 		return tdmModeToChannelNum(getTDMMode(device));
 	}
 
@@ -136,7 +136,7 @@ public:
 		auto cfg = getStructurePointer<rada2b_settings_t>();
 		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
-		return (ChannelSize)(~(deviceSettings.flags & a2bSettingsFlag16bit));
+		return static_cast<ChannelSize>(~(deviceSettings.flags & a2bSettingsFlag16bit));
 	}
 
 	uint8_t getChannelOffset(RADA2BDevice device, A2BMessage::A2BDirection dir) const {
@@ -154,7 +154,7 @@ public:
 		auto cfg = getStructurePointer<rada2b_settings_t>();
 		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
-		return (NodeType)(deviceSettings.nodeType);		
+		return static_cast<NodeType>(deviceSettings.nodeType);		
 	}
 
 	void setNodeType(RADA2BDevice device, NodeType newType) {
