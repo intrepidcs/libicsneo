@@ -59,12 +59,12 @@ protected:
 
 			Network::NetID::LIN,
 
-			Network::NetID::FlexRay,
+			Network::NetID::FlexRay1a,
+			Network::NetID::FlexRay1b,
 
 			Network::NetID::I2C,
 			Network::NetID::I2C2,
 			Network::NetID::I2C3,
-			Network::NetID::I2C4,
 		};
 		rxNetworks.insert(rxNetworks.end(), supportedRxNetworks.begin(), supportedRxNetworks.end());
 	}
@@ -84,9 +84,13 @@ protected:
 			Network::NetID::OP_Ethernet1,
 			Network::NetID::OP_Ethernet2,
 
-			Network::NetID::LIN
+			Network::NetID::LIN,
 
 			// FlexRay is Receive Only
+
+			Network::NetID::I2C,
+			Network::NetID::I2C2,
+			Network::NetID::I2C3,
 		};
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
 	}

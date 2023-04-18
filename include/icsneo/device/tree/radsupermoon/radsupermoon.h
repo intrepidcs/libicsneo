@@ -24,7 +24,6 @@ public:
 		static std::vector<Network> supportedNetworks = {
 			Network::NetID::Ethernet,
 			Network::NetID::OP_Ethernet1,
-			Network::NetID::OP_Ethernet2
 		};
 		return supportedNetworks;
 	}

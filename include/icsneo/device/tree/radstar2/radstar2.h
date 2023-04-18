@@ -21,7 +21,7 @@ public:
 			Network::NetID::HSCAN,
 			Network::NetID::MSCAN,
 
-			Network::NetID::LIN,
+			Network::NetID::Ethernet,
 
 			Network::NetID::OP_Ethernet1,
 			Network::NetID::OP_Ethernet2

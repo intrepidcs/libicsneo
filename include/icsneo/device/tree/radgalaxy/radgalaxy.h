@@ -34,6 +34,7 @@ public:
 			Network::NetID::LIN,
 
 			Network::NetID::Ethernet,
+			Network::NetID::Ethernet2,
 			
 			Network::NetID::OP_Ethernet1,
 			Network::NetID::OP_Ethernet2,
