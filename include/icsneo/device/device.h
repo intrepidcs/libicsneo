@@ -50,7 +50,6 @@
 #define ICSNEO_FINDABLE_DEVICE_BY_PID(className, type, pid) \
 	static constexpr const uint16_t PRODUCT_ID = pid; \
 	ICSNEO_FINDABLE_DEVICE_BASE(className, type)
-
 namespace icsneo {
 
 class DeviceExtension;
@@ -544,6 +543,10 @@ public:
 	 * Ethernet PHY registers through MDIO.
 	 */
 	virtual bool getEthPhyRegControlSupported() const { return false; }
+
+	//RTC declarations
+	std::optional<std::chrono::time_point<std::chrono::system_clock>> getRTC();
+	bool setRTC(const std::chrono::time_point<std::chrono::system_clock>& time);
 
 	/**
 	 * Returns true if this device supports the Wireless neoVI featureset

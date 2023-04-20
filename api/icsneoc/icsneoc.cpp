@@ -689,3 +689,28 @@ bool icsneo_setTerminationFor(const neodevice_t* device, neonetid_t netid, bool 
 
 	return device->device->settings->setTerminationFor(Network(netid), enabled);
 }
+
+bool icsneo_getRTC(const neodevice_t* device, uint64_t* output)
+{
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	const std::optional<std::chrono::time_point<std::chrono::system_clock>> rtc = device->device->getRTC();
+	if(!rtc)
+		return false;
+
+	auto duration = std::chrono::duration_cast<std::chrono::seconds>(rtc->time_since_epoch());
+	*output = static_cast<uint64_t>(duration.count());
+
+	return true;
+}
+
+bool icsneo_setRTC(const neodevice_t* device, uint64_t input)
+{
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	std::chrono::seconds duration(input);
+	const std::chrono::system_clock::time_point time(duration);
+	return device->device->setRTC(time);
+}

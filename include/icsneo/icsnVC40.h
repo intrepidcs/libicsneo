@@ -2442,6 +2442,16 @@ typedef struct
 	uint8_t bIPV4_Address[4];		// The Ipv4 address assigned to the Network interface. If not available, all bytes are set to zero.
 } NETWORK_ADAPTER_INFO;
 
+typedef struct
+{
+	unsigned char sec;// --- Seconds (00-59)
+	unsigned char min;// --- (00-59)
+	unsigned char hour;// --- (00-23)
+	unsigned char day;// --- (01-31)
+	unsigned char month;// --- (01-12)
+	unsigned char year;// --- (00-99)
+} icsSpyTime;
+
 #ifndef INTREPID_NO_CHECK_STRUCT_SIZE
 
 #if defined(__cplusplus) && (__cplusplus > 199711L)

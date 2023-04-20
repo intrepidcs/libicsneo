@@ -808,6 +808,24 @@ extern bool DLLExport icsneo_isTerminationEnabledFor(const neodevice_t* device, 
  */
 extern bool DLLExport icsneo_setTerminationFor(const neodevice_t* device, neonetid_t netid, bool enabled);
 
+/**
+ * \brief Get the real-time clock for the given device.
+ * \param[out] device A pointer to the neodevice_t structure specifying the device to read the RTC from.
+ * \param[out] output A pointer to a uint64_t where the RTC will be stored. This value is in seconds.
+
+ * \returns True if the RTC was successfully retrieved.
+ */
+extern bool icsneo_getRTC(const neodevice_t* device, uint64_t* output);
+
+/**
+ * \brief Set the real-time clock for the given device.
+ * \param[out] device A pointer to the neodevice_t structure specifying the device to write the RTC to.
+ * \param[in] input A uint64_t object holding the RTC value. This value is in seconds.
+
+ * \returns True if the RTC was successfully set.
+ */
+extern bool icsneo_setRTC(const neodevice_t* device, uint64_t input);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

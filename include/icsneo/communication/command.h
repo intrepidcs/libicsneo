@@ -12,6 +12,8 @@ enum class Command : uint8_t {
 	NeoWriteMemory = 0x41,
 	ClearCoreMini = 0x42,
 	LoadCoreMini = 0x43,
+	GetRTC = 0x49,
+	SetRTC = 0x50,
 	RequestSerialNumber = 0xA1,
 	GetMainVersion = 0xA3, // Previously known as RED_CMD_APP_VERSION_REQ
 	SetSettings = 0xA4, // Previously known as RED_CMD_SET_BAUD_REQ, follow up with SaveSettings to write to EEPROM

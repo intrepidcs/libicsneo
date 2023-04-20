@@ -1,19 +1,26 @@
-#include "icsneo/device/device.h"
-#include "icsneo/communication/message/callback/messagecallback.h"
+#include <sstream>
 #include "icsneo/api/eventmanager.h"
-#include "icsneo/communication/command.h"
+#include "icsneo/communication/message/extendedresponsemessage.h"
+#include "icsneo/device/device.h"
 #include "icsneo/device/extensions/deviceextension.h"
 #include "icsneo/disk/fat.h"
-#include "icsneo/communication/packet/wivicommandpacket.h"
-#include "icsneo/communication/message/wiviresponsemessage.h"
-#include "icsneo/communication/message/scriptstatusmessage.h"
-#include "icsneo/communication/message/extendedresponsemessage.h"
-#include <string.h>
-#include <iostream>
-#include <sstream>
-#include <chrono>
+
+#ifdef _MSC_VER
+#pragma warning(disable : 4996) // STL time functions
+#endif
 
 using namespace icsneo;
+
+struct RTCCTIME {
+	uint8_t FracSec;// --- fractions of seconds (00-99). Note that you can write only 0x00 here!
+	uint8_t Sec;// --- Seconds (00-59)
+	uint8_t Min;// --- (00-59)
+	uint8_t Hour;// --- (00-23)
+	uint8_t DOW;// --- (01-07)
+	uint8_t Day;// --- (01-31)
+	uint8_t Month;// --- (01-12)
+	uint8_t Year;// --- (00-99)
+};
 
 static const uint8_t fromBase36Table[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0, 0, 10, 11, 12,
@@ -1685,4 +1692,63 @@ std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAd
 	}
 	// Valid device with a properly formed respose, return success
 	return std::make_optional<bool>(success);
+}
+
+std::optional<std::chrono::time_point<std::chrono::system_clock>> Device::getRTC()
+{
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::RED_GET_RTC);
+	std::shared_ptr<Message> generic = com->waitForMessageSync([this]() {
+		return com->sendCommand(Command::GetRTC);
+	}, filter, std::chrono::milliseconds(3000));
+	if(!generic) // Did not receive a message
+		return std::nullopt;
+
+	auto rawMes = std::dynamic_pointer_cast<RawMessage>(generic);
+	if(!rawMes)
+		return std::nullopt;
+
+	if(rawMes->data.size() != sizeof(RTCCTIME))
+		return std::nullopt;
+
+	const auto* time = (RTCCTIME*)rawMes->data.data();
+	std::tm stdTime = {};
+	// std::tm has no member for the `FracSec` member of RTCCTIME struct
+	stdTime.tm_sec = time->Sec;
+	stdTime.tm_min = time->Min;
+	stdTime.tm_hour = time->Hour;
+	stdTime.tm_mday = time->Day;
+	stdTime.tm_mon = time->Month - 1; // [0-11]
+	stdTime.tm_year = time->Year + 100; // Number of years since 1900+100
+	stdTime.tm_wday = time->DOW;
+	// RTCCTIME struct has no member for `tm_yday`
+
+	#ifdef _MSC_VER
+		#define timegm _mkgmtime
+	#endif
+
+	return std::chrono::system_clock::from_time_t(timegm(&stdTime));
+}
+
+bool Device::setRTC(const std::chrono::time_point<std::chrono::system_clock>& time)
+{
+	auto now = std::chrono::system_clock::to_time_t(time);
+	const auto timeInfo = std::gmtime(&now);
+	if(!timeInfo)
+		return false;
+
+	// Populate the RTCCTIME struct using the timeInfo and offsets
+	// Create a vector of arguments to send as the payload to the communication command
+	std::vector<uint8_t> bytestream(sizeof(RTCCTIME));
+	auto rtcVals = (RTCCTIME*)bytestream.data();
+	rtcVals->FracSec = (uint8_t)0X00;
+	rtcVals->Sec = (uint8_t)timeInfo->tm_sec;
+	rtcVals->Min = (uint8_t)timeInfo->tm_min;
+	rtcVals->Hour = (uint8_t)timeInfo->tm_hour;
+	rtcVals->DOW = (uint8_t)timeInfo->tm_wday + 1;
+	rtcVals->Day = (uint8_t)timeInfo->tm_mday;
+	rtcVals->Month = (uint8_t)timeInfo->tm_mon + 1; // [0-11]
+	rtcVals->Year = (uint8_t)timeInfo->tm_year % 100; // divide by 100 and take remainder to get last 2 digits of year
+
+	com->sendCommand(Command::SetRTC, bytestream);
+	return true;
 }

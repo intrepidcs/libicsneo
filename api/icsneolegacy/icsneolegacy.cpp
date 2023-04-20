@@ -20,6 +20,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4100) // unreferenced formal parameter
+#pragma warning(disable : 4996) // STL time functions
 #endif
 
 using namespace icsneo;
@@ -557,6 +558,54 @@ void LegacyDLLExport icsneoSetISO15765RxParameters(void* hObject, int lNetwork, 
 {
 	// TODO Implement
 	return;
+}
+
+int LegacyDLLExport icsneoGetRTC(void* hObject, icsSpyTime* time)
+{
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
+
+	uint64_t time64 = 0;
+	if(!icsneo_getRTC(device, &time64))
+		return false;
+
+	std::time_t seconds = time64;
+	/* To accommodate local time bugzilla #6600 https://intrepidcs.homeip.net:100/bugzilla/show_bug.cgi?id=6600 */
+	// local time must be used here
+	const auto timeInfo = std::localtime(&seconds);
+	if(!timeInfo)
+		return false;
+
+	time->sec = (unsigned char)timeInfo->tm_sec; // Will never hit 60 (leap second) because tm_sec comes from RTCCTIME
+	time->min = (unsigned char)timeInfo->tm_min;
+	time->hour = (unsigned char)timeInfo->tm_hour;
+	time->day = (unsigned char)timeInfo->tm_mday;
+	time->month = (unsigned char)timeInfo->tm_mon + 1;
+	time->year = (unsigned char)timeInfo->tm_year % 100;
+
+	return true;
+}
+
+int LegacyDLLExport icsneoSetRTC(void* hObject, const icsSpyTime* time)
+{
+	if(!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
+
+	std::tm timeInfo{};
+	timeInfo.tm_sec = time->sec;
+	timeInfo.tm_min = time->min;
+	timeInfo.tm_hour = time->hour;
+	timeInfo.tm_mday = time->day;
+	timeInfo.tm_mon = time->month - 1;
+	timeInfo.tm_year = time->year + 100;
+
+	#ifdef _MSC_VER
+		#define timegm _mkgmtime
+	#endif
+
+	return icsneo_setRTC(device, (uint64_t)timegm(&timeInfo));
 }
 
 //Device Functions

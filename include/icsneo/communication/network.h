@@ -146,6 +146,7 @@ public:
 		DWCAN16 = 541,
 		LIN7 = 542,
 		LIN8 = 543,
+		RED_SET_RTC = 544,
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};
@@ -325,6 +326,8 @@ public:
 			case NetID::ExtendedCommand:
 			case NetID::NeoMemorySDRead:
 			case NetID::NeoMemoryWriteDone:
+			case NetID::RED_GET_RTC:
+			case NetID::RED_SET_RTC:
 				return Type::Internal;
 			case NetID::Invalid:
 			case NetID::Any:
@@ -453,6 +456,8 @@ public:
 				return "RED_HARDWARE_EXCEP";
 			case NetID::RED_GET_RTC:
 				return "RED_GET_RTC";
+			case NetID::RED_SET_RTC:
+				return "RED_SET_RTC";
 			case NetID::ISO9141_3:
 				return "ISO 9141 3";
 			case NetID::HSCAN2:

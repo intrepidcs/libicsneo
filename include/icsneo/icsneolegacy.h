@@ -40,6 +40,10 @@ extern void LegacyDLLExport icsneoGetISO15765Status(void* hObject, int lNetwork,
 extern void LegacyDLLExport icsneoSetISO15765RxParameters(void* hObject, int lNetwork, int lEnable, spyFilterLong* pFF_CFMsgFilter, icsSpyMessage* pTxMsg,
 										int lCFTimeOutMs, int lFlowCBlockSize, int lUsesExtendedAddressing, int lUseHardwareIfPresent);
 
+//RTC Functions
+extern int LegacyDLLExport icsneoGetRTC(void* hObject, icsSpyTime* time);
+extern int LegacyDLLExport icsneoSetRTC(void* hObject, const icsSpyTime* time);
+
 //Device Functions
 extern int LegacyDLLExport icsneoGetConfiguration(void* hObject, unsigned char* pData, int* lNumBytes);
 extern int LegacyDLLExport icsneoSendConfiguration(void* hObject, unsigned char* pData, int lNumBytes);
