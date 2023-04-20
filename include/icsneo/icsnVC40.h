@@ -163,6 +163,7 @@ typedef unsigned __int64 uint64_t;
 //#define NEODEVICE_RADPLUTO (0x00000009)
 #define NEODEVICE_VCAN42_EL (0x0000000a)
 #define NEODEVICE_VCAN3 (0x00000010)
+#define NEODEVICE_RADMOON3 (0x00000023)
 #define NEODEVICE_RED (0x00000040)
 #define NEODEVICE_ECU (0x00000080)
 #define NEODEVICE_IEVB (0x00000100)
@@ -1971,6 +1972,7 @@ typedef enum _EDeviceSettingsType
 	DeviceRADSuperMoonSettingsType,
 	DeviceRADMoon2SettingsType,
 	DeviceRADGigalogSettingsType,
+	DeviceRADMoon3SettingsType,
 	//
 	// add new settings type here
 	// ...

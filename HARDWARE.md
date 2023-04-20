@@ -47,3 +47,4 @@
 	- RADA2B
 		- CAN works
 		- Ethernet works
+	- RADMoon3

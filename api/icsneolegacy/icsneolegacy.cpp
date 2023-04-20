@@ -1042,6 +1042,9 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void* hObject, EPlasmaIonVnetCha
 	case NEODEVICE_RADGIGALOG:
 		*pDeviceSettingsType = DeviceRADGigalogSettingsType;
 		break;
+	case NEODEVICE_RADMOON3:
+		*pDeviceSettingsType = DeviceRADMoon3SettingsType;
+		break;
 	default:
 		return 0;
 	}
