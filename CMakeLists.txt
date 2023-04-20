@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(libicsneo VERSION 0.3.0)
 
+cmake_policy(SET CMP0074 OLD)
+
 option(LIBICSNEO_BUILD_TESTS "Build all tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
 option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
@@ -158,6 +160,14 @@ else() # Darwin or Linux
 	endif()
 endif()
 
+find_package(FTD3XX)
+if(FTD3XX_FOUND)
+	set(LIBICSNEO_ENABLE_FTD3XX 1)
+	list(APPEND PLATFORM_SRC
+		platform/ftd3xx.cpp
+	)
+endif()
+
 if(LIBICSNEO_ENABLE_TCP)
 	list(APPEND PLATFORM_SRC
 		platform/tcp.cpp
@@ -290,6 +300,10 @@ if(LIBICSNEO_ENABLE_CDCACM)
 endif()
 if(LIBICSNEO_ENABLE_FTDI)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FTDI)
+endif()
+if(LIBICSNEO_ENABLE_FTD3XX)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FTD3XX)
+	target_link_libraries(icsneocpp PRIVATE FTD3XX::FTD3XX)
 endif()
 if(LIBICSNEO_ENABLE_TCP)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_TCP)

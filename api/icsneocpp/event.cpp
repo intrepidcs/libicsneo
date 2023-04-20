@@ -133,6 +133,41 @@ static constexpr const char* ERROR_SETTING_SOCKET_OPTION = "A call to setsockopt
 static constexpr const char* GETIFADDRS_ERROR = "A call to getifaddrs() failed.";
 static constexpr const char* SEND_TO_ERROR = "A call to sendto() failed.";
 
+// FTD3XX
+static constexpr const char* FT_OK = "FTD3XX success.";
+static constexpr const char* FT_INVALID_HANDLE = "Invalid FTD3XX handle.";
+static constexpr const char* FT_DEVICE_NOT_FOUND = "FTD3XX device not found.";
+static constexpr const char* FT_DEVICE_NOT_OPENED = "FTD3XX device not opened.";
+static constexpr const char* FT_IO_ERROR = "FTD3XX IO error.";
+static constexpr const char* FT_INSUFFICIENT_RESOURCES = "Insufficient resources for FTD3XX.";
+static constexpr const char* FT_INVALID_PARAMETER = "Invalid FTD3XX parameter.";
+static constexpr const char* FT_INVALID_BAUD_RATE = "Invalid FTD3XX baud rate.";
+static constexpr const char* FT_DEVICE_NOT_OPENED_FOR_ERASE = "FTD3XX device not opened for erase.";
+static constexpr const char* FT_DEVICE_NOT_OPENED_FOR_WRITE = "FTD3XX not opened for write.";
+static constexpr const char* FT_FAILED_TO_WRITE_DEVICE = "FTD3XX failed to write device.";
+static constexpr const char* FT_EEPROM_READ_FAILED = "FTD3XX EEPROM read failed.";
+static constexpr const char* FT_EEPROM_WRITE_FAILED = "FTD3XX EEPROM write failed.";
+static constexpr const char* FT_EEPROM_ERASE_FAILED = "FTD3XX EEPROM erase failed.";
+static constexpr const char* FT_EEPROM_NOT_PRESENT = "FTD3XX EEPROM not present.";
+static constexpr const char* FT_EEPROM_NOT_PROGRAMMED = "FTD3XX EEPROM not programmed.";
+static constexpr const char* FT_INVALID_ARGS = "Invalid FTD3XX arguments.";
+static constexpr const char* FT_NOT_SUPPORTED = "FTD3XX not supported.";
+static constexpr const char* FT_NO_MORE_ITEMS = "No more FTD3XX items.";
+static constexpr const char* FT_TIMEOUT = "FTD3XX timeout.";
+static constexpr const char* FT_OPERATION_ABORTED = "FTD3XX operation aborted.";
+static constexpr const char* FT_RESERVED_PIPE = "Reserved FTD3XX pipe.";
+static constexpr const char* FT_INVALID_CONTROL_REQUEST_DIRECTION = "Invalid FTD3XX control request direction.";
+static constexpr const char* FT_INVALID_CONTROL_REQUEST_TYPE = "Invalid FTD3XX control request type.";
+static constexpr const char* FT_IO_PENDING = "FTD3XX IO pending.";
+static constexpr const char* FT_IO_INCOMPLETE = "FTD3XX IO incomplete.";
+static constexpr const char* FT_HANDLE_EOF = "Handle FTD3XX EOF.";
+static constexpr const char* FT_BUSY = "FTD3XX busy.";
+static constexpr const char* FT_NO_SYSTEM_RESOURCES = "No FTD3XX system resources.";
+static constexpr const char* FT_DEVICE_LIST_NOT_READY = "FTD3XX device list not ready.";
+static constexpr const char* FT_DEVICE_NOT_CONNECTED = "FTD3XX device not connected.";
+static constexpr const char* FT_INCORRECT_DEVICE_PATH = "Incorrect FTD3XX device path.";
+static constexpr const char* FT_OTHER_ERROR = "Other FTD3XX error.";
+
 static constexpr const char* TOO_MANY_EVENTS = "Too many events have occurred. The list has been truncated.";
 static constexpr const char* UNKNOWN = "An unknown internal error occurred.";
 static constexpr const char* INVALID = "An invalid internal error occurred.";
@@ -286,7 +321,75 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return GETIFADDRS_ERROR;
 		case Type::SendToError:
 			return SEND_TO_ERROR;
-		
+	
+		// FTD3XX
+		case Type::FTOK:
+			return FT_OK;
+		case Type::FTInvalidHandle:
+			return FT_INVALID_HANDLE;
+		case Type::FTDeviceNotFound:
+			return FT_DEVICE_NOT_FOUND;
+		case Type::FTDeviceNotOpened:
+			return FT_DEVICE_NOT_OPENED;
+		case Type::FTIOError:
+			return FT_IO_ERROR;
+		case Type::FTInsufficientResources:
+			return FT_INSUFFICIENT_RESOURCES;
+		case Type::FTInvalidParameter:
+			return FT_INVALID_PARAMETER;
+		case Type::FTInvalidBaudRate:
+			return FT_INVALID_BAUD_RATE;
+		case Type::FTDeviceNotOpenedForErase:
+			return FT_DEVICE_NOT_OPENED_FOR_ERASE;
+		case Type::FTDeviceNotOpenedForWrite:
+			return FT_DEVICE_NOT_OPENED_FOR_WRITE;
+		case Type::FTFailedToWriteDevice:
+			return FT_FAILED_TO_WRITE_DEVICE;
+		case Type::FTEEPROMReadFailed:
+			return FT_EEPROM_READ_FAILED;
+		case Type::FTEEPROMWriteFailed:
+			return FT_EEPROM_WRITE_FAILED;
+		case Type::FTEEPROMEraseFailed:
+			return FT_EEPROM_ERASE_FAILED;
+		case Type::FTEEPROMNotPresent:
+			return FT_EEPROM_NOT_PRESENT;
+		case Type::FTEEPROMNotProgrammed:
+			return FT_EEPROM_NOT_PROGRAMMED;
+		case Type::FTInvalidArgs:
+			return FT_INVALID_ARGS;
+		case Type::FTNotSupported:
+			return FT_NOT_SUPPORTED;
+		case Type::FTNoMoreItems:
+			return FT_NO_MORE_ITEMS;
+		case Type::FTTimeout:
+			return FT_TIMEOUT;
+		case Type::FTOperationAborted:
+			return FT_OPERATION_ABORTED;
+		case Type::FTReservedPipe:
+			return FT_RESERVED_PIPE;
+		case Type::FTInvalidControlRequestDirection:
+			return FT_INVALID_CONTROL_REQUEST_DIRECTION;
+		case Type::FTInvalidControlRequestType:
+			return FT_INVALID_CONTROL_REQUEST_TYPE;
+		case Type::FTIOPending:
+			return FT_IO_PENDING;
+		case Type::FTIOIncomplete:
+			return FT_IO_INCOMPLETE;
+		case Type::FTHandleEOF:
+			return FT_HANDLE_EOF;
+		case Type::FTBusy:
+			return FT_BUSY;
+		case Type::FTNoSystemResources:
+			return FT_NO_SYSTEM_RESOURCES;
+		case Type::FTDeviceListNotReady:
+			return FT_DEVICE_LIST_NOT_READY;
+		case Type::FTDeviceNotConnected:
+			return FT_DEVICE_NOT_CONNECTED;
+		case Type::FTIncorrectDevicePath:
+			return FT_INCORRECT_DEVICE_PATH;
+		case Type::FTOtherError:
+			return FT_OTHER_ERROR;
+
 		// Other Errors
 		case Type::TooManyEvents:
 			return TOO_MANY_EVENTS;

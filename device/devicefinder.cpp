@@ -19,6 +19,10 @@
 #include "icsneo/platform/ftdi.h"
 #endif
 
+#ifdef ICSNEO_ENABLE_FTD3XX
+#include "icsneo/platform/ftd3xx.h"
+#endif
+
 #ifdef ICSNEO_ENABLE_TCP
 #include "icsneo/platform/tcp.h"
 #endif
@@ -65,6 +69,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 
 	#ifdef ICSNEO_ENABLE_FTDI
 	FTDI::Find(newDriverFoundDevices);
+	#endif
+
+	#ifdef ICSNEO_ENABLE_FTD3XX
+	FTD3XX::Find(newDriverFoundDevices);
 	#endif
 
 	// Weak because we don't want to keep devices open if they go out of scope elsewhere
