@@ -78,6 +78,8 @@ extern int LegacyDLLExport icsneoGetDeviceSettingsType(void* hObject, EPlasmaIon
 extern int LegacyDLLExport icsneoSetDeviceSettings(void* hObject, SDeviceSettings* pSettings, int iNumBytes, int bSaveToEEPROM, EPlasmaIonVnetChannel_t vnetSlot);
 extern int LegacyDLLExport icsneoGetDeviceSettings(void* hObject, SDeviceSettings* pSettings, int iNumBytes, EPlasmaIonVnetChannel_t vnetSlot);
 
+extern int LegacyDLLExport icsneoLoadDefaultSettings(void* hObject);
+
 extern int LegacyDLLExport icsneoSetUSBLatency(NeoDevice* pNeoDevice, unsigned long LatencyVal);
 
 extern unsigned int LegacyDLLExport icsneoGetCANControllerClockFrequency(void* hObject, int lNetworkID);

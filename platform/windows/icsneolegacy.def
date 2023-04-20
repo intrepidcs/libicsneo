@@ -128,7 +128,7 @@ EXPORTS
 	icsneoReceiveHWTimeResponse @143
 	icsneoSendHWTimeRequest @144
 	icsneoSetUSBLatency     @145
-	; icsneoLoadDefaultSettings @146
+	icsneoLoadDefaultSettings @146
 	; icsneoGetAllChipVersions @149
 	icsneoSetBitRateEx  @ 150
 	; icsneoScriptGetScriptStatusEx  @ 151

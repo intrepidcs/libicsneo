@@ -1079,6 +1079,15 @@ int LegacyDLLExport icsneoGetDeviceSettings(void* hObject, SDeviceSettings* pSet
 	return !!icsneo_settingsReadStructure(device, &pSettings->Settings, iNumBytes - offset);
 }
 
+int LegacyDLLExport icsneoLoadDefaultSettings(void* hObject)
+{
+	if (!icsneoValidateHObject(hObject))
+		return false;
+
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
+	return icsneo_settingsApplyDefaults(device);
+}
+
 int LegacyDLLExport icsneoSetBitRateEx(void* hObject, unsigned long BitRate, int NetworkID, int iOptions)
 {
 	if (!icsneoValidateHObject(hObject))
