@@ -100,9 +100,31 @@ int main() {
 		std::cout << "\tSetting settings permanently... ";
 		ret = device->settings->apply();
 		std::cout << (ret ? "OK\n\n" : "FAIL\n\n");
+		
+		const auto getRTC = [&]() {
+			std::cout << "\tGetting RTC... ";
+			const auto rtc = device->getRTC();
+			if(!rtc) {
+				std::cout << "FAIL" << std::endl;
+				return;
+			}
+			const auto time = std::chrono::system_clock::to_time_t(*rtc);
+			const auto timeInfo = std::gmtime(&time);
+			std::cout << "OK, " << std::put_time(timeInfo, "%Y-%m-%d %H:%M:%S") << std::endl;
+		};
+		// Set the real time clock on the device using the system clock
+		// First, let's see if we can get the time from the device (if it has an RTC)
+		getRTC();
+
+		// Now, set the time using the system's clock so that we can check it again to ensure it's set
+		std::cout << "\tSetting RTC to system_clock::now()... ";
+		std::cout << (device->setRTC(std::chrono::system_clock::now()) ? "OK" : "FAIL") << std::endl;
+
+		// Get the time again after setting
+		getRTC();
 
 		// The concept of going "online" tells the connected device to start listening, i.e. ACKing traffic and giving it to us
-		std::cout << "\tGoing online... ";
+		std::cout << "\n\tGoing online... ";
 		ret = device->goOnline();
 		if(!ret) {
 			std::cout << "FAIL" << std::endl;
@@ -122,36 +144,6 @@ int main() {
 		}
 		std::cout << "OK" << std::endl;
 
-		// Set the real time clock on the device using the system clock
-		// First, let's see if we can get the time from the device (if it has an RTC)
-		std::cout << "\n\tChecking and setting the RTC on the device" << std::endl;
-		auto dTime = device->getRTC();
-		if (dTime.has_value()) {
-			std::time_t time = std::chrono::system_clock::to_time_t(dTime.value());
-			const auto timeInfo = std::gmtime(&time);
-			if(!timeInfo)
-				return false;
-			std::cout << "\t\tGetting current UTC time: " << std::put_time(timeInfo, "%Y-%m-%d %H:%M:%S") << std::endl;
-		} else {
-			std::cout << "\t\tTime not available" << std::endl;
-		}
-
-		// Now, set the time using the system's clock so that we can check it again to ensure it's set
-		auto now = std::chrono::system_clock::now();
-		device->setRTC(now);
-		std::cout << "\t\tTime is now set..." << std::endl;
-
-		// Get the time again after setting
-		auto dTime2 = device->getRTC();
-		if (dTime2.has_value()) {
-			std::time_t time2 = std::chrono::system_clock::to_time_t(dTime2.value());
-			const auto timeInfo2 = std::gmtime(&time2);
-			if(!timeInfo2)
-				return false;
-			std::cout << "\t\tGetting current UTC time: " << std::put_time(timeInfo2, "%Y-%m-%d %H:%M:%S") << std::endl;
-		} else {
-			std::cout << "\t\tTime is not available" << std::endl;
-		}
 		// Now we can either register a handler (or multiple) for messages coming in
 		// or we can enable message polling, and then call device->getMessages periodically
 
