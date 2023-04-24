@@ -944,7 +944,9 @@ typedef struct OP_ETH_SETTINGS_t
 			unsigned char mac_addr2[6];// Target Addr for spoofing
 			unsigned short mac_spoofing_en : 1;
 			unsigned short mac_spoofing_isDstOrSrc : 1;
-			unsigned short reserved : 14;
+			unsigned short link_spd : 2;
+			unsigned short q2112_phy_mode : 1;
+			unsigned short reserved : 11;
 		};
 		unsigned char reserved0[14];
 	};
