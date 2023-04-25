@@ -1,8 +1,15 @@
 #include <vector>
 #include "icsneo/api/eventmanager.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4091)
+#endif
 #define FTD3XX_STATIC
 #include <ftd3xx.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include "icsneo/platform/ftd3xx.h"
 

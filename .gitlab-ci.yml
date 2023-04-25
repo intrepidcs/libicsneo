@@ -92,8 +92,8 @@ test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y clang lld libc++-dev libc++abi-dev ninja-build cmake libusb-1.0-0-dev libpcap-dev
-    - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld CXXFLAGS=-stdlib=libc++ sh ci/build-posix.sh
+    - apt install -y clang lld ninja-build cmake libusb-1.0-0-dev libpcap-dev
+    - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
   artifacts:
     when: always
     paths:
@@ -107,7 +107,7 @@ test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y libusb-1.0-0-dev libpcap-dev libc++-dev libc++abi-dev
+    - apt install -y libusb-1.0-0-dev libpcap-dev
     - build/libicsneo-tests
   tags:
     - linux-build
@@ -202,8 +202,8 @@ test linux/ubuntu/2204/amd64/clang:
       - /var/cache/dnf
   script:
     - dnf upgrade -y
-    - dnf install -y clang lld libpcap-devel cmake ninja-build libusb1-devel libcxx-devel
-    - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld CXXFLAGS=-stdlib=libc++ sh ci/build-posix.sh
+    - dnf install -y clang lld libpcap-devel cmake ninja-build libusb1-devel
+    - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
   artifacts:
     when: always
     paths:
@@ -219,7 +219,7 @@ test linux/ubuntu/2204/amd64/clang:
       - /var/cache/dnf
   script:
     - dnf upgrade -y
-    - dnf install -y libpcap-devel libusb1-devel libcxx-devel
+    - dnf install -y libpcap-devel libusb1-devel
     - build/libicsneo-tests
   tags:
     - linux-build

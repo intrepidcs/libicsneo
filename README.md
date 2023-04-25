@@ -112,11 +112,7 @@ icsneo_closeDevice(myDevice);
 
 ## Building from Source
 ### FTD3XX
-Some devices require FTD3XX for USB communication:
-1. Download the archive for the target platform from [FTDI's website](https://ftdichip.com/drivers/d3xx-drivers/)
-   - Windows users should download the "Application Library (DLL)" package
-2. Extract the archive
-3. Configure libicsneo with the CMake option `FTD3XX_ROOT` set to the path containing `f3d3xx.h` (`-DFTD3XX_ROOT=<path to directory containing ftd3xx.h>`)
+Some devices require FTD3XX for USB communication so the [FTDI D3XX library](https://ftdichip.com/drivers/d3xx-drivers/) will be automatically downloaded and included. If you would like to use a system copy of D3XX instead you can set `FTD3XX_ROOT` to the path containing `f3d3xx.h` (`-DFTD3XX_ROOT=<path to directory containing ftd3xx.h>`).
 ### Windows
 Building will require MSVC 2017 version 15.7 or newer and CMake to be installed.
 ### macOS

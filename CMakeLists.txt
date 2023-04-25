@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.12)
 project(libicsneo VERSION 0.3.0)
 
-cmake_policy(SET CMP0074 OLD)
+cmake_policy(SET CMP0074 NEW)
 
 option(LIBICSNEO_BUILD_TESTS "Build all tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
@@ -20,6 +20,7 @@ option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw 
 option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" ON)
 option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" ON)
 option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
+option(LIBICSNEO_ENABLE_FTD3XX "Enable devices which communicate over USB FTD3XX" ON)
 
 if(NOT CMAKE_CXX_STANDARD)
 	set(CMAKE_CXX_STANDARD 17)
@@ -160,9 +161,43 @@ else() # Darwin or Linux
 	endif()
 endif()
 
-find_package(FTD3XX)
-if(FTD3XX_FOUND)
-	set(LIBICSNEO_ENABLE_FTD3XX 1)
+if(LIBICSNEO_ENABLE_FTD3XX)
+	if(NOT FTD3XX_ROOT) # allow system override
+		include(FetchContent)
+		if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+			FetchContent_Declare(
+				ftdi3xx
+				URL https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.3.0.4-win-x64.zip
+				URL_HASH SHA256=7ba81100e0d4e96aca685545656c9dfa393d08587b94319551f75a6089f04b5e
+		)
+		elseif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+			FetchContent_Declare(
+				ftdi3xx
+				URL https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.3.0.4-win-i686.zip
+				URL_HASH SHA256=e290bc29ee5b1a9e779225f276f7956debe7326019e066f077c46d9242beab4b
+			)
+		elseif(APPLE)
+			FetchContent_Declare(
+				ftdi3xx
+				URL https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.0.5-macos-universal2.zip
+				URL_HASH SHA256=a540583f3c1e80c6ebbc27a28a4168820f8b11b78752d0655f0bfe40e723129d
+			)
+		elseif(UNIX AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+			FetchContent_Declare(
+				ftdi3xx
+				URL https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.0.5-linux-x64.zip
+				URL_HASH SHA256=e9a16a41f407ee2932fcf77468204b0009468b5c15f5441e3b1302ccfd4144af
+			)
+		else()
+			message(FATAL_ERROR "Unsupported platform for FTD3XX driver")
+		endif()
+		FetchContent_GetProperties(ftdi3xx)
+		if(NOT ftdi3xx_POPULATED)
+			FetchContent_Populate(ftdi3xx)
+		endif()
+		set(FTD3XX_ROOT "${ftdi3xx_SOURCE_DIR}")
+	endif()
+	find_package(FTD3XX REQUIRED)
 	list(APPEND PLATFORM_SRC
 		platform/ftd3xx.cpp
 	)

@@ -1,12 +1,10 @@
 find_path(FTD3XX_INCLUDE_DIR
 	NAMES ftd3xx.h FTD3XX.h
-	HINTS "${FTD3XX_ROOT}"
 )
 
 find_library(FTD3XX_LIBRARY
-	NAMES libftd3xx-static.a FTD3XX.lib
+	NAMES libftd3xx.a libftd3xx-static.a FTD3XX.lib
 	PATH_SUFFIXES x64/Static
-	HINTS "${FTD3XX_ROOT}"
 )
 
 mark_as_advanced(FTD3XX_FOUND FTD3XX_INCLUDE_DIR FTD3XX_LIBRARY)
