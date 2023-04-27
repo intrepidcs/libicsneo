@@ -110,6 +110,10 @@ for(size_t i = 0; i < messageCount; i++) {
 icsneo_closeDevice(myDevice);
 ```
 
+### Debugging
+
+To enable debug printing set the `LIBICSNEO_PRINT_EVENTS` environmental variable to the desired `APIEvent::Severity` level, all `Event`s greater than or equal to that level will be printed to stderr. For example, to print all warnings and errors: `LIBICSNEO_PRINT_EVENTS=32`.
+
 ## Building from Source
 ### FTD3XX
 Some devices require FTD3XX for USB communication so the [FTDI D3XX library](https://ftdichip.com/drivers/d3xx-drivers/) will be automatically downloaded and included. If you would like to use a system copy of D3XX instead you can set `FTD3XX_ROOT` to the path containing `f3d3xx.h` (`-DFTD3XX_ROOT=<path to directory containing ftd3xx.h>`).

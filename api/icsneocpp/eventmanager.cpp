@@ -1,5 +1,8 @@
 #include "icsneo/api/eventmanager.h"
 #include <memory>
+#include <optional>
+#include <iostream>
+#include <cstdlib>
 
 using namespace icsneo;
 
@@ -33,6 +36,25 @@ void EventManager::cancelErrorDowngradingOnCurrentThread() {
 void EventManager::add(APIEvent event) {
 	if(destructing)
 		return;
+	static const auto printLevel = []() -> std::optional<uint8_t> {
+		#ifdef _MSC_VER
+		#pragma warning(push)
+		#pragma warning(disable : 4996)
+		#endif
+		const auto level = std::getenv("LIBICSNEO_PRINT_EVENTS");
+		#ifdef _MSC_VER
+		#pragma warning(pop)
+		#endif
+		if(!level)
+			return std::nullopt;
+		try {
+			return (uint8_t)std::stoi(level);
+		} catch (std::invalid_argument const&) {
+			return std::nullopt;
+		}
+	}();
+	if(printLevel && (uint8_t)event.getSeverity() >= *printLevel)
+		std::cerr << event.describe() << std::endl;
 	if(event.getSeverity() == APIEvent::Severity::Error) {
 		// if the error was added on a thread that downgrades errors (non-user thread)
 		std::lock_guard<std::mutex> lk(downgradedThreadsMutex);
