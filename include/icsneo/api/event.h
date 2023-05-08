@@ -93,6 +93,7 @@ public:
 		A2BMessageIncompleteFrame = 0x2039,
 		CoreminiUploadVersionMismatch = 0x2040,
 		DiskNotConnected = 0x2041,
+		UnexpectedResponse = 0x2042,
 
 		// Transport Events
 		FailedToRead = 0x3000,

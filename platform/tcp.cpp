@@ -16,6 +16,7 @@
 #include <arpa/inet.h>
 #endif
 
+#include <optional>
 #include "icsneo/platform/tcp.h"
 
 #ifdef _WIN32
@@ -415,9 +416,10 @@ bool TCP::open() {
 		return false;
 	}
 
-	socket.emplace(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	auto partiallyOpenSocket = std::make_unique<Socket>(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
 	#if !defined(_WIN32) && !defined(__APPLE__)
-		if(::setsockopt(*socket, SOL_SOCKET, SO_BINDTODEVICE, interface.name.c_str(), interface.name.size()) < 0) {
+		if(::setsockopt(*partiallyOpenSocket, SOL_SOCKET, SO_BINDTODEVICE, interface.name.c_str(), interface.name.size()) < 0) {
 			report(APIEvent::Type::ErrorSettingSocketOption, APIEvent::Severity::Error);
 			return false;
 		}
@@ -428,7 +430,7 @@ bool TCP::open() {
 		addr.sin_family = AF_INET;
 		addr.sin_addr.s_addr = htonl(interface.ip);
 		APPLE_SIN_LEN(addr);
-		if(::bind(*socket, (sockaddr*)&addr, sizeof(addr)) < 0) {
+		if(::bind(*partiallyOpenSocket, (sockaddr*)&addr, sizeof(addr)) < 0) {
 			report(APIEvent::Type::FailedToBind, APIEvent::Severity::Error);
 			return false;
 		}
@@ -442,7 +444,7 @@ bool TCP::open() {
 		APPLE_SIN_LEN(addr);
 
 		// the socket is non-blocking so it's expected that the first connect will fail
-		if(::connect(*socket, (sockaddr*)&addr, sizeof(addr)) == 0) {
+		if(::connect(*partiallyOpenSocket, (sockaddr*)&addr, sizeof(addr)) == 0) {
 			report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
 			return false;
 		}
@@ -462,11 +464,11 @@ bool TCP::open() {
 		timeout.tv_sec = 1;
 		fd_set writefs;
 		FD_ZERO(&writefs);
-		int nfds = WIN_INT(*socket) + 1;
-		FD_SET(*socket, &writefs);
+		int nfds = WIN_INT(*partiallyOpenSocket) + 1;
+		FD_SET(*partiallyOpenSocket, &writefs);
 		::select(nfds, 0, &writefs, 0, &timeout);
 
-		if(::connect(*socket, (sockaddr*)&addr, sizeof(addr)) < 0) {
+		if(::connect(*partiallyOpenSocket, (sockaddr*)&addr, sizeof(addr)) < 0) {
 			#ifdef _WIN32
 				if(::WSAGetLastError() != WSAEISCONN) {
 					report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
@@ -484,13 +486,14 @@ bool TCP::open() {
 		}
 	}
 
+	socket = std::move(partiallyOpenSocket);
 	readThread = std::thread(&TCP::readTask, this);
 	writeThread = std::thread(&TCP::writeTask, this);
 	return true;
 }
 
 bool TCP::isOpen() {
-	return socket.has_value();
+	return socket ? true : false;
 }
 
 bool TCP::close() {
@@ -513,6 +516,7 @@ bool TCP::close() {
 	while(writeQueue.try_dequeue(flushop)) {}
 
 	socket.reset();
+	closing = false;
 
 	return true;
 }

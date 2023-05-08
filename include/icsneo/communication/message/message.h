@@ -34,6 +34,8 @@ public:
 		ExtendedResponse = 0x8009,
 		WiVICommandResponse = 0x800a,
 		ScriptStatus = 0x800b,
+		ComponentVersions = 0x800c,
+		SupportedFeatures = 0x800d,
 	};
 
 	Message(Type t) : type(t) {}

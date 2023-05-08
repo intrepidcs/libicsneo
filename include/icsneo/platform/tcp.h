@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-#include <optional>
+#include <memory>
 
 #include "icsneo/communication/driver.h"
 #include "icsneo/device/founddevice.h"
@@ -45,7 +45,7 @@ private:
 	NetworkInterface interface;
 	uint32_t dstIP;
 	uint16_t dstPort;
-	std::optional<Socket> socket;
+	std::unique_ptr<Socket> socket;
 	void readTask() override;
 	void writeTask() override;
 };

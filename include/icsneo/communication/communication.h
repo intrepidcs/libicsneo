@@ -10,6 +10,8 @@
 #include "icsneo/communication/message/callback/messagecallback.h"
 #include "icsneo/communication/message/serialnumbermessage.h"
 #include "icsneo/communication/message/logicaldiskinfomessage.h"
+#include "icsneo/communication/message/componentversionsmessage.h"
+#include "icsneo/communication/message/extendedresponsemessage.h"
 #include "icsneo/device/deviceversion.h"
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/communication/packetizer.h"
@@ -58,6 +60,7 @@ public:
 	std::shared_ptr<SerialNumberMessage> getSerialNumberSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	std::optional< std::vector< std::optional<DeviceAppVersion> > > getVersionsSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	std::shared_ptr<LogicalDiskInfoMessage> getLogicalDiskInfoSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
+	std::optional< std::vector<ComponentVersion> > getComponentVersionsSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	int addMessageCallback(const std::shared_ptr<MessageCallback>& cb);
 	bool removeMessageCallback(int id);

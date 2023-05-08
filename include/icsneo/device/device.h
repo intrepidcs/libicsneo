@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <optional>
 #include <unordered_map>
+#include <set>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/api/lifetime.h"
 #include "icsneo/device/neodevice.h"
@@ -31,6 +32,7 @@
 #include "icsneo/communication/message/resetstatusmessage.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
 #include "icsneo/communication/message/scriptstatusmessage.h"
+#include "icsneo/communication/message/supportedfeaturesmessage.h"
 #include "icsneo/device/extensions/flexray/controller.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/message/ethphymessage.h"
@@ -530,7 +532,7 @@ public:
 	 * For use by extensions only. A more stable API will be provided in the future.
 	 */
 	const std::vector<std::optional<DeviceAppVersion>>& getVersions() const { return versions; }
-
+	const std::vector<ComponentVersion>& getComponentVersions() const { return componentVersions; }
 	/**
 	 * Some alternate communication protocols do not support DFU
 	 */
@@ -547,6 +549,9 @@ public:
 	//RTC declarations
 	std::optional<std::chrono::time_point<std::chrono::system_clock>> getRTC();
 	bool setRTC(const std::chrono::time_point<std::chrono::system_clock>& time);
+
+	// Get a bitfield from the device representing supported networks and features.
+	std::optional<std::set<SupportedFeature>> getSupportedFeatures();
 
 	/**
 	 * Returns true if this device supports the Wireless neoVI featureset
@@ -669,6 +674,7 @@ private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
 	std::vector<std::optional<DeviceAppVersion>> versions;
+	std::vector<ComponentVersion> componentVersions;
 
 	mutable std::mutex diskLock;
 	std::unique_ptr<Disk::ReadDriver> diskReadDriver;

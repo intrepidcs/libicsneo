@@ -26,6 +26,8 @@
 #include "icsneo/communication/packet/i2cpacket.h"
 #include "icsneo/communication/packet/scriptstatuspacket.h"
 #include "icsneo/communication/packet/linpacket.h"
+#include "icsneo/communication/packet/componentversionpacket.h"
+#include "icsneo/communication/packet/supportedfeaturespacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -247,13 +249,21 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						break; // Handle as a raw message, might not be a generic response
 
 					const auto& resp = *reinterpret_cast<ExtendedResponseMessage::PackedGenericResponse*>(packet->data.data());
-					if(resp.header.command != ExtendedCommand::GenericReturn)
-						break; // Handle as a raw message
-
-					const auto msg = std::make_shared<ExtendedResponseMessage>(resp.command, resp.returnCode);
-					result = msg;
-					return true;
-				}
+					switch(resp.header.command) {
+						case ExtendedCommand::GetComponentVersions:
+							result = ComponentVersionPacket::DecodeToMessage(packet->data);
+							return true;
+						case ExtendedCommand::GetSupportedFeatures:
+							result = SupportedFeaturesPacket::DecodeToMessage(packet->data);
+							return true;
+						case ExtendedCommand::GenericReturn:
+							result = std::make_shared<ExtendedResponseMessage>(resp.command, resp.returnCode);
+							return true;
+						default:
+							// No defined handler, treat this as a RawMessage
+							break;
+					}
+				}	break;
 				case Network::NetID::FlexRayControl: {
 					auto frResult = std::make_shared<FlexRayControlMessage>(*packet);
 					if(!frResult->decoded) {

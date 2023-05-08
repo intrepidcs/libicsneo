@@ -217,6 +217,13 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 	if(block) // Extensions say no
 		return false;
 
+	// Get component versions *after* the extension "onDeviceOpen" hooks (e.g. device reflashes)
+	
+	if (auto compVersions = com->getComponentVersionsSync())
+		componentVersions = std::move(*compVersions);
+	else
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::EventWarning);
+
 	if(!settings->disabled) {
 		// Since we will not fail the open if a settings read fails,
 		// downgrade any errors to warnings. Otherwise the error will
@@ -302,6 +309,10 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		// "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
 		return getCommunicationNotEstablishedError();
 	}
+
+	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
+		return getCommunicationNotEstablishedError();
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 	auto serial = com->getSerialNumberSync();
 	int i = 0;
@@ -1751,4 +1762,21 @@ bool Device::setRTC(const std::chrono::time_point<std::chrono::system_clock>& ti
 
 	com->sendCommand(Command::SetRTC, bytestream);
 	return true;
+}
+
+std::optional<std::set<SupportedFeature>> Device::getSupportedFeatures() {
+	auto timeout = std::chrono::milliseconds(100);
+	std::shared_ptr<Message> msg = com->waitForMessageSync(
+		[this](){ return com->sendCommand(ExtendedCommand::GetSupportedFeatures, {}); },
+		std::make_shared<MessageFilter>(Message::Type::SupportedFeatures), timeout);	
+	if(!msg) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	const auto& typedResponse = std::dynamic_pointer_cast<SupportedFeaturesMessage>(msg);
+	if(!typedResponse) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	return std::move(typedResponse->features);
 }

@@ -115,6 +115,7 @@ static constexpr const char* WIVI_UPLOAD_STACK_OVERFLOW = "The Wireless neoVI up
 static constexpr const char* A2B_MESSAGE_INCOMPLETE_FRAME = "At least one of the frames of the A2B message does not contain samples for each channel and stream."; 
 static constexpr const char* COREMINI_UPLOAD_VERSION_MISMATCH = "The version of the coremini engine on the device and the script uploaded are not the same.";
 static constexpr const char* DISK_NOT_CONNECTED = "The program tried to access a disk that is not connected.";
+static constexpr const char* UNEXPECTED_RESPONSE = "Received an unexpected or invalid response from the device.";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -290,6 +291,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return COREMINI_UPLOAD_VERSION_MISMATCH;
 		case Type::DiskNotConnected:
 			return DISK_NOT_CONNECTED;
+		case Type::UnexpectedResponse:
+			return UNEXPECTED_RESPONSE;
 		// Transport Errors
 		case Type::FailedToRead:
 			return FAILED_TO_READ;

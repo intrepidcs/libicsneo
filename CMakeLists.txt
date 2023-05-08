@@ -240,6 +240,8 @@ set(SRC_FILES
 	communication/packet/i2cpacket.cpp
 	communication/packet/linpacket.cpp
 	communication/packet/scriptstatuspacket.cpp
+	communication/packet/componentversionpacket.cpp
+	communication/packet/supportedfeaturespacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
 	communication/ethernetpacketizer.cpp

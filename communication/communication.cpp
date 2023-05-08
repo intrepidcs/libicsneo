@@ -13,6 +13,7 @@
 #include "icsneo/communication/message/filter/main51messagefilter.h"
 #include "icsneo/communication/message/readsettingsmessage.h"
 #include "icsneo/communication/message/versionmessage.h"
+#include "icsneo/communication/message/componentversionsmessage.h"
 
 using namespace icsneo;
 
@@ -300,4 +301,19 @@ void Communication::handleInput(Packetizer& p, std::vector<uint8_t>& readBytes) 
 			}
 		}
 	}
+}
+
+std::optional< std::vector<ComponentVersion> > Communication::getComponentVersionsSync(std::chrono::milliseconds timeout) {
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::ComponentVersions);
+	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
+		return sendCommand(ExtendedCommand::GetComponentVersions, {});
+	}, filter, timeout);
+	if(!msg) // Did not receive a message
+		return std::nullopt;
+
+	auto ver = std::dynamic_pointer_cast<ComponentVersionsMessage>(msg);
+	if(!ver) // Could not upcast for some reason
+		return std::nullopt;
+
+	return std::make_optional< std::vector<ComponentVersion> >(std::move(ver->versions));
 }

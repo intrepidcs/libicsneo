@@ -198,7 +198,7 @@ void CDCACM::readTask() {
 				// We were expecting a disconnect for reenumeration
 				modeChangeThread = std::thread([this] {
 					modeChangeCV.notify_all();
-					close(); // Which will trigger an open() due to modeChanging
+					// Requesting thread is responsible for calling close. This allows for more flexibility
 				});
 				break;
 			} else if(!closing && !fdIsValid() && !isDisconnected()) {

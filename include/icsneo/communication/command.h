@@ -47,6 +47,8 @@ enum class ExtendedCommand : uint16_t {
 	Extract = 0x0015,
 	StartDHCPServer = 0x0016,
 	StopDHCPServer = 0x0017,
+	GetSupportedFeatures = 0x0018,
+	GetComponentVersions = 0x001A,
 	Reboot = 0x001C,
 	SetUploadedFlag = 0x0027,
 };

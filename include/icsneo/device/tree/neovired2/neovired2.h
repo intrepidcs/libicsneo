@@ -47,7 +47,7 @@ protected:
 
 	void setupPacketizer(Packetizer& packetizer) override {
 		Device::setupPacketizer(packetizer);
-		packetizer.align16bit = false;
+		packetizer.align16bit = true;
 	}
 
 	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
