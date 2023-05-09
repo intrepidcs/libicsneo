@@ -65,6 +65,9 @@ protected:
 			Network::NetID::I2C,
 			Network::NetID::I2C2,
 			Network::NetID::I2C3,
+
+			Network::NetID::MDIO1,
+			Network::NetID::MDIO2,
 		};
 		rxNetworks.insert(rxNetworks.end(), supportedRxNetworks.begin(), supportedRxNetworks.end());
 	}
@@ -91,6 +94,9 @@ protected:
 			Network::NetID::I2C,
 			Network::NetID::I2C2,
 			Network::NetID::I2C3,
+
+			Network::NetID::MDIO1,
+			Network::NetID::MDIO2,
 		};
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
 	}

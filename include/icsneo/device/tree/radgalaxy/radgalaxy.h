@@ -47,7 +47,13 @@ public:
 			Network::NetID::OP_Ethernet9,
 			Network::NetID::OP_Ethernet10,
 			Network::NetID::OP_Ethernet11,
-			Network::NetID::OP_Ethernet12
+			Network::NetID::OP_Ethernet12,
+
+			Network::NetID::MDIO1,
+			Network::NetID::MDIO2,
+			Network::NetID::MDIO3,
+			Network::NetID::MDIO4,
+			Network::NetID::MDIO5,
 		};
 		return supportedNetworks;
 	}

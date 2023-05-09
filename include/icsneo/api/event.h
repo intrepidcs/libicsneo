@@ -111,6 +111,7 @@ public:
 		ErrorSettingSocketOption = 0x3107,
 		GetIfAddrsError = 0x3108,
 		SendToError = 0x3109,
+		MDIOMessageExceedsMaxLength = 0x3110,
 
 		// FTD3XX
 		FTOK = 0x4000, // placeholder

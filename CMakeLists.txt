@@ -245,6 +245,7 @@ set(SRC_FILES
 	communication/packet/wivicommandpacket.cpp
 	communication/packet/i2cpacket.cpp
 	communication/packet/linpacket.cpp
+	communication/packet/mdiopacket.cpp
 	communication/packet/scriptstatuspacket.cpp
 	communication/packet/componentversionpacket.cpp
 	communication/packet/supportedfeaturespacket.cpp
@@ -469,6 +470,7 @@ if(LIBICSNEO_BUILD_TESTS)
 		test/i2cencoderdecodertest.cpp
 		test/linencoderdecodertest.cpp
 		test/a2bencoderdecodertest.cpp
+		test/mdioencoderdecodertest.cpp
 	)
 
 	target_link_libraries(libicsneo-tests gtest gtest_main)

@@ -91,6 +91,7 @@ public:
 		Ethernet_DAQ = 69,
 		Data_To_Host = 70,
 		TextAPI_To_Host = 71,
+		SPI1 = 72,
 		OP_Ethernet6 = 73,
 		Red_VBat = 74,
 		OP_Ethernet7 = 75,
@@ -146,7 +147,15 @@ public:
 		DWCAN16 = 541,
 		LIN7 = 542,
 		LIN8 = 543,
-		RED_SET_RTC = 544,
+		SPI2 = 544,
+		MDIO1 = 545,
+		MDIO2 = 546,
+		MDIO3 = 547,
+		MDIO4 = 548,
+		MDIO5 = 549,
+		MDIO6 = 550,
+		MDIO7 = 551,
+		MDIO8 = 552,
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};
@@ -163,6 +172,8 @@ public:
 		ISO9141 = 9,
 		I2C = 10,
 		A2B = 11,
+		SPI = 12,
+		MDIO = 13,
 		Any = 0xFE, // Never actually set as type, but used as flag for filtering
 		Other = 0xFF
 	};
@@ -239,6 +250,16 @@ public:
 		DWCAN16 = 69,
 		LIN7 = 70,
 		LIN8 = 71,
+		SPI1 = 72,
+		SPI2 = 73,
+		MDIO1 = 75,
+		MDIO2 = 76,
+		MDIO3 = 77,
+		MDIO4 = 78,
+		MDIO5 = 79,
+		MDIO6 = 80,
+		MDIO7 = 81,
+		MDIO8 = 82,
 	};
 	static const char* GetTypeString(Type type) {
 		switch(type) {
@@ -266,6 +287,10 @@ public:
 				return "I²C";
 			case Type::A2B:
 				return "A2B";
+			case Type::SPI:
+				return "SPI";
+			case Type::MDIO:
+				return "MDIO";
 			case Type::Invalid:
 			default:
 				return "Invalid Type";
@@ -327,7 +352,6 @@ public:
 			case NetID::NeoMemorySDRead:
 			case NetID::NeoMemoryWriteDone:
 			case NetID::RED_GET_RTC:
-			case NetID::RED_SET_RTC:
 				return Type::Internal;
 			case NetID::Invalid:
 			case NetID::Any:
@@ -368,6 +392,18 @@ public:
 			case NetID::A2B1:
 			case NetID::A2B2:
 				return Type::A2B;
+			case NetID::SPI1:
+			case NetID::SPI2:
+				return Type::SPI;
+			case NetID::MDIO1:
+			case NetID::MDIO2:
+			case NetID::MDIO3:
+			case NetID::MDIO4:
+			case NetID::MDIO5:
+			case NetID::MDIO6:
+			case NetID::MDIO7:
+			case NetID::MDIO8:
+				return Type::MDIO;
 			default:
 				return Type::Other;
 		}
@@ -456,8 +492,6 @@ public:
 				return "RED_HARDWARE_EXCEP";
 			case NetID::RED_GET_RTC:
 				return "RED_GET_RTC";
-			case NetID::RED_SET_RTC:
-				return "RED_SET_RTC";
 			case NetID::ISO9141_3:
 				return "ISO 9141 3";
 			case NetID::HSCAN2:
@@ -626,6 +660,26 @@ public:
 				return "LIN 08";
 			case NetID::WBMS:
 				return "WBMS";
+			case NetID::SPI1:
+				return "SPI 1";
+			case NetID::SPI2:
+				return "SPI 2";
+			case NetID::MDIO1:
+				return "MDIO 1";
+			case NetID::MDIO2:
+				return "MDIO 2";
+			case NetID::MDIO3:
+				return "MDIO 3";
+			case NetID::MDIO4:
+				return "MDIO 4";
+			case NetID::MDIO5:
+				return "MDIO 5";
+			case NetID::MDIO6:
+				return "MDIO 6";
+			case NetID::MDIO7:
+				return "MDIO 7";
+			case NetID::MDIO8:
+				return "MDIO 8";
 			case NetID::Any:
 			case NetID::Invalid:
 				break;
@@ -778,6 +832,26 @@ public:
 				return CoreMini::LIN7;
 			case NetID::LIN8:
 				return CoreMini::LIN8;
+			case NetID::SPI1:
+				return CoreMini::SPI1;
+			case NetID::SPI2:
+				return CoreMini::SPI2;
+			case NetID::MDIO1:
+				return CoreMini::MDIO1;
+			case NetID::MDIO2:
+				return CoreMini::MDIO2;
+			case NetID::MDIO3:
+				return CoreMini::MDIO3;
+			case NetID::MDIO4:
+				return CoreMini::MDIO4;
+			case NetID::MDIO5:
+				return CoreMini::MDIO5;
+			case NetID::MDIO6:
+				return CoreMini::MDIO6;
+			case NetID::MDIO7:
+				return CoreMini::MDIO7;
+			case NetID::MDIO8:
+				return CoreMini::MDIO8;
 			default:
 				return std::nullopt;
 		}
@@ -928,6 +1002,27 @@ public:
 				return NetID::LIN7;
 			case CoreMini::LIN8:
 				return NetID::LIN8;
+			case CoreMini::SPI1:
+				return NetID::SPI1;
+			case CoreMini::SPI2:
+				return NetID::SPI2;
+			case CoreMini::MDIO1:
+				return NetID::MDIO1;
+			case CoreMini::MDIO2:
+				return NetID::MDIO2;
+			case CoreMini::MDIO3:
+				return NetID::MDIO3;
+			case CoreMini::MDIO4:
+				return NetID::MDIO4;
+			case CoreMini::MDIO5:
+				return NetID::MDIO5;
+			case CoreMini::MDIO6:
+				return NetID::MDIO6;
+			case CoreMini::MDIO7:
+				return NetID::MDIO7;
+			case CoreMini::MDIO8:
+				return NetID::MDIO8;
+			
 		}
 		return NetID::Invalid; // Should be unreachable, the compiler should warn about new CoreMini IDs
 	}

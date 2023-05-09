@@ -12,6 +12,7 @@
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/message/i2cmessage.h"
 #include "icsneo/communication/message/linmessage.h"
+#include "icsneo/communication/message/mdiomessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -28,6 +29,7 @@
 #include "icsneo/communication/packet/linpacket.h"
 #include "icsneo/communication/packet/componentversionpacket.h"
 #include "icsneo/communication/packet/supportedfeaturespacket.h"
+#include "icsneo/communication/packet/mdiopacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -166,6 +168,18 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			msg.network = packet->network;
 			return true;
 		}
+		case Network::Type::MDIO: {
+			result = HardwareMDIOPacket::DecodeToMessage(packet->data);
+
+			if(!result) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false; // A nullptr was returned, the packet was not long enough to decode
+			}
+
+			MDIOMessage& msg = *static_cast<MDIOMessage*>(result.get());
+			msg.network = packet->network;
+			return true;
+		}
 		case Network::Type::Internal: {
 			switch(packet->network.getNetID()) {
 				case Network::NetID::Reset_Status: {
@@ -252,7 +266,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					switch(resp.header.command) {
 						case ExtendedCommand::GetComponentVersions:
 							result = ComponentVersionPacket::DecodeToMessage(packet->data);
-							return true;
+					return true;
 						case ExtendedCommand::GetSupportedFeatures:
 							result = SupportedFeaturesPacket::DecodeToMessage(packet->data);
 							return true;
@@ -262,7 +276,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						default:
 							// No defined handler, treat this as a RawMessage
 							break;
-					}
+				}
 				}	break;
 				case Network::NetID::FlexRayControl: {
 					auto frResult = std::make_shared<FlexRayControlMessage>(*packet);

@@ -32,7 +32,9 @@ public:
 			Network::NetID::A2B2,
 
 			Network::NetID::I2C,
-			Network::NetID::I2C2
+			Network::NetID::I2C2,
+
+			Network::NetID::MDIO1,
 		};
 		return supportedNetworks;
 	}

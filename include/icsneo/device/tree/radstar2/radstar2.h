@@ -24,7 +24,10 @@ public:
 			Network::NetID::Ethernet,
 
 			Network::NetID::OP_Ethernet1,
-			Network::NetID::OP_Ethernet2
+			Network::NetID::OP_Ethernet2,
+
+			Network::NetID::MDIO1,
+			Network::NetID::MDIO2,
 		};
 		return supportedNetworks;
 	}

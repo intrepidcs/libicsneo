@@ -16,6 +16,14 @@ public:
 		APM1000E_CLK, // Clock Option and Keysight Branding
 	};
 
+	static const std::vector<Network>& GetSupportedNetworks() {
+		static std::vector<Network> supportedNetworks = {
+			Network::NetID::MDIO1,
+			Network::NetID::MDIO2,
+		};
+		return supportedNetworks;
+	}
+
 	SKU getSKU() const {
 		switch(getSerial().back()) {
 			case 'A':
@@ -65,6 +73,14 @@ protected:
 	}
 
 	bool requiresVehiclePower() const override { return false; }
+
+	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
+		for(auto& netid : GetSupportedNetworks())
+			rxNetworks.emplace_back(netid);
+	}
+
+	// The supported TX networks are the same as the supported RX networks for this device
+	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
 		return std::nullopt;

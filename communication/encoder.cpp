@@ -10,6 +10,7 @@
 #include "icsneo/communication/message/i2cmessage.h"
 #include "icsneo/communication/packet/a2bpacket.h"
 #include "icsneo/communication/packet/linpacket.h"
+#include "icsneo/communication/packet/mdiopacket.h"
 
 using namespace icsneo;
 
@@ -108,6 +109,18 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 					}
 					break;
 				} // End of Network::Type::LIN
+				case Network::Type::MDIO: {
+					auto mdiomsg = std::dynamic_pointer_cast<MDIOMessage>(message);
+					if(!mdiomsg) {
+						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+						return false;
+					}
+					buffer = &result;
+					if(!HardwareMDIOPacket::EncodeFromMessage(*mdiomsg, result, report)) {
+						return false;
+					}
+					break;
+				} // End of Network::Type::MDIO
 				default:
 					report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 					return false;

@@ -11,3 +11,6 @@ third-party/concurrentqueue/tests
 .vs
 .cache
 *.wav
+*.orig
+examples/csharp/bin
+examples/csharp/obj
