@@ -165,32 +165,38 @@ if(LIBICSNEO_ENABLE_FTD3XX)
 	if(NOT FTD3XX_ROOT) # allow system override
 		include(FetchContent)
 		if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-			FetchContent_Declare(
-				ftdi3xx
-				URL https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.3.0.4-win-x64.zip
-				URL_HASH SHA256=7ba81100e0d4e96aca685545656c9dfa393d08587b94319551f75a6089f04b5e
-		)
+			set(LIBICSNEO_FTD3XX_URL "https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.3.0.4-win-x64.zip")
+			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=7ba81100e0d4e96aca685545656c9dfa393d08587b94319551f75a6089f04b5e")
 		elseif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-			FetchContent_Declare(
-				ftdi3xx
-				URL https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.3.0.4-win-i686.zip
-				URL_HASH SHA256=e290bc29ee5b1a9e779225f276f7956debe7326019e066f077c46d9242beab4b
-			)
-		elseif(APPLE)
-			FetchContent_Declare(
-				ftdi3xx
-				URL https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.0.5-macos-universal2.zip
-				URL_HASH SHA256=a540583f3c1e80c6ebbc27a28a4168820f8b11b78752d0655f0bfe40e723129d
-			)
-		elseif(UNIX AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-			FetchContent_Declare(
-				ftdi3xx
-				URL https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.0.5-linux-x64.zip
-				URL_HASH SHA256=e9a16a41f407ee2932fcf77468204b0009468b5c15f5441e3b1302ccfd4144af
-			)
-		else()
+			set(LIBICSNEO_FTD3XX_URL "https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.3.0.4-win-i686.zip")
+			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=e290bc29ee5b1a9e779225f276f7956debe7326019e066f077c46d9242beab4b")
+		elseif(APPLE AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+			set(LIBICSNEO_FTD3XX_URL "https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.0.5-macos-universal2.zip")
+			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=a540583f3c1e80c6ebbc27a28a4168820f8b11b78752d0655f0bfe40e723129d")
+		elseif(UNIX)
+			if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
+				if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+					set(LIBICSNEO_FTD3XX_URL "https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.0.5-linux-x64.zip")
+					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=e9a16a41f407ee2932fcf77468204b0009468b5c15f5441e3b1302ccfd4144af")
+				endif()
+			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch64")
+				if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+					set(LIBICSNEO_FTD3XX_URL "https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.0.5-linux-aarch64.zip")
+					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=f06baabe5ed32f95470bb85bb84fb2d0a256b5e33c9bda753ee438877feb0361")
+				elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+					set(LIBICSNEO_FTD3XX_URL "https://cdn.intrepidcs.net/support/libicsneo/libftd3xx/libftd3xx-1.0.5-linux-armhf.zip")
+					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=049308085cdb89bb67458be4815b6107c7996e723e16253aec46c2de7df1c570")
+				endif()
+			endif()
+		endif()
+		if(NOT LIBICSNEO_FTD3XX_URL)
 			message(FATAL_ERROR "Unsupported platform for FTD3XX driver")
 		endif()
+		FetchContent_Declare(
+			ftdi3xx
+			URL ${LIBICSNEO_FTD3XX_URL}
+			URL_HASH ${LIBICSNEO_FTD3XX_URL_HASH}
+		)
 		FetchContent_GetProperties(ftdi3xx)
 		if(NOT ftdi3xx_POPULATED)
 			FetchContent_Populate(ftdi3xx)
