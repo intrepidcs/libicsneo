@@ -29,7 +29,7 @@ std::shared_ptr<SupportedFeaturesMessage> SupportedFeaturesPacket::DecodeToMessa
 	if(bytes.size() < expectedSize) {
 		return msg; // Empty
 	}
-	unsigned int loopLimit = std::min<unsigned int>(response.numValidBits, NumSupportedFeaturesFields);
+	unsigned int loopLimit = std::min<unsigned int>(response.numValidBits, static_cast<unsigned int>(SupportedFeature::numSupportedFeatures));
 	for(unsigned int i = 0; i < loopLimit; ++i) {
 		uint32_t wordOffset = i / 32;
 		uint32_t bitOffset = i % 32;
