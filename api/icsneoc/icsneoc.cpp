@@ -714,3 +714,30 @@ bool icsneo_setRTC(const neodevice_t* device, uint64_t input)
 	const std::chrono::system_clock::time_point time(duration);
 	return device->device->setRTC(time);
 }
+
+int icsneo_getDeviceStatus(const neodevice_t* device, void* status, size_t* size) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	if(status == nullptr || size == nullptr)
+		return false;
+	
+	std::shared_ptr<Message> msg = device->device->com->waitForMessageSync([&]() {
+		return device->device->com->sendCommand(Command::RequestStatusUpdate);
+	}, std::make_shared<MessageFilter>(Network::NetID::DeviceStatus), std::chrono::milliseconds(100));
+
+	if(!msg) // Did not receive a message
+		return false;
+	
+	auto rawMessage = std::static_pointer_cast<RawMessage>(msg);
+	if(!rawMessage || (rawMessage->network.getNetID() != Network::NetID::DeviceStatus))
+		return false;
+
+	if(*size < rawMessage->data.size())
+		return false;
+	
+	std::copy(rawMessage->data.begin(), rawMessage->data.end(), static_cast<uint8_t*>(status));
+	*size = rawMessage->data.size();
+
+	return true;
+}

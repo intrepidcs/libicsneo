@@ -185,7 +185,7 @@ EXPORTS
 	; icsneoSetVividCANSettings @ 197
 	; icsneoFindNeoDevicesNewStyle @ 198
 
-	; icsneoGetDeviceStatus @ 202
+	icsneoGetDeviceStatus @ 202
 
 	icsneoFindDevices @ 203
 	icsneoOpenDevice @ 204

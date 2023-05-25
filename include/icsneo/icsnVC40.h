@@ -2416,23 +2416,109 @@ typedef struct _icsSpyMessageVSB
 		m.NetworkID2 = X >> 8;  \
 	} while (0)
 
+#define RADJUPITER_NUM_PORTS 8
+
+#pragma pack(push)
+#pragma pack(1)
+typedef struct _ethernetNetworkStatus_t
+{
+	uint16_t networkId;
+	uint8_t linkStatus;
+	uint8_t linkFullDuplex;
+	uint8_t linkSpeed; // see ethLinkSpeed
+	uint8_t linkMode; // for automotive networks - see opEthLinkMode
+} ethernetNetworkStatus_t;
+#pragma pack(pop)
+
 typedef struct
 {
 	uint8_t backupPowerGood;
 	uint8_t backupPowerEnabled;
 	uint8_t usbHostPowerEnabled;
 	uint8_t ethernetActivationLineEnabled;
+	ethernetNetworkStatus_t ethernetStatus;
 } icsFire2DeviceStatus;
 
 typedef struct
 {
 	uint8_t ethernetActivationLineEnabled;
+	ethernetNetworkStatus_t ethernetStatus;
+	uint8_t unused;
+} icsFire2VnetDeviceStatus;
+
+typedef struct
+{
+	uint8_t ethernetActivationLineEnabled;
+	ethernetNetworkStatus_t ethernetStatus;
+	uint8_t unused;
 } icsVcan4DeviceStatus;
+
+typedef struct
+{
+	uint8_t ethernetActivationLineEnabled;
+	ethernetNetworkStatus_t ethernetStatus;
+	uint8_t unused;
+} icsFlexVnetzDeviceStatus;
+
+typedef struct
+{
+	uint8_t ethernetActivationLineEnabled;
+	ethernetNetworkStatus_t ethernetStatus[3];
+	uint8_t ethernetActivationLineEnabled_2;
+} icsFire3DeviceStatus;
+
+typedef struct
+{
+	ethernetNetworkStatus_t ethernetStatus[4];
+} icsRadMoonDuoDeviceStatus;
+
+typedef struct
+{
+	ethernetNetworkStatus_t ethernetStatus[RADJUPITER_NUM_PORTS-1];
+} icsRadJupiterDeviceStatus;
+
+typedef struct
+{
+	ethernetNetworkStatus_t ethernetStatus;
+} icsOBD2ProDeviceStatus;
+
+typedef struct
+{
+	ethernetNetworkStatus_t ethernetStatus[4];
+} icsRadPlutoDeviceStatus;
+
+typedef struct
+{
+	ethernetNetworkStatus_t ethernetStatus;
+} icsVcan4IndustrialDeviceStatus;
+
+typedef struct
+{
+	ethernetNetworkStatus_t ethernetStatus;
+} icsRadEpsilonDeviceStatus;
+
+typedef struct
+{
+	ethernetNetworkStatus_t ethernetStatus;
+} icsRadBMSDeviceStatus;
+
+#pragma pack(push)
+#pragma pack(4)
 
 typedef union {
 	icsFire2DeviceStatus fire2Status;
 	icsVcan4DeviceStatus vcan4Status;
+	icsFlexVnetzDeviceStatus flexVnetzStatus;
+	icsFire3DeviceStatus fire3Status;
+	icsRadMoonDuoDeviceStatus radMoonDuoStatus;
+	icsRadJupiterDeviceStatus jupiterStatus;
+	icsOBD2ProDeviceStatus obd2proStatus;
+	icsRadPlutoDeviceStatus plutoStatus;
+	icsVcan4IndustrialDeviceStatus vcan4indStatus;
+	icsRadBMSDeviceStatus radBMSStatus;
 } icsDeviceStatus;
+
+#pragma pack(pop)
 
 typedef struct
 {

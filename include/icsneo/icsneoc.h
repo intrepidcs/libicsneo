@@ -809,6 +809,17 @@ extern bool DLLExport icsneo_isTerminationEnabledFor(const neodevice_t* device, 
 extern bool DLLExport icsneo_setTerminationFor(const neodevice_t* device, neonetid_t netid, bool enabled);
 
 /**
+ * \brief Return the device status structures for a specified device.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] status A pointer to a device status structure for the current device.
+ * \param[in] size The size of the current device status structure in bytes.
+ * \returns True if the device status was successfully read.
+ *
+ * This function populates the device status structures and sub members.
+ */
+extern int icsneo_getDeviceStatus(const neodevice_t* device, void* status, size_t* size);
+
+/**
  * \brief Get the real-time clock for the given device.
  * \param[out] device A pointer to the neodevice_t structure specifying the device to read the RTC from.
  * \param[out] output A pointer to a uint64_t where the RTC will be stored. This value is in seconds.
@@ -997,6 +1008,15 @@ fn_icsneo_isTerminationEnabledFor icsneo_isTerminationEnabledFor;
 typedef bool(*fn_icsneo_setTerminationFor)(const neodevice_t* device, neonetid_t netid, bool enabled);
 fn_icsneo_setTerminationFor icsneo_setTerminationFor;
 
+typedef int (*fn_icsneo_getDeviceStatus)(const neodevice_t* device, void* status, size_t* size);
+fn_icsneo_getDeviceStatus icsneo_getDeviceStatus;
+
+typedef bool (*fn_icsneo_getRTC)(const neodevice_t* device, uint64_t* output);
+fn_icsneo_getRTC icsneo_getRTC;
+
+typedef bool (*fn_icsneo_setRTC)(const neodevice_t* device, uint64_t input);
+fn_icsneo_setRTC icsneo_setRTC;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneo_libraryHandle = NULL;
@@ -1066,6 +1086,9 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_canTerminationBeEnabledFor);
 	ICSNEO_IMPORTASSERT(icsneo_isTerminationEnabledFor);
 	ICSNEO_IMPORTASSERT(icsneo_setTerminationFor);
+	ICSNEO_IMPORTASSERT(icsneo_getDeviceStatus);
+	ICSNEO_IMPORTASSERT(icsneo_getRTC);
+	ICSNEO_IMPORTASSERT(icsneo_setRTC);
 
 	icsneo_initialized = true;
 	return 0;

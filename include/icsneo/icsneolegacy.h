@@ -90,6 +90,8 @@ extern unsigned int LegacyDLLExport icsneoGetCANControllerClockFrequency(void* h
 extern int LegacyDLLExport icsneoSetCANParameters(void* hObject,unsigned int baudRatePrescaler,unsigned int propagationTqs,unsigned int phase1Tqs,unsigned int phase2Tqs,unsigned int syncJumpWidthTqs,unsigned int optionBits,int lNetworkID);
 extern int LegacyDLLExport icsneoSetCANParametersPhilipsSJA1000(void* hObject,unsigned int btr0,unsigned int btr1,unsigned int optionBits,int lNetworkID);
 
+extern int LegacyDLLExport icsneoGetDeviceStatus(void* hObject, icsDeviceStatus* deviceStatus, size_t* deviceStatusSize);
+
 //Remote Device Functions
 extern int LegacyDLLExport icsneoOpenRemoteNeoDevice(const char* pIPAddress,NeoDevice* pNeoDevice,void** hObject,unsigned char* bNetworkIDs,int iOptions);
 extern int LegacyDLLExport icsneoFindRemoteNeoDevices(const char* pIPAddress, NeoDevice* pNeoDevice, int* pNumDevices);
@@ -131,7 +133,7 @@ extern int LegacyDLLExport icsneoScriptGetScriptStatus(void* hObject, int* piSta
 extern int LegacyDLLExport icsneoScriptReadAppSignal(void* hObject, unsigned int iIndex, double*dValue);
 extern int LegacyDLLExport icsneoScriptWriteAppSignal(void* hObject, unsigned int iIndex, double dValue);
 
-//Deprecated (but still suppored in the DLL)
+//Deprecated (but still supported in the DLL)
 extern int LegacyDLLExport icsneoOpenPortEx(void* lPortNumber, int lPortType, int lDriverType, int lIPAddressMSB, int lIPAddressLSBOrBaudRate, int bConfigRead, unsigned char* bNetworkID, int* hObject);
 extern int LegacyDLLExport icsneoOpenPort(int lPortNumber, int lPortType, int lDriverType, unsigned char* bNetworkID, unsigned char* bSCPIDs, int* hObject);
 extern int LegacyDLLExport icsneoFindAllCOMDevices(int lDriverType, int lGetSerialNumbers, int lStopAtFirst, int lUSBCommOnly, int* p_lDeviceTypes, int* p_lComPorts, int* p_lSerialNumbers, int*lNumDevices);

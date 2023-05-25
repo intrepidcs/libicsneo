@@ -912,6 +912,18 @@ int LegacyDLLExport icsneoStopSockServer(void* hObject)
 	return false;
 }
 
+int LegacyDLLExport icsneoGetDeviceStatus(void* hObject, icsDeviceStatus* deviceStatus, size_t* deviceStatusSize)
+{
+	if (!icsneoValidateHObject(hObject))
+		return false;
+	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
+
+	if (deviceStatus == nullptr || deviceStatusSize == nullptr)
+		return false;
+
+	return icsneo_getDeviceStatus(device, deviceStatus, deviceStatusSize);
+}
+
 //CoreMini Script functions
 int LegacyDLLExport icsneoScriptStart(void* hObject, int iLocation)
 {
