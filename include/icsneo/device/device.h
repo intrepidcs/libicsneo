@@ -33,6 +33,9 @@
 #include "icsneo/communication/message/wiviresponsemessage.h"
 #include "icsneo/communication/message/scriptstatusmessage.h"
 #include "icsneo/communication/message/supportedfeaturesmessage.h"
+#include "icsneo/communication/message/genericbinarystatusmessage.h"
+#include "icsneo/communication/message/extendeddatamessage.h"
+#include "icsneo/communication/packet/genericbinarystatuspacket.h"
 #include "icsneo/device/extensions/flexray/controller.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/message/ethphymessage.h"
@@ -565,6 +568,9 @@ public:
 	std::shared_ptr<Communication> com;
 	std::unique_ptr<IDeviceSettings> settings;
 
+	std::optional<size_t> getGenericBinarySize(uint16_t binaryIndex);
+	bool readBinaryFile(std::ostream& stream, uint16_t binaryIndex);
+
 protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;
@@ -669,6 +675,8 @@ protected:
 	virtual void handleDeviceStatus(const std::shared_ptr<RawMessage>&) {}
 
 	neodevice_t& getWritableNeoDevice() { return data; }
+
+
 
 private:
 	neodevice_t data;

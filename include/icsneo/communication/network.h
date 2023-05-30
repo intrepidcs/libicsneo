@@ -123,6 +123,7 @@ public:
 		ScriptStatus = 224,
 		EthPHYControl = 239,
 		ExtendedCommand = 240,
+		ExtendedData = 242,
 		FlexRayControl = 243,
 		CoreMiniPreLoad = 244,
 		HW_COM_Latency_Test = 512,
@@ -349,6 +350,7 @@ public:
 			case NetID::EthPHYControl:
 			case NetID::CoreMiniPreLoad:
 			case NetID::ExtendedCommand:
+			case NetID::ExtendedData:
 			case NetID::NeoMemorySDRead:
 			case NetID::NeoMemoryWriteDone:
 			case NetID::RED_GET_RTC:

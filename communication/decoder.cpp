@@ -13,6 +13,7 @@
 #include "icsneo/communication/message/i2cmessage.h"
 #include "icsneo/communication/message/linmessage.h"
 #include "icsneo/communication/message/mdiomessage.h"
+#include "icsneo/communication/message/extendeddatamessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -30,6 +31,7 @@
 #include "icsneo/communication/packet/componentversionpacket.h"
 #include "icsneo/communication/packet/supportedfeaturespacket.h"
 #include "icsneo/communication/packet/mdiopacket.h"
+#include "icsneo/communication/packet/genericbinarystatuspacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -259,6 +261,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					return true;
 				}
 				case Network::NetID::ExtendedCommand: {
+
 					if(packet->data.size() < sizeof(ExtendedResponseMessage::PackedGenericResponse))
 						break; // Handle as a raw message, might not be a generic response
 
@@ -266,9 +269,12 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					switch(resp.header.command) {
 						case ExtendedCommand::GetComponentVersions:
 							result = ComponentVersionPacket::DecodeToMessage(packet->data);
-					return true;
+							return true;
 						case ExtendedCommand::GetSupportedFeatures:
 							result = SupportedFeaturesPacket::DecodeToMessage(packet->data);
+							return true;
+						case ExtendedCommand::GenericBinaryInfo:
+							result = GenericBinaryStatusPacket::DecodeToMessage(packet->data);
 							return true;
 						case ExtendedCommand::GenericReturn:
 							result = std::make_shared<ExtendedResponseMessage>(resp.command, resp.returnCode);
@@ -276,8 +282,31 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						default:
 							// No defined handler, treat this as a RawMessage
 							break;
+					}
+					break;
 				}
-				}	break;
+				case Network::NetID::ExtendedData: {
+					if(packet->data.size() < sizeof(ExtendedDataMessage::ExtendedDataHeader))
+						break;
+
+					const auto& header = *reinterpret_cast<ExtendedDataMessage::ExtendedDataHeader*>(packet->data.data());
+
+					switch(header.subCommand) {
+						case ExtendedDataSubCommand::GenericBinaryRead: {
+							result = std::make_shared<ExtendedDataMessage>(header);
+							auto extDataMsg = std::static_pointer_cast<ExtendedDataMessage>(result);
+
+							size_t numRead = std::min(ExtendedDataMessage::MaxExtendedDataBufferSize, (size_t)header.length);
+							extDataMsg->data.resize(numRead);
+							
+							std::copy(packet->data.begin() + sizeof(header), packet->data.begin() + sizeof(header) + numRead, extDataMsg->data.begin());
+							return true;
+						}
+						default:
+							break;
+					}
+					break;
+				}
 				case Network::NetID::FlexRayControl: {
 					auto frResult = std::make_shared<FlexRayControlMessage>(*packet);
 					if(!frResult->decoded) {

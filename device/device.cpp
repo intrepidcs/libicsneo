@@ -1780,3 +1780,78 @@ std::optional<std::set<SupportedFeature>> Device::getSupportedFeatures() {
 	}
 	return std::move(typedResponse->features);
 }
+
+std::optional<size_t> Device::getGenericBinarySize(uint16_t binaryIndex) {
+	auto timeout = std::chrono::milliseconds(2000);
+	
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(!isOnline()) {
+		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	std::vector<uint8_t> args = GenericBinaryStatusPacket::EncodeArguments(binaryIndex);
+	
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, &args](){ 
+			return com->sendCommand(ExtendedCommand::GenericBinaryInfo, args); 
+		},
+		std::make_shared<MessageFilter>(Message::Type::GenericBinaryStatus),
+		timeout
+	);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	auto retMsg = std::static_pointer_cast<GenericBinaryStatusMessage>(response);
+	if(!retMsg) {
+		return std::nullopt;
+	}
+
+	return retMsg->binarySize;
+}
+
+bool Device::readBinaryFile(std::ostream& stream, uint16_t binaryIndex) {
+	auto timeout = std::chrono::milliseconds(100);
+
+	auto size = getGenericBinarySize(binaryIndex);
+
+	if(!size) {
+		return false;
+	}
+
+	std::vector<uint8_t> arguments(sizeof(ExtendedDataMessage::ExtendedDataHeader));
+	ExtendedDataMessage::ExtendedDataHeader& parameters = *reinterpret_cast<ExtendedDataMessage::ExtendedDataHeader*>(arguments.data());	
+
+	auto filter = std::make_shared<MessageFilter>(Network::NetID::ExtendedData);
+	
+	for(size_t offset = 0; offset < *size; offset+=ExtendedDataMessage::MaxExtendedDataBufferSize) {
+		parameters.subCommand = ExtendedDataSubCommand::GenericBinaryRead;
+		parameters.userValue = static_cast<uint32_t>(binaryIndex);
+		parameters.offset = static_cast<uint32_t>(offset);
+		parameters.length = static_cast<uint32_t>(std::min(ExtendedDataMessage::MaxExtendedDataBufferSize, *size - offset));
+
+		std::shared_ptr<Message> response = com->waitForMessageSync(
+			[this, arguments](){ 
+				return com->sendCommand(Command::ExtendedData, arguments); 
+			},
+			filter, 
+			timeout
+		);
+		if(!response) {
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+			return false;
+		}
+		auto retMsg = std::static_pointer_cast<ExtendedDataMessage>(response);
+
+		if(!stream.write(reinterpret_cast<char*>(retMsg->data.data()), retMsg->data.size())) {
+			return false;
+		}
+	}
+	return true;
+}

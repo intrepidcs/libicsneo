@@ -36,6 +36,7 @@ public:
 		ScriptStatus = 0x800b,
 		ComponentVersions = 0x800c,
 		SupportedFeatures = 0x800d,
+		GenericBinaryStatus = 0x800e,
 	};
 
 	Message(Type t) : type(t) {}

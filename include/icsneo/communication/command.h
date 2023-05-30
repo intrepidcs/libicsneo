@@ -31,7 +31,8 @@ enum class Command : uint8_t {
 	GetVBattReq = 0xDF, // Previously known as RED_CMD_VBATT_REQUEST
 	ScriptStatus = 0xE0, // Previously known as RED_CMD_SCRIPT_STATUS
 	MiscControl = 0xE7,
-	Extended = 0xF0,
+	Extended = 0xF0, // Previously known as RED_CMD_EXT_COMM
+	ExtendedData = 0xF2, // Previously known as RED_CMD_EXTENDED_DATA
 	FlexRayControl = 0xF3,
 	CoreMiniPreload = 0xF4, // Previously known as RED_CMD_COREMINI_PRELOAD
 	PHYControlRegisters = 0xEF
@@ -51,6 +52,7 @@ enum class ExtendedCommand : uint16_t {
 	GetComponentVersions = 0x001A,
 	Reboot = 0x001C,
 	SetUploadedFlag = 0x0027,
+	GenericBinaryInfo = 0x0030,
 };
 
 enum class ExtendedResponse : int32_t {
@@ -60,6 +62,10 @@ enum class ExtendedResponse : int32_t {
 	OperationFailed = -3,
 	OperationPending = -4,
 	InvalidParameter = -5,
+};
+
+enum class ExtendedDataSubCommand : uint32_t {
+	GenericBinaryRead = 13,
 };
 
 }
