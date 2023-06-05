@@ -616,6 +616,8 @@ public:
 				return "Ethernet PHY Register Control";
 			case NetID::ExtendedCommand:
 				return "Extended Command";
+			case NetID::ExtendedData:
+				return "Extended Data";
 			case NetID::FlexRayControl:
 				return "FlexRay Control";
 			case NetID::HW_COM_Latency_Test:
