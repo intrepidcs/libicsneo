@@ -161,7 +161,7 @@ extern int LegacyDLLExport icsneoGetBusVoltage(void* hObject, unsigned long* pVB
 extern int LegacyDLLExport icsneoGetNetidforSlaveVNETs(size_t* NetworkIndex, EPlasmaIonVnetChannel_t vnetSlot);
 extern int LegacyDLLExport icsneoGetVnetSimpleNetid(size_t* FullNetID);
 extern int LegacyDLLExport icsneoEnableDOIPLine(void* hObject, bool bActivate);
-extern int LegacyDLLExport icsneoGetMiniportAdapterInfo(void* hObject, NETWORK_ADAPTER_INFO* aInfo);
+extern int LegacyDLLExport icsneoGetMiniportAdapterInfo(void* hObject, NDIS_ADAPTER_INFORMATION* aInfo);
 
 // Hardware Time API functions
 extern int LegacyDLLExport icsneoSendHWTimeRequest(void* hObject);

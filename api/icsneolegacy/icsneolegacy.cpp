@@ -1106,6 +1106,9 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void* hObject, EPlasmaIonVnetCha
 	case NEODEVICE_RADMOON3:
 		*pDeviceSettingsType = DeviceRADMoon3SettingsType;
 		break;
+	case NEODEVICE_RED2:
+		*pDeviceSettingsType = DeviceRed2SettingsType;
+		break;
 	default:
 		return 0;
 	}
@@ -1492,7 +1495,7 @@ int LegacyDLLExport icsneoSerialNumberFromString(unsigned long* serial, char* da
 	return false;
 }
 
-int LegacyDLLExport icsneoGetMiniportAdapterInfo(void* hObject, NETWORK_ADAPTER_INFO* aInfo)
+int LegacyDLLExport icsneoGetMiniportAdapterInfo(void* hObject, NDIS_ADAPTER_INFORMATION* aInfo)
 {
 	return false;
 }
