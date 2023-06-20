@@ -122,15 +122,37 @@ Building will require MSVC 2017 version 15.7 or newer and CMake to be installed.
 ### macOS
 Getting the dependencies is easiest with the Homebrew package manager. You will also need XCode installed. You can then install CMake, an up-to-date version of GCC or Clang, and `libusb-1.0`.
 ### Linux
-The dependencies are as follows
+#### General Dependencies
  - CMake 3.12 or above
  - GCC 7 or above
  - `libusb-1.0-0-dev`
  - `libpcap0.8-dev`
  - `build-essential` is recommended
 
-If you'd like to be able to run programs that use this library without being root, consider using the included udev rules
+#### Fedora
+```
+sudo dnf install git @development-tools gcc-c++ libpcap-devel libusb1-devel cmake
+```
+#### Debian
+```
+su -c "apt install git build-essential libpcap0.8-dev libusb-1.0-0-dev cmake"
+```
+
+#### Building
+```
+git clone https://github.com/intrepidcs/libicsneo
+cd libicsneo
+cmake -S . -B build
+cd build
+make -j$((`nproc`+1))
+# Optional: Install globally:
+su -c "cp *.so /usr/local/lib/"
+```
+
+#### udev
+If you'd like to be able to run programs that use this library without being root, consider using the included udev rules:
 
 ```
-$ sudo cp 99-intrepidcs.rules /etc/udev/rules.d/
+su -c "cp 99-intrepidcs.rules /etc/udev/rules.d/"
+su -c "udevadm control --reload-rules && udevadm trigger"
 ```
