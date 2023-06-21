@@ -118,6 +118,25 @@ To enable debug printing set the `LIBICSNEO_PRINT_EVENTS` environmental variable
 ### FTD3XX
 Some devices require FTD3XX for USB communication so the [FTDI D3XX library](https://ftdichip.com/drivers/d3xx-drivers/) will be automatically downloaded and included. If you would like to use a system copy of D3XX instead you can set `FTD3XX_ROOT` to the path containing `f3d3xx.h` (`-DFTD3XX_ROOT=<path to directory containing ftd3xx.h>`).
 ### Windows
+
+- Open a terminal and install the following:
+```
+winget install Microsoft.VisualStudio.2022.Community
+winget install Kitware.CMake
+winget install Git.Git
+winget install Ninja-build.Ninja
+```
+- Reboot so cmake is in the system path
+- Open a developer Powershell for VS2022 and run the following:
+```
+git clone https://github.com/intrepidcs/libicsneo
+cd libicsneo
+cmake -S . -B build -G "Ninja"
+cmake --build build
+# All dlls and libs are now inside the build directory
+```
+
+
 Building will require MSVC 2017 version 15.7 or newer and CMake to be installed.
 ### macOS
 Getting the dependencies is easiest with the Homebrew package manager. You will also need XCode installed. You can then install CMake, an up-to-date version of GCC or Clang, and `libusb-1.0`.
@@ -131,11 +150,11 @@ Getting the dependencies is easiest with the Homebrew package manager. You will 
 
 #### Fedora
 ```
-sudo dnf install git @development-tools gcc-c++ libpcap-devel libusb1-devel cmake
+dnf install git @development-tools gcc-c++ libpcap-devel libusb1-devel cmake
 ```
-#### Debian
+#### Debian/Ubuntu
 ```
-su -c "apt install git build-essential libpcap0.8-dev libusb-1.0-0-dev cmake"
+apt install git build-essential libpcap0.8-dev libusb-1.0-0-dev cmake
 ```
 
 #### Building
@@ -143,16 +162,15 @@ su -c "apt install git build-essential libpcap0.8-dev libusb-1.0-0-dev cmake"
 git clone https://github.com/intrepidcs/libicsneo
 cd libicsneo
 cmake -S . -B build
-cd build
-make -j$((`nproc`+1))
+cmake --build build
 # Optional: Install globally:
-su -c "cp *.so /usr/local/lib/"
+cp *.so /usr/local/lib/
 ```
 
 #### udev
 If you'd like to be able to run programs that use this library without being root, consider using the included udev rules:
 
 ```
-su -c "cp 99-intrepidcs.rules /etc/udev/rules.d/"
-su -c "udevadm control --reload-rules && udevadm trigger"
+cp 99-intrepidcs.rules /etc/udev/rules.d/
+udevadm control --reload-rules && udevadm trigger
 ```
