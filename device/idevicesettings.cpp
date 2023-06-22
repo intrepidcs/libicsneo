@@ -128,6 +128,37 @@ int64_t IDeviceSettings::GetBaudrateValueForEnum(CANBaudrate enumValue) {
 	}
 }
 
+bool IDeviceSettings::ValidateLINBaudrate(int64_t baudrate) {
+	switch(baudrate) {
+		case 4800:
+			// fallthrough
+		case 9600:
+			// fallthrough
+		case 10400:
+			// fallthrough
+		case 10417:
+			// fallthrough
+		case 10504:
+			// fallthrough
+		case 10593:
+			// fallthrough
+		case 10684:
+			// fallthrough
+		case 10776:
+			// fallthrough
+		case 10870:
+			// fallthrough
+		case 10965:
+			// fallthrough
+		case 11062:
+			// fallthrough
+		case 19200:
+			return true;
+		default:
+			return false;
+	}
+}
+
 bool IDeviceSettings::refresh(bool ignoreChecksum) {
 	if(disabled) {
 		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
@@ -414,6 +445,15 @@ int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 			}
 			return baudrate;
 		}
+		case Network::Type::LIN: {
+			const LIN_SETTINGS* cfg = getLINSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
+				return -1;
+			}
+
+			return cfg->Baudrate;
+		}
 		default:
 			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 			return -1;
@@ -491,6 +531,21 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 			cfg->Baudrate = (uint8_t)newBaud;
 			cfg->auto_baud = false;
 			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
+			return true;
+		}
+		case Network::Type::LIN: {
+			LIN_SETTINGS* cfg = getMutableLINSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
+				return false;
+			}
+
+			bool valid = ValidateLINBaudrate(baudrate);
+			if(!valid) {
+				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
+				return false;
+			}
+			cfg->Baudrate = baudrate;
 			return true;
 		}
 		default:
@@ -702,6 +757,186 @@ bool IDeviceSettings::setTerminationFor(Network net, bool enabled) {
 	else
 		*terminationEnables &= ~mask;
 	return true;
+}
+
+std::optional<bool> IDeviceSettings::isMasterResistorEnabledFor(Network net) const {
+	if(!settingsLoaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	switch(net.getType()) {
+		case Network::Type::LIN: {
+			const LIN_SETTINGS* cfg = getLINSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
+				return std::nullopt;
+			}
+
+			return (cfg->MasterResistor != RESISTOR_OFF);
+		}
+		default:
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return std::nullopt;
+	}
+}
+
+bool IDeviceSettings::setMasterResistorFor(Network net, bool resistor_on) {
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(!settingsLoaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(readonly) {
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+		return false;
+	}
+
+	switch(net.getType()) {
+		case Network::Type::LIN: {
+			LIN_SETTINGS* cfg = getMutableLINSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
+				return false;
+			}
+
+			cfg->MasterResistor = resistor_on ? RESISTOR_ON : RESISTOR_OFF;
+			return true;
+		}
+		default:
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return false;
+	}
+}
+
+std::optional<enum LINMode> IDeviceSettings::getLINModeFor(Network net) const {
+	if(!settingsLoaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	switch(net.getType()) {
+		case Network::Type::LIN: {
+			const LIN_SETTINGS* cfg = getLINSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
+				return std::nullopt;
+			}
+
+			return (enum LINMode)cfg->Mode;
+		}
+		default:
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return std::nullopt;
+	}
+}
+
+bool IDeviceSettings::setLINModeFor(Network net, enum LINMode mode) {
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(!settingsLoaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(readonly) {
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+		return false;
+	}
+
+	switch(net.getType()) {
+		case Network::Type::LIN: {
+			LIN_SETTINGS* cfg = getMutableLINSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
+				return false;
+			}
+
+			cfg->Mode = (uint8_t)mode;
+			return true;
+		}
+		default:
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return false;
+	}
+}
+
+std::optional<uint8_t> IDeviceSettings::getLINMasterSlaveIntervalFor(Network net) const {
+	if(!settingsLoaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	switch(net.getType()) {
+		case Network::Type::LIN: {
+			const LIN_SETTINGS* cfg = getLINSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
+				return std::nullopt;
+			}
+
+			return cfg->numBitsDelay;
+		}
+		default:
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return std::nullopt;
+	}
+}
+
+bool IDeviceSettings::setLINMasterSlaveIntervalFor(Network net, uint8_t bits) {
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(!settingsLoaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(readonly) {
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+		return false;
+	}
+
+	switch(net.getType()) {
+		case Network::Type::LIN: {
+			LIN_SETTINGS* cfg = getMutableLINSettingsFor(net);
+			if(cfg == nullptr) {
+				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
+				return false;
+			}
+
+			cfg->numBitsDelay = bits;
+			return true;
+		}
+		default:
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return false;
+	}
 }
 
 template<typename T> bool IDeviceSettings::applyStructure(const T& newStructure) {

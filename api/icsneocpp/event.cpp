@@ -116,6 +116,8 @@ static constexpr const char* A2B_MESSAGE_INCOMPLETE_FRAME = "At least one of the
 static constexpr const char* COREMINI_UPLOAD_VERSION_MISMATCH = "The version of the coremini engine on the device and the script uploaded are not the same.";
 static constexpr const char* DISK_NOT_CONNECTED = "The program tried to access a disk that is not connected.";
 static constexpr const char* UNEXPECTED_RESPONSE = "Received an unexpected or invalid response from the device.";
+static constexpr const char* LIN_SETTINGS_NOT_AVAILABLE = "LIN settings are not available for this device.";
+static constexpr const char* MODE_NOT_FOUND = "The mode was not found.";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -302,6 +304,10 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return DISK_NOT_CONNECTED;
 		case Type::UnexpectedResponse:
 			return UNEXPECTED_RESPONSE;
+		case Type::LINSettingsNotAvailable:
+			return LIN_SETTINGS_NOT_AVAILABLE;
+		case Type::ModeNotFound:
+			return MODE_NOT_FOUND;
 		// Transport Errors
 		case Type::FailedToRead:
 			return FAILED_TO_READ;
