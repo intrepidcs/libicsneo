@@ -200,6 +200,11 @@ static bool SpyMessageToNeoMessage(const icsSpyMessage& oldmsg, neomessage_frame
 				linFrame.linStatus.txResponder = true;
 
 			copyFrameDataPtr();
+			uint8_t protID = linFrame.header[0] & 0x3Fu;
+			auto bit = [&](uint8_t pos)->uint8_t { return ((protID >> pos) & 0x1u); };
+			protID |= (~(bit(1) ^ bit(3) ^ bit(4) ^ bit(5)) << 7);
+			protID |= ((bit(0) ^ bit(1) ^ bit(2) ^ bit(4)) << 6);
+			linFrame.header[0] = protID;
 			if (frame.length > 2) {
 				size_t checksum = 0;
 				uint8_t* lastByte = nullptr;
