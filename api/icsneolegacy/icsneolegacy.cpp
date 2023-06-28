@@ -230,6 +230,7 @@ static bool SpyMessageToNeoMessage(const icsSpyMessage& oldmsg, neomessage_frame
 		}
 		case SPY_PROTOCOL_CANFD:
 		{
+			frame.length = oldmsg.NumberBytesData;
 			frame.status.canfdFDF = true;
 			copyFrameDataPtr();
 			break;
