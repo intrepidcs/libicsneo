@@ -115,7 +115,7 @@ bool HardwareLINPacket::EncodeFromMessage(LINMessage& message, std::vector<uint8
 		default:
 			break;
 	}
-	message.calcProtectedID(message.ID);
+	message.protectedID = message.calcProtectedID(message.ID);
 	bytestream.insert(bytestream.end(),
 	{
 		static_cast<uint8_t>(0x00u),
