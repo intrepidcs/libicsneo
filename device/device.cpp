@@ -1,5 +1,6 @@
 #include <sstream>
 #include "icsneo/api/eventmanager.h"
+#include "icsneo/communication/message/filter/main51messagefilter.h"
 #include "icsneo/communication/message/extendedresponsemessage.h"
 #include "icsneo/device/device.h"
 #include "icsneo/device/extensions/deviceextension.h"
@@ -1751,7 +1752,7 @@ bool Device::setRTC(const std::chrono::time_point<std::chrono::system_clock>& ti
 	// Create a vector of arguments to send as the payload to the communication command
 	std::vector<uint8_t> bytestream(sizeof(RTCCTIME));
 	auto rtcVals = (RTCCTIME*)bytestream.data();
-	rtcVals->FracSec = (uint8_t)0X00;
+	rtcVals->FracSec = (uint8_t)0x00;
 	rtcVals->Sec = (uint8_t)timeInfo->tm_sec;
 	rtcVals->Min = (uint8_t)timeInfo->tm_min;
 	rtcVals->Hour = (uint8_t)timeInfo->tm_hour;
@@ -1760,8 +1761,22 @@ bool Device::setRTC(const std::chrono::time_point<std::chrono::system_clock>& ti
 	rtcVals->Month = (uint8_t)timeInfo->tm_mon + 1; // [0-11]
 	rtcVals->Year = (uint8_t)timeInfo->tm_year % 100; // divide by 100 and take remainder to get last 2 digits of year
 
-	com->sendCommand(Command::SetRTC, bytestream);
-	return true;
+	const auto generic = com->waitForMessageSync([&]() {
+		return com->sendCommand(Command::SetRTC, bytestream);
+	}, std::make_shared<Main51MessageFilter>(Command::SetRTC), std::chrono::milliseconds(100));
+
+	if(!generic) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto m51msg = std::dynamic_pointer_cast<Main51Message>(generic);
+	if(!m51msg || m51msg->data.size() != 1) {
+		report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	return m51msg->data.front();
 }
 
 std::optional<std::set<SupportedFeature>> Device::getSupportedFeatures() {
