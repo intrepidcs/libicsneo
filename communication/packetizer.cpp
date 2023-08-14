@@ -72,7 +72,7 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 
 				packetLength = bytes[2]; // Long packets have a little endian length on bytes 3 and 4
 				packetLength |= bytes[3] << 8;
-				packet.network = Network((bytes[5] << 8) | bytes[4]); // Long packets have their netid stored as little endian on bytes 5 and 6
+				packet.network = Network(((bytes[5] << 8) | bytes[4]), false); // Long packets have their netid stored as little endian on bytes 5 and 6. Devices never send actual VNET IDs so we must not perform ID expansion here.
 				currentIndex += 4;
 
 				/* Long packets can't have a length less than 6, because that would indicate a negative payload size.

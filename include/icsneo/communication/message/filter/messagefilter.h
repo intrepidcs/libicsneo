@@ -13,7 +13,7 @@ class MessageFilter {
 public:
 	MessageFilter() {}
 	MessageFilter(Message::Type type) : includeInternalInAny(neomessagetype_t(type) & 0x8000), messageType(type) {}
-	MessageFilter(Network::NetID netid) : MessageFilter(Network::GetTypeOfNetID(netid), netid) {}
+	MessageFilter(Network::NetID netid) : MessageFilter(Network::GetTypeOfNetID(netid, false), netid) {} // Messages on the communication layer are never encoded as VNET ID + common ID, so skip the expansion step
 	MessageFilter(Network::Type type, Network::NetID net = Network::NetID::Any) : networkType(type), netid(net) {
 		// If a Network::Type::Internal is used, we want to also get internal Message::Types
 		// The NetID we want may be in there
