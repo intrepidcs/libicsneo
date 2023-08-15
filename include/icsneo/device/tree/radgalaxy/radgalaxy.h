@@ -7,6 +7,8 @@
 #include "icsneo/device/devicetype.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/decoder.h"
+#include "icsneo/disk/extextractordiskreaddriver.h"
+#include "icsneo/disk/neomemorydiskdriver.h"
 #include "icsneo/device/tree/radgalaxy/radgalaxysettings.h"
 
 namespace icsneo {
@@ -62,7 +64,7 @@ public:
 
 protected:
 	RADGalaxy(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<RADGalaxySettings>(makeDriver);
+		initialize<RADGalaxySettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {

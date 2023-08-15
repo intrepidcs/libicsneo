@@ -5,6 +5,8 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
+#include "icsneo/disk/extextractordiskreaddriver.h"
+#include "icsneo/disk/neomemorydiskdriver.h"
 #include "icsneo/device/tree/radgigastar/radgigastarsettings.h"
 
 namespace icsneo {
@@ -22,7 +24,7 @@ public:
 
 protected:
 	RADGigastar(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<RADGigastarSettings>(makeDriver);
+		initialize<RADGigastarSettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {
