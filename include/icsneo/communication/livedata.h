@@ -53,6 +53,7 @@ inline std::ostream& operator<<(std::ostream& os, const LiveDataCommand cmd) {
 		case LiveDataCommand::SUBSCRIBE: return os << "Subscribe";
 		case LiveDataCommand::UNSUBSCRIBE: return os << "Unsubscribe";
 		case LiveDataCommand::RESPONSE: return os << "Response";
+		case LiveDataCommand::CLEAR_ALL: return os << "Clear All";
 	}
 	return os;
 }
