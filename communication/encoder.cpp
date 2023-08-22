@@ -1,6 +1,8 @@
 #include "icsneo/communication/encoder.h"
 #include "icsneo/communication/message/ethernetmessage.h"
+#include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/message/main51message.h"
+#include "icsneo/communication/packet/livedatapacket.h"
 #include "icsneo/communication/packet/ethernetpacket.h"
 #include "icsneo/communication/packet/iso9141packet.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -196,6 +198,17 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			if(!HardwareEthernetPhyRegisterPacket::EncodeFromMessage(*ethPhyMessage, result, report))
 				return false;
 			break;
+		}
+		case Message::Type::LiveData: {
+			auto liveDataMsg = std::dynamic_pointer_cast<LiveDataMessage>(message);
+			if(!liveDataMsg) {
+				report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+				return false; // The message was not a properly formed LiveDataMessage
+			}
+			if(!HardwareLiveDataPacket::EncodeFromMessage(*liveDataMsg, result, report))
+				return false;
+			result = packetizer.packetWrap(result, false);
+			return true;
 		}
 		break;
 	}

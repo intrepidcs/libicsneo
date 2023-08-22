@@ -35,7 +35,7 @@ enum class Command : uint8_t {
 	ExtendedData = 0xF2, // Previously known as RED_CMD_EXTENDED_DATA
 	FlexRayControl = 0xF3,
 	CoreMiniPreload = 0xF4, // Previously known as RED_CMD_COREMINI_PRELOAD
-	PHYControlRegisters = 0xEF
+	PHYControlRegisters = 0xEF,
 };
 
 enum class ExtendedCommand : uint16_t {
@@ -53,6 +53,7 @@ enum class ExtendedCommand : uint16_t {
 	Reboot = 0x001C,
 	SetUploadedFlag = 0x0027,
 	GenericBinaryInfo = 0x0030,
+	LiveData = 0x0035,
 };
 
 enum class ExtendedResponse : int32_t {
@@ -67,6 +68,16 @@ enum class ExtendedResponse : int32_t {
 enum class ExtendedDataSubCommand : uint32_t {
 	GenericBinaryRead = 13,
 };
+
+#pragma pack(push,1)
+struct ExtendedCommandHeader {
+	uint8_t netid; // should be Main51
+	uint16_t fullLength;
+	uint8_t command; // should be Command::Extended
+	uint16_t extendedCommand;
+	uint16_t payloadLength;
+};
+#pragma pack(pop)
 
 }
 

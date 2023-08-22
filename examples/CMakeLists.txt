@@ -5,6 +5,7 @@ option(LIBICSNEO_BUILD_CPP_SIMPLE_EXAMPLE "Build the simple C++ example." ON)
 option(LIBICSNEO_BUILD_CPP_INTERACTIVE_EXAMPLE "Build the command-line interactive C++ example." ON)
 option(LIBICSNEO_BUILD_CPP_A2B_EXAMPLE "Build the A2B example." ON)
 option(LIBICSNEO_BUILD_CPP_LIN_EXAMPLE "Build the LIN example." ON)
+option(LIBICSNEO_BUILD_CPP_LIVEDATA_EXAMPLE "Build the Live Data example." ON)
 option(LIBICSNEO_BUILD_CPP_COREMINI_EXAMPLE "Build the Coremini example." ON)
 option(LIBICSNEO_BUILD_CPP_MDIO_EXAMPLE "Build the MDIO example." ON)
 
@@ -38,6 +39,10 @@ endif()
 
 if(LIBICSNEO_BUILD_CPP_LIN_EXAMPLE)
 	add_subdirectory(cpp/lin)
+endif()
+
+if(LIBICSNEO_BUILD_CPP_LIVEDATA_EXAMPLE)
+	add_subdirectory(cpp/livedata)
 endif()
 
 if(LIBICSNEO_BUILD_CPP_COREMINI_EXAMPLE)

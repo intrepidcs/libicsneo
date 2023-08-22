@@ -35,7 +35,9 @@
 #include "icsneo/communication/message/supportedfeaturesmessage.h"
 #include "icsneo/communication/message/genericbinarystatusmessage.h"
 #include "icsneo/communication/message/extendeddatamessage.h"
+#include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
+#include "icsneo/communication/packet/livedatapacket.h"
 #include "icsneo/device/extensions/flexray/controller.h"
 #include "icsneo/communication/message/flexray/control/flexraycontrolmessage.h"
 #include "icsneo/communication/message/ethphymessage.h"
@@ -561,6 +563,9 @@ public:
 	 */
 	virtual bool supportsWiVI() const { return false; }
 
+	// Returns true if this device supports Live Data subscription
+	virtual bool supportsLiveData() const { return false; }
+
 	std::optional<EthPhyMessage> sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
 	std::optional<bool> SetCollectionUploaded(uint32_t collectionEntryByteAddress);
@@ -570,6 +575,9 @@ public:
 
 	std::optional<size_t> getGenericBinarySize(uint16_t binaryIndex);
 	bool readBinaryFile(std::ostream& stream, uint16_t binaryIndex);
+	bool subscribeLiveData(std::shared_ptr<LiveDataCommandMessage> message);
+	bool unsubscribeLiveData(const LiveDataHandle& handle);
+	bool clearAllLiveData();
 
 protected:
 	bool online = false;

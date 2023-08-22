@@ -14,6 +14,7 @@
 #include "icsneo/communication/message/linmessage.h"
 #include "icsneo/communication/message/mdiomessage.h"
 #include "icsneo/communication/message/extendeddatamessage.h"
+#include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -32,6 +33,7 @@
 #include "icsneo/communication/packet/supportedfeaturespacket.h"
 #include "icsneo/communication/packet/mdiopacket.h"
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
+#include "icsneo/communication/packet/livedatapacket.h"
 #include <iostream>
 
 using namespace icsneo;
@@ -278,6 +280,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							return true;
 						case ExtendedCommand::GenericReturn:
 							result = std::make_shared<ExtendedResponseMessage>(resp.command, resp.returnCode);
+							return true;
+						case ExtendedCommand::LiveData:
+							result = HardwareLiveDataPacket::DecodeToMessage(packet->data, report);
 							return true;
 						default:
 							// No defined handler, treat this as a RawMessage

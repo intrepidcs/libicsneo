@@ -94,6 +94,16 @@ public:
 		CoreminiUploadVersionMismatch = 0x2040,
 		DiskNotConnected = 0x2041,
 		UnexpectedResponse = 0x2042,
+		LiveDataInvalidHandle = 0x2043,
+		LiveDataInvalidCommand = 0x2044,
+		LiveDataInvalidArgument = 0x2045,
+		LiveDataVersionMismatch = 0x2046,
+		LiveDataNoDeviceResponse = 0x2047,
+		LiveDataMaxSignalsReached = 0x2048,
+		LiveDataCommandFailed = 0x2049,
+		LiveDataEncoderError = 0x2050,
+		LiveDataDecoderError = 0x2051,
+		LiveDataNotSupported = 0x2052,
 
 		// Transport Events
 		FailedToRead = 0x3000,

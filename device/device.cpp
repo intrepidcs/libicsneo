@@ -301,6 +301,9 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		com->removeMessageCallback(messageReceivedCallbackID);
 	});
 
+	if(supportsLiveData())
+		clearAllLiveData();
+
 	return true;
 }
 
@@ -1871,5 +1874,145 @@ bool Device::readBinaryFile(std::ostream& stream, uint16_t binaryIndex) {
 			return false;
 		}
 	}
+	return true;
+}
+
+bool Device::subscribeLiveData(std::shared_ptr<LiveDataCommandMessage> message) {
+	if(!supportsLiveData()) {
+		report(APIEvent::Type::LiveDataNotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return false;
+	}
+	if((message->args.size() > MAX_LIVE_DATA_ENTRIES) || message->args.empty()) {
+		report(APIEvent::Type::LiveDataInvalidArgument, APIEvent::Severity::Error);
+		return false;
+	}
+
+	std::vector<uint8_t> bytes;
+	if(!com->encoder->encode(*com->packetizer, bytes, message)) {
+		report(APIEvent::Type::LiveDataEncoderError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, &bytes](){ return com->sendPacket(bytes); },
+		std::make_shared<MessageFilter>(Message::Type::LiveData));
+
+	if(response) {
+		auto statusMsg = std::dynamic_pointer_cast<LiveDataStatusMessage>(response);
+		if(statusMsg->requestedCommand == message->cmd) {
+			switch(statusMsg->status) {
+				case LiveDataStatus::SUCCESS:
+					return true;
+				case LiveDataStatus::ERR_DUPLICATE:
+				case LiveDataStatus::ERR_HANDLE:
+				{
+					report(APIEvent::Type::LiveDataInvalidHandle, APIEvent::Severity::Error);
+					return false;
+				}
+				case LiveDataStatus::ERR_FULL:
+				{
+					report(APIEvent::Type::LiveDataMaxSignalsReached, APIEvent::Severity::Error);
+					return false;
+				}
+				case LiveDataStatus::ERR_UNKNOWN_COMMAND:
+				{
+					report(APIEvent::Type::LiveDataCommandFailed, APIEvent::Severity::Error);
+					return false;
+				}
+				default:
+					break;
+			}
+		}
+	}
+	report(APIEvent::Type::LiveDataNoDeviceResponse, APIEvent::Severity::Error);
+	return false;
+}
+
+bool Device::unsubscribeLiveData(const LiveDataHandle& handle) {
+	if(!supportsLiveData()) {
+		report(APIEvent::Type::LiveDataNotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return false;
+	}
+	if(!handle) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return false;
+	}
+	auto msg = std::make_shared<LiveDataMessage>();
+	msg->cmd = LiveDataCommand::UNSUBSCRIBE;
+	msg->handle = handle;
+	std::vector<uint8_t> bytes;
+	if(!com->encoder->encode(*com->packetizer, bytes, msg)) {
+		report(APIEvent::Type::LiveDataEncoderError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, &bytes](){ return com->sendPacket(bytes); },
+		std::make_shared<MessageFilter>(Message::Type::LiveData));
+
+	if(!response) {
+		report(APIEvent::Type::LiveDataNoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto statusMsg = std::dynamic_pointer_cast<LiveDataStatusMessage>(response);
+	if(!statusMsg || statusMsg->requestedCommand != msg->cmd) {
+		report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(statusMsg->status != LiveDataStatus::SUCCESS) {
+		report(APIEvent::Type::LiveDataCommandFailed, APIEvent::Severity::Error);
+		return false;
+	}
+
+	return true;
+}
+
+bool Device::clearAllLiveData() {
+	if(!supportsLiveData()) {
+		report(APIEvent::Type::LiveDataNotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto msg = std::make_shared<LiveDataMessage>();
+	msg->cmd = LiveDataCommand::CLEAR_ALL;
+	std::vector<uint8_t> bytes;
+	if(!com->encoder->encode(*com->packetizer, bytes, msg)) {
+		report(APIEvent::Type::LiveDataEncoderError, APIEvent::Severity::Error);
+		return false;
+	}
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, &bytes](){ return com->sendPacket(bytes); },
+		std::make_shared<MessageFilter>(Message::Type::LiveData));
+
+	if(!response) {
+		report(APIEvent::Type::LiveDataNoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto statusMsg = std::dynamic_pointer_cast<LiveDataStatusMessage>(response);
+	if(!statusMsg || statusMsg->requestedCommand != msg->cmd) {
+		report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(statusMsg->status != LiveDataStatus::SUCCESS) {
+		report(APIEvent::Type::LiveDataCommandFailed, APIEvent::Severity::Error);
+		return false;
+	}
+
 	return true;
 }

@@ -234,6 +234,7 @@ set(SRC_FILES
 	communication/message/neomessage.cpp
 	communication/message/ethphymessage.cpp
 	communication/message/linmessage.cpp
+	communication/message/livedatamessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/a2bpacket.cpp
@@ -241,6 +242,7 @@ set(SRC_FILES
 	communication/packet/versionpacket.cpp
 	communication/packet/iso9141packet.cpp
 	communication/packet/ethphyregpacket.cpp
+	communication/packet/livedatapacket.cpp
 	communication/packet/logicaldiskinfopacket.cpp
 	communication/packet/wivicommandpacket.cpp
 	communication/packet/i2cpacket.cpp
@@ -257,6 +259,7 @@ set(SRC_FILES
 	communication/multichannelcommunication.cpp
 	communication/communication.cpp
 	communication/driver.cpp
+	communication/livedata.cpp
 	device/extensions/flexray/extension.cpp
 	device/extensions/flexray/controller.cpp
 	device/idevicesettings.cpp
@@ -468,6 +471,7 @@ if(LIBICSNEO_BUILD_TESTS)
 		test/linencoderdecodertest.cpp
 		test/a2bencoderdecodertest.cpp
 		test/mdioencoderdecodertest.cpp
+		test/livedataencoderdecodertest.cpp
 	)
 
 	target_link_libraries(libicsneo-tests gtest gtest_main)

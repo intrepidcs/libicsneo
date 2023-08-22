@@ -37,6 +37,7 @@ public:
 		ComponentVersions = 0x800c,
 		SupportedFeatures = 0x800d,
 		GenericBinaryStatus = 0x800e,
+		LiveData = 0x800f,
 	};
 
 	Message(Type t) : type(t) {}
