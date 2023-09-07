@@ -659,7 +659,11 @@ public:
 
 	virtual int64_t getFDBaudrateFor(Network net) const;
 	virtual bool setFDBaudrateFor(Network net, int64_t baudrate);
-
+	virtual bool setBaudrateTqFor(Network net, uint8_t brp, uint8_t sync, uint8_t prop, uint8_t seg1, uint8_t seg2);
+	virtual bool setFDBaudrateTqFor(Network net, uint8_t brp, uint8_t sync, uint8_t prop, uint8_t seg1, uint8_t seg2, uint8_t tdc);
+	virtual bool setFDBaudrateFor_sign(Network net, int64_t baudrate);
+	virtual int64_t getBaudrateTqFor(Network net) const;
+	virtual int64_t  getFDBaudrateTqFor(Network net) const;
 	virtual const CAN_SETTINGS* getCANSettingsFor(Network net) const { (void)net; return nullptr; }
 	CAN_SETTINGS* getMutableCANSettingsFor(Network net) {
 		if(disabled || readonly)

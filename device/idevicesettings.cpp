@@ -570,6 +570,267 @@ bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
 	}
 }
 
+bool IDeviceSettings::setBaudrateTqFor(Network net, uint8_t brp, uint8_t sync, uint8_t prop, uint8_t seg1, uint8_t seg2){
+    if(disabled) {
+        report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+        return false;
+    }
+
+    if(!settingsLoaded) {
+        report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+        return false;
+    }
+
+    if(readonly) {
+        report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+        return false;
+    }
+    int64_t baudrate = 80000000 / ((sync + prop + seg1 + seg2) * (brp + 1));
+    switch(net.getType()) {
+        case Network::Type::CAN: {
+            if(baudrate > 1000000) { // This is an CANFD baud rate. Use setFDBaudrateFor instead.
+                report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
+                return false;
+            }
+
+            CAN_SETTINGS* cfg = getMutableCANSettingsFor(net);
+            if(cfg == nullptr) {
+                report(APIEvent::Type::CANSettingsNotAvailable, APIEvent::Severity::Error);
+                return false;
+            }
+            cfg->auto_baud = false;
+            cfg->SetBaudrate = USE_TQ; // Device will use the  TQ values to set the baud rate
+            cfg->TqSync=sync;
+            cfg->TqProp=prop;
+            cfg->TqSeg1=seg1;
+            cfg->TqSeg2=seg2;
+            cfg->BRP=brp;
+            return true;
+        }
+        case Network::Type::LSFTCAN: {
+            CAN_SETTINGS* cfg = getMutableLSFTCANSettingsFor(net);
+            if(cfg == nullptr) {
+                report(APIEvent::Type::LSFTCANSettingsNotAvailable, APIEvent::Severity::Error);
+                return false;
+            }
+
+            cfg->auto_baud = false;
+            cfg->SetBaudrate = USE_TQ; // Device will use the  TQ values to set the baud rate
+            cfg->TqSync=sync;
+            cfg->TqProp=prop;
+            cfg->TqSeg1=seg1;
+            cfg->TqSeg2=seg2;
+            cfg->BRP=brp;
+            return true;
+        }
+        case Network::Type::SWCAN: {
+            SWCAN_SETTINGS* cfg = getMutableSWCANSettingsFor(net);
+            if(cfg == nullptr) {
+                report(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::Error);
+                return false;
+            }
+            cfg->auto_baud = false;
+            cfg->SetBaudrate = USE_TQ; // Device will use the  TQ values to set the baud rate
+            cfg->TqSync=sync;
+            cfg->TqProp=prop;
+            cfg->TqSeg1=seg1;
+            cfg->TqSeg2=seg2;
+            cfg->BRP=brp;
+            return true;
+        }
+        default:
+            report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+            return false;
+    }
+}
+
+bool IDeviceSettings::setFDBaudrateTqFor(Network net, uint8_t brp, uint8_t sync, uint8_t prop, uint8_t seg1, uint8_t seg2, uint8_t tdc) {
+    if (!settingsLoaded) {
+        report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+        return false;
+    }
+
+    if (disabled) {
+        report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+        return false;
+    }
+
+    if (readonly) {
+        report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+        return false;
+    }
+
+    switch (net.getType()) {
+        case Network::Type::CAN: {
+            CANFD_SETTINGS *cfg = getMutableCANFDSettingsFor(net);
+            if (cfg == nullptr) {
+                report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
+                return false;
+            }
+            cfg->FDBRP=brp;
+            cfg->FDTqSync=sync;
+            cfg->FDTqProp=prop;
+            cfg->FDTqSeg1=seg1;
+            cfg->FDTqSeg2=seg2;
+            cfg->FDTDC=tdc;
+            cfg->reserved=1;// sign for custom fd baud rate by tq
+            return true;
+        }
+        default:
+            report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+            return false;
+    }
+}
+
+int64_t IDeviceSettings::getBaudrateTqFor (icsneo::Network net) const{
+	if(disabled) {
+			report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+			return -1;
+		}
+
+	if(!settingsLoaded) {
+			report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+			return -1;
+		}
+
+	switch(net.getType()) {
+			case Network::Type::CAN: {
+					const CAN_SETTINGS* cfg = getCANSettingsFor(net);
+					if(cfg == nullptr) {
+							report(APIEvent::Type::CANSettingsNotAvailable, APIEvent::Severity::Error);
+							return -1;
+						}
+					if(cfg->SetBaudrate==AUTO) {
+							int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->Baudrate);
+							if (baudrate == -1) {
+									report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
+									return -1;
+								}
+							return baudrate;
+						}else if(cfg->SetBaudrate==USE_TQ){
+							int64_t baudrate = 80000000/ ((cfg->TqSync + cfg->TqSeg1 + cfg->TqSeg2) * (cfg->BRP + 1));
+							return baudrate;
+						}
+				}
+			case Network::Type::SWCAN: {
+					const SWCAN_SETTINGS* cfg = getSWCANSettingsFor(net);
+					if(cfg == nullptr) {
+							report(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::Error);
+							return -1;
+						}
+					if(cfg->SetBaudrate==AUTO) {
+							int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->Baudrate);
+							if (baudrate == -1) {
+									report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
+									return -1;
+								}
+							return baudrate;
+						}else if(cfg->SetBaudrate==USE_TQ) {
+							int64_t baudrate = 80000000 / ((cfg->TqSync + cfg->TqSeg1 + cfg->TqSeg2) * (cfg->BRP + 1));
+							return baudrate;
+						}
+				}
+			case Network::Type::LSFTCAN: {
+					const CAN_SETTINGS* cfg = getLSFTCANSettingsFor(net);
+					if(cfg == nullptr) {
+							report(APIEvent::Type::LSFTCANSettingsNotAvailable, APIEvent::Severity::Error);
+							return -1;
+						}
+
+					if(cfg->SetBaudrate==AUTO) {
+							int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate)cfg->Baudrate);
+							if (baudrate == -1) {
+									report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
+									return -1;
+								}
+							return baudrate;
+						}else if(cfg->SetBaudrate==USE_TQ) {
+							int64_t baudrate = 80000000 / ((cfg->TqSync + cfg->TqSeg1 + cfg->TqSeg2) * (cfg->BRP + 1));
+							return baudrate;
+						}
+				}
+			default:
+				report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return -1;
+		}
+}
+
+int64_t IDeviceSettings::getFDBaudrateTqFor (icsneo::Network net) const{
+	if(disabled) {
+			report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+			return -1;
+		}
+
+	if(!settingsLoaded) {
+			report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+			return -1;
+		}
+
+	switch(net.getType()) {
+			case Network::Type::CAN: {
+					const CANFD_SETTINGS *cfg = getCANFDSettingsFor(net);
+					if (cfg == nullptr) {
+							report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
+							return -1;
+						}
+					if (cfg->reserved == 0) {
+							int64_t baudrate = GetBaudrateValueForEnum((CANBaudrate) cfg->FDBaudrate);
+							if (baudrate == -1) {
+									report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
+									return -1;
+								}
+							return baudrate;
+						}else if(cfg->reserved==1){
+							int64_t  baudrate = 80000000/ ((cfg->FDTqSync + cfg->FDTqSeg1 + cfg->FDTqSeg2) * (cfg->FDBRP + 1));
+							return baudrate;
+						}
+				}
+			default:
+				report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return -1;
+		}
+}
+
+bool IDeviceSettings::setFDBaudrateFor_sign (Network net, int64_t baudrate)
+{
+	if(!settingsLoaded) {
+			report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+			return false;
+		}
+
+	if(disabled) {
+			report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+			return false;
+		}
+
+	if(readonly) {
+			report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+			return false;
+		}
+
+	switch(net.getType()) {
+			case Network::Type::CAN: {
+					CANFD_SETTINGS* cfg = getMutableCANFDSettingsFor(net);
+					if(cfg == nullptr) {
+							report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
+							return false;
+						}
+
+					CANBaudrate newBaud = GetEnumValueForBaudrate(baudrate);
+					if(newBaud == (CANBaudrate)-1) {
+							report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
+							return false;
+						}
+					cfg->FDBaudrate = (uint8_t)newBaud;
+					cfg->reserved=0;                  // to clear the sign of custom baud rate by tq , related to getFDBaudrateTqFor()
+					return true;
+				}
+			default:
+				report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return false;
+		}
+}
+
 bool IDeviceSettings::isTerminationSupportedFor(Network net) const {
 	for(const auto& group : getTerminationGroups()) {
 		for(const auto& supportedNet : group) {
