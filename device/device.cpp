@@ -329,8 +329,8 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		return getCommunicationNotEstablishedError();
 
 	std::string currentSerial = getNeoDevice().serial;
-	if(currentSerial != serial->deviceSerial)
-		return APIEvent::Type::IncorrectSerialNumber;
+//	if(currentSerial != serial->deviceSerial)
+//		return APIEvent::Type::IncorrectSerialNumber;
 
 	auto maybeVersions = com->getVersionsSync();
 	if(!maybeVersions)

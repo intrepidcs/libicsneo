@@ -169,7 +169,7 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 		return false;
 	}
 
-	if(rxLen < gsLen) {
+	if(rxLen <= gsLen) {
 		// We got less data, i.e. the firmware thinks the strucure is smaller than what
 		// was last saved. Usually this is due to a firmware downgrade. We'll ignore the
 		// checksum for now, because it will definitely be wrong.
