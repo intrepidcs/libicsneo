@@ -1017,9 +1017,6 @@ class icsneocsharpPINVOKE {
   [global::System.Runtime.InteropServices.DllImport("icsneocsharp.dll", EntryPoint="CSharp_ICSNEO_NETID_ISO_get")]
   public static extern int ICSNEO_NETID_ISO_get();
 
-  [global::System.Runtime.InteropServices.DllImport("icsneocsharp.dll", EntryPoint="CSharp_ICSNEO_NETID_ISOPIC_get")]
-  public static extern int ICSNEO_NETID_ISOPIC_get();
-
   [global::System.Runtime.InteropServices.DllImport("icsneocsharp.dll", EntryPoint="CSharp_ICSNEO_NETID_MAIN51_get")]
   public static extern int ICSNEO_NETID_MAIN51_get();
 

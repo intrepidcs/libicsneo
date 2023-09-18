@@ -248,9 +248,16 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 
 		MessageFilter filter;
 		filter.includeInternalInAny = true;
-		std::atomic<bool> receivedMessage{false};
-		auto messageReceivedCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&receivedMessage](std::shared_ptr<Message> message) {
-			receivedMessage = true;
+
+		std::condition_variable heartbeatCV;
+		std::mutex receivedMessageMutex;
+		bool receivedMessage = false;
+		auto messageReceivedCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&](std::shared_ptr<Message> message) {
+			{
+				std::scoped_lock<std::mutex> lk(receivedMessageMutex);
+				receivedMessage = true;
+			}
+			heartbeatCV.notify_all();
 		}));
 
 		// Give the device time to get situated
@@ -263,6 +270,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		while(!stopHeartbeatThread) {
 			// Wait for 110ms for a possible heartbeat
 			std::this_thread::sleep_for(std::chrono::milliseconds(110));
+			std::unique_lock<std::mutex> recvLk(receivedMessageMutex);
 			if(receivedMessage) {
 				receivedMessage = false;
 			} else {
@@ -281,12 +289,8 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 				// No heartbeat received, request a status
 				com->sendCommand(Command::RequestStatusUpdate);
 
-				// Wait until we either received the message or reach max wait time
-				for (uint32_t sleepTime = 0; sleepTime < 3500 && !receivedMessage; sleepTime += 50)
-					std::this_thread::sleep_for(std::chrono::milliseconds(50));
-
 				// Check if we got a message, and if not, if settings are being applied
-				if(receivedMessage) {
+				if(heartbeatCV.wait_for(recvLk, std::chrono::milliseconds(3500), [&](){ return receivedMessage; })) {
 					receivedMessage = false;
 				} else {
 					if(!stopHeartbeatThread && !isDisconnected()) {
@@ -448,8 +452,6 @@ int8_t Device::prepareScriptLoad() {
 
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::CoreMiniPreLoad);
 
-	std::lock_guard<std::mutex> lg(diskLock);
-
 	if(!com->sendCommand(Command::CoreMiniPreload))
 		return false;
 
@@ -477,8 +479,6 @@ bool Device::startScript(Disk::MemoryType memType)
 		return false;
 	}
 
-	std::lock_guard<std::mutex> lg(diskLock);
-
 	uint8_t location = static_cast<uint8_t>(memType);
 	auto generic = com->sendCommand(Command::LoadCoreMini, location);
 
@@ -497,8 +497,6 @@ bool Device::stopScript()
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
-
-	std::lock_guard<std::mutex> lg(diskLock);
 
 	auto generic = com->sendCommand(Command::ClearCoreMini);
 
@@ -663,7 +661,7 @@ std::optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uin
 		return std::nullopt;
 	}
 
-	std::lock_guard<std::mutex> lk(diskLock);
+	std::lock_guard<std::mutex> lk(diskMutex);
 
 	if(diskReadDriver->getAccess() == Disk::Access::EntireCard && diskWriteDriver->getAccess() == Disk::Access::VSA) {
 		// We have mismatched drivers, we need to add an offset to the diskReadDriver
@@ -677,9 +675,6 @@ std::optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uin
 			return std::nullopt;
 		diskReadDriver->setVSAOffset(*offset);
 	}
-
-	// This is needed for certain read drivers which take over the communication stream
-	const auto lifetime = suppressDisconnects();
 
 	return diskReadDriver->readLogicalDisk(*com, report, pos, into, amount, timeout, memType);
 }
@@ -695,7 +690,6 @@ std::optional<uint64_t> Device::writeLogicalDisk(uint64_t pos, const uint8_t* fr
 		return std::nullopt;
 	}
 
-	std::lock_guard<std::mutex> lk(diskLock);
 	return diskWriteDriver->writeLogicalDisk(*com, report, *diskReadDriver, pos, from, amount, timeout, memType);
 }
 
@@ -705,9 +699,6 @@ std::optional<bool> Device::isLogicalDiskConnected() {
 		return std::nullopt;
 	}
 
-	// This doesn't *really* make sense here but because the disk read redirects the parser until it is done, we'll lock this
-	// just to avoid the timeout.
-	std::lock_guard<std::mutex> lg(diskLock);
 	const auto info = com->getLogicalDiskInfoSync();
 	if (!info) {
 		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
@@ -723,9 +714,6 @@ std::optional<uint64_t> Device::getLogicalDiskSize() {
 		return std::nullopt;
 	}
 
-	// This doesn't *really* make sense here but because the disk read redirects the parser until it is done, we'll lock this
-	// just to avoid the timeout.
-	std::lock_guard<std::mutex> lg(diskLock);
 	const auto info = com->getLogicalDiskInfoSync();
 	if (!info) {
 		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
@@ -745,8 +733,6 @@ std::optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
-
-	std::lock_guard<std::mutex> lk(diskLock);
 
 	if (diskReadDriver->getAccess() == Disk::Access::VSA || diskReadDriver->getAccess() == Disk::Access::None)
 		return 0ull;
@@ -972,9 +958,6 @@ std::optional<double> Device::getAnalogIO(IO type, size_t number /* = 1 */) {
 void Device::wiviThreadBody() {
 	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
 	std::unique_lock<std::mutex> lk(wiviMutex);
-	// Disk access commands can 
-	std::unique_lock<std::mutex> dl(diskLock);
-	dl.unlock();
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
 	bool first = true;
@@ -985,11 +968,9 @@ void Device::wiviThreadBody() {
 			stopWiVIcv.wait_for(lk, std::chrono::seconds(3));
 
 		// Use the command GetAll to get a WiVI::Info structure from the device
-		dl.lock();
 		const auto generic = com->waitForMessageSync([this]() {
 			return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetAll::Encode());
 		}, filter);
-		dl.unlock();
 
 		if(!generic || generic->type != Message::Type::WiVICommandResponse) {
 			report(APIEvent::Type::WiVIStackRefreshFailed, APIEvent::Severity::Error);
@@ -1067,11 +1048,9 @@ void Device::wiviThreadBody() {
 			}
 
 			if(!clearMasks.empty()) {
-				dl.lock();
 				const auto clearMasksGenericResp = com->waitForMessageSync([this, &clearMasks]() {
 					return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::ClearUploads::Encode(clearMasks));
 				}, filter);
-				dl.unlock();
 
 				if(!clearMasksGenericResp
 					|| clearMasksGenericResp->type != Message::Type::WiVICommandResponse
@@ -1214,7 +1193,6 @@ std::optional<bool> Device::isSleepRequested() const {
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
 	// Hold this lock so the WiVI stack doesn't issue a WiVICommand at the same time as us
 	std::lock_guard<std::mutex> lk(wiviMutex);
-	std::lock_guard<std::mutex> lg(diskLock);
 	const auto generic = com->waitForMessageSync([this]() {
 		// VSSAL sets bit0 to indicate that it's waiting to sleep, then
 		// it waits for Wireless neoVI to acknowledge by clearing it.
@@ -1252,7 +1230,6 @@ bool Device::allowSleep(bool remoteWakeup) {
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
 	// Hold this lock so the WiVI stack doesn't issue a WiVICommand at the same time as us
 	std::lock_guard<std::mutex> lk(wiviMutex);
-	std::lock_guard<std::mutex> lg(diskLock);
 	const auto generic = com->waitForMessageSync([this, remoteWakeup]() {
 		// VSSAL sets bit0 to indicate that it's waiting to sleep, then
 		// it waits for Wireless neoVI to acknowledge by clearing it.
@@ -1425,7 +1402,6 @@ std::shared_ptr<ScriptStatusMessage> Device::getScriptStatus() const
 {
 	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::ScriptStatus);
 
-	std::lock_guard<std::mutex> lg(diskLock);
 	const auto generic = com->waitForMessageSync([this]() {
 		return com->sendCommand(Command::ScriptStatus);
 	}, filter, std::chrono::milliseconds(3000));
@@ -1686,7 +1662,6 @@ std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAd
 		 (uint8_t)((collectionEntryByteAddress >> 16) & 0xFF),
 		 (uint8_t)((collectionEntryByteAddress >> 24) & 0xFF)});
 
-	std::lock_guard<std::mutex> lg(diskLock);
 	std::shared_ptr<Message> response = com->waitForMessageSync(
 		[this, args](){ return com->sendCommand(ExtendedCommand::SetUploadedFlag, args); },
 		std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), timeout);

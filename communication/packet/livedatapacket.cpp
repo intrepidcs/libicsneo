@@ -104,12 +104,8 @@ bool HardwareLiveDataPacket::EncodeFromMessage(LiveDataMessage& message, std::ve
 			return false;
 		}
 	}
-	// Send as a long message without setting the NetID to RED first
-	// Size in long format is the size of the entire packet
-	// So +1 for AA header, +1 for short format header (only netID)
-	// +2 for long format size, +1 for the Main51 extended command
-	// +2 for the extended subcommand, +2 for the payload length
-	uint16_t fullSize = static_cast<uint16_t>(1 + sizeof(ExtendedCommandHeader) + payloadSize);
+	// +1 for AA, another +1 for firmware nuance
+	uint16_t fullSize = static_cast<uint16_t>(1 + sizeof(ExtendedCommandHeader) + payloadSize) + 1;
 
 	ExtendedCommandHeader* header = reinterpret_cast<ExtendedCommandHeader*>(bytestream.data());
 	if(!header) {

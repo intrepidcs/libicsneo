@@ -5506,18 +5506,6 @@ SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISO_1get(JNIEnv *jenv,
 }
 
 
-SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1ISOPIC_1get(JNIEnv *jenv, jclass jcls) {
-  jint jresult = 0 ;
-  int result;
-
-  (void)jenv;
-  (void)jcls;
-  result = (int)(10);
-  jresult = (jint)result;
-  return jresult;
-}
-
-
 SWIGEXPORT jint JNICALL Java_icsneojavaJNI_ICSNEO_1NETID_1MAIN51_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;

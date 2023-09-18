@@ -283,7 +283,6 @@ public class icsneojavaJNI {
   public final static native int ICSNEO_NETID_AUX_get();
   public final static native int ICSNEO_NETID_J1850VPW_get();
   public final static native int ICSNEO_NETID_ISO_get();
-  public final static native int ICSNEO_NETID_ISOPIC_get();
   public final static native int ICSNEO_NETID_MAIN51_get();
   public final static native int ICSNEO_NETID_RED_get();
   public final static native int ICSNEO_NETID_SCI_get();

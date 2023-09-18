@@ -692,7 +692,6 @@ private:
 	std::vector<std::optional<DeviceAppVersion>> versions;
 	std::vector<ComponentVersion> componentVersions;
 
-	mutable std::mutex diskLock;
 	std::unique_ptr<Disk::ReadDriver> diskReadDriver;
 	std::unique_ptr<Disk::WriteDriver> diskWriteDriver;
 
@@ -730,6 +729,8 @@ private:
 	std::atomic<bool> stopHeartbeatThread{false};
 	std::mutex heartbeatMutex;
 	std::thread heartbeatThread;
+
+	std::mutex diskMutex;
 
 	// Wireless neoVI Stack
 	std::atomic<bool> stopWiVIThread{false};

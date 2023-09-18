@@ -30,6 +30,7 @@ private:
 		SearchForHeader,
 		ParseHeader,
 		ParseLongStylePacketHeader,
+		ParseDiskDataHeader,
 		GetData
 	};
 	ReadState state = ReadState::SearchForHeader;

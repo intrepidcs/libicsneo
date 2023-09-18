@@ -3511,16 +3511,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISO_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_ISOPIC_get() {
-  int jresult ;
-  int result;
-
-  result = (int)(10);
-  jresult = result;
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_ICSNEO_NETID_MAIN51_get() {
   int jresult ;
   int result;

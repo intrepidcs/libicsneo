@@ -34,7 +34,7 @@ public:
 		Aux = 7,
 		J1850VPW = 8,
 		ISO9141 = 9,
-		ISOPIC = 10,
+		DiskData = 10,
 		Main51 = 11,
 		RED = 12,
 		SCI = 13,
@@ -342,7 +342,7 @@ public:
 		case 9:
 			return NetID::ISO9141;
 		case 10:
-			return NetID::ISOPIC;
+			return NetID::DiskData;
 		case 11:
 			return NetID::Main51;
 		case 12:
@@ -536,6 +536,7 @@ public:
 		case NetID::NeoMemorySDRead:
 		case NetID::NeoMemoryWriteDone:
 		case NetID::RED_GET_RTC:
+		case NetID::DiskData:
 			return Type::Internal;
 		case NetID::Invalid:
 		case NetID::Any:
@@ -617,8 +618,8 @@ public:
 			return "J1850 VPW";
 		case NetID::ISO9141:
 			return "ISO 9141";
-		case NetID::ISOPIC:
-			return "ISOPIC";
+		case NetID::DiskData:
+			return "Disk Data";
 		case NetID::Main51:
 			return "Main51";
 		case NetID::RED:
@@ -1265,7 +1266,7 @@ private:
 #define ICSNEO_NETID_AUX 7
 #define ICSNEO_NETID_J1850VPW 8
 #define ICSNEO_NETID_ISO9141 9
-#define ICSNEO_NETID_ISOPIC 10
+#define ICSNEO_NETID_DISK_DATA 10
 #define ICSNEO_NETID_MAIN51 11
 #define ICSNEO_NETID_RED 12
 #define ICSNEO_NETID_SCI 13

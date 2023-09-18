@@ -47,7 +47,7 @@ protected:
 	{
 		0xaa, //start AA
 		0x0B, //netid main51 
-		0x2F, 0x00, //size little end 16
+		0x30, 0x00, //size little end 16
 		0xF0, //extended header command
 		0x35, 0x00, //Live data subcommand little 16
 		0x26, 0x00, //extended subcommand size, little 16
@@ -68,7 +68,7 @@ protected:
 	{
 		0xaa, //start AA
 		0x0B, //netid main51 
-		0x15, 0x00, //size little end 16
+		0x16, 0x00, //size little end 16
 		0xF0, //extended header command
 		0x35, 0x00, //Live data subcommand little 16
 		0x0C, 0x00, //extended subcommand size, little 16
@@ -82,7 +82,7 @@ protected:
 	{
 		0xaa, //start AA
 		0x0B, //netid main51 
-		0x15, 0x00, //size little end 16
+		0x16, 0x00, //size little end 16
 		0xF0, //extended header command
 		0x35, 0x00, //Live data subcommand little 16
 		0x0C, 0x00, //extended subcommand size, little 16

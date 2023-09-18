@@ -20,7 +20,6 @@ public interface icsneojavaConstants {
   public final static int ICSNEO_NETID_AUX = icsneojavaJNI.ICSNEO_NETID_AUX_get();
   public final static int ICSNEO_NETID_J1850VPW = icsneojavaJNI.ICSNEO_NETID_J1850VPW_get();
   public final static int ICSNEO_NETID_ISO = icsneojavaJNI.ICSNEO_NETID_ISO_get();
-  public final static int ICSNEO_NETID_ISOPIC = icsneojavaJNI.ICSNEO_NETID_ISOPIC_get();
   public final static int ICSNEO_NETID_MAIN51 = icsneojavaJNI.ICSNEO_NETID_MAIN51_get();
   public final static int ICSNEO_NETID_RED = icsneojavaJNI.ICSNEO_NETID_RED_get();
   public final static int ICSNEO_NETID_SCI = icsneojavaJNI.ICSNEO_NETID_SCI_get();

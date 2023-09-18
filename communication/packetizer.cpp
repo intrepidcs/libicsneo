@@ -1,5 +1,4 @@
 #include "icsneo/communication/packetizer.h"
-#include <iostream>
 #include <iomanip>
 
 using namespace icsneo;
@@ -49,44 +48,97 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 					haveEnoughData = false;
 					break;
 				}
+	
+				packetLength = bytes[1] >> 4 & 0xF;
+				packet.network = Network(bytes[1] & 0xF); // Lower nibble of the second byte is the network ID
 
-				packetLength = bytes[1] >> 4 & 0xf; // Upper nibble of the second byte denotes the packet length
-				packet.network = Network(bytes[1] & 0xf); // Lower nibble of the second byte is the network ID
-				if(packetLength == 0) { // A length of zero denotes a long style packet
+				if(packetLength == 0) {
 					state = ReadState::ParseLongStylePacketHeader;
-					checksum = false;
-					headerSize = 6;
-				} else {
-					state = ReadState::GetData;
-					checksum = true; // Even if checksum is not explicitly disallowed, we enable it here, as this goes into length calculation
-					headerSize = 2;
-					packetLength += 2; // The packet length given in short packets does not include header
+					break;
+				} else if(packetLength == 0xA && packet.network == Network::NetID::DiskData) {
+					state = ReadState::ParseDiskDataHeader;
+					break;
 				}
+
+				checksum = true; // Even if checksum is not explicitly disallowed, we enable it here, as this goes into length calculation
+				headerSize = 2;
+				packetLength += 2; // The packet length given in short packets does not include header
 				currentIndex++;
+				state = ReadState::GetData;
 				break;
 			case ReadState::ParseLongStylePacketHeader:
 				if(bytes.size() < 6) {
 					haveEnoughData = false;
 					break;
 				}
-
+				
 				packetLength = bytes[2]; // Long packets have a little endian length on bytes 3 and 4
 				packetLength |= bytes[3] << 8;
 				packet.network = Network(((bytes[5] << 8) | bytes[4]), false); // Long packets have their netid stored as little endian on bytes 5 and 6. Devices never send actual VNET IDs so we must not perform ID expansion here.
-				currentIndex += 4;
 
 				/* Long packets can't have a length less than 6, because that would indicate a negative payload size.
-				 * Unlike the short packet length, the long packet length encompasses everything from the 0xAA to the
-				 * end of the payload. The short packet length, for reference, only encompasses the length of the actual
-				 * payload, and not the header or checksum.
-				 */
+				* Unlike the short packet length, the long packet length encompasses everything from the 0xAA to the
+				* end of the payload. The short packet length, for reference, only encompasses the length of the actual
+				* payload, and not the header or checksum.
+				*/
 				if(packetLength < 6 || packetLength > 4000) {
 					bytes.pop_front();
 					EventManager::GetInstance().add(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 					state = ReadState::SearchForHeader;
-				} else {
-					state = ReadState::GetData;
+					break;
 				}
+
+				checksum = false;
+				headerSize = 6;
+				currentIndex += 5;
+				state = ReadState::GetData;
+				break;
+			case ReadState::ParseDiskDataHeader:
+				if(bytes.size() < 3) {
+					haveEnoughData = false;
+					break;
+				}
+
+				if(bytes[2] != 0xAA) {
+					bytes.pop_front();
+					state = ReadState::SearchForHeader;
+					break;
+				}
+
+				if(bytes.size() < 4) {
+					haveEnoughData = false;
+					break;
+				}
+
+				if(bytes[3] != 0x55) {
+					bytes.pop_front();
+					state = ReadState::SearchForHeader;
+					break;
+				}
+
+				if(bytes.size() < 5) {
+					haveEnoughData = false;
+					break;
+				}
+
+				if(bytes[4] != 0x55) {
+					bytes.pop_front();
+					state = ReadState::SearchForHeader;
+					break;
+				}
+
+				if(bytes.size() < 7) {
+					haveEnoughData = false;
+					break;
+				}
+				
+				packetLength = bytes[5] | (bytes[6] << 8);
+				
+				checksum = false;
+				headerSize = 7;
+				packetLength += headerSize;
+				currentIndex += 6;
+				state = ReadState::GetData;
 				break;
 			case ReadState::GetData:
 				// We do not include the checksum in packetLength so it doesn't get copied into the payload buffer
@@ -98,7 +150,7 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 				packet.data.clear();
 				if(packetLength > 0)
 					packet.data.resize(packetLength - headerSize);
-				
+
 				auto i = 0;
 				while(currentIndex < packetLength)
 					packet.data[i++] = bytes[currentIndex++];
@@ -109,12 +161,16 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 					processedPackets.push_back(std::make_shared<Packet>(packet));
 					for (auto a = 0; a < packetLength; a++)
 						bytes.pop_front();
+
+					if(packet.network == Network::NetID::DiskData && (packetLength - headerSize) % 2 == 0) {
+						bytes.pop_front();
+					}
 				} else {
 					if(gotGoodPackets) // Don't complain unless we've already gotten a good packet, in case we started in the middle of a stream
 						report(APIEvent::Type::PacketChecksumError, APIEvent::Severity::Error);
 					bytes.pop_front(); // Drop the first byte so it doesn't get picked up again
 				}
-				
+
 				// Reset for the next packet
 				currentIndex = 0;
 				state = ReadState::SearchForHeader;

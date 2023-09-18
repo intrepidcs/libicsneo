@@ -71,7 +71,7 @@ typedef unsigned __int64 uint64_t;
 #define NETID_AUX 7
 #define NETID_JVPW 8
 #define NETID_ISO 9
-#define NETID_ISOPIC 10
+#define NETID_DISK_DATA 10
 #define NETID_MAIN51 11
 #define NETID_RED 12
 #define NETID_SCI 13

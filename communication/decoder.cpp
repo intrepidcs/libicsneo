@@ -15,6 +15,7 @@
 #include "icsneo/communication/message/mdiomessage.h"
 #include "icsneo/communication/message/extendeddatamessage.h"
 #include "icsneo/communication/message/livedatamessage.h"
+#include "icsneo/communication/message/diskdatamessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -427,6 +428,10 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
 						return false;
 					}
+					return true;
+				}
+				case Network::NetID::DiskData: {
+					result = std::make_shared<DiskDataMessage>(std::move(packet->data));
 					return true;
 				}
 				default:

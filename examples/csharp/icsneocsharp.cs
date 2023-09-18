@@ -325,7 +325,6 @@ public class icsneocsharp {
   public static readonly int ICSNEO_NETID_AUX = icsneocsharpPINVOKE.ICSNEO_NETID_AUX_get();
   public static readonly int ICSNEO_NETID_J1850VPW = icsneocsharpPINVOKE.ICSNEO_NETID_J1850VPW_get();
   public static readonly int ICSNEO_NETID_ISO = icsneocsharpPINVOKE.ICSNEO_NETID_ISO_get();
-  public static readonly int ICSNEO_NETID_ISOPIC = icsneocsharpPINVOKE.ICSNEO_NETID_ISOPIC_get();
   public static readonly int ICSNEO_NETID_MAIN51 = icsneocsharpPINVOKE.ICSNEO_NETID_MAIN51_get();
   public static readonly int ICSNEO_NETID_RED = icsneocsharpPINVOKE.ICSNEO_NETID_RED_get();
   public static readonly int ICSNEO_NETID_SCI = icsneocsharpPINVOKE.ICSNEO_NETID_SCI_get();
