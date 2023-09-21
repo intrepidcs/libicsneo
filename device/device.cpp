@@ -970,7 +970,7 @@ void Device::wiviThreadBody() {
 		// Use the command GetAll to get a WiVI::Info structure from the device
 		const auto generic = com->waitForMessageSync([this]() {
 			return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetAll::Encode());
-		}, filter);
+		}, filter, std::chrono::milliseconds(1000));
 
 		if(!generic || generic->type != Message::Type::WiVICommandResponse) {
 			report(APIEvent::Type::WiVIStackRefreshFailed, APIEvent::Severity::Error);
