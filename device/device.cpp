@@ -1878,7 +1878,7 @@ bool Device::subscribeLiveData(std::shared_ptr<LiveDataCommandMessage> message) 
 
 	if(response) {
 		auto statusMsg = std::dynamic_pointer_cast<LiveDataStatusMessage>(response);
-		if(statusMsg->requestedCommand == message->cmd) {
+		if(statusMsg && statusMsg->requestedCommand == message->cmd) {
 			switch(statusMsg->status) {
 				case LiveDataStatus::SUCCESS:
 					return true;

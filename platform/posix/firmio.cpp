@@ -42,9 +42,13 @@ void FirmIO::Find(std::vector<FoundDevice>& found) {
 	Decoder decoder([](APIEvent::Type, APIEvent::Severity) {});
 	using namespace std::chrono;
 	const auto start = steady_clock::now();
-	auto timeout = milliseconds(50);
-	while(temp.readWait(payload, timeout)) {
-		timeout -= duration_cast<milliseconds>(steady_clock::now() - start);
+	// Get an absolute wall clock to compare to
+	const auto overallTimeout = start + milliseconds(500);
+	while(temp.readWait(payload, milliseconds(50))) {
+		if(steady_clock::now() > overallTimeout) {
+			// failed to read out a serial number reponse in time
+			break;
+		}
 
 		if(!packetizer.input(payload))
 			continue; // A full packet has not yet been read out
