@@ -45,6 +45,8 @@ else() #if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-switch -Wno-unknown-pragmas")
 endif()
 
+find_package(Threads REQUIRED)
+
 # doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
@@ -333,6 +335,7 @@ target_include_directories(icsneocpp
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 		${LIBICSNEO_EXTENSION_INCLUDE_PATHS}
 )
+target_link_libraries(icsneocpp PUBLIC Threads::Threads)
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
@@ -379,7 +382,6 @@ if(LIBICSNEO_ENABLE_FTDI)
 		add_subdirectory(third-party/libftdi)
 		target_include_directories(icsneocpp PRIVATE ${LIBUSB_INCLUDE_DIR})
 
-		find_package(Threads)
 		set_property(TARGET ftdi1-static PROPERTY POSITION_INDEPENDENT_CODE ON)
 		target_link_libraries(icsneocpp PUBLIC ftdi1-static)
 		target_link_libraries(icsneocpp PUBLIC ${CMAKE_THREAD_LIBS_INIT})
