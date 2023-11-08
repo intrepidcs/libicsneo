@@ -6,7 +6,7 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/tree/neovifire2/neovifire2settings.h"
-
+#include "icsneo/disk/neomemorydiskdriver.h"
 namespace icsneo {
 
 class NeoVIFIRE2 : public Device {
@@ -89,7 +89,7 @@ public:
 
 protected:
 	NeoVIFIRE2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<NeoVIFIRE2Settings>(makeDriver);
+		initialize<NeoVIFIRE2Settings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	void setupSettings(IDeviceSettings& ssettings) override {

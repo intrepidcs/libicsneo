@@ -148,8 +148,10 @@ public:
 	int8_t prepareScriptLoad();
 	bool startScript(Disk::MemoryType memType = Disk::MemoryType::SD);
 	bool stopScript();
-	bool clearScript();
+	bool clearScript(Disk::MemoryType memType = Disk::MemoryType::SD);
 	bool uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::MemoryType memType = Disk::MemoryType::SD);
+
+	bool eraseScriptMemory(Disk::MemoryType memType, uint64_t amount);
 
 	virtual std::optional<MemoryAddress> getCoreminiStartAddressFlash() const {
 		return std::nullopt;

@@ -31,6 +31,7 @@ enum class Command : uint8_t {
 	GetVBattReq = 0xDF, // Previously known as RED_CMD_VBATT_REQUEST
 	ScriptStatus = 0xE0, // Previously known as RED_CMD_SCRIPT_STATUS
 	MiscControl = 0xE7,
+	NeoEraseMemory = 0xEA, // Previously known as RED_CMD_ERASE_MEMORY
 	Extended = 0xF0, // Previously known as RED_CMD_EXT_COMM
 	ExtendedData = 0xF2, // Previously known as RED_CMD_EXTENDED_DATA
 	FlexRayControl = 0xF3,

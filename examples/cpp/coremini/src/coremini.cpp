@@ -1,5 +1,5 @@
 // Usage:
-// ./libicsneocpp-coremini [DEVICE_SERIAL] [COREMINI_SCRIPT_PATH]
+// ./libicsneocpp-coremini [DEVICE_SERIAL] [COREMINI_SCRIPT_PATH] [FLASH | SD]
 
 
 #include <iostream>
@@ -8,14 +8,14 @@
 
 void displayUsage() {
 	std::cout << "Usage:\n";
-	std::cout << "./libicsneocpp-coremini [DEVICE_SERIAL] [COREMINI_SCRIPT_PATH]\n";
+	std::cout << "./libicsneocpp-coremini [DEVICE_SERIAL] [COREMINI_SCRIPT_PATH] [FLASH | SD]\n";
 }
 
 
 int main(int argc, char** argv) {
 	std::vector<std::string> arguments(argv, argv + argc);
 
-	if(arguments.size() != 3) {
+	if(arguments.size() != 4) {
 		displayUsage();
 		return EXIT_FAILURE;
 	}
@@ -50,14 +50,25 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
-	if (!device->uploadCoremini(std::make_unique<std::ifstream>(arguments[2], std::ios::binary), icsneo::Disk::MemoryType::Flash))
-	{
+	std::string memTypeString = arguments[3];
+
+	icsneo::Disk::MemoryType type;
+	if(memTypeString == "FLASH") {
+		type = icsneo::Disk::MemoryType::Flash;
+	} else if(memTypeString == "SD") {
+		type = icsneo::Disk::MemoryType::SD;
+	} else {
+		std::cout << "Incorrect memory type option" << std::endl;
+		displayUsage();
+		return EXIT_FAILURE;
+	}
+
+	if (!device->uploadCoremini(std::make_unique<std::ifstream>(arguments[2], std::ios::binary), type)) {
 		std::cout << "Failed to upload coremini" << std::endl;
 		std::cout << icsneo::GetLastError() << std::endl;
 	}
 
-	if (!device->startScript(icsneo::Disk::MemoryType::Flash))
-	{
+	if (!device->startScript(type)) {
 		std::cout << "Failed to start script" << std::endl;
 		std::cout << icsneo::GetLastError() << std::endl;
 	}

@@ -18,18 +18,20 @@ std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communicatio
 
 	const uint64_t currentSector = pos / SectorSize;
 	const uint8_t memLocation = (uint8_t)memType;
+
+	uint64_t numWords = amount / 2;
 	
-	auto msg = com.waitForMessageSync([&currentSector, &memLocation, &com] {
+	auto msg = com.waitForMessageSync([&currentSector, &memLocation, &com, &numWords] {
 		return com.sendCommand(Command::NeoReadMemory, {
 			memLocation,
 			uint8_t(currentSector & 0xFF),
 			uint8_t((currentSector >> 8) & 0xFF),
 			uint8_t((currentSector >> 16) & 0xFF),
 			uint8_t((currentSector >> 24) & 0xFF),
-			uint8_t(SectorSize & 0xFF),
-			uint8_t((SectorSize >> 8) & 0xFF),
-			uint8_t((SectorSize >> 16) & 0xFF),
-			uint8_t((SectorSize >> 24) & 0xFF)
+			uint8_t(numWords & 0xFF),
+			uint8_t((numWords >> 8) & 0xFF),
+			uint8_t((numWords >> 16) & 0xFF),
+			uint8_t((numWords >> 24) & 0xFF)
 		});
 	}, NeoMemorySDRead, timeout);
 
@@ -60,15 +62,17 @@ std::optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communicati
 	const uint64_t currentSector = pos / SectorSize;
 	const uint8_t memLocation = (uint8_t)memType;
 
-	auto msg = com.waitForMessageSync([&currentSector, &memLocation, &com, from, amount] {
+	uint64_t numWords = amount / 2;
+
+	auto msg = com.waitForMessageSync([&currentSector, &memLocation, &com, from, amount, &numWords] {
 		std::vector<uint8_t> command = {
 			memLocation,
 			uint8_t(currentSector & 0xFF),
 			uint8_t((currentSector >> 8) & 0xFF),
 			uint8_t((currentSector >> 16) & 0xFF),
 			uint8_t((currentSector >> 24) & 0xFF),
-			uint8_t(SectorSize & 0xFF),
-			uint8_t((SectorSize >> 8) & 0xFF),
+			uint8_t(numWords & 0xFF),
+			uint8_t((numWords >> 8) & 0xFF),
 		};
 		command.insert(command.end(), from, from + amount);
 		return com.sendCommand(Command::NeoWriteMemory, command);

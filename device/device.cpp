@@ -510,7 +510,33 @@ bool Device::stopScript()
 }
 
 bool Device::uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::MemoryType memType) {
+
+	if(!stream || stream->bad()) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return false;
+	}
 	
+	std::vector<char> bin(std::istreambuf_iterator<char>(*stream), {}); // Read the whole stream
+
+	if(bin.size() < 4) {
+		report(APIEvent::Type::BufferInsufficient, APIEvent::Severity::Error);
+		return false;
+	}
+
+	uint16_t scriptVersion = *(uint16_t*)(&bin[2]); // Third and fourth byte are version number stored in little endian
+
+	auto scriptStatus = getScriptStatus();
+
+	if(!scriptStatus) {
+		return false; // Already added an API error
+	}
+	
+	if(scriptStatus->coreminiVersion != scriptVersion) {
+		// Version on device and script are not the same
+		report(APIEvent::Type::CoreminiUploadVersionMismatch, APIEvent::Severity::Error);
+		return false;
+	}
+
 	auto startAddress = getCoreminiStartAddress(memType);
 	if(!startAddress) {
 		return false;
@@ -531,29 +557,12 @@ bool Device::uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::Memory
 		return false;
 	}
 
-	if(!stream || stream->bad()) {
-		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+	if(!clearScript(memType)) {
 		return false;
 	}
 
-	std::vector<char> bin(std::istreambuf_iterator<char>(*stream), {}); // Read the whole stream
 
-	if(bin.size() < 4) {
-		report(APIEvent::Type::BufferInsufficient, APIEvent::Severity::Error);
-		return false;
-	}
-
-	uint16_t scriptVersion = *(uint16_t*)(&bin[2]); // Third and fourth byte are version number stored in little endian
-	
-	auto scriptStatus = getScriptStatus();
-
-	if(!scriptStatus) {
-		return false; // Already added an API error
-	}
-	
-	if(scriptStatus->coreminiVersion != scriptVersion) {
-		// Version on device and script are not the same
-		report(APIEvent::Type::CoreminiUploadVersionMismatch, APIEvent::Severity::Error);
+	if(!eraseScriptMemory(memType, static_cast<uint64_t>(bin.size()))) {
 		return false;
 	}
 
@@ -563,7 +572,7 @@ bool Device::uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::Memory
 		return false; // Already added an API error
 	}
 	
-	if(*numWritten == 0) {
+	if(*numWritten != static_cast<uint64_t>(bin.size())) {
 		report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
 		return false; // Failed to write
 	}
@@ -571,16 +580,60 @@ bool Device::uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::Memory
 	return true;
 }
 
-bool Device::clearScript()
+bool Device::eraseScriptMemory(Disk::MemoryType memType, uint64_t amount) {
+	static std::shared_ptr<MessageFilter> NeoEraseDone = std::make_shared<MessageFilter>(Network::NetID::NeoMemoryWriteDone);
+
+	auto startAddress = getCoreminiStartAddress(memType);
+	if(!startAddress) {
+		return false;
+	}
+
+	if(memType != Disk::MemoryType::Flash) {
+		// Only need to erase on flash
+		return true;
+	}
+
+	std::vector<uint8_t> arguments(9, 0);
+
+	uint32_t numWords = static_cast<uint32_t>(amount / 2);
+
+	arguments[0] = static_cast<uint8_t>(memType);
+	*reinterpret_cast<uint32_t*>(&arguments[1]) = static_cast<uint32_t>(*startAddress / 512);
+	*reinterpret_cast<uint32_t*>(&arguments[5])= numWords;
+
+	auto msg = com->waitForMessageSync([this, &arguments] {
+		return com->sendCommand(Command::NeoEraseMemory, arguments);
+	}, NeoEraseDone, std::chrono::milliseconds(3000));
+
+	if(!msg) {
+		return false;
+	}
+
+	return true;
+}
+
+bool Device::clearScript(Disk::MemoryType memType)
 {
 	if(!stopScript())
 		return false;
+	
+
+	auto startAddress = getCoreminiStartAddress(memType);
+	if(!startAddress) {
+		return false;
+	}
 
 	std::vector<uint8_t> clearData(512, 0xCD);
-	uint64_t ScriptLocation = 0; //We only support a coremini in an SDCard, which is at the very beginning of the card
-	auto written = writeLogicalDisk(ScriptLocation, clearData.data(), clearData.size());
+	auto written = writeLogicalDisk(*startAddress, clearData.data(), clearData.size(), std::chrono::milliseconds(2000), memType);
 
-	return written > 0;
+	if(!written) {
+		return false;
+	}
+	if(*written == 0) {
+		return false;
+	}
+
+	return true;
 }
 
 bool Device::transmit(std::shared_ptr<Frame> frame) {
