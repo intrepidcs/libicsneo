@@ -1,5 +1,6 @@
 #include "icsneo/icsneocpp.h"
 #include "icsneo/device/devicefinder.h"
+#include <jni.h>
 
 using namespace icsneo;
 

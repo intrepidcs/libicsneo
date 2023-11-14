@@ -122,6 +122,11 @@ public:
 		GetIfAddrsError = 0x3108,
 		SendToError = 0x3109,
 		MDIOMessageExceedsMaxLength = 0x3110,
+		DriverTTYPathEmpty = 0x3120,
+		DriverWasNotNegOne = 0x3121,
+		DriverTCGetAddrFail = 0x3122,
+		DriverTCSetAddrFail= 0x3123,
+
 
 		// FTD3XX
 		FTOK = 0x4000, // placeholder
@@ -160,8 +165,8 @@ public:
 
 		NoErrorFound = 0xFFFFFFFD,
 		TooManyEvents = 0xFFFFFFFE,
-		Unknown = 0xFFFFFFFF
-	};
+		Unknown = 0xFFFFFFFF,
+    };
 	enum class Severity : uint8_t {
 		Any = 0, // Used for filtering, should not appear in data
 		EventInfo = 0x10,

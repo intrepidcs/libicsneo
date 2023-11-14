@@ -29,6 +29,7 @@ bool CDCACM::open() {
 	const std::string& ttyPath = HandleToTTY(device.handle);
 	if(ttyPath.empty()) {
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
+		report(APIEvent::Type::DriverTTYPathEmpty, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -60,6 +61,7 @@ bool CDCACM::open() {
 	if(!isOpen()) {
 		//std::cout << "Open of " << ttyPath.c_str() << " failed with " << strerror(errno) << ' ';
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
+		report(APIEvent::Type::DriverWasNotNegOne, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -69,6 +71,7 @@ bool CDCACM::open() {
 	if(tcgetattr(fd, &tty) != 0) {
 		close();
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
+		report(APIEvent::Type::DriverTCGetAddrFail, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -92,6 +95,7 @@ bool CDCACM::open() {
 	if(tcsetattr(fd, TCSAFLUSH, &tty) != 0) { // Flushes input and output buffers as well as setting settings
 		close();
 		report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
+		report(APIEvent::Type::DriverTCSetAddrFail, APIEvent::Severity::Error);
 		return false;
 	}
 
