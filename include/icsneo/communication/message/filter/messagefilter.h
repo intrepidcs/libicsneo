@@ -29,10 +29,10 @@ public:
 
 		if(message->type == Message::Type::Frame || message->type == Message::Type::Main51 || 
 			message->type == Message::Type::RawMessage || message->type == Message::Type::ReadSettings) {
-			RawMessage& frame = *static_cast<RawMessage*>(message.get());
-			if(!matchNetworkType(frame.network.getType()))
+			const auto frame = std::dynamic_pointer_cast<RawMessage>(message);
+			if(!matchNetworkType(frame->network.getType()))
 				return false;
-			if(!matchNetID(frame.network.getNetID()))
+			if(!matchNetID(frame->network.getNetID()))
 				return false;
 		} else if (netid != Network::NetID::Any || networkType != Network::Type::Any) {
 			return false; // Filtering on a NetID or Type, but this message doesn't have one

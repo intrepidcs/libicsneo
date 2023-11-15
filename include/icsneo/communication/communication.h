@@ -76,6 +76,8 @@ public:
 		const std::shared_ptr<MessageFilter>& f = {},
 		std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
+	void dispatchMessage(const std::shared_ptr<Message>& msg);
+
 	std::function<std::unique_ptr<Packetizer>()> makeConfiguredPacketizer;
 	std::unique_ptr<Packetizer> packetizer;
 	std::unique_ptr<Encoder> encoder;
@@ -93,7 +95,6 @@ protected:
 	std::mutex redirectingReadMutex; // Don't allow read to be disabled while in the redirectionFn
 	std::mutex syncMessageMutex;
 
-	void dispatchMessage(const std::shared_ptr<Message>& msg);
 	void handleInput(Packetizer& p, std::vector<uint8_t>& readBytes);
 
 private:

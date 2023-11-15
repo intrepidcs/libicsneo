@@ -275,6 +275,22 @@ set(SRC_FILES
 	disk/plasiondiskreaddriver.cpp
 	disk/extextractordiskreaddriver.cpp
 	disk/fat.cpp
+	disk/vsa/vsa.cpp
+	disk/vsa/vsa02.cpp
+	disk/vsa/vsa03.cpp
+	disk/vsa/vsa04.cpp
+	disk/vsa/vsa05.cpp
+	disk/vsa/vsa06.cpp
+	disk/vsa/vsa07.cpp
+	disk/vsa/vsa08.cpp
+	disk/vsa/vsa09.cpp
+	disk/vsa/vsa0b.cpp
+	disk/vsa/vsa0c.cpp
+	disk/vsa/vsa0d.cpp
+	disk/vsa/vsa0e.cpp
+	disk/vsa/vsa0f.cpp
+	disk/vsa/vsa6a.cpp
+	disk/vsa/vsaparser.cpp
 	${PLATFORM_SRC}
 )
 

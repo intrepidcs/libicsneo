@@ -43,6 +43,8 @@
 #include "icsneo/communication/message/ethphymessage.h"
 #include "icsneo/third-party/concurrentqueue/concurrentqueue.h"
 #include "icsneo/platform/nodiscard.h"
+#include "icsneo/disk/vsa/vsa.h"
+#include "icsneo/disk/vsa/vsaparser.h"
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
 	static constexpr DeviceType::Enum DEVICE_TYPE = type; \
@@ -581,6 +583,101 @@ public:
 	bool unsubscribeLiveData(const LiveDataHandle& handle);
 	bool clearAllLiveData();
 
+	// VSA Read functions
+
+	/**
+	 * Read VSA message records from disk and dispatch the messages via Communication object. Default behavior excludes
+	 * records older than the current CoreMini script and performs a full disk dump of other records. The CoreMini script is
+	 * also stopped by default.
+	 *
+	 * @param extractionSettings Contains filters and other advanced settings for extraction process
+	 *
+	 * @return Returns false if there were failures during the read or parse processes or issues with record formatting, else true
+	 */
+	bool readVSA(const VSAExtractionSettings& extractionSettings = VSAExtractionSettings());
+
+	/**
+	 * Determines important metadata about VSA record storage on the disk. Terminates at first failed attempt to retrieve information
+	 *
+	 * @param metadata The metadata object to store the probed information into
+	 * @param extractionSettings The settings for this extraction of VSA data
+	 *
+	 * @return True if all metadata information was successfully found
+	 */
+	bool probeVSA(VSAMetadata& metadata, const VSAExtractionSettings& extractionSettings);
+
+	/**
+	 * Find the first VSA record chronologically from ring buffer in the VSA log file on disk
+	 *
+	 * @param firstOffset Variable used to pass out offset of first record on the disk
+	 * @param firstRecord Variable used to pass out the first record in the buffer
+	 * @param extractionSettings The settings for this extraction of VSA data
+	 * @param optMetadata Metadata about the current state of the VSA log file
+	 * (Must include valid CoreMini timestamp, disk size, and isOverlapped values)
+	 *
+	 * @return True if the first record was found successfully
+	 */
+	bool findFirstVSARecord(uint64_t& firstOffset, std::shared_ptr<VSA>& firstRecord,
+		const VSAExtractionSettings& extractionSettings = VSAExtractionSettings(), std::optional<VSAMetadata> optMetadata = std::nullopt);
+
+	/**
+	 * Find the last record chronologically from ring buffer in the VSA log file with a valid timestamp
+	 *
+	 * @param lastOffset Variable used to pass out the offset of the last record on the disk
+	 * @param lastRecord Variable used to pass out the last record with a valid timestamp
+	 * @param extractionSettings The settings for this extraction of VSA data
+	 * @param optMetadata Metadata about the current state of the VSA log file
+	 * (Must include valid CoreMini timestamp, disk size, and isOverlapped values)
+	 *
+	 * @return True if the last record was found successfully
+	 */
+	bool findLastVSARecord(uint64_t& lastOffset, std::shared_ptr<VSA>& lastRecord,
+		const VSAExtractionSettings& extractionSettings = VSAExtractionSettings(), std::optional<VSAMetadata> optMetadata = std::nullopt);
+
+	/**
+	 * Find the closest VSA record to the desired time_point
+	 *
+	 * @param point The desired time_point of the record
+	 * @param vsaOffset Variable used to pass out offset of record closest to the desired time_point
+	 * @param record Variable used to pass out the record closest to the desired time_point
+	 * @param extractionSettings Settings for this extraction of VSA data
+	 * @param optMetadata Optional param to include metadata about the VSA log file on disk
+	 *
+	 * @return Pair containing the location of the record closest to the desired time_point (in bytes from the beginning of VSA log file) and the record itself
+	 */
+	bool findVSAOffsetFromTimepoint(
+		ICSClock::time_point point, uint64_t& vsaOffset, std::shared_ptr<VSA>& record, const VSAExtractionSettings& extractionSettings = VSAExtractionSettings(),
+		std::optional<VSAMetadata> optMetadata = std::nullopt);
+
+	/**
+	 * Parse VSA message records with the given filter and dispatch them with this device's com channel
+	 *
+	 * @param metadata Important information about the VSA logfile (including first record location)
+	 * @param extractionSettings Settings for this extraction of VSA data
+	 * @param filter Struct used to determine which bytes to read and to filter out undesired VSA records
+	 *
+	 * @return True if there were no failures reading from disk, parsing VSA records, or dispatching VSA records
+	 */
+	bool parseVSA(
+		VSAMetadata& metadata, const VSAExtractionSettings& extractionSettings = VSAExtractionSettings(),
+		const VSAMessageReadFilter& filter = VSAMessageReadFilter());
+
+	/**
+	 * Wrapper function for Device::readLogicalDisk(pos, into, amount, ...) that handles the VSA record ring buffer.
+	 * Handles pos that is before the VSA::RecordStartOffset or is larger than the diskSize.
+	 * Sets amount to maximum size of ring buffer if given amount is too large.
+	 *
+	 * @param pos Position to start read from in relation to VSA file start
+	 * @param into The buffer to read bytes into from the disk
+	 * @param amount The number of bytes to read into the buffer
+	 * @param metadata Optional metadata param (used to determine disk size and if disk is overlapped)
+	 *
+	 * @return Returns value of return from readLogicalDisk with the given inputs
+	 */
+	std::optional<uint64_t> vsaReadLogicalDisk(
+		uint64_t pos, uint8_t* into, uint64_t amount, std::optional<VSAMetadata> metadata = std::nullopt
+	);
+
 protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;
@@ -758,6 +855,96 @@ private:
 	void scriptStatusThreadBody();
 	void stopScriptStatusThreadIfNecessary(std::unique_lock<std::mutex> lk);
 
+	// VSA Read functions
+
+	/**
+	 * Read the timestamp from disk of the VSA record stored at pos. If the timestamp is unparsable, attempt to read from
+	 * previous records up to minPos
+	 *
+	 * @param parser The parser that is used to create a VSA record from the given buffer
+	 * @param buffer Vector of bytes that stores a sector from the disk
+	 * @param pos The location that the buffer was read from
+	 * @param minPos The leftmost (minimum) offset from the beginning of the VSA log file to attempt to read from
+	 * @param optMetadata Optional param to include metadata about the VSA log file on disk
+	 *
+	 * @return The timestamp of the first valid record found at or before the given position
+	 */
+	std::optional<uint64_t> getVSATimestampOrBefore(VSAParser& parser, std::vector<uint8_t>& buffer, uint64_t pos, uint64_t minPos,
+		std::optional<VSAMetadata> optMetadata = std::nullopt);
+
+	/**
+	 * Read the timestamp from disk of the VSA record stored at pos. If the timestamp is unparsable, attempt to read from
+	 * previous records up to maxPos
+	 *
+	 * @param parser The parser that is used to create a VSA record from the given buffer
+	 * @param buffer Vector of bytes that stores a sector that was previously read from the disk
+	 * @param pos The location that data in the buffer was read from
+	 * @param maxPos The rightmost (maximum) offset from the beginning of the VSA log file to attempt to read from
+	 * @param optMetadata Optional param to include metadata about the VSA log file on disk
+	 *
+	 * @return The timestamp of the first valid record found at or after the given position
+	 */
+	std::optional<uint64_t> getVSATimestampOrAfter(VSAParser& parser, std::vector<uint8_t>& buffer, uint64_t pos, uint64_t maxPos,
+		std::optional<VSAMetadata> optMetadata = std::nullopt);
+
+	/**
+	 * Iterate over VSA records and dispatch the messages contained within them. For extended message records, we concatenate the payloads of all of
+	 * the records together before dispatching. Dispatch is performed by Communication::dispatchMessage(...).
+	 *
+	 * @param parser The parser that holds the VSAMessage records to be dispatched
+	 *
+	 * @return True if dispatching of records is successful without unhandled issues from record parse, else false
+	 */
+	bool dispatchVSAMessages(VSAParser& parser);
+
+	/**
+	 * Determine if the ring buffer for VSA records has filled entirely and looped to the beginning.
+	 *
+	 * @param optMetadata Optional metadata param with partial information about current state of VSA log file
+	 * (Must contain valid disk size and CoreMini timestamp)
+	 *
+	 * @return True if the buffer has looped; Returns std::nullopt if unable to determine
+	 */
+	std::optional<bool> isVSAOverlapped(std::optional<VSAMetadata> optMetadata = std::nullopt);
+
+	/**
+	 * Find the first extended message record in the sequence of the given extended message record by backtracking in the disk.
+	 * Results are returned by reference (not through the return value)
+	 *
+	 * @param record The extended message record whose sequence for which to find the first record
+	 * @param pos The position of the given record in the VSA log file (in bytes)
+	 * @param parser Used to parse indices and sequence numbers from the extended message records
+	 * @param metadata Optional param to include metadata about the VSA log file on disk
+	 *
+	 * @return True if the first extended message record in the sequence was successfully found
+	 */
+	bool findFirstExtendedVSAFromConsecutive(std::shared_ptr<VSAExtendedMessage>& record, uint64_t& pos, 
+		VSAParser& parser, std::optional<VSAMetadata> metadata = std::nullopt);
+
+	/**
+	 * Find the first record before the given position that contains a valid timestamp. Results are returned by reference.
+	 * 
+	 * @param record The record from which to backtrack in the VSA buffer
+	 * @param pos The position of the given record in the VSA log file (in bytes)
+	 * @param parser Used to parse records from the VSA buffer
+	 * 
+	 * @return True if a record with valid timestamp is found within a set number of reads
+	*/
+	bool findPreviousRecordWithTimestamp(std::shared_ptr<VSA>& record, uint64_t& pos, VSAParser& parser);
+
+	/**
+	 * Get the creation timestamp of the CoreMini script from VSA log file
+	 *
+	 * @return Timestamp in 25 nanosecond ticks since January 1, 2007
+	 */
+	std::optional<uint64_t> getCoreMiniScriptTimestamp();
+
+	/**
+	 * Get the size of the VSA file storage system from the CoreMini script
+	 * 
+	 * @return The size of the vsa log files on the disk
+	 */
+	std::optional<uint64_t> getVSADiskSize();
 };
 
 }

@@ -169,6 +169,15 @@ static constexpr const char* FT_DEVICE_NOT_CONNECTED = "FTD3XX device not connec
 static constexpr const char* FT_INCORRECT_DEVICE_PATH = "Incorrect FTD3XX device path.";
 static constexpr const char* FT_OTHER_ERROR = "Other FTD3XX error.";
 
+// VSA
+static constexpr const char* VSA_BUFFER_CORRUPTED = "VSA data in record buffer is corrupted.";
+static constexpr const char* VSA_TIMESTAMP_NOT_FOUND = "Unable to find a VSA record with a valid timestamp.";
+static constexpr const char* VSA_BUFFER_FORMAT_ERROR = "VSA record buffer is formatted incorrectly.";
+static constexpr const char* VSA_MAX_READ_ATTEMPTS_REACHED = "Reached max attempts to read VSA records before exit.";
+static constexpr const char* VSA_BYTE_PARSE_FAILURE = "Failure to parse record bytes from VSA buffer.";
+static constexpr const char* VSA_EXTENDED_MESSAGE_ERROR = "Failure to parse extended message record sequence";
+static constexpr const char* VSA_OTHER_ERROR = "Unknown error in VSA read API.";
+
 static constexpr const char* TOO_MANY_EVENTS = "Too many events have occurred. The list has been truncated.";
 static constexpr const char* UNKNOWN = "An unknown internal error occurred.";
 static constexpr const char* INVALID = "An invalid internal error occurred.";
@@ -392,6 +401,22 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return FT_INCORRECT_DEVICE_PATH;
 		case Type::FTOtherError:
 			return FT_OTHER_ERROR;
+
+		// VSA
+		case Type::VSABufferCorrupted:
+			return VSA_BUFFER_CORRUPTED;
+		case Type::VSATimestampNotFound:
+			return VSA_TIMESTAMP_NOT_FOUND;
+		case Type::VSABufferFormatError:
+			return VSA_BUFFER_FORMAT_ERROR;
+		case Type::VSAMaxReadAttemptsReached:
+			return VSA_MAX_READ_ATTEMPTS_REACHED;
+		case Type::VSAByteParseFailure:
+			return VSA_BYTE_PARSE_FAILURE;
+		case Type::VSAExtendedMessageError:
+			return VSA_EXTENDED_MESSAGE_ERROR;
+		case Type::VSAOtherError:
+			return VSA_OTHER_ERROR;
 
 		// Other Errors
 		case Type::TooManyEvents:

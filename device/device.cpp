@@ -480,10 +480,15 @@ bool Device::startScript(Disk::MemoryType memType)
 	}
 
 	uint8_t location = static_cast<uint8_t>(memType);
-	auto generic = com->sendCommand(Command::LoadCoreMini, location);
 
-	if(!generic)
-	{
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Device);
+	filter->includeInternalInAny = true;
+
+	const auto response = com->waitForMessageSync([&]() {
+		return com->sendCommand(Command::LoadCoreMini, location);
+	}, filter);
+
+	if(!response) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		return false;
 	}
@@ -498,10 +503,14 @@ bool Device::stopScript()
 		return false;
 	}
 
-	auto generic = com->sendCommand(Command::ClearCoreMini);
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Device);
+	filter->includeInternalInAny = true;
 
-	if(!generic)
-	{
+	const auto response = com->waitForMessageSync([&]() {
+		return com->sendCommand(Command::ClearCoreMini);
+	}, filter);
+
+	if(!response) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		return false;
 	}
@@ -753,7 +762,7 @@ std::optional<bool> Device::isLogicalDiskConnected() {
 	}
 
 	const auto info = com->getLogicalDiskInfoSync();
-	if (!info) {
+	if(!info) {
 		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
@@ -768,14 +777,14 @@ std::optional<uint64_t> Device::getLogicalDiskSize() {
 	}
 
 	const auto info = com->getLogicalDiskInfoSync();
-	if (!info) {
+	if(!info) {
 		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
 
 	const auto reportedSize = info->getReportedSize();
 
-	if (diskReadDriver->getAccess() == Disk::Access::VSA)
+	if(diskReadDriver->getAccess() == Disk::Access::VSA)
 		return reportedSize - diskReadDriver->getVSAOffset();
 
 	return reportedSize;
@@ -787,7 +796,7 @@ std::optional<uint64_t> Device::getVSAOffsetInLogicalDisk() {
 		return std::nullopt;
 	}
 
-	if (diskReadDriver->getAccess() == Disk::Access::VSA || diskReadDriver->getAccess() == Disk::Access::None)
+	if(diskReadDriver->getAccess() == Disk::Access::VSA || diskReadDriver->getAccess() == Disk::Access::None)
 		return 0ull;
 	
 	auto offset = Disk::FindVSAInFAT([this](uint64_t pos, uint8_t *into, uint64_t amount) {
@@ -1324,7 +1333,7 @@ void Device::scriptStatusThreadBody()
 
 		const auto resp = getScriptStatus();
 
-		if (!resp)
+		if(!resp)
 			continue;
 
 		//If value changed/was inserted, notify callback
@@ -1702,7 +1711,7 @@ std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message,
 
 std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAddress)
 {
-	if (!supportsWiVI())
+	if(!supportsWiVI())
 	{
 		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::EventWarning);
 		return std::nullopt;
@@ -1718,20 +1727,20 @@ std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAd
 	std::shared_ptr<Message> response = com->waitForMessageSync(
 		[this, args](){ return com->sendCommand(ExtendedCommand::SetUploadedFlag, args); },
 		std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), timeout);
-	if (!response)
+	if(!response)
 	{
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
 	auto retMsg = std::static_pointer_cast<ExtendedResponseMessage>(response);
-	if (!retMsg)
+	if(!retMsg)
 	{
 		// TODO fix this error
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
 		return std::make_optional<bool>(false);
 	}
 	bool success = retMsg->response == ExtendedResponse::OK;
-	if (!success)
+	if(!success)
 	{
 		// TODO fix this error
 		report(APIEvent::Type::Unknown, APIEvent::Severity::EventWarning);
@@ -2043,4 +2052,1075 @@ bool Device::clearAllLiveData() {
 	}
 
 	return true;
+}
+
+bool Device::readVSA(const VSAExtractionSettings& extractionSettings) {
+	if(isOnline()) {
+		goOffline();
+	}
+	auto innerReadVSA = [&](uint64_t diskSize) -> const bool {
+		// Adjust driver to offset to start of VSA file
+		const auto& offset = getVSAOffsetInLogicalDisk();
+		if(!offset) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return false;
+		}
+		diskReadDriver->setVSAOffset(*offset);
+
+		// Gather metadata about VSA file system
+		VSAMetadata metadata;
+
+		metadata.diskSize = diskSize;
+
+		if(!probeVSA(metadata, extractionSettings)) {
+			return false;
+		}
+
+		if(extractionSettings.filters.empty()) { // Full SD Dump
+			if(!parseVSA(metadata, extractionSettings)) {
+				return false;
+			}
+		} else { // Only read data specified by filters
+			for(const auto& filter : extractionSettings.filters) {
+				if(!parseVSA(metadata, extractionSettings, filter)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	};
+
+	auto bufferSize = getVSADiskSize();
+
+	if(!bufferSize) {
+		return false;
+	}
+
+	const auto& wasScriptStarted = getScriptStatus()->isCoreminiRunning;
+
+	if(extractionSettings.stopCoreMini && wasScriptStarted) {
+		stopScript();
+	}
+
+	const auto ret = innerReadVSA(*bufferSize);
+
+	// Restart CoreMini script if stopped
+	if(extractionSettings.stopCoreMini && wasScriptStarted) {
+		startScript();
+	}
+	return ret;
+}
+
+bool Device::probeVSA(VSAMetadata& metadata, const VSAExtractionSettings& extractionSettings) {
+	auto cmTimestamp = getCoreMiniScriptTimestamp();
+	if(!metadata.coreMiniTimestamp) {
+		return false;
+	}
+	metadata.coreMiniTimestamp = *cmTimestamp;
+
+	const auto& isOverlapped = isVSAOverlapped(metadata);
+	if(isOverlapped) {
+		metadata.isOverlapped = *isOverlapped;
+	} else {
+		return false;
+	}
+
+	if(!findFirstVSARecord(metadata.firstRecordLocation, metadata.firstRecord, extractionSettings, metadata)) {
+		return false;
+	}
+
+	if(!findLastVSARecord(metadata.lastRecordLocation, metadata.lastRecord, extractionSettings, metadata)) {
+		return false;
+	}
+
+	if(metadata.isOverlapped) {
+		// The last byte in the buffer should immediately precede the first if the buffer is overlapped
+		metadata.bufferEnd = metadata.firstRecordLocation;
+	} else {
+		metadata.bufferEnd = metadata.lastRecordLocation;
+		const auto& type = metadata.lastRecord->getType();
+		if(type == VSA::Type::AA0D || type == VSA::Type::AA0E || type == VSA::Type::AA0F) {
+			// Add bytes based off of how many records should be in extended record sequence
+			metadata.bufferEnd += std::dynamic_pointer_cast<VSAExtendedMessage>(metadata.lastRecord)->getRecordCount() * VSA::StandardRecordSize;
+		} else if(type == VSA::Type::AA6A) {
+			// Add a full sector for script status backup records
+			metadata.bufferEnd += Disk::SectorSize;
+		} else {
+			// All other records add only one single record offset.
+			metadata.bufferEnd += VSA::StandardRecordSize;
+		}
+	}
+	return true;
+}
+
+bool Device::findFirstVSARecord(uint64_t& firstOffset, std::shared_ptr<VSA>& firstRecord, 
+	const VSAExtractionSettings& extractionSettings, std::optional<VSAMetadata> optMetadata) {
+	// Grab important metadata features if metadata not defined
+	VSAMetadata metadata;
+	if(!optMetadata) {
+		const auto& coreMiniTimestamp = getCoreMiniScriptTimestamp();
+		if(!coreMiniTimestamp) {
+			return false;
+		}
+		metadata.coreMiniTimestamp = *coreMiniTimestamp;
+		const auto& diskSize = getVSADiskSize();
+		if(!diskSize) {
+			return false;
+		}
+		metadata.diskSize = *diskSize;
+		const auto& isOverlapped = isVSAOverlapped(metadata);
+		if(isOverlapped) {
+			metadata.isOverlapped = *isOverlapped;
+		} else {
+			return false;
+		}
+	} else {
+		metadata = *optMetadata;
+	}
+
+	if(!metadata.isOverlapped) { // Grab the first record in the buffer
+		std::vector<uint8_t> buffer;
+		buffer.resize(Disk::SectorSize);
+		const auto& bytesRead = readLogicalDisk(VSA::RecordStartOffset, buffer.data(), Disk::SectorSize);
+		if(!bytesRead || *bytesRead < Disk::SectorSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return false;
+		}
+		VSAParser parser(report);
+		std::shared_ptr<VSA> record;
+		const auto& firstRecordStatus = parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, record);
+		if(firstRecordStatus == VSAParser::RecordParseStatus::Success) {
+			firstOffset = VSA::RecordStartOffset;
+			firstRecord = record;
+			return true;
+		}
+		report(APIEvent::Type::VSAOtherError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	static constexpr size_t RegionCount = 2; // Number of regions to chunk remaining disk into during logarithmic search
+	static constexpr size_t LinearSearchMaxSize = 0x00010000u; // Size of remaining disk space at which to begin iterative search (64 KB)
+	
+	// Initialize variables for disk search
+	VSAParser parser(report);
+	uint64_t first = VSA::RecordStartOffset; // First byte of vsa records to search
+	uint64_t last = metadata.diskSize; // One beyond the last byte of vsa records to search
+	uint64_t lastSector = last - Disk::SectorSize;
+	std::vector<uint8_t> buffer;
+	buffer.resize(Disk::SectorSize);
+	uint64_t start = first; // First byte of data to search for this iteration of algorithm
+	uint64_t stop = last; // One beyond last byte of data to search for this iteration of algorithm
+
+	// Repeatedly chunk data into regions and find largest negative difference in timestamp
+	// (i.e., where the timestamp at the beginning of the region is much larger than at the end)
+	// until data is under the LinearSearchMaxSize
+	while(stop - start > LinearSearchMaxSize) {
+		uint64_t regionSize = (stop - start) / RegionCount;
+		regionSize -= regionSize % Disk::SectorSize; // Ensures regions are chunked on a sector boundary
+		uint64_t largestNegative = 0;
+		size_t largestNegativeIndex = 0;
+		uint64_t smallestStartTimestamp = UINT64_MAX;
+		size_t smallestStartTimestampIndex = 0; // Only necessary in cases where smallest timestamp falls on front edge of a region
+		for(size_t i = 0; i < RegionCount; i++) {
+			uint64_t regionStart = start + i * regionSize;
+			// Start of last sector to read in the current region
+			uint64_t regionLastSector = (i != RegionCount - 1)
+											? regionStart + regionSize - Disk::SectorSize
+											: (stop - Disk::SectorSize) - ((stop - Disk::SectorSize) % Disk::SectorSize);
+			const auto& timestampStart = getVSATimestampOrBefore(parser, buffer, regionStart, first, metadata);
+			const auto& timestampStop = getVSATimestampOrAfter(parser, buffer, regionLastSector, lastSector, metadata);
+			// Ensure valid timestamps were found
+			if(!timestampStart || !timestampStop) {
+				return false;
+			}
+			// Check if region has largest negative
+			if(*timestampStart > *timestampStop && *timestampStart - *timestampStop > largestNegative) {
+				if(*timestampStop > metadata.coreMiniTimestamp || extractionSettings.parseOldRecords) {
+					largestNegative = *timestampStart - *timestampStop;
+					largestNegativeIndex = i;
+				}
+			}
+			// Track smallest start timestamp for edge case
+			if(*timestampStart < smallestStartTimestamp) {
+				if(*timestampStart >= metadata.coreMiniTimestamp || extractionSettings.parseOldRecords) {
+					smallestStartTimestamp = *timestampStart;
+					smallestStartTimestampIndex = i;
+				}
+			}
+		}
+
+		if(largestNegative == 0) {
+			// We did not find a switch between large and small timestamps within a region.
+			// Therefore the smallest timestamp is the first record within one of the regions.
+			uint64_t location = start + smallestStartTimestampIndex * regionSize;
+			const auto& bytesRead = readLogicalDisk(location, buffer.data(), Disk::SectorSize);
+			if(!bytesRead || *bytesRead < Disk::SectorSize) {
+				report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+				return false;
+			}
+			std::shared_ptr<VSA> record;
+			parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, record);
+			if(record) {
+				firstRecord = record;
+				firstOffset = location;
+				return true;
+			}
+			report(APIEvent::Type::VSAByteParseFailure, APIEvent::Severity::Error);
+			return false;
+		}
+
+		// Set start and stop to be start and stop of largest negative region
+		start += largestNegativeIndex * regionSize;
+		stop = (largestNegativeIndex != RegionCount - 1) ? start + regionSize : stop;
+	}
+
+	// Initialize variables for iterative search
+	auto smallestTimestampLocation = UINT64_MAX;
+	auto smallestTimestamp = UINT64_MAX;
+	size_t regionSize = static_cast<size_t>(stop - start - ((stop - start) % Disk::SectorSize));
+	buffer.resize(regionSize);
+	const auto& bytesRead = readLogicalDisk(start, buffer.data(), regionSize);
+	if(!bytesRead || *bytesRead < regionSize) {
+		report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+		return false;
+	}
+	std::shared_ptr<VSA> minRecord;
+
+	// Iteratively find sector with smallest timestamp from largest negative region
+	for(size_t offset = 0; offset + VSA::StandardRecordSize < regionSize; offset += VSA::StandardRecordSize) {
+		std::shared_ptr<VSA> record;
+		auto recordParseStatus = parser.getRecordFromBytes(buffer.data() + offset, Disk::SectorSize, record);
+
+		if(recordParseStatus == VSAParser::RecordParseStatus::ConsecutiveExtended) {
+			// Backtrack to get timestamp if first record is consecutive extended record
+			auto extendedRecord = std::dynamic_pointer_cast<VSAExtendedMessage>(record);
+			auto pos = start + offset;
+			if(!findFirstExtendedVSAFromConsecutive(extendedRecord, pos, parser, metadata)) {
+				// Possibly erased by looped buffer
+				continue;
+			}
+			uint64_t timestamp = extendedRecord->getTimestamp();
+			if(timestamp < smallestTimestamp) {
+				smallestTimestampLocation = pos;
+				smallestTimestamp = timestamp;
+				minRecord = extendedRecord;
+			}
+		} else if(record) {
+			// Update data tracking record with minimum timestamp
+			uint64_t timestamp = record->getTimestamp();
+			if(timestamp < smallestTimestamp) {
+				smallestTimestampLocation = offset + start;
+				smallestTimestamp = timestamp;
+				minRecord = record;
+			}
+		}
+	}
+	if(smallestTimestamp == UINT64_MAX || !minRecord) {
+		report(APIEvent::Type::VSATimestampNotFound, APIEvent::Severity::Error);
+		return false;
+	}
+	firstOffset = smallestTimestampLocation;
+	firstRecord = minRecord;
+	return true;
+}
+
+bool Device::findLastVSARecord(uint64_t& lastOffset, std::shared_ptr<VSA>& lastRecord, 
+	const VSAExtractionSettings& extractionSettings, std::optional<VSAMetadata> optMetadata) {
+	static constexpr auto LinearSearchSize = 0x8000u;
+
+	// Grab important metadata features if metadata not defined
+	VSAMetadata metadata;
+	if(optMetadata) {
+		metadata = *optMetadata;
+	} else {
+		const auto& coreMiniTimestamp = getCoreMiniScriptTimestamp();
+		if(!coreMiniTimestamp) {
+			return false;
+		}
+		metadata.coreMiniTimestamp = *coreMiniTimestamp;
+		const auto& diskSize = getVSADiskSize();
+		if(!diskSize) {
+			return false;
+		}
+		metadata.diskSize = *diskSize;
+		const auto& isOverlapped = isVSAOverlapped(metadata);
+		if(!isOverlapped) {
+			return false;
+		}
+		metadata.isOverlapped = *isOverlapped;
+	}
+
+	// Find record prior to first (chronological) record if VSA buffer is overlapped
+	VSAParser parser(report);
+	if(metadata.isOverlapped) {
+		uint64_t firstOffset;
+		std::shared_ptr<VSA> firstRecord;
+		if(metadata.firstRecordLocation != UINT64_MAX && metadata.firstRecord) {
+			firstOffset = metadata.firstRecordLocation;
+		} else if(!findFirstVSARecord(firstOffset, firstRecord, extractionSettings, metadata)) {
+			return false;
+		}
+		std::vector<uint8_t> buffer;
+		buffer.resize(Disk::SectorSize);
+		// Read sector before first if buffer is looped
+		const auto& bytesRead = vsaReadLogicalDisk(firstOffset - Disk::SectorSize, buffer.data(), Disk::SectorSize, metadata);
+		if(!bytesRead || *bytesRead < Disk::SectorSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return false;
+		}
+		uint16_t bufferOffset = Disk::SectorSize;
+		do {
+			bufferOffset -= VSA::StandardRecordSize;
+			const auto& lastRecordStatus = parser.getRecordFromBytes(buffer.data() + bufferOffset, VSA::StandardRecordSize, lastRecord);
+			if(lastRecordStatus == VSAParser::RecordParseStatus::Success) {
+				lastOffset = firstOffset - Disk::SectorSize + bufferOffset;
+				return true;
+			} else if(lastRecordStatus != VSAParser::RecordParseStatus::NotARecordStart) {
+				// Reverse search for record with valid timestamp
+				// Necessary if previous record is a pad record or consecutive extended record
+				auto pos = firstOffset - bufferOffset;
+				if(findPreviousRecordWithTimestamp(lastRecord, pos, parser)) {
+					lastOffset = pos;
+					return true;
+				}
+				return true;
+			}
+		} while(bufferOffset > 0);
+		lastRecord = nullptr;
+		report(APIEvent::Type::VSAOtherError, APIEvent::Severity::Error);
+		return false;
+	}
+
+	// Binary search for last record until region is less than LinearSearchSize
+	std::vector<uint8_t> buffer;
+	buffer.resize(Disk::SectorSize);
+	uint64_t left = VSA::RecordStartOffset;
+	uint64_t right = metadata.diskSize;
+	while(right - left > LinearSearchSize) {
+		uint64_t pos = (left + right) / 2;
+		pos -= pos % Disk::SectorSize;
+		const auto& bytesRead = readLogicalDisk(pos, buffer.data(), Disk::SectorSize);
+		if(!bytesRead || *bytesRead < Disk::SectorSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return false;
+		}
+		std::shared_ptr<VSA> testRecord;
+		const auto& testStatus = parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, testRecord);
+		if(testStatus == VSAParser::RecordParseStatus::NotARecordStart) {
+			right = pos;
+		} else if(testStatus == VSAParser::RecordParseStatus::ConsecutiveExtended) {
+			auto extendedRecord = std::dynamic_pointer_cast<VSAExtendedMessage>(testRecord);
+			auto tempPos = pos;
+			if(!findFirstExtendedVSAFromConsecutive(extendedRecord, tempPos, parser, metadata)) {
+				tempPos = pos;
+				if(!findPreviousRecordWithTimestamp(testRecord, tempPos, parser)) {
+					return false;
+				}
+				if(testRecord->getTimestamp() > metadata.coreMiniTimestamp || extractionSettings.parseOldRecords) {
+					left = tempPos;
+				} else {
+					right = tempPos;
+				}
+			}
+			if(extendedRecord->getTimestamp() > metadata.coreMiniTimestamp || extractionSettings.parseOldRecords) {
+				left = tempPos;
+			} else {
+				right = tempPos;
+			}
+		} else {
+			if(testRecord->getTimestamp() > metadata.coreMiniTimestamp || extractionSettings.parseOldRecords) {
+				left = pos;
+			} else {
+				right = pos;
+			}
+		}
+	}
+
+	buffer.resize(static_cast<size_t>(LinearSearchSize));
+	const auto& bytesRead = readLogicalDisk(left, buffer.data(), LinearSearchSize);
+	if(!bytesRead || *bytesRead < LinearSearchSize) {
+		report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+		return false;
+	}
+	std::shared_ptr<VSA> previousRecord;
+	auto previousParseStatus = parser.getRecordFromBytes(buffer.data(), LinearSearchSize, previousRecord);
+	uint64_t previousParseLocation = left;
+	uint64_t bufferOffset = VSA::StandardRecordSize;
+
+	// Ensure we have a record with a valid timestamp as the previousParseResult
+	while(previousParseStatus != VSAParser::RecordParseStatus::Success) {
+		if(bufferOffset >= LinearSearchSize) { // Never found a record with a valid timestamp (unlikely)
+			report(APIEvent::Type::VSAOtherError, APIEvent::Severity::Error);
+			return false;
+		}
+		previousParseStatus = parser.getRecordFromBytes(buffer.data() + bufferOffset, static_cast<size_t>(LinearSearchSize - bufferOffset), previousRecord);
+		previousParseLocation = left + bufferOffset;
+		bufferOffset += VSA::StandardRecordSize;
+	}
+
+	// Perform linear search for last record
+	while(bufferOffset < LinearSearchSize) {
+		std::shared_ptr<VSA> record;
+		auto parseStatus = parser.getRecordFromBytes(buffer.data() + bufferOffset, static_cast<size_t>(LinearSearchSize - bufferOffset), record);
+		if(parseStatus == VSAParser::RecordParseStatus::NotARecordStart) {
+			// We found the end of the VSA buffer
+			// Return the last valid record we found
+			lastOffset = previousParseLocation;
+			lastRecord = previousRecord;
+			return true;
+		} else if(
+			parseStatus == VSAParser::RecordParseStatus::Success &&
+			record->getTimestamp() < metadata.coreMiniTimestamp &&
+			!extractionSettings.parseOldRecords
+		) { // We have entered outdated record data
+			lastOffset = previousParseLocation;
+			lastRecord = previousRecord;
+			return true;
+		} else if(parseStatus == VSAParser::RecordParseStatus::Success) {
+			// Save new last-record data and update bufferOffset according to record size
+			previousParseStatus = parseStatus;
+			previousRecord = record;
+			previousParseLocation = left + bufferOffset;
+			bufferOffset += (record->getType() == VSA::Type::AA6A) ? Disk::SectorSize : VSA::StandardRecordSize;
+		} else {
+			bufferOffset += VSA::StandardRecordSize;
+		}
+	}
+	report(APIEvent::Type::VSAOtherError, APIEvent::Severity::Error);
+	return false; // Somehow we did not find any non-record data despite non-overlapped buffer
+}
+
+std::optional<bool> Device::isVSAOverlapped(std::optional<VSAMetadata> optMetadata) {
+	// Grab important metadata features if metadata not defined
+	VSAMetadata metadata;
+	if(!optMetadata) {
+		const auto& diskSize = getVSADiskSize();
+		if(!diskSize) {
+			return std::nullopt;
+		}
+		metadata.diskSize = *diskSize;
+		const auto& coreMiniTimestamp = getCoreMiniScriptTimestamp();
+		if(!coreMiniTimestamp) {
+			return std::nullopt;
+		}
+		metadata.coreMiniTimestamp = *coreMiniTimestamp;
+	} else {
+		metadata = *optMetadata;
+	}
+
+	// Read first sector
+	VSAParser parser(report);
+	std::vector<uint8_t> buffer;
+	buffer.resize(Disk::SectorSize);
+	const auto& bytesReadFirst = readLogicalDisk(VSA::RecordStartOffset, buffer.data(), Disk::SectorSize);
+	if(!bytesReadFirst || *bytesReadFirst < Disk::SectorSize) {
+		report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	std::shared_ptr<VSA> firstRecord;
+	auto firstRecordStatus = parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, firstRecord);
+	if(firstRecordStatus == VSAParser::RecordParseStatus::NotARecordStart) {
+		report(APIEvent::Type::VSABufferCorrupted, APIEvent::Severity::Error);
+		return std::nullopt; // Beginning of buffer is not a record
+	} else if(firstRecordStatus == VSAParser::RecordParseStatus::ConsecutiveExtended) {
+		return true; // The only way to have a consecutive extended record at the beginning is if the buffer looped
+	}
+
+	// Read last sector
+	uint64_t lastPos = metadata.diskSize - Disk::SectorSize;
+	lastPos -= lastPos % Disk::SectorSize;
+	const auto& bytesReadLast = readLogicalDisk(lastPos, buffer.data(), Disk::SectorSize);
+	if(!bytesReadLast || *bytesReadLast < Disk::SectorSize) {
+		report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	std::shared_ptr<VSA> lastSectorRecord;
+	auto lastSectorStatus = parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, lastSectorRecord);
+	if(lastSectorStatus == VSAParser::RecordParseStatus::ConsecutiveExtended) {
+		// Find the beginning record of the extended record sequence
+		auto extendedRecord = std::dynamic_pointer_cast<VSAExtendedMessage>(lastSectorRecord);
+		if(!findFirstExtendedVSAFromConsecutive(extendedRecord, lastPos, parser, metadata)) {
+			return std::nullopt;
+		}
+		return firstRecord->getTimestamp() >= extendedRecord->getTimestamp() &&
+			   extendedRecord->getTimestamp() > metadata.coreMiniTimestamp;
+	} else if(firstRecord && lastSectorRecord && firstRecord->isTimestampValid() && lastSectorRecord->isTimestampValid()) {
+		// Handle situation where both first and last records have valid timestamps
+		return firstRecord->getTimestamp() >= lastSectorRecord->getTimestamp() &&
+			   lastSectorRecord->getTimestamp() > metadata.coreMiniTimestamp;
+	} else if(lastSectorStatus == VSAParser::RecordParseStatus::NotARecordStart) {
+		// The vsa record buffer is not full
+		report(APIEvent::Type::VSAOtherError, APIEvent::Severity::Error);
+		return false;
+	}
+	report(APIEvent::Type::VSABufferFormatError, APIEvent::Severity::Error);
+	return std::nullopt;
+}
+
+bool Device::findFirstExtendedVSAFromConsecutive(std::shared_ptr<VSAExtendedMessage>& record, uint64_t& pos, VSAParser& parser, std::optional<VSAMetadata> optMetadata) {
+	static constexpr auto MaxReadAttempts = 10;
+
+	VSAMetadata metadata;
+	if(!optMetadata) {
+		const auto& diskSize = getVSADiskSize();
+		if(!diskSize) {
+			return false;
+		}
+		metadata.diskSize = *diskSize;
+	} else {
+		metadata = *optMetadata;
+	}
+
+	// Reverse iteratively search from given pos for first record in sequence
+	const auto& index = record->getIndex();
+	const auto& seqNum = record->getSequenceNum();
+	pos -= (index - 1) * VSA::StandardRecordSize;
+	std::vector<uint8_t> buffer;
+	buffer.resize(Disk::SectorSize);
+	uint16_t readCount = 0;
+	while(readCount < MaxReadAttempts) {
+		const auto& bytesRead = vsaReadLogicalDisk(pos, buffer.data(), Disk::SectorSize, metadata);
+		if(!bytesRead || *bytesRead < Disk::SectorSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return false;
+		}
+		std::shared_ptr<VSA> possibleFirstRecord;
+		const auto& possibleFirstStatus = parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, possibleFirstRecord);
+		std::shared_ptr<VSAExtendedMessage> extendedVSA;
+		if(possibleFirstStatus == VSAParser::RecordParseStatus::NotARecordStart) {
+			// Most likely either null bytes or the middle of an AA6A record
+			pos -= VSA::StandardRecordSize;
+			readCount++;
+			continue;
+		}
+		extendedVSA = std::dynamic_pointer_cast<VSAExtendedMessage>(possibleFirstRecord);
+		if(!extendedVSA) {
+			// Record is not an extended message record
+			pos -= VSA::StandardRecordSize;
+			readCount++;
+			continue;
+		}
+		if(possibleFirstStatus == VSAParser::RecordParseStatus::Success && extendedVSA->getSequenceNum() == seqNum) {
+			// Found the desired record
+			record = extendedVSA;
+			return true;
+		} else if(possibleFirstStatus == VSAParser::RecordParseStatus::ConsecutiveExtended) {
+			if(seqNum != extendedVSA->getSequenceNum()) { // Another extended record sequence is intermixed with the one we want
+				pos -= VSA::StandardRecordSize;
+			} else { // Traverse backwards the minimum amount the first record must be behind extendedVSA
+				pos -= extendedVSA->getIndex() * VSA::StandardRecordSize;
+			}
+		}
+		readCount++;
+	}
+	report(APIEvent::Type::VSAMaxReadAttemptsReached, APIEvent::Severity::Error);
+	return false;
+}
+
+bool Device::findPreviousRecordWithTimestamp(std::shared_ptr<VSA>& record, uint64_t& pos, VSAParser& parser) {
+	static constexpr uint16_t MaxReadAttempts = 100;
+	static constexpr uint64_t ReadSize = 0x1000;
+
+	std::vector<uint8_t> buffer;
+	buffer.resize(ReadSize);
+	uint16_t readCount = 0;
+	while(readCount < MaxReadAttempts) {
+		pos -= ReadSize;
+		const auto& bytesRead = vsaReadLogicalDisk(pos, buffer.data(), ReadSize);
+		if(!bytesRead || *bytesRead < ReadSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return false;
+		}
+		// Reverse search through buffer for a record with a valid timestamp
+		for (size_t offsetBufferEnd = VSA::StandardRecordSize; offsetBufferEnd < ReadSize; offsetBufferEnd += VSA::StandardRecordSize) {
+			const auto& parseStatus = parser.getRecordFromBytes(buffer.data() + ReadSize - offsetBufferEnd, offsetBufferEnd, record);
+			if(parseStatus == VSAParser::RecordParseStatus::Success) {
+				pos -= offsetBufferEnd;
+				return true;
+			}
+		}
+		readCount++;
+	}
+	report(APIEvent::Type::VSAMaxReadAttemptsReached, APIEvent::Severity::Error);
+	return false; // Exit if record not found within readCount number of reads
+}
+
+bool Device::findVSAOffsetFromTimepoint(ICSClock::time_point point, uint64_t& vsaOffset, std::shared_ptr<VSA>& record, 
+	const VSAExtractionSettings& extractionSettings, std::optional<VSAMetadata> optMetadata) {
+	static constexpr uint64_t LinearSearchTickDifference = 100000ull; // The maximum number of ticks offset from point at which to do a linear search
+
+	// Grab important metadata features if metadata not defined
+	VSAMetadata metadata;
+	if(!optMetadata) {
+		if(!probeVSA(metadata, extractionSettings)) {
+			return false;
+		}
+	} else {
+		metadata = *optMetadata;
+	}
+	if(metadata.diskSize == 0) { // Disk size is unknown
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return false;
+	}
+
+	uint64_t firstOffset = metadata.firstRecordLocation; // Offset of the first record chronologically
+	const auto& desiredTimestamp = VSA::getICSTimestampFromTimepoint(point);
+	VSAParser parser(report);
+	std::vector<uint8_t> buffer;
+	buffer.resize(Disk::SectorSize);
+
+	if(desiredTimestamp <= metadata.firstRecord->getTimestamp()) {
+		// Timestamp is less than first timestamp so we just return the first
+		vsaOffset = metadata.firstRecordLocation;
+		record = metadata.firstRecord;
+		return true;
+	}
+
+	if(desiredTimestamp > metadata.lastRecord->getTimestamp()) {
+		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+		return false;
+	}
+
+	// Handle situation where first offset is not on sector boundary
+	// Find smallest tick difference between record in sector and desired timestamp
+	uint64_t bestTickDiff = UINT64_MAX;
+	std::shared_ptr<VSA> bestRecord = nullptr;
+	uint64_t bestOffset = UINT64_MAX;
+
+	auto findBestTickDiff = [&] (uint64_t readPos, uint64_t readSize) {
+		for(uint64_t i = 0; i < Disk::SectorSize; i += VSA::StandardRecordSize) {
+			std::shared_ptr<VSA> testRecord;
+			const auto& testRecordStatus = parser.getRecordFromBytes(buffer.data() + i, static_cast<size_t>(readSize - i), testRecord);
+			if(testRecordStatus == VSAParser::RecordParseStatus::Success) {
+				const auto& testTimestamp = testRecord->getTimestamp();
+				uint64_t tickDiff = (testTimestamp > desiredTimestamp) 
+					? testTimestamp - desiredTimestamp 
+					: desiredTimestamp - testTimestamp;
+				if(tickDiff < bestTickDiff) {
+					bestTickDiff = tickDiff;
+					bestOffset = readPos + i;
+					bestRecord = testRecord;
+				}
+			}
+		}
+	};
+
+	if(firstOffset % Disk::SectorSize != 0) {
+		// First record is not located at the beginning of a sector
+		// Find the best tick diff for the sector that the first record is in
+		// and ignore it during the binary search to allow for binary searching sectors, not bytes.
+		// Compare the bestTickDiff from the firstSector to results during the linear search to 
+		// find the true best tick diff.
+		uint64_t readPos = firstOffset - (firstOffset % Disk::SectorSize);
+		const auto& bytesRead = vsaReadLogicalDisk(readPos, buffer.data(), Disk::SectorSize, metadata);
+		if(!bytesRead || *bytesRead < Disk::SectorSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return false;
+		}
+
+		findBestTickDiff(readPos, Disk::SectorSize);
+		
+		// Change the first offset to eliminate the first sector from the binary search
+		firstOffset = firstOffset + Disk::SectorSize - (firstOffset % Disk::SectorSize);
+	}
+
+	uint64_t leftIndex = 0; // Index of the leftmost sector (not the byte)
+	uint64_t rightIndex = ((metadata.isOverlapped) ? metadata.diskSize : metadata.bufferEnd) - VSA::RecordStartOffset;
+	rightIndex = (rightIndex / Disk::SectorSize);
+	uint64_t midIndex; // Index of the middle sector (not the byte)
+	// Indices indicate sector offset from first sector location in metadata
+	while(leftIndex < rightIndex) { // Perform binary search for records with timestamp closest to the desired timestamp
+		midIndex = (rightIndex + leftIndex) / 2;
+		uint64_t readPos = firstOffset + midIndex * Disk::SectorSize;
+		const auto& bytesRead = vsaReadLogicalDisk(readPos, buffer.data(), Disk::SectorSize, metadata);
+		if(!bytesRead || *bytesRead < Disk::SectorSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return false;
+		}
+		std::shared_ptr<VSA> midRecord;
+		auto midRecordStatus = parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, midRecord);
+		switch(midRecordStatus) {
+			case VSAParser::RecordParseStatus::NotARecordStart:
+				// This part of the buffer does not contain records
+				rightIndex = midIndex - 1;
+				continue;
+			case VSAParser::RecordParseStatus::ConsecutiveExtended:
+				// We dropped in the middle of an extended message record
+				auto extendedRecord = std::dynamic_pointer_cast<VSAExtendedMessage>(midRecord); 
+				uint64_t pos = readPos;
+				if(!findFirstExtendedVSAFromConsecutive(extendedRecord, pos, parser, metadata)) {
+					pos = firstOffset + midIndex * Disk::SectorSize;
+					if(!findPreviousRecordWithTimestamp(midRecord, pos, parser)) {
+						return false;
+					}
+					midIndex = (pos - firstOffset) / Disk::SectorSize;
+					break;
+				}
+				midIndex = (pos - firstOffset) / Disk::SectorSize;
+				midRecord = extendedRecord;
+				break;
+		}
+		if(midIndex <= leftIndex) {
+			// Extended records cause problems with binary search
+			// Just move on to linear search
+			leftIndex = midIndex;
+			break;
+		} 
+		if(midIndex > rightIndex) {
+			// Extended records cause problems with binary search
+			// Just move on to linear search
+			rightIndex = midIndex;
+			break;
+		}
+		if(!midRecord || !midRecord->isTimestampValid()) { // Unhandled failure to get timestamp
+			report(APIEvent::Type::VSATimestampNotFound, APIEvent::Severity::Error);
+			return false;
+		}
+		if(midRecord->getTimestamp() == desiredTimestamp) {
+			vsaOffset = firstOffset + midIndex * Disk::SectorSize;
+			record = midRecord;
+			return true;
+		}
+		if(midRecord->getTimestamp() < desiredTimestamp && midRecord->getTimestamp() > desiredTimestamp - LinearSearchTickDifference) {
+			// The timestamp of this sector is within desired linear search range
+			const uint64_t LinearReadByteAmount = 0x1000ull; // Number of bytes to read for linear search
+			uint64_t pos = firstOffset + midIndex * Disk::SectorSize;
+			const auto& recordBufferSize = metadata.diskSize - VSA::RecordStartOffset;
+			pos -= ((pos - VSA::RecordStartOffset) / recordBufferSize) * recordBufferSize; // Move pos to within physical space of record buffer
+			uint64_t lastTickDiff = UINT64_MAX;
+			buffer.resize(LinearReadByteAmount);
+
+			// Begin linear search for record with closest timestamp to desired
+			while(lastTickDiff < LinearSearchTickDifference || lastTickDiff == UINT64_MAX) {
+				const auto& bytesReadLinear = vsaReadLogicalDisk(pos, buffer.data(), LinearReadByteAmount, metadata);
+				if(!bytesReadLinear || *bytesReadLinear < LinearReadByteAmount) {
+					report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+					return false;
+				}
+				for(uint64_t i = 0; i < LinearReadByteAmount; i += VSA::StandardRecordSize) {
+					std::shared_ptr<VSA> testRecord;
+					const auto& testRecordStatus = parser.getRecordFromBytes(buffer.data() + i, static_cast<size_t>(LinearReadByteAmount - i), testRecord);
+					if(testRecordStatus == VSAParser::RecordParseStatus::Success) {
+						const auto& testTimestamp = testRecord->getTimestamp();
+						uint64_t tickDiff = (testTimestamp > desiredTimestamp)
+												? testTimestamp - desiredTimestamp
+												: desiredTimestamp - testTimestamp;
+						if(tickDiff < bestTickDiff) {
+							bestTickDiff = tickDiff;
+							bestRecord = testRecord;
+							bestOffset = pos + i;
+						}
+						lastTickDiff = tickDiff;
+						if(testRecord->getType() == VSA::Type::AA6A) {
+							// Increment to skip the whole record if it is a full sector length record
+							i += Disk::SectorSize - VSA::StandardRecordSize;
+						} 
+					} else if(testRecordStatus == VSAParser::RecordParseStatus::NotARecordStart) {
+						// We have reached an area with no records
+						break;
+					} else {
+						lastTickDiff = UINT64_MAX;
+					}
+				}
+				pos += LinearReadByteAmount;
+				if(!metadata.isOverlapped && pos > metadata.bufferEnd) {
+					// Ran out of valid records to search
+					break;
+				}
+				if(metadata.isOverlapped && pos >= metadata.firstRecordLocation && 
+					pos - LinearReadByteAmount < metadata.firstRecordLocation) {
+					// Ran out of valid records to search
+					break;
+				}
+			}
+			// Return the location with the closest timestamp to the desired point
+			vsaOffset = bestOffset;
+			record = bestRecord;
+			return true;
+		} else if(midRecord->getTimestamp() < desiredTimestamp) {
+			// Keep right partition
+			leftIndex = midIndex;
+		} else {
+			// Keep left partition
+			rightIndex = midIndex;
+		}
+	}
+	
+	// Nothing found within desired linear search tick range
+	// Check for closest record to desired timestamp
+	if(leftIndex <= rightIndex) {
+		buffer.clear();
+		uint64_t pos = firstOffset + leftIndex * Disk::SectorSize;
+		uint64_t bufferSize = (rightIndex - leftIndex + 1) * Disk::SectorSize;
+		buffer.resize(static_cast<size_t>(bufferSize));
+		const auto& bytesRead = vsaReadLogicalDisk(pos, buffer.data(), Disk::SectorSize, metadata);
+		if(!bytesRead || *bytesRead < Disk::SectorSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return false;
+		}
+		findBestTickDiff(pos, bufferSize);
+		vsaOffset = bestOffset;
+		record = bestRecord;
+		return true;
+	}
+	report(APIEvent::Type::VSAOtherError, APIEvent::Severity::Error);
+	return false;
+}
+
+std::optional<uint64_t> Device::getVSATimestampOrBefore(VSAParser& parser, std::vector<uint8_t>& buffer, uint64_t pos, uint64_t minPos,
+	std::optional<VSAMetadata> optMetadata) {
+	VSAMetadata metadata;
+	if(!optMetadata) {
+		const auto& diskSize = getVSADiskSize();
+		if(!diskSize) {
+			return std::nullopt;
+		}
+		metadata.diskSize = *diskSize;
+	} else {
+		metadata = *optMetadata;
+	}
+	
+	while(pos >= minPos) {
+		const auto& bytesRead = readLogicalDisk(pos, buffer.data(), Disk::SectorSize);
+		if(!bytesRead || *bytesRead < Disk::SectorSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		std::shared_ptr<VSA> record;
+		auto parseStatus = parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, record);
+		// Handle situations where we were dropped in the middle of an extended record
+		if(parseStatus == VSAParser::RecordParseStatus::ConsecutiveExtended) {
+			auto extendedRecord = std::dynamic_pointer_cast<VSAExtendedMessage>(record);
+			auto tempPos = pos; // If the first-extended search fails, we still have the original value of the search start location
+			if(!findFirstExtendedVSAFromConsecutive(extendedRecord, tempPos, parser, metadata)) {
+				// Unoptimized/Unloopable search
+				if(!findPreviousRecordWithTimestamp(record, pos, parser)) {
+					return std::nullopt;
+				}
+				return record->getTimestamp();
+			}
+			return extendedRecord->getTimestamp();
+		}
+		// Handle other situations without valid timestamp
+		if(parseStatus != VSAParser::RecordParseStatus::Success) {
+			pos -= VSA::StandardRecordSize;
+		} else {
+			return record->getTimestamp();
+		}
+	}
+	report(APIEvent::Type::VSATimestampNotFound, APIEvent::Severity::Error);
+	return std::nullopt;
+}
+
+std::optional<uint64_t> Device::getVSATimestampOrAfter(VSAParser& parser, std::vector<uint8_t>& buffer, uint64_t pos, uint64_t maxPos,
+	std::optional<VSAMetadata> optMetadata) {
+	VSAMetadata metadata;
+	if(!optMetadata) {
+		const auto& diskSize = getVSADiskSize();
+		if(!diskSize) {
+			return std::nullopt;
+		}
+		metadata.diskSize = *diskSize;
+	} else {
+		metadata = *optMetadata;
+	}
+	
+	while(pos <= maxPos) {
+		const auto& bytesRead = readLogicalDisk(pos, buffer.data(), Disk::SectorSize);
+		if(!bytesRead || *bytesRead < Disk::SectorSize) {
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		std::shared_ptr<VSA> record;
+		auto parseStatus = parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, record);
+		if(parseStatus == VSAParser::RecordParseStatus::ConsecutiveExtended) {
+			auto extendedRecord = std::dynamic_pointer_cast<VSAExtendedMessage>(record);
+			auto tempPos = pos; // If the first-extended search fails, we still have the original value of the search start location
+			if(!findFirstExtendedVSAFromConsecutive(extendedRecord, tempPos, parser, metadata)) {
+				pos += VSA::StandardRecordSize;
+				continue;
+			}
+			return extendedRecord->getTimestamp();
+		}
+		// Other situations with invalid timestamp
+		if(parseStatus != VSAParser::RecordParseStatus::Success) {
+			pos += VSA::StandardRecordSize;
+		} else {
+			return record->getTimestamp();
+		}
+	}
+	report(APIEvent::Type::VSATimestampNotFound, APIEvent::Severity::Error);
+	return std::nullopt;
+}
+
+bool Device::parseVSA(
+	VSAMetadata& metadata, const VSAExtractionSettings& extractionSettings, const VSAMessageReadFilter& filter
+) {
+	static constexpr uint64_t MaxReadAmountPerIteration = 0x10000; // Read 512 KB per iteration
+	static constexpr uint64_t MaxReadFailuresAllowed = 10;
+
+	if(filter.readRange.first > filter.readRange.second) {
+		// First timestamp occurs after second timestamp in filter
+		// Do not fail to allow for other filters to do work
+		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::EventWarning);
+		return true; 
+	}
+
+	// Location of first time_point from the filter
+	uint64_t readOffset;
+	std::shared_ptr<VSA> recordAtOffset;
+	if(!findVSAOffsetFromTimepoint(filter.readRange.first, readOffset, recordAtOffset, extractionSettings, metadata)) {
+		report(APIEvent::Type::VSATimestampNotFound, APIEvent::Severity::Error);
+		return false;
+	}
+	if(readOffset >= metadata.diskSize) {
+		readOffset -= metadata.diskSize - VSA::RecordStartOffset;
+	}
+
+	std::vector<uint8_t> buffer;
+	bool success = true;
+	bool moreToRead = true;
+	uint64_t numBytesRead = 0; // The number of bytes that have been read from the vsa buffer for this parse call
+	VSAParser::Settings parserSettings = VSAParser::Settings::messageRecords();
+	VSAParser parser(report, parserSettings);
+	parser.setMessageFilter(filter);
+	while(moreToRead) {
+		uint64_t amount;
+		if(!metadata.isOverlapped) {
+			moreToRead = readOffset + MaxReadAmountPerIteration < metadata.bufferEnd;
+			amount = std::min(MaxReadAmountPerIteration, metadata.bufferEnd - readOffset);
+		} else {
+			uint64_t readEnd = readOffset + MaxReadAmountPerIteration;
+			if(readEnd > metadata.diskSize) {
+				// Make sure read end is within the buffer for a possible looped read
+				readEnd -= metadata.diskSize - VSA::RecordStartOffset;
+			}
+			moreToRead = !(readOffset < metadata.bufferEnd && readEnd >= metadata.bufferEnd);
+			amount = moreToRead ? MaxReadAmountPerIteration : metadata.bufferEnd - readOffset;
+		}
+		if(amount < VSA::StandardRecordSize) {
+			break;
+		}
+
+		buffer.resize(static_cast<size_t>(amount));
+		uint64_t readAttempt = 1;
+		while(true) {
+			const auto& bytesRead = vsaReadLogicalDisk(readOffset, buffer.data(), amount, metadata);
+			if(bytesRead && *bytesRead == amount) {
+				break;
+			}
+			if(readAttempt >= MaxReadFailuresAllowed) {
+				report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+				return false;
+			}
+			report(APIEvent::Type::FailedToRead, APIEvent::Severity::EventWarning);
+			++readAttempt;
+		}
+
+		numBytesRead += amount;
+		success = parser.parseBytes(buffer.data(), amount);
+		if(!success) {
+			report(APIEvent::Type::VSAByteParseFailure, APIEvent::Severity::Error);
+			return false;
+		}
+		if(parser.empty()) { // No message records or all extended message records were not terminated in block
+			readOffset += amount;
+			continue;
+		}
+		const auto& lastRecord = parser.back();
+		if(lastRecord->getTimestampICSClock() >= filter.readRange.second) {
+			// Reached the desired end timestamp
+			moreToRead = false;
+		}
+		if(!dispatchVSAMessages(parser)) { // Piecemeal dispatch messages so we don't have exceptionally large vectors
+			return false;
+		}
+		readOffset += amount;
+	}
+	return success;
+}
+
+std::optional<uint64_t> Device::vsaReadLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount, std::optional<VSAMetadata> metadata) {
+	uint64_t diskSize;
+	if(metadata) {
+		diskSize = metadata->diskSize;
+	} else {
+		const auto& testDiskSize = getVSADiskSize();
+		if(!testDiskSize) {
+			return std::nullopt;
+		}
+		diskSize = *testDiskSize;
+	}
+	// Set the position to be within the ring buffer
+	if(pos < VSA::RecordStartOffset) {
+		pos = diskSize - (VSA::RecordStartOffset - pos);
+	} else if(pos >= diskSize) {
+		const auto& bufferSize = diskSize - VSA::RecordStartOffset;
+		const auto& timesLooped = (pos - VSA::RecordStartOffset) / bufferSize;
+		pos -= bufferSize * timesLooped;
+	}
+
+	if(amount > diskSize - VSA::RecordStartOffset) { // Given read amount is too large
+		amount = diskSize - VSA::RecordStartOffset; // Do full disk dump
+	}
+	if(pos + amount < diskSize) { // Read doesn't need to loop
+		return readLogicalDisk(pos, into, amount);
+	}
+	uint64_t firstReadAmount = diskSize - pos;
+	if(!readLogicalDisk(pos, into, firstReadAmount)) {
+		return std::nullopt;
+	}
+	return readLogicalDisk(VSA::RecordStartOffset, into + firstReadAmount, amount - firstReadAmount);
+}
+
+bool Device::dispatchVSAMessages(VSAParser& parser) {
+	std::vector<std::shared_ptr<Packet>> packets;
+	if(!parser.extractMessagePackets(packets)) {
+		report(APIEvent::Type::VSAByteParseFailure, APIEvent::Severity::Error);
+		return false;
+	}
+	for(const auto& packet : packets) {
+		std::shared_ptr<Message> msg;
+		if(!com->decoder->decode(msg, packet)) {
+			return false;
+		}
+		com->dispatchMessage(msg);
+	}
+	return true;
+}
+
+std::optional<uint64_t> Device::getCoreMiniScriptTimestamp() {
+	static constexpr auto CoreMiniTimestampLocation = 48;
+	static constexpr auto CoreMiniTimestampSize = 8;
+	uint8_t buffer[CoreMiniTimestampSize];
+	const auto& numBytes = readLogicalDisk(CoreMiniTimestampLocation, buffer, CoreMiniTimestampSize);
+	if(!numBytes || *numBytes < CoreMiniTimestampSize) {
+		report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	return *reinterpret_cast<uint64_t*>(buffer);
+}
+
+std::optional<uint64_t> Device::getVSADiskSize() {
+	uint64_t diskSize;
+	auto scriptStatus = getScriptStatus();
+	if(!scriptStatus) {
+		return std::nullopt;
+	}
+	if(!scriptStatus->isCoreminiRunning) {
+		startScript();
+		scriptStatus = getScriptStatus();
+		if(!scriptStatus) {
+			return std::nullopt;
+		}
+		diskSize = (scriptStatus->maxSector + 1) * Disk::SectorSize;
+		stopScript();
+	} else {
+		diskSize = (scriptStatus->maxSector + 1) * Disk::SectorSize;
+	}
+	if(diskSize == Disk::SectorSize) {
+		report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	return diskSize;
 }

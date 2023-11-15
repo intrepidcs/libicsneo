@@ -158,6 +158,15 @@ public:
 		FTIncorrectDevicePath = FTOK + 31,
 		FTOtherError = FTOK + 32,
 
+		// VSA
+		VSABufferCorrupted = 0x5000,
+		VSATimestampNotFound = VSABufferCorrupted + 1,
+		VSABufferFormatError = VSABufferCorrupted + 2,
+		VSAMaxReadAttemptsReached = VSABufferCorrupted + 3,
+		VSAByteParseFailure = VSABufferCorrupted + 4,
+		VSAExtendedMessageError = VSABufferCorrupted + 5,
+		VSAOtherError = VSABufferCorrupted + 6,
+
 		NoErrorFound = 0xFFFFFFFD,
 		TooManyEvents = 0xFFFFFFFE,
 		Unknown = 0xFFFFFFFF
