@@ -118,6 +118,12 @@ if(WIN32)
 			platform/windows/vcp.cpp
 		)
 	endif()
+
+elseif(LIBICSNEO_ENABLE_ANDROIDUSB)
+	list(APPEND PLATFORM_SRC
+		platform/android/androidusb.cpp
+	)
+
 else() # Darwin or Linux
 	set(PLATFORM_SRC)
 
@@ -167,6 +173,7 @@ else() # Darwin or Linux
 			)
 	endif()
 endif()
+
 
 if(LIBICSNEO_ENABLE_FTD3XX)
 	if(NOT FTD3XX_ROOT) # allow system override
@@ -367,9 +374,14 @@ if(LIBICSNEO_ENABLE_TCP)
 	endif()
 endif()
 
-if(ANDROID)
-	#target_link_libraries(icsneocpp PRIVATE android log)
+if(LIBICSNEO_ENABLE_ANDROIDUSB)
+	add_library(libusb SHARED IMPORTED)
+	set_target_properties(libusb PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/third-party/libusb/android/libs/${ANDROID_ABI}/libusb1.0.so)
+	target_include_directories(icsneocpp PRIVATE third-party/libusb/libusb)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_ANDROIDUSB)
+	target_link_libraries(icsneocpp PRIVATE android log libusb)
 endif()
+
 # fatfs
 add_subdirectory(third-party/fatfs)
 set_property(TARGET fatfs PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -424,6 +436,11 @@ if(LIBICSNEO_BUILD_ICSNEOC)
 	)
 	target_link_libraries(icsneoc PRIVATE icsneocpp)
 	target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	if(LIBICSNEO_ENABLE_ANDROIDUSB)
+		target_link_libraries(icsneoc PRIVATE android log)
+		target_include_directories(icsneoc PRIVATE third-party/libusb/libusb)
+		target_compile_definitions(icsneoc PRIVATE ICSNEO_ENABLE_ANDROIDUSB)
+	endif()
 endif()
 
 if(LIBICSNEO_BUILD_ICSNEOC_STATIC)

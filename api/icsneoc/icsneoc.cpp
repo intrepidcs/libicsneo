@@ -4,6 +4,10 @@
 
 #define ICSNEOC_MAKEDLL
 
+#ifdef ICSNEO_ENABLE_ANDROIDUSB
+#include "icsneo/platform/android/androidusb.h"
+#endif
+
 #include "icsneo/icsneoc.h"
 #include "icsneo/icsneocpp.h"
 #include "icsneo/platform/dynamiclib.h"
@@ -741,3 +745,12 @@ int icsneo_getDeviceStatus(const neodevice_t* device, void* status, size_t* size
 
 	return true;
 }
+#ifdef ICSNEO_ENABLE_ANDROIDUSB
+bool icsneo_addSysFileDescriptor(int sysFd) {
+	return icsneo::ANDROIDUSB::addSystemFD(sysFd);
+
+}
+bool icsneo_removeSysFileDescriptor(int sysFd) {
+	return icsneo::ANDROIDUSB::removeSystemFD(sysFd);
+}
+#endif

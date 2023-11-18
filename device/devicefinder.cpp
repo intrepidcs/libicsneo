@@ -16,7 +16,7 @@
 #endif
 
 #ifdef ICSNEO_ENABLE_ANDROIDUSB
-#include "icsneo/platform/cdcacm.h"
+#include "icsneo/platform/android/androidusb.h"
 #endif
 
 #ifdef ICSNEO_ENABLE_FTDI
@@ -72,7 +72,7 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
     #endif
 
 	#ifdef ICSNEO_ENABLE_ANDROIDUSB
-	ANDROIDUSB::Find(newDriverFoundDevices):
+	ANDROIDUSB::Find(newDriverFoundDevices);
 	#endif
 
 	#ifdef ICSNEO_ENABLE_FTDI

@@ -125,7 +125,7 @@ public:
 		DriverTTYPathEmpty = 0x3120,
 		DriverWasNotNegOne = 0x3121,
 		DriverTCGetAddrFail = 0x3122,
-		DriverTCSetAddrFail= 0x3123,
+		DriverTCSetAddrFail = 0x3123,
 
 
 		// FTD3XX
@@ -163,10 +163,15 @@ public:
 		FTIncorrectDevicePath = FTOK + 31,
 		FTOtherError = FTOK + 32,
 
+		// Android USB
+		AndroidUSBLibusbInitFailed = 0x5000,
+		AndroidUSBFDWrapFailed = 0x5001,
+
 		NoErrorFound = 0xFFFFFFFD,
 		TooManyEvents = 0xFFFFFFFE,
 		Unknown = 0xFFFFFFFF,
-    };
+	};
+
 	enum class Severity : uint8_t {
 		Any = 0, // Used for filtering, should not appear in data
 		EventInfo = 0x10,

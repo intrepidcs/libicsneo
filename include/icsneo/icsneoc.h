@@ -837,6 +837,11 @@ extern bool icsneo_getRTC(const neodevice_t* device, uint64_t* output);
  */
 extern bool icsneo_setRTC(const neodevice_t* device, uint64_t input);
 
+#ifdef ICSNEO_ENABLE_ANDROIDUSB
+extern bool icsneo_addSysFileDescriptor(int sysFd);
+extern bool icsneo_removeSysFileDescriptor(int sysFd);
+#endif
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

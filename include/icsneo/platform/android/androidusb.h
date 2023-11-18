@@ -1,11 +1,12 @@
-#ifndef __CDCACM_ANDROID_H_
-#define __CDCACM_ANDROID_H_
+#ifndef __ANDROIDUSB_H_
+#define __ANDROIDUSB_H_
 
 #ifdef __cplusplus
 
 #include "icsneo/communication/driver.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/api/eventmanager.h"
+#include "libusb.h"
 #include <optional>
 #include <chrono>
 #include <sys/stat.h>
@@ -19,7 +20,11 @@ public:
 	/**
 	 * Note: This is a driver for all devices which use Android CDC_ACM
 	 */
-	ANDROIDUSB(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice) {}
+	ANDROIDUSB(const device_eventhandler_t& err, neodevice_t& forDevice)
+    : Driver(err), device(forDevice) {
+        if(auto key = systemFDs.find(device.handle); key != systemFDs.end())
+            libusbDeviceHandle = key->second;
+    }
 	~ANDROIDUSB();
 	static void Find(std::vector<FoundDevice>& found);
 
@@ -27,22 +32,15 @@ public:
 	bool isOpen() override;
 	bool close() override;
 
-	void modeChangeIncoming() override;
-	void awaitModeChangeComplete() override;
-
-    static void addSystemFD(int fd);
-    static void removeSystemFD(int fd);
+    static bool addSystemFD(int fd);
+    static bool removeSystemFD(int fd);
 
 private:
 	neodevice_t& device;
-	static std::unordered_map<int,FoundDevice> systemFDs;
-	std::optional<ino_t> disallowedInode;
-	std::atomic<bool> modeChanging{false};
-	std::thread modeChangeThread;
-	std::mutex modeChangeMutex;
-	std::condition_variable modeChangeCV;
+	libusb_context *ctx = nullptr;
+	libusb_device_handle *libusbDeviceHandle = nullptr;
 
-	static std::string HandleToTTY(neodevice_handle_t handle);
+	inline static std::unordered_map<int,libusb_device_handle*> systemFDs; //android FD, libusb handle
 
 	void readTask() override;
 	void writeTask() override;
