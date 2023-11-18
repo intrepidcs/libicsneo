@@ -39,9 +39,10 @@ private:
 	neodevice_t& device;
 	libusb_context *ctx = nullptr;
 	libusb_device_handle *libusbDeviceHandle = nullptr;
-
 	inline static std::unordered_map<int,libusb_device_handle*> systemFDs; //android FD, libusb handle
-
+	static constexpr int ep_in_addr = 0x83;
+	static constexpr int ep_out_addr = 0x02;
+	bool openStatus = false;
 	void readTask() override;
 	void writeTask() override;
 	bool fdIsValid();

@@ -6,6 +6,9 @@
 
 #ifdef ICSNEO_ENABLE_ANDROIDUSB
 #include "icsneo/platform/android/androidusb.h"
+#include <android/log.h>
+#define  LOG_TAG    "libicsneoc"
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #endif
 
 #include "icsneo/icsneoc.h"
@@ -98,6 +101,7 @@ bool icsneo_isValidNeoDevice(const neodevice_t* device) {
 	// return false on nullptr
 	if(!device) {
 		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+        LOGD("nullparameter neodevice error\n");
 		return false;
 	}
 	// If this neodevice_t was returned by a previous search, it will no longer be valid (as the underlying icsneo::Device is freed)
@@ -111,15 +115,20 @@ bool icsneo_isValidNeoDevice(const neodevice_t* device) {
 	}
 
 	EventManager::GetInstance().add(APIEvent::Type::InvalidNeoDevice, APIEvent::Severity::Error);
+	LOGD("Invalid neodevice error\n");
 	return false;
 }
 
 bool icsneo_openDevice(const neodevice_t* device) {
-	if(!icsneo_isValidNeoDevice(device))
+	if(!icsneo_isValidNeoDevice(device)) {
+        LOGD("Invalid neodevice error\n");
 		return false;
+    }
 
-	if(!device->device->open())
-		return false;
+	if(!device->device->open()) {
+        LOGD("Device failed to open...\n");
+        return false;
+    }
 
 	// We connected successfully, move the device to connected devices
 	std::vector<std::vector<std::shared_ptr<Device>>::iterator> itemsToMove;

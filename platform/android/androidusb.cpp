@@ -39,9 +39,10 @@ bool ANDROIDUSB::removeSystemFD(int sysFd) {
 }
 
 bool ANDROIDUSB::open() {
-    int ret = 0;
+    openStatus = true;
     if (!isOpen()) {
         report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
+        LOGD("Failed isOpen check in open(): %ul\n", device.handle);
         return false;
     }
 
@@ -94,7 +95,8 @@ bool ANDROIDUSB::open() {
 }
 
 bool ANDROIDUSB::isOpen() {
-    return device.handle >= 0; // Negative fd indicates error or not opened yet
+    LOGD("isOpen handle: %i, openStatus: %s\n", device.handle, openStatus?"true":"false");
+    return ((device.handle >= 0) && (openStatus)); // Negative fd indicates error or not opened yet
 }
 
 bool ANDROIDUSB::close() {
@@ -126,20 +128,24 @@ bool ANDROIDUSB::close() {
 }
 
 void ANDROIDUSB::readTask() {
-    //constexpr size_t READ_BUFFER_SIZE = 2048;
-    //uint8_t readbuf[READ_BUFFER_SIZE];
+    constexpr size_t READ_BUFFER_SIZE = 2048;
+    uint8_t readbuf[READ_BUFFER_SIZE];
     EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+    libusb_device_handle *devh = nullptr;
+    auto mapItr = systemFDs.find(device.handle);
+    if (mapItr != systemFDs.end()) {
+        devh = mapItr->second;
+    }
     while(!closing && !isDisconnected()) {
-        //fd_set rfds = {0};
-        //struct timeval tv = {0};
-        //FD_SET(fd, &rfds);
-        //tv.tv_usec = 50000; // 50ms
-        //::select(fd + 1, &rfds, NULL, NULL, &tv);
-        ssize_t bytesRead = 0; // ::read(fd, readbuf, READ_BUFFER_SIZE);
-
-        //libusb bulk transfer?
-        //todo!
-
+        int bytesRead = 0; // ::read(fd, readbuf, READ_BUFFER_SIZE);
+        auto ret = libusb_bulk_transfer(devh, ep_in_addr, readbuf, READ_BUFFER_SIZE, &bytesRead, 50);
+        if (ret == LIBUSB_ERROR_TIMEOUT) {
+            continue;
+        }
+        if (ret == LIBUSB_ERROR_NO_DEVICE) {
+            disconnected = true;
+            report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+        }
         if(bytesRead > 0) {
 #if 0 // Perhaps helpful for debugging :)
             std::cout << "Read data: (" << bytesRead << ')' << std::hex << std::endl;
@@ -151,7 +157,7 @@ void ANDROIDUSB::readTask() {
 			std::cout << std::dec << std::endl;
 #endif
 
-            //readQueue.enqueue_bulk(readbuf, bytesRead);
+            readQueue.enqueue_bulk(readbuf, bytesRead);
         } else {
             if(!closing && !fdIsValid() && !isDisconnected()) {
                 disconnected = true;
@@ -164,6 +170,11 @@ void ANDROIDUSB::readTask() {
 void ANDROIDUSB::writeTask() {
     WriteOperation writeOp;
     EventManager::GetInstance().downgradeErrorsOnCurrentThread();
+    libusb_device_handle *devh = nullptr;
+    auto mapItr = systemFDs.find(device.handle);
+    if (mapItr != systemFDs.end()) {
+        devh = mapItr->second;
+    }
     while(!closing && !isDisconnected()) {
         if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
             continue;
@@ -172,31 +183,19 @@ void ANDROIDUSB::writeTask() {
         ssize_t totalWritten = 0;
         while(totalWritten < totalWriteSize) {
             const ssize_t writeSize = totalWriteSize - totalWritten;
-            ssize_t actualWritten = writeSize; //::write(fd, writeOp.bytes.data() + totalWritten, writeSize);
-
-            //libusb bulk transfer?
-            //todo!
-
-            if(actualWritten != writeSize) {
-                // If we partially wrote, it's probably EAGAIN but it won't have been set
-                // so don't signal an error unless it's < 0, we'll come back around and
-                // get a -1 to see the real error.
-                if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
-                    // We filled the TX FIFO, use select to wait for it to become available again
-                    //fd_set wfds = {0};
-                    //struct timeval tv = {0};
-                    //FD_SET(fd, &wfds);
-                    //tv.tv_usec = 50000; // 50ms
-                    //::select(fd + 1, nullptr, &wfds, nullptr, &tv);
-                } else if (actualWritten < 0) {
-                    if(!fdIsValid()) {
-                        if(!isDisconnected()) {
-                            disconnected = true;
-                            report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
-                        }
-                    } else
-                        report(APIEvent::Type::FailedToWrite, APIEvent::Severity::Error);
-                    break;
+            int actualWritten = 0;
+            auto ret = libusb_bulk_transfer(devh, ep_out_addr, writeOp.bytes.data() + totalWritten, writeSize, &actualWritten, 100);
+            if (ret < 0) {
+                if (ret == LIBUSB_ERROR_NO_DEVICE) {
+                    LOGD("Write task bulk transfer failed, device disconnected!\n");
+                    if(!isDisconnected()) {
+                        disconnected = true;
+                        report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+                    }
+                }
+                if (ret != LIBUSB_ERROR_TIMEOUT) {
+                    LOGD("Write task bulk transfer failed!\n%s", libusb_strerror(ret));
+                    continue;
                 }
             }
             if(actualWritten > 0) {
@@ -217,7 +216,12 @@ void ANDROIDUSB::writeTask() {
 }
 
 bool ANDROIDUSB::fdIsValid() {
-    //libusb validate FD
+    if (device.handle != -1) {
+        auto itr = systemFDs.find(device.handle);
+        if ((itr != systemFDs.end()) && (itr->second != nullptr)) {
+            return true;
+        }
+    }
     return false;
 }
 
