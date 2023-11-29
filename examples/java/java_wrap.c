@@ -178,26 +178,26 @@ typedef struct {
 static void SWIGUNUSED SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionCodes code, const char *msg) {
   jclass excep;
   static const SWIG_JavaExceptions_t java_exceptions[] = {
-    { SWIG_JavaOutOfMemoryError, "java/lang/OutOfMemoryError" },
-    { SWIG_JavaIOException, "java/io/IOException" },
-    { SWIG_JavaRuntimeException, "java/lang/RuntimeException" },
-    { SWIG_JavaIndexOutOfBoundsException, "java/lang/IndexOutOfBoundsException" },
-    { SWIG_JavaArithmeticException, "java/lang/ArithmeticException" },
-    { SWIG_JavaIllegalArgumentException, "java/lang/IllegalArgumentException" },
-    { SWIG_JavaNullPointerException, "java/lang/NullPointerException" },
-    { SWIG_JavaDirectorPureVirtual, "java/lang/RuntimeException" },
-    { SWIG_JavaUnknownError,  "java/lang/UnknownError" },
-    { (SWIG_JavaExceptionCodes)0,  "java/lang/UnknownError" }
+	{ SWIG_JavaOutOfMemoryError, "java/lang/OutOfMemoryError" },
+	{ SWIG_JavaIOException, "java/io/IOException" },
+	{ SWIG_JavaRuntimeException, "java/lang/RuntimeException" },
+	{ SWIG_JavaIndexOutOfBoundsException, "java/lang/IndexOutOfBoundsException" },
+	{ SWIG_JavaArithmeticException, "java/lang/ArithmeticException" },
+	{ SWIG_JavaIllegalArgumentException, "java/lang/IllegalArgumentException" },
+	{ SWIG_JavaNullPointerException, "java/lang/NullPointerException" },
+	{ SWIG_JavaDirectorPureVirtual, "java/lang/RuntimeException" },
+	{ SWIG_JavaUnknownError,  "java/lang/UnknownError" },
+	{ (SWIG_JavaExceptionCodes)0,  "java/lang/UnknownError" }
   };
   const SWIG_JavaExceptions_t *except_ptr = java_exceptions;
 
   while (except_ptr->code != code && except_ptr->code)
-    except_ptr++;
+	except_ptr++;
 
   (*jenv)->ExceptionClear(jenv);
   excep = (*jenv)->FindClass(jenv, except_ptr->java_exception);
   if (excep)
-    (*jenv)->ThrowNew(jenv, excep, msg);
+	(*jenv)->ThrowNew(jenv, excep, msg);
 }
 
 
@@ -275,20 +275,20 @@ static int SWIG_JavaArrayInSchar (JNIEnv *jenv, jbyte **jarr, signed char **carr
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetByteArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (signed char*) malloc(sz * sizeof(signed char));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (signed char)(*jarr)[i];
+	(*carr)[i] = (signed char)(*jarr)[i];
   return 1;
 }
 
@@ -296,7 +296,7 @@ static void SWIG_JavaArrayArgoutSchar (JNIEnv *jenv, jbyte *jarr, signed char *c
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jbyte)carr[i];
+	jarr[i] = (jbyte)carr[i];
   (*jenv)->ReleaseByteArrayElements(jenv, input, jarr, 0);
 }
 
@@ -305,12 +305,12 @@ static jbyteArray SWIG_JavaArrayOutSchar (JNIEnv *jenv, signed char *result, jsi
   int i;
   jbyteArray jresult = (*jenv)->NewByteArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetByteArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jbyte)result[i];
+	arr[i] = (jbyte)result[i];
   (*jenv)->ReleaseByteArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -321,20 +321,20 @@ static int SWIG_JavaArrayInUchar (JNIEnv *jenv, jshort **jarr, unsigned char **c
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetShortArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (unsigned char*) malloc(sz * sizeof(unsigned char));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (unsigned char)(*jarr)[i];
+	(*carr)[i] = (unsigned char)(*jarr)[i];
   return 1;
 }
 
@@ -342,7 +342,7 @@ static void SWIG_JavaArrayArgoutUchar (JNIEnv *jenv, jshort *jarr, unsigned char
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jshort)carr[i];
+	jarr[i] = (jshort)carr[i];
   (*jenv)->ReleaseShortArrayElements(jenv, input, jarr, 0);
 }
 
@@ -351,12 +351,12 @@ static jshortArray SWIG_JavaArrayOutUchar (JNIEnv *jenv, unsigned char *result, 
   int i;
   jshortArray jresult = (*jenv)->NewShortArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetShortArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jshort)result[i];
+	arr[i] = (jshort)result[i];
   (*jenv)->ReleaseShortArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -367,20 +367,20 @@ static int SWIG_JavaArrayInShort (JNIEnv *jenv, jshort **jarr, short **carr, jsh
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetShortArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (short*) malloc(sz * sizeof(short));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (short)(*jarr)[i];
+	(*carr)[i] = (short)(*jarr)[i];
   return 1;
 }
 
@@ -388,7 +388,7 @@ static void SWIG_JavaArrayArgoutShort (JNIEnv *jenv, jshort *jarr, short *carr, 
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jshort)carr[i];
+	jarr[i] = (jshort)carr[i];
   (*jenv)->ReleaseShortArrayElements(jenv, input, jarr, 0);
 }
 
@@ -397,12 +397,12 @@ static jshortArray SWIG_JavaArrayOutShort (JNIEnv *jenv, short *result, jsize sz
   int i;
   jshortArray jresult = (*jenv)->NewShortArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetShortArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jshort)result[i];
+	arr[i] = (jshort)result[i];
   (*jenv)->ReleaseShortArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -413,20 +413,20 @@ static int SWIG_JavaArrayInUshort (JNIEnv *jenv, jint **jarr, unsigned short **c
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetIntArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (unsigned short*) malloc(sz * sizeof(unsigned short));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (unsigned short)(*jarr)[i];
+	(*carr)[i] = (unsigned short)(*jarr)[i];
   return 1;
 }
 
@@ -434,7 +434,7 @@ static void SWIG_JavaArrayArgoutUshort (JNIEnv *jenv, jint *jarr, unsigned short
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jint)carr[i];
+	jarr[i] = (jint)carr[i];
   (*jenv)->ReleaseIntArrayElements(jenv, input, jarr, 0);
 }
 
@@ -443,12 +443,12 @@ static jintArray SWIG_JavaArrayOutUshort (JNIEnv *jenv, unsigned short *result, 
   int i;
   jintArray jresult = (*jenv)->NewIntArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetIntArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jint)result[i];
+	arr[i] = (jint)result[i];
   (*jenv)->ReleaseIntArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -459,20 +459,20 @@ static int SWIG_JavaArrayInInt (JNIEnv *jenv, jint **jarr, int **carr, jintArray
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetIntArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (int*) malloc(sz * sizeof(int));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (int)(*jarr)[i];
+	(*carr)[i] = (int)(*jarr)[i];
   return 1;
 }
 
@@ -480,7 +480,7 @@ static void SWIG_JavaArrayArgoutInt (JNIEnv *jenv, jint *jarr, int *carr, jintAr
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jint)carr[i];
+	jarr[i] = (jint)carr[i];
   (*jenv)->ReleaseIntArrayElements(jenv, input, jarr, 0);
 }
 
@@ -489,12 +489,12 @@ static jintArray SWIG_JavaArrayOutInt (JNIEnv *jenv, int *result, jsize sz) {
   int i;
   jintArray jresult = (*jenv)->NewIntArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetIntArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jint)result[i];
+	arr[i] = (jint)result[i];
   (*jenv)->ReleaseIntArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -505,20 +505,20 @@ static int SWIG_JavaArrayInUint (JNIEnv *jenv, jlong **jarr, unsigned int **carr
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetLongArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (unsigned int*) malloc(sz * sizeof(unsigned int));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (unsigned int)(*jarr)[i];
+	(*carr)[i] = (unsigned int)(*jarr)[i];
   return 1;
 }
 
@@ -526,7 +526,7 @@ static void SWIG_JavaArrayArgoutUint (JNIEnv *jenv, jlong *jarr, unsigned int *c
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jlong)carr[i];
+	jarr[i] = (jlong)carr[i];
   (*jenv)->ReleaseLongArrayElements(jenv, input, jarr, 0);
 }
 
@@ -535,12 +535,12 @@ static jlongArray SWIG_JavaArrayOutUint (JNIEnv *jenv, unsigned int *result, jsi
   int i;
   jlongArray jresult = (*jenv)->NewLongArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetLongArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jlong)result[i];
+	arr[i] = (jlong)result[i];
   (*jenv)->ReleaseLongArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -551,20 +551,20 @@ static int SWIG_JavaArrayInLong (JNIEnv *jenv, jint **jarr, long **carr, jintArr
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetIntArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (long*) malloc(sz * sizeof(long));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (long)(*jarr)[i];
+	(*carr)[i] = (long)(*jarr)[i];
   return 1;
 }
 
@@ -572,7 +572,7 @@ static void SWIG_JavaArrayArgoutLong (JNIEnv *jenv, jint *jarr, long *carr, jint
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jint)carr[i];
+	jarr[i] = (jint)carr[i];
   (*jenv)->ReleaseIntArrayElements(jenv, input, jarr, 0);
 }
 
@@ -581,12 +581,12 @@ static jintArray SWIG_JavaArrayOutLong (JNIEnv *jenv, long *result, jsize sz) {
   int i;
   jintArray jresult = (*jenv)->NewIntArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetIntArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jint)result[i];
+	arr[i] = (jint)result[i];
   (*jenv)->ReleaseIntArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -597,20 +597,20 @@ static int SWIG_JavaArrayInUlong (JNIEnv *jenv, jlong **jarr, unsigned long **ca
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetLongArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (unsigned long*) malloc(sz * sizeof(unsigned long));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (unsigned long)(*jarr)[i];
+	(*carr)[i] = (unsigned long)(*jarr)[i];
   return 1;
 }
 
@@ -618,7 +618,7 @@ static void SWIG_JavaArrayArgoutUlong (JNIEnv *jenv, jlong *jarr, unsigned long 
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jlong)carr[i];
+	jarr[i] = (jlong)carr[i];
   (*jenv)->ReleaseLongArrayElements(jenv, input, jarr, 0);
 }
 
@@ -627,12 +627,12 @@ static jlongArray SWIG_JavaArrayOutUlong (JNIEnv *jenv, unsigned long *result, j
   int i;
   jlongArray jresult = (*jenv)->NewLongArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetLongArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jlong)result[i];
+	arr[i] = (jlong)result[i];
   (*jenv)->ReleaseLongArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -643,20 +643,20 @@ static int SWIG_JavaArrayInLonglong (JNIEnv *jenv, jlong **jarr, jlong **carr, j
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetLongArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (jlong*) malloc(sz * sizeof(jlong));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (jlong)(*jarr)[i];
+	(*carr)[i] = (jlong)(*jarr)[i];
   return 1;
 }
 
@@ -664,7 +664,7 @@ static void SWIG_JavaArrayArgoutLonglong (JNIEnv *jenv, jlong *jarr, jlong *carr
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jlong)carr[i];
+	jarr[i] = (jlong)carr[i];
   (*jenv)->ReleaseLongArrayElements(jenv, input, jarr, 0);
 }
 
@@ -673,12 +673,12 @@ static jlongArray SWIG_JavaArrayOutLonglong (JNIEnv *jenv, jlong *result, jsize 
   int i;
   jlongArray jresult = (*jenv)->NewLongArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetLongArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jlong)result[i];
+	arr[i] = (jlong)result[i];
   (*jenv)->ReleaseLongArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -689,20 +689,20 @@ static int SWIG_JavaArrayInFloat (JNIEnv *jenv, jfloat **jarr, float **carr, jfl
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetFloatArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (float*) malloc(sz * sizeof(float));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (float)(*jarr)[i];
+	(*carr)[i] = (float)(*jarr)[i];
   return 1;
 }
 
@@ -710,7 +710,7 @@ static void SWIG_JavaArrayArgoutFloat (JNIEnv *jenv, jfloat *jarr, float *carr, 
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jfloat)carr[i];
+	jarr[i] = (jfloat)carr[i];
   (*jenv)->ReleaseFloatArrayElements(jenv, input, jarr, 0);
 }
 
@@ -719,12 +719,12 @@ static jfloatArray SWIG_JavaArrayOutFloat (JNIEnv *jenv, float *result, jsize sz
   int i;
   jfloatArray jresult = (*jenv)->NewFloatArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetFloatArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jfloat)result[i];
+	arr[i] = (jfloat)result[i];
   (*jenv)->ReleaseFloatArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -735,20 +735,20 @@ static int SWIG_JavaArrayInDouble (JNIEnv *jenv, jdouble **jarr, double **carr, 
   int i;
   jsize sz;
   if (!input) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+	return 0;
   }
   sz = (*jenv)->GetArrayLength(jenv, input);
   *jarr = (*jenv)->GetDoubleArrayElements(jenv, input, 0);
   if (!*jarr)
-    return 0;
+	return 0;
   *carr = (double*) malloc(sz * sizeof(double));
   if (!*carr) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
-    return 0;
+	SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "array memory allocation failed");
+	return 0;
   }
   for (i=0; i<sz; i++)
-    (*carr)[i] = (double)(*jarr)[i];
+	(*carr)[i] = (double)(*jarr)[i];
   return 1;
 }
 
@@ -756,7 +756,7 @@ static void SWIG_JavaArrayArgoutDouble (JNIEnv *jenv, jdouble *jarr, double *car
   int i;
   jsize sz = (*jenv)->GetArrayLength(jenv, input);
   for (i=0; i<sz; i++)
-    jarr[i] = (jdouble)carr[i];
+	jarr[i] = (jdouble)carr[i];
   (*jenv)->ReleaseDoubleArrayElements(jenv, input, jarr, 0);
 }
 
@@ -765,12 +765,12 @@ static jdoubleArray SWIG_JavaArrayOutDouble (JNIEnv *jenv, double *result, jsize
   int i;
   jdoubleArray jresult = (*jenv)->NewDoubleArray(jenv, sz);
   if (!jresult)
-    return NULL;
+	return NULL;
   arr = (*jenv)->GetDoubleArrayElements(jenv, jresult, 0);
   if (!arr)
-    return NULL;
+	return NULL;
   for (i=0; i<sz; i++)
-    arr[i] = (jdouble)result[i];
+	arr[i] = (jdouble)result[i];
   (*jenv)->ReleaseDoubleArrayElements(jenv, jresult, arr, 0);
   return jresult;
 }
@@ -808,10 +808,10 @@ static void delete_neodevice_t_array(neodevice_t *ary) {
 }
 
 static neodevice_t neodevice_t_array_getitem(neodevice_t *ary, int index) {
-    return ary[index];
+	return ary[index];
 }
 static void neodevice_t_array_setitem(neodevice_t *ary, int index, neodevice_t value) {
-    ary[index] = value;
+	ary[index] = value;
 }
 
 
@@ -824,10 +824,10 @@ static void delete_neoevent_t_array(neoevent_t *ary) {
 }
 
 static neoevent_t neoevent_t_array_getitem(neoevent_t *ary, int index) {
-    return ary[index];
+	return ary[index];
 }
 static void neoevent_t_array_setitem(neoevent_t *ary, int index, neoevent_t value) {
-    ary[index] = value;
+	ary[index] = value;
 }
 
 
@@ -840,10 +840,10 @@ static void delete_neomessage_t_array(neomessage_t *ary) {
 }
 
 static neomessage_t neomessage_t_array_getitem(neomessage_t *ary, int index) {
-    return ary[index];
+	return ary[index];
 }
 static void neomessage_t_array_setitem(neomessage_t *ary, int index, neomessage_t value) {
-    ary[index] = value;
+	ary[index] = value;
 }
 
 
@@ -860,19 +860,19 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_icsneo_1findAllDevices(JNIEnv *jenv, 
   (void)jarg1_;
   arg1 = *(neodevice_t **)&jarg1;
   {
-    if (!jarg2) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
-      return ;
-    }
-    if ((*jenv)->GetArrayLength(jenv, jarg2) == 0) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
-      return ;
-    }
-    arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0);
+	if (!jarg2) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
+	  return ;
+	}
+	if ((*jenv)->GetArrayLength(jenv, jarg2) == 0) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
+	  return ;
+	}
+	arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0);
   }
   icsneo_findAllDevices(arg1,arg2);
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0);
+	(*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0);
   }
 
 }
@@ -896,59 +896,59 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1serialNumToString(JNIEnv 
   (void)jcls;
   arg1 = (uint32_t)jarg1;
   {
-    arg2 = NULL;
-    if(jarg2 != NULL) {
-      /* Get the String from the StringBuffer */
-      jmethodID setLengthID;
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
-      jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
-      jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
+	arg2 = NULL;
+	if(jarg2 != NULL) {
+	  /* Get the String from the StringBuffer */
+	  jmethodID setLengthID;
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
+	  jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
+	  jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
 
-      /* Convert the String to a C string */
-      const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
+	  /* Convert the String to a C string */
+	  const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
 
-      /* Take a copy of the C string as the typemap is for a non const C string */
-      jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
-      jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
-      arg2 = (char *) malloc(capacity+1);
-      strcpy(arg2, pCharStr);
+	  /* Take a copy of the C string as the typemap is for a non const C string */
+	  jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
+	  jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
+	  arg2 = (char *) malloc(capacity+1);
+	  strcpy(arg2, pCharStr);
 
-      /* Release the UTF string we obtained with GetStringUTFChars */
-      (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
+	  /* Release the UTF string we obtained with GetStringUTFChars */
+	  (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
 
-      /* Zero the original StringBuffer, so we can replace it with the result */
-      setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
-      (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
-    }
+	  /* Zero the original StringBuffer, so we can replace it with the result */
+	  setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
+	  (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
+	}
   }
   {
-    if (!jarg3) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
-      return 0;
-    }
-    if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
-      return 0;
-    }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
+	if (!jarg3) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
+	  return 0;
+	}
+	if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
+	  return 0;
+	}
+	arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_serialNumToString(arg1,arg2,arg3);
   jresult = (jboolean)result;
   {
-    if(arg2 != NULL) {
-      /* Append the result to the empty StringBuffer */
-      jstring newString = (*jenv)->NewStringUTF(jenv, arg2);
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
-      jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
-      (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
+	if(arg2 != NULL) {
+	  /* Append the result to the empty StringBuffer */
+	  jstring newString = (*jenv)->NewStringUTF(jenv, arg2);
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
+	  jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
+	  (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
 
-      /* Clean up the string object, no longer needed */
-      free(arg2);
-      arg2 = NULL;
-    }
+	  /* Clean up the string object, no longer needed */
+	  free(arg2);
+	  arg2 = NULL;
+	}
   }
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
+	(*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
 
 
@@ -964,45 +964,45 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1serialStringToNum(JNIEnv *je
   (void)jenv;
   (void)jcls;
   {
-    arg1 = NULL;
-    if(jarg1 != NULL) {
-      /* Get the String from the StringBuffer */
-      jmethodID setLengthID;
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg1);
-      jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
-      jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg1, toStringID);
+	arg1 = NULL;
+	if(jarg1 != NULL) {
+	  /* Get the String from the StringBuffer */
+	  jmethodID setLengthID;
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg1);
+	  jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
+	  jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg1, toStringID);
 
-      /* Convert the String to a C string */
-      const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
+	  /* Convert the String to a C string */
+	  const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
 
-      /* Take a copy of the C string as the typemap is for a non const C string */
-      jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
-      jint capacity = (*jenv)->CallIntMethod(jenv, jarg1, capacityID);
-      arg1 = (char *) malloc(capacity+1);
-      strcpy(arg1, pCharStr);
+	  /* Take a copy of the C string as the typemap is for a non const C string */
+	  jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
+	  jint capacity = (*jenv)->CallIntMethod(jenv, jarg1, capacityID);
+	  arg1 = (char *) malloc(capacity+1);
+	  strcpy(arg1, pCharStr);
 
-      /* Release the UTF string we obtained with GetStringUTFChars */
-      (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
+	  /* Release the UTF string we obtained with GetStringUTFChars */
+	  (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
 
-      /* Zero the original StringBuffer, so we can replace it with the result */
-      setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
-      (*jenv)->CallVoidMethod(jenv, jarg1, setLengthID, (jint) 0);
-    }
+	  /* Zero the original StringBuffer, so we can replace it with the result */
+	  setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
+	  (*jenv)->CallVoidMethod(jenv, jarg1, setLengthID, (jint) 0);
+	}
   }
   result = (uint32_t)icsneo_serialStringToNum((char const *)arg1);
   jresult = (jlong)result;
   {
-    if(arg1 != NULL) {
-      /* Append the result to the empty StringBuffer */
-      jstring newString = (*jenv)->NewStringUTF(jenv, arg1);
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg1);
-      jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
-      (*jenv)->CallObjectMethod(jenv, jarg1, appendStringID, newString);
+	if(arg1 != NULL) {
+	  /* Append the result to the empty StringBuffer */
+	  jstring newString = (*jenv)->NewStringUTF(jenv, arg1);
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg1);
+	  jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
+	  (*jenv)->CallObjectMethod(jenv, jarg1, appendStringID, newString);
 
-      /* Clean up the string object, no longer needed */
-      free(arg1);
-      arg1 = NULL;
-    }
+	  /* Clean up the string object, no longer needed */
+	  free(arg1);
+	  arg1 = NULL;
+	}
   }
 
   return jresult;
@@ -1174,46 +1174,46 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getMessages(JNIEnv *jenv,
   arg1 = *(neodevice_t **)&jarg1;
   arg2 = *(neomessage_t **)&jarg2;
   {
-    if (!jarg3) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
-      return 0;
-    }
-    if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
-      return 0;
-    }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
+	if (!jarg3) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
+	  return 0;
+	}
+	if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
+	  return 0;
+	}
+	arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   {
-    jclass clazz;
-    jmethodID mid;
-    jbyteArray ba;
-    jbyte* bae;
-    jsize sz;
-    int i;
+	jclass clazz;
+	jmethodID mid;
+	jbyteArray ba;
+	jbyte* bae;
+	jsize sz;
+	int i;
 
-    if (!jarg4) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
-      return 0;
-    }
-    clazz = (*jenv)->GetObjectClass(jenv, jarg4);
-    mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
-    ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg4, mid);
-    bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    sz = (*jenv)->GetArrayLength(jenv, ba);
-    arg4 = 0;
-    if (sz > 0) {
-      arg4 = (uint64_t)(signed char)bae[0];
-      for(i=1; i<sz; i++) {
-        arg4 = (arg4 << 8) | (uint64_t)(unsigned char)bae[i];
-      }
-    }
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	if (!jarg4) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
+	  return 0;
+	}
+	clazz = (*jenv)->GetObjectClass(jenv, jarg4);
+	mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
+	ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg4, mid);
+	bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	sz = (*jenv)->GetArrayLength(jenv, ba);
+	arg4 = 0;
+	if (sz > 0) {
+	  arg4 = (uint64_t)(signed char)bae[0];
+	  for(i=1; i<sz; i++) {
+		arg4 = (arg4 << 8) | (uint64_t)(unsigned char)bae[i];
+	  }
+	}
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
   }
   result = (bool)icsneo_getMessages((neodevice_t const *)arg1,arg2,arg3,arg4);
   jresult = (jboolean)result;
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
+	(*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
 
   return jresult;
@@ -1264,59 +1264,59 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductName(JNIEnv *je
   (void)jarg1_;
   arg1 = *(neodevice_t **)&jarg1;
   {
-    arg2 = NULL;
-    if(jarg2 != NULL) {
-      /* Get the String from the StringBuffer */
-      jmethodID setLengthID;
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
-      jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
-      jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
+	arg2 = NULL;
+	if(jarg2 != NULL) {
+	  /* Get the String from the StringBuffer */
+	  jmethodID setLengthID;
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
+	  jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
+	  jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
 
-      /* Convert the String to a C string */
-      const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
+	  /* Convert the String to a C string */
+	  const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
 
-      /* Take a copy of the C string as the typemap is for a non const C string */
-      jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
-      jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
-      arg2 = (char *) malloc(capacity+1);
-      strcpy(arg2, pCharStr);
+	  /* Take a copy of the C string as the typemap is for a non const C string */
+	  jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
+	  jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
+	  arg2 = (char *) malloc(capacity+1);
+	  strcpy(arg2, pCharStr);
 
-      /* Release the UTF string we obtained with GetStringUTFChars */
-      (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
+	  /* Release the UTF string we obtained with GetStringUTFChars */
+	  (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
 
-      /* Zero the original StringBuffer, so we can replace it with the result */
-      setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
-      (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
-    }
+	  /* Zero the original StringBuffer, so we can replace it with the result */
+	  setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
+	  (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
+	}
   }
   {
-    if (!jarg3) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
-      return 0;
-    }
-    if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
-      return 0;
-    }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
+	if (!jarg3) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
+	  return 0;
+	}
+	if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
+	  return 0;
+	}
+	arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_getProductName((neodevice_t const *)arg1,arg2,arg3);
   jresult = (jboolean)result;
   {
-    if(arg2 != NULL) {
-      /* Append the result to the empty StringBuffer */
-      jstring newString = (*jenv)->NewStringUTF(jenv, arg2);
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
-      jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
-      (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
+	if(arg2 != NULL) {
+	  /* Append the result to the empty StringBuffer */
+	  jstring newString = (*jenv)->NewStringUTF(jenv, arg2);
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
+	  jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
+	  (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
 
-      /* Clean up the string object, no longer needed */
-      free(arg2);
-      arg2 = NULL;
-    }
+	  /* Clean up the string object, no longer needed */
+	  free(arg2);
+	  arg2 = NULL;
+	}
   }
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
+	(*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
 
 
@@ -1335,59 +1335,59 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getProductNameForType(JNI
   (void)jcls;
   arg1 = (devicetype_t)jarg1;
   {
-    arg2 = NULL;
-    if(jarg2 != NULL) {
-      /* Get the String from the StringBuffer */
-      jmethodID setLengthID;
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
-      jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
-      jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
+	arg2 = NULL;
+	if(jarg2 != NULL) {
+	  /* Get the String from the StringBuffer */
+	  jmethodID setLengthID;
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
+	  jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
+	  jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
 
-      /* Convert the String to a C string */
-      const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
+	  /* Convert the String to a C string */
+	  const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
 
-      /* Take a copy of the C string as the typemap is for a non const C string */
-      jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
-      jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
-      arg2 = (char *) malloc(capacity+1);
-      strcpy(arg2, pCharStr);
+	  /* Take a copy of the C string as the typemap is for a non const C string */
+	  jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
+	  jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
+	  arg2 = (char *) malloc(capacity+1);
+	  strcpy(arg2, pCharStr);
 
-      /* Release the UTF string we obtained with GetStringUTFChars */
-      (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
+	  /* Release the UTF string we obtained with GetStringUTFChars */
+	  (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
 
-      /* Zero the original StringBuffer, so we can replace it with the result */
-      setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
-      (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
-    }
+	  /* Zero the original StringBuffer, so we can replace it with the result */
+	  setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
+	  (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
+	}
   }
   {
-    if (!jarg3) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
-      return 0;
-    }
-    if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
-      return 0;
-    }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
+	if (!jarg3) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
+	  return 0;
+	}
+	if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
+	  return 0;
+	}
+	arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_getProductNameForType(arg1,arg2,arg3);
   jresult = (jboolean)result;
   {
-    if(arg2 != NULL) {
-      /* Append the result to the empty StringBuffer */
-      jstring newString = (*jenv)->NewStringUTF(jenv, arg2);
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
-      jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
-      (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
+	if(arg2 != NULL) {
+	  /* Append the result to the empty StringBuffer */
+	  jstring newString = (*jenv)->NewStringUTF(jenv, arg2);
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
+	  jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
+	  (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
 
-      /* Clean up the string object, no longer needed */
-      free(arg2);
-      arg2 = NULL;
-    }
+	  /* Clean up the string object, no longer needed */
+	  free(arg2);
+	  arg2 = NULL;
+	}
   }
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
+	(*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
 
 
@@ -1662,59 +1662,59 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1describeDevice(JNIEnv *je
   (void)jarg1_;
   arg1 = *(neodevice_t **)&jarg1;
   {
-    arg2 = NULL;
-    if(jarg2 != NULL) {
-      /* Get the String from the StringBuffer */
-      jmethodID setLengthID;
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
-      jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
-      jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
+	arg2 = NULL;
+	if(jarg2 != NULL) {
+	  /* Get the String from the StringBuffer */
+	  jmethodID setLengthID;
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
+	  jmethodID toStringID = (*jenv)->GetMethodID(jenv, strClass, "toString", "()Ljava/lang/String;");
+	  jstring js = (jstring) (*jenv)->CallObjectMethod(jenv, jarg2, toStringID);
 
-      /* Convert the String to a C string */
-      const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
+	  /* Convert the String to a C string */
+	  const char *pCharStr = (*jenv)->GetStringUTFChars(jenv, js, 0);
 
-      /* Take a copy of the C string as the typemap is for a non const C string */
-      jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
-      jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
-      arg2 = (char *) malloc(capacity+1);
-      strcpy(arg2, pCharStr);
+	  /* Take a copy of the C string as the typemap is for a non const C string */
+	  jmethodID capacityID = (*jenv)->GetMethodID(jenv, strClass, "capacity", "()I");
+	  jint capacity = (*jenv)->CallIntMethod(jenv, jarg2, capacityID);
+	  arg2 = (char *) malloc(capacity+1);
+	  strcpy(arg2, pCharStr);
 
-      /* Release the UTF string we obtained with GetStringUTFChars */
-      (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
+	  /* Release the UTF string we obtained with GetStringUTFChars */
+	  (*jenv)->ReleaseStringUTFChars(jenv,  js, pCharStr);
 
-      /* Zero the original StringBuffer, so we can replace it with the result */
-      setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
-      (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
-    }
+	  /* Zero the original StringBuffer, so we can replace it with the result */
+	  setLengthID = (*jenv)->GetMethodID(jenv, strClass, "setLength", "(I)V");
+	  (*jenv)->CallVoidMethod(jenv, jarg2, setLengthID, (jint) 0);
+	}
   }
   {
-    if (!jarg3) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
-      return 0;
-    }
-    if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
-      return 0;
-    }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
+	if (!jarg3) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
+	  return 0;
+	}
+	if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
+	  return 0;
+	}
+	arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_describeDevice((neodevice_t const *)arg1,arg2,arg3);
   jresult = (jboolean)result;
   {
-    if(arg2 != NULL) {
-      /* Append the result to the empty StringBuffer */
-      jstring newString = (*jenv)->NewStringUTF(jenv, arg2);
-      jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
-      jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
-      (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
+	if(arg2 != NULL) {
+	  /* Append the result to the empty StringBuffer */
+	  jstring newString = (*jenv)->NewStringUTF(jenv, arg2);
+	  jclass strClass = (*jenv)->GetObjectClass(jenv, jarg2);
+	  jmethodID appendStringID = (*jenv)->GetMethodID(jenv, strClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
+	  (*jenv)->CallObjectMethod(jenv, jarg2, appendStringID, newString);
 
-      /* Clean up the string object, no longer needed */
-      free(arg2);
-      arg2 = NULL;
-    }
+	  /* Clean up the string object, no longer needed */
+	  free(arg2);
+	  arg2 = NULL;
+	}
   }
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
+	(*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
 
 
@@ -1730,9 +1730,9 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_icsneo_1getVersion(JNIEnv *jenv, jcl
   (void)jcls;
   result = icsneo_getVersion();
   {
-    neoversion_t * resultptr = (neoversion_t *) malloc(sizeof(neoversion_t));
-    memmove(resultptr, &result, sizeof(neoversion_t));
-    *(neoversion_t **)&jresult = resultptr;
+	neoversion_t * resultptr = (neoversion_t *) malloc(sizeof(neoversion_t));
+	memmove(resultptr, &result, sizeof(neoversion_t));
+	*(neoversion_t **)&jresult = resultptr;
   }
   return jresult;
 }
@@ -1749,20 +1749,20 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getEvents(JNIEnv *jenv, j
   (void)jarg1_;
   arg1 = *(neoevent_t **)&jarg1;
   {
-    if (!jarg2) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
-      return 0;
-    }
-    if ((*jenv)->GetArrayLength(jenv, jarg2) == 0) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
-      return 0;
-    }
-    arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0);
+	if (!jarg2) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
+	  return 0;
+	}
+	if ((*jenv)->GetArrayLength(jenv, jarg2) == 0) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
+	  return 0;
+	}
+	arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0);
   }
   result = (bool)icsneo_getEvents(arg1,arg2);
   jresult = (jboolean)result;
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0);
+	(*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0);
   }
 
   return jresult;
@@ -1783,20 +1783,20 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getDeviceEvents(JNIEnv *j
   arg1 = *(neodevice_t **)&jarg1;
   arg2 = *(neoevent_t **)&jarg2;
   {
-    if (!jarg3) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
-      return 0;
-    }
-    if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
-      return 0;
-    }
-    arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
+	if (!jarg3) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
+	  return 0;
+	}
+	if ((*jenv)->GetArrayLength(jenv, jarg3) == 0) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
+	  return 0;
+	}
+	arg3 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg3, 0);
   }
   result = (bool)icsneo_getDeviceEvents((neodevice_t const *)arg1,arg2,arg3);
   jresult = (jboolean)result;
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
+	(*jenv)->ReleaseIntArrayElements(jenv, jarg3, (jint *)arg3, 0);
   }
 
   return jresult;
@@ -1868,20 +1868,20 @@ SWIGEXPORT jboolean JNICALL Java_icsneojavaJNI_icsneo_1getSupportedDevices(JNIEn
   (void)jcls;
   arg1 = *(devicetype_t **)&jarg1;
   {
-    if (!jarg2) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
-      return 0;
-    }
-    if ((*jenv)->GetArrayLength(jenv, jarg2) == 0) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
-      return 0;
-    }
-    arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0);
+	if (!jarg2) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "array null");
+	  return 0;
+	}
+	if ((*jenv)->GetArrayLength(jenv, jarg2) == 0) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "Array must contain at least 1 element");
+	  return 0;
+	}
+	arg2 = (size_t *) (*jenv)->GetIntArrayElements(jenv, jarg2, 0);
   }
   result = (bool)icsneo_getSupportedDevices(arg1,arg2);
   jresult = (jboolean)result;
   {
-    (*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0);
+	(*jenv)->ReleaseIntArrayElements(jenv, jarg2, (jint *)arg2, 0);
   }
 
   return jresult;
@@ -1999,16 +1999,16 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neodevice_1t_1serial_1set(JNIEnv *jen
   arg1 = *(neodevice_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return ;
+	arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+	if (!arg2) return ;
   }
   {
-    if(arg2) {
-      strncpy((char*)arg1->serial, (const char *)arg2, 7-1);
-      arg1->serial[7-1] = 0;
-    } else {
-      arg1->serial[0] = 0;
-    }
+	if(arg2) {
+	  strncpy((char*)arg1->serial, (const char *)arg2, 7-1);
+	  arg1->serial[7-1] = 0;
+	} else {
+	  arg1->serial[0] = 0;
+	}
   }
 
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
@@ -3602,14 +3602,14 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1statusbitfield_1t_1status
   (void)jarg1_;
   arg1 = *(neomessage_statusbitfield_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 4) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
+	return ;
   }
   if (!SWIG_JavaArrayInUint(jenv, &jarr2, (unsigned int **)&arg2, jarg2)) return ;
   {
-    size_t ii;
-    uint32_t *b = (uint32_t *) arg1->statusBitfield;
-    for (ii = 0; ii < (size_t)4; ii++) b[ii] = *((uint32_t *) arg2 + ii);
+	size_t ii;
+	uint32_t *b = (uint32_t *) arg1->statusBitfield;
+	for (ii = 0; ii < (size_t)4; ii++) b[ii] = *((uint32_t *) arg2 + ii);
   }
   SWIG_JavaArrayArgoutUint(jenv, jarr2, (unsigned int *)arg2, jarg2);
   free(arg2);
@@ -3691,30 +3691,30 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1timestamp_1set(JNIEnv 
   (void)jarg1_;
   arg1 = *(neomessage_t **)&jarg1;
   {
-    jclass clazz;
-    jmethodID mid;
-    jbyteArray ba;
-    jbyte* bae;
-    jsize sz;
-    int i;
+	jclass clazz;
+	jmethodID mid;
+	jbyteArray ba;
+	jbyte* bae;
+	jsize sz;
+	int i;
 
-    if (!jarg2) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
-      return ;
-    }
-    clazz = (*jenv)->GetObjectClass(jenv, jarg2);
-    mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
-    ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
-    bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    sz = (*jenv)->GetArrayLength(jenv, ba);
-    arg2 = 0;
-    if (sz > 0) {
-      arg2 = (uint64_t)(signed char)bae[0];
-      for(i=1; i<sz; i++) {
-        arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
-      }
-    }
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	if (!jarg2) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
+	  return ;
+	}
+	clazz = (*jenv)->GetObjectClass(jenv, jarg2);
+	mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
+	ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
+	bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	sz = (*jenv)->GetArrayLength(jenv, ba);
+	arg2 = 0;
+	if (sz > 0) {
+	  arg2 = (uint64_t)(signed char)bae[0];
+	  for(i=1; i<sz; i++) {
+		arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
+	  }
+	}
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
   }
   if (arg1) (arg1)->timestamp = arg2;
 }
@@ -3731,22 +3731,22 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1t_1timestamp_1get(JNIE
   arg1 = *(neomessage_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestamp);
   {
-    jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
-    jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
-    jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
-    jobject bigint;
-    int i;
+	jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
+	jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
+	jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
+	jobject bigint;
+	int i;
 
-    bae[0] = 0;
-    for(i=1; i<9; i++ ) {
-      bae[i] = (jbyte)(result>>8*(8-i));
-    }
+	bae[0] = 0;
+	for(i=1; i<9; i++ ) {
+	  bae[i] = (jbyte)(result>>8*(8-i));
+	}
 
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
-    bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
-    (*jenv)->DeleteLocalRef(jenv, ba);
-    jresult = bigint;
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
+	(*jenv)->DeleteLocalRef(jenv, ba);
+	jresult = bigint;
   }
   return jresult;
 }
@@ -3761,30 +3761,30 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1timestampReserved_1set
   (void)jarg1_;
   arg1 = *(neomessage_t **)&jarg1;
   {
-    jclass clazz;
-    jmethodID mid;
-    jbyteArray ba;
-    jbyte* bae;
-    jsize sz;
-    int i;
+	jclass clazz;
+	jmethodID mid;
+	jbyteArray ba;
+	jbyte* bae;
+	jsize sz;
+	int i;
 
-    if (!jarg2) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
-      return ;
-    }
-    clazz = (*jenv)->GetObjectClass(jenv, jarg2);
-    mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
-    ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
-    bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    sz = (*jenv)->GetArrayLength(jenv, ba);
-    arg2 = 0;
-    if (sz > 0) {
-      arg2 = (uint64_t)(signed char)bae[0];
-      for(i=1; i<sz; i++) {
-        arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
-      }
-    }
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	if (!jarg2) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
+	  return ;
+	}
+	clazz = (*jenv)->GetObjectClass(jenv, jarg2);
+	mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
+	ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
+	bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	sz = (*jenv)->GetArrayLength(jenv, ba);
+	arg2 = 0;
+	if (sz > 0) {
+	  arg2 = (uint64_t)(signed char)bae[0];
+	  for(i=1; i<sz; i++) {
+		arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
+	  }
+	}
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
   }
   if (arg1) (arg1)->timestampReserved = arg2;
 }
@@ -3801,22 +3801,22 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1t_1timestampReserved_1
   arg1 = *(neomessage_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestampReserved);
   {
-    jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
-    jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
-    jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
-    jobject bigint;
-    int i;
+	jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
+	jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
+	jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
+	jobject bigint;
+	int i;
 
-    bae[0] = 0;
-    for(i=1; i<9; i++ ) {
-      bae[i] = (jbyte)(result>>8*(8-i));
-    }
+	bae[0] = 0;
+	for(i=1; i<9; i++ ) {
+	  bae[i] = (jbyte)(result>>8*(8-i));
+	}
 
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
-    bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
-    (*jenv)->DeleteLocalRef(jenv, ba);
-    jresult = bigint;
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
+	(*jenv)->DeleteLocalRef(jenv, ba);
+	jresult = bigint;
   }
   return jresult;
 }
@@ -3894,14 +3894,14 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1header_1set(JNIEnv *je
   (void)jarg1_;
   arg1 = *(neomessage_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 4) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
+	return ;
   }
   if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
-    size_t ii;
-    uint8_t *b = (uint8_t *) arg1->header;
-    for (ii = 0; ii < (size_t)4; ii++) b[ii] = *((uint8_t *) arg2 + ii);
+	size_t ii;
+	uint8_t *b = (uint8_t *) arg1->header;
+	for (ii = 0; ii < (size_t)4; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
   SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
   free(arg2);
@@ -3989,14 +3989,14 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1reserved_1set(JNIEnv *
   (void)jarg1_;
   arg1 = *(neomessage_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 17) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
+	return ;
   }
   if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
-    size_t ii;
-    uint8_t *b = (uint8_t *) arg1->reserved;
-    for (ii = 0; ii < (size_t)17; ii++) b[ii] = *((uint8_t *) arg2 + ii);
+	size_t ii;
+	uint8_t *b = (uint8_t *) arg1->reserved;
+	for (ii = 0; ii < (size_t)17; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
   SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
   free(arg2);
@@ -4078,30 +4078,30 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestamp_1set(JN
   (void)jarg1_;
   arg1 = *(neomessage_can_t **)&jarg1;
   {
-    jclass clazz;
-    jmethodID mid;
-    jbyteArray ba;
-    jbyte* bae;
-    jsize sz;
-    int i;
+	jclass clazz;
+	jmethodID mid;
+	jbyteArray ba;
+	jbyte* bae;
+	jsize sz;
+	int i;
 
-    if (!jarg2) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
-      return ;
-    }
-    clazz = (*jenv)->GetObjectClass(jenv, jarg2);
-    mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
-    ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
-    bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    sz = (*jenv)->GetArrayLength(jenv, ba);
-    arg2 = 0;
-    if (sz > 0) {
-      arg2 = (uint64_t)(signed char)bae[0];
-      for(i=1; i<sz; i++) {
-        arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
-      }
-    }
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	if (!jarg2) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
+	  return ;
+	}
+	clazz = (*jenv)->GetObjectClass(jenv, jarg2);
+	mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
+	ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
+	bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	sz = (*jenv)->GetArrayLength(jenv, ba);
+	arg2 = 0;
+	if (sz > 0) {
+	  arg2 = (uint64_t)(signed char)bae[0];
+	  for(i=1; i<sz; i++) {
+		arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
+	  }
+	}
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
   }
   if (arg1) (arg1)->timestamp = arg2;
 }
@@ -4118,22 +4118,22 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestamp_1get
   arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestamp);
   {
-    jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
-    jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
-    jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
-    jobject bigint;
-    int i;
+	jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
+	jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
+	jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
+	jobject bigint;
+	int i;
 
-    bae[0] = 0;
-    for(i=1; i<9; i++ ) {
-      bae[i] = (jbyte)(result>>8*(8-i));
-    }
+	bae[0] = 0;
+	for(i=1; i<9; i++ ) {
+	  bae[i] = (jbyte)(result>>8*(8-i));
+	}
 
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
-    bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
-    (*jenv)->DeleteLocalRef(jenv, ba);
-    jresult = bigint;
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
+	(*jenv)->DeleteLocalRef(jenv, ba);
+	jresult = bigint;
   }
   return jresult;
 }
@@ -4148,30 +4148,30 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestampReserved
   (void)jarg1_;
   arg1 = *(neomessage_can_t **)&jarg1;
   {
-    jclass clazz;
-    jmethodID mid;
-    jbyteArray ba;
-    jbyte* bae;
-    jsize sz;
-    int i;
+	jclass clazz;
+	jmethodID mid;
+	jbyteArray ba;
+	jbyte* bae;
+	jsize sz;
+	int i;
 
-    if (!jarg2) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
-      return ;
-    }
-    clazz = (*jenv)->GetObjectClass(jenv, jarg2);
-    mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
-    ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
-    bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    sz = (*jenv)->GetArrayLength(jenv, ba);
-    arg2 = 0;
-    if (sz > 0) {
-      arg2 = (uint64_t)(signed char)bae[0];
-      for(i=1; i<sz; i++) {
-        arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
-      }
-    }
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	if (!jarg2) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
+	  return ;
+	}
+	clazz = (*jenv)->GetObjectClass(jenv, jarg2);
+	mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
+	ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
+	bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	sz = (*jenv)->GetArrayLength(jenv, ba);
+	arg2 = 0;
+	if (sz > 0) {
+	  arg2 = (uint64_t)(signed char)bae[0];
+	  for(i=1; i<sz; i++) {
+		arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
+	  }
+	}
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
   }
   if (arg1) (arg1)->timestampReserved = arg2;
 }
@@ -4188,22 +4188,22 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1timestampReser
   arg1 = *(neomessage_can_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestampReserved);
   {
-    jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
-    jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
-    jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
-    jobject bigint;
-    int i;
+	jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
+	jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
+	jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
+	jobject bigint;
+	int i;
 
-    bae[0] = 0;
-    for(i=1; i<9; i++ ) {
-      bae[i] = (jbyte)(result>>8*(8-i));
-    }
+	bae[0] = 0;
+	for(i=1; i<9; i++ ) {
+	  bae[i] = (jbyte)(result>>8*(8-i));
+	}
 
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
-    bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
-    (*jenv)->DeleteLocalRef(jenv, ba);
-    jresult = bigint;
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
+	(*jenv)->DeleteLocalRef(jenv, ba);
+	jresult = bigint;
   }
   return jresult;
 }
@@ -4393,14 +4393,14 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1can_1t_1reserved_1set(JNI
   (void)jarg1_;
   arg1 = *(neomessage_can_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 16) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
+	return ;
   }
   if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
-    size_t ii;
-    uint8_t *b = (uint8_t *) arg1->reserved;
-    for (ii = 0; ii < (size_t)16; ii++) b[ii] = *((uint8_t *) arg2 + ii);
+	size_t ii;
+	uint8_t *b = (uint8_t *) arg1->reserved;
+	for (ii = 0; ii < (size_t)16; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
   SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
   free(arg2);
@@ -4482,30 +4482,30 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestamp_1set(JN
   (void)jarg1_;
   arg1 = *(neomessage_eth_t **)&jarg1;
   {
-    jclass clazz;
-    jmethodID mid;
-    jbyteArray ba;
-    jbyte* bae;
-    jsize sz;
-    int i;
+	jclass clazz;
+	jmethodID mid;
+	jbyteArray ba;
+	jbyte* bae;
+	jsize sz;
+	int i;
 
-    if (!jarg2) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
-      return ;
-    }
-    clazz = (*jenv)->GetObjectClass(jenv, jarg2);
-    mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
-    ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
-    bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    sz = (*jenv)->GetArrayLength(jenv, ba);
-    arg2 = 0;
-    if (sz > 0) {
-      arg2 = (uint64_t)(signed char)bae[0];
-      for(i=1; i<sz; i++) {
-        arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
-      }
-    }
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	if (!jarg2) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
+	  return ;
+	}
+	clazz = (*jenv)->GetObjectClass(jenv, jarg2);
+	mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
+	ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
+	bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	sz = (*jenv)->GetArrayLength(jenv, ba);
+	arg2 = 0;
+	if (sz > 0) {
+	  arg2 = (uint64_t)(signed char)bae[0];
+	  for(i=1; i<sz; i++) {
+		arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
+	  }
+	}
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
   }
   if (arg1) (arg1)->timestamp = arg2;
 }
@@ -4522,22 +4522,22 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestamp_1get
   arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestamp);
   {
-    jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
-    jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
-    jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
-    jobject bigint;
-    int i;
+	jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
+	jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
+	jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
+	jobject bigint;
+	int i;
 
-    bae[0] = 0;
-    for(i=1; i<9; i++ ) {
-      bae[i] = (jbyte)(result>>8*(8-i));
-    }
+	bae[0] = 0;
+	for(i=1; i<9; i++ ) {
+	  bae[i] = (jbyte)(result>>8*(8-i));
+	}
 
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
-    bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
-    (*jenv)->DeleteLocalRef(jenv, ba);
-    jresult = bigint;
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
+	(*jenv)->DeleteLocalRef(jenv, ba);
+	jresult = bigint;
   }
   return jresult;
 }
@@ -4552,30 +4552,30 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestampReserved
   (void)jarg1_;
   arg1 = *(neomessage_eth_t **)&jarg1;
   {
-    jclass clazz;
-    jmethodID mid;
-    jbyteArray ba;
-    jbyte* bae;
-    jsize sz;
-    int i;
+	jclass clazz;
+	jmethodID mid;
+	jbyteArray ba;
+	jbyte* bae;
+	jsize sz;
+	int i;
 
-    if (!jarg2) {
-      SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
-      return ;
-    }
-    clazz = (*jenv)->GetObjectClass(jenv, jarg2);
-    mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
-    ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
-    bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    sz = (*jenv)->GetArrayLength(jenv, ba);
-    arg2 = 0;
-    if (sz > 0) {
-      arg2 = (uint64_t)(signed char)bae[0];
-      for(i=1; i<sz; i++) {
-        arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
-      }
-    }
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	if (!jarg2) {
+	  SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "BigInteger null");
+	  return ;
+	}
+	clazz = (*jenv)->GetObjectClass(jenv, jarg2);
+	mid = (*jenv)->GetMethodID(jenv, clazz, "toByteArray", "()[B");
+	ba = (jbyteArray)(*jenv)->CallObjectMethod(jenv, jarg2, mid);
+	bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	sz = (*jenv)->GetArrayLength(jenv, ba);
+	arg2 = 0;
+	if (sz > 0) {
+	  arg2 = (uint64_t)(signed char)bae[0];
+	  for(i=1; i<sz; i++) {
+		arg2 = (arg2 << 8) | (uint64_t)(unsigned char)bae[i];
+	  }
+	}
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
   }
   if (arg1) (arg1)->timestampReserved = arg2;
 }
@@ -4592,22 +4592,22 @@ SWIGEXPORT jobject JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1timestampReser
   arg1 = *(neomessage_eth_t **)&jarg1;
   result = (uint64_t) ((arg1)->timestampReserved);
   {
-    jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
-    jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
-    jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
-    jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
-    jobject bigint;
-    int i;
+	jbyteArray ba = (*jenv)->NewByteArray(jenv, 9);
+	jbyte* bae = (*jenv)->GetByteArrayElements(jenv, ba, 0);
+	jclass clazz = (*jenv)->FindClass(jenv, "java/math/BigInteger");
+	jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "([B)V");
+	jobject bigint;
+	int i;
 
-    bae[0] = 0;
-    for(i=1; i<9; i++ ) {
-      bae[i] = (jbyte)(result>>8*(8-i));
-    }
+	bae[0] = 0;
+	for(i=1; i<9; i++ ) {
+	  bae[i] = (jbyte)(result>>8*(8-i));
+	}
 
-    (*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
-    bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
-    (*jenv)->DeleteLocalRef(jenv, ba);
-    jresult = bigint;
+	(*jenv)->ReleaseByteArrayElements(jenv, ba, bae, 0);
+	bigint = (*jenv)->NewObject(jenv, clazz, mid, ba);
+	(*jenv)->DeleteLocalRef(jenv, ba);
+	jresult = bigint;
   }
   return jresult;
 }
@@ -4713,14 +4713,14 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1reservedHeader_1s
   (void)jarg1_;
   arg1 = *(neomessage_eth_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
+	return ;
   }
   if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
-    size_t ii;
-    uint8_t *b = (uint8_t *) arg1->reservedHeader;
-    for (ii = 0; ii < (size_t)3; ii++) b[ii] = *((uint8_t *) arg2 + ii);
+	size_t ii;
+	uint8_t *b = (uint8_t *) arg1->reservedHeader;
+	for (ii = 0; ii < (size_t)3; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
   SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
   free(arg2);
@@ -4808,14 +4808,14 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1eth_1t_1reserved_1set(JNI
   (void)jarg1_;
   arg1 = *(neomessage_eth_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 17) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
+	return ;
   }
   if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
-    size_t ii;
-    uint8_t *b = (uint8_t *) arg1->reserved;
-    for (ii = 0; ii < (size_t)17; ii++) b[ii] = *((uint8_t *) arg2 + ii);
+	size_t ii;
+	uint8_t *b = (uint8_t *) arg1->reserved;
+	for (ii = 0; ii < (size_t)17; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
   SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
   free(arg2);
@@ -4977,16 +4977,16 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1metadata_1set(JNIEnv *
   arg1 = *(neoversion_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return ;
+	arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+	if (!arg2) return ;
   }
   {
-    if (arg2) {
-      arg1->metadata = (char const *) malloc(strlen((const char *)arg2)+1);
-      strcpy((char *)arg1->metadata, (const char *)arg2);
-    } else {
-      arg1->metadata = 0;
-    }
+	if (arg2) {
+	  arg1->metadata = (char const *) malloc(strlen((const char *)arg2)+1);
+	  strcpy((char *)arg1->metadata, (const char *)arg2);
+	} else {
+	  arg1->metadata = 0;
+	}
   }
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
 }
@@ -5017,16 +5017,16 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1buildBranch_1set(JNIEn
   arg1 = *(neoversion_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return ;
+	arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+	if (!arg2) return ;
   }
   {
-    if (arg2) {
-      arg1->buildBranch = (char const *) malloc(strlen((const char *)arg2)+1);
-      strcpy((char *)arg1->buildBranch, (const char *)arg2);
-    } else {
-      arg1->buildBranch = 0;
-    }
+	if (arg2) {
+	  arg1->buildBranch = (char const *) malloc(strlen((const char *)arg2)+1);
+	  strcpy((char *)arg1->buildBranch, (const char *)arg2);
+	} else {
+	  arg1->buildBranch = 0;
+	}
   }
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
 }
@@ -5057,16 +5057,16 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1buildTag_1set(JNIEnv *
   arg1 = *(neoversion_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return ;
+	arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+	if (!arg2) return ;
   }
   {
-    if (arg2) {
-      arg1->buildTag = (char const *) malloc(strlen((const char *)arg2)+1);
-      strcpy((char *)arg1->buildTag, (const char *)arg2);
-    } else {
-      arg1->buildTag = 0;
-    }
+	if (arg2) {
+	  arg1->buildTag = (char const *) malloc(strlen((const char *)arg2)+1);
+	  strcpy((char *)arg1->buildTag, (const char *)arg2);
+	} else {
+	  arg1->buildTag = 0;
+	}
   }
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
 }
@@ -5097,16 +5097,16 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoversion_1t_1reserved_1set(JNIEnv *
   arg1 = *(neoversion_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return ;
+	arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+	if (!arg2) return ;
   }
   {
-    if(arg2) {
-      strncpy((char*)arg1->reserved, (const char *)arg2, 32-1);
-      arg1->reserved[32-1] = 0;
-    } else {
-      arg1->reserved[0] = 0;
-    }
+	if(arg2) {
+	  strncpy((char*)arg1->reserved, (const char *)arg2, 32-1);
+	  arg1->reserved[32-1] = 0;
+	} else {
+	  arg1->reserved[0] = 0;
+	}
   }
 
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
@@ -5160,16 +5160,16 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1description_1set(JNIEnv 
   arg1 = *(neoevent_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return ;
+	arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+	if (!arg2) return ;
   }
   {
-    if (arg2) {
-      arg1->description = (char const *) malloc(strlen((const char *)arg2)+1);
-      strcpy((char *)arg1->description, (const char *)arg2);
-    } else {
-      arg1->description = 0;
-    }
+	if (arg2) {
+	  arg1->description = (char const *) malloc(strlen((const char *)arg2)+1);
+	  strcpy((char *)arg1->description, (const char *)arg2);
+	} else {
+	  arg1->description = 0;
+	}
   }
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
 }
@@ -5201,8 +5201,8 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1timestamp_1set(JNIEnv *j
   arg1 = *(neoevent_t **)&jarg1;
   argp2 = *(time_t **)&jarg2;
   if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null time_t");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null time_t");
+	return ;
   }
   arg2 = *argp2;
   if (arg1) (arg1)->timestamp = arg2;
@@ -5220,9 +5220,9 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neoevent_1t_1timestamp_1get(JNIEnv *
   arg1 = *(neoevent_t **)&jarg1;
   result =  ((arg1)->timestamp);
   {
-    time_t * resultptr = (time_t *) malloc(sizeof(time_t));
-    memmove(resultptr, &result, sizeof(time_t));
-    *(time_t **)&jresult = resultptr;
+	time_t * resultptr = (time_t *) malloc(sizeof(time_t));
+	memmove(resultptr, &result, sizeof(time_t));
+	*(time_t **)&jresult = resultptr;
   }
   return jresult;
 }
@@ -5294,16 +5294,16 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1serial_1set(JNIEnv *jenv
   arg1 = *(neoevent_t **)&jarg1;
   arg2 = 0;
   if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return ;
+	arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+	if (!arg2) return ;
   }
   {
-    if(arg2) {
-      strncpy((char*)arg1->serial, (const char *)arg2, 7-1);
-      arg1->serial[7-1] = 0;
-    } else {
-      arg1->serial[0] = 0;
-    }
+	if(arg2) {
+	  strncpy((char*)arg1->serial, (const char *)arg2, 7-1);
+	  arg1->serial[7-1] = 0;
+	} else {
+	  arg1->serial[0] = 0;
+	}
   }
 
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
@@ -5335,14 +5335,14 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1reserved_1set(JNIEnv *je
   (void)jarg1_;
   arg1 = *(neoevent_t **)&jarg1;
   if (jarg2 && (*jenv)->GetArrayLength(jenv, jarg2) != 16) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaIndexOutOfBoundsException, "incorrect array size");
+	return ;
   }
   if (!SWIG_JavaArrayInUchar(jenv, &jarr2, (unsigned char **)&arg2, jarg2)) return ;
   {
-    size_t ii;
-    uint8_t *b = (uint8_t *) arg1->reserved;
-    for (ii = 0; ii < (size_t)16; ii++) b[ii] = *((uint8_t *) arg2 + ii);
+	size_t ii;
+	uint8_t *b = (uint8_t *) arg1->reserved;
+	for (ii = 0; ii < (size_t)16; ii++) b[ii] = *((uint8_t *) arg2 + ii);
   }
   SWIG_JavaArrayArgoutUchar(jenv, jarr2, (unsigned char *)arg2, jarg2);
   free(arg2);
@@ -6768,9 +6768,9 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neodevice_1t_1array_1getitem(JNIEnv 
   arg2 = (int)jarg2;
   result = neodevice_t_array_getitem(arg1,arg2);
   {
-    neodevice_t * resultptr = (neodevice_t *) malloc(sizeof(neodevice_t));
-    memmove(resultptr, &result, sizeof(neodevice_t));
-    *(neodevice_t **)&jresult = resultptr;
+	neodevice_t * resultptr = (neodevice_t *) malloc(sizeof(neodevice_t));
+	memmove(resultptr, &result, sizeof(neodevice_t));
+	*(neodevice_t **)&jresult = resultptr;
   }
   return jresult;
 }
@@ -6790,8 +6790,8 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neodevice_1t_1array_1setitem(JNIEnv *
   arg2 = (int)jarg2;
   argp3 = *(neodevice_t **)&jarg3;
   if (!argp3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null neodevice_t");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null neodevice_t");
+	return ;
   }
   arg3 = *argp3;
   neodevice_t_array_setitem(arg1,arg2,arg3);
@@ -6836,9 +6836,9 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neoevent_1t_1array_1getitem(JNIEnv *
   arg2 = (int)jarg2;
   result = neoevent_t_array_getitem(arg1,arg2);
   {
-    neoevent_t * resultptr = (neoevent_t *) malloc(sizeof(neoevent_t));
-    memmove(resultptr, &result, sizeof(neoevent_t));
-    *(neoevent_t **)&jresult = resultptr;
+	neoevent_t * resultptr = (neoevent_t *) malloc(sizeof(neoevent_t));
+	memmove(resultptr, &result, sizeof(neoevent_t));
+	*(neoevent_t **)&jresult = resultptr;
   }
   return jresult;
 }
@@ -6858,8 +6858,8 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neoevent_1t_1array_1setitem(JNIEnv *j
   arg2 = (int)jarg2;
   argp3 = *(neoevent_t **)&jarg3;
   if (!argp3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null neoevent_t");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null neoevent_t");
+	return ;
   }
   arg3 = *argp3;
   neoevent_t_array_setitem(arg1,arg2,arg3);
@@ -6904,9 +6904,9 @@ SWIGEXPORT jlong JNICALL Java_icsneojavaJNI_neomessage_1t_1array_1getitem(JNIEnv
   arg2 = (int)jarg2;
   result = neomessage_t_array_getitem(arg1,arg2);
   {
-    neomessage_t * resultptr = (neomessage_t *) malloc(sizeof(neomessage_t));
-    memmove(resultptr, &result, sizeof(neomessage_t));
-    *(neomessage_t **)&jresult = resultptr;
+	neomessage_t * resultptr = (neomessage_t *) malloc(sizeof(neomessage_t));
+	memmove(resultptr, &result, sizeof(neomessage_t));
+	*(neomessage_t **)&jresult = resultptr;
   }
   return jresult;
 }
@@ -6926,8 +6926,8 @@ SWIGEXPORT void JNICALL Java_icsneojavaJNI_neomessage_1t_1array_1setitem(JNIEnv 
   arg2 = (int)jarg2;
   argp3 = *(neomessage_t **)&jarg3;
   if (!argp3) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null neomessage_t");
-    return ;
+	SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null neomessage_t");
+	return ;
   }
   arg3 = *argp3;
   neomessage_t_array_setitem(arg1,arg2,arg3);

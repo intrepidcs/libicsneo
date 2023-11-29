@@ -5,10 +5,10 @@ cmake_policy(SET CMP0074 NEW)
 
 option(LIBICSNEO_BUILD_TESTS "Build all tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
-option(LIBICSNEO_BUILD_EXAMPLES "Build examples." OFF)
+option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
 option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
-option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" OFF)
+option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
 
 # Device Drivers
@@ -16,12 +16,12 @@ set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to
 # it is only relevant for communication between Linux and
 # CoreMini from the onboard processor of the device.
 option(LIBICSNEO_ENABLE_FIRMIO "Enable communication between Linux and CoreMini within the same device" OFF)
-option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw ethernet" OFF)
-option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" OFF)
+option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw ethernet" ON)
+option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" ON)
 option(LIBICSNEO_ENABLE_ANDROIDUSB "Enable devices which communicate over USB CDC ACM on Android" ON)
-option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" OFF)
+option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" ON)
 option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
-option(LIBICSNEO_ENABLE_FTD3XX "Enable devices which communicate over USB FTD3XX" OFF)
+option(LIBICSNEO_ENABLE_FTD3XX "Enable devices which communicate over USB FTD3XX" ON)
 
 if(NOT CMAKE_CXX_STANDARD)
 	set(CMAKE_CXX_STANDARD 17)
@@ -165,12 +165,6 @@ else() # Darwin or Linux
 				)
 			endif()
 		endif()
-	endif()
-
-	if(LIBICSNEO_ENABLE_ANDROIDUSB)
-		list(APPEND PLATFORM_SRC
-				platform/posix/android/androidusb.cpp
-			)
 	endif()
 endif()
 

@@ -45,57 +45,14 @@ bool ANDROIDUSB::open() {
         LOGD("Failed isOpen check in open(): %ul\n", device.handle);
         return false;
     }
-
-    /*
-    struct termios tty = {};
-    struct termios compare = {};
-
-    if(tcgetattr(fd, &tty) != 0) {
-        close();
-        report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
-        report(APIEvent::Type::DriverTCGetAddrFail, APIEvent::Severity::Error);
-        return false;
-    }
-
-    tty.c_cflag |= (CLOCAL | CREAD); // Ignore modem controls
-    tty.c_cflag &= ~CSIZE;
-    tty.c_cflag |= CS8; // 8-bit characters
-    tty.c_cflag &= ~PARENB; // No parity bit
-    tty.c_cflag &= ~CSTOPB; // One stop bit
-    tty.c_cflag &= ~CRTSCTS; // No hardware flow control
-
-    // Non-canonical mode
-    tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
-    tty.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-    tty.c_oflag &= ~OPOST;
-
-    // Fetch bytes as they become available
-    // See http://man7.org/linux/man-pages/man3/termios.3.html
-    tty.c_cc[VMIN] = 0;
-    tty.c_cc[VTIME] = 1; // 100ms timeout (1 decisecond, what?)
-
-    if(tcsetattr(fd, TCSAFLUSH, &tty) != 0) { // Flushes input and output buffers as well as setting settings
-        close();
-        report(APIEvent::Type::DriverFailedToOpen, APIEvent::Severity::Error);
-        report(APIEvent::Type::DriverTCSetAddrFail, APIEvent::Severity::Error);
-        return false;
-    }
-
-    if(tcgetattr(fd, &compare) != 0 || memcmp(&tty, &compare, sizeof(struct termios)) != 0) {
-        close();
-        return false;
-    }
-     */
-
     // Create threads
     readThread = std::thread(&ANDROIDUSB::readTask, this);
     writeThread = std::thread(&ANDROIDUSB::writeTask, this);
-
     return true;
 }
 
 bool ANDROIDUSB::isOpen() {
-    LOGD("isOpen handle: %i, openStatus: %s\n", device.handle, openStatus?"true":"false");
+    //LOGD("isOpen handle: %i, openStatus: %s\n", device.handle, openStatus?"true":"false");
     return ((device.handle >= 0) && (openStatus)); // Negative fd indicates error or not opened yet
 }
 
@@ -117,6 +74,7 @@ bool ANDROIDUSB::close() {
     disconnected = false;
 
     systemFDs[device.handle] = nullptr;
+    openStatus = false;
     device.handle = -1;
 
     uint8_t flush;
@@ -137,7 +95,7 @@ void ANDROIDUSB::readTask() {
         devh = mapItr->second;
     }
     while(!closing && !isDisconnected()) {
-        int bytesRead = 0; // ::read(fd, readbuf, READ_BUFFER_SIZE);
+        int bytesRead = 0;
         auto ret = libusb_bulk_transfer(devh, ep_in_addr, readbuf, READ_BUFFER_SIZE, &bytesRead, 50);
         if (ret == LIBUSB_ERROR_TIMEOUT) {
             continue;
@@ -239,11 +197,11 @@ void ANDROIDUSB::Find(std::vector<FoundDevice>& found) {
         LOGD("libusb_init failed: %d\n", ret);
         return;
     }
-    LOGD("libusb_init completed: %d\n", ret);
-    LOGD("SYSTEM FDs size: %d\n", systemFDs.size());
+    //LOGD("libusb_init completed: %d\n", ret);
+    //LOGD("SYSTEM FDs size: %d\n", systemFDs.size());
     for (auto & [fd, libUsbHandle]: systemFDs) {
         ret = libusb_wrap_sys_device(ctx, (intptr_t) fd, &libusbDeviceHandle);
-        LOGD("Wrapping system FD: %d, return: %s\n", fd, libusb_strerror(ret));
+        //LOGD("Wrapping system FD: %d, return: %s\n", fd, libusb_strerror(ret));
         if (ret == 0) {
             FoundDevice device = {};
             struct libusb_device_descriptor desc;
@@ -252,14 +210,13 @@ void ANDROIDUSB::Find(std::vector<FoundDevice>& found) {
                 ret = libusb_get_device_descriptor(libusb_get_device(libusbDeviceHandle), &desc);
                 if (ret == 0) {
                     device.productId = desc.idProduct;
-                    LOGD("ProductID: %x\n", device.productId);
+                    //LOGD("ProductID: %x\n", device.productId);
                     ret = libusb_get_string_descriptor_ascii(libusbDeviceHandle, desc.iSerialNumber,
                                                              outString, sizeof(outString));
 
                     if (ret > 0) {
                         std::strncpy(device.serial, reinterpret_cast<char *>(outString),
                                      sizeof(device.serial));
-                        LOGD("Serial Number: %s\n", device.serial);
                     } else {
                         LOGD("Serial number fetch failed!\n");
                     }
