@@ -88,6 +88,17 @@ public:
 				return nullptr;
 		}
 	}
+	const LIN_SETTINGS* getLINSettingsFor(Network net) const override {
+		auto cfg = getStructurePointer<etherbadge_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		switch(net.getNetID()) {
+			case Network::NetID::LIN:
+				return &(cfg->lin1);
+			default:
+				return nullptr;
+		}
+	}
 };
 
 }

@@ -131,6 +131,23 @@ public:
 				return nullptr;
 		}
 	}
+	const LIN_SETTINGS* getLINSettingsFor(Network net) const override {
+		auto cfg = getStructurePointer<neovifire_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		switch(net.getNetID()) {
+			case Network::NetID::LIN:
+				return &(cfg->lin1);
+			case Network::NetID::LIN2:
+				return &(cfg->lin2);
+			case Network::NetID::LIN3:
+				return &(cfg->lin3);
+			case Network::NetID::LIN4:
+				return &(cfg->lin4);
+			default:
+				return nullptr;
+		}
+	}
 };
 
 }

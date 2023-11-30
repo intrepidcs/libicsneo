@@ -229,6 +229,32 @@ public:
 		};
 	}
 
+	const LIN_SETTINGS* getLINSettingsFor(Network net) const override {
+		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		switch(net.getNetID()) {
+			case Network::NetID::LIN:
+				return &(cfg->lin1);
+			case Network::NetID::LIN2:
+				return &(cfg->lin2);
+			case Network::NetID::LIN3:
+				return &(cfg->lin3);
+			case Network::NetID::LIN4:
+				return &(cfg->lin4);
+			case Network::NetID::LIN5:
+				return &(cfg->lin5);
+			case Network::NetID::LIN6:
+				return &(cfg->lin6);
+			case Network::NetID::LIN7:
+				return &(cfg->lin7);
+			case Network::NetID::LIN8:
+				return &(cfg->lin8);
+			default:
+				return nullptr;
+		}
+	}
+
 protected:
 	ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const override {
 		auto cfg = getStructurePointer<neovifire3_settings_t>();
