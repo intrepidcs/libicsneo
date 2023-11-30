@@ -84,8 +84,8 @@ int main() {
 		else
 			std::cout << "OK, " << (baud) << "bit/s" << std::endl;
 
-		std::cout << "Enable LIN master resistor... ";
-		ret &= device->settings->setMasterResistorFor(icsneo::Network::NetID::LIN, true);
+		std::cout << "Enable LIN commander resistor... ";
+		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN, true);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Setting LIN2 to operate at " << baud << "bit/s... ";
@@ -100,8 +100,8 @@ int main() {
 		ret = device->settings->setLINModeFor(icsneo::Network::NetID::LIN2, NORMAL_MODE);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
-		std::cout << "Disable LIN2 master resistor... ";
-		ret &= device->settings->setMasterResistorFor(icsneo::Network::NetID::LIN2, false);
+		std::cout << "Disable LIN2 commander resistor... ";
+		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN2, false);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Applying settings... ";

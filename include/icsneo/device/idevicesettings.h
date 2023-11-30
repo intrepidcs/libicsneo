@@ -558,7 +558,7 @@ typedef struct _LIN_SETTINGS
 	uint16_t spbrg; /* Precompiled to be 40Mhz/Baudrate/16 - 1.  Only used in neoVI FIRE/FIREVNET(4dw) */
 	uint8_t brgh; /* Must be zero */
 	uint8_t numBitsDelay;
-	uint8_t MasterResistor;
+	uint8_t CommanderResistor;
 	uint8_t Mode;
 } LIN_SETTINGS;
 #define LIN_SETTINGS_SIZE 10
@@ -765,22 +765,22 @@ public:
 	bool setTerminationFor(Network net, bool enabled);
 
 	/**
-	 * Check whether software switchable master resistor is currently
+	 * Check whether software switchable commander resistor is currently
 	 * enabled for a given network in the currently active device settings.
 	 *
 	 * Returns true if the call was successful, otherwise an error
 	 * will have been reported in icsneo::getLastError().
 	 */
-	std::optional<bool> isMasterResistorEnabledFor(Network net) const;
+	std::optional<bool> isCommanderResistorEnabledFor(Network net) const;
 
 	/**
-	 * Enable or disable software switchable master resistor for a given
+	 * Enable or disable software switchable commander resistor for a given
 	 * network.
 	 *
 	 * Returns true if the call was successful, otherwise an error
 	 * will have been reported in icsneo::getLastError().
 	 */
-	bool setMasterResistorFor(Network net, bool resistor_on);
+	bool setCommanderResistorFor(Network net, bool resistor_on);
 
 	/**
 	 * Get LIN mode for a given network in the currently active device
@@ -797,19 +797,19 @@ public:
 	bool setLINModeFor(Network net, enum LINMode mode);
 
 	/**
-	 * Get number of bit delays between Master ID and first Slave byte for
+	 * Get number of bit delays between commander ID and first responder byte for
 	 * a given network in the currently active device settings.
 	 */
-	std::optional<uint8_t> getLINMasterSlaveIntervalFor(Network net) const;
+	std::optional<uint8_t> getLINCommanderResponseTimeFor(Network net) const;
 
 	/**
-	 * Set number of bit delays between Master ID and first Slave byte for
+	 * Set number of bit delays between commander ID and first responder byte for
 	 * a given network
 	 *
 	 * Returns true if the call was successful, otherwise an error
 	 * will have been reported in icsneo::getLastError().
 	 */
-	bool setLINMasterSlaveIntervalFor(Network net, uint8_t bits);
+	bool setLINCommanderResponseTimeFor(Network net, uint8_t bits);
 
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }

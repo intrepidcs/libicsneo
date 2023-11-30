@@ -759,7 +759,7 @@ bool IDeviceSettings::setTerminationFor(Network net, bool enabled) {
 	return true;
 }
 
-std::optional<bool> IDeviceSettings::isMasterResistorEnabledFor(Network net) const {
+std::optional<bool> IDeviceSettings::isCommanderResistorEnabledFor(Network net) const {
 	if(!settingsLoaded) {
 		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return std::nullopt;
@@ -778,7 +778,7 @@ std::optional<bool> IDeviceSettings::isMasterResistorEnabledFor(Network net) con
 				return std::nullopt;
 			}
 
-			return (cfg->MasterResistor != RESISTOR_OFF);
+			return (cfg->CommanderResistor != RESISTOR_OFF);
 		}
 		default:
 			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
@@ -786,7 +786,7 @@ std::optional<bool> IDeviceSettings::isMasterResistorEnabledFor(Network net) con
 	}
 }
 
-bool IDeviceSettings::setMasterResistorFor(Network net, bool resistor_on) {
+bool IDeviceSettings::setCommanderResistorFor(Network net, bool resistor_on) {
 	if(disabled) {
 		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
@@ -810,7 +810,7 @@ bool IDeviceSettings::setMasterResistorFor(Network net, bool resistor_on) {
 				return false;
 			}
 
-			cfg->MasterResistor = resistor_on ? RESISTOR_ON : RESISTOR_OFF;
+			cfg->CommanderResistor = resistor_on ? RESISTOR_ON : RESISTOR_OFF;
 			return true;
 		}
 		default:
@@ -819,7 +819,7 @@ bool IDeviceSettings::setMasterResistorFor(Network net, bool resistor_on) {
 	}
 }
 
-std::optional<enum LINMode> IDeviceSettings::getLINModeFor(Network net) const {
+std::optional<LINMode> IDeviceSettings::getLINModeFor(Network net) const {
 	if(!settingsLoaded) {
 		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return std::nullopt;
@@ -838,7 +838,7 @@ std::optional<enum LINMode> IDeviceSettings::getLINModeFor(Network net) const {
 				return std::nullopt;
 			}
 
-			return (enum LINMode)cfg->Mode;
+			return static_cast<LINMode>(cfg->Mode);
 		}
 		default:
 			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
@@ -846,7 +846,7 @@ std::optional<enum LINMode> IDeviceSettings::getLINModeFor(Network net) const {
 	}
 }
 
-bool IDeviceSettings::setLINModeFor(Network net, enum LINMode mode) {
+bool IDeviceSettings::setLINModeFor(Network net, LINMode mode) {
 	if(disabled) {
 		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
@@ -870,7 +870,7 @@ bool IDeviceSettings::setLINModeFor(Network net, enum LINMode mode) {
 				return false;
 			}
 
-			cfg->Mode = (uint8_t)mode;
+			cfg->Mode = static_cast<uint8_t>(mode);
 			return true;
 		}
 		default:
@@ -879,7 +879,7 @@ bool IDeviceSettings::setLINModeFor(Network net, enum LINMode mode) {
 	}
 }
 
-std::optional<uint8_t> IDeviceSettings::getLINMasterSlaveIntervalFor(Network net) const {
+std::optional<uint8_t> IDeviceSettings::getLINCommanderResponseTimeFor(Network net) const {
 	if(!settingsLoaded) {
 		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return std::nullopt;
@@ -906,7 +906,7 @@ std::optional<uint8_t> IDeviceSettings::getLINMasterSlaveIntervalFor(Network net
 	}
 }
 
-bool IDeviceSettings::setLINMasterSlaveIntervalFor(Network net, uint8_t bits) {
+bool IDeviceSettings::setLINCommanderResponseTimeFor(Network net, uint8_t bits) {
 	if(disabled) {
 		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
