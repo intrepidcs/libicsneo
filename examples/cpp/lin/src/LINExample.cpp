@@ -77,6 +77,37 @@ int main() {
 		}
 		std::cout << "OK" << std::endl;
 
+		std::cout << "\tGetting LIN Baudrate... ";
+		int64_t baud = device->settings->getBaudrateFor(icsneo::Network::NetID::LIN);
+		if(baud < 0)
+			std::cout << "FAIL" << std::endl;
+		else
+			std::cout << "OK, " << (baud) << "bit/s" << std::endl;
+
+		std::cout << "Enable LIN commander resistor... ";
+		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN, true);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
+		std::cout << "Setting LIN2 to operate at " << baud << "bit/s... ";
+		ret = device->settings->setBaudrateFor(icsneo::Network::NetID::LIN2, baud);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
+		std::cout << "Setting LIN mode to NORMAL... ";
+		ret = device->settings->setLINModeFor(icsneo::Network::NetID::LIN, NORMAL_MODE);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
+		std::cout << "Setting LIN2 mode to NORMAL... ";
+		ret = device->settings->setLINModeFor(icsneo::Network::NetID::LIN2, NORMAL_MODE);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
+		std::cout << "Disable LIN2 commander resistor... ";
+		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN2, false);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
+		std::cout << "Applying settings... ";
+		ret = device->settings->apply(true);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
 		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> message) {
 			if(icsneo::Message::Type::Frame == message->type) {
 				auto frame = std::static_pointer_cast<icsneo::Frame>(message);
@@ -125,7 +156,7 @@ int main() {
 
 		// Go offline, stop sending and receiving traffic
 		auto shutdown = [&](){
-			device->removeMessageCallback(handler); 
+			device->removeMessageCallback(handler);
 			std::cout << "\tGoing offline... ";
 			ret = device->goOffline();
 			std::cout << (ret ? "OK" : "FAIL") << std::endl;

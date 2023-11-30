@@ -104,6 +104,8 @@ public:
 		LiveDataEncoderError = 0x2050,
 		LiveDataDecoderError = 0x2051,
 		LiveDataNotSupported = 0x2052,
+		LINSettingsNotAvailable = 0x2053,
+		ModeNotFound = 0x2054,
 
 		// Transport Events
 		FailedToRead = 0x3000,

@@ -121,6 +121,18 @@ public:
 		}
 	}
 
+	const LIN_SETTINGS* getLINSettingsFor(Network net) const override {
+		auto cfg = getStructurePointer<rada2b_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		switch(net.getNetID()) {
+			case Network::NetID::LIN:
+				return &(cfg->lin1);
+			default:
+				return nullptr;
+		}
+	}
+
 	TDMMode getTDMMode(RADA2BDevice device) const {
 		auto cfg = getStructurePointer<rada2b_settings_t>();
 		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;

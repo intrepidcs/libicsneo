@@ -544,7 +544,7 @@ enum
 };
 
 /* Mode in LIN_SETTINGS */
-enum
+enum LINMode
 {
 	SLEEP_MODE,
 	SLOW_MODE,
@@ -558,7 +558,7 @@ typedef struct _LIN_SETTINGS
 	uint16_t spbrg; /* Precompiled to be 40Mhz/Baudrate/16 - 1.  Only used in neoVI FIRE/FIREVNET(4dw) */
 	uint8_t brgh; /* Must be zero */
 	uint8_t numBitsDelay;
-	uint8_t MasterResistor;
+	uint8_t CommanderResistor;
 	uint8_t Mode;
 } LIN_SETTINGS;
 #define LIN_SETTINGS_SIZE 10
@@ -643,6 +643,7 @@ public:
 	static std::optional<uint16_t> CalculateGSChecksum(const std::vector<uint8_t>& settings, std::optional<size_t> knownSize = std::nullopt);
 	static CANBaudrate GetEnumValueForBaudrate(int64_t baudrate);
 	static int64_t GetBaudrateValueForEnum(CANBaudrate enumValue);
+	static bool ValidateLINBaudrate(int64_t baudrate);
 
 	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), report(com->report), structSize(size) {}
 	virtual ~IDeviceSettings() {}
@@ -700,6 +701,16 @@ public:
 		return reinterpret_cast<SWCAN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
+	virtual const LIN_SETTINGS* getLINSettingsFor(Network net) const { (void)net; return nullptr; }
+	LIN_SETTINGS* getMutableLINSettingsFor(Network net) {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = (const uint8_t*)getLINSettingsFor(net);
+		if(offset == nullptr)
+			return nullptr;
+		return reinterpret_cast<LIN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+	}
+
 	/**
 	 * Some devices have groupings of networks, where software
 	 * switchable termination can only be applied to one network
@@ -752,6 +763,53 @@ public:
 	 * will have been reported in icsneo::getLastError().
 	 */
 	bool setTerminationFor(Network net, bool enabled);
+
+	/**
+	 * Check whether software switchable commander resistor is currently
+	 * enabled for a given network in the currently active device settings.
+	 *
+	 * Returns true if the call was successful, otherwise an error
+	 * will have been reported in icsneo::getLastError().
+	 */
+	std::optional<bool> isCommanderResistorEnabledFor(Network net) const;
+
+	/**
+	 * Enable or disable software switchable commander resistor for a given
+	 * network.
+	 *
+	 * Returns true if the call was successful, otherwise an error
+	 * will have been reported in icsneo::getLastError().
+	 */
+	bool setCommanderResistorFor(Network net, bool resistor_on);
+
+	/**
+	 * Get LIN mode for a given network in the currently active device
+	 * settings.
+	 */
+	std::optional<enum LINMode> getLINModeFor(Network net) const;
+
+	/**
+	 * Set LIN mode for a given network.
+	 *
+	 * Returns true if the call was successful, otherwise an error
+	 * will have been reported in icsneo::getLastError().
+	 */
+	bool setLINModeFor(Network net, enum LINMode mode);
+
+	/**
+	 * Get number of bit delays between commander ID and first responder byte for
+	 * a given network in the currently active device settings.
+	 */
+	std::optional<uint8_t> getLINCommanderResponseTimeFor(Network net) const;
+
+	/**
+	 * Set number of bit delays between commander ID and first responder byte for
+	 * a given network
+	 *
+	 * Returns true if the call was successful, otherwise an error
+	 * will have been reported in icsneo::getLastError().
+	 */
+	bool setLINCommanderResponseTimeFor(Network net, uint8_t bits);
 
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }
