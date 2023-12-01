@@ -545,7 +545,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 				report(APIEvent::Type::BaudrateNotFound, APIEvent::Severity::Error);
 				return false;
 			}
-			cfg->Baudrate = baudrate;
+			cfg->Baudrate = (uint32_t)baudrate;
 			return true;
 		}
 		default:

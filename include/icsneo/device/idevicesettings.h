@@ -536,8 +536,8 @@ enum
 	BPS117647
 };
 
-/* MasterResistor in LIN_SETTINGS */
-enum
+/* CommanderResistor in LIN_SETTINGS */
+enum : uint8_t
 {
 	RESISTOR_ON,
 	RESISTOR_OFF

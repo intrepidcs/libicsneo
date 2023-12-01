@@ -55,8 +55,78 @@ int main() {
 			continue;
 		}
 		std::cout << "OK" << std::endl;
+		/*
+		std::cout << "\nApply default settings... ";
+		ret &= device->settings->applyDefaults();
+		if(!ret) {
+			std::cout << "FAIL\n" << std::endl;
+			device->close();
+			continue;
+		}
+		std::cout << "OK" << std::endl;
+		*/
+		int64_t baud = 19200;
+		
+		std::cout << "Enable LIN commander resistor... ";
+		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN, true);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
-		// The concept of going "online" tells the connected device to start listening, i.e. ACKing traffic and giving it to us
+		std::cout << "Disable LIN2 commander resistor... ";
+		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN2, false);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+		
+		std::cout << "Setting LIN to operate at " << baud << "bit/s... ";
+		ret = device->settings->setBaudrateFor(icsneo::Network::NetID::LIN, baud);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
+		std::cout << "Setting LIN2 to operate at " << baud << "bit/s... ";
+		ret = device->settings->setBaudrateFor(icsneo::Network::NetID::LIN2, baud);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
+		std::cout << "Setting LIN mode to NORMAL... ";
+		ret = device->settings->setLINModeFor(icsneo::Network::NetID::LIN, NORMAL_MODE);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
+		std::cout << "Setting LIN2 mode to NORMAL... ";
+		ret = device->settings->setLINModeFor(icsneo::Network::NetID::LIN2, NORMAL_MODE);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+		
+		std::cout << "Applying settings... ";
+		ret = device->settings->apply(true);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::cout << "\tGetting LIN Baudrate... ";
+		int64_t readBaud = device->settings->getBaudrateFor(icsneo::Network::NetID::LIN);
+		if(readBaud < 0)
+			std::cout << "FAIL" << std::endl;
+		else
+			std::cout << "OK, " << (readBaud) << "bit/s" << std::endl;
+
+		readBaud = device->settings->getBaudrateFor(icsneo::Network::NetID::LIN2);
+		if(readBaud < 0)
+			std::cout << "FAIL" << std::endl;
+		else
+			std::cout << "OK, " << (readBaud) << "bit/s" << std::endl;
+		
+		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> message) {
+			if(icsneo::Message::Type::Frame == message->type) {
+				auto frame = std::static_pointer_cast<icsneo::Frame>(message);
+				if(icsneo::Network::Type::LIN == frame->network.getType()) {
+					auto msg = std::static_pointer_cast<icsneo::LINMessage>(message);
+					std::cout << msg->network << " RX frame | ID: 0x" << std::hex << static_cast<int>(msg->ID) << " | ";
+					std::cout << "Protected ID: 0x" << static_cast<int>(msg->protectedID) << "\n" << "Data: ";
+					for(uint8_t& each : msg->data) {
+						std::cout << "0x" << static_cast<int>(each) << " ";
+					}
+					std::cout << "\nChecksum type: " << (msg->isEnhancedChecksum ? "Enhanced" : "Classic");
+					std::cout << "\nChecksum: 0x" << static_cast<int>(msg->checksum) << "\n";
+					std::cout << "Is checksum valid: " << ((!msg->errFlags.ErrChecksumMatch) ? "yes" : "no") << "\n\n";
+				}
+			}
+		}));
+
+				// The concept of going "online" tells the connected device to start listening, i.e. ACKing traffic and giving it to us
 		std::cout << "\tGoing online... ";
 		ret = device->goOnline();
 		if(!ret) {
@@ -76,54 +146,6 @@ int main() {
 			continue;
 		}
 		std::cout << "OK" << std::endl;
-
-		std::cout << "\tGetting LIN Baudrate... ";
-		int64_t baud = device->settings->getBaudrateFor(icsneo::Network::NetID::LIN);
-		if(baud < 0)
-			std::cout << "FAIL" << std::endl;
-		else
-			std::cout << "OK, " << (baud) << "bit/s" << std::endl;
-
-		std::cout << "Enable LIN commander resistor... ";
-		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN, true);
-		std::cout << (ret ? "OK" : "FAIL") << std::endl;
-
-		std::cout << "Setting LIN2 to operate at " << baud << "bit/s... ";
-		ret = device->settings->setBaudrateFor(icsneo::Network::NetID::LIN2, baud);
-		std::cout << (ret ? "OK" : "FAIL") << std::endl;
-
-		std::cout << "Setting LIN mode to NORMAL... ";
-		ret = device->settings->setLINModeFor(icsneo::Network::NetID::LIN, NORMAL_MODE);
-		std::cout << (ret ? "OK" : "FAIL") << std::endl;
-
-		std::cout << "Setting LIN2 mode to NORMAL... ";
-		ret = device->settings->setLINModeFor(icsneo::Network::NetID::LIN2, NORMAL_MODE);
-		std::cout << (ret ? "OK" : "FAIL") << std::endl;
-
-		std::cout << "Disable LIN2 commander resistor... ";
-		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN2, false);
-		std::cout << (ret ? "OK" : "FAIL") << std::endl;
-
-		std::cout << "Applying settings... ";
-		ret = device->settings->apply(true);
-		std::cout << (ret ? "OK" : "FAIL") << std::endl;
-
-		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> message) {
-			if(icsneo::Message::Type::Frame == message->type) {
-				auto frame = std::static_pointer_cast<icsneo::Frame>(message);
-				if(icsneo::Network::Type::LIN == frame->network.getType()) {
-					auto msg = std::static_pointer_cast<icsneo::LINMessage>(message);
-					std::cout << msg->network << " RX frame | ID: 0x" << std::hex << static_cast<int>(msg->ID) << " | ";
-					std::cout << "Protected ID: 0x" << static_cast<int>(msg->protectedID) << "\n" << "Data: ";
-					for(uint8_t& each : msg->data) {
-						std::cout << "0x" << static_cast<int>(each) << " ";
-					}
-					std::cout << "\nChecksum type: " << (msg->isEnhancedChecksum ? "Enhanced" : "Classic");
-					std::cout << "\nChecksum: 0x" << static_cast<int>(msg->checksum) << "\n";
-					std::cout << "Is checksum valid: " << ((!msg->errFlags.ErrChecksumMatch) ? "yes" : "no") << "\n\n";
-				}
-			}
-		}));
 
 		// We can transmit messages
 		std::cout << "\tTransmitting a LIN responder data frame... ";

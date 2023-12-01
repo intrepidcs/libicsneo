@@ -2980,7 +2980,6 @@ bool Device::parseVSA(
 	std::vector<uint8_t> buffer;
 	bool success = true;
 	bool moreToRead = true;
-	uint64_t numBytesRead = 0; // The number of bytes that have been read from the vsa buffer for this parse call
 	VSAParser::Settings parserSettings = VSAParser::Settings::messageRecords();
 	VSAParser parser(report, parserSettings);
 	parser.setMessageFilter(filter);
@@ -3017,7 +3016,6 @@ bool Device::parseVSA(
 			++readAttempt;
 		}
 
-		numBytesRead += amount;
 		success = parser.parseBytes(buffer.data(), amount);
 		if(!success) {
 			report(APIEvent::Type::VSAByteParseFailure, APIEvent::Severity::Error);

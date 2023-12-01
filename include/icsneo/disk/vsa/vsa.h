@@ -83,6 +83,7 @@ struct VSAExtractionSettings {
  */
 class VSA {
 public:
+	virtual ~VSA() = default;
 	static constexpr size_t StandardRecordSize = 32; // Size of most VSA records
 	static constexpr uint64_t RecordStartOffset = 0x06000000u; // Offset of VSA record ring buffer from start of VSA log file
 

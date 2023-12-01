@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.12)
 project(libicsneo VERSION 0.3.0)
 
 cmake_policy(SET CMP0074 NEW)
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
 
 option(LIBICSNEO_BUILD_TESTS "Build all tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)

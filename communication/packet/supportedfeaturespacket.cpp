@@ -23,6 +23,9 @@ std::shared_ptr<SupportedFeaturesMessage> SupportedFeaturesPacket::DecodeToMessa
 	}
 	// Get a reference to the payload to fully validate the length
 	const auto& response = *reinterpret_cast<const SupportedFeaturesResponse*>(bytes.data());
+	if(response.cmdVersion != SupportedFeaturesCommandVersion) {
+		return msg;
+	}
 	// Expected size is the header, cmdVersion and numValidBits fields, plus the number of 32-bit bitfields in the response based on numValidBits
 	auto expectedSize = sizeof(ExtendedResponseMessage::ResponseHeader) + 4 + ((response.numValidBits + 31) / 32) * 4;
 	// If the response is malformed (too small), return an empty message

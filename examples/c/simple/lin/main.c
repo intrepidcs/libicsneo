@@ -161,7 +161,9 @@ char getCharInput(int numArgs, ...) {
 	va_end(vaList);
 
 	while(!found) {
-		fgets(input, 99, stdin);
+		if(fgets(input, 99, stdin) == NULL) {
+			break;
+		}
 		if(strlen(input) == 2) {
 			for(int i = 0; i < numArgs; ++i) {
 				if(input[0] == *(list + i)) {
