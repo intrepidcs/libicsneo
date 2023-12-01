@@ -171,6 +171,8 @@ test linux/ubuntu/2204/amd64/clang:
     paths:
       - /var/cache/dnf
   script:
+    - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
+    - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
     - dnf install -y g++ libpcap-devel cmake ninja-build libusb1-devel
     - sh ci/build-posix.sh
@@ -188,6 +190,8 @@ test linux/ubuntu/2204/amd64/clang:
     paths:
       - /var/cache/dnf
   script:
+    - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
+    - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
     - dnf install -y libpcap-devel libusb1-devel
     - build/libicsneo-tests
@@ -201,6 +205,8 @@ test linux/ubuntu/2204/amd64/clang:
     paths:
       - /var/cache/dnf
   script:
+    - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
+    - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
     - dnf install -y clang lld libpcap-devel cmake ninja-build libusb1-devel
     - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
@@ -218,6 +224,8 @@ test linux/ubuntu/2204/amd64/clang:
     paths:
       - /var/cache/dnf
   script:
+    - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
+    - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
     - dnf install -y libpcap-devel libusb1-devel
     - build/libicsneo-tests
@@ -248,3 +256,51 @@ test linux/fedora/37/amd64/clang:
     - build linux/fedora/37/amd64/clang
   needs:
     - build linux/fedora/37/amd64/clang
+
+build linux/fedora/38/amd64/gcc:
+  <<: *build_linux_fedora_gcc
+  image: fedora:38
+
+test linux/fedora/38/amd64/gcc:
+  <<: *test_linux_fedora_gcc
+  image: fedora:38
+  dependencies:
+    - build linux/fedora/38/amd64/gcc
+  needs:
+    - build linux/fedora/38/amd64/gcc
+
+build linux/fedora/38/amd64/clang:
+  <<: *build_linux_fedora_clang
+  image: fedora:38
+
+test linux/fedora/38/amd64/clang:
+  <<: *test_linux_fedora_clang
+  image: fedora:38
+  dependencies:
+    - build linux/fedora/38/amd64/clang
+  needs:
+    - build linux/fedora/38/amd64/clang
+
+build linux/fedora/39/amd64/gcc:
+  <<: *build_linux_fedora_gcc
+  image: fedora:39
+
+test linux/fedora/39/amd64/gcc:
+  <<: *test_linux_fedora_gcc
+  image: fedora:39
+  dependencies:
+    - build linux/fedora/39/amd64/gcc
+  needs:
+    - build linux/fedora/39/amd64/gcc
+
+build linux/fedora/39/amd64/clang:
+  <<: *build_linux_fedora_clang
+  image: fedora:39
+
+test linux/fedora/39/amd64/clang:
+  <<: *test_linux_fedora_clang
+  image: fedora:39
+  dependencies:
+    - build linux/fedora/39/amd64/clang
+  needs:
+    - build linux/fedora/39/amd64/clang
