@@ -1112,7 +1112,7 @@ void Device::wiviThreadBody() {
 			if(!clearMasks.empty()) {
 				const auto clearMasksGenericResp = com->waitForMessageSync([this, &clearMasks]() {
 					return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::ClearUploads::Encode(clearMasks));
-				}, filter);
+				}, filter, std::chrono::milliseconds(1000));
 
 				if(!clearMasksGenericResp
 					|| clearMasksGenericResp->type != Message::Type::WiVICommandResponse
@@ -1262,7 +1262,7 @@ std::optional<bool> Device::isSleepRequested() const {
 		// will be suppressed (assuming the device supported it in the
 		// first place)
 		return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetSignal::Encode(WiVI::SignalType::SleepRequest));
-	}, filter);
+	}, filter, std::chrono::milliseconds(1000));
 
 	if(!generic || generic->type != Message::Type::WiVICommandResponse) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
@@ -1301,7 +1301,7 @@ bool Device::allowSleep(bool remoteWakeup) {
 		return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::SetSignal::Encode(
 			WiVI::SignalType::SleepRequest, remoteWakeup ? 0 : 2
 		));
-	}, filter);
+	}, filter, std::chrono::milliseconds(1000));
 
 	if(!generic || generic->type != Message::Type::WiVICommandResponse) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
