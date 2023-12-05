@@ -7,32 +7,6 @@
 #include "icsneo/communication/message/linmessage.h"
 
 /* Note: This example requires LIN 1 and LIN 2 channels to be connected on the device */
-
-char getCharInput(std::vector<char> allowed) {
-	bool found = false;
-	std::string input;
-
-	while(!found) {
-		std::cin >> input;
-
-		if(input.length() == 1) {
-			for(char compare : allowed) {
-				if(compare == input.c_str()[0]) {
-					found = true;
-					break;
-				}
-			}
-		}
-
-		if(!found) {
-			std::cout << "Input did not match expected options. Please try again." << std::endl;
-			std::cout << "<X or x to quit>" << std::endl;
-		}
-	}
-
-	return input.c_str()[0];
-}
-
 int main() {
 	// Print version
 	std::cout << "Running libicsneo " << icsneo::GetVersion() << std::endl;
@@ -46,7 +20,7 @@ int main() {
 		std::cout << '\t' << device->describe() << " @ Handle " << device->getNeoDevice().handle << std::endl;
 	std::cout << std::endl;
 
-	for(auto& device : devices) {
+	for(auto device : devices) {
 		std::cout << "Connecting to " << device->describe() << "... ";
 		bool ret = device->open();
 		if(!ret) { // Failed to open
@@ -54,27 +28,18 @@ int main() {
 			std::cout << icsneo::GetLastError() << std::endl << std::endl;
 			continue;
 		}
-		std::cout << "OK" << std::endl;
-		/*
-		std::cout << "\nApply default settings... ";
-		ret &= device->settings->applyDefaults();
-		if(!ret) {
-			std::cout << "FAIL\n" << std::endl;
-			device->close();
-			continue;
-		}
-		std::cout << "OK" << std::endl;
-		*/
+		std::cout << "OK" << std::endl << std::endl;
+
 		int64_t baud = 19200;
-		
+
 		std::cout << "Enable LIN commander resistor... ";
-		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN, true);
+		ret = device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN, true);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Disable LIN2 commander resistor... ";
-		ret &= device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN2, false);
+		ret = device->settings->setCommanderResistorFor(icsneo::Network::NetID::LIN2, false);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
-		
+
 		std::cout << "Setting LIN to operate at " << baud << "bit/s... ";
 		ret = device->settings->setBaudrateFor(icsneo::Network::NetID::LIN, baud);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
@@ -90,25 +55,46 @@ int main() {
 		std::cout << "Setting LIN2 mode to NORMAL... ";
 		ret = device->settings->setLINModeFor(icsneo::Network::NetID::LIN2, NORMAL_MODE);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
-		
+
 		std::cout << "Applying settings... ";
-		ret = device->settings->apply(true);
+		ret = device->settings->apply();
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		std::cout << "\tGetting LIN Baudrate... ";
+		std::cout << "Getting LIN Baudrate... ";
 		int64_t readBaud = device->settings->getBaudrateFor(icsneo::Network::NetID::LIN);
 		if(readBaud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
 			std::cout << "OK, " << (readBaud) << "bit/s" << std::endl;
 
+		std::cout << "Getting LIN2 Baudrate... ";
 		readBaud = device->settings->getBaudrateFor(icsneo::Network::NetID::LIN2);
 		if(readBaud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
-			std::cout << "OK, " << (readBaud) << "bit/s" << std::endl;
-		
+			std::cout << "OK, " << (readBaud) << "bit/s" << std::endl << std::endl;
+
+		// The concept of going "online" tells the connected device to start listening, i.e. ACKing traffic and giving it to us
+		std::cout << "Going online... ";
+		ret = device->goOnline();
+		if(!ret) {
+			std::cout << "FAIL" << std::endl;
+			device->close();
+			continue;
+		}
+		std::cout << "OK" << std::endl;
+
+		// A real application would just check the result of icsneo_goOnline() rather than calling this
+		// This function is intended to be called later on if needed
+		std::cout << "Checking online status... ";
+		ret = device->isOnline();
+		if(!ret) {
+			std::cout << "FAIL\n" << std::endl;
+			device->close();
+			continue;
+		}
+		std::cout << "OK" << std::endl << std::endl;
+
 		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> message) {
 			if(icsneo::Message::Type::Frame == message->type) {
 				auto frame = std::static_pointer_cast<icsneo::Frame>(message);
@@ -126,29 +112,8 @@ int main() {
 			}
 		}));
 
-				// The concept of going "online" tells the connected device to start listening, i.e. ACKing traffic and giving it to us
-		std::cout << "\tGoing online... ";
-		ret = device->goOnline();
-		if(!ret) {
-			std::cout << "FAIL" << std::endl;
-			device->close();
-			continue;
-		}
-		std::cout << "OK" << std::endl;
-
-		// A real application would just check the result of icsneo_goOnline() rather than calling this
-		// This function is intended to be called later on if needed
-		std::cout << "\tChecking online status... ";
-		ret = device->isOnline();
-		if(!ret) {
-			std::cout << "FAIL\n" << std::endl;
-			device->close();
-			continue;
-		}
-		std::cout << "OK" << std::endl;
-
 		// We can transmit messages
-		std::cout << "\tTransmitting a LIN responder data frame... ";
+		std::cout << "Transmitting a LIN responder data frame... ";
 		auto lin_r = std::make_shared<icsneo::LINMessage>();
 		lin_r->network = icsneo::Network::NetID::LIN2;
 		lin_r->ID = 0x11;
@@ -157,7 +122,7 @@ int main() {
 		ret = device->transmit(lin_r); // This will return false if the device does not support LIN
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
-		std::cout << "\tTransmitting a LIN commander frame... ";
+		std::cout << "Transmitting a LIN commander header... ";
 		auto lin_c = std::make_shared<icsneo::LINMessage>();
 		lin_c->network = icsneo::Network::NetID::LIN;
 		lin_c->ID = 0x11;
@@ -165,7 +130,9 @@ int main() {
 		ret = device->transmit(lin_c);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl << std::endl;
 
-		std::cout << "\tTransmitting a LIN commander frame with responder data... ";
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+		std::cout << "Transmitting a LIN commander frame with responder data... ";
 		auto lin_d = std::make_shared<icsneo::LINMessage>();
 		lin_d->network = icsneo::Network::NetID::LIN;
 		lin_d->ID = 0x22;
@@ -174,31 +141,17 @@ int main() {
 		lin_d->data = {0x11, 0x22, 0x33, 0x44, 0xaa, 0xbb, 0xcc, 0xdd};
 		ret = device->transmit(lin_d);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl << std::endl;
-		std::cout << "<X or x to quit>\n\n";
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 		// Go offline, stop sending and receiving traffic
-		auto shutdown = [&](){
-			device->removeMessageCallback(handler);
-			std::cout << "\tGoing offline... ";
-			ret = device->goOffline();
-			std::cout << (ret ? "OK" : "FAIL") << std::endl;
-			std::cout << "\tDisconnecting... ";
-			ret = device->close();
-			std::cout << (ret ? "OK\n" : "FAIL\n") << std::endl;
-		};
-
-		while(true) {
-			char input = getCharInput(std::vector<char> {'X', 'x'});
-			switch(input) {
-				case 'X':
-				case 'x':
-					shutdown();
-					printf("Exiting program\n");
-					return 0;
-				default:
-					break;
-			}
-		}
+		device->removeMessageCallback(handler);
+		std::cout << "Going offline... ";
+		ret = device->goOffline();
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+		std::cout << "Disconnecting... ";
+		ret = device->close();
+		std::cout << (ret ? "OK\n" : "FAIL\n") << std::endl;
 	}
 	return 0;
 }
