@@ -29,7 +29,7 @@ public:
 
 		if(message->type == Message::Type::Frame || message->type == Message::Type::Main51 || 
 			message->type == Message::Type::RawMessage || message->type == Message::Type::ReadSettings) {
-			const auto frame = std::dynamic_pointer_cast<RawMessage>(message);
+			const auto frame = std::static_pointer_cast<RawMessage>(message);
 			if(!matchNetworkType(frame->network.getType()))
 				return false;
 			if(!matchNetID(frame->network.getNetID()))

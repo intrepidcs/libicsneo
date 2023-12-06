@@ -66,7 +66,7 @@ public:
 	bool removeMessageCallback(int id);
 	std::shared_ptr<Message> waitForMessageSync(
 		const std::shared_ptr<MessageFilter>& f = {},
-		std::chrono::milliseconds timeout = std::chrono::milliseconds(50)) {
+		std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) {
 		return waitForMessageSync([](){ return true; }, f, timeout);
 	}
 	// onceWaitingDo is a way to avoid race conditions.
