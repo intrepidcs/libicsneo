@@ -74,7 +74,7 @@ public:
 	std::shared_ptr<Message> waitForMessageSync(
 		std::function<bool(void)> onceWaitingDo,
 		const std::shared_ptr<MessageFilter>& f = {},
-		std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
+		std::chrono::milliseconds timeout = std::chrono::milliseconds(500));
 
 	void dispatchMessage(const std::shared_ptr<Message>& msg);
 
