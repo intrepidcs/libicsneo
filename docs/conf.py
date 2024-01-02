@@ -64,7 +64,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'libicsneo'
-copyright = '2018-2023, Intrepid Control Systems, Inc.'
+copyright = '2018-2024, Intrepid Control Systems, Inc.'
 author = 'Intrepid Control Systems, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
