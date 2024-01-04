@@ -59,6 +59,13 @@
 #define ICSNEO_FINDABLE_DEVICE_BY_PID(className, type, pid) \
 	static constexpr const uint16_t PRODUCT_ID = pid; \
 	ICSNEO_FINDABLE_DEVICE_BASE(className, type)
+
+// Devices which are discernable by a serial range
+#define ICSNEO_FINDABLE_DEVICE_BY_SERIAL_RANGE(className, type, serialLow, serialHigh) \
+	static constexpr const char* SERIAL_RANGE_LOW = serialLow; \
+	static constexpr const char* SERIAL_RANGE_HIGH = serialHigh; \
+	ICSNEO_FINDABLE_DEVICE_BASE(className, type)
+
 namespace icsneo {
 
 class DeviceExtension;

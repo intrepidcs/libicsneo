@@ -47,6 +47,18 @@ static void makeIfPIDMatches(const FoundDevice& dev, std::vector<std::shared_ptr
 		into.push_back(std::make_shared<T>(dev));
 }
 
+template<typename T>
+static void makeIfSerialRangeMatches(const FoundDevice& dev, std::vector<std::shared_ptr<Device>>& into) {
+	// Relies on the subclass to have 
+	// `static constexpr uint32_t SERIAL_RANGE_LOW = 0x12345678`
+	// `static constexpr uint32_t SERIAL_RANGE_HIGH = 0x12345678`
+	// and also a public constructor `T(const FoundDevice& dev)`
+	// Use macro ICSNEO_FINDABLE_DEVICE_BY_SERIAL_RANGE() to create these
+	uint32_t serialNum = Device::SerialStringToNum(dev.serial);
+	if(serialNum >= Device::SerialStringToNum(T::SERIAL_RANGE_LOW) && serialNum <= Device::SerialStringToNum(T::SERIAL_RANGE_HIGH))
+		into.push_back(std::make_shared<T>(dev));
+}
+
 std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	static std::vector<FoundDevice> newDriverFoundDevices;
 	newDriverFoundDevices.clear();
@@ -158,7 +170,11 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		#endif
 
 		#ifdef __RADCOMET_H_
-		makeIfSerialMatches<RADCOMET>(dev, newFoundDevices);
+		makeIfSerialRangeMatches<RADComet>(dev, newFoundDevices);
+		#endif
+
+		#ifdef __RADCOMET2_H_
+		makeIfSerialRangeMatches<RADComet2>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADEPSILON_H_
@@ -297,7 +313,7 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 		#endif
 
 		#ifdef __RADCOMET_H_
-		RADCOMET::DEVICE_TYPE,
+		RADComet::DEVICE_TYPE,
 		#endif
 		
 		#ifdef __RADEPSILON_H_

@@ -54,6 +54,8 @@ typedef struct {
 	// 10T1S
 	ETHERNET_SETTINGS2 ethT1s2;
 	ETHERNET10T1S_SETTINGS t1s2;
+	uint64_t network_enables_5;
+	LIN_SETTINGS lin1;
 } radcomet_settings_t;
 #pragma pack(pop)
 
@@ -61,9 +63,9 @@ typedef struct {
 
 #include <iostream>
 
-class RADCOMETSettings : public IDeviceSettings {
+class RADCometSettings : public IDeviceSettings {
 public:
-	RADCOMETSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radcomet_settings_t)) {}
+	RADCometSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radcomet_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radcomet_settings_t>();
 		if(cfg == nullptr)
