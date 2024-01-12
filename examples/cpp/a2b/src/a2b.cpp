@@ -233,9 +233,91 @@ void example5(std::shared_ptr<icsneo::Device>& rada2b) {
 	std::thread listenerThread{listener};
 
 	// Transmit wave file using example0
-
 	example0(rada2b);
 	listenerThread.join();
+}
+
+// Example 6: Retrieving A2B bus status using I2C messaages.
+void example6(std::shared_ptr<icsneo::Device>& rada2b) {
+	std::shared_ptr<icsneo::I2CMessage> msg = std::make_shared<icsneo::I2CMessage>();
+	std::shared_ptr<icsneo::MessageFilter> msgFilter = std::make_shared<icsneo::MessageFilter>(icsneo::Network::NetID::I2C2);
+
+	msg->network = icsneo::Network(icsneo::Network::NetID::I2C2);
+	msg->controlBytes.resize(1);
+	msg->controlBytes[0] = static_cast<uint8_t>(0x17u); // Register address for A2B INTTYPE
+	msg->dataBytes.resize(1, 0);
+	msg->direction = icsneo::I2CMessage::Direction::Read;
+	msg->deviceMode = icsneo::I2CMessage::DeviceMode::Controller;
+	msg->address = static_cast<uint16_t>(0x68); // A2B master node address.
+	msg->isTXMsg = true;
+	
+	auto handler = rada2b->addMessageCallback(std::make_shared<icsneo::MessageCallback>(
+		[] (std::shared_ptr<icsneo::Message> newMsg) {
+
+			if(newMsg->type == icsneo::Message::Type::Frame) {
+				const auto& frame = std::dynamic_pointer_cast<icsneo::Frame>(newMsg);
+				if(frame && frame->network.getNetID() == icsneo::Network::NetID::I2C2) {
+					const auto& i2cMessage = std::dynamic_pointer_cast<icsneo::I2CMessage>(frame);
+
+					if(!i2cMessage) {
+						return;
+					}
+
+					if(i2cMessage->controlBytes.size() == 1 && i2cMessage->direction == icsneo::I2CMessage::Direction::Read) {
+						if(i2cMessage->controlBytes[0] == 0x17u) {
+							if(i2cMessage->dataBytes.size() == 1) {
+								std::cout << "Current A2B bus status INTTYPE code: " << static_cast<int>(i2cMessage->dataBytes[0]) << '\n'; 
+							}
+						} else if(i2cMessage->controlBytes[0] == 0x03u) {
+							if(i2cMessage->dataBytes.size() == 1) {
+								std::cout << "A2B_PRODUCT register: " << static_cast<int>(i2cMessage->dataBytes[0]) << std::endl;
+							}
+						} else if(i2cMessage->controlBytes[0] == 0x02u) {
+							if(i2cMessage->dataBytes.size() == 1) {
+								std::cout << "A2B_VENDOR register: " << static_cast<int>(i2cMessage->dataBytes[0]) << std::endl;
+							}
+						} else if(i2cMessage->controlBytes[0] == 0x1C) {
+							if(i2cMessage->dataBytes.size() == 1) {
+								std::cout << "A2B_INTMSK1 register value: " << static_cast<int>(i2cMessage->dataBytes[0]) << std::endl;
+							}
+						}
+					}
+				}
+			}
+		}
+	, msgFilter));
+	if(!rada2b->transmit(msg)) {
+		std::cout << "Failed to transmit." << std::endl;
+	}
+	msg->controlBytes[0] = 0x03; // Address for A2B_PRODUCT register
+
+	if(!rada2b->transmit(msg)) {
+		std::cout << "Failed to transmit." << std::endl;
+	}
+
+	msg->controlBytes[0] = 0x02; // Address for A2B_VENDOR register
+	if(!rada2b->transmit(msg)) {
+		std::cout << "Failed to transmit." << std::endl;
+	}
+
+	msg->controlBytes[0] = 0x1C ; // Address for A2B_INTMSK1 register
+	msg->dataBytes[0] = 0x11;
+	msg->direction = icsneo::I2CMessage::Direction::Write;
+	// Write register
+	if(!rada2b->transmit(msg)) {
+		std::cout << "Failed to transmit" << std::endl;
+	}
+	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+	msg->direction = icsneo::I2CMessage::Direction::Read;
+
+	// Read register
+	if(!rada2b->transmit(msg)) {
+		std::cout << "Failed to transmit." << std::endl;
+	}
+	
+	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+	rada2b->removeMessageCallback(handler);
 }
 
 void displayUsage() {
@@ -254,6 +336,7 @@ void displayUsage() {
 	std::cout << "3\tA2BMessage API" << std::endl;
 	std::cout << "4\tPackaging and transmitting sine wave using A2BMessage API" << std::endl;
 	std::cout << "5\tWave loopback" << std::endl;
+	std::cout << "6\tRead/write I2C registers on A2B board" << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -277,7 +360,7 @@ int main(int argc, char** argv) {
 
 	int option = atoi(arguments[2].c_str());
 
-	if(option < 0 || option > 5) {
+	if(option < 0 || option > 6) {
 		std::cerr << "Invalid usage." << std::endl;
 		displayUsage();
 		return EXIT_FAILURE;
@@ -344,6 +427,9 @@ int main(int argc, char** argv) {
 			break;
 		case 5:
 			example5(rada2b);
+			break;
+		case 6:
+			example6(rada2b);
 			break;
 		default:
 			break;
