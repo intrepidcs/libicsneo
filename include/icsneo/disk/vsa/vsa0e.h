@@ -78,6 +78,7 @@ private:
 	uint16_t captureBitfield; // The data capture this record is a part of
 	uint64_t timestamp; // Timestamp of this record in 25 nanosecond ticks since January 1, 2007
 	uint16_t checksum; // Sum of the previous 15 words
+	bool timestampIsExtended = false;
 };
 
 /**

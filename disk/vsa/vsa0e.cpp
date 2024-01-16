@@ -42,6 +42,7 @@ VSA0EFirst::VSA0EFirst(uint8_t* const recordBytes, uint32_t& runningChecksum)
 	captureBitfield = *reinterpret_cast<uint16_t*>(recordBytes + 4);
 	setRecordCount(*reinterpret_cast<uint32_t*>(recordBytes + 6));
 	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 20) & UINT63_MAX;
+	timestampIsExtended = (bool)(*reinterpret_cast<uint64_t*>(recordBytes + 20) & (0x8000000000000000));
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 30);
 	doChecksum(recordBytes);
 }
@@ -75,16 +76,18 @@ bool VSA0EFirst::filter(const std::shared_ptr<VSAMessageReadFilter> filter)
 void VSA0EFirst::reorderPayload(std::vector<uint8_t>& secondPayload)
 {
 	std::vector<uint8_t> tempPayload;
-	tempPayload.insert(tempPayload.end(), { 0, 0 }); // Leaving this in here temporarily to figure out checksum stuff
 	tempPayload.insert(tempPayload.end(), payload.begin(), payload.end());
 	tempPayload.insert(tempPayload.end(), secondPayload.begin(), secondPayload.begin() + 6);
 	uint8_t* timestampBytes = reinterpret_cast<uint8_t*>(&timestamp);
+	if(timestampIsExtended) {
+		timestampBytes[7] += 0x80;
+	}
 	tempPayload.insert(tempPayload.end(), timestampBytes, timestampBytes + 8);
 	tempPayload.insert(tempPayload.end(), secondPayload.begin() + 6, secondPayload.end());
 	payload.clear();
 	secondPayload.clear();
 	payload.insert(payload.end(), tempPayload.begin(), tempPayload.begin() + 10); // This is done because the capacity of payload is already 10
-	secondPayload.insert(secondPayload.end(), tempPayload.begin() + 12, tempPayload.end());
+	secondPayload.insert(secondPayload.end(), tempPayload.begin() + 10, tempPayload.end());
 }
 
 // Consecutive Record Functions

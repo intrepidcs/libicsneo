@@ -62,6 +62,9 @@ void VSA0DFirst::reorderPayload(std::vector<uint8_t>& secondPayload)
 	std::vector<uint8_t> tempPayload;
 	tempPayload.insert(tempPayload.end(), secondPayload.begin(), secondPayload.begin() + 4);
 	uint8_t* timestampBytes = reinterpret_cast<uint8_t*>(&timestamp);
+	if(timestampIsExtended) {
+		timestampBytes[7] += 0x80;
+	}
 	tempPayload.insert(tempPayload.end(), timestampBytes, timestampBytes + 8);
 	tempPayload.insert(tempPayload.end(), secondPayload.begin() + 4, secondPayload.end());
 	payload.clear();

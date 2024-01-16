@@ -2096,7 +2096,7 @@ bool Device::readVSA(const VSAExtractionSettings& extractionSettings) {
 		return false;
 	}
 
-	const auto& wasScriptStarted = getScriptStatus()->isCoreminiRunning;
+	const auto wasScriptStarted = getScriptStatus()->isCoreminiRunning;
 
 	if(extractionSettings.stopCoreMini && wasScriptStarted) {
 		stopScript();

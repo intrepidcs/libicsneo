@@ -82,6 +82,7 @@ private:
 		uint8_t reserved : 6; // Unused bytes
 	} vNetInfo; // Struct used to indicate which bytes are actually used for VNetSlot
 	uint16_t checksum; // The sum of the previous 15 words
+	bool timestampIsExtended = false;
 };
 
 /**
