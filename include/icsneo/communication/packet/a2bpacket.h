@@ -13,6 +13,9 @@ namespace icsneo {
 
 typedef uint16_t icscm_bitfield;
 
+
+
+#pragma pack(push, 2)
 struct HardwareA2BPacket {
 
 	static std::shared_ptr<Message> DecodeToMessage(const std::vector<uint8_t>& bytestream);
@@ -33,11 +36,20 @@ struct HardwareA2BPacket {
 		icscm_bitfield : 11;
 		icscm_bitfield rfu2;
 	} header;
+	uint8_t offset[8];
+	uint16_t stats;
+	struct {
+		uint64_t TS : 60;
+		uint64_t : 3; // Reserved for future status bits
+		uint64_t IsExtended : 1;
+	} timestamp;
+	uint16_t networkID;
+	uint16_t length;
 
-	static const size_t coreMiniMessageHeaderSize;
 	static const size_t a2bMessageMaxLength;
-	static const size_t a2bHeaderSize;
 };
+
+#pragma pack(pop)
 
 }
 

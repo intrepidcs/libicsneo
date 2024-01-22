@@ -159,6 +159,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 
 			A2BMessage& msg = *static_cast<A2BMessage*>(result.get());
 			msg.network = packet->network;
+			msg.timestamp *= timestampResolution;
 			return true;
 		}
 		case Network::Type::LIN: {

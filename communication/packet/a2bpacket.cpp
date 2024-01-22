@@ -4,20 +4,18 @@
 
 namespace icsneo {
 
-const size_t HardwareA2BPacket::coreMiniMessageHeaderSize = 28;
-const size_t HardwareA2BPacket::a2bMessageMaxLength = (size_t)HardwareA2BPacket::coreMiniMessageHeaderSize + 1024;
-const size_t HardwareA2BPacket::a2bHeaderSize = 6;
+const size_t HardwareA2BPacket::a2bMessageMaxLength = sizeof(HardwareA2BPacket) + 1024;
 
 std::shared_ptr<Message> HardwareA2BPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
 
-	if(bytestream.size() < coreMiniMessageHeaderSize)
+	if(bytestream.size() < sizeof(HardwareA2BPacket))
 	{
 		return nullptr;
 	}
 
-	const HardwareA2BPacket *data = (const HardwareA2BPacket*)bytestream.data();
+	const HardwareA2BPacket* data = (const HardwareA2BPacket*)bytestream.data();
 
-	size_t totalPackedLength = static_cast<size_t>(bytestream.size()) - static_cast<size_t>(coreMiniMessageHeaderSize); // First 28 bytes are message header.
+	size_t totalPackedLength = static_cast<size_t>(bytestream.size()) - sizeof(HardwareA2BPacket); // First 28 bytes are message header.
 
 	std::shared_ptr<A2BMessage> msg = std::make_shared<A2BMessage>(
 		(uint8_t)data->header.channelNum,
@@ -30,7 +28,8 @@ std::shared_ptr<Message> HardwareA2BPacket::DecodeToMessage(const std::vector<ui
 	msg->setErrIndicatorBit(data->header.errIndicator);
 	msg->setSyncFrameBit(data->header.syncFrame);
 	msg->setRFU2(data->header.rfu2);
-	msg->setAudioBuffer(bytestream.begin() + coreMiniMessageHeaderSize, bytestream.end());
+	msg->timestamp = data->timestamp.TS;
+	msg->setAudioBuffer(bytestream.begin() + sizeof(HardwareA2BPacket), bytestream.end());
 
 	return msg;
 }
