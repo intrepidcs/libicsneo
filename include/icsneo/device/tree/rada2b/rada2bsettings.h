@@ -84,8 +84,8 @@ public:
 	};
 
 	enum class ChannelSize : uint8_t {
-		chSize16 = 0,
-		chSize32 = 1
+		chSize32 = 0,
+		chSize16 = 1
 	};
 
 	enum class RADA2BDevice : uint8_t {
@@ -148,7 +148,7 @@ public:
 		auto cfg = getStructurePointer<rada2b_settings_t>();
 		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
-		return static_cast<ChannelSize>(~(deviceSettings.flags & a2bSettingsFlag16bit));
+		return static_cast<ChannelSize>(deviceSettings.flags & a2bSettingsFlag16bit);
 	}
 
 	uint8_t getChannelOffset(RADA2BDevice device, A2BMessage::A2BDirection dir) const {
