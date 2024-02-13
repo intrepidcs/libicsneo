@@ -741,3 +741,10 @@ int icsneo_getDeviceStatus(const neodevice_t* device, void* status, size_t* size
 
 	return true;
 }
+
+bool icsneo_isOnlineSupported(const neodevice_t* device) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+	
+	return device->device->isOnlineSupported();
+}

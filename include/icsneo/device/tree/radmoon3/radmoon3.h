@@ -25,6 +25,8 @@ public:
 
 	bool getEthPhyRegControlSupported() const override { return true; }
 
+	bool isOnlineSupported() const override { return false; }
+
 protected:
 	RADMoon3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADMoon3Settings>(makeDriver);

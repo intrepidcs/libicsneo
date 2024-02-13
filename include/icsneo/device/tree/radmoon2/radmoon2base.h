@@ -64,6 +64,8 @@ public:
 
 	virtual uint8_t getPhyAddrOrPort() const = 0;
 
+	bool isOnlineSupported() const override { return false; }
+
 protected:
 	using Device::Device;
 

@@ -817,25 +817,33 @@ extern bool DLLExport icsneo_setTerminationFor(const neodevice_t* device, neonet
  *
  * This function populates the device status structures and sub members.
  */
-extern int icsneo_getDeviceStatus(const neodevice_t* device, void* status, size_t* size);
+extern int DLLExport icsneo_getDeviceStatus(const neodevice_t* device, void* status, size_t* size);
 
 /**
  * \brief Get the real-time clock for the given device.
- * \param[out] device A pointer to the neodevice_t structure specifying the device to read the RTC from.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to read the RTC from.
  * \param[out] output A pointer to a uint64_t where the RTC will be stored. This value is in seconds.
 
  * \returns True if the RTC was successfully retrieved.
  */
-extern bool icsneo_getRTC(const neodevice_t* device, uint64_t* output);
+extern bool DLLExport icsneo_getRTC(const neodevice_t* device, uint64_t* output);
 
 /**
  * \brief Set the real-time clock for the given device.
- * \param[out] device A pointer to the neodevice_t structure specifying the device to write the RTC to.
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to write the RTC to.
  * \param[in] input A uint64_t object holding the RTC value. This value is in seconds.
 
  * \returns True if the RTC was successfully set.
  */
-extern bool icsneo_setRTC(const neodevice_t* device, uint64_t input);
+extern bool DLLExport icsneo_setRTC(const neodevice_t* device, uint64_t input);
+
+/**
+ * \brief Check if the device supports the ability to go online
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+
+ * \returns True if the device supports the ability to go online
+*/
+extern bool DLLExport icsneo_isOnlineSupported(const neodevice_t* device);
 
 #ifdef __cplusplus
 } // extern "C"
@@ -1017,6 +1025,9 @@ fn_icsneo_getRTC icsneo_getRTC;
 typedef bool (*fn_icsneo_setRTC)(const neodevice_t* device, uint64_t input);
 fn_icsneo_setRTC icsneo_setRTC;
 
+typedef bool(*fn_icsneo_isOnlineSupported)(const neodevice_t* device);
+fn_icsneo_isOnlineSupported icsneo_isOnlineSupported;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneo_libraryHandle = NULL;
@@ -1089,6 +1100,7 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_getDeviceStatus);
 	ICSNEO_IMPORTASSERT(icsneo_getRTC);
 	ICSNEO_IMPORTASSERT(icsneo_setRTC);
+	ICSNEO_IMPORTASSERT(icsneo_isOnlineSupported);
 
 	icsneo_initialized = true;
 	return 0;

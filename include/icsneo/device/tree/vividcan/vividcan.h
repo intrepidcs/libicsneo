@@ -27,6 +27,8 @@ public:
 		return false;
 	}
 
+	bool isOnlineSupported() const override { return false; }
+
 protected:
 	VividCAN(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<VividCANSettings>(makeDriver);

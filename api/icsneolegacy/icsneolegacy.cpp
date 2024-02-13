@@ -417,8 +417,19 @@ int LegacyDLLExport icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, u
 	*hObject = device;
 	if (!icsneo_openDevice(device))
 		return false;
-	
-	return icsneo_setPollingMessageLimit(device, 20000) && icsneo_enableMessagePolling(device) && icsneo_goOnline(device);
+
+	if (icsneo_isOnlineSupported(device)) {
+		if (!icsneo_setPollingMessageLimit(device, 20000))
+			return false;
+
+		if (!icsneo_enableMessagePolling(device))
+			return false;
+		
+		if (!icsneo_goOnline(device))
+			return false;
+	}
+
+	return true;
 }
 
 int LegacyDLLExport icsneoOpenDevice(
@@ -447,7 +458,18 @@ int LegacyDLLExport icsneoOpenDevice(
 	if(!icsneo_openDevice(device))
 		return false;
 	
-	return icsneo_setPollingMessageLimit(device, 20000) && icsneo_enableMessagePolling(device) && icsneo_goOnline(device);
+	if (icsneo_isOnlineSupported(device)) {
+		if (!icsneo_setPollingMessageLimit(device, 20000))
+			return false;
+
+		if (!icsneo_enableMessagePolling(device))
+			return false;
+		
+		if (!icsneo_goOnline(device))
+			return false;
+	}
+
+	return true;
 }
 
 int LegacyDLLExport icsneoClosePort(void* hObject, int* pNumberOfErrors)

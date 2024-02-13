@@ -685,6 +685,8 @@ public:
 		uint64_t pos, uint8_t* into, uint64_t amount, std::optional<VSAMetadata> metadata = std::nullopt
 	);
 
+	virtual bool isOnlineSupported() const { return true; }
+
 protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;
