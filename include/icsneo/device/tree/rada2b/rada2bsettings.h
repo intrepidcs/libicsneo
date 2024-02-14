@@ -33,7 +33,8 @@ typedef struct {
 	struct
 	{
 		uint16_t hwComLatencyTestEn : 1;
-		uint16_t : 15;
+		uint16_t disableUsbCheckOnBoot : 1;
+		uint16_t : 14;
 	} flags;
 	uint16_t network_enabled_on_boot;
 	CAN_SETTINGS can1;
@@ -56,10 +57,14 @@ typedef struct {
 	uint32_t pwr_man_timeout;
 	uint16_t pwr_man_enable;
 	ETHERNET_SETTINGS2 ethernet;
+	RAD_GPTP_SETTINGS gPTP;
+	uint64_t network_enables_5;
 } rada2b_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+static_assert(sizeof(rada2b_settings_t) == 340, "RAD-A2B settings size mismatch");
 
 #include <iostream>
 
