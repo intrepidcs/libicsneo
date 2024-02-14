@@ -424,6 +424,16 @@ public:
 		IsEncrypted = 16,
 	};
 
+	enum RootDirectoryEntryFlags : uint8_t {
+		IsPrePost = 1,
+		PrePostTriggered = (1 << 1),
+		UploadPriority = (1 << 2) | (1 << 3),
+		CellularEnabled = (1 << 4),
+		WiFiEnabled = (1 << 5),
+		Uploaded = (1 << 6),
+		Unused = (1 << 7)
+	};
+
 	typedef std::function< void(uint64_t value) > ScriptStatusCallback;
 
 	/**
@@ -579,8 +589,20 @@ public:
 
 	std::optional<EthPhyMessage> sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
-	std::optional<bool> SetCollectionUploaded(uint32_t collectionEntryByteAddress);
-	
+
+	/**
+	 * Set the flags of the root directory entry specified at given address
+	 *
+	 * Will not allow changes of IsPrePost and PrePostTriggered flags and will produce a warning
+	 * if there is an attempt to do so
+	 *
+	 * @param mask Flags to set, with each bit representing a different entry flag @RootDirectoryEntryFlags
+	 * @param values The values in which to set each flag, each bit corresponding to the flag in the same position
+	 * @param collectionEntryByteAddress The position of the root directory entry in which to set these flags
+	 * @return Success or failure
+	 */
+	std::optional<bool> SetRootDirectoryEntryFlags(uint8_t mask, uint8_t values, uint32_t collectionEntryByteAddress);
+
 	std::shared_ptr<Communication> com;
 	std::unique_ptr<IDeviceSettings> settings;
 

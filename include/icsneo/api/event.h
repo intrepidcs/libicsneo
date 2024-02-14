@@ -49,6 +49,7 @@ public:
 		ValueNotYetPresent = 0x1013,
 		Timeout = 0x1014,
 		WiVINotSupported = 0x1015,
+		RestrictedEntryFlag = 0x1016,
 
 		// Device Events
 		PollingMessageOverflow = 0x2000,

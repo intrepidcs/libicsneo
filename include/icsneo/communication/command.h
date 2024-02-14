@@ -52,7 +52,7 @@ enum class ExtendedCommand : uint16_t {
 	GetSupportedFeatures = 0x0018,
 	GetComponentVersions = 0x001A,
 	Reboot = 0x001C,
-	SetUploadedFlag = 0x0027,
+	SetRootFSEntryFlags = 0x0027,
 	GenericBinaryInfo = 0x0030,
 	LiveData = 0x0035,
 };

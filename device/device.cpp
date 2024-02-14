@@ -1709,7 +1709,7 @@ std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message,
 	return std::make_optional<EthPhyMessage>(*retMsg);
 }
 
-std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAddress)
+std::optional<bool> Device::SetRootDirectoryEntryFlags(uint8_t mask, uint8_t values, uint32_t collectionEntryByteAddress)
 {
 	if(!supportsWiVI())
 	{
@@ -1717,15 +1717,31 @@ std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAd
 		return std::nullopt;
 	}
 
+	if (mask & RootDirectoryEntryFlags::IsPrePost)
+	{
+		report(APIEvent::Type::RestrictedEntryFlag, APIEvent::Severity::EventWarning);
+		mask &= ~RootDirectoryEntryFlags::IsPrePost;
+		values &= ~RootDirectoryEntryFlags::IsPrePost;
+	}
+
+	if (mask & RootDirectoryEntryFlags::PrePostTriggered)
+	{
+		report(APIEvent::Type::RestrictedEntryFlag, APIEvent::Severity::EventWarning);
+		mask &= ~RootDirectoryEntryFlags::PrePostTriggered;
+		values &= ~RootDirectoryEntryFlags::PrePostTriggered;
+	}
+
 	auto timeout = std::chrono::milliseconds(2500);
 	std::vector<uint8_t> args(
 		{(uint8_t)(collectionEntryByteAddress & 0xFF),
 		 (uint8_t)((collectionEntryByteAddress >> 8) & 0xFF),
 		 (uint8_t)((collectionEntryByteAddress >> 16) & 0xFF),
-		 (uint8_t)((collectionEntryByteAddress >> 24) & 0xFF)});
+		 (uint8_t)((collectionEntryByteAddress >> 24) & 0xFF),
+		 values,
+		 mask});
 
 	std::shared_ptr<Message> response = com->waitForMessageSync(
-		[this, args](){ return com->sendCommand(ExtendedCommand::SetUploadedFlag, args); },
+		[this, args](){ return com->sendCommand(ExtendedCommand::SetRootFSEntryFlags, args); },
 		std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), timeout);
 	if(!response)
 	{
@@ -1737,7 +1753,7 @@ std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAd
 	{
 		// TODO fix this error
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
-		return std::make_optional<bool>(false);
+		return false;
 	}
 	bool success = retMsg->response == ExtendedResponse::OK;
 	if(!success)
@@ -1745,8 +1761,8 @@ std::optional<bool> Device::SetCollectionUploaded(uint32_t collectionEntryByteAd
 		// TODO fix this error
 		report(APIEvent::Type::Unknown, APIEvent::Severity::EventWarning);
 	}
-	// Valid device with a properly formed respose, return success
-	return std::make_optional<bool>(success);
+	// Valid device with a properly formed response, return success
+	return success;
 }
 
 std::optional<std::chrono::time_point<std::chrono::system_clock>> Device::getRTC()
