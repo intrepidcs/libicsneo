@@ -20,7 +20,7 @@ public:
 		return "RAD-Comet 2";
 	}
 
-	virtual const std::vector<Network>& GetSupportedNetworks() {
+	const std::vector<Network>& GetSupportedNetworks() override {
 		static std::vector<Network> supportedNetworks = RADCometBase::GetSupportedNetworks();
 		supportedNetworks.push_back(Network::NetID::OP_Ethernet3);
 		supportedNetworks.push_back(Network::NetID::MDIO4);
