@@ -42,7 +42,7 @@ private:
 		SocketFileDescriptor fd;
 	};
 	
-	NetworkInterface interface;
+	NetworkInterface interfaceDescription;
 	uint32_t dstIP;
 	uint16_t dstPort;
 	std::unique_ptr<Socket> socket;

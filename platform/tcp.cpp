@@ -184,8 +184,8 @@ void TCP::Find(std::vector<FoundDevice>& found) {
 		return;
 	}
 
-	for(auto interface = interfaces.begin(); interface; interface = interface.next()) {
-		if(!interface.validType())
+	for(auto intf = interfaces.begin(); intf; intf = intf.next()) {
+		if(!intf.validType())
 			continue;
 		Socket socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if(!socket) {
@@ -205,14 +205,14 @@ void TCP::Find(std::vector<FoundDevice>& found) {
 					continue;
 				}
 				#ifndef __APPLE__
-					if(::setsockopt(socket, SOL_SOCKET, SO_BINDTODEVICE, interface.name().data(), interface.name().size()) < 0) {
+					if(::setsockopt(socket, SOL_SOCKET, SO_BINDTODEVICE, intf.name().data(), intf.name().size()) < 0) {
 						EventManager::GetInstance().add(APIEvent::Type::ErrorSettingSocketOption, APIEvent::Severity::EventWarning);
 						continue;
 					}
 				#endif
 			#endif
 		}
-		auto ifAddrIn = (sockaddr_in*)interface.address();
+		auto ifAddrIn = (sockaddr_in*)intf.address();
 		ifAddrIn->sin_port = MDNS_PORT;
 
 		{
@@ -394,7 +394,7 @@ void TCP::Find(std::vector<FoundDevice>& found) {
 				continue;
 
 			NetworkInterface on = {
-				std::string(interface.name()),
+				std::string(intf.name()),
 				ntohl(ifAddrIn->sin_addr.s_addr)
 			};
 
@@ -407,7 +407,7 @@ void TCP::Find(std::vector<FoundDevice>& found) {
 }
 
 TCP::TCP(const device_eventhandler_t& err, NetworkInterface on, uint32_t dstIP, uint16_t dstPort) :
-	Driver(err), interface(on), dstIP(dstIP), dstPort(dstPort) {
+	Driver(err), interfaceDescription(on), dstIP(dstIP), dstPort(dstPort) {
 }
 
 bool TCP::open() {
@@ -419,7 +419,7 @@ bool TCP::open() {
 	auto partiallyOpenSocket = std::make_unique<Socket>(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	#if !defined(_WIN32) && !defined(__APPLE__)
-		if(::setsockopt(*partiallyOpenSocket, SOL_SOCKET, SO_BINDTODEVICE, interface.name.c_str(), interface.name.size()) < 0) {
+		if(::setsockopt(*partiallyOpenSocket, SOL_SOCKET, SO_BINDTODEVICE, interfaceDescription.name.c_str(), interfaceDescription.name.size()) < 0) {
 			report(APIEvent::Type::ErrorSettingSocketOption, APIEvent::Severity::Error);
 			return false;
 		}
@@ -428,7 +428,7 @@ bool TCP::open() {
 	{
 		sockaddr_in addr = {};
 		addr.sin_family = AF_INET;
-		addr.sin_addr.s_addr = htonl(interface.ip);
+		addr.sin_addr.s_addr = htonl(interfaceDescription.ip);
 		APPLE_SIN_LEN(addr);
 		if(::bind(*partiallyOpenSocket, (sockaddr*)&addr, sizeof(addr)) < 0) {
 			report(APIEvent::Type::FailedToBind, APIEvent::Severity::Error);

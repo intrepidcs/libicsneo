@@ -378,7 +378,7 @@ endif()
 if(LIBICSNEO_ENABLE_TCP)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_TCP)
 	if(WIN32)
-		target_link_libraries(icsneocpp PRIVATE ws2_32)
+		target_link_libraries(icsneocpp PRIVATE ws2_32 iphlpapi)
 	endif()
 endif()
 
