@@ -14,7 +14,6 @@
 #include "icsneo/communication/network.h"
 #include <map>
 #include <algorithm>
-
 #include <cstring>
 #include <climits>
 
@@ -27,6 +26,7 @@ using namespace icsneo;
 
 typedef uint64_t legacymaphandle_t;
 static std::map<legacymaphandle_t, neodevice_t> neodevices;
+static std::map<neodevice_t*, NeoDeviceEx*> openneodevices;
 
 static const std::map<size_t, size_t> mp_netIDToVnetOffSet = {
 	{NETID_HSCAN, 1},
@@ -52,18 +52,6 @@ static const std::map<size_t, size_t> mp_HWnetIDToCMnetID = {
 
 static unsigned long vnet_table[] = {0, PLASMA_SLAVE1_OFFSET, PLASMA_SLAVE2_OFFSET};
 
-static NeoDevice OldNeoDeviceFromNew(const neodevice_t* newnd)
-{
-	NeoDevice oldnd = {0};
-	oldnd.DeviceType = newnd->type;
-	oldnd.SerialNumber = icsneo_serialStringToNum(newnd->serial);
-	oldnd.NumberOfClients = 0;
-	oldnd.MaxAllowedClients = 1;
-	static_assert(sizeof(neodevice_handle_t) == sizeof(oldnd.Handle),
-		"neodevice_handle_t size must be sizeof(int) for compatibility reasons");
-	oldnd.Handle = newnd->handle;
-	return oldnd;
-}
 
 static bool NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t& newmsg, icsSpyMessage& oldmsg)
 {
@@ -318,118 +306,79 @@ static inline size_t GetVnetAgnosticNetid(size_t fullNetid)
 int LegacyDLLExport icsneoFindDevices(NeoDeviceEx* devs, int* devCount, unsigned int* devTypes, unsigned int devTypeCount,
 	POptionsFindNeoEx* POptionsFindNeoEx, unsigned int* zero)
 {
-	if (!devs || !devCount)
+	// Match the legacy API maximum, this derives from the maximum COM Port on old windows versions.
+	constexpr int MAX_NEO_DEVICES = 255;
+
+	// Validate arguments
+	if (!devCount && *devCount < 0) {
 		return 0;
-
-	if (*devCount < 0 || *devCount > 255)
-		return 0;
-
-	// Find the devices without filtering by the device type
-	// We allow this to find more than the requested number,
-	// as we may filter out some devices.
-	constexpr const size_t MAX_DEVICES = 255;
-	NeoDevice foundDevices[MAX_DEVICES];
-	int NumDevices = MAX_DEVICES;
-
-	int filteredDeviceCount = 0;
-
-	if (!icsneoFindNeoDevices(0, foundDevices, &NumDevices))
-		return 0;
-
-	for (auto i = 0; i < NumDevices; i++)
-	{
-		// Check if the next device would overrun the user's buffer
-		// We check this up here since the documentation allows zero
-		// to be specified.
-		if (filteredDeviceCount >= *devCount)
-			break;
-
-		if (devTypes && devTypeCount)
-		{
-			for (unsigned int j = 0; j < devTypeCount; j++)
-			{
-				if (foundDevices[i].DeviceType == devTypes[j])
-				{
-					devs[filteredDeviceCount++].neoDevice = foundDevices[i];
-					break;
-				}
-			}
-		}
-		else
-		{
-			devs[filteredDeviceCount++].neoDevice = foundDevices[i];
-		}
 	}
-
-	*devCount = filteredDeviceCount;
-	return 1; // If the function succeeds but no devices are found 1 will still be returned and devCount will equal 0
-}
-
-int LegacyDLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* pNumDevices)
-{
-	constexpr size_t MAX_DEVICES = 255;
-	size_t count = MAX_DEVICES;
-
-	if (pNumDevices == nullptr)
-		return 0;
-
-	if (pNeoDevice == nullptr)
+	// return the size only if devs is NULL.
+	if (!devs)
 	{
-		icsneo_findAllDevices(nullptr, &count);
-		*pNumDevices = (int)count;
+		icsneo_findAllDevices(nullptr, (size_t*)devCount);
 		return 1;
 	}
-
-	size_t bufferSize = (size_t)*pNumDevices;
-	if (*pNumDevices < 0 || bufferSize > MAX_DEVICES)
-		return 0;
-
-	neodevice_t devices[MAX_DEVICES];
-	icsneo_findAllDevices(devices, &count);
-	if (bufferSize < count)
-		count = bufferSize;
-	*pNumDevices = (int)count;
-
-	for (size_t i = 0; i < count; i++)
-	{
-		pNeoDevice[i] = OldNeoDeviceFromNew(&devices[i]);														  // Write out into user memory
-		neodevices[uint64_t(devices[i].handle) << 32 | icsneo_serialStringToNum(devices[i].serial)] = devices[i]; // Fill the look up table
+	// shrink the number of devices allowed to find
+	if (*devCount > MAX_NEO_DEVICES) {
+		*devCount = MAX_NEO_DEVICES;
 	}
-
+	// Find all the neodevice_t devices
+	std::vector<neodevice_t> neoDevices(*devCount);
+	auto neoDevicesSize = neoDevices.size();
+	icsneo_findAllDevices(neoDevices.data(), &neoDevicesSize);
+	neoDevices.resize(neoDevicesSize);
+	// Filter out the devices if needed
+	// No filtering needed
+	if (devTypes && devTypeCount > 0) {
+		neoDevices.erase(
+			std::remove_if(
+				neoDevices.begin(), 
+				neoDevices.end(), 
+				[&](const auto& iter) {
+					for (unsigned int i=0; i < devTypeCount; ++i) {
+						if (iter.type == devTypes[i]) {
+							return false;
+						}
+					}
+					return true;
+				}
+			),
+			neoDevices.end()
+		);
+	}
+	// Create a NeoDeviceEx From a neodevice_t
+	auto _createNeoDeviceExFrom = [](const neodevice_t* neoDevice) -> NeoDeviceEx {
+		NeoDeviceEx nde = {};
+		nde.neoDevice.DeviceType = neoDevice->type;
+		nde.neoDevice.SerialNumber = icsneo_serialStringToNum(neoDevice->serial);
+		nde.neoDevice.NumberOfClients = 0;
+		nde.neoDevice.MaxAllowedClients = 1;
+		static_assert(sizeof(neodevice_handle_t) == sizeof(nde.neoDevice.Handle),
+			"neodevice_handle_t size must be sizeof(int) for compatibility reasons");
+		nde.neoDevice.Handle = neoDevice->handle;
+		return nde;
+	};
+	
+	// Create the NeoDeviceEx from the neodevice_t
+	auto i = 0;
+	for (const auto& neoDevice : neoDevices) {
+		// Fill the look up table
+		neodevices[uint64_t(neoDevice.handle) << 32 | icsneo_serialStringToNum(neoDevice.serial)] = neoDevice;
+		// Create the NeoDeviceEx
+		devs[i] = _createNeoDeviceExFrom(&neoDevice);
+		NeoDeviceEx* nde = &devs[i];
+		++i;
+		// Lookup the open NeoDeviceEx devices and match the NumberOfClients value if available.
+		for (auto& [neo_device, open_nde]: openneodevices) {
+			// SerialNumber should always be unique so lets compare against that.
+			if (nde->neoDevice.SerialNumber == open_nde->neoDevice.SerialNumber) {
+				nde->neoDevice.NumberOfClients = open_nde->neoDevice.NumberOfClients;
+			}
+		}
+	}
+	*devCount = (int)neoDevices.size();
 	return 1;
-}
-
-int LegacyDLLExport icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC)
-{
-	if (pNeoDevice == nullptr || hObject == nullptr)
-		return false;
-
-	neodevice_t *device;
-	try
-	{
-		device = &neodevices.at(uint64_t(pNeoDevice->Handle) << 32 | pNeoDevice->SerialNumber);
-	}
-	catch (const std::out_of_range&)
-	{
-		return false;
-	}
-
-	*hObject = device;
-	if (!icsneo_openDevice(device))
-		return false;
-
-	if (icsneo_isOnlineSupported(device)) {
-		if (!icsneo_setPollingMessageLimit(device, 20000))
-			return false;
-
-		if (!icsneo_enableMessagePolling(device))
-			return false;
-		
-		if (!icsneo_goOnline(device))
-			return false;
-	}
-
-	return true;
 }
 
 int LegacyDLLExport icsneoOpenDevice(
@@ -454,20 +403,34 @@ int LegacyDLLExport icsneoOpenDevice(
 		return false;
 	}
 
-	*hObject = device;
-	if(!icsneo_openDevice(device))
+	if (pNeoDeviceEx->neoDevice.NumberOfClients >= pNeoDeviceEx->neoDevice.MaxAllowedClients) {
 		return false;
+	}
+
+	*hObject = device;
+	if(!icsneo_openDevice(device)) {
+		return false;
+	}
 	
 	if (icsneo_isOnlineSupported(device)) {
-		if (!icsneo_setPollingMessageLimit(device, 20000))
+		if (!icsneo_setPollingMessageLimit(device, 20000)) {
+			icsneo_closeDevice(device);
 			return false;
+		}
 
-		if (!icsneo_enableMessagePolling(device))
+		if (!icsneo_enableMessagePolling(device)) {
+			icsneo_closeDevice(device);
 			return false;
+		}
 		
-		if (!icsneo_goOnline(device))
+		if (!icsneo_goOnline(device)) {
+			icsneo_closeDevice(device);
 			return false;
+		}
 	}
+	pNeoDeviceEx->neoDevice.NumberOfClients = 1;
+	// Add the open NeoDevice to the container so we can decrement NumberOfClients on close
+	openneodevices[device] = pNeoDeviceEx;
 
 	return true;
 }
@@ -476,8 +439,14 @@ int LegacyDLLExport icsneoClosePort(void* hObject, int* pNumberOfErrors)
 {
 	if (!icsneoValidateHObject(hObject))
 		return false;
+	if (pNumberOfErrors) {
+		*pNumberOfErrors = 0;
+	}
 	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
-
+	if (openneodevices.find(device) != openneodevices.end()) {
+		openneodevices[device]->neoDevice.NumberOfClients -= 1;
+		openneodevices.erase(device);
+	}
 	return icsneo_closeDevice(device);
 }
 
@@ -1013,20 +982,7 @@ int LegacyDLLExport icsneoScriptWriteAppSignal(void* hObject, unsigned int iInde
 	return false;
 }
 
-//Deprecated (but still suppored in the DLL)
-int LegacyDLLExport icsneoOpenPortEx(void* lPortNumber, int lPortType, int lDriverType, int lIPAddressMSB,
-	int lIPAddressLSBOrBaudRate, int bConfigRead, unsigned char* bNetworkID, int* hObject)
-{
-	// TODO Implement
-	return false;
-}
 
-int LegacyDLLExport icsneoOpenPort(int lPortNumber, int lPortType, int lDriverType, unsigned char *bNetworkID,
-	unsigned char* bSCPIDs, int* hObject)
-{
-	// TODO Implement
-	return false;
-}
 
 int LegacyDLLExport icsneoEnableNetworkCom(void* hObject, int Enable)
 {
@@ -1040,19 +996,6 @@ int LegacyDLLExport icsneoEnableNetworkCom(void* hObject, int Enable)
 		return icsneo_goOffline(device);
 }
 
-int LegacyDLLExport icsneoFindAllCOMDevices(int lDriverType, int lGetSerialNumbers, int lStopAtFirst, int lUSBCommOnly,
-	int* p_lDeviceTypes, int* p_lComPorts, int* p_lSerialNumbers, int* lNumDevices)
-{
-	// TODO Implement
-	return false;
-}
-
-int LegacyDLLExport icsneoOpenNeoDeviceByChannels(NeoDevice* pNeoDevice, void** hObject, unsigned char* uChannels, int iSize,
-	int bConfigRead, int iOptions)
-{
-	// TODO Implement
-	return false;
-}
 
 int LegacyDLLExport icsneoGetVCAN4Settings(void* hObject, SVCAN4Settings* pSettings, int iNumBytes)
 {
@@ -1136,6 +1079,12 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void* hObject, EPlasmaIonVnetCha
 		break;
 	case NEODEVICE_RED2:
 		*pDeviceSettingsType = DeviceRed2SettingsType;
+		break;
+	case NEODEVICE_FIRE3:
+		*pDeviceSettingsType = DeviceFire3SettingsType;
+		break;
+	case NEODEVICE_FIRE3_FLEXRAY:
+		*pDeviceSettingsType = DeviceFire3FlexraySettingsType;
 		break;
 	default:
 		return 0;

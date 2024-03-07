@@ -2,7 +2,7 @@
 LIBRARY icsneolegacy
 
 EXPORTS
-	icsneoOpenPort @21
+	; icsneoOpenPort @21
 	icsneoClosePort @22
 	icsneoGetMessages @23
 	icsneoTxMessages @24
@@ -12,12 +12,12 @@ EXPORTS
 	icsneoSendConfiguration @30
 	icsneoGetSerialNumber @32
 	; icsneoFindAllUSBDevices @33
-	icsneoOpenPortEx @34
+	; icsneoOpenPortEx @34
 	icsneoStopSockServer  @35
 	icsneoGetErrorInfo @36
 	icsneoGetDLLVersion @37
 	icsneoGetConfiguration @38
-	icsneoFindAllCOMDevices @39
+	; icsneoFindAllCOMDevices @39
 	icsneoGetISO15765Status @40
 	icsneoSetISO15765RxParameters @41
 	; icsneoSetPerformanceParameters @42
@@ -39,8 +39,8 @@ EXPORTS
 	icsneoScriptStart @ 57
 	icsneoScriptStop @ 58
 
-	icsneoFindNeoDevices @ 62
-	icsneoOpenNeoDevice @ 63
+	; icsneoFindNeoDevices @ 62
+	; icsneoOpenNeoDevice @ 63
 	; icsneoOpenNeoDeviceBySerialNumber @ 64
 
 	icsneoForceFirmwareUpdate @ 65
@@ -132,7 +132,7 @@ EXPORTS
 	; icsneoGetAllChipVersions @149
 	icsneoSetBitRateEx  @ 150
 	; icsneoScriptGetScriptStatusEx  @ 151
-	icsneoOpenNeoDeviceByChannels @ 152
+	; icsneoOpenNeoDeviceByChannels @ 152
 	; icsneoGetChannelLockStatus @ 153
 	; icsneoRequestEnterSleepMode @ 154
 	icsneoEnableNetworkComEx @ 155

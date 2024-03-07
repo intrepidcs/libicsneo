@@ -37,18 +37,17 @@ int main() {
 	printf("ICS icsneolegacy.dll version %u\n\n", ver);
 	// Find and attempt to open device
 	//legacy open device
-	int numDevices = 10;
-	NeoDevice devices[10];
-	void* hObject;  // holds a handle to the neoVI object
+	int numDevices = 255;
+	NeoDeviceEx devices[255] = {0};
+	void* hObject = NULL;  // holds a handle to the neoVI object
 	int iRetVal = 0;
-	int deviceTypes = 0;
 	int iResult = 0;
-	SDeviceSettings pSettings;
+	SDeviceSettings pSettings = {0};
 
-	iRetVal = icsneoFindNeoDevices(deviceTypes, devices, &numDevices);
-	if(iRetVal) {
+	iRetVal = icsneoFindDevices(devices, &numDevices, NULL, 0, NULL, 0);
+	if(iRetVal && numDevices > 0) {
 		// Attempt to open the selected device, enable message polling, and go online
-		iRetVal = icsneoOpenNeoDevice(&devices[0], &hObject, NULL, 1, 0);
+		iRetVal = icsneoOpenDevice(&devices[0], &hObject, NULL, 1, 0, NULL, 0);
 		if(iRetVal) {
 			puts("Device found and opened!\n");
 		} else {

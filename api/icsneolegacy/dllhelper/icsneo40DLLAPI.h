@@ -114,8 +114,6 @@ typedef int  (__stdcall *SCRIPTWRITEISO15765TXMESSAGE)(void * hObject, unsigned 
 
 
 //Basic Functions
-extern FINDNEODEVICES icsneoFindNeoDevices;
-extern OPENNEODEVICE icsneoOpenNeoDevice;
 extern OPENDEVICE icsneoOpenDevice;
 extern CLOSEPORT icsneoClosePort;
 extern FREEOBJECT icsneoFreeObject;

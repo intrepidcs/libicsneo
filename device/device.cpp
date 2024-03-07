@@ -356,6 +356,10 @@ bool Device::close() {
 
 	stopHeartbeatThread = true;
 
+	if (isMessagePollingEnabled()) {
+		disableMessagePolling();
+	}
+	
 	if(isOnline())
 		goOffline();
 

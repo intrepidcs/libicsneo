@@ -3,8 +3,6 @@
 #include <Tchar.h>
 
 //Basic Functions
-FINDNEODEVICES icsneoFindNeoDevices;
-OPENNEODEVICE icsneoOpenNeoDevice;
 OPENDEVICE icsneoOpenDevice;
 CLOSEPORT icsneoClosePort;
 FREEOBJECT icsneoFreeObject;
@@ -134,10 +132,6 @@ bool LoadDLLAPI(HINSTANCE &hAPIDLL)
  	if((hAPIDLL = LoadLibrary(_T("icsneo40.dll"))) == NULL)
 		return false;
 
-
-
-	icsneoFindNeoDevices =    (FINDNEODEVICES) GetProcAddress(hAPIDLL,              "icsneoFindNeoDevices");
-	icsneoOpenNeoDevice =     (OPENNEODEVICE) GetProcAddress(hAPIDLL,               "icsneoOpenNeoDevice");
 	icsneoOpenDevice =     (OPENDEVICE) GetProcAddress(hAPIDLL,               "icsneoOpenDevice");
 	icsneoClosePort =         (CLOSEPORT) GetProcAddress(hAPIDLL,                   "icsneoClosePort");	
 	icsneoFreeObject =        (FREEOBJECT) GetProcAddress(hAPIDLL,                  "icsneoFreeObject");
@@ -206,7 +200,7 @@ bool LoadDLLAPI(HINSTANCE &hAPIDLL)
 
 	icsneoEnableDOIPLine = (ENABLEDOIPACTIVATIONLINE)GetProcAddress(hAPIDLL, "icsneoEnableDOIPLine");
 
-    if(!icsneoFindNeoDevices || !icsneoOpenNeoDevice || !icsneoOpenDevice || !icsneoClosePort || !icsneoFreeObject ||
+    if(!icsneoOpenDevice || !icsneoClosePort || !icsneoFreeObject ||
 	   !icsneoTxMessages || !icsneoGetMessages || !icsneoWaitForRxMessagesWithTimeOut ||
        !icsneoGetTimeStampForMsg || !icsneoEnableNetworkRXQueue || !icsneoGetISO15765Status || !icsneoTxMessagesEx ||
        !icsneoSetISO15765RxParameters || !icsneoGetConfiguration || !icsneoSendConfiguration ||

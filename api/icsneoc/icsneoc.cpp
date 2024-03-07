@@ -144,8 +144,17 @@ bool icsneo_closeDevice(const neodevice_t* device) {
 		if((*it).get() == device->device)
 			itemsToDelete.push_back(it);
 	}
-	for(auto it : itemsToDelete)
+	for(auto it : itemsToDelete) {
+		// Move it back into connectable devices so we can open it again.
+		// Without this we will be unable to use/reopen the device due to 
+		// icsneo_isValidNeoDevice / icsneo_openDevice checks against this
+		// container. Since its closed we are in a connectable state again.
+		// Notice: When we search again this will be cleaned up by 
+		// icsneo_freeUnconnectedDevices()
+		connectableFoundDevices.push_back(*it);
+		// Remove it from the connected devices as we are no longer connected.
 		connectedDevices.erase(it);
+	}
 
 	return true;
 }

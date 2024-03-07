@@ -22,8 +22,10 @@ extern "C" {
 
 //Basic Functions
 extern int LegacyDLLExport icsneoFindDevices(NeoDeviceEx* pNeoDeviceEx, int* pNumDevices, unsigned int* DeviceTypes, unsigned int numDeviceTypes,POptionsFindNeoEx* pOptionsNeoEx, unsigned int* reserved);
-extern int LegacyDLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* pNumDevices);
-extern int LegacyDLLExport icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC);
+// icsneoFindNeoDevices was marked as obsolete in icsneo40 in 2016, Please move to icsneoFindDevices
+// extern int LegacyDLLExport icsneoFindNeoDevices(unsigned long DeviceTypes, NeoDevice* pNeoDevice, int* pNumDevices);
+// icsneoOpenNeoDevice was marked as obsolete in icsneo40 in 2016, Please move to icsneoOpenNeoDevice
+// extern int LegacyDLLExport icsneoOpenNeoDevice(NeoDevice* pNeoDevice, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int bSyncToPC);
 extern int LegacyDLLExport icsneoOpenDevice(NeoDeviceEx* pNeoDeviceEx, void** hObject, unsigned char* bNetworkIDs, int bConfigRead, int iOptions, OptionsOpenNeoEx* stOptionsOpenNeoEx, unsigned long reserved);
 extern int LegacyDLLExport icsneoClosePort(void* hObject, int* pNumberOfErrors);
 extern void LegacyDLLExport icsneoFreeObject(void* hObject);
@@ -133,13 +135,17 @@ extern int LegacyDLLExport icsneoScriptReadAppSignal(void* hObject, unsigned int
 extern int LegacyDLLExport icsneoScriptWriteAppSignal(void* hObject, unsigned int iIndex, double dValue);
 
 //Deprecated (but still supported in the DLL)
-extern int LegacyDLLExport icsneoOpenPortEx(void* lPortNumber, int lPortType, int lDriverType, int lIPAddressMSB, int lIPAddressLSBOrBaudRate, int bConfigRead, unsigned char* bNetworkID, int* hObject);
-extern int LegacyDLLExport icsneoOpenPort(int lPortNumber, int lPortType, int lDriverType, unsigned char* bNetworkID, unsigned char* bSCPIDs, int* hObject);
-extern int LegacyDLLExport icsneoFindAllCOMDevices(int lDriverType, int lGetSerialNumbers, int lStopAtFirst, int lUSBCommOnly, int* p_lDeviceTypes, int* p_lComPorts, int* p_lSerialNumbers, int*lNumDevices);
-extern int LegacyDLLExport icsneoOpenNeoDeviceByChannels(NeoDevice* pNeoDevice,void** hObject,unsigned char* uChannels,int iSize,int bConfigRead,int iOptions);
-extern int LegacyDLLExport icsneoLockChannels(void* hObject, unsigned char* uChannels, int iSize);
-extern int LegacyDLLExport icsneoUnlockChannels(void* hObject, unsigned char* uChannels, int iSize);
-extern int LegacyDLLExport icsneoGetChannelLockStatus(void* hObject, unsigned char* uChannels, int iSize);
+// icsneoOpenPortEx was marked as obsolete in icsneo40 in 2016, Please move to icsneoOpenNeoDevice
+// extern int LegacyDLLExport icsneoOpenPortEx(void* lPortNumber, int lPortType, int lDriverType, int lIPAddressMSB, int lIPAddressLSBOrBaudRate, int bConfigRead, unsigned char* bNetworkID, int* hObject);
+// icsneoOpenPort was marked as obsolete in icsneo40 in 2016, Please move to icsneoOpenNeoDevice
+// extern int LegacyDLLExport icsneoOpenPort(int lPortNumber, int lPortType, int lDriverType, unsigned char* bNetworkID, unsigned char* bSCPIDs, int* hObject);
+// icsneoFindAllCOMDevices was marked as obsolete in icsneo40 in 2016, Please move to icsneoOpenNeoDevice
+// extern int LegacyDLLExport icsneoFindAllCOMDevices(int lDriverType, int lGetSerialNumbers, int lStopAtFirst, int lUSBCommOnly, int* p_lDeviceTypes, int* p_lComPorts, int* p_lSerialNumbers, int*lNumDevices);
+// icsneoOpenNeoDeviceByChannels was marked as obsolete in icsneo40 in 2016, Please move to icsneoOpenNeoDevice
+// extern int LegacyDLLExport icsneoOpenNeoDeviceByChannels(NeoDevice* pNeoDevice,void** hObject,unsigned char* uChannels,int iSize,int bConfigRead,int iOptions);
+// extern int LegacyDLLExport icsneoLockChannels(void* hObject, unsigned char* uChannels, int iSize);
+// extern int LegacyDLLExport icsneoUnlockChannels(void* hObject, unsigned char* uChannels, int iSize);
+// extern int LegacyDLLExport icsneoGetChannelLockStatus(void* hObject, unsigned char* uChannels, int iSize);
 
 //Enable Network Com Functions
 extern int LegacyDLLExport icsneoEnableNetworkComEx(void* hObject, int iEnable, int iNetId);
