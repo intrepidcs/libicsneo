@@ -101,17 +101,23 @@ The write blocking status of the device determines the behavior of attempting to
 If write blocking is enabled, then the transmitting thread will wait for the entire buffer to be transmitted.
 If write blocking is disabled, then the attempt to transmit will simply fail and an error will be logged on the calling thread.
 
-A2B Wave Output
-~~~~~~~~~~~~~~~~~~~~
-Users may add a ``icsneo::A2BWAVOutput`` message callback to their device in order to write A2B PCM data to a WAVE file. The message callback listens for ``icsneo::A2BMessage``
-messages and writes both downstream and upstream channels to a single wave file. If downstream and upstream each have ``32`` channels, the wave file will contain ``2*32 = 64``
-total channels. Channels are indexed at 0 and interleaved such that downstream are on even number channels and upstream on odd number channels. If we introduce a
-variable ``IS_UPSTREAM`` which is ``0`` when downstream and ``1`` when upstream and desired a channel ``CHANNEL_NUM`` the corresponding channel in the wave file would be 
-``2*CHANNEL_NUM + IS_UPSTREAM``.  
+A2B message channel indexing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The libicsneo API allows users to input and output WAV file via receiving or transmitting A2B messages. The library provides several ways to import and export
+WAV files via A2B traffic. While using the API, a user will encounter message channels being referenced as unsigned integers for indexing. A ``icsneo::A2BMessage``
+object will contain both upstream and downstream channels. This implies that the number of channels that a A2B message has is twice the TDM mode. The ordering for these
+channels are interleved. Therefore, a message channel index ``0`` would represent downstream channel ``0`` in the network, message channel index ``1`` would represent
+upstream channel ``0`` in the network, and so on. More generally, a message channel index can be computed with the formula ``2 * CHANNEL + IS_UPSTREAM`` where channel
+is the channel referred in the A2B network and ``IS_UPSTREAM`` is ``1`` when a channel is upstream and ``0`` if downstream.
 
-Wave files may be split by channel using programs such as ``FFmpeg``. Consider a file ``out.wav`` which was generated using a ``icsneo::A2BWAVOutput`` object
-and contains ``32`` channels per stream. The ``icsneo::A2BWavoutput`` object injested PCM data with a sample rate of ``44.1 kHz`` and bit depth of ``24``. The corresponding
-channel of upstream channel ``8`` in ``out.wav`` would be  ``2*CHANNEL_NUM + IS_UPSTREAM = 2*8 + 1 = 17``. The following ``FFmpeg`` command may be ran in a linux environment to create a new wave 
-file ``out_upstream_ch8.wav`` which contains only PCM samples off of upstream channel ``8``.
+One area where these message channel indexes are used are when specifying a ``icsneo::ChannelMap`` for WAV transmit or receive. When transmitting a WAV file, the
+map will map message channels to the input WAV file. For receiving a WAV file, the map will map the output WAV channels to channels from received messages.
 
-``ffmpeg -i out.wav -ar 44100 -acodec pcm_s24le -map_channel 0.0.17 out_upstream_ch8.wav``
+EX: If we want to transmit, we will need to construct a mapping from message channels to the input WAV file. So, if we have a monotone WAV file that we are inputting
+through the API, then we can map channel ``2`` upstream to channel 0 in the input WAV (the only channel in the WAV file) with the following:
+
+``icsneo::ChannelMap chMap``
+``chMap[5] = 0``
+
+Since we are transmitting, we must map our desired A2B message channels to the input WAV file. We have ``0`` representing the single channel in the WAV file and
+``5`` representing channel ``2`` upstream in the A2B message from using the formula above ``2 * CHANNEL + IS_UPSTREAM = 2 * 2 + 1 = 5``.

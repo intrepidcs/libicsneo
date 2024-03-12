@@ -156,11 +156,11 @@ public:
 		return static_cast<ChannelSize>(deviceSettings.flags & a2bSettingsFlag16bit);
 	}
 
-	uint8_t getChannelOffset(RADA2BDevice device, A2BMessage::A2BDirection dir) const {
+	uint8_t getChannelOffset(RADA2BDevice device, A2BMessage::Direction dir) const {
 		auto cfg = getStructurePointer<rada2b_settings_t>();
 		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
-		if(dir == A2BMessage::A2BDirection::Upstream) {
+		if(dir == A2BMessage::Direction::Upstream) {
 			return deviceSettings.upstreamChannelOffset;
 		}
 
@@ -188,11 +188,11 @@ public:
 		deviceSettings.tdmMode = static_cast<uint8_t>(newMode);
 	}
 
-	void setChannelOffset(RADA2BDevice device, A2BMessage::A2BDirection dir, uint8_t newOffset) {
+	void setChannelOffset(RADA2BDevice device, A2BMessage::Direction dir, uint8_t newOffset) {
 		auto cfg = getMutableStructurePointer<rada2b_settings_t>();
 		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
-		if(dir == A2BMessage::A2BDirection::Upstream) {
+		if(dir == A2BMessage::Direction::Upstream) {
 			deviceSettings.upstreamChannelOffset = newOffset;
 		}
 		else {

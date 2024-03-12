@@ -9,7 +9,7 @@
 
 namespace icsneo {
 
-class ExtendedDataMessage : public RawMessage {
+class ExtendedDataMessage : public Frame {
 public:
 	#pragma pack(push, 2)
 	struct ExtendedDataHeader {
@@ -23,7 +23,7 @@ public:
 	static constexpr size_t MaxExtendedDataBufferSize = 2048;
 	const ExtendedDataHeader header;
 
-	ExtendedDataMessage(ExtendedDataHeader params) : RawMessage(Message::Type::RawMessage, Network::NetID::ExtendedData), header{params} {}
+	ExtendedDataMessage(ExtendedDataHeader params) : header{params} {}
 
 };
 

@@ -1,111 +1,144 @@
-// libicsneo A2B example
-// Example must be ran with rada2b as slave on TDM4 32 bit channel size and one ADI master node
-// Options:
-// -h, --help   Display help message.
-// -e, --example [EXAMPLE_NUM] Example to run.
-// Example usage: ./libicsneocpp-a2b.exe --example 1
-// Example usage: ./libicsneocpp-a2b.exe -h
+/**
+ * libicsneo A2B example
+ * 
+ * Example were made to be ran with RAD-A2B as main node on TDM4 16 bit channel size and one additional sub node (either an ADI board or an additional RAD-A2B).
+ * Follow the specific hardware instructions per example to ensure expected output. Be sure to configure the A2B network before running these examples, especially
+ * ones which Tx or Rx audio.
+ * 
+ * Options:
+ * -h, --help   Display help message.
+ * -e, --example [EXAMPLE_NUM] Example to run.
+ * Example usage: ./libicsneocpp-a2b.exe --example 1
+ * Example usage: ./libicsneocpp-a2b.exe -h
+*/
 
 #include <iostream>
 #include <fstream>
 #include <icsneo/icsneocpp.h>
 #include <icsneo/device/tree/rada2b/rada2bsettings.h>
-#include <icsneo/communication/message/callback/streamoutput/a2bdecoder.h>
+#include <icsneo/communication/message/callback/streamoutput/a2bwavoutput.h>
 #include <string>
 #include <math.h>
 
-static constexpr size_t numFramesInWave = 48;
-
-std::string makeWave() {
-	icsneo::WaveFileHeader header = icsneo::WaveFileHeader(1, 48000, 24);
-	std::vector<uint8_t> sineWaveSamples = {
-		0x00,	0x2B,	0x98,	0x08,	0x25,	0x01,	0x10,	0xD3,	0xEF,	0x18,	0x40,	0xA3,	0x20,	0x33,	0x4C, 	0x26,
-		0xCE,	0xCA,	0x2D,	0x5B,	0x41,	0x32,	0xB9,	0x3C,	0x37,	0x6E,	0x50,	0x3B,	0x29,	0x18,	0x3D,	0xC2,
-		0x96,	0x3F,	0x86,	0xD3,	0x3F,	0xEC,	0x35,	0x3F,	0x85,	0xA7,	0x3D,	0xC4,	0x19,	0x3B,	0x28,	0xC9,
-		0x37,	0x6B,	0x5A,	0x32,	0xC1,	0xC4,	0x2D,	0x4A,	0xEE,	0x26,	0xE8,	0xB1,	0x20,	0x0E,	0xCF,	0x18,
-		0x6F,	0xAA,	0x10,	0x9C,	0x17,	0x08,	0x53,	0x35,	0x00,	0x01,	0xFD,	0xF7,	0xA9,	0x29,	0xEF,	0x66,
-		0x87,	0xE7,	0x8F,	0x37,	0xDF,	0xF0,	0x8A,	0xD9,	0x19,	0xB3,	0xD2,	0xB1,	0x3E,	0xCD,	0x42,	0xE9,
-		0xC8,	0x8F,	0xE0,	0xC4,	0xDB,	0x39,	0xC2,	0x39,	0x78,	0xC0,	0x7A,	0x8A,	0xC0,	0x16,	0x38,	0xC0,
-		0x74,	0x18,	0xC2,	0x44,	0xBF,	0xC4,	0xCE,	0x26,	0xC8,	0x9A,	0x99,	0xCD,	0x3F,	0x53,	0xD2,	0xA8,
-		0xBD,	0xD9,	0x32,	0xF5,	0xDF,	0xC2,	0x68,	0xE7,	0xD5,	0xFD,	0xEF,	0x02,	0x15,	0xF8,	0x3B,	0x33,
+std::string makeWAV() {
+	icsneo::WAVHeader header = icsneo::WAVHeader(1, 48000, 16);
+	std::vector<uint8_t> sineWAVSamples = {
+		0xFF, 0x3F, 0x81, 0x5A, 0xD9, 0x6E, 0xA2, 0x7B, 0xFF, 0x7F, 0xA2, 0x7B, 0xD9, 0x6E, 0x81, 0x5A,
+		0xFF, 0x3F, 0x20, 0x21, 0x00, 0x00, 0xE0, 0xDE, 0x01, 0xC0, 0x7F, 0xA5, 0x27, 0x91, 0x5E, 0x84,
+		0x01, 0x80, 0x5E, 0x84, 0x27, 0x91, 0x7F, 0xA5, 0x01, 0xC0, 0xE0, 0xDe, 0x00, 0x00, 0x20, 0x21
 	};
 
-	std::vector<uint8_t> sineWave;
-	sineWave.reserve(sineWaveSamples.size() + sizeof(header));
+	std::vector<uint8_t> sineWAV;
+	sineWAV.reserve(sineWAVSamples.size() + sizeof(header));
 
-	sineWave.insert(sineWave.begin(), (uint8_t*)&header, (uint8_t*)(&header) + sizeof(header));
-	std::copy(sineWaveSamples.begin(), sineWaveSamples.end(), std::back_inserter(sineWave));
+	sineWAV.insert(sineWAV.begin(), (uint8_t*)&header, (uint8_t*)(&header) + sizeof(header));
+	std::copy(sineWAVSamples.begin(), sineWAVSamples.end(), std::back_inserter(sineWAV));
 
-	return std::string(sineWave.begin(), sineWave.end());
+	return std::string(sineWAV.begin(), sineWAV.end());
 }
 
-// Example 0: TX
-void example0(std::shared_ptr<icsneo::Device>& rada2b) { 
-	std::cout << "Transmitting a sine wave..." << std::endl;
+/**
+ * Example 0: TX
+*/
+void example0(const std::shared_ptr<icsneo::Device>& rada2b) { 
+	std::cout << "Transmitting a sine tone..." << std::endl;
 
-	// Create sine tone in wave format
-	std::string waveString = makeWave();
+	// Create sine tone in wav format
+	std::string wavString = makeWAV();
 
-	// Audio map to map which channel in wave to stream on a2b bus.
-	icsneo::A2BAudioChannelMap a2bmap(4);
-	
-	
-	a2bmap.set(
-		2, // Channel on a2b bus
-		icsneo::A2BMessage::A2BDirection::Downstream, // Direction
-		0 // Channel in wave file
-	);
-
-	a2bmap.setAll(0);
-
-	icsneo::A2BDecoder decoder(
-		std::make_unique<std::istringstream>(waveString), // Wave file stream
-		false, // True when using 16 bit samples
-		a2bmap
-	);
-
-
+	std::istringstream sineWAV(wavString);
 	double elapsedTime = 0.0;
+	
+	// Create a IWAVStream object which represents a WAV data stream
+	// the IWAVStream object here is initialized with an outside std::ostream, 
+	// so it holds a reference pointer to this stream.
+	icsneo::IWAVStream wavStream(sineWAV);
+
+	// Create a channel map which maps each message channel to a channel in the input WAV file
+	icsneo::ChannelMap channelMap;
+
+	// Here we will just set every message channel to channel 0 in the WAV file
+	// We have 8 channels since this is TDM4 and we include both upstream and downstream
+	// see docs for specific message channel labeling information
+
+	for(uint8_t messageChannel = 0; messageChannel < 8; messageChannel++) {
+		channelMap[messageChannel] = 0;
+	}
+
 	// Play roughly 5 seconds of sine tone.
 	while(elapsedTime < 5.0) {
+		while(elapsedTime < 5.0) {
+			// If WAVStream is invalid (at EOF) break out of loop
+			if(!wavStream) {
+				break;
+			}
 
-		decoder.outputAll(rada2b); // Output entire wave file
+			// Creates a new message with the maximum amount of allocated frames
+			auto msg = std::make_shared<icsneo::A2BMessage>(
+				icsneo::A2BMessage::TDMMode::TDM4, /* TDM mode of the message, we use TDM4 for this whole example*/
+				true /* true if we want 16 bit channels in the message, false for 32 bit. This should match the RAD-A2B device setting */
+			);
+			msg->txmsg = true;
+			msg->network = icsneo::Network(icsneo::Network::NetID::A2B2);
 
-		elapsedTime += (static_cast<double>(numFramesInWave)) * 1.0/48000.0;
+			// Load the WAV audio data into the desired channel, break if we fail to load
+			if(!msg->loadAudioBuffer(wavStream, channelMap)) {
+				break;
+			}
 
-		decoder.stream->clear();
-		decoder.stream->seekg(0, std::ios::beg);
-		// Also outputs entire wave file
-		while(decoder && elapsedTime < 5.0) {
-			auto msg = decoder.decode();
-			rada2b->transmit(msg);
+			// Transmit the message
+			if(!rada2b->transmit(msg)) {
+				std::cout << "Failed to transmit." << std::endl;
+				break;
+			}
 			elapsedTime += (static_cast<double>(msg->getNumFrames()))*1.0/48000.0;
 		}
 
-		decoder.stream->clear();
-		decoder.stream->seekg(0, std::ios::beg);
+		// Reset the WAV stream
+		wavStream.reset();
 	}
-
 }
 
-// Example 1: RX
-void example1(std::shared_ptr<icsneo::Device>& rada2b) {
+/**
+ * Example 1: RX
+*/
+void example1(const std::shared_ptr<icsneo::Device>& rada2b) {
 	std::cout << "Receiving 5 seconds of audio data..." << std::endl;
 
 	// Add WAV output message callback
 	// Saves samples to "out.wav"
-	auto handler = rada2b->addMessageCallback(std::make_shared<icsneo::A2BWAVOutput>("out.wav", 48000));
+	auto handler = rada2b->addMessageCallback(
+		std::make_shared<icsneo::A2BWAVOutput>(
+			"audio16bit.wav", /* output file name */
+			icsneo::ChannelMap( /** channel mapping which maps our output WAV channels to the message channels from incoming messages */
+				{ /* See docs for specific A2B channel indexing information */
+					{static_cast<uint8_t>(3u), static_cast<uint8_t>(0u)}, /* Map output WAV channel 3 to channel 0 downstream of the A2B network/A2BMessage */
+					{static_cast<uint8_t>(2u), static_cast<uint8_t>(1u)}, /* Map output WAV channel 2 to channel 0 upstream of the A2B network/A2BMessage */
+					{static_cast<uint8_t>(1u), static_cast<uint8_t>(2u)}, /* Map output WAV channel 1 to channel 1 downstream of the A2B network/A2BMessage */
+					{static_cast<uint8_t>(0u), static_cast<uint8_t>(3u)} /* Map output WAV channel 0 to channel 1 upstream of the A2B network/A2BMessage */
+				}
+			), 
+			icsneo::PCMType::L16, /* store samples with 16 bit resolution*/
+			2u, /* Number of channels in the output WAV file */
+			48000 /* Sample rate of WAV file */
+		)
+	);
 
 	// Sleep this thread for 5 seconds, message callback still runs
 	std::this_thread::sleep_for(std::chrono::seconds(5));
+
+	// Make sure you send 16 bit audio data on the above message channels in the channel map
+	// to the RAD-A2B main node through a microphone or a different modem.
+	// You can configure the message channels by changing the stream config in the A2B schematic
 
 	// Remove callback
 	rada2b->removeMessageCallback(handler);
 }
 
-
-// Example 2: RADA2B settings 
-void example2(std::shared_ptr<icsneo::Device>& rada2b) {
+/**
+ * Example 2: RAD-A2B settings
+*/
+void example2(const std::shared_ptr<icsneo::Device>& rada2b) {
 	uint8_t numChannels;
 	{
 		// Get device settings
@@ -129,82 +162,70 @@ void example2(std::shared_ptr<icsneo::Device>& rada2b) {
 		rada2bSettings->setNodeType(icsneo::RADA2BSettings::RADA2BDevice::Node, icsneo::RADA2BSettings::NodeType::Master);
 
 		// Set TDM mode to TDM8
-		rada2bSettings->setTDMMode(icsneo::RADA2BSettings::RADA2BDevice::Node, icsneo::RADA2BSettings::TDMMode::TDM8);
+		rada2bSettings->setTDMMode(icsneo::RADA2BSettings::RADA2BDevice::Node, icsneo::RADA2BSettings::TDMMode::TDM4);
 		
 		// Apply local settings to device
 		rada2bSettings->apply();
 	}
 }
 
-// Example 3: A2BMessage API
-void example3() {
-	icsneo::A2BMessage msg = icsneo::A2BMessage(4, false, 2048); // Create new A2BMessage
-
-	msg[0][0] = 60; // Set sample using operator[][]
-	msg[0][3] = 60; // Frame 0, channel 2 upstream
-	msg[6][2] = 32; // Frame 6, channel 1 downstream
-
-	// Equivalent to last line
-	msg.setSample(icsneo::A2BMessage::A2BDirection::Downstream, 1, 6, 32);
-
-	// Get sample
-	std::cout << "Channel 1 downstream sample for frame 6: " << msg.getSample(icsneo::A2BMessage::A2BDirection::Downstream, 1, 6).value() << std::endl; 
-
-	// Get number of frames
-	auto numFrames = msg.getNumFrames();
-	std::cout << "Num frames: " << numFrames << std::endl;
-
-	icsneo::A2BPCMSample sample1 = 40;
-	icsneo::A2BPCMSample sample2 = 60;
-	msg.fill(sample1); // Fill whole message with sample 40 
-
-	msg.fillFrame(sample2, numFrames/2); // Fill frame numFrames/2 with sample2
-
-	// Print msg sample contents
-	std::cout << "A2B message contents:" << std::endl;
-	for(size_t y = 0; y < numFrames; y++) {
-		for(size_t x = 0; x < ((size_t)(msg.getNumChannels())*2); x++) { // Num channels including upstream and downstream
-			std::cout << msg[y][x] << " ";
-		}
-		std::cout << std::endl;
-	}
-
-	// Set and get bits
-	msg.setSyncFrameBit(true);
-
-	std::cout << "Was received from monitor: " << msg.isMonitorMsg() << std::endl;
-}
-
-// Example 4: Packaging and transmitting sine wave using A2BMessage API
-void example4(std::shared_ptr<icsneo::Device>& rada2b) {
-	std::cout << "Transmitting a 1000 hz sine wave." << std::endl;
+/**
+ * Example 3: Packaging and transmitting sine tone using A2BMessage API
+*/
+void example3(const std::shared_ptr<icsneo::Device>& rada2b) {
+	std::cout << "Transmitting a 1000 hz sine tone." << std::endl;
 
 	float deltaTime = static_cast<float>(1.0/48000.0);
 	float elapsedTime = 0.0;
 	float twoPI = static_cast<float>(2.0*atan(1.0)*4.0);
 	float frequency = 1000;
-	float amplitude = static_cast<float>((1 << 23) - 1);
+	float amplitude = static_cast<float>((1 << 15) - 1);
+	size_t tdm = 4;
+	size_t bytesPerSample = 2;
 
-	uint8_t icsChannel = 0; // Play audio on channel 2, upstream, see docs for details
+	size_t numFrames = 2048 / (2 * tdm * bytesPerSample);
 
 
 	// Play for roughly 5 seconds
 	while(elapsedTime < 5.0) {
 		// Allocate message
-		std::shared_ptr<icsneo::A2BMessage> a2bmsgPtr = std::make_shared<icsneo::A2BMessage>(static_cast<uint8_t>(4), false, static_cast<size_t>(2048));
+		std::shared_ptr<icsneo::A2BMessage> a2bmsgPtr = std::make_shared<icsneo::A2BMessage>(numFrames, icsneo::A2BMessage::TDMMode::TDM4, true);
 
 		icsneo::A2BMessage& a2bmsg = *a2bmsgPtr.get();
 		a2bmsg.network = icsneo::Network(icsneo::Network::NetID::A2B2);
+		a2bmsg.txmsg = true;
 
 		for(size_t frame = 0; frame < a2bmsg.getNumFrames(); frame++) {
 		
-			// Sine wave sample, amplitude 1000, frequency 1000 hz
+			// Sine tone sample, amplitude 1000, frequency 1000 hz
 
 			float contSample = amplitude*sin(twoPI*frequency*elapsedTime);
-			icsneo::A2BPCMSample sample = static_cast<icsneo::A2BPCMSample>(contSample);
+			icsneo::PCMSample sample = static_cast<icsneo::PCMSample>(contSample);
 
-			// Set sample for each frame in message
-			a2bmsg[frame][icsChannel] = sample;
+			// Send this sine wave sample downstream on channels 0, 1, and 2
+			a2bmsg.setChannelSample(
+				icsneo::A2BMessage::Direction::Downstream,
+				0,
+				frame,
+				sample,
+				icsneo::PCMType::L16
+			);
+
+			a2bmsg.setChannelSample(
+				icsneo::A2BMessage::Direction::Downstream,
+				1,
+				frame,
+				sample,
+				icsneo::PCMType::L16
+			);
+
+			a2bmsg.setChannelSample(
+				icsneo::A2BMessage::Direction::Downstream,
+				2,
+				frame,
+				sample,
+				icsneo::PCMType::L16
+			);
 
 			elapsedTime+=deltaTime;
 		}
@@ -219,26 +240,10 @@ void example4(std::shared_ptr<icsneo::Device>& rada2b) {
 
 }
 
-
-// Example 5: Wave loop back
-void example5(std::shared_ptr<icsneo::Device>& rada2b) {
-
-	auto listener = [&rada2b]() {
-		auto handler = rada2b->addMessageCallback(std::make_shared<icsneo::A2BWAVOutput>("looped.wav", 48000));
-		std::this_thread::sleep_for(std::chrono::seconds(5));
-		rada2b->removeMessageCallback(handler);
-	};
-
-	// Listen on another thread
-	std::thread listenerThread{listener};
-
-	// Transmit wave file using example0
-	example0(rada2b);
-	listenerThread.join();
-}
-
-// Example 6: Retrieving A2B bus status using I2C messaages.
-void example6(std::shared_ptr<icsneo::Device>& rada2b) {
+/**
+ * Example 4: Retrieving A2B bus status using I2C messaages.
+*/
+void example4(const std::shared_ptr<icsneo::Device>& rada2b) {
 	std::shared_ptr<icsneo::I2CMessage> msg = std::make_shared<icsneo::I2CMessage>();
 	std::shared_ptr<icsneo::MessageFilter> msgFilter = std::make_shared<icsneo::MessageFilter>(icsneo::Network::NetID::I2C2);
 
@@ -320,6 +325,21 @@ void example6(std::shared_ptr<icsneo::Device>& rada2b) {
 	rada2b->removeMessageCallback(handler);
 }
 
+/**
+ * Example 5: Reading A2B sequence chart .puml file
+*/
+void example5(const std::shared_ptr<icsneo::Device>& rada2b) {
+	// The A2B sequence chart is located at binary index 0
+	constexpr uint16_t a2bSequenceChartIndex = 0;
+
+	// Create a ostream object to capture sequence chart data
+	std::ofstream a2bSequenceChart("a2b_sequence_chart.puml", std::ios::out | std::ios::binary);
+	
+	if(!rada2b->readBinaryFile(a2bSequenceChart, a2bSequenceChartIndex)) {
+		std::cout << "Failed to read A2B sequence chart" << std::endl;
+	}
+}
+
 void displayUsage() {
 	std::cout << "libicsneo A2B example" << std::endl;
 	std::cout << "Example must be ran with rada2b as slave on TDM4 32 bit channel size and one ADI master node" << std::endl;
@@ -332,11 +352,10 @@ void displayUsage() {
 	std::cout << "Example options:" << std::endl;
 	std::cout << "0\ttx" << std::endl;
 	std::cout << "1\trx" << std::endl;
-	std::cout << "2\tSet RADA2B settings" << std::endl;
-	std::cout << "3\tA2BMessage API" << std::endl;
-	std::cout << "4\tPackaging and transmitting sine wave using A2BMessage API" << std::endl;
-	std::cout << "5\tWave loopback" << std::endl;
-	std::cout << "6\tRead/write I2C registers on A2B board" << std::endl;
+	std::cout << "2\tSet RAD-A2B settings" << std::endl;
+	std::cout << "3\tPackaging and transmitting sine wav using A2BMessage API" << std::endl;
+	std::cout << "4\tRead/write I2C registers on A2B board" << std::endl;
+	std::cout << "5\tReading out A2B sequence chart .puml file" << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -360,7 +379,7 @@ int main(int argc, char** argv) {
 
 	int option = atoi(arguments[2].c_str());
 
-	if(option < 0 || option > 6) {
+	if(option < 0 || option > 5) {
 		std::cerr << "Invalid usage." << std::endl;
 		displayUsage();
 		return EXIT_FAILURE;
@@ -386,27 +405,27 @@ int main(int argc, char** argv) {
 	);
 
 	if(it == devices.end()) {
-		std::cerr << "Could not find RADA2B." << std::endl;
+		std::cerr << "Could not find RAD-A2B." << std::endl;
 		return EXIT_FAILURE;
 	}
 
 	std::shared_ptr<icsneo::Device> rada2b = *it;
 	if(!rada2b->open()) {
-		std::cout << "Failed to open RADA2B." << std::endl;
+		std::cout << "Failed to open RAD-A2B." << std::endl;
 		std::cout << icsneo::GetLastError() << std::endl;
 		return EXIT_FAILURE;
 	} 
 	else {
-		std::cout << "Opened RADA2B." << std::endl;
+		std::cout << "Opened RAD-A2B." << std::endl;
 	}
 
 	if(!rada2b->goOnline()) {
-		std::cout << "Failed to go online with RADA2B." << std::endl;
+		std::cout << "Failed to go online with RAD-A2B." << std::endl;
 		std::cout << icsneo::GetLastError() << std::endl;
 		return EXIT_FAILURE;
 	}
 	else {
-		std::cout << "RADA2B online." << std::endl;
+		std::cout << "RAD-A2B online." << std::endl;
 	}
 	
 	switch(option) {
@@ -420,16 +439,13 @@ int main(int argc, char** argv) {
 			example2(rada2b);
 			break;
 		case 3:
-			example3();
+			example3(rada2b);
 			break;
 		case 4:
 			example4(rada2b);
 			break;
 		case 5:
 			example5(rada2b);
-			break;
-		case 6:
-			example6(rada2b);
 			break;
 		default:
 			break;

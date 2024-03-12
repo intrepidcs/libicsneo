@@ -54,6 +54,10 @@ protected:
 		return 0;
 	}
 
+	bool supportsEraseMemory() const override {
+		return true;
+	}
+
 };
 
 }

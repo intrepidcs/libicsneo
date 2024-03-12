@@ -9,33 +9,73 @@
 
 namespace icsneo {
 
+/**
+ * A message callback which injests A2BMessage PCM data and formats it into a WAV file
+*/
 class A2BWAVOutput : public StreamOutput {
 public:
-	A2BWAVOutput(const char* filename, uint32_t sampleRate = 44100) 
-		: StreamOutput(filename), wavSampleRate(sampleRate) {}
+	static constexpr size_t wavBufferSize = 1024 * 32;
 
-	A2BWAVOutput(std::unique_ptr<std::ostream>&& os, uint32_t sampleRate = 44100) 
-		: StreamOutput(std::move(os)), wavSampleRate(sampleRate) {}
+	/**
+	 * Creates a new A2BWAVOutput object
+	 * 
+	 * @param filename Name of desired output WAV file
+	 * @param channelMap A map which maps a channel in the output WAV file to a channel in received messages. See docs for specific channel format in messages
+	 * @param bitDepth The size of the samples in the WAV file.
+	 * @param numWAVChannels The number of channels in the output WAV file
+	 * @param sampleRate The output WAV file sample rate
+	*/
+	A2BWAVOutput(
+		const char* filename,
+		const ChannelMap& channelMap,
+		PCMType bitDepth,
+		size_t numWAVChannels,
+		uint32_t sampleRate = 48000
+	);
 
-	void writeHeader(const std::shared_ptr<A2BMessage>& firstMsg) const;
+	/**
+	 * Creates a new A2BWAVOutput object
+	 * 
+	 * @param os A std::ostream object which represents this WAV file
+	 * @param channelMap A map which maps a channel in the output WAV file to a channel in received messages. See docs for specific channel format in messages
+	 * @param bitDepth The size of the samples in the WAV file.
+	 * @param numWAVChannels The number of channels in the output WAV file
+	 * @param sampleRate The output WAV file sample rate
+	*/
+	A2BWAVOutput(
+		std::ostream& os,
+		const ChannelMap& channelMap,
+		PCMType bitDepth,
+		size_t numWAVChannels,
+		uint32_t sampleRate = 48000
+	);
 
 	bool callIfMatch(const std::shared_ptr<Message>& message) const override;
 
-	void close() const;
-
-	~A2BWAVOutput() override {
-		if(!closed) {
-			close();
-		}
-	}
+	~A2BWAVOutput() override;
 
 protected:
+	void close() const;
+	bool initialize();
 
-	uint32_t wavSampleRate;
+	/**
+	 * Write and clear the current stored audio buffer
+	*/
+	bool writeCurrentBuffer() const;
+
+	mutable std::vector<uint8_t> wavBuffer; // A buffer which is used to cache PCM data to write to disk later
+	mutable size_t wavBufferOffset = 0; // Current offset in the above buffer, gets incremented as data is read into buffer
+	uint32_t wavSampleRate; // The output WAV sample rate
+
+	size_t bytesPerSampleWAV; // The number of bytes per sample in the output WAV file
+	size_t numChannelsWAV; // The number of channels in the output WAV file
+
+	ChannelMap chMap; // A map which maps a WAV channel to a A2BMessage channel
+	size_t maxMessageChannel; // The highest message channel in the above channel map, this variable is used for error checking
+
+	bool initialized = false;
 	mutable uint32_t streamStartPos;
-	mutable bool firstMessageFlag = true;
 	mutable bool closed = false;
-
 };
 
 }

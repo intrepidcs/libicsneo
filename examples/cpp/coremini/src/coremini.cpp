@@ -63,7 +63,9 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
-	if (!device->uploadCoremini(std::make_unique<std::ifstream>(arguments[2], std::ios::binary), type)) {
+	std::ifstream coreminiFile(arguments[2], std::ios::binary);
+
+	if (!device->uploadCoremini(coreminiFile, type)) {
 		std::cout << "Failed to upload coremini" << std::endl;
 		std::cout << icsneo::GetLastError() << std::endl;
 	}

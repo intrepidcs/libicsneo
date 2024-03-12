@@ -490,7 +490,7 @@ bool Device::startScript(Disk::MemoryType memType)
 
 	const auto response = com->waitForMessageSync([&]() {
 		return com->sendCommand(Command::LoadCoreMini, location);
-	}, filter);
+	}, filter, std::chrono::milliseconds(2000));
 
 	if(!response) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
@@ -522,14 +522,14 @@ bool Device::stopScript()
 	return true;
 }
 
-bool Device::uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::MemoryType memType) {
+bool Device::uploadCoremini(std::istream& stream, Disk::MemoryType memType) {
 
-	if(!stream || stream->bad()) {
+	if(stream.bad()) {
 		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;
 	}
 	
-	std::vector<char> bin(std::istreambuf_iterator<char>(*stream), {}); // Read the whole stream
+	std::vector<char> bin(std::istreambuf_iterator<char>(stream), {}); // Read the whole stream
 
 	if(bin.size() < 4) {
 		report(APIEvent::Type::BufferInsufficient, APIEvent::Severity::Error);
@@ -596,6 +596,10 @@ bool Device::uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::Memory
 bool Device::eraseScriptMemory(Disk::MemoryType memType, uint64_t amount) {
 	static std::shared_ptr<MessageFilter> NeoEraseDone = std::make_shared<MessageFilter>(Network::NetID::NeoMemoryWriteDone);
 
+	if(!supportsEraseMemory()) {
+		return true;
+	}
+
 	auto startAddress = getCoreminiStartAddress(memType);
 	if(!startAddress) {
 		return false;
@@ -612,7 +616,7 @@ bool Device::eraseScriptMemory(Disk::MemoryType memType, uint64_t amount) {
 
 	arguments[0] = static_cast<uint8_t>(memType);
 	*reinterpret_cast<uint32_t*>(&arguments[1]) = static_cast<uint32_t>(*startAddress / 512);
-	*reinterpret_cast<uint32_t*>(&arguments[5])= numWords;
+	*reinterpret_cast<uint32_t*>(&arguments[5]) = numWords;
 
 	auto msg = com->waitForMessageSync([this, &arguments] {
 		return com->sendCommand(Command::NeoEraseMemory, arguments);

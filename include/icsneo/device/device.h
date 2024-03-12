@@ -158,7 +158,7 @@ public:
 	bool startScript(Disk::MemoryType memType = Disk::MemoryType::SD);
 	bool stopScript();
 	bool clearScript(Disk::MemoryType memType = Disk::MemoryType::SD);
-	bool uploadCoremini(std::unique_ptr<std::istream>&& stream, Disk::MemoryType memType = Disk::MemoryType::SD);
+	bool uploadCoremini(std::istream& stream, Disk::MemoryType memType = Disk::MemoryType::SD);
 
 	bool eraseScriptMemory(Disk::MemoryType memType, uint64_t amount);
 
@@ -182,8 +182,14 @@ public:
 		return std::nullopt;
 	}
 
+	virtual bool supportsEraseMemory() const {
+		return false;
+	}
+
 
 	// Message polling related functions
+
+
 	bool enableMessagePolling();
 	bool disableMessagePolling();
 	bool isMessagePollingEnabled() { return messagePollingCallbackID != 0; };

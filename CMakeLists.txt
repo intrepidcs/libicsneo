@@ -235,7 +235,7 @@ endforeach()
 set(SRC_FILES
 	communication/message/flexray/control/flexraycontrolmessage.cpp
 	communication/message/callback/streamoutput/a2bwavoutput.cpp
-	communication/message/callback/streamoutput/a2bdecoder.cpp
+	communication/message/a2bmessage.cpp
 	communication/message/neomessage.cpp
 	communication/message/ethphymessage.cpp
 	communication/message/linmessage.cpp

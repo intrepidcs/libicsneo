@@ -69,6 +69,10 @@ protected:
 
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
+
+	bool supportsEraseMemory() const override {
+		return true;
+	}
 };
 
 }

@@ -62,6 +62,10 @@ protected:
 	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
 		return 0;
 	}
+
+	bool supportsEraseMemory() const override {
+		return true;
+	}
 };
 
 }

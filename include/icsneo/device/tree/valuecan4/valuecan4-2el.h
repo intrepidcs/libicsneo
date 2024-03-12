@@ -89,6 +89,10 @@ protected:
 		ValueCAN4::setupPacketizer(packetizer);
 		packetizer.align16bit = !com->driver->isEthernet();
 	}
+
+	bool supportsEraseMemory() const override {
+		return true;
+	}
 };
 
 }

@@ -295,7 +295,6 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				case Network::NetID::ExtendedData: {
 					if(packet->data.size() < sizeof(ExtendedDataMessage::ExtendedDataHeader))
 						break;
-
 					const auto& header = *reinterpret_cast<ExtendedDataMessage::ExtendedDataHeader*>(packet->data.data());
 
 					switch(header.subCommand) {
@@ -307,6 +306,8 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							extDataMsg->data.resize(numRead);
 							
 							std::copy(packet->data.begin() + sizeof(header), packet->data.begin() + sizeof(header) + numRead, extDataMsg->data.begin());
+
+							extDataMsg->network = Network(static_cast<uint16_t>(Network::NetID::ExtendedData), false);
 							return true;
 						}
 						default:
