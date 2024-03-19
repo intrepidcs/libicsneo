@@ -3,11 +3,17 @@
 
 #include "icsneo/platform/windows.h"
 
+#ifndef ICSNEOC_BUILD_STATIC
 #ifdef ICSNEOC_MAKEDLL
 #define DLLExport __declspec(dllexport)
 #else
 #define DLLExport __declspec(dllimport)
 #endif
+#else
+#define DLLExport
+#endif
+
+
 #define LegacyDLLExport DLLExport _stdcall
 
 // MSVC does not have the ability to specify a destructor

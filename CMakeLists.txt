@@ -12,6 +12,7 @@ option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
 option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
+option(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC "Build static icsnVC40 compatibility library" ON)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
 
 # Device Drivers
@@ -448,6 +449,7 @@ if(LIBICSNEO_BUILD_ICSNEOC_STATIC)
 	)
 	target_link_libraries(icsneoc-static PUBLIC icsneocpp)
 	target_compile_features(icsneoc-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	target_compile_definitions(icsneoc-static PUBLIC ICSNEOC_BUILD_STATIC)
 endif()
 
 if(LIBICSNEO_BUILD_ICSNEOLEGACY)
@@ -466,6 +468,25 @@ if(LIBICSNEO_BUILD_ICSNEOLEGACY)
 	)
 	target_link_libraries(icsneolegacy PRIVATE icsneocpp)
 	target_compile_features(icsneolegacy PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+endif()
+
+if(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC)
+	add_library(icsneolegacy-static STATIC
+		api/icsneolegacy/icsneolegacy.cpp
+		api/icsneolegacy/icsneolegacyextra.cpp
+		api/icsneoc/icsneoc.cpp
+	)
+
+	target_include_directories(icsneolegacy-static
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneolegacy-static PUBLIC icsneocpp)
+	target_compile_features(icsneolegacy-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	target_compile_definitions(icsneolegacy-static PUBLIC ICSNEOC_BUILD_STATIC)
 endif()
 
 # googletest

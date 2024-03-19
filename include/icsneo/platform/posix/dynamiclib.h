@@ -9,7 +9,12 @@
 #include "icsneo/platform/posix/linux/dynamiclib.h"
 #endif
 
+#ifndef ICSNEOC_BUILD_STATIC
 #define DLLExport __attribute__((visibility("default")))
+#else
+#define DLLExport
+#endif
+
 #define LegacyDLLExport DLLExport
 
 // #ifndef ICSNEO_NO_AUTO_DESTRUCT
