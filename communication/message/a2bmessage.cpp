@@ -59,7 +59,7 @@ size_t A2BMessage::getSampleOffset(Direction dir, uint8_t channel, size_t frame)
 	size_t sampleOffset = static_cast<size_t>(frameSize * frame + 2 * channel *  getBytesPerChannel());
 
 	if(dir == Direction::Upstream) {
-		sampleOffset++;
+		sampleOffset += getBytesPerChannel();
 	}
 
 	return sampleOffset;
@@ -152,7 +152,6 @@ PCMSample A2BMessage::getChannelSample(Direction dir, uint8_t channel, size_t fr
 void A2BMessage::setChannelSample(Direction dir, uint8_t channel, size_t frame, PCMSample sampleToSet, PCMType pcmType) {
 	
 	size_t sampleOffset = getSampleOffset(dir, channel, frame);
-	uint8_t* audioData = data.data();
 	uint32_t& uSample = *reinterpret_cast<uint32_t*>(&sampleToSet);
 
 	// Align the bytes towards the most significant bit by multiplying using
@@ -168,10 +167,10 @@ void A2BMessage::setChannelSample(Direction dir, uint8_t channel, size_t frame, 
 
 	if(channelSize16) {
 		// Read the 2 most significant bytes of the sample
-		SAMPLE_TO_BYTES_16(audioData, sampleOffset, uSample)
+		SAMPLE_TO_BYTES_16(data, sampleOffset, uSample)
 	} else {
 		// Read the entire sample
-		SAMPLE_TO_BYTES_32(audioData, sampleOffset, uSample);
+		SAMPLE_TO_BYTES_32(data, sampleOffset, uSample);
 	}
 }
 

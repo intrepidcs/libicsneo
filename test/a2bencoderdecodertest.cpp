@@ -71,6 +71,21 @@ TEST_F(A2BEncoderDecoderTest, PacketEncoderTest)
 
 	packetEncoder->encode(*packetizer, bytestream, messagePtr);
 	EXPECT_EQ(bytestream, testBytes);
+
+	message.setChannelSample(
+		icsneo::A2BMessage::Direction::Upstream,
+		static_cast<uint8_t>(1u),
+		0u,
+		-102,
+		icsneo::PCMType::L16
+	);
+
+	EXPECT_EQ(message.getChannelSample(
+		icsneo::A2BMessage::Direction::Upstream,
+		static_cast<uint8_t>(1u),
+		0u,
+		icsneo::PCMType::L16
+	), -102);
 }
 
 TEST_F(A2BEncoderDecoderTest, PacketDecoderTest)
