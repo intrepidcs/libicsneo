@@ -497,6 +497,7 @@ public:
 		case NetID::DWCAN14:
 		case NetID::DWCAN15:
 		case NetID::DWCAN16:
+		case NetID::Device:
 			return Type::CAN;
 		case NetID::LIN:
 		case NetID::LIN2:
@@ -520,7 +521,6 @@ public:
 			return Type::MOST;
 		case NetID::RED:
 		case NetID::RED_OLDFORMAT:
-		case NetID::Device:
 		case NetID::Reset_Status:
 		case NetID::DeviceStatus:
 		case NetID::FlexRayControl:
