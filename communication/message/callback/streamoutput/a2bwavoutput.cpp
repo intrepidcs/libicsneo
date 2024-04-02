@@ -11,7 +11,7 @@ A2BWAVOutput::A2BWAVOutput(
 	size_t numWAVChannels,
 	uint32_t sampleRate
 ) 
-	: StreamOutput(filename), chMap(channelMap), wavSampleRate(sampleRate), numChannelsWAV(numWAVChannels) {
+	: StreamOutput(filename), wavSampleRate(sampleRate), numChannelsWAV(numWAVChannels), chMap(channelMap) {
 	switch(bitDepth) {
 		case PCMType::L16:
 			bytesPerSampleWAV = 2;
@@ -36,7 +36,7 @@ A2BWAVOutput::A2BWAVOutput(
 	size_t numWAVChannels,
 	uint32_t sampleRate
 ) 
-	: StreamOutput(os), chMap(channelMap), wavSampleRate(sampleRate), numChannelsWAV(numWAVChannels) {
+	: StreamOutput(os), wavSampleRate(sampleRate), numChannelsWAV(numWAVChannels), chMap(channelMap) {
 	switch(bitDepth) {
 		case PCMType::L16:
 			bytesPerSampleWAV = 2;
