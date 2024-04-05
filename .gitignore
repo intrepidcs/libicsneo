@@ -14,3 +14,4 @@ third-party/concurrentqueue/tests
 *.orig
 examples/csharp/bin
 examples/csharp/obj
+test/system

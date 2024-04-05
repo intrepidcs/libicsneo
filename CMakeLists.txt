@@ -6,7 +6,8 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-option(LIBICSNEO_BUILD_TESTS "Build all tests." OFF)
+option(LIBICSNEO_BUILD_UNIT_TESTS "Build unit tests." OFF)
+option(LIBICSNEO_BUILD_SYSTEM_TESTS "Build system tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
 option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
 option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
@@ -491,7 +492,7 @@ if(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC)
 endif()
 
 # googletest
-if(LIBICSNEO_BUILD_TESTS)
+if(LIBICSNEO_BUILD_UNIT_TESTS)
 	if(WIN32)
 		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 	endif()
@@ -504,28 +505,44 @@ if(LIBICSNEO_BUILD_TESTS)
 		include_directories("${gtest_SOURCE_DIR}/include")
 	endif()
 
-	add_executable(libicsneo-tests
-		test/main.cpp
-		test/diskdriverreadtest.cpp
-		test/diskdriverwritetest.cpp
-		test/eventmanagertest.cpp
-		test/ethernetpacketizertest.cpp
-		test/i2cencoderdecodertest.cpp
-		test/linencoderdecodertest.cpp
-		test/a2bencoderdecodertest.cpp
-		test/mdioencoderdecodertest.cpp
-		test/livedataencoderdecodertest.cpp
-		test/ringbuffertest.cpp
+	add_executable(libicsneo-unit-tests
+		test/unit/main.cpp
+		test/unit/diskdriverreadtest.cpp
+		test/unit/diskdriverwritetest.cpp
+		test/unit/eventmanagertest.cpp
+		test/unit/ethernetpacketizertest.cpp
+		test/unit/i2cencoderdecodertest.cpp
+		test/unit/linencoderdecodertest.cpp
+		test/unit/a2bencoderdecodertest.cpp
+		test/unit/mdioencoderdecodertest.cpp
+		test/unit/livedataencoderdecodertest.cpp
+		test/unit/ringbuffertest.cpp
 	)
 
-	target_link_libraries(libicsneo-tests gtest gtest_main)
-	target_link_libraries(libicsneo-tests icsneocpp)
+	target_link_libraries(libicsneo-unit-tests gtest gtest_main)
+	target_link_libraries(libicsneo-unit-tests icsneocpp)
 
-	target_include_directories(libicsneo-tests PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+	target_include_directories(libicsneo-unit-tests PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 	enable_testing()
 
-	add_test(NAME libicsneo-test-suite COMMAND libicsneo-tests)
+	add_test(NAME libicsneo-unit-test-suite COMMAND libicsneo-unit-tests)
+endif()
+
+if(LIBICSNEO_BUILD_SYSTEM_TESTS)
+	if(DEFINED ENV{LIBICSNEO_SYSTEM_TESTS})
+		include(FetchContent)
+		file(MAKE_DIRECTORY test/system)
+		FetchContent_Declare(
+			SystemTests
+			GIT_REPOSITORY $ENV{LIBICSNEO_SYSTEM_TESTS}
+			GIT_TAG main
+			SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test/system
+		)
+		FetchContent_MakeAvailable(SystemTests)
+	else()
+		message("System test repo not defined!")
+	endif()
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

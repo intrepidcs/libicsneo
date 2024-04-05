@@ -109,19 +109,19 @@ public:
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:
 				return &(cfg->can1);
-			case Network::NetID::MSCAN:
-				return &(cfg->can2);
 			case Network::NetID::HSCAN2:
-				return &(cfg->can3);
+				return &(cfg->can2);
 			case Network::NetID::HSCAN3:
-				return &(cfg->can4);
+				return &(cfg->can3);
 			case Network::NetID::HSCAN4:
-				return &(cfg->can5);
+				return &(cfg->can4);
 			case Network::NetID::HSCAN5:
-				return &(cfg->can6);
+				return &(cfg->can5);
 			case Network::NetID::HSCAN6:
-				return &(cfg->can7);
+				return &(cfg->can6);
 			case Network::NetID::HSCAN7:
+				return &(cfg->can7);
+			case Network::NetID::MSCAN:
 				return &(cfg->can8);
 			default:
 				return nullptr;
@@ -134,19 +134,19 @@ public:
 		switch(net.getNetID()) {
 			case Network::NetID::HSCAN:
 				return &(cfg->canfd1);
-			case Network::NetID::MSCAN:
-				return &(cfg->canfd2);
 			case Network::NetID::HSCAN2:
-				return &(cfg->canfd3);
+				return &(cfg->canfd2);
 			case Network::NetID::HSCAN3:
-				return &(cfg->canfd4);
+				return &(cfg->canfd3);
 			case Network::NetID::HSCAN4:
-				return &(cfg->canfd5);
+				return &(cfg->canfd4);
 			case Network::NetID::HSCAN5:
-				return &(cfg->canfd6);
+				return &(cfg->canfd5);
 			case Network::NetID::HSCAN6:
-				return &(cfg->canfd7);
+				return &(cfg->canfd6);
 			case Network::NetID::HSCAN7:
+				return &(cfg->canfd7);
+			case Network::NetID::MSCAN:
 				return &(cfg->canfd8);
 			default:
 				return nullptr;

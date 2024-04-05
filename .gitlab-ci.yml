@@ -3,7 +3,8 @@ variables:
 
 stages:
   - build
-  - test
+  - unit_test
+  - hardware_test
 
 #-------------------------------------------------------------------------------
 # Windows
@@ -21,10 +22,10 @@ build windows/x64:
   tags:
     - icsneo-windows
 
-test windows/x64:
-  stage: test
+unit_test windows/x64:
+  stage: unit_test
   script:
-    - build\libicsneo-tests.exe
+    - build\libicsneo-unit-tests.exe
   dependencies:
     - build windows/x64
   needs:
@@ -45,10 +46,10 @@ build windows/x86:
   tags:
     - icsneo-windows
 
-test windows/x86:
-  stage: test
+unit_test windows/x86:
+  stage: unit_test
   script:
-    - build\libicsneo-tests.exe
+    - build\libicsneo-unit-tests.exe
   dependencies:
     - build windows/x86
   needs:
@@ -66,7 +67,7 @@ test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y g++ ninja-build cmake libusb-1.0-0-dev libpcap-dev
+    - apt install -y g++ ninja-build cmake libusb-1.0-0-dev libpcap-dev git
     - sh ci/build-posix.sh
   artifacts:
     when: always
@@ -77,12 +78,12 @@ test windows/x86:
     - linux-build
 
 .test_linux_ubuntu_gcc: &test_linux_ubuntu_gcc
-  stage: test
+  stage: unit_test
   script:
     - apt update -y
     - apt upgrade -y
     - apt install -y libusb-1.0-0-dev libpcap-dev
-    - build/libicsneo-tests
+    - build/libicsneo-unit-tests
   tags:
     - linux-build
   timeout: 5m
@@ -92,7 +93,7 @@ test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y clang lld ninja-build cmake libusb-1.0-0-dev libpcap-dev
+    - apt install -y clang lld ninja-build cmake libusb-1.0-0-dev libpcap-dev git
     - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
   artifacts:
     when: always
@@ -103,12 +104,12 @@ test windows/x86:
     - linux-build
 
 .test_linux_ubuntu_clang: &test_linux_ubuntu_clang
-  stage: test
+  stage: unit_test
   script:
     - apt update -y
     - apt upgrade -y
     - apt install -y libusb-1.0-0-dev libpcap-dev
-    - build/libicsneo-tests
+    - build/libicsneo-unit-tests
   tags:
     - linux-build
   timeout: 5m
@@ -117,7 +118,7 @@ build linux/ubuntu/2004/amd64/gcc:
   <<: *build_linux_ubuntu_gcc
   image: ubuntu:20.04
 
-test linux/ubuntu/2004/amd64/gcc:
+unit_test linux/ubuntu/2004/amd64/gcc:
   <<: *test_linux_ubuntu_gcc
   image: ubuntu:20.04
   dependencies:
@@ -129,7 +130,7 @@ build linux/ubuntu/2004/amd64/clang:
   <<: *build_linux_ubuntu_clang
   image: ubuntu:20.04
 
-test linux/ubuntu/2004/amd64/clang:
+unit_test linux/ubuntu/2004/amd64/clang:
   <<: *test_linux_ubuntu_clang
   image: ubuntu:20.04
   dependencies:
@@ -141,7 +142,7 @@ build linux/ubuntu/2204/amd64/gcc:
   <<: *build_linux_ubuntu_gcc
   image: ubuntu:22.04
 
-test linux/ubuntu/2204/amd64/gcc:
+unit_test linux/ubuntu/2204/amd64/gcc:
   <<: *test_linux_ubuntu_gcc
   image: ubuntu:22.04
   dependencies:
@@ -153,7 +154,7 @@ build linux/ubuntu/2204/amd64/clang:
   <<: *build_linux_ubuntu_clang
   image: ubuntu:22.04
 
-test linux/ubuntu/2204/amd64/clang:
+unit_test linux/ubuntu/2204/amd64/clang:
   <<: *test_linux_ubuntu_clang
   image: ubuntu:22.04
   dependencies:
@@ -174,7 +175,7 @@ test linux/ubuntu/2204/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y g++ libpcap-devel cmake ninja-build libusb1-devel
+    - dnf install -y g++ libpcap-devel cmake ninja-build libusb1-devel git
     - sh ci/build-posix.sh
   artifacts:
     when: always
@@ -185,7 +186,7 @@ test linux/ubuntu/2204/amd64/clang:
     - linux-build
 
 .test_linux_fedora_gcc: &test_linux_fedora_gcc
-  stage: test
+  stage: unit_test
   cache:
     paths:
       - /var/cache/dnf
@@ -194,7 +195,7 @@ test linux/ubuntu/2204/amd64/clang:
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
     - dnf install -y libpcap-devel libusb1-devel
-    - build/libicsneo-tests
+    - build/libicsneo-unit-tests
   tags:
     - linux-build
   timeout: 5m
@@ -208,7 +209,7 @@ test linux/ubuntu/2204/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y clang lld libpcap-devel cmake ninja-build libusb1-devel
+    - dnf install -y clang lld libpcap-devel cmake ninja-build libusb1-devel git
     - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
   artifacts:
     when: always
@@ -219,7 +220,7 @@ test linux/ubuntu/2204/amd64/clang:
     - linux-build
 
 .test_linux_fedora_clang: &test_linux_fedora_clang
-  stage: test
+  stage: unit_test
   cache:
     paths:
       - /var/cache/dnf
@@ -228,7 +229,7 @@ test linux/ubuntu/2204/amd64/clang:
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
     - dnf install -y libpcap-devel libusb1-devel
-    - build/libicsneo-tests
+    - build/libicsneo-unit-tests
   tags:
     - linux-build
   timeout: 5m
@@ -237,7 +238,7 @@ build linux/fedora/37/amd64/gcc:
   <<: *build_linux_fedora_gcc
   image: fedora:37
 
-test linux/fedora/37/amd64/gcc:
+unit_test linux/fedora/37/amd64/gcc:
   <<: *test_linux_fedora_gcc
   image: fedora:37
   dependencies:
@@ -249,7 +250,7 @@ build linux/fedora/37/amd64/clang:
   <<: *build_linux_fedora_clang
   image: fedora:37
 
-test linux/fedora/37/amd64/clang:
+unit_test linux/fedora/37/amd64/clang:
   <<: *test_linux_fedora_clang
   image: fedora:37
   dependencies:
@@ -261,7 +262,7 @@ build linux/fedora/38/amd64/gcc:
   <<: *build_linux_fedora_gcc
   image: fedora:38
 
-test linux/fedora/38/amd64/gcc:
+unit_test linux/fedora/38/amd64/gcc:
   <<: *test_linux_fedora_gcc
   image: fedora:38
   dependencies:
@@ -273,7 +274,7 @@ build linux/fedora/38/amd64/clang:
   <<: *build_linux_fedora_clang
   image: fedora:38
 
-test linux/fedora/38/amd64/clang:
+unit_test linux/fedora/38/amd64/clang:
   <<: *test_linux_fedora_clang
   image: fedora:38
   dependencies:
@@ -285,7 +286,7 @@ build linux/fedora/39/amd64/gcc:
   <<: *build_linux_fedora_gcc
   image: fedora:39
 
-test linux/fedora/39/amd64/gcc:
+unit_test linux/fedora/39/amd64/gcc:
   <<: *test_linux_fedora_gcc
   image: fedora:39
   dependencies:
@@ -297,10 +298,77 @@ build linux/fedora/39/amd64/clang:
   <<: *build_linux_fedora_clang
   image: fedora:39
 
-test linux/fedora/39/amd64/clang:
+unit_test linux/fedora/39/amd64/clang:
   <<: *test_linux_fedora_clang
   image: fedora:39
   dependencies:
     - build linux/fedora/39/amd64/clang
   needs:
     - build linux/fedora/39/amd64/clang
+
+.hw_test: &hw_test
+  stage: hardware_test
+  tags:
+    - libicsneo_hil
+  timeout: 5m
+  script:
+    - echo $GUEST_OS_TAG
+    - echo $DEVICE_PORT
+    - /opt/libvirt-driver/prepare.sh
+    - /opt/libvirt-driver/run.sh
+  after_script:
+    - /opt/libvirt-driver/cleanup.sh
+
+hardware_test system-test-fedora38-red2:
+  <<: *hw_test
+  variables:
+    GUEST_OS_TAG: fedora38
+    DEVICE_PORT: ETH_A
+  needs:
+    - job: build linux/fedora/38/amd64/clang
+      artifacts: true
+
+hardware_test system-test-fedora38-vcan42:
+  <<: *hw_test
+  variables:
+    GUEST_OS_TAG: fedora38
+    DEVICE_PORT: USB_D
+  needs:
+    - job: build linux/fedora/38/amd64/clang
+      artifacts: true
+
+hardware_test system-test-ubuntu2204-red2:
+  <<: *hw_test
+  variables:
+    GUEST_OS_TAG: ubuntu22.04
+    DEVICE_PORT: ETH_A
+  needs:
+    - job: build linux/ubuntu/2204/amd64/clang
+      artifacts: true
+
+hardware_test system-test-ubuntu2204-vcan42:
+  <<: *hw_test
+  variables:
+    GUEST_OS_TAG: ubuntu22.04
+    DEVICE_PORT: USB_D
+  needs:
+    - job: build linux/ubuntu/2204/amd64/clang
+      artifacts: true
+
+hardware_test system-test-win10-red2:
+  <<: *hw_test
+  variables:
+    GUEST_OS_TAG: win10
+    DEVICE_PORT: ETH_A
+  needs:
+    - job: build windows/x64
+      artifacts: true
+
+hardware_test system-test-win10-vcan42:
+  <<: *hw_test
+  variables:
+    GUEST_OS_TAG: win10
+    DEVICE_PORT: USB_D
+  needs:
+    - job: build windows/x64
+      artifacts: true
