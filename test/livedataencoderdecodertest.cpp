@@ -3,6 +3,7 @@
 #include "icsneo/communication/packet/livedatapacket.h"
 #include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/packetizer.h"
+#include "icsneo/communication/ringbuffer.h"
 #include "icsneo/api/eventmanager.h"
 #include "gtest/gtest.h"
 #include <vector>
@@ -42,6 +43,7 @@ protected:
 	std::optional<Encoder> packetEncoder;
 	std::optional<Packetizer> packetizer;
 	std::optional<Decoder> packetDecoder;
+	RingBuffer ringBuffer = RingBuffer(128);
 
 	const std::vector<uint8_t> testBytesSub =
 	{
@@ -157,7 +159,9 @@ TEST_F(LiveDataEncoderDecoderTest, EncodeClearCommandTest) {
 
 TEST_F(LiveDataEncoderDecoderTest, DecoderStatusTest) {
 	std::shared_ptr<Message> result;
-	if (packetizer->input(testBytesStatus)) {
+	ringBuffer.clear();
+	ringBuffer.write(testBytesStatus);
+	if (packetizer->input(ringBuffer)) {
 		for (const auto& packet : packetizer->output()) {
 			if (!packetDecoder->decode(result, packet))
 				continue;
@@ -173,7 +177,9 @@ TEST_F(LiveDataEncoderDecoderTest, DecoderStatusTest) {
 
 TEST_F(LiveDataEncoderDecoderTest, DecoderResponseTest) {
 	std::shared_ptr<Message> result;
-	if (packetizer->input(testBytesResponse)) {
+	ringBuffer.clear();
+	ringBuffer.write(testBytesResponse);
+	if (packetizer->input(ringBuffer)) {
 		for (const auto& packet : packetizer->output()) {
 			if (!packetDecoder->decode(result, packet))
 				continue;

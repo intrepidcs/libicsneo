@@ -266,6 +266,7 @@ set(SRC_FILES
 	communication/communication.cpp
 	communication/driver.cpp
 	communication/livedata.cpp
+	communication/ringbuffer.cpp
 	device/extensions/flexray/extension.cpp
 	device/extensions/flexray/controller.cpp
 	device/idevicesettings.cpp
@@ -514,6 +515,7 @@ if(LIBICSNEO_BUILD_TESTS)
 		test/a2bencoderdecodertest.cpp
 		test/mdioencoderdecodertest.cpp
 		test/livedataencoderdecodertest.cpp
+		test/ringbuffertest.cpp
 	)
 
 	target_link_libraries(libicsneo-tests gtest gtest_main)

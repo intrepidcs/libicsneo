@@ -11,9 +11,11 @@
 #include <condition_variable>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/third-party/concurrentqueue/blockingconcurrentqueue.h"
+#include "icsneo/communication/ringbuffer.h"
 
 namespace icsneo {
 
+#define ICSNEO_DRIVER_RINGBUFFER_SIZE (512 * 1024)
 class Driver {
 public:
 	Driver(const device_eventhandler_t& handler) : report(handler) {}
@@ -24,10 +26,11 @@ public:
 	virtual void awaitModeChangeComplete() {}
 	virtual bool isDisconnected() { return disconnected; };
 	virtual bool close() = 0;
-	bool read(std::vector<uint8_t>& bytes, size_t limit = 0);
 	bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 0);
 	bool write(const std::vector<uint8_t>& bytes);
 	virtual bool isEthernet() const { return false; }
+	bool readAvailable() { return readBuffer.size() > 0; }
+	RingBuffer& getReadBuffer() { return readBuffer; }
 
 	device_eventhandler_t report;
 
@@ -54,7 +57,8 @@ protected:
 	virtual bool writeQueueAlmostFull() { return writeQueue.size_approx() > (writeQueueSize * 3 / 4); }
 	virtual bool writeInternal(const std::vector<uint8_t>& b) { return writeQueue.enqueue(WriteOperation(b)); }
 
-	moodycamel::BlockingConcurrentQueue<uint8_t> readQueue;
+	
+	RingBuffer readBuffer = RingBuffer(ICSNEO_DRIVER_RINGBUFFER_SIZE);
 	moodycamel::BlockingConcurrentQueue<WriteOperation> writeQueue;
 	std::thread readThread, writeThread;
 	std::atomic<bool> closing{false};

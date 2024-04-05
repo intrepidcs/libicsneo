@@ -136,6 +136,8 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 		pcap_sendpacket(iface.fp, bs.data(), (int)bs.size());
 
 		auto timeout = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(50);
+		constexpr const size_t TempBufferSize = 4096;
+		RingBuffer tempBuffer(TempBufferSize);
 		while(std::chrono::high_resolution_clock::now() <= timeout) { // Wait up to 50ms for the response
 			struct pcap_pkthdr* header;
 			const uint8_t* data;
@@ -158,7 +160,8 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 				continue; // This packet is not for us
 
 			Packetizer packetizer([](APIEvent::Type, APIEvent::Severity) {});
-			if(!packetizer.input(ethPacketizer.outputUp()))
+			tempBuffer.write(ethPacketizer.outputUp());
+			if(!packetizer.input(tempBuffer))
 				continue; // This packet was not well formed
 
 			EthernetPacketizer::EthernetPacket decoded(data, header->caplen);
@@ -267,9 +270,8 @@ bool PCAP::close() {
 	pcap_close(iface.fp);
 	iface.fp = nullptr;
 
-	uint8_t flush;
 	WriteOperation flushop;
-	while(readQueue.try_dequeue(flush)) {}
+	readBuffer.clear();
 	while(writeQueue.try_dequeue(flushop)) {}
 
 	return true;
@@ -282,7 +284,7 @@ void PCAP::readTask() {
 			PCAP* driver = reinterpret_cast<PCAP*>(obj);
 			if(driver->ethPacketizer.inputUp({data, data + header->caplen})) {
 				const auto bytes = driver->ethPacketizer.outputUp();
-				driver->readQueue.enqueue_bulk(bytes.data(), bytes.size());
+				driver->readBuffer.write(bytes.data(), bytes.size());
 			}
 		}, (uint8_t*)this);
 	}

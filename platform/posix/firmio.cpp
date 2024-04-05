@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <sys/select.h>
 #include <sys/mman.h>
+#include <sys/resource.h>
 
 using namespace icsneo;
 
@@ -44,13 +45,13 @@ void FirmIO::Find(std::vector<FoundDevice>& found) {
 	const auto start = steady_clock::now();
 	// Get an absolute wall clock to compare to
 	const auto overallTimeout = start + milliseconds(500);
-	while(temp.readWait(payload, milliseconds(50))) {
+	while(!temp.readAvailable()) {
 		if(steady_clock::now() > overallTimeout) {
 			// failed to read out a serial number reponse in time
 			break;
 		}
 
-		if(!packetizer.input(payload))
+		if(!packetizer.input(temp.getReadBuffer()))
 			continue; // A full packet has not yet been read out
 
 		for(const auto& packet : packetizer.output()) {
@@ -182,9 +183,6 @@ bool FirmIO::close() {
 	ret |= ::close(fd);
 	fd = -1;
 
-	uint8_t flush;
-	while (readQueue.try_dequeue(flush)) {}
-
 	if(ret == 0) {
 		return true;
 	} else {
@@ -197,6 +195,12 @@ void FirmIO::readTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	Msg msg;
 	std::vector<Msg> toFree;
+
+	// attempt to elevate the thread priority. PRIO_MIN is actually the highest priority but the lowest value.
+	int err = setpriority(PRIO_PROCESS, 0, -1);
+	if (err != 0) {
+		std::cerr << "FirmIO::readTask setpriority failed : " << strerror(errno)  << std::endl;
+	}
 
 	while(!closing && !isDisconnected()) {
 		fd_set rfds = {0};
@@ -219,10 +223,7 @@ void FirmIO::readTask() {
 
 		toFree.clear();
 		int i = 0;
-		while(!in->isEmpty() && i++ < 1000) {
-			if(!in->read(&msg))
-				break;
-
+		while(in->read(&msg) && i++ < 1000) {
 			switch(msg.command) {
 			case Msg::Command::ComData: {
 				if(toFree.empty() || toFree.back().payload.free.refCount == 6) {
@@ -241,9 +242,14 @@ void FirmIO::readTask() {
 
 				// Translate the physical address back to our virtual address space
 				uint8_t* addr = reinterpret_cast<uint8_t*>(msg.payload.data.addr - PHY_ADDR_BASE + vbase);
-				readQueue.enqueue_bulk(addr, msg.payload.data.len);
-				break;
+				while (!readBuffer.write(addr, msg.payload.data.len)) {
+					std::this_thread::sleep_for(std::chrono::milliseconds(1)); // back-off so reading thread can empty the buffer
+					if (closing || isDisconnected()) {
+						break;
+					}
+				}
 			}
+			break;
 			case Msg::Command::ComFree: {
 				std::lock_guard<std::mutex> lk(outMutex);
 				// std::cout << "Got some free " << std::hex << msg.payload.free.ref[0] << std::endl;

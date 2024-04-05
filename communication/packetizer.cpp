@@ -24,10 +24,8 @@ std::vector<uint8_t>& Packetizer::packetWrap(std::vector<uint8_t>& data, bool sh
 	return data;
 }
 
-bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
+bool Packetizer::input(RingBuffer& bytes) {
 	bool haveEnoughData = true;
-
-	bytes.Copy(inputBytes);
 
 	while(haveEnoughData) {
 		switch(state) {
@@ -152,14 +150,14 @@ bool Packetizer::input(const std::vector<uint8_t>& inputBytes) {
 				if(packetLength > 0)
 					packet.data.resize(packetLength - headerSize);
 
-				bytes.CopyTo(packet.data.data(), currentIndex, (packetLength - currentIndex));
+				bytes.read(packet.data.data(), currentIndex, (packetLength - currentIndex));
 				currentIndex = packetLength;
 
 				if(disableChecksum || !checksum || bytes[currentIndex] == ICSChecksum(packet.data)) {
 					// Got a good packet
 					gotGoodPackets = true;
 					processedPackets.push_back(std::make_shared<Packet>(packet));
-					bytes.Erase_front(packetLength);
+					bytes.pop(packetLength);
 
 					if(packet.network == Network::NetID::DiskData && (packetLength - headerSize) % 2 == 0) {
 						bytes.pop_front();

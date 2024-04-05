@@ -3,6 +3,7 @@
 #include "icsneo/communication/packet/linpacket.h"
 #include "icsneo/communication/message/linmessage.h"
 #include "icsneo/communication/packetizer.h"
+#include "icsneo/communication/ringbuffer.h"
 #include "icsneo/api/eventmanager.h"
 #include "gtest/gtest.h"
 #include <vector>
@@ -31,6 +32,7 @@ protected:
 	std::optional<Encoder> packetEncoder;
 	std::optional<Packetizer> packetizer;
 	std::optional<Decoder> packetDecoder;
+	RingBuffer ringBuffer = RingBuffer(128);
 	//Responder load data before response LIN 2
 	// ID 0x22 pID 0xE2 length 8
 	std::vector<uint8_t> testRespData =
@@ -165,7 +167,9 @@ TEST_F(LINEncoderDecoderTest, PacketDecoderTest) {
 	msg2->data = {0xaa, 0xbb, 0xcc};
 	msg2->checksum = 0xcc;
 
-	EXPECT_TRUE(packetizer->input(recvBytes));
+	ringBuffer.clear();
+	ringBuffer.write(recvBytes);
+	EXPECT_TRUE(packetizer->input(ringBuffer));
 	auto packets = packetizer->output();
 	if(packets.size() != 2) { EXPECT_TRUE(false); }
 	//LIN2 frame from device

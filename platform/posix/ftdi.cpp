@@ -109,9 +109,8 @@ bool FTDI::close() {
 			report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
 	}
 	
-	uint8_t flush;
 	WriteOperation flushop;
-	while(readQueue.try_dequeue(flush)) {}
+	readBuffer.clear();
 	while(writeQueue.try_dequeue(flushop)) {}
 
 	closing = false;
@@ -214,7 +213,7 @@ void FTDI::readTask() {
 			} else
 				report(APIEvent::Type::FailedToRead, APIEvent::Severity::EventWarning);
 		} else
-			readQueue.enqueue_bulk(readbuf, readBytes);
+			readBuffer.write(readbuf, readBytes);
 	}
 }
 

@@ -268,7 +268,7 @@ void Communication::readTask() {
 
 	while(!closing) {
 		readBytes.clear();
-		if(driver->readWait(readBytes)) {
+		if(driver->readAvailable()) {
 			handleInput(*packetizer, readBytes);
 		}
 	}
@@ -291,7 +291,7 @@ void Communication::handleInput(Packetizer& p, std::vector<uint8_t>& readBytes) 
 			handleInput(p, readBytes); // and we might as well process this input ourselves
 		}
 	} else {
-		if(p.input(readBytes)) {
+		if(p.input(driver->getReadBuffer())) {
 			for(const auto& packet : p.output()) {
 				std::shared_ptr<Message> msg;
 				if(!decoder->decode(msg, packet))

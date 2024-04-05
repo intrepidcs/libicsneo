@@ -3,6 +3,7 @@
 #include "icsneo/communication/packet/mdiopacket.h"
 #include "icsneo/communication/message/mdiomessage.h"
 #include "icsneo/communication/packetizer.h"
+#include "icsneo/communication/ringbuffer.h"
 #include "icsneo/api/eventmanager.h"
 #include "gtest/gtest.h"
 #include <vector>
@@ -30,6 +31,7 @@ protected:
 	std::optional<Encoder> packetEncoder;
 	std::optional<Packetizer> packetizer;
 	std::optional<Decoder> packetDecoder;
+	RingBuffer ringBuffer = RingBuffer(128);
 
 	std::vector<uint8_t> testBytesClause22 =
 	{0xAA, 0x0C, 0x11, 0x00, 0x21, 0x02, 0xAB, 0xCD,
@@ -156,7 +158,9 @@ TEST_F(MDIOEncoderDecoderTest, PacketDecoderClause22Test) {
 	message->isTXMsg = true;
 	message->timestamp = static_cast<uint64_t>(0xB0FCC1FBE62997);
 
-	EXPECT_TRUE(packetizer->input(recvBytesClause22));
+	ringBuffer.clear();
+	ringBuffer.write(recvBytesClause22);
+	EXPECT_TRUE(packetizer->input(ringBuffer));
 	auto packets = packetizer->output();
 	EXPECT_FALSE(packets.empty());
 	EXPECT_TRUE(packetDecoder->decode(decodeMsg, packets.back()));
@@ -202,7 +206,9 @@ TEST_F(MDIOEncoderDecoderTest, PacketDecoderClause45Test) {
 	message->txInvalidOpcode = true;
 	message->timestamp = static_cast<uint64_t>(0xB0FCC1FBE62997);
 
-	EXPECT_TRUE(packetizer->input(recvBytesClause45));
+	ringBuffer.clear();
+	ringBuffer.write(recvBytesClause45);
+	EXPECT_TRUE(packetizer->input(ringBuffer));
 	auto packets = packetizer->output();
 	EXPECT_FALSE(packets.empty());
 	EXPECT_TRUE(packetDecoder->decode(decodeMsg, packets.back()));

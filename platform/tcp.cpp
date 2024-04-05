@@ -510,9 +510,8 @@ bool TCP::close() {
 	if(writeThread.joinable())
 		writeThread.join();
 
-	uint8_t flush;
 	WriteOperation flushop;
-	while(readQueue.try_dequeue(flush)) {}
+	readBuffer.pop(readBuffer.size());
 	while(writeQueue.try_dequeue(flushop)) {}
 
 	socket.reset();
@@ -534,7 +533,7 @@ void TCP::readTask() {
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	while(!closing) {
 		if(const auto received = ::recv(*socket, (char*)readbuf, READ_BUFFER_SIZE, 0); received > 0) {
-			readQueue.enqueue_bulk(readbuf, received);
+			readBuffer.write(readbuf, received);
 		} else {
 			timeout.tv_sec = 0;
 			timeout.tv_usec = 50'000;

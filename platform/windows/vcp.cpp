@@ -357,9 +357,8 @@ bool VCP::close() {
 		detail->overlappedWait.hEvent = INVALID_HANDLE_VALUE;
 	}
 
-	uint8_t flush;
 	WriteOperation flushop;
-	while(readQueue.try_dequeue(flush)) {}
+	readBuffer.clear();
 	while(writeQueue.try_dequeue(flushop)) {}
 
 	if(!ret)
@@ -391,7 +390,7 @@ void VCP::readTask() {
 				if(ReadFile(detail->handle, readbuf, READ_BUFFER_SIZE, nullptr, &detail->overlappedRead)) {
 					if(GetOverlappedResult(detail->handle, &detail->overlappedRead, &bytesRead, FALSE)) {
 						if(bytesRead)
-							readQueue.enqueue_bulk(readbuf, bytesRead);
+							readBuffer.write(readbuf, bytesRead);
 					}
 					continue;
 				}
@@ -414,7 +413,7 @@ void VCP::readTask() {
 				auto ret = WaitForSingleObject(detail->overlappedRead.hEvent, 100);
 				if(ret == WAIT_OBJECT_0) {
 					if(GetOverlappedResult(detail->handle, &detail->overlappedRead, &bytesRead, FALSE)) {
-						readQueue.enqueue_bulk(readbuf, bytesRead);
+						readBuffer.write(readbuf, bytesRead);
 						state = LAUNCH;
 					} else
 						report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);

@@ -3,6 +3,7 @@
 #include "icsneo/communication/packet/i2cpacket.h"
 #include "icsneo/communication/message/i2cmessage.h"
 #include "icsneo/communication/packetizer.h"
+#include "icsneo/communication/ringbuffer.h"
 #include "icsneo/api/eventmanager.h"
 #include "gtest/gtest.h"
 #include <vector>
@@ -30,6 +31,8 @@ protected:
 	std::optional<Encoder> packetEncoder;
 	std::optional<Packetizer> packetizer;
 	std::optional<Decoder> packetDecoder;
+	RingBuffer ringBuffer = RingBuffer(128);
+
 	//Read request to the device
 	//Control length 1, control bytes 0x12 (I2C register to read from)
 	//data length 1: blank bytes padded in that the device will fill in the reply
@@ -73,7 +76,9 @@ TEST_F(I2CEncoderDecoderTest, PacketDecoderTest) {
 	message->isTXMsg = true;
 	message->timestamp = static_cast<uint64_t>(0xB0FCC1FBE62997);
 
-	EXPECT_TRUE(packetizer->input(recvBytes));
+	ringBuffer.clear();
+	ringBuffer.write(recvBytes);
+	EXPECT_TRUE(packetizer->input(ringBuffer));
 	auto packets = packetizer->output();
 	if(packets.empty()) { EXPECT_TRUE(false); }
 	EXPECT_TRUE(packetDecoder->decode(decodeMsg, packets.back()));

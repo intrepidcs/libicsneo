@@ -7,6 +7,7 @@
 #include "icsneo/communication/ethernetpacketizer.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/decoder.h"
+#include "icsneo/communication/ringbuffer.h"
 #include <pcap.h>
 #include <iphlpapi.h>
 #pragma comment(lib, "IPHLPAPI.lib")
@@ -123,7 +124,9 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 		auto bs = requestPacket.getBytestream();
 		pcap.sendpacket(iface.fp, bs.data(), (int)bs.size());
 
-		auto timeout = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(5);
+		auto timeout = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(250);
+		constexpr const size_t TempBufferSize = 4096;
+		RingBuffer tempBuffer(TempBufferSize);
 		while(std::chrono::high_resolution_clock::now() <= timeout) { // Wait up to 5ms for the response
 			struct pcap_pkthdr* header;
 			const uint8_t* data;
@@ -142,7 +145,8 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 				continue; // This packet is not for us
 
 			Packetizer packetizer([](APIEvent::Type, APIEvent::Severity) {});
-			if(!packetizer.input(ethPacketizer.outputUp()))
+			tempBuffer.write(ethPacketizer.outputUp());
+			if(!packetizer.input(tempBuffer))
 				continue; // This packet was not well formed
 
 			EthernetPacketizer::EthernetPacket decoded(data, header->caplen);
@@ -251,9 +255,8 @@ bool PCAP::close() {
 	pcap.close(iface.fp);
 	iface.fp = nullptr;
 
-	uint8_t flush;
 	WriteOperation flushop;
-	while(readQueue.try_dequeue(flush)) {}
+	readBuffer.clear();
 	while(writeQueue.try_dequeue(flushop)) {}
 	transmitQueue = nullptr;
 
@@ -275,7 +278,7 @@ void PCAP::readTask() {
 
 		if(ethPacketizer.inputUp({data, data + header->caplen})) {
 			const auto bytes = ethPacketizer.outputUp();
-			readQueue.enqueue_bulk(bytes.data(), bytes.size());
+			readBuffer.write(bytes.data(), bytes.size());
 		}
 	}
 }

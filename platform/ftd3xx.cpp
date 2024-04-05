@@ -89,9 +89,8 @@ bool FTD3XX::close() {
 	if(writeThread.joinable())
 		writeThread.join();
 
-	uint8_t flush;
 	WriteOperation flushop;
-	while(readQueue.try_dequeue(flush)) {}
+	readBuffer.pop(readBuffer.size());
 	while(writeQueue.try_dequeue(flushop)) {}
 
 	if(const auto ret = FT_Close(*handle); ret != FT_OK) {
@@ -137,7 +136,7 @@ void FTD3XX::readTask() {
 		}
 		FT_ReleaseOverlapped(*handle, &overlap);
 		if(received > 0) {
-			readQueue.enqueue_bulk(buffer, received);
+			readBuffer.write(buffer, received);
 		}
 	}
 }

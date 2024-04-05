@@ -140,9 +140,8 @@ bool CDCACM::close() {
 	int ret = ::close(fd);
 	fd = -1;
 
-	uint8_t flush;
 	WriteOperation flushop;
-	while (readQueue.try_dequeue(flush)) {}
+	readBuffer.clear();
 	while (writeQueue.try_dequeue(flushop)) {}
 
 	if(modeChanging) {
@@ -191,8 +190,7 @@ void CDCACM::readTask() {
 			}
 			std::cout << std::dec << std::endl;
 #endif
-		
-			readQueue.enqueue_bulk(readbuf, bytesRead);
+			readBuffer.write(readbuf, bytesRead);
 		} else {
 			if(modeChanging) {
 				// We were expecting a disconnect for reenumeration

@@ -3,6 +3,7 @@
 #include "icsneo/communication/packet/a2bpacket.h"
 #include "icsneo/communication/message/a2bmessage.h"
 #include "icsneo/communication/packetizer.h"
+#include "icsneo/communication/ringbuffer.h"
 #include "icsneo/api/eventmanager.h"
 #include "gtest/gtest.h"
 #include <vector>
@@ -26,6 +27,7 @@ protected:
 	std::optional<Encoder> packetEncoder;
 	std::optional<Packetizer> packetizer;
 	std::optional<Decoder> packetDecoder;
+	RingBuffer ringBuffer = RingBuffer(128);
 
 	std::vector<uint8_t> testBytes =
 		{0xaa, 0x0c, 0x15, 0x00, 0x0b, 0x02, 0x00, 0x00,
@@ -131,7 +133,9 @@ TEST_F(A2BEncoderDecoderTest, PacketDecoderTest)
 		icsneo::PCMType::L16		
 	) == static_cast<icsneo::PCMSample>((0x04 << 8) | (0x08)));
 
-	EXPECT_TRUE(packetizer->input(recvBytes));
+	ringBuffer.clear();
+	ringBuffer.write(recvBytes);
+	EXPECT_TRUE(packetizer->input(ringBuffer));
 	auto packets = packetizer->output();
 	if(packets.empty()) {
 		EXPECT_TRUE(false);
