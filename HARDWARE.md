@@ -21,6 +21,9 @@
 		- CAN works
 		- CAN FD works
 		- Ethernet works
+	- RADComet3
+		- CAN works
+		- Ethernet works
 
 - Connecting over USB
 	- ValueCAN 4 series
@@ -48,3 +51,6 @@
 		- CAN works
 		- Ethernet works
 	- RADMoon3
+	- RADComet3
+		- CAN works
+		- Ethernet works

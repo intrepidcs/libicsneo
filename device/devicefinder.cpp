@@ -177,6 +177,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialRangeMatches<RADComet2>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __RADCOMET3_H_
+		makeIfSerialMatches<RADComet3>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __RADEPSILON_H_
 		makeIfSerialMatches<RADEpsilon>(dev, newFoundDevices);
 		#endif
@@ -314,6 +318,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 
 		#ifdef __RADCOMET_H_
 		RADComet::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADCOMET3_H_
+		RADComet3::DEVICE_TYPE,
 		#endif
 		
 		#ifdef __RADEPSILON_H_
