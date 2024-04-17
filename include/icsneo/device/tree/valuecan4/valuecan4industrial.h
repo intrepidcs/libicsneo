@@ -40,8 +40,6 @@ protected:
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
-	bool currentDriverSupportsDFU() const override { return com->driver->isEthernet(); }
-
 	void setupPacketizer(Packetizer& packetizer) override {
 		ValueCAN4::setupPacketizer(packetizer);
 		packetizer.align16bit = !com->driver->isEthernet();

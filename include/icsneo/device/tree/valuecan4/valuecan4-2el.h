@@ -83,7 +83,7 @@ protected:
 		ethActivationStatus = status->ethernetActivationLineEnabled;
 	}
 
-	bool currentDriverSupportsDFU() const override { return com->driver->isEthernet(); }
+	bool currentDriverSupportsDFU() const override { return !com->driver->isEthernet(); }
 
 	void setupPacketizer(Packetizer& packetizer) override {
 		ValueCAN4::setupPacketizer(packetizer);
