@@ -715,6 +715,8 @@ public:
 
 	virtual bool isOnlineSupported() const { return true; }
 
+	virtual bool supportsComponentVersions() const { return false; }
+
 protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;

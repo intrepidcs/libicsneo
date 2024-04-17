@@ -50,6 +50,8 @@ public:
 		return supportedNetworks;
 	}
 
+	bool supportsComponentVersions() const override { return true; }
+
 protected:
 	NeoVIFIRE3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRE3Settings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

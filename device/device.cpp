@@ -220,10 +220,13 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 
 	// Get component versions *after* the extension "onDeviceOpen" hooks (e.g. device reflashes)
 	
-	if (auto compVersions = com->getComponentVersionsSync())
-		componentVersions = std::move(*compVersions);
-	else
-		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::EventWarning);
+	if(supportsComponentVersions()) {
+		if(auto compVersions = com->getComponentVersionsSync())
+			componentVersions = std::move(*compVersions);
+		else
+			// It's possible the device is on older firmware so don't return false here
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::EventWarning);
+	}
 
 	if(!settings->disabled) {
 		// Since we will not fail the open if a settings read fails,

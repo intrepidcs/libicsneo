@@ -26,6 +26,8 @@ public:
 		return supportedNetworks;
 	}
 
+	bool supportsComponentVersions() const override { return true; }
+
 protected:
 	EtherBADGE(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<EtherBADGESettings>(makeDriver);

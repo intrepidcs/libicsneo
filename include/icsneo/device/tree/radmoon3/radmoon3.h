@@ -27,6 +27,8 @@ public:
 
 	bool isOnlineSupported() const override { return false; }
 
+	bool supportsComponentVersions() const override { return true; }
+
 protected:
 	RADMoon3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADMoon3Settings>(makeDriver);

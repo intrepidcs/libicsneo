@@ -35,6 +35,8 @@ public:
 		return supportedNetworks;
 	}
 
+	bool supportsComponentVersions() const override { return true; }
+
 protected:
 	NeoVIRED2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIRED2Settings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

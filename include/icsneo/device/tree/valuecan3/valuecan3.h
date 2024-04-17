@@ -22,6 +22,8 @@ public:
 		return supportedNetworks;
 	}
 
+	bool supportsComponentVersions() const override { return true; }
+
 private:
 	ValueCAN3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<ValueCAN3Settings>(makeDriver);

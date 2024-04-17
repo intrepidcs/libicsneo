@@ -12,6 +12,8 @@ class ValueCAN4 : public Device {
 public:
 	// All ValueCAN 4 devices share a USB PID of 0x1101
 
+	bool supportsComponentVersions() const override { return true; }
+
 protected:
 	using Device::Device;
 

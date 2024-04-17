@@ -16,6 +16,8 @@ public:
 
 	uint8_t getPhyAddrOrPort() const override { return 1; }
 
+	bool supportsComponentVersions() const override { return true; }
+
 protected:
 	RADMoon2ZL(neodevice_t neodevice, const driver_factory_t& makeDriver) : RADMoon2Base(neodevice) {
 		initialize<RADMoon2Settings>(makeDriver);

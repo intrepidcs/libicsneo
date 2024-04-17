@@ -87,6 +87,8 @@ public:
 		};
 	}
 
+	bool supportsComponentVersions() const override { return true; }
+
 protected:
 	NeoVIFIRE2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRE2Settings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
@@ -99,7 +101,7 @@ protected:
 		}
 	}
 
-	bool currentDriverSupportsDFU() const override { return com->driver->isEthernet(); }
+	bool currentDriverSupportsDFU() const override { return !com->driver->isEthernet(); }
 
 	void setupPacketizer(Packetizer& packetizer) override {
 		Device::setupPacketizer(packetizer);

@@ -52,6 +52,8 @@ public:
 		return supportedNetworks;
 	}
 
+	bool supportsComponentVersions() const override { return true; }
+
 protected:
 	NeoVIFIRE3FlexRay(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRE3FlexRaySettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
