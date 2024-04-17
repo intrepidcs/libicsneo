@@ -327,6 +327,35 @@ typedef struct SERDESPOC_SETTINGS_t
 } SERDESPOC_SETTINGS;
 #define SERDESPOC_SETTINGS_SIZE 10
 
+enum
+{
+	SERDESGEN_MOD_ID_NONE = 0,
+	SERDESGEN_MOD_ID_FPD3_2x2 = 1,
+	SERDESGEN_MOD_ID_GMSL2_2x2 = 2,
+	SERDESGEN_MOD_ID_GMSL1_4x4 = 3,
+	SERDESGEN_MOD_ID_FPD3_TO_GMSL2_2x2 = 4,
+	// new modules go above this line
+	SERDESGEN_MOD_ID_UNKNOWN = -1,
+};
+
+#define SERDESGEN_SETTINGS_FLAG_TX_PATGEN_ENABLE 0x0001
+
+typedef struct SERDESGEN_SETTINGS_t
+{
+	/* 
+	 * bit0: enable pattern generator
+	 */
+	uint16_t flags;
+	uint8_t rsvd1;
+	uint8_t mod_id; // connected module passed back from device
+	uint16_t tx_speed; // Mbps per lane, all tx ports
+	uint16_t rx_speed; // Mbps per lane, all rx ports
+	// reserved space for the future
+	// maybe pattern generator settings
+	uint8_t rsvd2[24];
+} SERDESGEN_SETTINGS;
+#define SERDESGEN_SETTINGS_SIZE 32
+
 #define ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX  0x01
 #define ETHERNET_SETTINGS2_FLAG_AUTO_NEG     0x02
 #define ETHERNET_SETTINGS2_FLAG_TCPIP_ENABLE 0x04

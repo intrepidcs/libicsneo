@@ -60,16 +60,17 @@ typedef struct {
 	struct
 	{
 		uint16_t hwComLatencyTestEn : 1;
-		uint16_t reserved : 15;
+		uint16_t disableUsbCheckOnBoot : 1;
+		uint16_t reserved : 14;
 	} flags;
 	ETHERNET_SETTINGS2 ethernet1;
 	ETHERNET_SETTINGS2 ethernet2;
 
 	LIN_SETTINGS lin1;
 
-    OP_ETH_GENERAL_SETTINGS opEthGen;
-    OP_ETH_SETTINGS opEth1;
-    OP_ETH_SETTINGS opEth2;
+	OP_ETH_GENERAL_SETTINGS opEthGen;
+	OP_ETH_SETTINGS opEth1;
+	OP_ETH_SETTINGS opEth2;
 
 	SERDESCAM_SETTINGS serdescam1;
 	SERDESPOC_SETTINGS serdespoc;
@@ -79,12 +80,16 @@ typedef struct {
 	SERDESCAM_SETTINGS serdescam4;
 	RAD_REPORTING_SETTINGS reporting;
 	uint16_t network_enables_4;
+	SERDESGEN_SETTINGS serdesgen;
+
+	RAD_GPTP_SETTINGS gPTP;
+	uint64_t network_enables_5;
 } radgigastar_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-static_assert(sizeof(radgigastar_settings_t) == 634, "RADGigastar settings size mismatch");
+static_assert(sizeof(radgigastar_settings_t) == 710, "RADGigastar settings size mismatch");
 
 #include <iostream>
 
