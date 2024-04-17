@@ -32,7 +32,17 @@ typedef struct {
 	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_1;
 	uint16_t iso_parity_1;
 	uint16_t iso_msg_termination_1;
-	uint64_t network_enables;
+	union
+	{
+		uint64_t word;
+		struct
+		{
+			uint16_t network_enables;
+			uint16_t network_enables_2;
+			uint16_t network_enables_3;
+			uint16_t network_enables_4;
+		};
+	} network_enables;
 	uint64_t termination_enables;
 	TIMESYNC_ICSHARDWARE_SETTINGS timeSyncSettings;
 	RAD_REPORTING_SETTINGS reporting;
@@ -60,6 +70,8 @@ typedef struct {
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+static_assert(sizeof(radcomet_settings_t) == 466, "RADComet settings size mismatch");
 
 #include <iostream>
 
