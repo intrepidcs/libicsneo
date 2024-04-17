@@ -10,6 +10,11 @@ namespace icsneo {
 
 #endif
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
+
 #pragma pack(push, 2)
 typedef struct {
 	// ECU ID used in CAN communications.
@@ -68,6 +73,10 @@ typedef struct {
 	LIN_SETTINGS lin1;
 } radcomet_settings_t;
 #pragma pack(pop)
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #ifdef __cplusplus
 
