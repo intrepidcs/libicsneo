@@ -137,6 +137,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<NeoOBD2SIM>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __NEOVICONNECT_H_
+		makeIfSerialMatches<NeoVIConnect>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __NEOVIFIRE_H_
 		makeIfPIDMatches<NeoVIFIRE>(dev, newFoundDevices);
 		#endif
@@ -286,6 +290,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 
 		#ifdef __NEOVIRED2_H_
 		NeoVIRED2::DEVICE_TYPE,
+		#endif
+
+		#ifdef __NEOVICONNECT_H_
+		NeoVIConnect::DEVICE_TYPE,
 		#endif
 
 		#ifdef __NEOVIFIRE_H_

@@ -50,6 +50,7 @@ public:
 		RADMoon3 = (0x00000023),
 		RADComet = (0x00000024),
 		FIRE3_FlexRay = (0x00000025),
+		Connect = (0x00000026),
 		RADComet3 = (0x00000027),
 		RED = (0x00000040),
 		ECU = (0x00000080),
@@ -189,6 +190,8 @@ public:
 				return "neoVI FIRE3 FlexRay";
 			case RADComet3:
 				return "RAD-Comet 3";
+			case Connect:
+				return "neoVI Connect";
 			case DONT_REUSE0:
 			case DONT_REUSE1:
 			case DONT_REUSE2:
@@ -242,6 +245,7 @@ private:
 #define ICSNEO_DEVICETYPE_RADMoon3 ((devicetype_t)0x00000023)
 #define ICSNEO_DEVICETYPE_RADCOMET ((devicetype_t)0x00000024)
 #define ICSNEO_DEVICETYPE_FIRE3FLEXRAY ((devicetype_t)0x00000025)
+#define ICSNEO_DEVICETYPE_CONNECT ((devicetype_t)0x00000026)
 #define ICSNEO_DEVICETYPE_RADCOMET3 ((devicetype_t)0x00000027)
 #define ICSNEO_DEVICETYPE_RED ((devicetype_t)0x00000040)
 #define ICSNEO_DEVICETYPE_ECU ((devicetype_t)0x00000080)

@@ -24,6 +24,10 @@
 	- RADComet3
 		- CAN works
 		- Ethernet works
+	- neoVI Connect
+		- CAN works
+		- CAN FD works
+		- Ethernet works
 
 - Connecting over USB
 	- ValueCAN 4 series
