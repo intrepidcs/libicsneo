@@ -16,6 +16,7 @@
 #include "icsneo/communication/message/extendeddatamessage.h"
 #include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/message/diskdatamessage.h"
+#include "icsneo/communication/message/hardwareinfo.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -35,6 +36,8 @@
 #include "icsneo/communication/packet/mdiopacket.h"
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
 #include "icsneo/communication/packet/livedatapacket.h"
+#include "icsneo/communication/packet/hardwareinfopacket.h"
+
 #include <iostream>
 
 using namespace icsneo;
@@ -351,6 +354,16 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						}
 						case Command::GetSecondaryVersions: {
 							result = HardwareVersionPacket::DecodeSecondaryToMessage(packet->data);
+							if(!result) {
+								report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+								return false;
+							}
+
+							return true;
+						}
+						case Command::GetHardwareInfo: {
+							result = HardwareInfoPacket::DecodeToMessage(packet->data);
+
 							if(!result) {
 								report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 								return false;

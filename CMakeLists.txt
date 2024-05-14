@@ -259,6 +259,7 @@ set(SRC_FILES
 	communication/packet/componentversionpacket.cpp
 	communication/packet/supportedfeaturespacket.cpp
 	communication/packet/genericbinarystatuspacket.cpp
+	communication/packet/hardwareinfopacket.cpp
 	communication/decoder.cpp
 	communication/encoder.cpp
 	communication/ethernetpacketizer.cpp

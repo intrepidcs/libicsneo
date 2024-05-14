@@ -38,6 +38,7 @@ public:
 		SupportedFeatures = 0x800d,
 		GenericBinaryStatus = 0x800e,
 		LiveData = 0x800f,
+		HardwareInfo = 0x8010
 	};
 
 	Message(Type t) : type(t) {}

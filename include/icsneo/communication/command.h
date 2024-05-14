@@ -22,6 +22,7 @@ enum class Command : uint8_t {
 	UpdateLEDState = 0xA7,
 	SetDefaultSettings = 0xA8, // Follow up with SaveSettings to write to EEPROM
 	GetSecondaryVersions = 0xA9, // Previously known as RED_CMD_PERIPHERALS_APP_VERSION_REQ, versions other than the main chip
+	GetHardwareInfo = 0xB7, // Previously known as RED_CMD_HARDWARE_VERSION_REQ
 	GetLogicalDiskInfo = 0xBB, // Previously known as RED_CMD_GET_SDCARD_INFO
 	RequestStatusUpdate = 0xBC,
 	ReadSettings = 0xC7, // Previously known as 3G_READ_SETTINGS_EX

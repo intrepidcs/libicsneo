@@ -34,6 +34,7 @@
 #include "icsneo/communication/message/scriptstatusmessage.h"
 #include "icsneo/communication/message/supportedfeaturesmessage.h"
 #include "icsneo/communication/message/genericbinarystatusmessage.h"
+#include "icsneo/communication/message/hardwareinfo.h"
 #include "icsneo/communication/message/extendeddatamessage.h"
 #include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
@@ -45,6 +46,8 @@
 #include "icsneo/platform/nodiscard.h"
 #include "icsneo/disk/vsa/vsa.h"
 #include "icsneo/disk/vsa/vsaparser.h"
+#include "icsneo/communication/message/versionmessage.h"
+
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
 	static constexpr DeviceType::Enum DEVICE_TYPE = type; \
@@ -222,6 +225,7 @@ public:
 	virtual size_t getNetworkCountByType(Network::Type) const;
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
+	std::shared_ptr<HardwareInfo> getHardwareInfo(std::chrono::milliseconds timeout = std::chrono::milliseconds(2));
 
 
 	/**
@@ -565,6 +569,7 @@ public:
 	 */
 	const std::vector<std::optional<DeviceAppVersion>>& getVersions() const { return versions; }
 	const std::vector<ComponentVersion>& getComponentVersions() const { return componentVersions; }
+
 	/**
 	 * Some alternate communication protocols do not support DFU
 	 */
@@ -821,8 +826,6 @@ protected:
 	virtual void handleDeviceStatus(const std::shared_ptr<RawMessage>&) {}
 
 	neodevice_t& getWritableNeoDevice() { return data; }
-
-
 
 private:
 	neodevice_t data;

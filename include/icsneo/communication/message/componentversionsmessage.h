@@ -9,6 +9,20 @@ class ComponentVersion {
 public:
 	ComponentVersion(uint8_t valid, uint8_t componentInfo, uint32_t identifier, uint32_t dotVersion, uint32_t commitHash) :
 		valid(valid), componentInfo(componentInfo), identifier(identifier), dotVersion(dotVersion), commitHash(commitHash) {}
+
+	static ComponentVersion FromAppVersion(uint32_t identifier, uint8_t appMajor, uint8_t appMinor) {
+		uint32_t dotVersion = (appMajor << 24) | (appMinor << 16);
+
+
+		return ComponentVersion(
+			static_cast<uint8_t>(1u),
+			static_cast<uint8_t>(0u),
+			identifier,
+			dotVersion,
+			static_cast<uint8_t>(0u)
+		);
+	}
+
 	const bool valid;
 	const uint8_t componentInfo;
 	const uint32_t identifier;

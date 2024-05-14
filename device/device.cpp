@@ -722,6 +722,37 @@ Network Device::getNetworkByNumber(Network::Type type, size_t index) const {
 	return Network::NetID::Invalid;
 }
 
+std::shared_ptr<HardwareInfo> Device::getHardwareInfo(std::chrono::milliseconds timeout) {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	if(!isOnline()) {
+		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	auto filter = std::make_shared<MessageFilter>(Message::Type::HardwareInfo);
+
+	auto response = com->waitForMessageSync([this]() {
+		return com->sendCommand(Command::GetHardwareInfo);
+	}, filter, timeout);
+
+	if(!response) {
+		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	auto hardwareInfo = std::dynamic_pointer_cast<HardwareInfo>(response);
+	if(!hardwareInfo) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	return hardwareInfo;
+}
+
 
 std::optional<uint64_t> Device::readLogicalDisk(uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, Disk::MemoryType memType) {
 	if(!into || timeout <= std::chrono::milliseconds(0)) {
