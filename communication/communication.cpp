@@ -20,8 +20,6 @@ using namespace icsneo;
 int Communication::messageCallbackIDCounter = 1;
 
 Communication::~Communication() {
-	if(redirectingRead)
-		clearRedirectRead();
 	if(isOpen())
 		close();
 }
@@ -44,6 +42,11 @@ void Communication::spawnThreads() {
 
 void Communication::joinThreads() {
 	closing = true;
+
+	if(pauseReadTask) {
+		resumeReads();
+	}
+
 	if(readTaskThread.joinable())
 		readTaskThread.join();
 	closing = false;
@@ -94,23 +97,6 @@ bool Communication::sendCommand(ExtendedCommand cmd, std::vector<uint8_t> argume
 	});
 
 	return sendCommand(Command::Extended, arguments);
-}
-
-bool Communication::redirectRead(std::function<void(std::vector<uint8_t>&&)> redirectTo) {
-	if(redirectingRead)
-		return false;
-	redirectionFn = redirectTo;
-	redirectingRead = true;
-	return true;
-}
-
-void Communication::clearRedirectRead() {
-	if(!redirectingRead)
-		return;
-	// The mutex is required to clear the redirection, but not to set it
-	std::lock_guard<std::mutex> lk(redirectingReadMutex);
-	redirectingRead = false;
-	redirectionFn = std::function<void(std::vector<uint8_t>&&)>();
 }
 
 bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout) {
@@ -261,44 +247,55 @@ void Communication::dispatchMessage(const std::shared_ptr<Message>& msg) {
 		EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 }
 
-void Communication::readTask() {
-	std::vector<uint8_t> readBytes;
+void Communication::pauseReads() {
+	std::unique_lock<std::mutex> lk(pauseReadTaskMutex);
+	pauseReadTask = true;
+}
 
+void Communication::resumeReads() {
+	std::unique_lock<std::mutex> lk(pauseReadTaskMutex);
+	if(!pauseReadTask) {
+		return;
+	}
+	pauseReadTask = false; 
+	lk.unlock();
+
+	pauseReadTaskCv.notify_one();
+}
+
+bool Communication::readsArePaused() {
+	std::unique_lock<std::mutex> lk(pauseReadTaskMutex);
+	return pauseReadTask;
+}
+
+void Communication::readTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
 	while(!closing) {
-		readBytes.clear();
+		if(pauseReadTask) {
+			std::unique_lock<std::mutex> lk(pauseReadTaskMutex);
+			pauseReadTaskCv.wait(lk, [this]() { return !pauseReadTask; });
+		}
 		if(driver->readAvailable()) {
-			handleInput(*packetizer, readBytes);
+			if(pauseReadTask) {
+				/**
+				 * Reads could have paused while the driver was not available
+				*/
+				continue;
+			}
+			handleInput(*packetizer);
 		}
 	}
 }
 
-void Communication::handleInput(Packetizer& p, std::vector<uint8_t>& readBytes) {
-	if(redirectingRead) {
-		// redirectingRead is an atomic so it can be set without acquiring a mutex
-		// However, we do not clear it without the mutex. The idea is that if another
-		// thread calls clearRedirectRead(), it will block until the redirectionFn
-		// finishes, and after that the redirectionFn will not be called again.
-		std::unique_lock<std::mutex> lk(redirectingReadMutex);
-		// So after we acquire the mutex, we need to check the atomic again, and
-		// if it has become cleared, we *can not* run the redirectionFn.
-		if(redirectingRead) {
-			redirectionFn(std::move(readBytes));
-		} else {
-			// The redirectionFn got cleared while we were acquiring the lock
-			lk.unlock(); // We don't need the lock anymore
-			handleInput(p, readBytes); // and we might as well process this input ourselves
-		}
-	} else {
-		if(p.input(driver->getReadBuffer())) {
-			for(const auto& packet : p.output()) {
-				std::shared_ptr<Message> msg;
-				if(!decoder->decode(msg, packet))
-					continue;
+void Communication::handleInput(Packetizer& p) {
+	if(p.input(driver->getReadBuffer())) {
+		for(const auto& packet : p.output()) {
+			std::shared_ptr<Message> msg;
+			if(!decoder->decode(msg, packet))
+				continue;
 
-				dispatchMessage(msg);
-			}
+			dispatchMessage(msg);
 		}
 	}
 }

@@ -136,7 +136,7 @@ void FTD3XX::readTask() {
 		}
 		FT_ReleaseOverlapped(*handle, &overlap);
 		if(received > 0) {
-			readBuffer.write(buffer, received);
+			writeToReadBuffer(buffer, received);
 		}
 	}
 }

@@ -213,7 +213,7 @@ void FTDI::readTask() {
 			} else
 				report(APIEvent::Type::FailedToRead, APIEvent::Severity::EventWarning);
 		} else
-			readBuffer.write(readbuf, readBytes);
+			writeToReadBuffer(readbuf, readBytes);
 	}
 }
 

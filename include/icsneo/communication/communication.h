@@ -48,8 +48,10 @@ public:
 	void awaitModeChangeComplete() { driver->awaitModeChangeComplete(); }
 	bool rawWrite(const std::vector<uint8_t>& bytes) { return driver->write(bytes); }
 	virtual bool sendPacket(std::vector<uint8_t>& bytes);
-	bool redirectRead(std::function<void(std::vector<uint8_t>&&)> redirectTo);
-	void clearRedirectRead();
+
+	void pauseReads();
+	void resumeReads();
+	bool readsArePaused();
 
 	void setWriteBlocks(bool blocks) { driver->writeBlocks = blocks; }
 
@@ -90,12 +92,14 @@ protected:
 	std::mutex messageCallbacksLock;
 	std::map<int, std::shared_ptr<MessageCallback>> messageCallbacks;
 	std::atomic<bool> closing{false};
-	std::atomic<bool> redirectingRead{false};
-	std::function<void(std::vector<uint8_t>&&)> redirectionFn;
-	std::mutex redirectingReadMutex; // Don't allow read to be disabled while in the redirectionFn
+
+	std::condition_variable pauseReadTaskCv;
+	std::mutex pauseReadTaskMutex;
+	std::atomic<bool> pauseReadTask = false;
+
 	std::mutex syncMessageMutex;
 
-	void handleInput(Packetizer& p, std::vector<uint8_t>& readBytes);
+	void handleInput(Packetizer& p);
 
 private:
 	std::thread readTaskThread;

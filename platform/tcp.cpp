@@ -533,7 +533,7 @@ void TCP::readTask() {
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	while(!closing) {
 		if(const auto received = ::recv(*socket, (char*)readbuf, READ_BUFFER_SIZE, 0); received > 0) {
-			readBuffer.write(readbuf, received);
+			writeToReadBuffer(readbuf, received);
 		} else {
 			timeout.tv_sec = 0;
 			timeout.tv_usec = 50'000;

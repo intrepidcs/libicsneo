@@ -26,6 +26,8 @@ public:
 	virtual void awaitModeChangeComplete() {}
 	virtual bool isDisconnected() { return disconnected; };
 	virtual bool close() = 0;
+
+	bool waitForRx(size_t minBytes, std::chrono::milliseconds timeout);
 	bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 0);
 	bool write(const std::vector<uint8_t>& bytes);
 	virtual bool isEthernet() const { return false; }
@@ -57,8 +59,12 @@ protected:
 	virtual bool writeQueueAlmostFull() { return writeQueue.size_approx() > (writeQueueSize * 3 / 4); }
 	virtual bool writeInternal(const std::vector<uint8_t>& b) { return writeQueue.enqueue(WriteOperation(b)); }
 
-	
+	bool writeToReadBuffer(const uint8_t* buf, size_t numReceived);
 	RingBuffer readBuffer = RingBuffer(ICSNEO_DRIVER_RINGBUFFER_SIZE);
+	std::atomic<bool> hasRxWaitRequest = false;
+	std::condition_variable rxWaitRequestCv;
+	std::mutex rxWaitMutex;
+
 	moodycamel::BlockingConcurrentQueue<WriteOperation> writeQueue;
 	std::thread readThread, writeThread;
 	std::atomic<bool> closing{false};

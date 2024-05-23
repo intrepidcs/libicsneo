@@ -8,6 +8,26 @@
 
 using namespace icsneo;
 
+bool Driver::writeToReadBuffer(const uint8_t* buf, size_t numReceived) {
+	bool ret = readBuffer.write(buf, numReceived);
+
+	if(hasRxWaitRequest) {
+		rxWaitRequestCv.notify_one();
+	}
+
+	return ret;
+}
+
+bool Driver::waitForRx(size_t minBytes, std::chrono::milliseconds timeout) {
+	std::unique_lock<std::mutex> lk(rxWaitMutex);
+	hasRxWaitRequest = true;
+
+	auto ret = rxWaitRequestCv.wait_for(lk, timeout, [this, minBytes]{ return readBuffer.size() >= minBytes; });
+	hasRxWaitRequest = false;
+
+	return ret;
+}
+
 bool Driver::readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout, size_t limit) {
 	// A limit of zero indicates no limit
 	if(limit == 0)
@@ -16,14 +36,13 @@ bool Driver::readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds tim
 	if(limit > (readBuffer.size() + 4))
 		limit = (readBuffer.size() + 4);
 
-	bytes.resize(limit);
 
 	// wait until we have enough data, or the timout occurs
-	const auto timeoutTime = std::chrono::steady_clock::now() + timeout;
-	while (readBuffer.size() < limit && std::chrono::steady_clock::now() < timeoutTime) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	}
+	waitForRx(limit, timeout);
+
 	size_t actuallyRead = std::min(readBuffer.size(), limit);
+	bytes.resize(actuallyRead);
+
 	readBuffer.read(bytes.data(), 0, actuallyRead);
 	readBuffer.pop(actuallyRead);
 	bytes.resize(actuallyRead);

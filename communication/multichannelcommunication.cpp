@@ -177,8 +177,11 @@ void MultiChannelCommunication::vnetReadTask(size_t vnetIndex) {
 		if(queue.wait_dequeue_timed(payloadBytes, std::chrono::milliseconds(250))) {
 			if(closing)
 				break;
-			
-			handleInput(*vnetPacketizer, payloadBytes);
+
+			auto& ringBuffer = driver->getReadBuffer();
+			ringBuffer.write(payloadBytes);
+
+			handleInput(*vnetPacketizer);
 		}
 	}
 }

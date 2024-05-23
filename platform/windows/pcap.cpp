@@ -278,7 +278,7 @@ void PCAP::readTask() {
 
 		if(ethPacketizer.inputUp({data, data + header->caplen})) {
 			const auto bytes = ethPacketizer.outputUp();
-			readBuffer.write(bytes.data(), bytes.size());
+			writeToReadBuffer(bytes.data(), bytes.size());
 		}
 	}
 }
