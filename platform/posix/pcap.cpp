@@ -284,7 +284,7 @@ void PCAP::readTask() {
 			PCAP* driver = reinterpret_cast<PCAP*>(obj);
 			if(driver->ethPacketizer.inputUp({data, data + header->caplen})) {
 				const auto bytes = driver->ethPacketizer.outputUp();
-				driver->writeToReadBuffer(bytes.data(), bytes.size());
+				driver->pushRx(bytes.data(), bytes.size());
 			}
 		}, (uint8_t*)this);
 	}

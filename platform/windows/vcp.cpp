@@ -390,7 +390,7 @@ void VCP::readTask() {
 				if(ReadFile(detail->handle, readbuf, READ_BUFFER_SIZE, nullptr, &detail->overlappedRead)) {
 					if(GetOverlappedResult(detail->handle, &detail->overlappedRead, &bytesRead, FALSE)) {
 						if(bytesRead)
-							writeToReadBuffer(readbuf, bytesRead);
+							pushRx(readbuf, bytesRead);
 					}
 					continue;
 				}
@@ -413,7 +413,7 @@ void VCP::readTask() {
 				auto ret = WaitForSingleObject(detail->overlappedRead.hEvent, 100);
 				if(ret == WAIT_OBJECT_0) {
 					if(GetOverlappedResult(detail->handle, &detail->overlappedRead, &bytesRead, FALSE)) {
-						writeToReadBuffer(readbuf, bytesRead);
+						pushRx(readbuf, bytesRead);
 						state = LAUNCH;
 					} else
 						report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);

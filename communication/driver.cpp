@@ -8,7 +8,7 @@
 
 using namespace icsneo;
 
-bool Driver::writeToReadBuffer(const uint8_t* buf, size_t numReceived) {
+bool Driver::pushRx(const uint8_t* buf, size_t numReceived) {
 	bool ret = readBuffer.write(buf, numReceived);
 
 	if(hasRxWaitRequest) {
@@ -18,11 +18,18 @@ bool Driver::writeToReadBuffer(const uint8_t* buf, size_t numReceived) {
 	return ret;
 }
 
-bool Driver::waitForRx(size_t minBytes, std::chrono::milliseconds timeout) {
+bool Driver::waitForRx(size_t limit, std::chrono::milliseconds timeout) {
+	return waitForRx([limit, this]() {
+		return readBuffer.size() >= limit;
+	}, timeout);
+}
+
+bool Driver::waitForRx(std::function<bool()> predicate, std::chrono::milliseconds timeout) {
 	std::unique_lock<std::mutex> lk(rxWaitMutex);
 	hasRxWaitRequest = true;
 
-	auto ret = rxWaitRequestCv.wait_for(lk, timeout, [this, minBytes]{ return readBuffer.size() >= minBytes; });
+	auto ret = rxWaitRequestCv.wait_for(lk, timeout, predicate);
+
 	hasRxWaitRequest = false;
 
 	return ret;

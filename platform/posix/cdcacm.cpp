@@ -190,7 +190,7 @@ void CDCACM::readTask() {
 			}
 			std::cout << std::dec << std::endl;
 #endif
-			writeToReadBuffer(readbuf, bytesRead);
+			pushRx(readbuf, bytesRead);
 		} else {
 			if(modeChanging) {
 				// We were expecting a disconnect for reenumeration

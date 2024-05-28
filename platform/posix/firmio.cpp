@@ -242,7 +242,7 @@ void FirmIO::readTask() {
 
 				// Translate the physical address back to our virtual address space
 				uint8_t* addr = reinterpret_cast<uint8_t*>(msg.payload.data.addr - PHY_ADDR_BASE + vbase);
-				while (!writeToReadBuffer(addr, msg.payload.data.len)) {
+				while (!pushRx(addr, msg.payload.data.len)) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(1)); // back-off so reading thread can empty the buffer
 					if (closing || isDisconnected()) {
 						break;
