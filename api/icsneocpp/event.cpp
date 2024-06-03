@@ -73,6 +73,7 @@ static constexpr const char* VALUE_NOT_YET_PRESENT = "The value is not yet prese
 static constexpr const char* TIMEOUT = "The timeout was reached.";
 static constexpr const char* WIVI_NOT_SUPPORTED = "Wireless neoVI functions are not supported on this device.";
 static constexpr const char* RESTRICTED_ENTRY_FLAG = "Attempted to set a restricted flag in a Root Directory entry.";
+static constexpr const char* NOT_SUPPORTED = "The requested feature is not supported.";
 
 // Device Errors
 static constexpr const char* POLLING_MESSAGE_OVERFLOW = "Too many messages have been recieved for the polling message buffer, some have been lost!";
@@ -221,6 +222,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return WIVI_NOT_SUPPORTED;
 		case Type::RestrictedEntryFlag:
 			return RESTRICTED_ENTRY_FLAG;
+		case Type::NotSupported:
+			return NOT_SUPPORTED;
 
 		// Device Errors
 		case Type::PollingMessageOverflow:

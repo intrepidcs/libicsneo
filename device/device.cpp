@@ -3180,3 +3180,79 @@ std::optional<uint64_t> Device::getVSADiskSize() {
 	}
 	return diskSize;
 }
+
+bool Device::requestTC10Wake(Network::NetID network) {
+	if(!supportsTC10()) {
+		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	std::vector<uint8_t> args(sizeof(network));
+	*(Network::NetID*)args.data() = network;
+	auto msg = com->waitForMessageSync([&] {
+		return com->sendCommand(ExtendedCommand::RequestTC10Wake, args);
+	}, std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), std::chrono::milliseconds(1000));
+
+	if(!msg) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto resp = std::static_pointer_cast<ExtendedResponseMessage>(msg);
+	if(!resp) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	return resp->response == ExtendedResponse::OK;
+}
+
+bool Device::requestTC10Sleep(Network::NetID network) {
+	if(!supportsTC10()) {
+		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	std::vector<uint8_t> args(sizeof(network));
+	*(Network::NetID*)args.data() = network;
+	auto msg = com->waitForMessageSync([&] {
+		return com->sendCommand(ExtendedCommand::RequestTC10Sleep, args);
+	}, std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), std::chrono::milliseconds(1000));
+
+	if(!msg) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto typed = std::static_pointer_cast<ExtendedResponseMessage>(msg);
+	if(!typed) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	return typed->response == ExtendedResponse::OK;
+}
+
+std::optional<TC10StatusMessage> Device::getTC10Status(Network::NetID network) {
+	if(!supportsTC10()) {
+		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	std::vector<uint8_t> args(sizeof(network));
+	*(Network::NetID*)args.data() = network;
+	auto msg = com->waitForMessageSync([&] {
+		return com->sendCommand(ExtendedCommand::GetTC10Status, args);
+	}, std::make_shared<MessageFilter>(Message::Type::TC10Status), std::chrono::milliseconds(1000));
+
+	if(!msg) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	auto typed = std::static_pointer_cast<TC10StatusMessage>(msg);
+	
+	if(!typed) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	return *typed;
+}

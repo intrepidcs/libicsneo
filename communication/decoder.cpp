@@ -17,6 +17,7 @@
 #include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/message/diskdatamessage.h"
 #include "icsneo/communication/message/hardwareinfo.h"
+#include "icsneo/communication/message/tc10statusmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -288,6 +289,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							return true;
 						case ExtendedCommand::LiveData:
 							result = HardwareLiveDataPacket::DecodeToMessage(packet->data, report);
+							return true;
+						case ExtendedCommand::GetTC10Status:
+							result = TC10StatusMessage::DecodeToMessage(packet->data);
 							return true;
 						default:
 							// No defined handler, treat this as a RawMessage

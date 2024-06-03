@@ -50,6 +50,7 @@ public:
 		Timeout = 0x1014,
 		WiVINotSupported = 0x1015,
 		RestrictedEntryFlag = 0x1016,
+		NotSupported = 0x1017,
 
 		// Device Events
 		PollingMessageOverflow = 0x2000,

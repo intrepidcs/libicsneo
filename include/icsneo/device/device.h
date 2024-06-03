@@ -37,6 +37,7 @@
 #include "icsneo/communication/message/hardwareinfo.h"
 #include "icsneo/communication/message/extendeddatamessage.h"
 #include "icsneo/communication/message/livedatamessage.h"
+#include "icsneo/communication/message/tc10statusmessage.h"
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
 #include "icsneo/communication/packet/livedatapacket.h"
 #include "icsneo/device/extensions/flexray/controller.h"
@@ -721,6 +722,14 @@ public:
 	virtual bool isOnlineSupported() const { return true; }
 
 	virtual bool supportsComponentVersions() const { return false; }
+
+	virtual bool supportsTC10() const { return false; }
+
+	bool requestTC10Wake(Network::NetID network);
+
+	bool requestTC10Sleep(Network::NetID network);
+
+	std::optional<TC10StatusMessage> getTC10Status(Network::NetID network);
 
 protected:
 	bool online = false;

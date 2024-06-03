@@ -56,6 +56,9 @@ enum class ExtendedCommand : uint16_t {
 	SetRootFSEntryFlags = 0x0027,
 	GenericBinaryInfo = 0x0030,
 	LiveData = 0x0035,
+	RequestTC10Wake = 0x003D,
+	RequestTC10Sleep = 0x003E,
+	GetTC10Status = 0x003F,
 };
 
 enum class ExtendedResponse : int32_t {
