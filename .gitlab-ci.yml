@@ -319,56 +319,101 @@ unit_test linux/fedora/39/amd64/clang:
   after_script:
     - /opt/libvirt-driver/cleanup.sh
 
-hardware_test system-test-fedora38-red2:
-  <<: *hw_test
-  variables:
-    GUEST_OS_TAG: fedora38
-    DEVICE_PORT: ETH_A
+.fedora38_needs: &fedora38_needs
   needs:
     - job: build linux/fedora/38/amd64/clang
       artifacts: true
 
-hardware_test system-test-fedora38-vcan42:
+hardware_test fedora38-red2:
   <<: *hw_test
+  <<: *fedora38_needs
+  variables:
+    GUEST_OS_TAG: fedora38
+    DEVICE_PORT: ETH_A
+
+hardware_test fedora38-vcan42:
+  <<: *hw_test
+  <<: *fedora38_needs
   variables:
     GUEST_OS_TAG: fedora38
     DEVICE_PORT: USB_D
-  needs:
-    - job: build linux/fedora/38/amd64/clang
-      artifacts: true
 
-hardware_test system-test-ubuntu2204-red2:
+hardware_test fedora38-fire3:
   <<: *hw_test
+  <<: *fedora38_needs
   variables:
-    GUEST_OS_TAG: ubuntu22.04
-    DEVICE_PORT: ETH_A
+    GUEST_OS_TAG: fedora38
+    DEVICE_PORT: ETH_B
+
+hardware_test fedora38-vcan42-EL:
+  <<: *hw_test
+  <<: *fedora38_needs
+  variables:
+    GUEST_OS_TAG: fedora38
+    DEVICE_PORT: USB_C
+
+.ubuntu2204_needs: &ubuntu2204_needs
   needs:
     - job: build linux/ubuntu/2204/amd64/clang
       artifacts: true
 
-hardware_test system-test-ubuntu2204-vcan42:
+hardware_test ubuntu2204-red2:
   <<: *hw_test
+  <<: *ubuntu2204_needs
+  variables:
+    GUEST_OS_TAG: ubuntu22.04
+    DEVICE_PORT: ETH_A
+
+hardware_test ubuntu2204-vcan42:
+  <<: *hw_test
+  <<: *ubuntu2204_needs
   variables:
     GUEST_OS_TAG: ubuntu22.04
     DEVICE_PORT: USB_D
+
+hardware_test ubuntu2204-fire3:
+  <<: *hw_test
+  <<: *ubuntu2204_needs
+  variables:
+    GUEST_OS_TAG: ubuntu22.04
+    DEVICE_PORT: ETH_B
+
+hardware_test ubuntu2204-vcan42-EL:
+  <<: *hw_test
+  <<: *ubuntu2204_needs
+  variables:
+    GUEST_OS_TAG: ubuntu22.04
+    DEVICE_PORT: USB_C
+
+.win10_needs: &win10_needs
   needs:
-    - job: build linux/ubuntu/2204/amd64/clang
+    - job: build windows/x64
       artifacts: true
 
-hardware_test system-test-win10-red2:
+hardware_test win10-red2:
   <<: *hw_test
+  <<: *win10_needs
   variables:
     GUEST_OS_TAG: win10
     DEVICE_PORT: ETH_A
-  needs:
-    - job: build windows/x64
-      artifacts: true
 
-hardware_test system-test-win10-vcan42:
+hardware_test win10-vcan42:
   <<: *hw_test
+  <<: *win10_needs
   variables:
     GUEST_OS_TAG: win10
     DEVICE_PORT: USB_D
-  needs:
-    - job: build windows/x64
-      artifacts: true
+
+hardware_test win10-fire3:
+  <<: *hw_test
+  <<: *win10_needs
+  variables:
+    GUEST_OS_TAG: win10
+    DEVICE_PORT: ETH_B
+
+hardware_test win10-vcan42-EL:
+  <<: *hw_test
+  <<: *win10_needs
+  variables:
+    GUEST_OS_TAG: win10
+    DEVICE_PORT: USB_C
