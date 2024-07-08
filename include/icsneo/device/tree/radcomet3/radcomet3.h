@@ -44,6 +44,8 @@ public:
 
 	bool getEthPhyRegControlSupported() const override { return true; }
 
+	bool supportsTC10() const override { return true; }
+
 protected:
 	RADComet3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADComet3Settings>(makeDriver);
