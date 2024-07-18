@@ -34,9 +34,12 @@ PCAPDLL::PCAPDLL()
 	int len = GetSystemDirectory(dllPath, 480); // be safe
 	if (len) {
 		_tcscat_s(dllPath, 512, TEXT("\\Npcap"));
-		cookie = AddDllDirectory(dllPath);
+		WCHAR dllPath_w[512] = { 0 };
+		if (mbstowcs(dllPath_w, dllPath, 512)) {
+			cookie = AddDllDirectory(dllPath_w);
+		}
 	}
-	dll = LoadLibraryEx(TEXT("wpcap.dll"), nullptr, LOAD_LIBRARY_SEARCH_USER_DIRS);
+	dll = LoadLibraryEx(TEXT("wpcap.dll"), nullptr, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
 
 	if (cookie)
 		RemoveDllDirectory(cookie);
