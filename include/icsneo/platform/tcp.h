@@ -38,6 +38,7 @@ private:
 		~Socket();
 		explicit operator bool() const { return fd != -1; }
 		operator SocketFileDescriptor() const { return fd; }
+		void poll(uint16_t event, uint32_t msTimeout);
 	private:
 		SocketFileDescriptor fd;
 	};
