@@ -277,6 +277,9 @@ void TCP::Find(std::vector<FoundDevice>& found) {
 			uint8_t buffer[bufferLen];
 			// keep trying till the timeout
 			const auto msWait = std::chrono::duration_cast<std::chrono::milliseconds>(rxTill - std::chrono::steady_clock::now()).count();
+			if(msWait < 0) {
+				break;
+			}
 			socket.poll(POLLIN, static_cast<uint32_t>(msWait));
 			const auto recvRet = ::recv(socket, (char*)buffer, bufferLen, 0);
 			static constexpr auto headerLength = 12;
