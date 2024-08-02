@@ -2116,7 +2116,7 @@ bool Device::readVSA(const VSAExtractionSettings& extractionSettings) {
 	if(isOnline()) {
 		goOffline();
 	}
-	auto innerReadVSA = [&](uint64_t diskSize) -> const bool {
+	auto innerReadVSA = [&](uint64_t diskSize) -> bool {
 		// Adjust driver to offset to start of VSA file
 		const auto& offset = getVSAOffsetInLogicalDisk();
 		if(!offset) {
