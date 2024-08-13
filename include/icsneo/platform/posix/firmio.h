@@ -25,8 +25,11 @@ public:
 	bool isOpen() override;
 	bool close() override;
 private:
-	void readTask() override;
-	void writeTask() override;
+	std::thread readThread, writeThread;
+
+	void readTask();
+	void writeTask();
+
 	bool writeQueueFull() override;
 	bool writeQueueAlmostFull() override;
 	bool writeInternal(const std::vector<uint8_t>& bytes) override;

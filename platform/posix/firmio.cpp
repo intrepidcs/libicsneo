@@ -166,13 +166,13 @@ bool FirmIO::close() {
 		return false;
 	}
 
-	closing = true;
+	setIsClosing(true);
 
 	if(readThread.joinable())
 		readThread.join();
 
-	closing = false;
-	disconnected = false;
+	setIsClosing(false);
+	setIsDisconnected(false);
 
 	int ret = 0;
 	if(vbase != nullptr) {
@@ -202,7 +202,7 @@ void FirmIO::readTask() {
 		std::cerr << "FirmIO::readTask setpriority failed : " << strerror(errno)  << std::endl;
 	}
 
-	while(!closing && !isDisconnected()) {
+	while(!isClosing() && !isDisconnected()) {
 		fd_set rfds = {0};
 		struct timeval tv = {0};
 		FD_SET(fd, &rfds);
@@ -244,7 +244,7 @@ void FirmIO::readTask() {
 				uint8_t* addr = reinterpret_cast<uint8_t*>(msg.payload.data.addr - PHY_ADDR_BASE + vbase);
 				while (!pushRx(addr, msg.payload.data.len)) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(1)); // back-off so reading thread can empty the buffer
-					if (closing || isDisconnected()) {
+					if (isClosing() || isDisconnected()) {
 						break;
 					}
 				}

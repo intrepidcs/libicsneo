@@ -326,12 +326,12 @@ bool VCP::close() {
 		return false;
 	}
 		
-	closing = true; // Signal the threads that we are closing
+	setIsClosing(true); // Signal the threads that we are closing
 	for(auto& t : threads)
 		t->join(); // Wait for the threads to close
 	readThread.join();
 	writeThread.join();
-	closing = false;
+	setIsClosing(false);
 
 	if(!CloseHandle(detail->handle)) {
 		report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
@@ -357,9 +357,7 @@ bool VCP::close() {
 		detail->overlappedWait.hEvent = INVALID_HANDLE_VALUE;
 	}
 
-	WriteOperation flushop;
-	readBuffer.clear();
-	while(writeQueue.try_dequeue(flushop)) {}
+	clearBuffers();
 
 	if(!ret)
 		report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
@@ -379,7 +377,7 @@ void VCP::readTask() {
 	IOTaskState state = LAUNCH;
 	DWORD bytesRead = 0;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing && !isDisconnected()) {
+	while(!isClosing() && !isDisconnected()) {
 		switch(state) {
 			case LAUNCH: {
 				COMSTAT comStatus;
@@ -401,7 +399,7 @@ void VCP::readTask() {
 				else if(lastError != ERROR_SUCCESS) {
 					if(lastError == ERROR_ACCESS_DENIED) {
 						if(!isDisconnected()) {
-							disconnected = true;
+							setIsDisconnected(true);
 							report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 						}
 					} else
@@ -432,7 +430,7 @@ void VCP::writeTask() {
 	VCP::WriteOperation writeOp;
 	DWORD bytesWritten = 0;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing && !isDisconnected()) {
+	while(!isClosing() && !isDisconnected()) {
 		switch(state) {
 			case LAUNCH: {
 				if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
@@ -448,7 +446,7 @@ void VCP::writeTask() {
 				}
 				else if(winerr == ERROR_ACCESS_DENIED) {
 					if(!isDisconnected()) {
-						disconnected = true;
+						setIsDisconnected(true);
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 					}
 				} else

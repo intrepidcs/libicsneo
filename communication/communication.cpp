@@ -276,7 +276,7 @@ void Communication::readTask() {
 			std::unique_lock<std::mutex> lk(pauseReadTaskMutex);
 			pauseReadTaskCv.wait(lk, [this]() { return !pauseReadTask; });
 		}
-		if(driver->readAvailable()) {
+		if(driver->waitForRx(readTaskWakeLimit, readTaskWakeTimeout)) {
 			if(pauseReadTask) {
 				/**
 				 * Reads could have paused while the driver was not available

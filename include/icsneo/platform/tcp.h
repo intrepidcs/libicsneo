@@ -47,8 +47,10 @@ private:
 	uint32_t dstIP;
 	uint16_t dstPort;
 	std::unique_ptr<Socket> socket;
-	void readTask() override;
-	void writeTask() override;
+
+	std::thread readThread, writeThread;
+	void readTask();
+	void writeTask();
 };
 
 }

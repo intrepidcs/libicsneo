@@ -117,7 +117,7 @@ bool CDCACM::close() {
 		return false;
 	}
 
-	closing = true;
+	setIsClosing(true);
 
 	if(readThread.joinable())
 		readThread.join();
@@ -125,8 +125,8 @@ bool CDCACM::close() {
 	if(writeThread.joinable())
 		writeThread.join();
 
-	closing = false;
-	disconnected = false;
+	setIsClosing(false);
+	setIsDisconnected(false);
 
 	if(modeChanging) {
 		// We're expecting this inode to go away after we close the device
@@ -140,9 +140,7 @@ bool CDCACM::close() {
 	int ret = ::close(fd);
 	fd = -1;
 
-	WriteOperation flushop;
-	readBuffer.clear();
-	while (writeQueue.try_dequeue(flushop)) {}
+	clearBuffers();
 
 	if(modeChanging) {
 		modeChanging = false;
@@ -173,7 +171,7 @@ void CDCACM::readTask() {
 	constexpr size_t READ_BUFFER_SIZE = 2048;
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing && !isDisconnected()) {
+	while(!isClosing() && !isDisconnected()) {
 		fd_set rfds = {0};
 		struct timeval tv = {0};
 		FD_SET(fd, &rfds);
@@ -199,8 +197,8 @@ void CDCACM::readTask() {
 					// Requesting thread is responsible for calling close. This allows for more flexibility
 				});
 				break;
-			} else if(!closing && !fdIsValid() && !isDisconnected()) {
-				disconnected = true;
+			} else if(!isClosing() && !fdIsValid() && !isDisconnected()) {
+				setIsDisconnected(true);
 				report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 			}
 		}
@@ -210,7 +208,7 @@ void CDCACM::readTask() {
 void CDCACM::writeTask() {
 	WriteOperation writeOp;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing && !isDisconnected()) {
+	while(!isClosing() && !isDisconnected()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
@@ -233,7 +231,7 @@ void CDCACM::writeTask() {
 				} else if (actualWritten < 0) {
 					if(!fdIsValid()) {
 						if(!isDisconnected()) {
-							disconnected = true;
+							setIsDisconnected(true);
 							report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 						}
 					} else

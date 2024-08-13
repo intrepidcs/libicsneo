@@ -511,20 +511,18 @@ bool TCP::close() {
 		return false;
 	}
 
-	closing = true;
-	disconnected = false;
+	setIsClosing(true);
+	setIsDisconnected(false);
 
 	if(readThread.joinable())
 		readThread.join();
 	if(writeThread.joinable())
 		writeThread.join();
 
-	WriteOperation flushop;
-	readBuffer.pop(readBuffer.size());
-	while(writeQueue.try_dequeue(flushop)) {}
+	clearBuffers();
 
 	socket.reset();
-	closing = false;
+	setIsClosing(false);
 
 	return true;
 }
@@ -534,7 +532,7 @@ void TCP::readTask() {
 
 	constexpr size_t READ_BUFFER_SIZE = 2048;
 	uint8_t readbuf[READ_BUFFER_SIZE];
-	while(!closing) {
+	while(!isClosing()) {
 		if(const auto received = ::recv(*socket, (char*)readbuf, READ_BUFFER_SIZE, 0); received > 0) {
 			pushRx(readbuf, received);
 		} else {
@@ -547,11 +545,11 @@ void TCP::writeTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
 	WriteOperation writeOp;
-	while(!closing) {
+	while(!isClosing()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
-		while(!closing) {
+		while(!isClosing()) {
 			if(::send(*socket, (char*)writeOp.bytes.data(), WIN_INT(writeOp.bytes.size()), 0) > 0)
 				break;
 			socket->poll(POLLOUT, 100);

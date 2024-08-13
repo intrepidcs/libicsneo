@@ -246,18 +246,17 @@ bool PCAP::close() {
 		return false;
 	}
 
-	closing = true; // Signal the threads that we are closing
+	setIsClosing(true); // Signal the threads that we are closing
 	readThread.join();
 	writeThread.join();
 	transmitThread.join();
-	closing = false;
+	setIsClosing(false);
 
 	pcap.close(iface.fp);
 	iface.fp = nullptr;
 
-	WriteOperation flushop;
-	readBuffer.clear();
-	while(writeQueue.try_dequeue(flushop)) {}
+	clearBuffers();
+
 	transmitQueue = nullptr;
 
 	return true;
@@ -267,7 +266,7 @@ void PCAP::readTask() {
 	struct pcap_pkthdr* header;
 	const uint8_t* data;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing) {
+	while(!isClosing()) {
 		auto readBytes = pcap.next_ex(iface.fp, &header, &data);
 		if(readBytes < 0) {
 			report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
@@ -291,7 +290,7 @@ void PCAP::writeTask() {
 	pcap_send_queue* queue2 = pcap.sendqueue_alloc(128000);
 	pcap_send_queue* queue = queue1;
 
-	while(!closing) {
+	while(!isClosing()) {
 		// Potentially, we added frames to a second queue faster than the other thread was able to hand the first
 		// off to the kernel. In that case, wait for a minimal amount of time before checking whether we can
 		// transmit it again.
@@ -342,9 +341,9 @@ void PCAP::writeTask() {
 }
 
 void PCAP::transmitTask() {
-	while(!closing) {
+	while(!isClosing()) {
 		std::unique_lock<std::mutex> lk(transmitQueueMutex);
-		if(transmitQueueCV.wait_for(lk, std::chrono::milliseconds(100), [this] { return !!transmitQueue; }) && !closing && transmitQueue) {
+		if(transmitQueueCV.wait_for(lk, std::chrono::milliseconds(100), [this] { return !!transmitQueue; }) && !isClosing() && transmitQueue) {
 			pcap_send_queue* current = transmitQueue;
 			lk.unlock();
 			pcap.sendqueue_transmit(iface.fp, current, 0);

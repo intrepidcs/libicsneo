@@ -22,8 +22,10 @@ public:
 private:
 	neodevice_t& device;
 	std::optional<void*> handle;
-	void readTask() override;
-	void writeTask() override;
+
+	std::thread readThread, writeThread;
+	void readTask();
+	void writeTask();
 };
 
 }

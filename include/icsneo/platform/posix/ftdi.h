@@ -57,8 +57,11 @@ private:
 	static std::vector<std::string> handles;
 
 	static bool ErrorIsDisconnection(int errorCode);
+	std::thread readThread, writeThread;
+
 	void readTask();
 	void writeTask();
+
 	bool openable; // Set to false in the constructor if the object has not been found in searchResultDevices
 
 	neodevice_t& device;

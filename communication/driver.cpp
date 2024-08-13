@@ -11,11 +11,19 @@ using namespace icsneo;
 bool Driver::pushRx(const uint8_t* buf, size_t numReceived) {
 	bool ret = readBuffer.write(buf, numReceived);
 
-	if(hasRxWaitRequest) {
-		rxWaitRequestCv.notify_one();
-	}
+	rxWaitCv.notify_all();
 
 	return ret;
+}
+
+void Driver::clearBuffers()
+{
+	WriteOperation flushop;
+
+	readBuffer.clear();
+	rxWaitCv.notify_all();
+
+	while (writeQueue.try_dequeue(flushop)) {}
 }
 
 bool Driver::waitForRx(size_t limit, std::chrono::milliseconds timeout) {
@@ -26,13 +34,7 @@ bool Driver::waitForRx(size_t limit, std::chrono::milliseconds timeout) {
 
 bool Driver::waitForRx(std::function<bool()> predicate, std::chrono::milliseconds timeout) {
 	std::unique_lock<std::mutex> lk(rxWaitMutex);
-	hasRxWaitRequest = true;
-
-	auto ret = rxWaitRequestCv.wait_for(lk, timeout, predicate);
-
-	hasRxWaitRequest = false;
-
-	return ret;
+	return rxWaitCv.wait_for(lk, timeout, predicate);
 }
 
 bool Driver::readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout, size_t limit) {
