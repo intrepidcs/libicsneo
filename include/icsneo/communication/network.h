@@ -537,6 +537,7 @@ public:
 		case NetID::NeoMemoryWriteDone:
 		case NetID::RED_GET_RTC:
 		case NetID::DiskData:
+		case NetID::RED_App_Error:
 			return Type::Internal;
 		case NetID::Invalid:
 		case NetID::Any:

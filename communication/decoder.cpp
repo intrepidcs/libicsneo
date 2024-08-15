@@ -18,6 +18,7 @@
 #include "icsneo/communication/message/diskdatamessage.h"
 #include "icsneo/communication/message/hardwareinfo.h"
 #include "icsneo/communication/message/tc10statusmessage.h"
+#include "icsneo/communication/message/apperrormessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -397,6 +398,14 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					if(packet->data.size() != length)
 						packet->data.resize(length);
 					return decode(result, packet);
+				}
+				case Network::NetID::RED_App_Error: {
+					result = AppErrorMessage::DecodeToMessage(packet->data, report);
+					if(!result) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
+						return false;
+					}
+					return true;
 				}
 				case Network::NetID::ReadSettings: {
 					auto msg = std::make_shared<ReadSettingsMessage>();

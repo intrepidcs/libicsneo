@@ -238,6 +238,7 @@ set(SRC_FILES
 	communication/message/flexray/control/flexraycontrolmessage.cpp
 	communication/message/callback/streamoutput/a2bwavoutput.cpp
 	communication/message/a2bmessage.cpp
+	communication/message/apperrormessage.cpp
 	communication/message/neomessage.cpp
 	communication/message/ethphymessage.cpp
 	communication/message/linmessage.cpp
@@ -519,6 +520,7 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/mdioencoderdecodertest.cpp
 		test/unit/livedataencoderdecodertest.cpp
 		test/unit/ringbuffertest.cpp
+		test/unit/apperrordecodertest.cpp
 	)
 
 	target_link_libraries(libicsneo-unit-tests gtest gtest_main)

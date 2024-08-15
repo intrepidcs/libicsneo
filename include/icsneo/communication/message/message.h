@@ -40,6 +40,7 @@ public:
 		LiveData = 0x800f,
 		HardwareInfo = 0x8010,
 		TC10Status = 0x8011,
+		AppError = 0x8012,
 	};
 
 	Message(Type t) : type(t) {}
