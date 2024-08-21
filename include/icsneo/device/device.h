@@ -13,6 +13,7 @@
 #include <optional>
 #include <unordered_map>
 #include <set>
+#include <chrono>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/api/lifetime.h"
 #include "icsneo/device/neodevice.h"
@@ -21,6 +22,7 @@
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/deviceversion.h"
 #include "icsneo/device/founddevice.h"
+#include "icsneo/device/coremini.h"
 #include "icsneo/disk/diskreaddriver.h"
 #include "icsneo/disk/diskwritedriver.h"
 #include "icsneo/disk/nulldiskdriver.h"
@@ -163,6 +165,7 @@ public:
 	bool stopScript();
 	bool clearScript(Disk::MemoryType memType = Disk::MemoryType::SD);
 	bool uploadCoremini(std::istream& stream, Disk::MemoryType memType = Disk::MemoryType::SD);
+	std::optional<CoreminiHeader> readCoreminiHeader(Disk::MemoryType memType = Disk::MemoryType::SD);
 
 	bool eraseScriptMemory(Disk::MemoryType memType, uint64_t amount);
 

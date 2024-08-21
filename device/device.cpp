@@ -656,6 +656,85 @@ bool Device::clearScript(Disk::MemoryType memType)
 	return true;
 }
 
+std::optional<CoreminiHeader> Device::readCoreminiHeader(Disk::MemoryType memType) {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	auto startAddress = getCoreminiStartAddress(memType);
+	if(!startAddress) {
+		return std::nullopt;
+	}
+
+	auto connected = isLogicalDiskConnected();
+	
+	if(!connected) {
+		return std::nullopt; // Already added an API error
+	}
+
+	#pragma pack(push, 2)
+	struct RawCoreminiHeader {
+		uint16_t fileType;
+		uint16_t fileVersion;
+		uint32_t storedFileSize;
+		uint32_t fileChecksum;
+		union
+		{
+			struct
+			{
+				uint32_t skipDecompression : 1;
+				uint32_t encryptedMode : 1;
+				uint32_t reserved : 30;
+			} bits;
+			uint32_t word;
+		} flags;
+		uint8_t fileHash[32];
+		union
+		{
+			struct
+			{
+				uint32_t lsb;
+				uint32_t msb;
+			} words;
+			uint64_t time64;
+		} createTime;
+		uint8_t reserved[8];
+	};
+	#pragma pack(pop)
+
+	RawCoreminiHeader header = {};
+	auto numRead = readLogicalDisk(*startAddress, (uint8_t*)&header, sizeof(header), std::chrono::milliseconds(2000), memType);
+
+	if(!numRead) {
+		return std::nullopt; // Already added an API error
+	}
+	
+	if(*numRead != sizeof(header)) {
+		report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(header.fileType != 0x0907) {
+		report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	std::optional<CoreminiHeader> ret;
+	ret.emplace();
+	ret->coreminiVersion = header.fileVersion;
+	ret->storedFileSize = header.storedFileSize;
+	ret->fileChecksum = header.fileChecksum;
+	ret->skipDecompression = static_cast<bool>(header.flags.bits.skipDecompression);
+	ret->encryptedMode = static_cast<bool>(header.flags.bits.encryptedMode);
+	std::copy(std::begin(header.fileHash), std::end(header.fileHash), ret->fileHash.begin());
+	static constexpr std::chrono::seconds icsEpochDelta(1167609600);
+	static constexpr uint8_t timestampResolution = 25;
+	static constexpr uint16_t nsInUs = 1'000;
+	ret->timestamp += icsEpochDelta + std::chrono::microseconds(header.createTime.time64 * timestampResolution / nsInUs);
+	return ret;
+}
+
 bool Device::transmit(std::shared_ptr<Frame> frame) {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);

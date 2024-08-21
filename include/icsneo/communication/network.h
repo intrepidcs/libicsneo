@@ -533,6 +533,7 @@ public:
 		case NetID::CoreMiniPreLoad:
 		case NetID::ExtendedCommand:
 		case NetID::ExtendedData:
+		case NetID::RED_INT_MEMORYREAD:
 		case NetID::NeoMemorySDRead:
 		case NetID::NeoMemoryWriteDone:
 		case NetID::RED_GET_RTC:

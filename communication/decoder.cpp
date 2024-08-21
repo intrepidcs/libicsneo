@@ -5,6 +5,7 @@
 #include "icsneo/communication/message/readsettingsmessage.h"
 #include "icsneo/communication/message/canerrorcountmessage.h"
 #include "icsneo/communication/message/neoreadmemorysdmessage.h"
+#include "icsneo/communication/message/flashmemorymessage.h"
 #include "icsneo/communication/message/extendedresponsemessage.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
 #include "icsneo/communication/message/scriptstatusmessage.h"
@@ -255,6 +256,18 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				case Network::NetID::DeviceStatus: {
 					// Just pass along the data, the device needs to handle this itself
 					result = std::make_shared<RawMessage>(packet->network, packet->data);
+					return true;
+				}
+				case Network::NetID::RED_INT_MEMORYREAD: {
+					if(packet->data.size() != 512 + sizeof(uint16_t)) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+						return false; // Should get enough data for a start address and sector
+					}
+
+					const auto msg = std::make_shared<FlashMemoryMessage>();
+					result = msg;
+					msg->startAddress = *reinterpret_cast<uint16_t*>(packet->data.data());
+					msg->data.insert(msg->data.end(), packet->data.begin() + 2, packet->data.end());
 					return true;
 				}
 				case Network::NetID::NeoMemorySDRead: {
