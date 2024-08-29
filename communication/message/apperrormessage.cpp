@@ -137,7 +137,6 @@ std::string AppErrorMessage::getAppErrorString() {
 		default:
 			return "Unknown error";
 	}
-	return "Unknown error";
 }
 
 } // namespace icsneo
