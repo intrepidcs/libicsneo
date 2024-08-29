@@ -57,6 +57,9 @@ enum class AppErrorType : uint16_t {
 	AppErrorInvalidSetting = 42,
 	AppErrorSystemFailureRequestedReset = 43,
 	AppErrorPortKeyMistmatch = 45,
+	AppErrorBusFailure = 46,
+	AppErrorTapOverflow = 47,
+	AppErrorEthTxNoLink = 48,
 	AppErrorErrorBufferOverflow = 254,
 	AppNoError = 255
 };

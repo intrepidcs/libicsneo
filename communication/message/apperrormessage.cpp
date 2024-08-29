@@ -130,6 +130,12 @@ std::string AppErrorMessage::getAppErrorString() {
 			return "Device rebooted to recover from an unexpected error condition";
 		case AppErrorType::AppErrorPortKeyMistmatch:
 			return std::string(netIDString) + ": Mismatch between key in manager and stored key";
+		case AppErrorType::AppErrorBusFailure:
+			return std::string(netIDString) + ": Bus failure";
+		case AppErrorType::AppErrorTapOverflow:
+			return std::string(netIDString) + ": Tap overflow";
+		case AppErrorType::AppErrorEthTxNoLink:
+			return std::string(netIDString) + ": Attempted Ethernet transmit without link";
 		case AppErrorType::AppErrorErrorBufferOverflow:
 			return "Device error buffer overflow";
 		case AppErrorType::AppNoError:
