@@ -229,7 +229,7 @@ public:
 	virtual size_t getNetworkCountByType(Network::Type) const;
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
-	std::shared_ptr<HardwareInfo> getHardwareInfo(std::chrono::milliseconds timeout = std::chrono::milliseconds(2));
+	std::shared_ptr<HardwareInfo> getHardwareInfo(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
 
 
 	/**
