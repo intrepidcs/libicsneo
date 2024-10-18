@@ -58,3 +58,5 @@
 	- RADComet3
 		- CAN works
 		- Ethernet works
+	- RADMoonT1S
+		- Ethernet works
