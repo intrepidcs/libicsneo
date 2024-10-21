@@ -28,6 +28,7 @@
 		- CAN works
 		- CAN FD works
 		- Ethernet works
+	- RADGigastar2
 
 - Connecting over USB
 	- ValueCAN 4 series
@@ -60,3 +61,4 @@
 		- Ethernet works
 	- RADMoonT1S
 		- Ethernet works
+	- RADGigastar2

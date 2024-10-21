@@ -204,6 +204,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		#ifdef __RADGIGASTAR_H_
 		makeIfSerialMatches<RADGigastar>(dev, newFoundDevices);
 		#endif
+		
+		#ifdef __RADGIGASTAR2_H_
+		makeIfSerialMatches<RADGigastar2>(dev, newFoundDevices);
+		#endif
 
 		#ifdef __RADJUPITER_H_
 		makeIfSerialMatches<RADJupiter>(dev, newFoundDevices);
@@ -354,6 +358,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 
 		#ifdef __RADGIGASTAR_H_
 		RADGigastar::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADGIGASTAR2_H_
+		RADGigastar2::DEVICE_TYPE,
 		#endif
 
 		#if defined __RADMOON2_H_ || defined __RADMOON2ZL_H_
