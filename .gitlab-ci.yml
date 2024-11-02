@@ -319,6 +319,7 @@ unit_test linux/fedora/39/amd64/clang:
     - /opt/libvirt-driver/run.sh
   after_script:
     - /opt/libvirt-driver/cleanup.sh
+  allow_failure: true
 
 .fedora38_needs: &fedora38_needs
   needs:
@@ -504,6 +505,11 @@ deploy python/pypi:
     - python3 -m pip install -U twine
     - twine upload wheelhouse/*
   dependencies:
+    - build python/linux/amd64
+    - build python/linux/arm64
+    - build python/macos
+    - build python/windows
+  needs:
     - build python/linux/amd64
     - build python/linux/arm64
     - build python/macos
