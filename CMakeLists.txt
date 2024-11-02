@@ -27,6 +27,8 @@ option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX"
 option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
 option(LIBICSNEO_ENABLE_FTD3XX "Enable devices which communicate over USB FTD3XX" ON)
 
+option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" OFF)
+
 if(NOT CMAKE_CXX_STANDARD)
 	set(CMAKE_CXX_STANDARD 17)
 endif()
@@ -493,6 +495,8 @@ if(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC)
 	target_compile_features(icsneolegacy-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 	target_compile_definitions(icsneolegacy-static PUBLIC ICSNEOC_BUILD_STATIC)
 endif()
+
+add_subdirectory(bindings)
 
 # googletest
 if(LIBICSNEO_BUILD_UNIT_TESTS)

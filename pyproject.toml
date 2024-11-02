@@ -1,0 +1,49 @@
+[build-system]
+requires = ["scikit-build-core", "pybind11", "setuptools>=64", "setuptools-scm>=8"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "icsneopy"
+dynamic = ["version"]
+requires-python = ">=3.9"
+readme = "README.md"
+authors = [{name = "Intrepid Control Systems, Inc."}]
+maintainers = [
+    {name = "Kyle Schwarz", email="kschwarz@intrepidcs.com"},
+]
+license = {file = "LICENSE"}
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Programming Language :: C',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: Implementation :: CPython',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Operating System :: Unix',
+    'Operating System :: MacOS',
+]
+
+[project.urls]
+homepage = "https://github.com/intrepidcs/libicsneo"
+documentation = "https://libicsneo.readthedocs.io"
+source = "https://github.com/intrepidcs/libicsneo"
+tracker = "https://github.com/intrepidcs/libicsneo/issues"
+
+[tool.scikit-build]
+metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
+
+[tool.scikit-build.cmake.define]
+LIBICSNEO_ENABLE_BINDINGS_PYTHON = true
+LIBICSNEO_ENABLE_TCP = true
