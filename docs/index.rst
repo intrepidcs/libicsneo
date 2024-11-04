@@ -1,10 +1,10 @@
-Welcome to libicsneo's documentation!
-=======================================
+libicsneo
+=========
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Documentation
+   :maxdepth: 1
+   :caption: API Documentation
 
-   Usage
-   icsneocpp
-   icsneoc
+   icsneocpp/index
+   icsneopy/index
+   icsneoc/index
