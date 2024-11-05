@@ -514,3 +514,18 @@ deploy python/pypi:
     - build python/linux/arm64
     - build python/macos
     - build python/windows
+
+push github:
+  stage: deploy
+  tags:
+    - linux-build
+  image: alpine:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  dependencies:
+    - deploy python/pypi
+  needs:
+    - deploy python/pypi
+  script:
+    - apk add git
+    - git push https://$LIBICSNEO_GITHUB_USERNAME:$LIBICSNEO_GITHUB_TOKEN@github.com/intrepidcs/libicsneo.git
