@@ -36,6 +36,7 @@ void init_device(pybind11::module_& m) {
 		.def("supports_tc10", &Device::supportsTC10)
 		.def("request_tc10_wake", &Device::requestTC10Wake)
 		.def("request_tc10_sleep", &Device::requestTC10Sleep)
+		.def("get_tc10_status", &Device::getTC10Status)
 		.def("__repr__", &Device::describe);
 }
 
