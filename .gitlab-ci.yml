@@ -528,4 +528,4 @@ push github:
     - deploy python/pypi
   script:
     - apk add git
-    - git push https://$LIBICSNEO_GITHUB_USERNAME:$LIBICSNEO_GITHUB_TOKEN@github.com/intrepidcs/libicsneo.git
+    - git push https://$LIBICSNEO_GITHUB_USERNAME:$LIBICSNEO_GITHUB_TOKEN@github.com/intrepidcs/libicsneo.git HEAD:master
