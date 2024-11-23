@@ -10,8 +10,10 @@ option(LIBICSNEO_BUILD_UNIT_TESTS "Build unit tests." OFF)
 option(LIBICSNEO_BUILD_SYSTEM_TESTS "Build system tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
 option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
-option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
-option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
+option(LIBICSNEO_BUILD_ICSNEO "Build dynamic C library" ON)
+option(LIBICSNEO_BUILD_ICSNEO_STATIC "Build static C library" ON)
+option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C legacy library" ON)
+option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C legacy library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC "Build static icsnVC40 compatibility library" ON)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
@@ -332,6 +334,7 @@ endif()
 
 configure_file(api/icsneocpp/buildinfo.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated/buildinfo.h)
 configure_file(api/icsneoc/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
+configure_file(api/icsneo/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneo/version.rc)
 
 foreach(EXTINC ${LIBICSNEO_EXTENSION_INCLUDES})
 	message("Including " ${EXTINC})
@@ -431,6 +434,37 @@ if(LIBICSNEO_ENABLE_RAW_ETHERNET)
 		target_link_libraries(icsneocpp PUBLIC ${PCAP_LIBRARY})
 	endif(WIN32)
 endif(LIBICSNEO_ENABLE_RAW_ETHERNET)
+
+if(LIBICSNEO_BUILD_ICSNEO)
+	add_library(icsneo SHARED api/icsneo/icsneo.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneo/version.rc)
+	
+	target_include_directories(icsneo
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneo PRIVATE icsneocpp)
+	target_compile_definitions(icsneo PRIVATE ICSNEO_EXPORTS)
+	target_compile_features(icsneo PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+endif()
+
+if(LIBICSNEO_BUILD_ICSNEO_STATIC)
+	add_library(icsneo-static STATIC api/icsneo/icsneo.cpp)
+	target_include_directories(icsneo-static
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneo-static PUBLIC icsneocpp)
+	target_compile_features(icsneo-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	target_compile_definitions(icsneo PRIVATE ICSNEO_EXPORTS)
+	target_compile_definitions(icsneo-static PUBLIC ICSNEOC_BUILD_STATIC)
+endif()
+
 
 if(LIBICSNEO_BUILD_ICSNEOC)
 	add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)

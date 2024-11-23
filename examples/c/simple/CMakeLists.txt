@@ -1,5 +1,5 @@
-add_executable(libicsneoc-simple-lin-example lin/main.c)
+add_executable(libicsneo-simple-example src/main.c)
 if(UNIX)
-	target_link_libraries(libicsneoc-simple-lin-example ${CMAKE_DL_LIBS})
+	target_link_libraries(libicsneo-simple-example ${CMAKE_DL_LIBS})
 endif()
-target_link_libraries(libicsneoc-simple-lin-example icsneoc)
+target_link_libraries(libicsneo-simple-example icsneo)
