@@ -14,7 +14,7 @@ public:
 	// Serial numbers start with RC, Comet2 starts at RC0300
 	// USB PID is 0x1207, standard driver is FTDI3
 	// Ethernet MAC allocation is 0x1D, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE_BY_SERIAL_RANGE(RADComet2, DeviceType::RADComet, "RC0300", "RCZZZZ");
+	ICSNEO_FINDABLE_DEVICE_BY_SERIAL_RANGE(RADComet2, _icsneo_devicetype_t::RADComet, "RC0300", "RCZZZZ");
 
 	std::string getProductName() const override {
 		return "RAD-Comet 2";

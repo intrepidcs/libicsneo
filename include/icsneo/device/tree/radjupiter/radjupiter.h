@@ -13,7 +13,7 @@ class RADJupiter : public Device {
 public:
 	// Serial numbers start with RJ
 	// USB PID is 1105, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(RADJupiter, DeviceType::RADJupiter, "RJ");
+	ICSNEO_FINDABLE_DEVICE(RADJupiter, _icsneo_devicetype_t::RADJupiter, "RJ");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

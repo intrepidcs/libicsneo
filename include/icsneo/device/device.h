@@ -53,7 +53,7 @@
 
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
-	static constexpr DeviceType::Enum DEVICE_TYPE = type; \
+	static constexpr icsneo_devicetype_t DEVICE_TYPE = type; \
 	className(const FoundDevice& dev) : className(neodevice_t(dev, DEVICE_TYPE), dev.makeDriver) {}
 
 // Devices which are discernable by the first two characters of their serial

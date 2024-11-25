@@ -13,7 +13,7 @@ class NeoVIRED2 : public Device {
 public:
 	// Serial numbers start with D2
 	// Ethernet MAC allocation is 0x0E, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(NeoVIRED2, DeviceType::RED2, "D2");
+	ICSNEO_FINDABLE_DEVICE(NeoVIRED2, _icsneo_devicetype_t::RED2, "D2");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

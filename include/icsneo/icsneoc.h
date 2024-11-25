@@ -364,7 +364,7 @@ extern bool DLLExport icsneo_getProductName(const neodevice_t* device, char* str
  * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.
  */
-extern bool DLLExport icsneo_getProductNameForType(devicetype_t type, char* str, size_t* maxLength);
+extern bool DLLExport icsneo_getProductNameForType(icsneo_devicetype_t type, char* str, size_t* maxLength);
 
 /**
  * \brief Trigger a refresh of the settings structure for a specified device.
@@ -704,11 +704,11 @@ extern size_t DLLExport icsneo_getEventLimit(void);
 
 /**
  * \brief Get the devices supported by the current version of the API
- * \param[out] devices A pointer to a buffer of devicetype_t structures which will be written to.
+ * \param[out] devices A pointer to a buffer of icsneo_devicetype_t structures which will be written to.
  * NULL can be passed, which will write the current supported device count to count.
  * \param[inout] count A pointer to a size_t which, prior to the call,
- * holds the maximum number of devicetype_t structures to be written,
- * and after the call holds the number of devicetype_t structures written.
+ * holds the maximum number of icsneo_devicetype_t structures to be written,
+ * and after the call holds the number of icsneo_devicetype_t structures written.
  * \returns True if devices was written to
  *
  * See icsneo_getProductNameForType() to get textual descriptions of each device.
@@ -719,7 +719,7 @@ extern size_t DLLExport icsneo_getEventLimit(void);
  * An icsneo::APIEvent::OutputTruncatedError will be available in icsneo_getLastError() in this case.
  * True will still be returned.
  */
-extern bool DLLExport icsneo_getSupportedDevices(devicetype_t* devices, size_t* count);
+extern bool DLLExport icsneo_getSupportedDevices(icsneo_devicetype_t* devices, size_t* count);
 
 /**
  * \brief Get the timestamp resolution for the given device
@@ -992,7 +992,7 @@ fn_icsneo_setEventLimit icsneo_setEventLimit;
 typedef size_t(*fn_icsneo_getEventLimit)(void);
 fn_icsneo_getEventLimit icsneo_getEventLimit;
 
-typedef bool(*fn_icsneo_getSupportedDevices)(devicetype_t* devices, size_t* count);
+typedef bool(*fn_icsneo_getSupportedDevices)(icsneo_devicetype_t* devices, size_t* count);
 fn_icsneo_getSupportedDevices icsneo_getSupportedDevices;
 
 typedef bool(*fn_icsneo_getTimestampResolution)(const neodevice_t* device, uint16_t* resolution);

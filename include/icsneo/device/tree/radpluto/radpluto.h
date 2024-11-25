@@ -13,7 +13,7 @@ class RADPluto : public Device {
 public:
 	// Serial numbers start with PL
 	// USB PID is 1104, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(RADPluto, DeviceType::RADPluto, "PL");
+	ICSNEO_FINDABLE_DEVICE(RADPluto, _icsneo_devicetype_t::RADPluto, "PL");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

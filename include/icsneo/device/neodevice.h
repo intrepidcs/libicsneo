@@ -24,13 +24,13 @@ typedef int32_t neodevice_handle_t;
 #ifdef __cplusplus
 typedef struct neodevice_t {
 	neodevice_t();
-	neodevice_t(const icsneo::FoundDevice& found, devicetype_t inType);
+	neodevice_t(const icsneo::FoundDevice& found, icsneo_devicetype_t inType);
 #else
 typedef struct {
 #endif
 	devicehandle_t device; // Pointer back to the C++ device object
 	neodevice_handle_t handle; // Handle for use by the underlying driver
-	devicetype_t type;
+	icsneo_devicetype_t type;
 	char serial[7];
 } neodevice_t;
 

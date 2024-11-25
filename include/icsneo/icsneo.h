@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include <icsneo/icsneotypes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -46,16 +48,7 @@ typedef enum _icsneo_error_t {
 
 typedef uint32_t icsneo_error_t;
 
-typedef enum _icsneo_open_options_t {
-    icsneo_open_options_none = 0x0,
-    icsneo_open_options_go_online = 0x1,
-    icsneo_open_options_enable_message_polling = 0x2,
-    icsneo_open_options_sync_rtc = 0x4,
-    icsneo_open_options_enable_auto_update = 0x8,
-    icsneo_open_options_force_update = 0x10,
-} _icsneo_open_options_t;
 
-typedef uint32_t icsneo_open_options_t;
 
 /** @brief Find all hardware attached to the system. 
  * 

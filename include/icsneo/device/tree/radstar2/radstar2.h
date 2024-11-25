@@ -14,7 +14,7 @@ public:
 	// Serial numbers start with RS
 	// USB PID is 0x0005, standard driver is FTDI
 	// Ethernet MAC allocation is 0x05, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(RADStar2, DeviceType::RADStar2, "RS");
+	ICSNEO_FINDABLE_DEVICE(RADStar2, _icsneo_devicetype_t::RADStar2, "RS");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

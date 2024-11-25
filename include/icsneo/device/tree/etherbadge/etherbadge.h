@@ -15,7 +15,7 @@ class EtherBADGE : public Device {
 public:
 	// Serial numbers start with EB
 	// USB PID is 0x1107, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(EtherBADGE, DeviceType::EtherBADGE, "EB");
+	ICSNEO_FINDABLE_DEVICE(EtherBADGE, _icsneo_devicetype_t::EtherBADGE, "EB");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

@@ -14,7 +14,7 @@ public:
 	// Serial numbers start with CY
 	// USB PID is 0x1000, standard driver is FTDI
 	// Ethernet MAC allocation is 0x04, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE2, DeviceType::FIRE2, "CY");
+	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE2, _icsneo_devicetype_t::FIRE2, "CY");
 
 	enum class SKU {
 		Standard,

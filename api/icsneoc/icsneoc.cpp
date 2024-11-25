@@ -306,7 +306,7 @@ bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLeng
 	return true;
 }
 
-bool icsneo_getProductNameForType(devicetype_t type, char* str, size_t* maxLength) {
+bool icsneo_getProductNameForType(icsneo_devicetype_t type, char* str, size_t* maxLength) {
 	// TAG String copy function
 	if(maxLength == nullptr) {
 		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
@@ -608,7 +608,7 @@ size_t icsneo_getEventLimit(void) {
 	return icsneo::GetEventLimit();
 }
 
-bool icsneo_getSupportedDevices(devicetype_t* devices, size_t* count) {
+bool icsneo_getSupportedDevices(icsneo_devicetype_t* devices, size_t* count) {
 	if(count == nullptr) {
 		EventManager::GetInstance().add(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return false;

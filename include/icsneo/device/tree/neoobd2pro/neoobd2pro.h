@@ -12,7 +12,7 @@ class NeoOBD2PRO : public Device {
 public:
 	// Serial numbers start with NP
 	// USB PID is 0x1103, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(NeoOBD2PRO, DeviceType::OBD2_PRO, "NP");
+	ICSNEO_FINDABLE_DEVICE(NeoOBD2PRO, _icsneo_devicetype_t::OBD2_PRO, "NP");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

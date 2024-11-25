@@ -13,7 +13,7 @@ class RADSupermoon : public Device {
 public:
 	// Serial numbers start with SM
 	// USB PID is 0x1201, standard driver is FTDI3
-	ICSNEO_FINDABLE_DEVICE(RADSupermoon, DeviceType::RADSupermoon, "SM");
+	ICSNEO_FINDABLE_DEVICE(RADSupermoon, _icsneo_devicetype_t::RADSupermoon, "SM");
 
 	enum class SKU {
 		Standard,

@@ -13,7 +13,7 @@ public:
 	// Serial numbers start with IV for Industrial
 	// USB PID is 0x1101 (shared by all ValueCAN 4s), standard driver is CDCACM
 	// Ethernet MAC allocation is 0x12, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(ValueCAN4Industrial, DeviceType::VCAN4_IND, "IV");
+	ICSNEO_FINDABLE_DEVICE(ValueCAN4Industrial, _icsneo_devicetype_t::VCAN4_IND, "IV");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

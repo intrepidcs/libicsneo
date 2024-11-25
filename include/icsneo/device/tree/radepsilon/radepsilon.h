@@ -10,7 +10,7 @@ class RADEpsilon : public Device {
 public:
 	// Serial numbers start with RE
 	// USB PID is 0x1109, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(RADEpsilon, DeviceType::RADEpsilon, "RE");
+	ICSNEO_FINDABLE_DEVICE(RADEpsilon, _icsneo_devicetype_t::RADEpsilon, "RE");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
