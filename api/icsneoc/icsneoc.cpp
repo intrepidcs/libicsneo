@@ -313,7 +313,7 @@ bool icsneo_getProductNameForType(icsneo_devicetype_t type, char* str, size_t* m
 		return false;
 	}
 
-	std::string output = DeviceType(type).getGenericProductName();
+	std::string output = DeviceType(type).getProductName();
 
 	if(str == nullptr) {
 		*maxLength = output.length();

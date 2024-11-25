@@ -2,6 +2,9 @@
 #include "icsneo/device/device.h"
 #include "icsneo/communication/message/flexray/flexraymessage.h"
 
+#include <chrono>
+#include <memory>
+
 using namespace icsneo;
 
 FlexRay::Extension::Extension(Device& device, const std::vector<Network>& controllerNetworks) : DeviceExtension(device) {

@@ -142,13 +142,13 @@ ICSNEO_API icsneo_error_t icsneo_device_describe(icsneo_device_t* device, const 
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, uint64_t* value) {
+ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_devicetype_t* value) {
     if (!device || !device->device) {
         return icsneo_error_invalid_parameters;
     }
     auto dev = device->device;
     // TODO: We should expose these types
-    *value = static_cast<uint64_t>(dev->getType());
+    *value = dev->getType().getDeviceType();
     
     return icsneo_error_success;
 }

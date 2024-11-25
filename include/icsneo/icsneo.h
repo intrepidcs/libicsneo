@@ -111,7 +111,7 @@ ICSNEO_API icsneo_error_t icsneo_open(icsneo_device_t* device);
 ICSNEO_API icsneo_error_t icsneo_close(icsneo_device_t* device);
 
 ICSNEO_API icsneo_error_t icsneo_device_describe(icsneo_device_t* device, const char* value, uint32_t* value_length);
-ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, uint64_t* value);
+ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_devicetype_t* value);
 ICSNEO_API icsneo_error_t icsneo_device_serial(icsneo_device_t* device, const char* value, uint32_t* value_length);
 
 #ifdef __cplusplus

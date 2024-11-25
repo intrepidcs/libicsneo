@@ -15,7 +15,7 @@ int main() {
 
 	std::cout<< "Supported devices:" << std::endl;
 	for(auto& dev : icsneo::GetSupportedDevices())
-		std::cout << '\t' << dev.getGenericProductName() << std::endl;
+		std::cout << '\t' << dev.getProductName() << std::endl;
 
 	std::cout << "\nFinding devices... " << std::flush;
 	auto devices = icsneo::FindAllDevices(); // This is type std::vector<std::shared_ptr<icsneo::Device>>

@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <cstdint>
+#include <string>
 #include <icsneo/icsneotypes.h>
 
 
@@ -21,9 +22,11 @@ public:
 	 * as the product name may change based on device-specific factors, such as serial
 	 * number.
 	 */
-	static const char* GetGenericProductName(_icsneo_devicetype_t t) {
+	template<typename T>
+	static std::string getGenericProductName(T deviceType) {
+		icsneo_devicetype_t t = static_cast<icsneo_devicetype_t>(deviceType);
 		// Adding something? Make sure you update DEVICE_TYPE_LONGEST_NAME at the top!
-		switch(t) {
+		switch((icsneo_devicetype_t)t) {
 			case Unknown:
 				return "Unknown";
 			case BLUE:
@@ -134,18 +137,20 @@ public:
 			case DONT_REUSE1:
 			case DONT_REUSE2:
 			case DONT_REUSE3:
-				// Intentionally don't use default so that the compiler throws a warning when something is added
 				return "Unknown neoVI";
+			// Intentionally don't use default so that the compiler throws a warning when something is added
 		}
 		return "Unknown neoVI";
 	}
 
-	DeviceType() { value = _icsneo_devicetype_t::Unknown; }
-	DeviceType(icsneo_devicetype_t device_type) { value = device_type; }
-	icsneo_devicetype_t getDeviceType() const { return value; }
-	std::string getGenericProductName() const { return GetGenericProductName(getDeviceType()); }
-	operator icsneo_devicetype_t() const { return getDeviceType(); }
+	DeviceType(icsneo_devicetype_t device_type) { deviceType = device_type; }
+	icsneo_devicetype_t getDeviceType() const { return deviceType; }
+
+	// Returns the generic name of the device - This doesn't include the serial.
+	std::string getProductName() const { return DeviceType::getGenericProductName(getDeviceType()); }
 
 private:
-	icsneo_devicetype_t value;
+	icsneo_devicetype_t deviceType;
 };
+
+}; // namespace icsneo
