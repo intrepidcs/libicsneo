@@ -178,7 +178,6 @@ ICSNEO_API icsneo_error_t icsneo_close(icsneo_device_t* device) {
     return icsneo_error_success;
 }
 
-
 ICSNEO_API icsneo_error_t icsneo_device_describe(icsneo_device_t* device, const char* value, uint32_t* value_length) {
     if (!device || !device->device) {
         return icsneo_error_invalid_parameters;
@@ -268,6 +267,26 @@ ICSNEO_API icsneo_error_t icsneo_get_message_polling(icsneo_device_t* device, bo
     }
     auto dev = device->device;
     *is_enabled = dev->isMessagePollingEnabled();
+    
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_set_message_polling_limit(icsneo_device_t* device, uint32_t limit) {
+    if (!device) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    dev->setPollingMessageLimit(static_cast<size_t>(limit));
+    
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_get_message_polling_limit(icsneo_device_t* device, uint32_t* limit) {
+    if (!device || !limit) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    *limit = static_cast<uint32_t>(dev->getPollingMessageLimit());
     
     return icsneo_error_success;
 }

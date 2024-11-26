@@ -165,16 +165,15 @@ ICSNEO_API icsneo_error_t icsneo_device_describe(icsneo_device_t* device, const 
  */
 ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_devicetype_t* value);
 
-/** @brief Get the description of a device
+/** @brief Get the serial of a device
  * 
- * @param[in] icsneo_device_t device The device to get the description of.
- * @param[out] const char* value Pointer to a buffer to copy the description into. Null terminated.
- * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the description.
+ * @param[in] icsneo_device_t device The device to get the serial of.
+ * @param[out] const char* value Pointer to a buffer to copy the serial into. Null terminated.
+ * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the serial.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
 ICSNEO_API icsneo_error_t icsneo_device_serial(icsneo_device_t* device, const char* value, uint32_t* value_length);
-
 
 /** @brief Set the online state of a device.
  * 
@@ -213,6 +212,27 @@ ICSNEO_API icsneo_error_t icsneo_set_message_polling(icsneo_device_t* device, bo
  */
 ICSNEO_API icsneo_error_t icsneo_get_message_polling(icsneo_device_t* device, bool* is_enabled);
 
+/** @brief Set the message polling limit of a device.
+ * 
+ * This will truncate the message queue to the specified limit.
+ * 
+ * @param[in] icsneo_device_t device The device to enforce the message polling limit.
+ * @param[in] uint32_t limit The limit to enforce.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_set_message_polling_limit(icsneo_device_t* device, uint32_t limit);
+
+/** @brief Get the message polling limit of a device.
+ * 
+ * @see icsneo_set_message_polling_limit
+ * 
+ * @param[in] icsneo_device_t device The device to enforce the message polling limit.
+ * @param[out] uint32_t limit The limit to get.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_get_message_polling_limit(icsneo_device_t* device, uint32_t* limit);
 
 
 #ifdef __cplusplus
