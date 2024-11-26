@@ -39,6 +39,9 @@ extern "C" {
 typedef struct icsneo_device_t icsneo_device_t;
 
 
+typedef struct icsneo_message_t icsneo_message_t;
+
+
 /** @brief Error codes for icsneo functions.
  *
  * This enum is guaranteed to be ABI stable, any new values will be appended to the end. 
@@ -56,6 +59,8 @@ typedef enum _icsneo_error_t {
     icsneo_error_enable_message_polling_failed,
     // Error syncing RTC.
     icsneo_error_sync_rtc_failed,
+    // Error getting messages.
+    icsneo_error_get_messages_failed,
 } _icsneo_error_t;
 
 /** @brief Integer representation of _icsneo_error_t enum. 
@@ -243,6 +248,37 @@ ICSNEO_API icsneo_error_t icsneo_get_message_polling_limit(icsneo_device_t* devi
  */
 ICSNEO_API icsneo_error_t icsneo_get_message_count(icsneo_device_t* device, uint32_t* count);
 
+
+/** @brief Get the timestamp resolution (nanoseconds) of a device
+ * 
+ * @param[in] icsneo_device_t device The device to get the timestamp resolution of.
+ * @param[out] uint32_t* resolution Pointer to a uint32_t to copy the timestamp resolution in nanoseconds into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_get_timestamp_resolution(icsneo_device_t* device, uint32_t* resolution);
+
+/** @brief Get the messages of a device
+ * 
+ * When calling this function, the previous messages retrieved by this function will be invalid.
+ * 
+ * @param[in] icsneo_device_t device The device to get the messages of.
+ * @param[out] icsneo_message_t** messages Pointer to an array of icsneo_message_t to copy the messages into.
+ *  Undefined behaviour if index is out of range of messages_count.
+ * @param[in,out] uint32_t* messages_count Size of the messages array. Modified with the number of messages found.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count);
+
+/** @brief Check if a message is valid
+ * 
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] bool* is_valid Pointer to a bool to copy the validity of the message into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_message_t* message, bool* is_valid);
 
 #ifdef __cplusplus
 }

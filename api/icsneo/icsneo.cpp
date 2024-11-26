@@ -14,8 +14,13 @@ typedef struct icsneo_device_t {
     icsneo_open_options_t options;
 } icsneo_device_t;
 
+typedef struct icsneo_message_t {
+    std::shared_ptr<Message> message;
+} icsneo_message_t;
+
 
 static std::deque<std::shared_ptr<icsneo_device_t>> g_devices;
+static std::deque<std::shared_ptr<icsneo_message_t>> g_messages;
 
 ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length) {
     if (!value || !value_length) {
@@ -297,6 +302,54 @@ ICSNEO_API icsneo_error_t icsneo_get_message_count(icsneo_device_t* device, uint
     }
     auto dev = device->device;
     *count = static_cast<uint32_t>(dev->getCurrentMessageCount());
+    
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_get_timestamp_resolution(icsneo_device_t* device, uint32_t* resolution) {
+    if (!device || !resolution) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    *resolution = static_cast<uint32_t>(dev->getTimestampResolution());
+    
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count) {
+    if (!device || !messages || !messages_count) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    // Get the messages
+    auto results = dev->getMessages();
+    auto& queried_messages = results.first;
+    auto& success = results.second;
+    if (!success) {
+        return icsneo_error_get_messages_failed;
+    }
+    // Find the minimum number of messages
+    uint32_t message_size = std::minmax(static_cast<uint32_t>(queried_messages.size()), *messages_count).first;
+    *messages_count = message_size;
+
+    // Copy the messages into our global message container
+    g_messages.clear();
+    for (auto& message : queried_messages) {
+        auto message_t = std::make_shared<icsneo_message_t>();
+        message_t->message = message;
+        g_messages.push_back(message_t);
+    }
+    
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_message_t* message, bool* is_valid) {
+    if (!message || !is_valid) {
+        return icsneo_error_invalid_parameters;
+    }
+    *is_valid = std::find_if(g_messages.begin(), g_messages.end(), [&](const auto& msg) {
+        return msg->message == message->message;
+    }) == g_messages.end();
     
     return icsneo_error_success;
 }
