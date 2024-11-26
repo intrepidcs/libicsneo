@@ -12,7 +12,7 @@ class NeoOBD2SIM : public Device {
 public:
 	// Serial numbers start with OS
 	// USB PID is 0x1100, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(NeoOBD2SIM, _icsneo_devicetype_t::OBD2_SIM, "OS");
+	ICSNEO_FINDABLE_DEVICE(NeoOBD2SIM, _icsneo_devicetype_t::icsneo_devicetype_obd2_sim, "OS");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

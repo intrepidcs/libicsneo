@@ -17,7 +17,7 @@ public:
 	// Serial numbers start with AB
 	// USB PID is 0x0006, standard driver is FTDI
 	// Ethernet MAC allocation is 0x18, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(RADA2B, _icsneo_devicetype_t::RAD_A2B, "AB");
+	ICSNEO_FINDABLE_DEVICE(RADA2B, _icsneo_devicetype_t::icsneo_devicetype_rad_a2b, "AB");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

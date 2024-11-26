@@ -14,7 +14,7 @@ class VividCAN : public Device {
 public:
 	// Serial numbers start with VV
 	// USB PID is 0x1102, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(VividCAN, _icsneo_devicetype_t::VividCAN, "VV");
+	ICSNEO_FINDABLE_DEVICE(VividCAN, _icsneo_devicetype_t::icsneo_devicetype_vividcan, "VV");
 
 	// VividCAN does not go online, you can only set settings
 	bool goOnline() override {

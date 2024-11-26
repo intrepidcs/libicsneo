@@ -13,7 +13,7 @@ class NeoVIFIRE3 : public Device {
 public:
 	// Serial numbers start with ON
 	// Ethernet MAC allocation is 0x0E, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE3, _icsneo_devicetype_t::FIRE3, "ON");
+	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE3, _icsneo_devicetype_t::icsneo_devicetype_fire3, "ON");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

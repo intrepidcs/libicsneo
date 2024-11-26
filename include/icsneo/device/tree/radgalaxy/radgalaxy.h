@@ -17,7 +17,7 @@ class RADGalaxy : public Device {
 public:
 	// Serial numbers start with RG
 	// Ethernet MAC allocation is 0x03, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(RADGalaxy, _icsneo_devicetype_t::RADGalaxy, "RG");
+	ICSNEO_FINDABLE_DEVICE(RADGalaxy, _icsneo_devicetype_t::icsneo_devicetype_rad_galaxy, "RG");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

@@ -16,7 +16,7 @@ public:
 	// Serial numbers start with GL (previously, RAD-Gigalog)
 	// USB PID is 0x1203, standard driver is FTDI3
 	// Ethernet MAC allocation is 0x0A, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(RADMars, _icsneo_devicetype_t::RADMars, "GL");
+	ICSNEO_FINDABLE_DEVICE(RADMars, _icsneo_devicetype_t::icsneo_devicetype_rad_mars, "GL");
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
 

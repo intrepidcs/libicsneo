@@ -12,7 +12,7 @@ class ValueCAN4_4 : public ValueCAN4 {
 public:
 	// Serial numbers start with V4 for 4-4
 	// USB PID is 0x1101 (shared by all ValueCAN 4s), standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(ValueCAN4_4, _icsneo_devicetype_t::VCAN4_4, "V4");
+	ICSNEO_FINDABLE_DEVICE(ValueCAN4_4, _icsneo_devicetype_t::icsneo_devicetype_vcan44, "V4");
 
 	enum class SKU {
 		Standard,

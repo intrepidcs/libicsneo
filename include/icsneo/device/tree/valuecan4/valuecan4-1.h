@@ -12,7 +12,7 @@ class ValueCAN4_1 : public ValueCAN4 {
 public:
 	// Serial numbers start with V1 for 4-1
 	// USB PID is 0x1101 (shared by all ValueCAN 4s), standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(ValueCAN4_1, _icsneo_devicetype_t::VCAN4_1, "V1");
+	ICSNEO_FINDABLE_DEVICE(ValueCAN4_1, _icsneo_devicetype_t::icsneo_devicetype_vcan41, "V1");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

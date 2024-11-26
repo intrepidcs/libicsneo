@@ -14,7 +14,7 @@ public:
 	// Serial numbers start with MS
 	// USB PID is 0x1209, standard driver is FTDI3
 	// Ethernet MAC allocation is 0x21, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(RADMoonT1S, _icsneo_devicetype_t::RADMoonT1S, "MS");
+	ICSNEO_FINDABLE_DEVICE(RADMoonT1S, _icsneo_devicetype_t::icsneo_devicetype_rad_moon_t1s, "MS");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

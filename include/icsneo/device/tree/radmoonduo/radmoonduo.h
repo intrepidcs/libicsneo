@@ -13,7 +13,7 @@ class RADMoonDuo : public Device {
 public:
 	// Serial numbers start with MD
 	// USB PID is 1106, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(RADMoonDuo, _icsneo_devicetype_t::RADMoonDuo, "MD");
+	ICSNEO_FINDABLE_DEVICE(RADMoonDuo, _icsneo_devicetype_t::icsneo_devicetype_rad_moon_duo, "MD");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		// If Converter1 Target is set to USB/CM, OP_Ethernet2 will be exposed to the PC

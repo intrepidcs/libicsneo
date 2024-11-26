@@ -12,7 +12,7 @@ class RADMoon2 : public RADMoon2Base {
 public:
 	// Serial numbers start with RM
 	// USB PID is 0x1202, standard driver is FTDI3
-	ICSNEO_FINDABLE_DEVICE(RADMoon2, _icsneo_devicetype_t::RADMoon2, "RM");
+	ICSNEO_FINDABLE_DEVICE(RADMoon2, _icsneo_devicetype_t::icsneo_devicetype_rad_moon2, "RM");
 
 	uint8_t getPhyAddrOrPort() const override { return 6; };
 

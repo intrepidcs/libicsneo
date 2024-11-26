@@ -13,7 +13,7 @@ class NeoVIFIRE3FlexRay : public Device {
 public:
 	// Serial numbers start with FF
 	// Ethernet MAC allocation is 1F, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE3FlexRay, _icsneo_devicetype_t::FIRE3_FlexRay, "FF");
+	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE3FlexRay, _icsneo_devicetype_t::icsneo_devicetype_fire3_flexray, "FF");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

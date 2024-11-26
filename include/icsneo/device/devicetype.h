@@ -23,120 +23,114 @@ public:
 	 */
 	template<typename T>
 	static std::string getGenericProductName(T deviceType) {
-		icsneo_devicetype_t t = static_cast<icsneo_devicetype_t>(deviceType);
 		// Adding something? Make sure you update DEVICE_TYPE_LONGEST_NAME at the top!
-		switch((icsneo_devicetype_t)t) {
-			case Unknown:
+		switch(static_cast<icsneo_devicetype_t>(deviceType)) {
+			case icsneo_devicetype_unknown:
 				return "Unknown";
-			case BLUE:
+			case icsneo_devicetype_blue:
 				return "neoVI BLUE";
-			case ECU_AVB:
+			case icsneo_devicetype_ecu_avb:
 				return "neoECU AVB/TSN";
-			case RADSupermoon:
+			case icsneo_devicetype_rad_supermoon:
 				return "RAD-Supermoon";
-			case DW_VCAN:
+			case icsneo_devicetype_dw_vcan:
 				return "DW_VCAN";
-			case RADMoon2:
+			case icsneo_devicetype_rad_moon2:
 				return "RAD-Moon 2";
-			case RADMars:
+			case icsneo_devicetype_rad_mars:
 				return "RAD-Mars";
-			case VCAN4_1:
+			case icsneo_devicetype_vcan41:
 				return "ValueCAN 4-1";
-			case FIRE:
+			case icsneo_devicetype_fire:
 				return "neoVI FIRE";
-			case RADPluto:
+			case icsneo_devicetype_rad_pluto:
 				return "RAD-Pluto";
-			case VCAN4_2EL:
+			case icsneo_devicetype_vcan42_el:
 				return "ValueCAN 4-2EL";
-			case RADIO_CANHUB:
+			case icsneo_devicetype_radio_canhub:
 				return "RAD-IO2 CANHub";
-			case NEOECU12:
+			case icsneo_devicetype_neo_ecu12:
 				return "neoECU 12";
-			case OBD2_LCBADGE:
+			case icsneo_devicetype_obd2_lc_badge:
 				return "neoOBD2 LC BADGE";
-			case RADMoonDuo:
+			case icsneo_devicetype_rad_moon_duo:
 				return "RAD-Moon Duo";
-			case FIRE3:
+			case icsneo_devicetype_fire3:
 				return "neoVI FIRE 3";
-			case VCAN3:
+			case icsneo_devicetype_vcan3:
 				return "ValueCAN 3";
-			case RADJupiter:
+			case icsneo_devicetype_rad_jupiter:
 				return "RAD-Jupiter";
-			case VCAN4_IND:
+			case icsneo_devicetype_vcan4_industrial:
 				return "ValueCAN 4 Industrial";
-			case RADGigastar:
+			case icsneo_devicetype_rad_gigastar:
 				return "RAD-Gigastar";
-			case RED2:
+			case icsneo_devicetype_red2:
 				return "neoVI RED 2";
-			case EtherBADGE:
+			case icsneo_devicetype_etherbadge:
 				return "EtherBADGE";
-			case RAD_A2B:
+			case icsneo_devicetype_rad_a2b:
 				return "RAD-A2B";
-			case RADEpsilon:
+			case icsneo_devicetype_rad_epsilon:
 				return "RAD-Epsilon";
-			case RADMoon3:
+			case icsneo_devicetype_rad_moon3:
 				return "RAD-Moon 3";
-			case RADComet:
+			case icsneo_devicetype_rad_comet:
 				return "RAD-Comet";
-			case RED:
+			case icsneo_devicetype_red:
 				return "neoVI RED";
-			case ECU:
+			case icsneo_devicetype_ecu:
 				return "neoECU";
-			case IEVB:
+			case icsneo_devicetype_ievb:
 				return "IEVB";
-			case Pendant:
+			case icsneo_devicetype_pendant:
 				return "Pendant";
-			case OBD2_PRO:
+			case icsneo_devicetype_obd2_pro:
 				return "neoOBD2 PRO";
-			case ECUChip_UART:
+			case icsneo_devicetype_ecuchip_uart:
 				return "neoECU Chip UART";
-			case PLASMA:
+			case icsneo_devicetype_plasma:
 				return "neoVI PLASMA";
-			case NEOAnalog:
+			case icsneo_devicetype_neo_analog:
 				return "NEOAnalog";
-			case CT_OBD:
+			case icsneo_devicetype_ct_obd:
 				return "CT_OBD";
-			case ION:
+			case icsneo_devicetype_ion:
 				return "neoVI ION";
-			case RADStar:
+			case icsneo_devicetype_rad_star:
 				return "RAD-Star";
-			case VCAN4_4:
+			case icsneo_devicetype_vcan44:
 				return "ValueCAN 4-4";
-			case VCAN4_2:
+			case icsneo_devicetype_vcan42:
 				return "ValueCAN 4-2";
-			case CMProbe:
+			case icsneo_devicetype_cm_probe:
 				return "CMProbe";
-			case EEVB:
+			case icsneo_devicetype_eevb:
 				return "Intrepid Ethernet Evaluation Board";
-			case VCANrf:
+			case icsneo_devicetype_vcan_rf:
 				return "ValueCAN.rf";
-			case FIRE2:
+			case icsneo_devicetype_fire2:
 				return "neoVI FIRE 2";
-			case Flex:
+			case icsneo_devicetype_flex:
 				return "neoVI Flex";
-			case RADGalaxy:
+			case icsneo_devicetype_rad_galaxy:
 				return "RAD-Galaxy";
-			case RADStar2:
+			case icsneo_devicetype_rad_star2:
 				return "RAD-Star 2";
-			case VividCAN:
+			case icsneo_devicetype_vividcan:
 				return "VividCAN";
-			case OBD2_SIM:
+			case icsneo_devicetype_obd2_sim:
 				return "neoOBD2 SIM";
-			case FIRE3_FlexRay:
+			case icsneo_devicetype_fire3_flexray:
 				return "neoVI FIRE3 FlexRay";
-			case RADComet3:
+			case icsneo_devicetype_rad_comet3:
 				return "RAD-Comet 3";
-			case RADMoonT1S:
+			case icsneo_devicetype_rad_moon_t1s:
 				return "RAD-Moon T1S";
-			case Connect:
+			case icsneo_devicetype_connect:
 				return "neoVI Connect";
-			case RADGigastar2:
+			case icsneo_devicetype_rad_gigastar2:
 				return "RAD-Gigastar 2";
-			case DONT_REUSE0:
-			case DONT_REUSE1:
-			case DONT_REUSE2:
-			case DONT_REUSE3:
-				return "Unknown neoVI";
 			// Intentionally don't use default so that the compiler throws a warning when something is added
 		}
 		return "Unknown neoVI";

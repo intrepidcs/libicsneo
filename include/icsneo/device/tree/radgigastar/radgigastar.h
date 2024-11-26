@@ -16,7 +16,7 @@ public:
 	// Serial numbers start with GS
 	// USB PID is 0x1204, standard driver is FTDI3
 	// Ethernet MAC allocation is 0x0F, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(RADGigastar, _icsneo_devicetype_t::RADGigastar, "GS");
+	ICSNEO_FINDABLE_DEVICE(RADGigastar, _icsneo_devicetype_t::icsneo_devicetype_rad_gigastar, "GS");
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
 

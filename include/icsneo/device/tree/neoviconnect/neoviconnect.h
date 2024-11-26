@@ -13,7 +13,7 @@ class NeoVIConnect : public Device {
 public:
 	// Serial numbers start with DM
 	// Ethernet MAC allocation is 0x1F, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(NeoVIConnect, _icsneo_devicetype_t::Connect, "DM");
+	ICSNEO_FINDABLE_DEVICE(NeoVIConnect, _icsneo_devicetype_t::icsneo_devicetype_connect, "DM");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

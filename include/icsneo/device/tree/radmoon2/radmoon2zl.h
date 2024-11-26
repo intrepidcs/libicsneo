@@ -12,7 +12,7 @@ class RADMoon2ZL : public RADMoon2Base {
 public:
 	// Serial numbers start with RN
 	// USB PID is 0x110C, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(RADMoon2ZL, _icsneo_devicetype_t::RADMoon2, "RN");
+	ICSNEO_FINDABLE_DEVICE(RADMoon2ZL, _icsneo_devicetype_t::icsneo_devicetype_rad_moon2, "RN");
 
 	uint8_t getPhyAddrOrPort() const override { return 1; }
 

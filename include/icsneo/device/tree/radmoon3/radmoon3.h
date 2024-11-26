@@ -13,7 +13,7 @@ class RADMoon3 : public Device {
 public:
 	// Serial numbers start with R3
 	// USB PID is 0x110D, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(RADMoon3, _icsneo_devicetype_t::RADMoon3, "R3");
+	ICSNEO_FINDABLE_DEVICE(RADMoon3, _icsneo_devicetype_t::icsneo_devicetype_rad_moon3, "R3");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

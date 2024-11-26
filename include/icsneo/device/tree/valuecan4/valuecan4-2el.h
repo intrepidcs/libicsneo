@@ -13,7 +13,7 @@ public:
 	// Serial numbers start with VE for 4-2EL
 	// USB PID is 0x1101 (shared by all ValueCAN 4s), standard driver is CDCACM
 	// Ethernet MAC allocation is 0x0B, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(ValueCAN4_2EL, _icsneo_devicetype_t::VCAN4_2EL, "VE");
+	ICSNEO_FINDABLE_DEVICE(ValueCAN4_2EL, _icsneo_devicetype_t::icsneo_devicetype_vcan42_el, "VE");
 
 	enum class SKU {
 		Standard,
