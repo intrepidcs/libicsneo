@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include <icsneo/icsneotypes.h>
 
@@ -152,6 +153,46 @@ ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_dev
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
 ICSNEO_API icsneo_error_t icsneo_device_serial(icsneo_device_t* device, const char* value, uint32_t* value_length);
+
+
+/** @brief Set the online state of a device.
+ * 
+ * @param[in] icsneo_device_t device The device to set the online state of.
+ * @param[in] bool go_online true to go online, false to go offline.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_go_online(icsneo_device_t* device, bool go_online);
+
+/** @brief Get the online state of a device.
+ * 
+ * @param[in] icsneo_device_t device The device to set the online state of.
+ * @param[out] bool true if online, false if offline.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_is_online(icsneo_device_t* device, bool* is_online);
+
+
+/** @brief Set the message polling state of a device.
+ * 
+ * @param[in] icsneo_device_t device The device to set the message polling state of.
+ * @param[in] bool enable true to enable message polling, false to disable message polling..
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_set_message_polling(icsneo_device_t* device, bool enable);
+
+/** @brief Get the message polling state of a device.
+ * 
+ * @param[in] icsneo_device_t device The device to set the message polling state of.
+ * @param[out] bool is_enabled true if message polling is enabled, false if message polling is disabled.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_get_message_polling(icsneo_device_t* device, bool* is_enabled);
+
+
 
 #ifdef __cplusplus
 }

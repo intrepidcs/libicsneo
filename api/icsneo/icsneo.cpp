@@ -147,7 +147,6 @@ ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_dev
         return icsneo_error_invalid_parameters;
     }
     auto dev = device->device;
-    // TODO: We should expose these types
     *value = dev->getType().getDeviceType();
     
     return icsneo_error_success;
@@ -163,6 +162,61 @@ ICSNEO_API icsneo_error_t icsneo_device_serial(icsneo_device_t* device, const ch
     *value_length = min_length;
     // Copy the string into value
     strncpy(const_cast<char *>(value), dev->getSerial().c_str(), min_length);
+    
+    return icsneo_error_success;
+}
+
+
+ICSNEO_API icsneo_error_t icsneo_go_online(icsneo_device_t* device, bool go_online) {
+    if (!device) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    // Go online
+    if (go_online && dev->goOnline()) {
+        return icsneo_error_success;
+    }
+    // Go offline
+    if (!go_online && dev->goOffline()) {
+        return icsneo_error_success;
+    }
+
+    return icsneo_error_go_online_failed;
+}
+
+ICSNEO_API icsneo_error_t icsneo_is_online(icsneo_device_t* device, bool* is_online) {
+    if (!device || !is_online) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    *is_online = dev->isOnline();
+    
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_set_message_polling(icsneo_device_t* device, bool enable) {
+    if (!device) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    // Enable message polling
+    if (enable && dev->enableMessagePolling()) {
+        return icsneo_error_success;
+    } 
+    // Disable message polling
+    if (!enable && dev->disableMessagePolling()) {
+        return icsneo_error_success;
+    }
+    
+    return icsneo_error_enable_message_polling_failed;
+}
+
+ICSNEO_API icsneo_error_t icsneo_get_message_polling(icsneo_device_t* device, bool* is_enabled) {
+    if (!device || !is_enabled) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    *is_enabled = dev->isMessagePollingEnabled();
     
     return icsneo_error_success;
 }
