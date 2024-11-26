@@ -290,3 +290,13 @@ ICSNEO_API icsneo_error_t icsneo_get_message_polling_limit(icsneo_device_t* devi
     
     return icsneo_error_success;
 }
+
+ICSNEO_API icsneo_error_t icsneo_get_message_count(icsneo_device_t* device, uint32_t* count)  {
+    if (!device || !count) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    *count = static_cast<uint32_t>(dev->getCurrentMessageCount());
+    
+    return icsneo_error_success;
+}

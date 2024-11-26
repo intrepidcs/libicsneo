@@ -234,6 +234,15 @@ ICSNEO_API icsneo_error_t icsneo_set_message_polling_limit(icsneo_device_t* devi
 */
 ICSNEO_API icsneo_error_t icsneo_get_message_polling_limit(icsneo_device_t* device, uint32_t* limit);
 
+/** @brief Get the message count of a device
+ * 
+ * @param[in] icsneo_device_t device The device to get the message count of.
+ * @param[out] uint32_t* count Pointer to a uint32_t to copy the message count into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_get_message_count(icsneo_device_t* device, uint32_t* count);
+
 
 #ifdef __cplusplus
 }
