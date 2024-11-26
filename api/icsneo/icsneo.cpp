@@ -100,17 +100,17 @@ ICSNEO_API icsneo_error_t icsneo_open(icsneo_device_t* device) {
     // Go online
     if ((device->options & icsneo_open_options_go_online) == icsneo_open_options_go_online && !dev->goOnline()) {
         dev->close();
-        return icsneo_error_open_gonline_failed;
+        return icsneo_error_go_online_failed;
     }
     // Enable message polling
     if ((device->options & icsneo_open_options_enable_message_polling) == icsneo_open_options_enable_message_polling && !dev->enableMessagePolling()) {
         dev->close();
-        return icsneo_error_open_message_polling_failed;
+        return icsneo_error_enable_message_polling_failed;
     }
     // Sync RTC
     if ((device->options & icsneo_open_options_sync_rtc) == icsneo_open_options_sync_rtc && !dev->setRTC(std::chrono::system_clock::now())) {
         dev->close();
-        return icsneo_error_open_sync_rtc_failed;
+        return icsneo_error_sync_rtc_failed;
     }
     return icsneo_error_success;
 }

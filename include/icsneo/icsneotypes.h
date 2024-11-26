@@ -11,21 +11,34 @@ extern "C" {
 
 #include <stdint.h>
 
+/** @brief
+ * Options for opening a device. See icsneo_open() for more info.
+ */
 typedef enum _icsneo_open_options_t {
+    // No options
     icsneo_open_options_none = 0x0,
+    // After opening, go online
     icsneo_open_options_go_online = 0x1,
+    // After opening, enable message polling
     icsneo_open_options_enable_message_polling = 0x2,
+    // After opening, sync RTC
     icsneo_open_options_sync_rtc = 0x4,
+    // After opening, enable auto update
     icsneo_open_options_enable_auto_update = 0x8,
+    // After opening, force update
     icsneo_open_options_force_update = 0x10,
 } _icsneo_open_options_t;
 
+/** @brief Integer representation of _icsneo_open_options_t enum. 
+ * 
+ * This is used for easier ABI compatibility, especially between other languages.
+ */
 typedef uint32_t icsneo_open_options_t;
 
 
-
-// This enum used to be a bitfield, but has since become an enum as we have more than 32 devices
-// Adding something? Make sure you update the type string and C-compatible defines below!
+/** @brief
+ * Intrepid hardware device types, useful for filtering out or identifying devices.
+*/
 typedef enum _icsneo_devicetype_t {
     // Unknown device type
     icsneo_devicetype_unknown,
@@ -139,6 +152,10 @@ typedef enum _icsneo_devicetype_t {
     icsneo_devicetype_maxsize,
 } _icsneo_devicetype_t;
 
+/** @brief Integer representation of _icsneo_devicetype_t enum. 
+ * 
+ * This is used for easier ABI compatibility, especially between other languages.
+ */
 typedef uint32_t icsneo_devicetype_t;
 
 // Make sure icsneo_devicetype_t is never smaller than the actual enum

@@ -37,26 +37,40 @@ extern "C" {
  */
 typedef struct icsneo_device_t icsneo_device_t;
 
+
+/** @brief Error codes for icsneo functions.
+ */
 typedef enum _icsneo_error_t {
+    // Function was successful
     icsneo_error_success,
+    // Invalid parameters, typically because of a NULL reference.
     icsneo_error_invalid_parameters,
+    // Error opening the device.
     icsneo_error_open_failed,
-    icsneo_error_open_gonline_failed,
-    icsneo_error_open_message_polling_failed,
-    icsneo_error_open_sync_rtc_failed,
+    // Error going online.
+    icsneo_error_go_online_failed,
+    // Error enabling message polling.
+    icsneo_error_enable_message_polling_failed,
+    // Error syncing RTC.
+    icsneo_error_sync_rtc_failed,
 } _icsneo_error_t;
 
+/** @brief Integer representation of _icsneo_error_t enum. 
+ * 
+ * This is used for easier ABI compatibility, especially between other languages.
+ */
 typedef uint32_t icsneo_error_t;
 
 
 
 /** @brief Find all hardware attached to the system. 
  * 
- * @param[out] icsneo_device_t array of devices to be filled with found devices. Last element will be NULL.
+ * @param[out] icsneo_device_t array of devices to be filled with found devices. 
+ *  Undefined behaviour if index is out of range of devices_count.
  * @param[in,out] uint32_t* devices_count Size of the devices array. Modified with the number of devices found.
  * @param[in] void* reserved Reserved for future use. Currently unused and must be set to NULL.
  * 
- * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_failure otherwise.
+ * @return icsneo_error_t icsneo_error_success if successful.
 */
 ICSNEO_API icsneo_error_t icsneo_find(icsneo_device_t** devices, uint32_t* devices_count, void* reserved);
 
@@ -110,8 +124,33 @@ ICSNEO_API icsneo_error_t icsneo_open(icsneo_device_t* device);
  */
 ICSNEO_API icsneo_error_t icsneo_close(icsneo_device_t* device);
 
+/** @brief Get the description of a device
+ * 
+ * @param[in] icsneo_device_t device The device to get the description of.
+ * @param[out] const char* value Pointer to a buffer to copy the description into. Null terminated.
+ * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the description.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
 ICSNEO_API icsneo_error_t icsneo_device_describe(icsneo_device_t* device, const char* value, uint32_t* value_length);
+
+/** @brief Get the description type a device
+ * 
+ * @param[in] icsneo_device_t device The device to get the description of.
+ * @param[out] icsneo_devicetype_t* value Pointer to an icsneo_devicetype_t to copy the type into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
 ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_devicetype_t* value);
+
+/** @brief Get the description of a device
+ * 
+ * @param[in] icsneo_device_t device The device to get the description of.
+ * @param[out] const char* value Pointer to a buffer to copy the description into. Null terminated.
+ * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the description.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
 ICSNEO_API icsneo_error_t icsneo_device_serial(icsneo_device_t* device, const char* value, uint32_t* value_length);
 
 #ifdef __cplusplus
