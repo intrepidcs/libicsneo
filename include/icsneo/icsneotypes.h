@@ -1,5 +1,10 @@
 #pragma once
 
+// _Static_assert support, this can be removed once C23 is the "standard"
+#if __STDC_VERSION__ < 202311L && !defined(__cplusplus)
+#include <assert.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -128,9 +133,20 @@ typedef enum _icsneo_devicetype_t {
     icsneo_devicetype_vividcan,
     // neoOBD2 SIM
     icsneo_devicetype_obd2_sim,
+
+
+    // Must be last entry
+    icsneo_devicetype_maxsize,
 } _icsneo_devicetype_t;
 
-typedef uint64_t icsneo_devicetype_t;
+typedef uint32_t icsneo_devicetype_t;
+
+// Make sure icsneo_devicetype_t is never smaller than the actual enum
+#if __STDC_VERSION__ < 202311L && !defined(__cplusplus)
+_Static_assert(sizeof(_icsneo_devicetype_t) <= sizeof(icsneo_devicetype_t));
+#else // C++ or C23
+static_assert(sizeof(_icsneo_devicetype_t) <= sizeof(icsneo_devicetype_t));
+#endif
 
 #ifdef __cplusplus
 }
