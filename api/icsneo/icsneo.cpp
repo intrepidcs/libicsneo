@@ -17,6 +17,42 @@ typedef struct icsneo_device_t {
 
 static std::deque<std::shared_ptr<icsneo_device_t>> g_devices;
 
+ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length) {
+    if (!value || !value_length) {
+        return icsneo_error_invalid_parameters;
+    }
+
+    std::string error;
+    switch (error_code) {
+        case icsneo_error_success:
+            error = "success";
+            break;
+        case icsneo_error_invalid_parameters:
+            error = "invalid parameters";
+            break;
+        case icsneo_error_open_failed:
+            error = "open failed";
+            break;
+        case icsneo_error_go_online_failed:
+            error = "go online failed";
+            break;
+        case icsneo_error_enable_message_polling_failed:
+            error = "enable message polling failed";
+            break;
+        case icsneo_error_sync_rtc_failed:
+            error = "sync RTC failed";
+            break;
+        // Don't default, let the compiler warn us if we forget to handle an error code
+    }
+    // Find the minimum length of the error string and set value_length
+    auto min_length = std::minmax(static_cast<uint32_t>(error.length()), *value_length).first;
+    *value_length = min_length;
+    // Copy the string into value
+    strncpy(const_cast<char *>(value), error.c_str(), min_length);
+
+    return icsneo_error_success;
+}
+
 ICSNEO_API icsneo_error_t icsneo_find(icsneo_device_t** devices, uint32_t* devices_count, void* reserved) {
     if (!devices || !devices_count) {
         return icsneo_error_invalid_parameters;

@@ -40,6 +40,8 @@ typedef struct icsneo_device_t icsneo_device_t;
 
 
 /** @brief Error codes for icsneo functions.
+ *
+ * This enum is guaranteed to be ABI stable, any new values will be appended to the end. 
  */
 typedef enum _icsneo_error_t {
     // Function was successful
@@ -63,6 +65,15 @@ typedef enum _icsneo_error_t {
 typedef uint32_t icsneo_error_t;
 
 
+/** @brief Get the error string for an error code.
+ * 
+ * @param[in] icsneo_device_t device The device to get the description of.
+ * @param[out] const char* value Pointer to a buffer to copy the description into. Null terminated.
+ * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the description.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length);
 
 /** @brief Find all hardware attached to the system. 
  * 
