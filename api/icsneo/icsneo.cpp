@@ -53,6 +53,21 @@ ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const cha
     return icsneo_error_success;
 }
 
+ICSNEO_API icsneo_error_t icsneo_device_type_from_type(icsneo_devicetype_t device_type, const char* value, uint32_t* value_length) {
+    if (!value || !value_length) {
+        return icsneo_error_invalid_parameters;
+    }
+
+    auto device_type_str = DeviceType::getGenericProductName(device_type);
+    // Find the minimum length of the device type string and set value_length
+    auto min_length = std::minmax(static_cast<uint32_t>(device_type_str.length()), *value_length).first;
+    *value_length = min_length;
+    // Copy the string into value
+    strncpy(const_cast<char *>(value), device_type_str.c_str(), min_length);
+
+    return icsneo_error_success;
+}
+
 ICSNEO_API icsneo_error_t icsneo_find(icsneo_device_t** devices, uint32_t* devices_count, void* reserved) {
     if (!devices || !devices_count) {
         return icsneo_error_invalid_parameters;

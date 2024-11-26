@@ -75,6 +75,16 @@ typedef uint32_t icsneo_error_t;
  */
 ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length);
 
+/** @brief Get the device type string for a icsneo_devicetype_t.
+ * 
+ * @param[in] icsneo_devicetype_t device_type The device type to get the description of.
+ * @param[out] const char* value Pointer to a buffer to copy the description into. Null terminated.
+ * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the description.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_device_type_from_type(icsneo_devicetype_t device_type, const char* value, uint32_t* value_length);
+
 /** @brief Find all hardware attached to the system. 
  * 
  * @param[out] icsneo_device_t array of devices to be filled with found devices. 
