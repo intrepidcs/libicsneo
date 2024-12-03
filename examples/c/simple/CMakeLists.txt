@@ -1,5 +1,2 @@
 add_executable(libicsneo-simple-example src/main.c)
-if(UNIX)
-	target_link_libraries(libicsneo-simple-example ${CMAKE_DL_LIBS})
-endif()
 target_link_libraries(libicsneo-simple-example icsneo)
