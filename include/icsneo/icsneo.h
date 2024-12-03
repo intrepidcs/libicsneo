@@ -24,11 +24,15 @@ extern "C" {
     #pragma warning Unknown dynamic link import/export semantics.
 #endif
 
+#ifdef ICSNEO_BUILD_STATIC
+#define ICSNEO_API
+#else
 #ifdef ICSNEO_EXPORTS
 #define ICSNEO_API EXPORT
 #else
 #define ICSNEO_API IMPORT
-#endif
+#endif // ICSNEO_EXPORTS
+#endif // ICSNEO_BUILD_STATIC
 
 /** @brief icsneo_device_t opaque struct definition
  * 

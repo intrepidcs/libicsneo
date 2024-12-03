@@ -160,7 +160,7 @@ typedef uint32_t icsneo_devicetype_t;
 
 // Make sure icsneo_devicetype_t is never smaller than the actual enum
 #if __STDC_VERSION__ < 202311L && !defined(__cplusplus)
-_Static_assert(sizeof(_icsneo_devicetype_t) <= sizeof(icsneo_devicetype_t));
+_Static_assert(sizeof(_icsneo_devicetype_t) <= sizeof(icsneo_devicetype_t), "icsneo_devicetype_t is too small");
 #else // C++ or C23
 static_assert(sizeof(_icsneo_devicetype_t) <= sizeof(icsneo_devicetype_t));
 #endif
