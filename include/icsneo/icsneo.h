@@ -285,6 +285,8 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
  */
 ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_message_t* message, bool* is_valid);
 
+ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_message_t* message, uint32_t* type);
+
 #ifdef __cplusplus
 }
 #endif

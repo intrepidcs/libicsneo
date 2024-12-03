@@ -368,3 +368,12 @@ ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_message_t* message, boo
     
     return icsneo_error_success;
 }
+
+ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_message_t* message, uint32_t* type) {
+    if (!message || !type) {
+        return icsneo_error_invalid_parameters;
+    }
+    *type = (uint32_t)message->message->type;
+    
+    return icsneo_error_success;
+}
