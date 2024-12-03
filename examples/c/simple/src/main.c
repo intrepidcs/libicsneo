@@ -69,6 +69,13 @@ int main(int argc, char* argv[]) {
         if (res != icsneo_error_success) {
             return print_error_code("Failed to get device description", res);
         };
+        // Get timestamp resolution of the device
+        uint32_t timestamp_resolution = 0;
+        res = icsneo_get_timestamp_resolution(device, &timestamp_resolution);
+        if (res != icsneo_error_success) {
+            return print_error_code("Failed to get timestamp resolution", res);
+        }
+        printf("%s timestamp resolution: %uns\n", description, timestamp_resolution);
 
         icsneo_open_options_t options = icsneo_open_options_none;
         res = icsneo_get_open_options(device, &options);
