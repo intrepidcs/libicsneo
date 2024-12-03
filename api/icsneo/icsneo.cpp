@@ -316,11 +316,21 @@ ICSNEO_API icsneo_error_t icsneo_get_timestamp_resolution(icsneo_device_t* devic
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count) {
+ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count, uint32_t timeout_ms) {    
     if (!device || !messages || !messages_count) {
         return icsneo_error_invalid_parameters;
     }
     auto dev = device->device;
+    // Wait for messages
+    auto start_time = std::chrono::steady_clock::now();
+    while (timeout_ms && std::chrono::duration_cast<std::chrono::milliseconds>(
+               std::chrono::steady_clock::now() - start_time)
+                   .count() < timeout_ms &&
+           dev->getCurrentMessageCount() == 0) {
+        // Lets make sure we don't busy loop, we don't have any messages yet
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        continue;
+    }
     // Get the messages
     auto results = dev->getMessages();
     auto& queried_messages = results.first;
@@ -329,8 +339,8 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
         return icsneo_error_get_messages_failed;
     }
     // Find the minimum number of messages
-    uint32_t message_size = std::minmax(static_cast<uint32_t>(queried_messages.size()), *messages_count).first;
-    *messages_count = message_size;
+    uint32_t min_size = std::minmax(static_cast<uint32_t>(queried_messages.size()), *messages_count).first;
+    *messages_count = min_size;
 
     // Copy the messages into our global message container
     g_messages.clear();
@@ -338,6 +348,11 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
         auto message_t = std::make_shared<icsneo_message_t>();
         message_t->message = message;
         g_messages.push_back(message_t);
+    }
+
+    // Copy the messages into the output array
+    for (uint32_t i = 0; i < min_size; i++) {
+        messages[i] = g_messages[i].get();
     }
     
     return icsneo_error_success;

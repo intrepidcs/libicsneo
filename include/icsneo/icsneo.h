@@ -270,10 +270,11 @@ ICSNEO_API icsneo_error_t icsneo_get_timestamp_resolution(icsneo_device_t* devic
  * @param[out] icsneo_message_t** messages Pointer to an array of icsneo_message_t to copy the messages into.
  *  Undefined behaviour if index is out of range of messages_count.
  * @param[in,out] uint32_t* messages_count Size of the messages array. Modified with the number of messages found.
+ * @param[in] uint32_t timeout_ms The timeout in milliseconds to wait for messages. A value of 0 indicates a non-blocking call.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count);
+ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count, uint32_t timeout_ms);
 
 /** @brief Check if a message is valid
  * 
