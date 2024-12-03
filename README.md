@@ -24,6 +24,7 @@ each of the respective APIs.
 - RAD-Comet 2
 - RAD-Comet 3
 - RAD-Galaxy
+- RAD-Galaxy 2
 - RAD-Gigastar
 - RAD-Gigastar 2
 - RAD-Moon 2

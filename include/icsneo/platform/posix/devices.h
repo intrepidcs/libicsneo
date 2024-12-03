@@ -19,6 +19,7 @@
 #include "icsneo/device/tree/radmoont1s/radmoont1s.h"
 #include "icsneo/device/tree/radepsilon/radepsilon.h"
 #include "icsneo/device/tree/radgalaxy/radgalaxy.h"
+#include "icsneo/device/tree/radgalaxy2/radgalaxy2.h"
 #include "icsneo/device/tree/radgigastar/radgigastar.h"
 #include "icsneo/device/tree/radgigastar2/radgigastar2.h"
 #include "icsneo/device/tree/radjupiter/radjupiter.h"
