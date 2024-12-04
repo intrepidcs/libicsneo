@@ -431,7 +431,7 @@ ICSNEO_API icsneo_error_t icsneo_get_events(icsneo_event_t** events, uint32_t* e
         };
         g_events.push_back(e);
     }
-    // Copy the device events references into the events array
+    // Copy the global events references into the events array
     for (uint32_t i = 0; i < min_size; i++) {
         events[i] = &g_events[i];
     }
