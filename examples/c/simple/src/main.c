@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
             return print_error_code("Failed to get open options", res);
         }
         // Disable Syncing RTC
-        //options &= ~icsneo_open_options_sync_rtc;
+        options &= ~icsneo_open_options_sync_rtc;
         res = icsneo_set_open_options(device, options);
         if (res != icsneo_error_success) {
             print_device_events(device, description);
@@ -206,7 +206,34 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
         if (res != icsneo_error_success) {
             return print_error_code("Failed to get message bus type", res);
         }
-        printf("%d Message type: %u bus type: %u\n", i, msg_type, bus_type);
+        printf("\t%d) Message type: %u bus type: %u\n", i, msg_type, bus_type);
+        if (bus_type == icsneo_msg_bus_type_can) {
+            uint32_t arbid = 0;
+            uint32_t dlc = 0;
+            bool is_remote = false;
+            bool is_canfd = false;
+            bool is_extended = false;
+            uint8_t data[64] = {0};
+            uint32_t data_length = 64;
+            uint32_t result = icsneo_can_message_arbid(device, message, &arbid);
+            result += icsneo_can_message_dlc_on_wire(device, message, &dlc);
+            result += icsneo_can_message_is_remote(device, message, &is_remote);
+            result += icsneo_can_message_is_canfd(device, message, &is_canfd);
+            result += icsneo_can_message_is_extended(device, message, &is_extended);
+            result += icsneo_message_get_data(device, message, data, &data_length);
+            if (result != icsneo_error_success) {
+                printf("\tFailed get get CAN parameters (error: %u) for index %u\n", result, i);
+                continue;
+            }
+            printf("\t  ArbID: 0x%x\t DLC: %u\t Remote: %d\t CANFD: %d\t Extended: %d\t Data length: %u\n", arbid, dlc, is_remote, is_canfd, is_extended, data_length);
+            printf("\t  Data: [");
+            for (uint32_t x = 0; x < data_length; x++) {
+                printf(" 0x%x", data[x]);
+            }
+            printf(" ]\n");
+            continue;
+        }
+        
     }
 
     return icsneo_error_success;

@@ -327,6 +327,98 @@ ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsne
  */
 ICSNEO_API icsneo_error_t icsneo_message_get_bus_type(icsneo_device_t* device, icsneo_message_t* message, icsneo_msg_bus_type_t* bus_type);
 
+/** @brief Get the data bytes of a message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] uint8_t* data Pointer to a uint8_t to copy the data bytes into.
+ * @param[out] uint32_t* data_length Pointer to a uint32_t to copy the length of the data into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_message_get_data(icsneo_device_t* device, icsneo_message_t* message, uint8_t* data, uint32_t* data_length);
+
+/** @brief Get the Arbitration ID of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] uint32_t* value Pointer to a uint32_t to copy the Arbitration ID into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_arbid(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value);
+
+/** @brief Get the DLC on wire of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] uint32_t* value Pointer to a uint32_t to copy the DLC on wire into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value);
+
+/** @brief Get the remote status of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] bool* value Pointer to a uint32_t to copy the remote status into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_is_remote(icsneo_device_t* device, icsneo_message_t* message, bool* value);
+
+/** @brief Get the extended status of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] bool* value Pointer to a uint32_t to copy the extended status into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_is_extended(icsneo_device_t* device, icsneo_message_t* message, bool* value);
+
+/** @brief Get the CANFD status of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] bool* value Pointer to a uint32_t to copy the CANFD status into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_is_canfd(icsneo_device_t* device, icsneo_message_t* message, bool* value);
+
+/** @brief Get the baudrate switch status of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] bool* value Pointer to a uint32_t to copy the baudrate switch status into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_baudrate_switch(icsneo_device_t* device, icsneo_message_t* message, bool* value);
+
+/** @brief Get the error state indicator status of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] bool* value Pointer to a uint32_t to copy the error state indicator status into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_error_state_indicator(icsneo_device_t* device, icsneo_message_t* message, bool* value);
+
+
+/*
+	uint32_t arbid;
+	uint8_t dlcOnWire;
+	bool isRemote = false; // Not allowed if CAN FD
+	bool isExtended = false;
+	bool isCANFD = false;
+	bool baudrateSwitch = false; // CAN FD only
+	bool errorStateIndicator = false; // CAN FD only
+*/
+
 /** @brief Get the global events not specifically related to a device.
  * 
  * @param[out] icsneo_event_t** events Pointer to an array of icsneo_event_t to copy the events into.
