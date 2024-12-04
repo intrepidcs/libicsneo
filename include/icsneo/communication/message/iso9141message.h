@@ -10,6 +10,7 @@ namespace icsneo {
 
 class ISO9141Message : public BusMessage {
 public:
+	const icsneo_msg_bus_type_t getBusType() const final { return icsneo_msg_bus_type_iso9141; }
 	std::array<uint8_t, 3> header;
 	bool isInit = false;
 	bool isBreak = false;

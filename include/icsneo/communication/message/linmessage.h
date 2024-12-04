@@ -36,6 +36,8 @@ struct LINStatusFlags {
 
 class LINMessage : public BusMessage {
 public:
+	const icsneo_msg_bus_type_t getBusType() const final { return icsneo_msg_bus_type_lin; }
+	
 	enum class Type : uint8_t {
 		NOT_SET = 0,
 		LIN_COMMANDER_MSG,

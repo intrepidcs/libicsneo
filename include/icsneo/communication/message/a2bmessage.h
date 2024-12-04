@@ -22,6 +22,8 @@ using ChannelMap = std::unordered_map<uint8_t, uint8_t>;
 
 class A2BMessage : public BusMessage {
 public:
+	const icsneo_msg_bus_type_t getBusType() const final { return icsneo_msg_bus_type_a2b; }
+
 	static constexpr size_t maxAudioBufferSize = 2048;
 
 	enum class TDMMode : uint8_t {

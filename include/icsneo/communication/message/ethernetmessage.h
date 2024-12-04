@@ -33,6 +33,8 @@ struct MACAddress {
 
 class EthernetMessage : public BusMessage {
 public:
+	const icsneo_msg_bus_type_t getBusType() const final { return icsneo_msg_bus_type_ethernet; }
+
 	bool preemptionEnabled = false;
 	uint8_t preemptionFlags = 0;
 	bool fcsAvailable = false;

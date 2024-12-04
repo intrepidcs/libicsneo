@@ -76,7 +76,7 @@ public:
 
 	const icsneo_msg_type_t getMsgType() const final { return icsneo_msg_type_bus; }
 
-	//virtual const icsneo_msg_bus_type_t getBusType() const = 0;
+	virtual const icsneo_msg_bus_type_t getBusType() const = 0;
 
 	uint16_t description = 0;
 	bool transmitted = false;

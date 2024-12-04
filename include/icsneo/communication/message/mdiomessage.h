@@ -9,6 +9,8 @@ namespace icsneo {
 
 class MDIOMessage : public BusMessage {
 public:
+	const icsneo_msg_bus_type_t getBusType() const final { return icsneo_msg_bus_type_mdio; }
+	
 	enum class Clause : uint8_t {
 		Clause45 = 0,
 		Clause22 = 1

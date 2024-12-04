@@ -9,7 +9,7 @@
 
 namespace icsneo {
 
-class ExtendedDataMessage : public BusMessage {
+class ExtendedDataMessage : public InternalMessage {
 public:
 	#pragma pack(push, 2)
 	struct ExtendedDataHeader {

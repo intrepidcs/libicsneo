@@ -9,6 +9,8 @@ namespace icsneo {
 
 class CANMessage : public BusMessage {
 public:
+	const icsneo_msg_bus_type_t getBusType() const final { return icsneo_msg_bus_type_can; }
+
 	uint32_t arbid;
 	uint8_t dlcOnWire;
 	bool isRemote = false; // Not allowed if CAN FD
