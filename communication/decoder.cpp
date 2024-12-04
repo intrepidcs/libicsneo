@@ -230,7 +230,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					// They come in as CAN but we will handle them in the device rather than
 					// passing them onto the user.
 					if(packet->data.size() < 24) {
-						auto rawmsg = std::make_shared<RawMessage>(Network::NetID::Device);
+						auto rawmsg = std::make_shared<InternalMessage>(Network::NetID::Device);
 						result = rawmsg;
 						rawmsg->data = packet->data;
 						return true;
@@ -244,7 +244,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 
 					// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
 					// The resolution depends on the device
-					auto* raw = dynamic_cast<RawMessage*>(result.get());
+					auto* raw = dynamic_cast<InternalMessage*>(result.get());
 					if(raw == nullptr) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 						return false; // A nullptr was returned, the packet was malformed
@@ -255,7 +255,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				}
 				case Network::NetID::DeviceStatus: {
 					// Just pass along the data, the device needs to handle this itself
-					result = std::make_shared<RawMessage>(packet->network, packet->data);
+					result = std::make_shared<InternalMessage>(packet->network, packet->data);
 					return true;
 				}
 				case Network::NetID::RED_INT_MEMORYREAD: {
@@ -483,6 +483,6 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 	}
 
 	// For the moment other types of messages will automatically be decoded as raw messages
-	result = std::make_shared<RawMessage>(packet->network, packet->data);
+	result = std::make_shared<InternalMessage>(packet->network, packet->data);
 	return true;
 }

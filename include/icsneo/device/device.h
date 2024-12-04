@@ -835,7 +835,7 @@ protected:
 
 	void handleInternalMessage(std::shared_ptr<Message> message);
 
-	virtual void handleDeviceStatus(const std::shared_ptr<RawMessage>&) {}
+	virtual void handleDeviceStatus(const std::shared_ptr<InternalMessage>&) {}
 
 	neodevice_t& getWritableNeoDevice() { return data; }
 

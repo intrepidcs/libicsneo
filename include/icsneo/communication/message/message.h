@@ -57,12 +57,12 @@ public:
 	uint64_t timestamp = 0;
 };
 
-class RawMessage : public Message {
+class InternalMessage : public Message {
 public:
-	RawMessage(Message::Type type = Message::Type::RawMessage) : Message(type) {}
-	RawMessage(Message::Type type, Network net) : Message(type), network(net) {}
-	RawMessage(Network net) : Message(Message::Type::RawMessage), network(net) {}
-	RawMessage(Network net, std::vector<uint8_t> d) : Message(Message::Type::RawMessage), network(net), data(d) {}
+	InternalMessage(Message::Type type = Message::Type::RawMessage) : Message(type) {}
+	InternalMessage(Message::Type type, Network net) : Message(type), network(net) {}
+	InternalMessage(Network net) : Message(Message::Type::RawMessage), network(net) {}
+	InternalMessage(Network net, std::vector<uint8_t> d) : Message(Message::Type::RawMessage), network(net), data(d) {}
 
 	virtual const icsneo_msg_type_t getMsgType() const { return icsneo_msg_type_internal; }
 
@@ -70,9 +70,9 @@ public:
 	std::vector<uint8_t> data;
 };
 
-class BusMessage : public RawMessage {
+class BusMessage : public InternalMessage {
 public:
-	BusMessage() : RawMessage(Message::Type::Frame) {}
+	BusMessage() : InternalMessage(Message::Type::Frame) {}
 
 	const icsneo_msg_type_t getMsgType() const final { return icsneo_msg_type_bus; }
 

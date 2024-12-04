@@ -738,7 +738,7 @@ int icsneo_getDeviceStatus(const neodevice_t* device, void* status, size_t* size
 	if(!msg) // Did not receive a message
 		return false;
 	
-	auto rawMessage = std::static_pointer_cast<RawMessage>(msg);
+	auto rawMessage = std::static_pointer_cast<InternalMessage>(msg);
 	if(!rawMessage || (rawMessage->network.getNetID() != Network::NetID::DeviceStatus))
 		return false;
 

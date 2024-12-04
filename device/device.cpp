@@ -472,7 +472,7 @@ int8_t Device::prepareScriptLoad() {
 			return false;
 		}
 
-		const auto resp = std::static_pointer_cast<RawMessage>(generic);
+		const auto resp = std::static_pointer_cast<InternalMessage>(generic);
 		retVal = (int8_t)resp->data[0];
 	}
 
@@ -1719,7 +1719,7 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 			latestResetStatus = std::static_pointer_cast<ResetStatusMessage>(message);
 			break;
 		case Message::Type::RawMessage: {
-			auto rawMessage = std::static_pointer_cast<RawMessage>(message);
+			auto rawMessage = std::static_pointer_cast<InternalMessage>(message);
 			switch(rawMessage->network.getNetID()) {
 				case Network::NetID::Device: {
 					// Device is not guaranteed to be a CANMessage, it might be a RawMessage
@@ -1895,7 +1895,7 @@ std::optional<std::chrono::time_point<std::chrono::system_clock>> Device::getRTC
 	if(!generic) // Did not receive a message
 		return std::nullopt;
 
-	auto rawMes = std::dynamic_pointer_cast<RawMessage>(generic);
+	auto rawMes = std::dynamic_pointer_cast<InternalMessage>(generic);
 	if(!rawMes)
 		return std::nullopt;
 

@@ -8,9 +8,9 @@
 
 namespace icsneo {
 
-class ReadSettingsMessage : public RawMessage {
+class ReadSettingsMessage : public InternalMessage {
 public:
-	ReadSettingsMessage() : RawMessage(Message::Type::ReadSettings, Network::NetID::ReadSettings) {}
+	ReadSettingsMessage() : InternalMessage(Message::Type::ReadSettings, Network::NetID::ReadSettings) {}
 	
 	enum class Response : uint8_t {
 		OK = 0,

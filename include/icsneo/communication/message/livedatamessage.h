@@ -8,9 +8,9 @@
 #include "icsneo/communication/livedata.h"
 
 namespace icsneo {
-class LiveDataMessage : public RawMessage {
+class LiveDataMessage : public InternalMessage {
 public:
-	LiveDataMessage() : RawMessage(Message::Type::LiveData, Network::NetID::ExtendedCommand) {}
+	LiveDataMessage() : InternalMessage(Message::Type::LiveData, Network::NetID::ExtendedCommand) {}
 	LiveDataHandle handle;
 	LiveDataCommand cmd;
 };

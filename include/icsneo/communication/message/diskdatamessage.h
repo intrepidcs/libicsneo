@@ -7,9 +7,9 @@
 
 namespace icsneo {
 
-class DiskDataMessage : public RawMessage {
+class DiskDataMessage : public InternalMessage {
 public:
-	DiskDataMessage(std::vector<uint8_t>&& d) : RawMessage(Network::NetID::DiskData) {
+	DiskDataMessage(std::vector<uint8_t>&& d) : InternalMessage(Network::NetID::DiskData) {
 		data = std::move(d);
 	}
 };
