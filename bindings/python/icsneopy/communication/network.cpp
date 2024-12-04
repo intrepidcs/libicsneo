@@ -167,7 +167,30 @@ void init_network(pybind11::module_& m) {
 		.value("Any", Network::NetID::Any)
 		.value("Invalid", Network::NetID::Invalid);
 	
-    network.def(pybind11::init<Network::NetID>());
+	pybind11::enum_<Network::Type>(network, "Type")
+		.value("Invalid", Network::Type::Invalid)
+		.value("Internal", Network::Type::Internal)
+		.value("CAN", Network::Type::CAN)
+		.value("LIN", Network::Type::LIN)
+		.value("FlexRay", Network::Type::FlexRay)
+		.value("MOST", Network::Type::MOST)
+		.value("Ethernet", Network::Type::Ethernet)
+		.value("LSFTCAN", Network::Type::LSFTCAN)
+		.value("SWCAN", Network::Type::SWCAN)
+		.value("ISO9141", Network::Type::ISO9141)
+		.value("I2C", Network::Type::I2C)
+		.value("A2B", Network::Type::A2B)
+		.value("SPI", Network::Type::SPI)
+		.value("MDIO", Network::Type::MDIO)
+		.value("Any", Network::Type::Any)
+		.value("Other", Network::Type::Other);
+
+    network
+		.def(pybind11::init<Network::NetID>())
+		.def("__repr__", [](Network& self) { return Network::GetNetIDString(self.getNetID()); })
+		.def_static("get_net_id_string", &Network::GetNetIDString, pybind11::arg("netid"), pybind11::arg("expand") = true)
+		.def("get_net_id", &Network::getNetID)
+		.def("get_type", &Network::getType);
 }
 
 } // namespace icsneo 
