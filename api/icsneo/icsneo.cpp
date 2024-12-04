@@ -1,7 +1,7 @@
 #include <icsneo/icsneo.h>
 #include <icsneo/device/device.h>
 #include "icsneo/device/devicefinder.h"
-
+#include "icsneo/icsneocpp.h"
 #include "icsneo/communication/message/message.h"
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/message/linmessage.h"
@@ -16,6 +16,7 @@ using namespace icsneo;
 typedef struct icsneo_device_t {
     std::shared_ptr<Device> device;
     std::vector<std::shared_ptr<icsneo_message_t>> messages;
+    std::vector<icsneo_event_t> events;
 
     icsneo_open_options_t options;
 } icsneo_device_t;
@@ -24,8 +25,13 @@ typedef struct icsneo_message_t {
     std::shared_ptr<Message> message;
 } icsneo_message_t;
 
+typedef struct icsneo_event_t {
+    APIEvent event;
+} icsneo_event_t;
+
 
 static std::vector<std::shared_ptr<icsneo_device_t>> g_devices;
+static std::vector<icsneo_event_t> g_events;
 
 ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length) {
     if (!value || !value_length) {
@@ -350,7 +356,7 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
     uint32_t min_size = std::minmax(static_cast<uint32_t>(queried_messages.size()), *messages_count).first;
     *messages_count = min_size;
 
-    // Copy the messages into our global message container
+    // Copy the messages into our device message container
     device->messages.clear();
     for (auto& message : queried_messages) {
         auto message_t = std::make_shared<icsneo_message_t>();
@@ -406,3 +412,103 @@ ICSNEO_API icsneo_error_t icsneo_message_get_bus_type(icsneo_device_t* device, i
     
     return icsneo_error_success;
 }
+
+ICSNEO_API icsneo_error_t icsneo_get_events(icsneo_event_t** events, uint32_t* events_count) {
+    if (!events || !events_count) {
+        return icsneo_error_invalid_parameters;
+    }
+    // Clear the device events
+    g_events.clear();
+    // Get the global events
+    auto global_events = EventManager::GetInstance().get();
+    // Get the mininum number of events
+    auto min_size = std::minmax(static_cast<uint32_t>(global_events.size()), *events_count).first;
+    *events_count = min_size;
+    // GetEvents uses 0 as unlimited, where the API can't allocate anything.
+    if (min_size == 0) {
+        return icsneo_error_success;
+    }
+    // Copy the events into the global event container
+    for (uint32_t i = 0; i < min_size; i++) {
+        auto e = icsneo_event_t {
+            .event = global_events[i],
+        };
+        g_events.push_back(e);
+    }
+    // Copy the device events references into the events array
+    for (uint32_t i = 0; i < min_size; i++) {
+        events[i] = &g_events[i];
+    }
+
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_device_get_events(icsneo_device_t* device, icsneo_event_t** events, uint32_t* events_count) {
+    if (!device || !events || !events_count) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    // Setup the event filter
+    EventFilter filter(device->device.get());
+    // Clear the device events
+    device->events.clear();
+    // Get the mininum number of events
+    auto min_size = std::minmax(static_cast<uint32_t>(icsneo::EventCount(filter)), *events_count).first;
+    *events_count = min_size;
+    // GetEvents uses 0 as unlimited, where the API can't allocate anything.
+    if (min_size == 0) {
+        return icsneo_error_success;
+    }
+    // Copy the events into the device event container
+    auto device_events = icsneo::GetEvents(filter, min_size);
+    for (uint32_t i = 0; i < min_size; i++) {
+        auto e = icsneo_event_t {
+            .event = device_events[i],
+        };
+        device->events.push_back(e);
+    }
+    // Copy the device events references into the events array
+    for (uint32_t i = 0; i < min_size; i++) {
+        events[i] = &device->events[i];
+    }
+
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_event_get_description(icsneo_event_t* event, const char* value, uint32_t* value_length) {
+    if (!event || !value || !value_length) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if event is valid
+    auto ev = event->event;
+    
+    // Get and set the length
+    auto min_length = std::minmax(static_cast<uint32_t>(ev.describe().length()), *value_length).first;
+    *value_length = min_length;
+    // Copy the string into value
+    strncpy(const_cast<char *>(value), ev.describe().c_str(), min_length);
+
+    return icsneo_error_success;
+}
+
+/*
+	Type getType() const noexcept { return Type(eventStruct.eventNumber); }
+	Severity getSeverity() const noexcept { return Severity(eventStruct.severity); }
+	std::string getDescription() const noexcept { return std::string(eventStruct.description); }
+	const Device* getDevice() const noexcept { return device; } // Will return nullptr if this is an API-wide event
+	EventTimePoint getTimestamp() const noexcept { return timepoint; }
+	
+	void downgradeFromError() noexcept;
+
+	bool isForDevice(const Device* forDevice) const noexcept { return forDevice == device; }
+	bool isForDevice(std::string serial) const noexcept;
+	
+	// As opposed to getDescription, this will also add text such as "neoVI FIRE 2 CY2468 Error: " to fully describe the problem
+	std::string describe() const noexcept;
+	friend std::ostream& operator<<(std::ostream& os, const APIEvent& event) {
+		os << event.describe();
+		return os;
+	}
+
+	static const char* DescriptionForType(Type type);
+*/

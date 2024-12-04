@@ -42,7 +42,7 @@ int print_error_code(const char* message, icsneo_error_t error) {
         printf("%s: Failed to get string for error code %d with error code %d\n", message, error, res);
         return res;
     }
-    printf("%s: %s\n", message, error_str);
+    printf("%s: \"%s\" (%u)\n", message, error_str, error);
     return (int)error;
 }
 
@@ -61,6 +61,8 @@ int print_error_code(const char* message, icsneo_error_t error) {
  */
 int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t messages_count);
 
+void print_device_events(icsneo_device_t* device, const char* device_description);
+
 int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
@@ -74,42 +76,46 @@ int main(int argc, char* argv[]) {
     };
 
     printf("Found %u devices\n", devices_count);
-
+    // Loop over each device
     for (uint32_t i = 0; i < devices_count; i++) {
         icsneo_device_t* device = devices[i];
-
+        // Get description of the device
         const char description[255] = {0};
         uint32_t description_length = 255;
         res = icsneo_device_describe(device, description, &description_length);
         if (res != icsneo_error_success) {
+            print_device_events(device, description);
             return print_error_code("Failed to get device description", res);
         };
         // Get timestamp resolution of the device
         uint32_t timestamp_resolution = 0;
         res = icsneo_get_timestamp_resolution(device, &timestamp_resolution);
         if (res != icsneo_error_success) {
+            print_device_events(device, description);
             return print_error_code("Failed to get timestamp resolution", res);
         }
         printf("%s timestamp resolution: %uns\n", description, timestamp_resolution);
-
+        // Get/Set open options
         icsneo_open_options_t options = icsneo_open_options_none;
         res = icsneo_get_open_options(device, &options);
         if (res != icsneo_error_success) {
+            print_device_events(device, description);
             return print_error_code("Failed to get open options", res);
         }
         // Disable Syncing RTC
-        options &= ~icsneo_open_options_sync_rtc;
+        //options &= ~icsneo_open_options_sync_rtc;
         res = icsneo_set_open_options(device, options);
         if (res != icsneo_error_success) {
+            print_device_events(device, description);
             return print_error_code("Failed to set open options", res);
         }
-
+        // Open the device
         printf("Opening device: %s...\n", description);
         res = icsneo_open(device);
         if (res != icsneo_error_success) {
+            print_device_events(device, description);
             return print_error_code("Failed to open device", res);
         };
-
         // Wait for the bus to collect some messages, requires an active bus to get messages
         printf("Waiting 1 second for messages...\n");
         sleep_ms(1000);
@@ -119,23 +125,72 @@ int main(int argc, char* argv[]) {
         printf("Getting messages from device with timeout of 3000ms on %s...\n", description);
         res = icsneo_get_messages(device, messages, &message_count, 3000);
         if (res != icsneo_error_success) {
+            print_device_events(device, description);
             return print_error_code("Failed to get messages from device", res);
         };
         // Process the messages
         res = process_messages(device, messages, message_count);
         if (res != icsneo_error_success) {
+            print_device_events(device, description);
             return print_error_code("Failed to process messages", res);
         }
-
+        // Finally, close the device.
         printf("Closing device: %s...\n", description);
         res = icsneo_close(device);
         if (res != icsneo_error_success) {
+            print_device_events(device, description);
             return print_error_code("Failed to close device", res);
         };
+        // Print device events
+        print_device_events(device, description);
     }
     
     return 0;
 }
+
+void print_device_events(icsneo_device_t* device, const char* device_description) {
+    // Get device events
+    icsneo_event_t* events[1024] = {0};
+    uint32_t events_count = 1024;
+    icsneo_error_t res = icsneo_device_get_events(device, events, &events_count);
+    if (res != icsneo_error_success) {
+        (void)print_error_code("Failed to get device events", res);
+        return;
+    }
+    // Loop over each event and describe it.
+    for (uint32_t i = 0; i < events_count; i++) {
+        const char event_description[255] = {0};
+        uint32_t event_description_length = 255;
+        res = icsneo_event_get_description(events[i], event_description, &event_description_length);
+        if (res != icsneo_error_success) {
+            print_error_code("Failed to get event description", res);
+            continue;
+        }
+        printf("\t%s: Event %u: %s\n", device_description, i, event_description);
+    }
+
+    // Get global events
+    icsneo_event_t* global_events[1024] = {0};
+    uint32_t global_events_count = 1024;
+    res = icsneo_get_events(global_events, &global_events_count);
+    if (res != icsneo_error_success) {
+        (void)print_error_code("Failed to get global events", res);
+        return;
+    }
+    // Loop over each event and describe it.
+    for (uint32_t i = 0; i < global_events_count; i++) {
+        const char event_description[255] = {0};
+        uint32_t event_description_length = 255;
+        res = icsneo_event_get_description(global_events[i], event_description, &event_description_length);
+        if (res != icsneo_error_success) {
+            print_error_code("Failed to get global event description", res);
+            continue;
+        }
+        printf("\t%s: Global Event %u: %s\n", device_description, i, event_description);
+    }
+    printf("%s: Received %u events and %u global events\n", device_description, events_count, global_events_count);
+}
+
 int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t messages_count) {
     printf("Received %u messages\n", messages_count);
     // Print the type and bus type of each message

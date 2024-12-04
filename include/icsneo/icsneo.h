@@ -43,7 +43,22 @@ extern "C" {
 typedef struct icsneo_device_t icsneo_device_t;
 
 
+/** @brief icsneo_message_t opaque struct definition
+ * 
+ * This object represents a single event from the device.
+ * 
+ * @see icsneo_device_get_events
+ */
 typedef struct icsneo_message_t icsneo_message_t;
+
+
+/** @brief icsneo_event_t opaque struct definition
+ * 
+ * This object represents a single event from the device.
+ * 
+ * @see icsneo_device_get_events
+ */
+typedef struct icsneo_event_t icsneo_event_t;
 
 
 /** @brief Error codes for icsneo functions.
@@ -311,6 +326,37 @@ ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsne
  * @see icsneo_msg_bus_type_t
  */
 ICSNEO_API icsneo_error_t icsneo_message_get_bus_type(icsneo_device_t* device, icsneo_message_t* message, icsneo_msg_bus_type_t* bus_type);
+
+/** @brief Get the global events not specifically related to a device.
+ * 
+ * @param[out] icsneo_event_t** events Pointer to an array of icsneo_event_t to copy the events into.
+ *  Undefined behaviour if index is out of range of events_count.
+ * @param[in,out] uint32_t* events_count Size of the events array. Modified with the number of events found.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_get_events(icsneo_event_t** events, uint32_t* events_count);
+
+/** @brief Get the events of a device.
+ * 
+ * @param[in] icsneo_device_t device The device to get the events of.
+ * @param[out] icsneo_event_t** events Pointer to an array of icsneo_event_t to copy the events into.
+ *  Undefined behaviour if index is out of range of events_count.
+ * @param[in,out] uint32_t* events_count Size of the events array. Modified with the number of events found.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_device_get_events(icsneo_device_t* device, icsneo_event_t** events, uint32_t* events_count);
+
+/** @brief Get the error string for an error code.
+ * 
+ * @param[in] icsneo_event_t* event The event to get the description of.
+ * @param[out] const char* value Pointer to a buffer to copy the description into. Null terminated.
+ * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the description.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_event_get_description(icsneo_event_t* event, const char* value, uint32_t* value_length);
 
 #ifdef __cplusplus
 }
