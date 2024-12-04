@@ -424,10 +424,6 @@ ICSNEO_API icsneo_error_t icsneo_get_events(icsneo_event_t** events, uint32_t* e
     // Get the mininum number of events
     auto min_size = std::minmax(static_cast<uint32_t>(global_events.size()), *events_count).first;
     *events_count = min_size;
-    // GetEvents uses 0 as unlimited, where the API can't allocate anything.
-    if (min_size == 0) {
-        return icsneo_error_success;
-    }
     // Copy the events into the global event container
     for (uint32_t i = 0; i < min_size; i++) {
         auto e = icsneo_event_t {
