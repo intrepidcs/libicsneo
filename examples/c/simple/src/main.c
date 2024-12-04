@@ -20,7 +20,7 @@ void sleep_ms(uint32_t ms) {
 #if defined(_WIN32) || defined(_WIN64)
     Sleep(ms);
 #else
-    sleep(ms);
+    sleep(ms / 1000);
 #endif
 }
 
