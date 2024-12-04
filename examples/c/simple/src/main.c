@@ -100,6 +100,7 @@ int main(int argc, char* argv[]) {
 
         icsneo_message_t* messages[20000] = {0};
         uint32_t message_count = 20000;
+        printf("Getting messages from device with timeout of 3000ms on %s...\n", description);
         res = icsneo_get_messages(device, messages, &message_count, 3000);
         if (res != icsneo_error_success) {
             return print_error_code("Failed to get messages from device", res);
@@ -109,7 +110,7 @@ int main(int argc, char* argv[]) {
         for (uint32_t i = 0; i < message_count; i++) {
             icsneo_message_t* message = messages[i];
             uint32_t type = 0;
-            res = icsneo_message_get_type(message, &type);
+            res = icsneo_message_get_type(device, message, &type);
             if (res != icsneo_error_success) {
                 return print_error_code("Failed to get message type", res);
             }

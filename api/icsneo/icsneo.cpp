@@ -2,14 +2,20 @@
 #include <icsneo/device/device.h>
 #include "icsneo/device/devicefinder.h"
 
+#include "icsneo/communication/message/message.h"
+#include "icsneo/communication/message/canmessage.h"
+#include "icsneo/communication/message/linmessage.h"
+#include "icsneo/communication/message/ethernetmessage.h"
+
 #include <string>
-#include <deque>
+#include <vector>
 #include <algorithm>
 
 using namespace icsneo;
 
 typedef struct icsneo_device_t {
     std::shared_ptr<Device> device;
+    std::vector<std::shared_ptr<icsneo_message_t>> messages;
 
     icsneo_open_options_t options;
 } icsneo_device_t;
@@ -19,8 +25,7 @@ typedef struct icsneo_message_t {
 } icsneo_message_t;
 
 
-static std::deque<std::shared_ptr<icsneo_device_t>> g_devices;
-static std::deque<std::shared_ptr<icsneo_message_t>> g_messages;
+static std::vector<std::shared_ptr<icsneo_device_t>> g_devices;
 
 ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length) {
     if (!value || !value_length) {
@@ -180,6 +185,8 @@ ICSNEO_API icsneo_error_t icsneo_close(icsneo_device_t* device) {
         return icsneo_error_success;
     }
     dev->close();
+    // Clear out old messages
+    device->messages.clear();
     return icsneo_error_success;
 }
 
@@ -343,37 +350,46 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
     *messages_count = min_size;
 
     // Copy the messages into our global message container
-    g_messages.clear();
+    device->messages.clear();
     for (auto& message : queried_messages) {
         auto message_t = std::make_shared<icsneo_message_t>();
         message_t->message = message;
-        g_messages.push_back(message_t);
+        device->messages.push_back(message_t);
     }
 
     // Copy the messages into the output array
     for (uint32_t i = 0; i < min_size; i++) {
-        messages[i] = g_messages[i].get();
+        messages[i] = device->messages[i].get();
     }
     
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_message_t* message, bool* is_valid) {
+ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_device_t* device, icsneo_message_t* message, bool* is_valid) {
     if (!message || !is_valid) {
         return icsneo_error_invalid_parameters;
     }
-    *is_valid = std::find_if(g_messages.begin(), g_messages.end(), [&](const auto& msg) {
+    *is_valid = std::find_if(device->messages.begin(), device->messages.end(), [&](const auto& msg) {
         return msg->message == message->message;
-    }) == g_messages.end();
+    }) == device->messages.end();
     
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_message_t* message, uint32_t* type) {
+ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsneo_message_t* message, uint32_t* type) {
     if (!message || !type) {
         return icsneo_error_invalid_parameters;
     }
-    *type = (uint32_t)message->message->type;
+    // TODO: Fix this in the core so we actually get the message type from the message
+    if (dynamic_cast<CANMessage*>(message->message.get())) {
+        return 100;
+    } else if (dynamic_cast<LINMessage*>(message->message.get())) {
+        return 200;
+    } else if (dynamic_cast<EthernetMessage*>(message->message.get())) {
+        return 300;
+    } else {
+        return 999;
+    }
     
     return icsneo_error_success;
 }

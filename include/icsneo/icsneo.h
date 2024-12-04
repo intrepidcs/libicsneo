@@ -278,14 +278,15 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
 
 /** @brief Check if a message is valid
  * 
+ * @param[in] icsneo_device_t* device The device to check against.
  * @param[in] icsneo_message_t* message The message to check.
  * @param[out] bool* is_valid Pointer to a bool to copy the validity of the message into.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_message_t* message, bool* is_valid);
+ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_device_t* device, icsneo_message_t* message, bool* is_valid);
 
-ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_message_t* message, uint32_t* type);
+ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsneo_message_t* message, uint32_t* type);
 
 #ifdef __cplusplus
 }
