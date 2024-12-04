@@ -1951,7 +1951,7 @@ bool Device::setRTC(const std::chrono::time_point<std::chrono::system_clock>& ti
 	}
 
 	auto m51msg = std::dynamic_pointer_cast<Main51Message>(generic);
-	if(!m51msg || m51msg->data.size() != 1) {
+	if(!m51msg || m51msg->data.empty() || m51msg->data.size() > 2) {
 		report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
 		return false;
 	}
