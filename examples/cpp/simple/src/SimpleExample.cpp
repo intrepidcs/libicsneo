@@ -171,7 +171,7 @@ int main() {
 			switch(message->type) {
 				case icsneo::Message::Type::Frame: {
 					// A message of type Frame is guaranteed to be a Frame, so we can static cast safely
-					auto frame = std::static_pointer_cast<icsneo::Frame>(message);
+					auto frame = std::static_pointer_cast<icsneo::BusMessage>(message);
 					switch(frame->network.getType()) {
 						case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can: {
 							// A message of type CAN is guaranteed to be a CANMessage, so we can static cast safely

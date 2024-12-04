@@ -212,8 +212,8 @@ public:
 	int addMessageCallback(const std::shared_ptr<MessageCallback>& cb) { return com->addMessageCallback(cb); }
 	bool removeMessageCallback(int id) { return com->removeMessageCallback(id); }
 
-	bool transmit(std::shared_ptr<Frame> frame);
-	bool transmit(std::vector<std::shared_ptr<Frame>> frames);
+	bool transmit(std::shared_ptr<BusMessage> frame);
+	bool transmit(std::vector<std::shared_ptr<BusMessage>> frames);
 
 	void setWriteBlocks(bool blocks);
 

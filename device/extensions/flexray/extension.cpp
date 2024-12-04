@@ -48,7 +48,7 @@ void FlexRay::Extension::handleMessage(const std::shared_ptr<Message>& message) 
 	}
 }
 
-bool FlexRay::Extension::transmitHook(const std::shared_ptr<Frame>& frame, bool& success) {
+bool FlexRay::Extension::transmitHook(const std::shared_ptr<BusMessage>& frame, bool& success) {
 	if(!frame || frame->network.getType() != _icsneo_msg_bus_type_t::icsneo_msg_bus_type_flexray)
 		return true; // Don't hook non-FlexRay messages
 

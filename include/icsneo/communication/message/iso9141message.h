@@ -8,7 +8,7 @@
 
 namespace icsneo {
 
-class ISO9141Message : public Frame {
+class ISO9141Message : public BusMessage {
 public:
 	std::array<uint8_t, 3> header;
 	bool isInit = false;

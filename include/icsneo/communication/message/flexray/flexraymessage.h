@@ -10,7 +10,7 @@
 
 namespace icsneo {
 
-class FlexRayMessage : public Frame {
+class FlexRayMessage : public BusMessage {
 public:
 	uint16_t slotid = 0;
 	double tsslen = 0;

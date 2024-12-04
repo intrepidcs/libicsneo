@@ -735,7 +735,7 @@ std::optional<CoreminiHeader> Device::readCoreminiHeader(Disk::MemoryType memTyp
 	return ret;
 }
 
-bool Device::transmit(std::shared_ptr<Frame> frame) {
+bool Device::transmit(std::shared_ptr<BusMessage> frame) {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
@@ -768,7 +768,7 @@ bool Device::transmit(std::shared_ptr<Frame> frame) {
 	return com->sendPacket(packet);
 }
 
-bool Device::transmit(std::vector<std::shared_ptr<Frame>> frames) {
+bool Device::transmit(std::vector<std::shared_ptr<BusMessage>> frames) {
 	for(auto& frame : frames) {
 		if(!transmit(frame))
 			return false;

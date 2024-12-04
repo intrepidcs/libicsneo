@@ -7,7 +7,7 @@
 
 namespace icsneo {
 
-class MDIOMessage : public Frame {
+class MDIOMessage : public BusMessage {
 public:
 	enum class Clause : uint8_t {
 		Clause45 = 0,

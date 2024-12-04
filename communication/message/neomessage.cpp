@@ -16,7 +16,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 	{
 	case Message::Type::Frame: {
 		neomessage_frame_t& frame = *(neomessage_frame_t*)&neomsg;
-		auto framemsg = std::static_pointer_cast<Frame>(message);
+		auto framemsg = std::static_pointer_cast<BusMessage>(message);
 		const auto netType = framemsg->network.getType();
 
 		frame.netid = (neonetid_t)framemsg->network.getNetID();

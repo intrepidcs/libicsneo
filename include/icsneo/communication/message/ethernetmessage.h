@@ -31,7 +31,7 @@ struct MACAddress {
 	}
 };
 
-class EthernetMessage : public Frame {
+class EthernetMessage : public BusMessage {
 public:
 	bool preemptionEnabled = false;
 	uint8_t preemptionFlags = 0;

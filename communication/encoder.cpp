@@ -24,7 +24,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 
 	switch(message->type) {
 		case Message::Type::Frame: {
-			auto frame = std::dynamic_pointer_cast<Frame>(message);
+			auto frame = std::dynamic_pointer_cast<BusMessage>(message);
 
 			// Frame uses frame->data as the buffer unless directed otherwise
 			buffer = &frame->data;

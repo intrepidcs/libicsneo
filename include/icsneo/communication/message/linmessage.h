@@ -34,7 +34,7 @@ struct LINStatusFlags {
 	bool BreakOnly = false;
 };
 
-class LINMessage : public Frame {
+class LINMessage : public BusMessage {
 public:
 	enum class Type : uint8_t {
 		NOT_SET = 0,

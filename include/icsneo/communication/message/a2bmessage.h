@@ -20,7 +20,7 @@ enum class PCMType : uint8_t {
 
 using ChannelMap = std::unordered_map<uint8_t, uint8_t>;
 
-class A2BMessage : public Frame {
+class A2BMessage : public BusMessage {
 public:
 	static constexpr size_t maxAudioBufferSize = 2048;
 

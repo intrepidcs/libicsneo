@@ -70,9 +70,9 @@ public:
 	std::vector<uint8_t> data;
 };
 
-class Frame : public RawMessage {
+class BusMessage : public RawMessage {
 public:
-	Frame() : RawMessage(Message::Type::Frame) {}
+	BusMessage() : RawMessage(Message::Type::Frame) {}
 
 	const icsneo_msg_type_t getMsgType() const final { return icsneo_msg_type_bus; }
 
