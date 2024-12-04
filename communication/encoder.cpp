@@ -31,7 +31,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			netid = uint16_t(frame->network.getNetID());
 
 			switch(frame->network.getType()) {
-				case Network::Type::Ethernet: {
+				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_ethernet: {
 					auto ethmsg = std::dynamic_pointer_cast<EthernetMessage>(message);
 					if(!ethmsg) {
 						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
@@ -44,9 +44,9 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 
 					break;
 				} // End of Network::Type::Ethernet
-				case Network::Type::CAN:
-				case Network::Type::SWCAN:
-				case Network::Type::LSFTCAN: {
+				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can:
+				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan:
+				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan: {
 					auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
 					if(!canmsg) {
 						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
@@ -64,7 +64,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 
 					break;
 				} // End of Network::Type::CAN
-				case Network::Type::ISO9141: {
+				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_iso9141: {
 					auto isomsg = std::dynamic_pointer_cast<ISO9141Message>(message);
 					if(!isomsg) {
 						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
@@ -75,7 +75,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 					// packets to the device. This function just encodes them back to back into `result`
 					return HardwareISO9141Packet::EncodeFromMessage(*isomsg, result, report, packetizer);
 				} // End of Network::Type::ISO9141
-				case Network::Type::A2B: {
+				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_a2b: {
 					auto a2bmsg = std::dynamic_pointer_cast<A2BMessage>(message);
 					if(!a2bmsg) {
 						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
@@ -87,7 +87,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 					}
 					break;
 				} // End of Network::Type::A2B
-				case Network::Type::I2C: {
+				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_i2c: {
 					auto i2cmsg = std::dynamic_pointer_cast<I2CMessage>(message);
 					if(!i2cmsg) {
 						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
@@ -99,7 +99,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 					}
 					break;
 				} // End of Network::Type::I2C
-				case Network::Type::LIN: {
+				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
 					auto linmsg = std::dynamic_pointer_cast<LINMessage>(message);
 					if(!linmsg) {
 						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
@@ -111,7 +111,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 					}
 					break;
 				} // End of Network::Type::LIN
-				case Network::Type::MDIO: {
+				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_mdio: {
 					auto mdiomsg = std::dynamic_pointer_cast<MDIOMessage>(message);
 					if(!mdiomsg) {
 						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);

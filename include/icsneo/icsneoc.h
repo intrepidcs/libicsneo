@@ -313,7 +313,7 @@ extern bool DLLExport icsneo_removeMessageCallback(const neodevice_t* device, in
  * device. For instance, on a ValueCAN 4-2, the second CAN network is ICSNEO_NETID_HSCAN2, while
  * on a neoVI FIRE the second CAN network is ICSNEO_NETID_MSCAN.
  */
-extern neonetid_t DLLExport icsneo_getNetworkByNumber(const neodevice_t* device, neonettype_t type, unsigned int number);
+extern neonetid_t DLLExport icsneo_getNetworkByNumber(const neodevice_t* device, icsneo_msg_bus_type_t type, unsigned int number);
 
 /**
  * \brief Get the friendly product name for a specified device.
@@ -908,7 +908,7 @@ fn_icsneo_addMessageCallback icsneo_addMessageCallback;
 typedef bool(*fn_icsneo_removeMessageCallback)(const neodevice_t* device, int id);
 fn_icsneo_removeMessageCallback icsneo_removeMessageCallback;
 
-typedef neonetid_t (*fn_icsneo_getNetworkByNumber)(const neodevice_t* device, neonettype_t type, unsigned int number);
+typedef neonetid_t (*fn_icsneo_getNetworkByNumber)(const neodevice_t* device, icsneo_msg_bus_type_t type, unsigned int number);
 fn_icsneo_getNetworkByNumber icsneo_getNetworkByNumber;
 
 typedef bool(*fn_icsneo_getProductName)(const neodevice_t* device, char* str, size_t* maxLength);

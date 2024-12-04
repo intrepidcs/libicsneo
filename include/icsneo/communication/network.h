@@ -2,9 +2,9 @@
 #define __NETWORKID_H_
 
 #include <stdint.h>
+#include <icsneo/icsneotypes.h>
 
 typedef uint16_t neonetid_t;
-typedef uint8_t neonettype_t;
 
 #ifdef __cplusplus
 
@@ -187,24 +187,6 @@ public:
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};
-	enum class Type : neonettype_t {
-		Invalid = 0,
-		Internal = 1, // Used for statuses that don't actually need to be transferred to the client application
-		CAN = 2,
-		LIN = 3,
-		FlexRay = 4,
-		MOST = 5,
-		Ethernet = 6,
-		LSFTCAN = 7,
-		SWCAN = 8,
-		ISO9141 = 9,
-		I2C = 10,
-		A2B = 11,
-		SPI = 12,
-		MDIO = 13,
-		Any = 0xFE, // Never actually set as type, but used as flag for filtering
-		Other = 0xFF
-	};
 	enum class CoreMini : uint8_t {
 		HSCAN = 0,
 		MSCAN = 1,
@@ -307,37 +289,37 @@ public:
 		LIN15 = 99,
 		LIN16 = 100,
 	};
-	static const char* GetTypeString(Type type) {
+	static const char* GetTypeString(icsneo_msg_bus_type_t type) {
 		switch(type) {
-		case Type::CAN:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can:
 			return "CAN";
-		case Type::LIN:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin:
 			return "LIN";
-		case Type::FlexRay:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_flexray:
 			return "FlexRay";
-		case Type::MOST:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_most:
 			return "MOST";
-		case Type::Other:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_other:
 			return "Other";
-		case Type::Internal:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_internal:
 			return "Internal";
-		case Type::ISO9141:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_iso9141:
 			return "ISO 9141-2";
-		case Type::Ethernet:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_ethernet:
 			return "Ethernet";
-		case Type::LSFTCAN:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan:
 			return "Low Speed Fault Tolerant CAN";
-		case Type::SWCAN:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan:
 			return "Single Wire CAN";
-		case Type::I2C:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_i2c:
 			return "I²C";
-		case Type::A2B:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_a2b:
 			return "A2B";
-		case Type::SPI:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_spi:
 			return "SPI";
-		case Type::MDIO:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_mdio:
 			return "MDIO";
-		case Type::Invalid:
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_invalid:
 		default:
 			return "Invalid Type";
 		}
@@ -511,7 +493,7 @@ public:
 		}
 		return "Invalid VNET ID";
 	}
-	static Type GetTypeOfNetID(NetID netid, bool expand = true) {
+	static icsneo_msg_bus_type_t GetTypeOfNetID(NetID netid, bool expand = true) {
 		if(expand) {
 			netid = GetVnetAgnosticNetid((neonetid_t)netid).second;
 		}
@@ -533,7 +515,7 @@ public:
 		case NetID::DWCAN14:
 		case NetID::DWCAN15:
 		case NetID::DWCAN16:
-			return Type::CAN;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can;
 		case NetID::LIN:
 		case NetID::LIN2:
 		case NetID::LIN3:
@@ -550,18 +532,18 @@ public:
 		case NetID::LIN14:
 		case NetID::LIN15:
 		case NetID::LIN16:
-			return Type::LIN;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin;
 		case NetID::FlexRay:
 		case NetID::FlexRay1a:
 		case NetID::FlexRay1b:
 		case NetID::FlexRay2:
 		case NetID::FlexRay2a:
 		case NetID::FlexRay2b:
-			return Type::FlexRay;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_flexray;
 		case NetID::MOST25:
 		case NetID::MOST50:
 		case NetID::MOST150:
-			return Type::MOST;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_most;
 		case NetID::RED:
 		case NetID::RED_OLDFORMAT:
 		case NetID::Device:
@@ -583,10 +565,10 @@ public:
 		case NetID::RED_GET_RTC:
 		case NetID::DiskData:
 		case NetID::RED_App_Error:
-			return Type::Internal;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_internal;
 		case NetID::Invalid:
 		case NetID::Any:
-			return Type::Invalid;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_invalid;
 		case NetID::Ethernet:
 		case NetID::Ethernet_DAQ:
 		case NetID::Ethernet2:
@@ -607,26 +589,26 @@ public:
 		case NetID::OP_Ethernet14:
 		case NetID::OP_Ethernet15:
 		case NetID::OP_Ethernet16:
-			return Type::Ethernet;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_ethernet;
 		case NetID::LSFTCAN:
 		case NetID::LSFTCAN2:
-			return Type::LSFTCAN;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan;
 		case NetID::SWCAN:
 		case NetID::SWCAN2:
-			return Type::SWCAN;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan;
 		case NetID::ISO9141:
 		case NetID::ISO9141_2:
 		case NetID::ISO9141_3:
 		case NetID::ISO9141_4:
-			return Type::ISO9141;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_iso9141;
 		case NetID::I2C:
 		case NetID::I2C2:
 		case NetID::I2C3:
 		case NetID::I2C4:
-			return Type::I2C;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_i2c;
 		case NetID::A2B1:
 		case NetID::A2B2:
-			return Type::A2B;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_a2b;
 		case NetID::SPI1:
 		case NetID::SPI2:
 		case NetID::SPI3:
@@ -635,7 +617,7 @@ public:
 		case NetID::SPI6:
 		case NetID::SPI7:
 		case NetID::SPI8:
-			return Type::SPI;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_spi;
 		case NetID::MDIO1:
 		case NetID::MDIO2:
 		case NetID::MDIO3:
@@ -644,9 +626,9 @@ public:
 		case NetID::MDIO6:
 		case NetID::MDIO7:
 		case NetID::MDIO8:
-			return Type::MDIO;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_mdio;
 		default:
-			return Type::Other;
+			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_other;
 		}
 	}
 	static const char* GetNetIDString(NetID netid, bool expand = true) {
@@ -1386,7 +1368,7 @@ public:
 	Network(NetID netid) { setValue(netid); }
 	Network(CoreMini cm) { setValue(GetNetIDFromCoreMiniNetwork(cm)); }
 	NetID getNetID() const { return value; }
-	Type getType() const { return type; }
+	icsneo_msg_bus_type_t getType() const { return type; }
 	VnetId getVnetId() const { return vnetId; }
 	std::optional<CoreMini> getCoreMini() const { return GetCoreMiniNetworkFromNetID(getNetID()); }
 	friend std::ostream& operator<<(std::ostream& os, const Network& network) {
@@ -1398,7 +1380,7 @@ public:
 
 private:
 	NetID value; // Always use setValue so that value and type stay in sync
-	Type type;
+	icsneo_msg_bus_type_t type;
 	NetID commonNetId;
 	VnetId vnetId;
 	void setValue(NetID id, bool expand = true) {

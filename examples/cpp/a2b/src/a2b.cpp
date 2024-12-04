@@ -392,11 +392,11 @@ int main(int argc, char** argv) {
 			const auto& txNetworks = dev->getSupportedTXNetworks();
 			const auto& rxNetworks = dev->getSupportedRXNetworks();
 
-			if(std::none_of(txNetworks.begin(), txNetworks.end(), [](const icsneo::Network& net) { return net.getType() == icsneo::Network::Type::A2B; })) {
+			if(std::none_of(txNetworks.begin(), txNetworks.end(), [](const icsneo::Network& net) { return net.getType() == _icsneo_msg_bus_type_t::icsneo_msg_bus_type_a2b; })) {
 				return false;
 			}
 
-			if(std::none_of(rxNetworks.begin(), rxNetworks.end(), [](const icsneo::Network& net) { return net.getType() == icsneo::Network::Type::A2B; })) {
+			if(std::none_of(rxNetworks.begin(), rxNetworks.end(), [](const icsneo::Network& net) { return net.getType() == _icsneo_msg_bus_type_t::icsneo_msg_bus_type_a2b; })) {
 				return false;
 			}
 

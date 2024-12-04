@@ -165,6 +165,49 @@ _Static_assert(sizeof(_icsneo_devicetype_t) <= sizeof(icsneo_devicetype_t), "ics
 static_assert(sizeof(_icsneo_devicetype_t) <= sizeof(icsneo_devicetype_t));
 #endif
 
+typedef enum _icsneo_msg_type_t {
+    icsneo_msg_type_device,
+    icsneo_msg_type_internal,
+    icsneo_msg_type_bus,
+
+    icsneo_msg_type_maxsize,
+} _icsneo_msg_type_t;
+
+/** @brief Integer representation of _icsneo_msg_type_t enum. 
+ * 
+ * This is used for easier ABI compatibility, especially between other languages.
+ */
+typedef uint32_t icsneo_msg_type_t;
+
+
+/** @brief
+ * Bus message types, useful for filtering out or identifying Bus Messages.
+*/
+typedef enum _icsneo_msg_bus_type_t {
+    icsneo_msg_bus_type_invalid = 0,
+    icsneo_msg_bus_type_internal = 1, // Used for statuses that don't actually need to be transferred to the client application
+    icsneo_msg_bus_type_can = 2,
+    icsneo_msg_bus_type_lin = 3,
+    icsneo_msg_bus_type_flexray = 4,
+    icsneo_msg_bus_type_most = 5,
+    icsneo_msg_bus_type_ethernet = 6,
+    icsneo_msg_bus_type_lsftcan = 7,
+    icsneo_msg_bus_type_swcan = 8,
+    icsneo_msg_bus_type_iso9141 = 9,
+    icsneo_msg_bus_type_i2c = 10,
+    icsneo_msg_bus_type_a2b = 11,
+    icsneo_msg_bus_type_spi = 12,
+    icsneo_msg_bus_type_mdio = 13,
+    icsneo_msg_bus_type_any = 0xFE, // Never actually set as type, but used as flag for filtering
+    icsneo_msg_bus_type_other = 0xFF
+} _icsneo_msg_bus_type_t;
+
+/** @brief Integer representation of _icsneo_msg_bus_type_t enum. 
+ * 
+ * This is used for easier ABI compatibility, especially between other languages.
+ */
+typedef uint8_t icsneo_msg_bus_type_t;
+
 #ifdef __cplusplus
 }
 #endif

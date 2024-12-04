@@ -780,7 +780,7 @@ void Device::setWriteBlocks(bool blocks) {
 	com->setWriteBlocks(blocks);
 }
 
-size_t Device::getNetworkCountByType(Network::Type type) const {
+size_t Device::getNetworkCountByType(icsneo_msg_bus_type_t type) const {
 	size_t count = 0;
 	for(const auto& net : getSupportedRXNetworks())
 		if(net.getType() == type)
@@ -789,7 +789,7 @@ size_t Device::getNetworkCountByType(Network::Type type) const {
 }
 
 // Indexed starting at one
-Network Device::getNetworkByNumber(Network::Type type, size_t index) const {
+Network Device::getNetworkByNumber(icsneo_msg_bus_type_t type, size_t index) const {
 	size_t count = 0;
 	for(const auto& net : getSupportedRXNetworks()) {
 		if(net.getType() == type) {

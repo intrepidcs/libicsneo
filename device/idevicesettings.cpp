@@ -403,7 +403,7 @@ int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 	}
 
 	switch(net.getType()) {
-		case Network::Type::CAN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can: {
 			const CAN_SETTINGS* cfg = getCANSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::CANSettingsNotAvailable, APIEvent::Severity::Error);
@@ -417,7 +417,7 @@ int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 			}
 			return baudrate;
 		}
-		case Network::Type::SWCAN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan: {
 			const SWCAN_SETTINGS* cfg = getSWCANSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::Error);
@@ -431,7 +431,7 @@ int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 			}
 			return baudrate;
 		}
-		case Network::Type::LSFTCAN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan: {
 			const CAN_SETTINGS* cfg = getLSFTCANSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LSFTCANSettingsNotAvailable, APIEvent::Severity::Error);
@@ -445,7 +445,7 @@ int64_t IDeviceSettings::getBaudrateFor(Network net) const {
 			}
 			return baudrate;
 		}
-		case Network::Type::LIN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
 			const LIN_SETTINGS* cfg = getLINSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
@@ -477,7 +477,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 	}
 
 	switch(net.getType()) {
-		case Network::Type::CAN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can: {
 			if(baudrate > 1000000) { // This is an FD baudrate. Use setFDBaudrateFor instead.
 				report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
 				return false;
@@ -499,7 +499,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
 			return true;
 		}
-		case Network::Type::LSFTCAN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan: {
 			CAN_SETTINGS* cfg = getMutableLSFTCANSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LSFTCANSettingsNotAvailable, APIEvent::Severity::Error);
@@ -516,7 +516,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
 			return true;
 		}
-		case Network::Type::SWCAN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan: {
 			SWCAN_SETTINGS* cfg = getMutableSWCANSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::SWCANSettingsNotAvailable, APIEvent::Severity::Error);
@@ -533,7 +533,7 @@ bool IDeviceSettings::setBaudrateFor(Network net, int64_t baudrate) {
 			cfg->SetBaudrate = AUTO; // Device will use the baudrate value to set the TQ values
 			return true;
 		}
-		case Network::Type::LIN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
 			LIN_SETTINGS* cfg = getMutableLINSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
@@ -566,7 +566,7 @@ int64_t IDeviceSettings::getFDBaudrateFor(Network net) const {
 	}
 
 	switch(net.getType()) {
-		case Network::Type::CAN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can: {
 			const CANFD_SETTINGS* cfg = getCANFDSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
@@ -604,7 +604,7 @@ bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
 	}
 
 	switch(net.getType()) {
-		case Network::Type::CAN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can: {
 			CANFD_SETTINGS* cfg = getMutableCANFDSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
@@ -771,7 +771,7 @@ std::optional<bool> IDeviceSettings::isCommanderResistorEnabledFor(Network net) 
 	}
 
 	switch(net.getType()) {
-		case Network::Type::LIN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
 			const LIN_SETTINGS* cfg = getLINSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
@@ -803,7 +803,7 @@ bool IDeviceSettings::setCommanderResistorFor(Network net, bool resistor_on) {
 	}
 
 	switch(net.getType()) {
-		case Network::Type::LIN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
 			LIN_SETTINGS* cfg = getMutableLINSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
@@ -831,7 +831,7 @@ std::optional<LINMode> IDeviceSettings::getLINModeFor(Network net) const {
 	}
 
 	switch(net.getType()) {
-		case Network::Type::LIN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
 			const LIN_SETTINGS* cfg = getLINSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
@@ -863,7 +863,7 @@ bool IDeviceSettings::setLINModeFor(Network net, LINMode mode) {
 	}
 
 	switch(net.getType()) {
-		case Network::Type::LIN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
 			LIN_SETTINGS* cfg = getMutableLINSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
@@ -891,7 +891,7 @@ std::optional<uint8_t> IDeviceSettings::getLINCommanderResponseTimeFor(Network n
 	}
 
 	switch(net.getType()) {
-		case Network::Type::LIN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
 			const LIN_SETTINGS* cfg = getLINSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);
@@ -923,7 +923,7 @@ bool IDeviceSettings::setLINCommanderResponseTimeFor(Network net, uint8_t bits) 
 	}
 
 	switch(net.getType()) {
-		case Network::Type::LIN: {
+		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
 			LIN_SETTINGS* cfg = getMutableLINSettingsFor(net);
 			if(cfg == nullptr) {
 				report(APIEvent::Type::LINSettingsNotAvailable, APIEvent::Severity::Error);

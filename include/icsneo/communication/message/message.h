@@ -7,12 +7,20 @@ typedef uint16_t neomessagetype_t;
 #ifdef __cplusplus
 
 #include "icsneo/communication/network.h"
+#include "icsneo/icsneotypes.h"
 #include <vector>
 
 namespace icsneo {
 
-class Message {
+class AbstractMessage {
 public:
+	virtual const icsneo_msg_type_t getMsgType() const = 0;
+};
+
+class Message : public AbstractMessage {
+public:
+	virtual const icsneo_msg_type_t getMsgType() const { return icsneo_msg_type_device; }
+
 	enum class Type : neomessagetype_t {
 		Frame = 0,
 
@@ -56,6 +64,8 @@ public:
 	RawMessage(Network net) : Message(Message::Type::RawMessage), network(net) {}
 	RawMessage(Network net, std::vector<uint8_t> d) : Message(Message::Type::RawMessage), network(net), data(d) {}
 
+	virtual const icsneo_msg_type_t getMsgType() const { return icsneo_msg_type_internal; }
+
 	Network network;
 	std::vector<uint8_t> data;
 };
@@ -63,6 +73,10 @@ public:
 class Frame : public RawMessage {
 public:
 	Frame() : RawMessage(Message::Type::Frame) {}
+
+	const icsneo_msg_type_t getMsgType() const final { return icsneo_msg_type_bus; }
+
+	//virtual const icsneo_msg_bus_type_t getBusType() const = 0;
 
 	uint16_t description = 0;
 	bool transmitted = false;

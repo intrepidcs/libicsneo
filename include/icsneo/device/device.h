@@ -226,8 +226,8 @@ public:
 		return std::find(supportedTXNetworks.begin(), supportedTXNetworks.end(), net) != supportedTXNetworks.end();
 	}
 
-	virtual size_t getNetworkCountByType(Network::Type) const;
-	virtual Network getNetworkByNumber(Network::Type, size_t) const;
+	virtual size_t getNetworkCountByType(icsneo_msg_bus_type_t) const;
+	virtual Network getNetworkByNumber(icsneo_msg_bus_type_t, size_t) const;
 
 	std::shared_ptr<HardwareInfo> getHardwareInfo(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
 

@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 
+#include "icsneo/icsneotypes.h"
 #include "icsneo/device/device.h"
 #include "icsneo/api/version.h"
 #include "icsneo/api/eventmanager.h"
