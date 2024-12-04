@@ -327,6 +327,7 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
     if (!device || !messages || !messages_count) {
         return icsneo_error_invalid_parameters;
     }
+    // TODO: Check if device is valid
     auto dev = device->device;
     // Wait for messages
     auto start_time = std::chrono::steady_clock::now();
@@ -366,9 +367,10 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
 }
 
 ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_device_t* device, icsneo_message_t* message, bool* is_valid) {
-    if (!message || !is_valid) {
+    if (!device || !message || !is_valid) {
         return icsneo_error_invalid_parameters;
     }
+    // TODO: Check if device is valid
     *is_valid = std::find_if(device->messages.begin(), device->messages.end(), [&](const auto& msg) {
         return msg->message == message->message;
     }) == device->messages.end();
@@ -376,20 +378,31 @@ ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_device_t* device, icsne
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsneo_message_t* message, uint32_t* type) {
-    if (!message || !type) {
+ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsneo_message_t* message, icsneo_msg_type_t* msg_type) {
+    if (!device || !message || !msg_type) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Fix this in the core so we actually get the message type from the message
-    if (dynamic_cast<CANMessage*>(message->message.get())) {
-        return 100;
-    } else if (dynamic_cast<LINMessage*>(message->message.get())) {
-        return 200;
-    } else if (dynamic_cast<EthernetMessage*>(message->message.get())) {
-        return 300;
-    } else {
-        return 999;
+    // TODO: Check if message is valid
+    
+    // Assign the message type
+    *msg_type = message->message->getMsgType();
+
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_message_get_bus_type(icsneo_device_t* device, icsneo_message_t* message, icsneo_msg_bus_type_t* bus_type) {
+    if (!device || !message || !bus_type) {
+        return icsneo_error_invalid_parameters;
     }
+    // TODO: Check if message is valid
+
+    // Make sure the message is a bus message
+    if (message->message->getMsgType() != icsneo_msg_type_bus) {
+        return icsneo_error_invalid_type;
+    }
+    // We can static cast here because we are relying on the type being correct at this point
+    auto bus_message = static_cast<BusMessage*>(message->message.get());
+    *bus_type = bus_message->getBusType();
     
     return icsneo_error_success;
 }

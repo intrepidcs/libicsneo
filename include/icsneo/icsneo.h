@@ -65,6 +65,8 @@ typedef enum _icsneo_error_t {
     icsneo_error_sync_rtc_failed,
     // Error getting messages.
     icsneo_error_get_messages_failed,
+    // Generic invalid type error
+    icsneo_error_invalid_type,
 } _icsneo_error_t;
 
 /** @brief Integer representation of _icsneo_error_t enum. 
@@ -286,7 +288,29 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
  */
 ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_device_t* device, icsneo_message_t* message, bool* is_valid);
 
-ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsneo_message_t* message, uint32_t* type);
+/** @brief Get the type of a message
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] icsneo_msg_type_t* msg_type Pointer to a icsneo_msg_type_t to copy the type of the value into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ * 
+ * @see icsneo_msg_type_t
+ */
+ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsneo_message_t* message, icsneo_msg_type_t* msg_type);
+
+/** @brief Get the type of a bus message
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] icsneo_msg_type_t* msg_type Pointer to a icsneo_msg_type_t to copy the type of the value into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters or icsneo_error_invalid_type otherwise.
+ * 
+ * @see icsneo_msg_bus_type_t
+ */
+ICSNEO_API icsneo_error_t icsneo_message_get_bus_type(icsneo_device_t* device, icsneo_message_t* message, icsneo_msg_bus_type_t* bus_type);
 
 #ifdef __cplusplus
 }
