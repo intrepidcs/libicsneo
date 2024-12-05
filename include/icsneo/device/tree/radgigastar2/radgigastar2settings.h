@@ -207,13 +207,13 @@ namespace icsneo
 				return &(cfg->lin5);
 			case Network::_icsneo_netid_t::icsneo_netid_lin6:
 				return &(cfg->lin6);
-			case Network::_icsneo_netid_t::LIN7:
+			case Network::_icsneo_netid_t::icsneo_netid_lin7:
 				return &(cfg->lin7);
-			case Network::_icsneo_netid_t::LIN8:
+			case Network::_icsneo_netid_t::icsneo_netid_lin8:
 				return &(cfg->lin8);
-			case Network::_icsneo_netid_t::LIN9:
+			case Network::_icsneo_netid_t::icsneo_netid_lin9:
 				return &(cfg->lin9);
-			case Network::_icsneo_netid_t::LIN10:
+			case Network::_icsneo_netid_t::icsneo_netid_lin10:
 				return &(cfg->lin10);
 			default:
 				return nullptr;

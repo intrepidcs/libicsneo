@@ -23,9 +23,9 @@ public:
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 			Network::_icsneo_netid_t::icsneo_netid_iso9141,
 
-			Network::_icsneo_netid_t::MDIO1,
-			Network::_icsneo_netid_t::MDIO2,
-			Network::_icsneo_netid_t::MDIO3,
+			Network::_icsneo_netid_t::icsneo_netid_mdio1,
+			Network::_icsneo_netid_t::icsneo_netid_mdio2,
+			Network::_icsneo_netid_t::icsneo_netid_mdio3,
 		};
 		return supportedNetworks;
 	}

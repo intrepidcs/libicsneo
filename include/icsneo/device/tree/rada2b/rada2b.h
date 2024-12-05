@@ -28,13 +28,13 @@ public:
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 
-			Network::_icsneo_netid_t::A2B1,
-			Network::_icsneo_netid_t::A2B2,
+			Network::_icsneo_netid_t::icsneo_netid_a2b1,
+			Network::_icsneo_netid_t::icsneo_netid_a2b2,
 
 			Network::_icsneo_netid_t::icsneo_netid_i2c,
 			Network::_icsneo_netid_t::icsneo_netid_i2c2,
 
-			Network::_icsneo_netid_t::MDIO1,
+			Network::_icsneo_netid_t::icsneo_netid_mdio1,
 		};
 		return supportedNetworks;
 	}

@@ -54,7 +54,7 @@ protected:
 
 			Network::_icsneo_netid_t::icsneo_netid_ethernet,
 			Network::_icsneo_netid_t::icsneo_netid_ethernet2,
-			Network::_icsneo_netid_t::Ethernet3,
+			Network::_icsneo_netid_t::icsneo_netid_ethernet3,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 
@@ -63,8 +63,8 @@ protected:
 
 			Network::_icsneo_netid_t::icsneo_netid_i2c,
 
-			Network::_icsneo_netid_t::MDIO1,
-			Network::_icsneo_netid_t::MDIO2,
+			Network::_icsneo_netid_t::icsneo_netid_mdio1,
+			Network::_icsneo_netid_t::icsneo_netid_mdio2,
 		};
 		rxNetworks.insert(rxNetworks.end(), supportedRxNetworks.begin(), supportedRxNetworks.end());
 	}
@@ -82,7 +82,7 @@ protected:
 
 			Network::_icsneo_netid_t::icsneo_netid_ethernet,
 			Network::_icsneo_netid_t::icsneo_netid_ethernet2,
-			Network::_icsneo_netid_t::Ethernet3,
+			Network::_icsneo_netid_t::icsneo_netid_ethernet3,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 
@@ -90,8 +90,8 @@ protected:
 			
 			Network::_icsneo_netid_t::icsneo_netid_i2c,
 
-			Network::_icsneo_netid_t::MDIO1,
-			Network::_icsneo_netid_t::MDIO2,
+			Network::_icsneo_netid_t::icsneo_netid_mdio1,
+			Network::_icsneo_netid_t::icsneo_netid_mdio2,
 		};
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
 	}

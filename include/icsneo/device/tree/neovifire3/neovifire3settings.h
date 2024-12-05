@@ -246,9 +246,9 @@ public:
 				return &(cfg->lin5);
 			case Network::_icsneo_netid_t::icsneo_netid_lin6:
 				return &(cfg->lin6);
-			case Network::_icsneo_netid_t::LIN7:
+			case Network::_icsneo_netid_t::icsneo_netid_lin7:
 				return &(cfg->lin7);
-			case Network::_icsneo_netid_t::LIN8:
+			case Network::_icsneo_netid_t::icsneo_netid_lin8:
 				return &(cfg->lin8);
 			default:
 				return nullptr;

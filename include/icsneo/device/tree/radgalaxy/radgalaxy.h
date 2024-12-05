@@ -51,11 +51,11 @@ public:
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet11,
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet12,
 
-			Network::_icsneo_netid_t::MDIO1,
-			Network::_icsneo_netid_t::MDIO2,
-			Network::_icsneo_netid_t::MDIO3,
-			Network::_icsneo_netid_t::MDIO4,
-			Network::_icsneo_netid_t::MDIO5,
+			Network::_icsneo_netid_t::icsneo_netid_mdio1,
+			Network::_icsneo_netid_t::icsneo_netid_mdio2,
+			Network::_icsneo_netid_t::icsneo_netid_mdio3,
+			Network::_icsneo_netid_t::icsneo_netid_mdio4,
+			Network::_icsneo_netid_t::icsneo_netid_mdio5,
 		};
 		return supportedNetworks;
 	}

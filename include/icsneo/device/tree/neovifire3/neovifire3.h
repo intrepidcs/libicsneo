@@ -25,18 +25,18 @@ public:
 			Network::_icsneo_netid_t::icsneo_netid_hscan5,
 			Network::_icsneo_netid_t::icsneo_netid_hscan6,
 			Network::_icsneo_netid_t::icsneo_netid_hscan7,
-			Network::_icsneo_netid_t::DWCAN9,
-			Network::_icsneo_netid_t::DWCAN10,
-			Network::_icsneo_netid_t::DWCAN11,
-			Network::_icsneo_netid_t::DWCAN12,
-			Network::_icsneo_netid_t::DWCAN13,
-			Network::_icsneo_netid_t::DWCAN14,
-			Network::_icsneo_netid_t::DWCAN15,
-			Network::_icsneo_netid_t::DWCAN16,
+			Network::_icsneo_netid_t::icsneo_netid_dwcan9,
+			Network::_icsneo_netid_t::icsneo_netid_dwcan10,
+			Network::_icsneo_netid_t::icsneo_netid_dwcan11,
+			Network::_icsneo_netid_t::icsneo_netid_dwcan12,
+			Network::_icsneo_netid_t::icsneo_netid_dwcan13,
+			Network::_icsneo_netid_t::icsneo_netid_dwcan14,
+			Network::_icsneo_netid_t::icsneo_netid_dwcan15,
+			Network::_icsneo_netid_t::icsneo_netid_dwcan16,
 
 			Network::_icsneo_netid_t::icsneo_netid_ethernet,
 			Network::_icsneo_netid_t::icsneo_netid_ethernet2,
-			Network::_icsneo_netid_t::Ethernet3,
+			Network::_icsneo_netid_t::icsneo_netid_ethernet3,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 			Network::_icsneo_netid_t::icsneo_netid_lin2,
@@ -44,8 +44,8 @@ public:
 			Network::_icsneo_netid_t::icsneo_netid_lin4,
 			Network::_icsneo_netid_t::icsneo_netid_lin5,
 			Network::_icsneo_netid_t::icsneo_netid_lin6,
-			Network::_icsneo_netid_t::LIN7,
-			Network::_icsneo_netid_t::LIN8,
+			Network::_icsneo_netid_t::icsneo_netid_lin7,
+			Network::_icsneo_netid_t::icsneo_netid_lin8,
 		};
 		return supportedNetworks;
 	}

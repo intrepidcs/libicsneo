@@ -798,7 +798,7 @@ Network Device::getNetworkByNumber(icsneo_msg_bus_type_t type, size_t index) con
 				return net;
 		}
 	}
-	return Network::_icsneo_netid_t::Invalid;
+	return Network::_icsneo_netid_t::icsneo_netid_invalid;
 }
 
 std::shared_ptr<HardwareInfo> Device::getHardwareInfo(std::chrono::milliseconds timeout) {

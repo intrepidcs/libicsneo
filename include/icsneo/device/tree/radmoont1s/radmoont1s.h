@@ -22,7 +22,7 @@ public:
 
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet1,
 
-			Network::_icsneo_netid_t::MDIO1,
+			Network::_icsneo_netid_t::icsneo_netid_mdio1,
 
 			Network::_icsneo_netid_t::icsneo_netid_spi1,
 		};

@@ -48,25 +48,25 @@ namespace icsneo
 				Network::_icsneo_netid_t::icsneo_netid_lin4,
 				Network::_icsneo_netid_t::icsneo_netid_lin5,
 				Network::_icsneo_netid_t::icsneo_netid_lin6,
-				Network::_icsneo_netid_t::LIN7,
-				Network::_icsneo_netid_t::LIN8,
-				Network::_icsneo_netid_t::LIN9,
-				Network::_icsneo_netid_t::LIN10,
+				Network::_icsneo_netid_t::icsneo_netid_lin7,
+				Network::_icsneo_netid_t::icsneo_netid_lin8,
+				Network::_icsneo_netid_t::icsneo_netid_lin9,
+				Network::_icsneo_netid_t::icsneo_netid_lin10,
 
 				Network::_icsneo_netid_t::icsneo_netid_i2c,
 				Network::_icsneo_netid_t::icsneo_netid_i2c2,
 
-				Network::_icsneo_netid_t::MDIO1,
-				Network::_icsneo_netid_t::MDIO2,
+				Network::_icsneo_netid_t::icsneo_netid_mdio1,
+				Network::_icsneo_netid_t::icsneo_netid_mdio2,
 
 				Network::_icsneo_netid_t::icsneo_netid_spi1,
-				Network::_icsneo_netid_t::SPI2,
-				Network::_icsneo_netid_t::SPI3,
-				Network::_icsneo_netid_t::SPI4,
-				Network::_icsneo_netid_t::SPI5,
-				Network::_icsneo_netid_t::SPI6,
-				Network::_icsneo_netid_t::SPI7,
-				Network::_icsneo_netid_t::SPI8,
+				Network::_icsneo_netid_t::icsneo_netid_spi2,
+				Network::_icsneo_netid_t::icsneo_netid_spi3,
+				Network::_icsneo_netid_t::icsneo_netid_spi4,
+				Network::_icsneo_netid_t::icsneo_netid_spi5,
+				Network::_icsneo_netid_t::icsneo_netid_spi6,
+				Network::_icsneo_netid_t::icsneo_netid_spi7,
+				Network::_icsneo_netid_t::icsneo_netid_spi8,
 			};
 			return supportedNetworks;
 		}

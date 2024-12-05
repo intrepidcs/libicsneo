@@ -143,49 +143,49 @@ public:
 		icsneo_netid_i2c3 = 518,
 		icsneo_netid_i2c4 = 519,
 		icsneo_netid_ethernet2 = 520,
-		A2B1 = 522,
-		A2B2 = 523,
-		Ethernet3 = 524,
-		WBMS = 532,
-		DWCAN9 = 534,
-		DWCAN10 = 535,
-		DWCAN11 = 536,
-		DWCAN12 = 537,
-		DWCAN13 = 538,
-		DWCAN14 = 539,
-		DWCAN15 = 540,
-		DWCAN16 = 541,
-		LIN7 = 542,
-		LIN8 = 543,
-		SPI2 = 544,
-		MDIO1 = 545,
-		MDIO2 = 546,
-		MDIO3 = 547,
-		MDIO4 = 548,
-		MDIO5 = 549,
-		MDIO6 = 550,
-		MDIO7 = 551,
-		MDIO8 = 552,
-		OP_Ethernet13 = 553,
-		OP_Ethernet14 = 554,
-		OP_Ethernet15 = 555,
-		OP_Ethernet16 = 556,
-		SPI3 = 557,
-		SPI4 = 558,
-		SPI5 = 559,
-		SPI6 = 560,
-		SPI7 = 561,
-		SPI8 = 562,
-		LIN9 = 563,
-		LIN10 = 564,
-		LIN11 = 565,
-		LIN12 = 566,
-		LIN13 = 567,
-		LIN14 = 568,
-		LIN15 = 569,
-		LIN16 = 570,
-		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
-		Invalid = 0xffff
+		icsneo_netid_a2b1 = 522,
+		icsneo_netid_a2b2 = 523,
+		icsneo_netid_ethernet3 = 524,
+		icsneo_netid_wbms = 532,
+		icsneo_netid_dwcan9 = 534,
+		icsneo_netid_dwcan10 = 535,
+		icsneo_netid_dwcan11 = 536,
+		icsneo_netid_dwcan12 = 537,
+		icsneo_netid_dwcan13 = 538,
+		icsneo_netid_dwcan14 = 539,
+		icsneo_netid_dwcan15 = 540,
+		icsneo_netid_dwcan16 = 541,
+		icsneo_netid_lin7 = 542,
+		icsneo_netid_lin8 = 543,
+		icsneo_netid_spi2 = 544,
+		icsneo_netid_mdio1 = 545,
+		icsneo_netid_mdio2 = 546,
+		icsneo_netid_mdio3 = 547,
+		icsneo_netid_mdio4 = 548,
+		icsneo_netid_mdio5 = 549,
+		icsneo_netid_mdio6 = 550,
+		icsneo_netid_mdio7 = 551,
+		icsneo_netid_mdio8 = 552,
+		icsneo_netid_op_ethernet13 = 553,
+		icsneo_netid_op_ethernet14 = 554,
+		icsneo_netid_op_ethernet15 = 555,
+		icsneo_netid_op_ethernet16 = 556,
+		icsneo_netid_spi3 = 557,
+		icsneo_netid_spi4 = 558,
+		icsneo_netid_spi5 = 559,
+		icsneo_netid_spi6 = 560,
+		icsneo_netid_spi7 = 561,
+		icsneo_netid_spi8 = 562,
+		icsneo_netid_lin9 = 563,
+		icsneo_netid_lin10 = 564,
+		icsneo_netid_lin11 = 565,
+		icsneo_netid_lin12 = 566,
+		icsneo_netid_lin13 = 567,
+		icsneo_netid_lin14 = 568,
+		icsneo_netid_lin15 = 569,
+		icsneo_netid_lin16 = 570,
+		icsneo_netid_any = 0xfffe, // Never actually set as type, but used as flag for filtering
+		icsneo_netid_invalid = 0xffff
 	};
 	enum class CoreMini : uint8_t {
 		HSCAN = 0,
@@ -507,14 +507,14 @@ public:
 		case _icsneo_netid_t::icsneo_netid_hscan5:
 		case _icsneo_netid_t::icsneo_netid_hscan6:
 		case _icsneo_netid_t::icsneo_netid_hscan7:
-		case _icsneo_netid_t::DWCAN9:
-		case _icsneo_netid_t::DWCAN10:
-		case _icsneo_netid_t::DWCAN11:
-		case _icsneo_netid_t::DWCAN12:
-		case _icsneo_netid_t::DWCAN13:
-		case _icsneo_netid_t::DWCAN14:
-		case _icsneo_netid_t::DWCAN15:
-		case _icsneo_netid_t::DWCAN16:
+		case _icsneo_netid_t::icsneo_netid_dwcan9:
+		case _icsneo_netid_t::icsneo_netid_dwcan10:
+		case _icsneo_netid_t::icsneo_netid_dwcan11:
+		case _icsneo_netid_t::icsneo_netid_dwcan12:
+		case _icsneo_netid_t::icsneo_netid_dwcan13:
+		case _icsneo_netid_t::icsneo_netid_dwcan14:
+		case _icsneo_netid_t::icsneo_netid_dwcan15:
+		case _icsneo_netid_t::icsneo_netid_dwcan16:
 			return icsneo_msg_bus_type_can;
 		case _icsneo_netid_t::icsneo_netid_lin:
 		case _icsneo_netid_t::icsneo_netid_lin2:
@@ -522,16 +522,16 @@ public:
 		case _icsneo_netid_t::icsneo_netid_lin4:
 		case _icsneo_netid_t::icsneo_netid_lin5:
 		case _icsneo_netid_t::icsneo_netid_lin6:
-		case _icsneo_netid_t::LIN7:
-		case _icsneo_netid_t::LIN8:
-		case _icsneo_netid_t::LIN9:
-		case _icsneo_netid_t::LIN10:
-		case _icsneo_netid_t::LIN11:
-		case _icsneo_netid_t::LIN12:
-		case _icsneo_netid_t::LIN13:
-		case _icsneo_netid_t::LIN14:
-		case _icsneo_netid_t::LIN15:
-		case _icsneo_netid_t::LIN16:
+		case _icsneo_netid_t::icsneo_netid_lin7:
+		case _icsneo_netid_t::icsneo_netid_lin8:
+		case _icsneo_netid_t::icsneo_netid_lin9:
+		case _icsneo_netid_t::icsneo_netid_lin10:
+		case _icsneo_netid_t::icsneo_netid_lin11:
+		case _icsneo_netid_t::icsneo_netid_lin12:
+		case _icsneo_netid_t::icsneo_netid_lin13:
+		case _icsneo_netid_t::icsneo_netid_lin14:
+		case _icsneo_netid_t::icsneo_netid_lin15:
+		case _icsneo_netid_t::icsneo_netid_lin16:
 			return icsneo_msg_bus_type_lin;
 		case _icsneo_netid_t::icsneo_netid_flexray:
 		case _icsneo_netid_t::icsneo_netid_flexray1a:
@@ -566,13 +566,13 @@ public:
 		case _icsneo_netid_t::icsneo_netid_disk_data:
 		case _icsneo_netid_t::icsneo_netid_red_app_error:
 			return icsneo_msg_bus_type_internal;
-		case _icsneo_netid_t::Invalid:
-		case _icsneo_netid_t::Any:
+		case _icsneo_netid_t::icsneo_netid_invalid:
+		case _icsneo_netid_t::icsneo_netid_any:
 			return icsneo_msg_bus_type_invalid;
 		case _icsneo_netid_t::icsneo_netid_ethernet:
 		case _icsneo_netid_t::icsneo_netid_ethernet_daq:
 		case _icsneo_netid_t::icsneo_netid_ethernet2:
-		case _icsneo_netid_t::Ethernet3:
+		case _icsneo_netid_t::icsneo_netid_ethernet3:
 		case _icsneo_netid_t::icsneo_netid_op_ethernet1:
 		case _icsneo_netid_t::icsneo_netid_op_ethernet2:
 		case _icsneo_netid_t::icsneo_netid_op_ethernet3:
@@ -585,10 +585,10 @@ public:
 		case _icsneo_netid_t::icsneo_netid_op_ethernet10:
 		case _icsneo_netid_t::icsneo_netid_op_ethernet11:
 		case _icsneo_netid_t::icsneo_netid_op_ethernet12:
-		case _icsneo_netid_t::OP_Ethernet13:
-		case _icsneo_netid_t::OP_Ethernet14:
-		case _icsneo_netid_t::OP_Ethernet15:
-		case _icsneo_netid_t::OP_Ethernet16:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet13:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet14:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet15:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet16:
 			return icsneo_msg_bus_type_ethernet;
 		case _icsneo_netid_t::icsneo_netid_lsftcan:
 		case _icsneo_netid_t::icsneo_netid_lsftcan2:
@@ -606,26 +606,26 @@ public:
 		case _icsneo_netid_t::icsneo_netid_i2c3:
 		case _icsneo_netid_t::icsneo_netid_i2c4:
 			return icsneo_msg_bus_type_i2c;
-		case _icsneo_netid_t::A2B1:
-		case _icsneo_netid_t::A2B2:
+		case _icsneo_netid_t::icsneo_netid_a2b1:
+		case _icsneo_netid_t::icsneo_netid_a2b2:
 			return icsneo_msg_bus_type_a2b;
 		case _icsneo_netid_t::icsneo_netid_spi1:
-		case _icsneo_netid_t::SPI2:
-		case _icsneo_netid_t::SPI3:
-		case _icsneo_netid_t::SPI4:
-		case _icsneo_netid_t::SPI5:
-		case _icsneo_netid_t::SPI6:
-		case _icsneo_netid_t::SPI7:
-		case _icsneo_netid_t::SPI8:
+		case _icsneo_netid_t::icsneo_netid_spi2:
+		case _icsneo_netid_t::icsneo_netid_spi3:
+		case _icsneo_netid_t::icsneo_netid_spi4:
+		case _icsneo_netid_t::icsneo_netid_spi5:
+		case _icsneo_netid_t::icsneo_netid_spi6:
+		case _icsneo_netid_t::icsneo_netid_spi7:
+		case _icsneo_netid_t::icsneo_netid_spi8:
 			return icsneo_msg_bus_type_spi;
-		case _icsneo_netid_t::MDIO1:
-		case _icsneo_netid_t::MDIO2:
-		case _icsneo_netid_t::MDIO3:
-		case _icsneo_netid_t::MDIO4:
-		case _icsneo_netid_t::MDIO5:
-		case _icsneo_netid_t::MDIO6:
-		case _icsneo_netid_t::MDIO7:
-		case _icsneo_netid_t::MDIO8:
+		case _icsneo_netid_t::icsneo_netid_mdio1:
+		case _icsneo_netid_t::icsneo_netid_mdio2:
+		case _icsneo_netid_t::icsneo_netid_mdio3:
+		case _icsneo_netid_t::icsneo_netid_mdio4:
+		case _icsneo_netid_t::icsneo_netid_mdio5:
+		case _icsneo_netid_t::icsneo_netid_mdio6:
+		case _icsneo_netid_t::icsneo_netid_mdio7:
+		case _icsneo_netid_t::icsneo_netid_mdio8:
 			return icsneo_msg_bus_type_mdio;
 		default:
 			return icsneo_msg_bus_type_other;
@@ -806,13 +806,13 @@ public:
 			return "FlexRay 2";
 		case _icsneo_netid_t::icsneo_netid_op_ethernet12:
 			return "OP (BR) Ethernet 12";
-		case _icsneo_netid_t::OP_Ethernet13:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet13:
 			return "OP (BR) Ethernet 13";
-		case _icsneo_netid_t::OP_Ethernet14:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet14:
 			return "OP (BR) Ethernet 14";
-		case _icsneo_netid_t::OP_Ethernet15:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet15:
 			return "OP (BR) Ethernet 15";
-		case _icsneo_netid_t::OP_Ethernet16:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet16:
 			return "OP (BR) Ethernet 16";
 		case _icsneo_netid_t::icsneo_netid_i2c:
 			return "I2C";
@@ -868,84 +868,84 @@ public:
 			return "I2C 4";
 		case _icsneo_netid_t::icsneo_netid_ethernet2:
 			return "Ethernet 2";
-		case _icsneo_netid_t::A2B1:
+		case _icsneo_netid_t::icsneo_netid_a2b1:
 			return "A2B 1";
-		case _icsneo_netid_t::A2B2:
+		case _icsneo_netid_t::icsneo_netid_a2b2:
 			return "A2B 2";
-		case _icsneo_netid_t::DWCAN9:
+		case _icsneo_netid_t::icsneo_netid_dwcan9:
 			return "DWCAN 09";
-		case _icsneo_netid_t::DWCAN10:
+		case _icsneo_netid_t::icsneo_netid_dwcan10:
 			return "DWCAN 10";
-		case _icsneo_netid_t::DWCAN11:
+		case _icsneo_netid_t::icsneo_netid_dwcan11:
 			return "DWCAN 11";
-		case _icsneo_netid_t::DWCAN12:
+		case _icsneo_netid_t::icsneo_netid_dwcan12:
 			return "DWCAN 12";
-		case _icsneo_netid_t::DWCAN13:
+		case _icsneo_netid_t::icsneo_netid_dwcan13:
 			return "DWCAN 13";
-		case _icsneo_netid_t::DWCAN14:
+		case _icsneo_netid_t::icsneo_netid_dwcan14:
 			return "DWCAN 14";
-		case _icsneo_netid_t::DWCAN15:
+		case _icsneo_netid_t::icsneo_netid_dwcan15:
 			return "DWCAN 15";
-		case _icsneo_netid_t::DWCAN16:
+		case _icsneo_netid_t::icsneo_netid_dwcan16:
 			return "DWCAN 16";
-		case _icsneo_netid_t::Ethernet3:
+		case _icsneo_netid_t::icsneo_netid_ethernet3:
 			return "Ethernet 03";
-		case _icsneo_netid_t::LIN7:
+		case _icsneo_netid_t::icsneo_netid_lin7:
 			return "LIN 07";
-		case _icsneo_netid_t::LIN8:
+		case _icsneo_netid_t::icsneo_netid_lin8:
 			return "LIN 08";
-		case _icsneo_netid_t::LIN9:
+		case _icsneo_netid_t::icsneo_netid_lin9:
 			return "LIN 09";
-		case _icsneo_netid_t::LIN10:
+		case _icsneo_netid_t::icsneo_netid_lin10:
 			return "LIN 10";
-		case _icsneo_netid_t::LIN11:
+		case _icsneo_netid_t::icsneo_netid_lin11:
 			return "LIN 11";
-		case _icsneo_netid_t::LIN12:
+		case _icsneo_netid_t::icsneo_netid_lin12:
 			return "LIN 12";
-		case _icsneo_netid_t::LIN13:
+		case _icsneo_netid_t::icsneo_netid_lin13:
 			return "LIN 13";
-		case _icsneo_netid_t::LIN14:
+		case _icsneo_netid_t::icsneo_netid_lin14:
 			return "LIN 14";
-		case _icsneo_netid_t::LIN15:
+		case _icsneo_netid_t::icsneo_netid_lin15:
 			return "LIN 15";
-		case _icsneo_netid_t::LIN16:
+		case _icsneo_netid_t::icsneo_netid_lin16:
 			return "LIN 16";
-		case _icsneo_netid_t::WBMS:
+		case _icsneo_netid_t::icsneo_netid_wbms:
 			return "WBMS";
 		case _icsneo_netid_t::icsneo_netid_spi1:
 			return "SPI 1";
-		case _icsneo_netid_t::SPI2:
+		case _icsneo_netid_t::icsneo_netid_spi2:
 			return "SPI 2";
-		case _icsneo_netid_t::SPI3:
+		case _icsneo_netid_t::icsneo_netid_spi3:
 			return "SPI 3";
-		case _icsneo_netid_t::SPI4:
+		case _icsneo_netid_t::icsneo_netid_spi4:
 			return "SPI 4";
-		case _icsneo_netid_t::SPI5:
+		case _icsneo_netid_t::icsneo_netid_spi5:
 			return "SPI 5";
-		case _icsneo_netid_t::SPI6:
+		case _icsneo_netid_t::icsneo_netid_spi6:
 			return "SPI 6";
-		case _icsneo_netid_t::SPI7:
+		case _icsneo_netid_t::icsneo_netid_spi7:
 			return "SPI 7";
-		case _icsneo_netid_t::SPI8:
+		case _icsneo_netid_t::icsneo_netid_spi8:
 			return "SPI 8";
-		case _icsneo_netid_t::MDIO1:
+		case _icsneo_netid_t::icsneo_netid_mdio1:
 			return "MDIO 1";
-		case _icsneo_netid_t::MDIO2:
+		case _icsneo_netid_t::icsneo_netid_mdio2:
 			return "MDIO 2";
-		case _icsneo_netid_t::MDIO3:
+		case _icsneo_netid_t::icsneo_netid_mdio3:
 			return "MDIO 3";
-		case _icsneo_netid_t::MDIO4:
+		case _icsneo_netid_t::icsneo_netid_mdio4:
 			return "MDIO 4";
-		case _icsneo_netid_t::MDIO5:
+		case _icsneo_netid_t::icsneo_netid_mdio5:
 			return "MDIO 5";
-		case _icsneo_netid_t::MDIO6:
+		case _icsneo_netid_t::icsneo_netid_mdio6:
 			return "MDIO 6";
-		case _icsneo_netid_t::MDIO7:
+		case _icsneo_netid_t::icsneo_netid_mdio7:
 			return "MDIO 7";
-		case _icsneo_netid_t::MDIO8:
+		case _icsneo_netid_t::icsneo_netid_mdio8:
 			return "MDIO 8";
-		case _icsneo_netid_t::Any:
-		case _icsneo_netid_t::Invalid:
+		case _icsneo_netid_t::icsneo_netid_any:
+		case _icsneo_netid_t::icsneo_netid_invalid:
 			break;
 		}
 		return "Invalid Network";
@@ -1048,13 +1048,13 @@ public:
 			return CoreMini::OP_Ethernet11;
 		case _icsneo_netid_t::icsneo_netid_op_ethernet12:
 			return CoreMini::OP_Ethernet12;
-		case _icsneo_netid_t::OP_Ethernet13:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet13:
 			return CoreMini::OP_Ethernet13;
-		case _icsneo_netid_t::OP_Ethernet14:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet14:
 			return CoreMini::OP_Ethernet14;
-		case _icsneo_netid_t::OP_Ethernet15:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet15:
 			return CoreMini::OP_Ethernet15;
-		case _icsneo_netid_t::OP_Ethernet16:
+		case _icsneo_netid_t::icsneo_netid_op_ethernet16:
 			return CoreMini::OP_Ethernet16;
 		case _icsneo_netid_t::icsneo_netid_tcp:
 			return CoreMini::TCPVirtual;
@@ -1076,81 +1076,81 @@ public:
 			return CoreMini::I2C4;
 		case _icsneo_netid_t::icsneo_netid_ethernet2:
 			return CoreMini::Ethernet2;
-		case _icsneo_netid_t::A2B1:
+		case _icsneo_netid_t::icsneo_netid_a2b1:
 			return CoreMini::A2B1;
-		case _icsneo_netid_t::A2B2:
+		case _icsneo_netid_t::icsneo_netid_a2b2:
 			return CoreMini::A2B2;
-		case _icsneo_netid_t::Ethernet3:
+		case _icsneo_netid_t::icsneo_netid_ethernet3:
 			return CoreMini::Ethernet3;
-		case _icsneo_netid_t::WBMS:
+		case _icsneo_netid_t::icsneo_netid_wbms:
 			return CoreMini::WBMS;
-		case _icsneo_netid_t::DWCAN9:
+		case _icsneo_netid_t::icsneo_netid_dwcan9:
 			return CoreMini::DWCAN9;
-		case _icsneo_netid_t::DWCAN10:
+		case _icsneo_netid_t::icsneo_netid_dwcan10:
 			return CoreMini::DWCAN10;
-		case _icsneo_netid_t::DWCAN11:
+		case _icsneo_netid_t::icsneo_netid_dwcan11:
 			return CoreMini::DWCAN11;
-		case _icsneo_netid_t::DWCAN12:
+		case _icsneo_netid_t::icsneo_netid_dwcan12:
 			return CoreMini::DWCAN12;
-		case _icsneo_netid_t::DWCAN13:
+		case _icsneo_netid_t::icsneo_netid_dwcan13:
 			return CoreMini::DWCAN13;
-		case _icsneo_netid_t::DWCAN14:
+		case _icsneo_netid_t::icsneo_netid_dwcan14:
 			return CoreMini::DWCAN14;
-		case _icsneo_netid_t::DWCAN15:
+		case _icsneo_netid_t::icsneo_netid_dwcan15:
 			return CoreMini::DWCAN15;
-		case _icsneo_netid_t::DWCAN16:
+		case _icsneo_netid_t::icsneo_netid_dwcan16:
 			return CoreMini::DWCAN16;
-		case _icsneo_netid_t::LIN7:
+		case _icsneo_netid_t::icsneo_netid_lin7:
 			return CoreMini::LIN7;
-		case _icsneo_netid_t::LIN8:
+		case _icsneo_netid_t::icsneo_netid_lin8:
 			return CoreMini::LIN8;
-		case _icsneo_netid_t::LIN9:
+		case _icsneo_netid_t::icsneo_netid_lin9:
 			return CoreMini::LIN9;
-		case _icsneo_netid_t::LIN10:
+		case _icsneo_netid_t::icsneo_netid_lin10:
 			return CoreMini::LIN10;
-		case _icsneo_netid_t::LIN11:
+		case _icsneo_netid_t::icsneo_netid_lin11:
 			return CoreMini::LIN11;
-		case _icsneo_netid_t::LIN12:
+		case _icsneo_netid_t::icsneo_netid_lin12:
 			return CoreMini::LIN12;
-		case _icsneo_netid_t::LIN13:
+		case _icsneo_netid_t::icsneo_netid_lin13:
 			return CoreMini::LIN13;
-		case _icsneo_netid_t::LIN14:
+		case _icsneo_netid_t::icsneo_netid_lin14:
 			return CoreMini::LIN14;
-		case _icsneo_netid_t::LIN15:
+		case _icsneo_netid_t::icsneo_netid_lin15:
 			return CoreMini::LIN15;
-		case _icsneo_netid_t::LIN16:
+		case _icsneo_netid_t::icsneo_netid_lin16:
 			return CoreMini::LIN16;
 		case _icsneo_netid_t::icsneo_netid_spi1:
 			return CoreMini::SPI1;
-		case _icsneo_netid_t::SPI2:
+		case _icsneo_netid_t::icsneo_netid_spi2:
 			return CoreMini::SPI2;
-		case _icsneo_netid_t::SPI3:
+		case _icsneo_netid_t::icsneo_netid_spi3:
 			return CoreMini::SPI3;
-		case _icsneo_netid_t::SPI4:
+		case _icsneo_netid_t::icsneo_netid_spi4:
 			return CoreMini::SPI4;
-		case _icsneo_netid_t::SPI5:
+		case _icsneo_netid_t::icsneo_netid_spi5:
 			return CoreMini::SPI5;
-		case _icsneo_netid_t::SPI6:
+		case _icsneo_netid_t::icsneo_netid_spi6:
 			return CoreMini::SPI6;
-		case _icsneo_netid_t::SPI7:
+		case _icsneo_netid_t::icsneo_netid_spi7:
 			return CoreMini::SPI7;
-		case _icsneo_netid_t::SPI8:
+		case _icsneo_netid_t::icsneo_netid_spi8:
 			return CoreMini::SPI8;
-		case _icsneo_netid_t::MDIO1:
+		case _icsneo_netid_t::icsneo_netid_mdio1:
 			return CoreMini::MDIO1;
-		case _icsneo_netid_t::MDIO2:
+		case _icsneo_netid_t::icsneo_netid_mdio2:
 			return CoreMini::MDIO2;
-		case _icsneo_netid_t::MDIO3:
+		case _icsneo_netid_t::icsneo_netid_mdio3:
 			return CoreMini::MDIO3;
-		case _icsneo_netid_t::MDIO4:
+		case _icsneo_netid_t::icsneo_netid_mdio4:
 			return CoreMini::MDIO4;
-		case _icsneo_netid_t::MDIO5:
+		case _icsneo_netid_t::icsneo_netid_mdio5:
 			return CoreMini::MDIO5;
-		case _icsneo_netid_t::MDIO6:
+		case _icsneo_netid_t::icsneo_netid_mdio6:
 			return CoreMini::MDIO6;
-		case _icsneo_netid_t::MDIO7:
+		case _icsneo_netid_t::icsneo_netid_mdio7:
 			return CoreMini::MDIO7;
-		case _icsneo_netid_t::MDIO8:
+		case _icsneo_netid_t::icsneo_netid_mdio8:
 			return CoreMini::MDIO8;
 		default:
 			return std::nullopt;
@@ -1255,13 +1255,13 @@ public:
 		case CoreMini::OP_Ethernet12:
 			return _icsneo_netid_t::icsneo_netid_op_ethernet12;
 		case CoreMini::OP_Ethernet13:
-			return _icsneo_netid_t::OP_Ethernet13;
+			return _icsneo_netid_t::icsneo_netid_op_ethernet13;
 		case CoreMini::OP_Ethernet14:
-			return _icsneo_netid_t::OP_Ethernet14;
+			return _icsneo_netid_t::icsneo_netid_op_ethernet14;
 		case CoreMini::OP_Ethernet15:
-			return _icsneo_netid_t::OP_Ethernet15;
+			return _icsneo_netid_t::icsneo_netid_op_ethernet15;
 		case CoreMini::OP_Ethernet16:
-			return _icsneo_netid_t::OP_Ethernet16;
+			return _icsneo_netid_t::icsneo_netid_op_ethernet16;
 		case CoreMini::TCPVirtual:
 			return _icsneo_netid_t::icsneo_netid_tcp;
 		case CoreMini::UDPVirtual:
@@ -1283,87 +1283,87 @@ public:
 		case CoreMini::Ethernet2:
 			return _icsneo_netid_t::icsneo_netid_ethernet2;
 		case CoreMini::A2B1:
-			return _icsneo_netid_t::A2B1;
+			return _icsneo_netid_t::icsneo_netid_a2b1;
 		case CoreMini::A2B2:
-			return _icsneo_netid_t::A2B2;
+			return _icsneo_netid_t::icsneo_netid_a2b2;
 		case CoreMini::Ethernet3:
-			return _icsneo_netid_t::Ethernet3;
+			return _icsneo_netid_t::icsneo_netid_ethernet3;
 		case CoreMini::WBMS:
-			return _icsneo_netid_t::WBMS;
+			return _icsneo_netid_t::icsneo_netid_wbms;
 		case CoreMini::DWCAN9:
-			return _icsneo_netid_t::DWCAN9;
+			return _icsneo_netid_t::icsneo_netid_dwcan9;
 		case CoreMini::DWCAN10:
-			return _icsneo_netid_t::DWCAN10;
+			return _icsneo_netid_t::icsneo_netid_dwcan10;
 		case CoreMini::DWCAN11:
-			return _icsneo_netid_t::DWCAN11;
+			return _icsneo_netid_t::icsneo_netid_dwcan11;
 		case CoreMini::DWCAN12:
-			return _icsneo_netid_t::DWCAN12;
+			return _icsneo_netid_t::icsneo_netid_dwcan12;
 		case CoreMini::DWCAN13:
-			return _icsneo_netid_t::DWCAN13;
+			return _icsneo_netid_t::icsneo_netid_dwcan13;
 		case CoreMini::DWCAN14:
-			return _icsneo_netid_t::DWCAN14;
+			return _icsneo_netid_t::icsneo_netid_dwcan14;
 		case CoreMini::DWCAN15:
-			return _icsneo_netid_t::DWCAN15;
+			return _icsneo_netid_t::icsneo_netid_dwcan15;
 		case CoreMini::DWCAN16:
-			return _icsneo_netid_t::DWCAN16;
+			return _icsneo_netid_t::icsneo_netid_dwcan16;
 		case CoreMini::LIN7:
-			return _icsneo_netid_t::LIN7;
+			return _icsneo_netid_t::icsneo_netid_lin7;
 		case CoreMini::LIN8:
-			return _icsneo_netid_t::LIN8;
+			return _icsneo_netid_t::icsneo_netid_lin8;
 		case CoreMini::LIN9:
-			return _icsneo_netid_t::LIN9;
+			return _icsneo_netid_t::icsneo_netid_lin9;
 		case CoreMini::LIN10:
-			return _icsneo_netid_t::LIN10;
+			return _icsneo_netid_t::icsneo_netid_lin10;
 		case CoreMini::LIN11:
-			return _icsneo_netid_t::LIN11;
+			return _icsneo_netid_t::icsneo_netid_lin11;
 		case CoreMini::LIN12:
-			return _icsneo_netid_t::LIN12;
+			return _icsneo_netid_t::icsneo_netid_lin12;
 		case CoreMini::LIN13:
-			return _icsneo_netid_t::LIN13;
+			return _icsneo_netid_t::icsneo_netid_lin13;
 		case CoreMini::LIN14:
-			return _icsneo_netid_t::LIN14;
+			return _icsneo_netid_t::icsneo_netid_lin14;
 		case CoreMini::LIN15:
-			return _icsneo_netid_t::LIN15;
+			return _icsneo_netid_t::icsneo_netid_lin15;
 		case CoreMini::LIN16:
-			return _icsneo_netid_t::LIN16;
+			return _icsneo_netid_t::icsneo_netid_lin16;
 		case CoreMini::SPI1:
 			return _icsneo_netid_t::icsneo_netid_spi1;
 		case CoreMini::SPI2:
-			return _icsneo_netid_t::SPI2;
+			return _icsneo_netid_t::icsneo_netid_spi2;
 		case CoreMini::SPI3:
-			return _icsneo_netid_t::SPI3;
+			return _icsneo_netid_t::icsneo_netid_spi3;
 		case CoreMini::SPI4:
-			return _icsneo_netid_t::SPI4;
+			return _icsneo_netid_t::icsneo_netid_spi4;
 		case CoreMini::SPI5:
-			return _icsneo_netid_t::SPI5;
+			return _icsneo_netid_t::icsneo_netid_spi5;
 		case CoreMini::SPI6:
-			return _icsneo_netid_t::SPI6;
+			return _icsneo_netid_t::icsneo_netid_spi6;
 		case CoreMini::SPI7:
-			return _icsneo_netid_t::SPI7;
+			return _icsneo_netid_t::icsneo_netid_spi7;
 		case CoreMini::SPI8:
-			return _icsneo_netid_t::SPI8;
+			return _icsneo_netid_t::icsneo_netid_spi8;
 		case CoreMini::MDIO1:
-			return _icsneo_netid_t::MDIO1;
+			return _icsneo_netid_t::icsneo_netid_mdio1;
 		case CoreMini::MDIO2:
-			return _icsneo_netid_t::MDIO2;
+			return _icsneo_netid_t::icsneo_netid_mdio2;
 		case CoreMini::MDIO3:
-			return _icsneo_netid_t::MDIO3;
+			return _icsneo_netid_t::icsneo_netid_mdio3;
 		case CoreMini::MDIO4:
-			return _icsneo_netid_t::MDIO4;
+			return _icsneo_netid_t::icsneo_netid_mdio4;
 		case CoreMini::MDIO5:
-			return _icsneo_netid_t::MDIO5;
+			return _icsneo_netid_t::icsneo_netid_mdio5;
 		case CoreMini::MDIO6:
-			return _icsneo_netid_t::MDIO6;
+			return _icsneo_netid_t::icsneo_netid_mdio6;
 		case CoreMini::MDIO7:
-			return _icsneo_netid_t::MDIO7;
+			return _icsneo_netid_t::icsneo_netid_mdio7;
 		case CoreMini::MDIO8:
-			return _icsneo_netid_t::MDIO8;
+			return _icsneo_netid_t::icsneo_netid_mdio8;
 
 		}
-		return _icsneo_netid_t::Invalid; // Should be unreachable, the compiler should warn about new CoreMini IDs
+		return _icsneo_netid_t::icsneo_netid_invalid; // Should be unreachable, the compiler should warn about new CoreMini IDs
 	}
 
-	Network() { setValue(_icsneo_netid_t::Invalid); }
+	Network() { setValue(_icsneo_netid_t::icsneo_netid_invalid); }
 	Network(icsneo_netid_t netid, bool expand = true) { setValue(static_cast<_icsneo_netid_t>(netid), expand); }
 	Network(_icsneo_netid_t netid) { setValue(netid); }
 	Network(CoreMini cm) { setValue(GetNetIDFromCoreMiniNetwork(cm)); }

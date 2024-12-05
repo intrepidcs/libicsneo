@@ -79,7 +79,7 @@ void example0(const std::shared_ptr<icsneo::Device>& rada2b) {
 				true /* true if we want 16 bit channels in the message, false for 32 bit. This should match the RAD-A2B device setting */
 			);
 			msg->txmsg = true;
-			msg->network = icsneo::Network(icsneo::Network::_icsneo_netid_t::A2B2);
+			msg->network = icsneo::Network(icsneo::Network::_icsneo_netid_t::icsneo_netid_a2b2);
 
 			// Load the WAV audio data into the desired channel, break if we fail to load
 			if(!msg->loadAudioBuffer(wavStream, channelMap)) {
@@ -192,7 +192,7 @@ void example3(const std::shared_ptr<icsneo::Device>& rada2b) {
 		std::shared_ptr<icsneo::A2BMessage> a2bmsgPtr = std::make_shared<icsneo::A2BMessage>(numFrames, icsneo::A2BMessage::TDMMode::TDM4, true);
 
 		icsneo::A2BMessage& a2bmsg = *a2bmsgPtr.get();
-		a2bmsg.network = icsneo::Network(icsneo::Network::_icsneo_netid_t::A2B2);
+		a2bmsg.network = icsneo::Network(icsneo::Network::_icsneo_netid_t::icsneo_netid_a2b2);
 		a2bmsg.txmsg = true;
 
 		for(size_t frame = 0; frame < a2bmsg.getNumFrames(); frame++) {
