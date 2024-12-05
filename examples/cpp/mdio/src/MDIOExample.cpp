@@ -94,7 +94,7 @@ int main()
 																							{
 			if(icsneo::Message::Type::Frame == message->type) {
 				auto frame = std::static_pointer_cast<icsneo::BusMessage>(message);
-				if(_icsneo_msg_bus_type_t::icsneo_msg_bus_type_mdio == frame->network.getType()) {
+				if(icsneo_msg_bus_type_mdio == frame->network.getType()) {
 					auto msg = std::static_pointer_cast<icsneo::MDIOMessage>(message);
 					std::cout << msg->network << " " << ((msg->isTXMsg)? "TX" : "RX") << " frame\n";
 					std::cout << "Clause: " << ((msg->clause ==  icsneo::MDIOMessage::Clause::Clause22) ? "22" : "45") << "\n";

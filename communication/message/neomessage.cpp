@@ -29,9 +29,9 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 		frame.status.transmitMessage = framemsg->transmitted;
 
 		switch(netType) {
-			case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can:
-			case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan:
-			case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan: {
+			case icsneo_msg_bus_type_can:
+			case icsneo_msg_bus_type_swcan:
+			case icsneo_msg_bus_type_lsftcan: {
 				neomessage_can_t& can = *(neomessage_can_t*)&neomsg;
 				auto canmsg = std::static_pointer_cast<CANMessage>(message);
 				can.arbid = canmsg->arbid;
@@ -44,7 +44,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 				can.status.canfdESI = canmsg->errorStateIndicator;
 				break;
 			}
-			case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_ethernet: {
+			case icsneo_msg_bus_type_ethernet: {
 				neomessage_eth_t& eth = *(neomessage_eth_t*)&neomsg;
 				auto ethmsg = std::static_pointer_cast<EthernetMessage>(message);
 				eth.preemptionFlags = ethmsg->preemptionFlags;
@@ -55,7 +55,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 				//eth.status.xyz = ethmsg->noPadding;
 				break;
 			}
-			case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
+			case icsneo_msg_bus_type_lin: {
 				neomessage_lin_t& lin = *(neomessage_lin_t*)&neomsg;
 				auto linmsg = std::static_pointer_cast<LINMessage>(message);
 				if(!linmsg) { break; }
@@ -123,9 +123,9 @@ std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t*
 		case Message::Type::Frame: {
 			const Network network = ((neomessage_frame_t*)neomessage)->netid;
 			switch(network.getType()) {
-				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can:
-				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan:
-				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan: {
+				case icsneo_msg_bus_type_can:
+				case icsneo_msg_bus_type_swcan:
+				case icsneo_msg_bus_type_lsftcan: {
 					neomessage_can_t& can = *(neomessage_can_t*)neomessage;
 					auto canmsg = std::make_shared<CANMessage>();
 					canmsg->network = network;
@@ -140,7 +140,7 @@ std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t*
 					canmsg->errorStateIndicator = can.status.canfdESI;
 					return canmsg;
 				}
-				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_ethernet: {
+				case icsneo_msg_bus_type_ethernet: {
 					neomessage_eth_t& eth = *(neomessage_eth_t*)neomessage;
 					auto ethmsg = std::make_shared<EthernetMessage>();
 					ethmsg->network = network;
@@ -148,7 +148,7 @@ std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t*
 					ethmsg->data.insert(ethmsg->data.end(), eth.data, eth.data + eth.length);
 					return ethmsg;
 				}
-				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
+				case icsneo_msg_bus_type_lin: {
 					neomessage_lin_t& lin = *(neomessage_lin_t*)neomessage;
 					auto linmsg = std::make_shared<LINMessage>();
 					linmsg->network = network;

@@ -54,7 +54,7 @@ uint64_t Decoder::GetUInt64FromLEBytes(const uint8_t* bytes) {
 
 bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet) {
 	switch(packet->network.getType()) {
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_ethernet: {
+		case icsneo_msg_bus_type_ethernet: {
 			result = HardwareEthernetPacket::DecodeToMessage(packet->data, report);
 			if(!result) {
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
@@ -68,9 +68,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			eth.network = packet->network;
 			return true;
 		}
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can:
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan:
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan: {
+		case icsneo_msg_bus_type_can:
+		case icsneo_msg_bus_type_swcan:
+		case icsneo_msg_bus_type_lsftcan: {
 			if(packet->data.size() < 24) {
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false;
@@ -105,7 +105,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 
 			return true;
 		}
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_flexray: {
+		case icsneo_msg_bus_type_flexray: {
 			if(packet->data.size() < 24) {
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false;
@@ -124,7 +124,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			fr.network = packet->network;
 			return true;
 		}
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_iso9141: {
+		case icsneo_msg_bus_type_iso9141: {
 			if(packet->data.size() < sizeof(HardwareISO9141Packet)) {
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false;
@@ -141,7 +141,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			iso.network = packet->network;
 			return true;
 		}
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_i2c: {
+		case icsneo_msg_bus_type_i2c: {
 			if(packet->data.size() < sizeof(HardwareI2CPacket)) {
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false;
@@ -155,7 +155,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 
 			return true;
 		}
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_a2b: {
+		case icsneo_msg_bus_type_a2b: {
 			result = HardwareA2BPacket::DecodeToMessage(packet->data);
 
 			if(!result) {
@@ -168,7 +168,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			msg.timestamp *= timestampResolution;
 			return true;
 		}
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin: {
+		case icsneo_msg_bus_type_lin: {
 			result = HardwareLINPacket::DecodeToMessage(packet->data);
 
 			if(!result) {
@@ -180,7 +180,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			msg.network = packet->network;
 			return true;
 		}
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_mdio: {
+		case icsneo_msg_bus_type_mdio: {
 			result = HardwareMDIOPacket::DecodeToMessage(packet->data);
 
 			if(!result) {
@@ -192,7 +192,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			msg.network = packet->network;
 			return true;
 		}
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_internal: {
+		case icsneo_msg_bus_type_internal: {
 			switch(packet->network.getNetID()) {
 				case Network::NetID::Reset_Status: {
 					// We can deal with not having the last two fields (voltage and temperature)

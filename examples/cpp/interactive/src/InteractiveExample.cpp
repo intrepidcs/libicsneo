@@ -188,7 +188,7 @@ void printMessage(const std::shared_ptr<icsneo::Message>& message) {
 			// A message of type Frame is guaranteed to be a Frame, so we can static cast safely
 			auto frame = std::static_pointer_cast<icsneo::BusMessage>(message);
 			switch(frame->network.getType()) {
-				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can: {
+				case icsneo_msg_bus_type_can: {
 					// A message of type CAN is guaranteed to be a CANMessage, so we can static cast safely
 					auto canMessage = std::static_pointer_cast<icsneo::CANMessage>(message);
 
@@ -214,7 +214,7 @@ void printMessage(const std::shared_ptr<icsneo::Message>& message) {
 					std::cout << std::dec << '(' << canMessage->timestamp << " ns since 1/1/2007)\n";
 					break;
 				}
-				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_ethernet: {
+				case icsneo_msg_bus_type_ethernet: {
 					auto ethMessage = std::static_pointer_cast<icsneo::EthernetMessage>(message);
 
 					std::cout << "\t\t" << ethMessage->network << " Frame - " << std::dec
@@ -235,7 +235,7 @@ void printMessage(const std::shared_ptr<icsneo::Message>& message) {
 					std::cout << std::dec << std::endl;
 					break;
 				}
-				case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_iso9141: {
+				case icsneo_msg_bus_type_iso9141: {
 					// Note that the default settings on some devices have ISO9141 disabled by default in favor of LIN
 					// and that this example loads the device defaults at the very end.
 					// A message of type ISO9414 is guaranteed to be an ISO9141Message, so we can static cast safely

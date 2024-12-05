@@ -36,9 +36,9 @@ the arbitration ID.
    std::cout << "We got " << messages.size() << " messages!" << std::endl;
    for(auto& msg : messages) {
        switch(msg->network.getType()) {
-           case icsneo::Network::Type::CAN:
-           case icsneo::Network::Type::SWCAN:
-           case icsneo::Network::Type::LSFTCAN: {
+           case icsneo::icsneo_msg_bus_type_can:
+           case icsneo::icsneo_msg_bus_type_swcan:
+           case icsneo::icsneo_msg_bus_type_lsftcan: {
                // A message of type CAN is guaranteed to be a CANMessage, so we can static cast safely
                auto canmsg = std::static_pointer_cast<icsneo::CANMessage>(msg);
                // canmsg->arbid is valid here

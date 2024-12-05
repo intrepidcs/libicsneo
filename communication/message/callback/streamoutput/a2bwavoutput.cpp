@@ -112,7 +112,7 @@ bool A2BWAVOutput::callIfMatch(const std::shared_ptr<Message>& message) const {
 		return false;
 	}
 
-	if(frameMsg->network.getType() != _icsneo_msg_bus_type_t::icsneo_msg_bus_type_a2b)
+	if(frameMsg->network.getType() != icsneo_msg_bus_type_a2b)
 		return false;
 
 	const auto& a2bMsg = std::dynamic_pointer_cast<A2BMessage>(frameMsg);

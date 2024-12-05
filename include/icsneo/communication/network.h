@@ -291,35 +291,35 @@ public:
 	};
 	static const char* GetTypeString(icsneo_msg_bus_type_t type) {
 		switch(type) {
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can:
+		case icsneo_msg_bus_type_can:
 			return "CAN";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin:
+		case icsneo_msg_bus_type_lin:
 			return "LIN";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_flexray:
+		case icsneo_msg_bus_type_flexray:
 			return "FlexRay";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_most:
+		case icsneo_msg_bus_type_most:
 			return "MOST";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_other:
+		case icsneo_msg_bus_type_other:
 			return "Other";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_internal:
+		case icsneo_msg_bus_type_internal:
 			return "Internal";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_iso9141:
+		case icsneo_msg_bus_type_iso9141:
 			return "ISO 9141-2";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_ethernet:
+		case icsneo_msg_bus_type_ethernet:
 			return "Ethernet";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan:
+		case icsneo_msg_bus_type_lsftcan:
 			return "Low Speed Fault Tolerant CAN";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan:
+		case icsneo_msg_bus_type_swcan:
 			return "Single Wire CAN";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_i2c:
+		case icsneo_msg_bus_type_i2c:
 			return "I²C";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_a2b:
+		case icsneo_msg_bus_type_a2b:
 			return "A2B";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_spi:
+		case icsneo_msg_bus_type_spi:
 			return "SPI";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_mdio:
+		case icsneo_msg_bus_type_mdio:
 			return "MDIO";
-		case _icsneo_msg_bus_type_t::icsneo_msg_bus_type_invalid:
+		case icsneo_msg_bus_type_invalid:
 		default:
 			return "Invalid Type";
 		}
@@ -515,7 +515,7 @@ public:
 		case NetID::DWCAN14:
 		case NetID::DWCAN15:
 		case NetID::DWCAN16:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_can;
+			return icsneo_msg_bus_type_can;
 		case NetID::LIN:
 		case NetID::LIN2:
 		case NetID::LIN3:
@@ -532,18 +532,18 @@ public:
 		case NetID::LIN14:
 		case NetID::LIN15:
 		case NetID::LIN16:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lin;
+			return icsneo_msg_bus_type_lin;
 		case NetID::FlexRay:
 		case NetID::FlexRay1a:
 		case NetID::FlexRay1b:
 		case NetID::FlexRay2:
 		case NetID::FlexRay2a:
 		case NetID::FlexRay2b:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_flexray;
+			return icsneo_msg_bus_type_flexray;
 		case NetID::MOST25:
 		case NetID::MOST50:
 		case NetID::MOST150:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_most;
+			return icsneo_msg_bus_type_most;
 		case NetID::RED:
 		case NetID::RED_OLDFORMAT:
 		case NetID::Device:
@@ -565,10 +565,10 @@ public:
 		case NetID::RED_GET_RTC:
 		case NetID::DiskData:
 		case NetID::RED_App_Error:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_internal;
+			return icsneo_msg_bus_type_internal;
 		case NetID::Invalid:
 		case NetID::Any:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_invalid;
+			return icsneo_msg_bus_type_invalid;
 		case NetID::Ethernet:
 		case NetID::Ethernet_DAQ:
 		case NetID::Ethernet2:
@@ -589,26 +589,26 @@ public:
 		case NetID::OP_Ethernet14:
 		case NetID::OP_Ethernet15:
 		case NetID::OP_Ethernet16:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_ethernet;
+			return icsneo_msg_bus_type_ethernet;
 		case NetID::LSFTCAN:
 		case NetID::LSFTCAN2:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_lsftcan;
+			return icsneo_msg_bus_type_lsftcan;
 		case NetID::SWCAN:
 		case NetID::SWCAN2:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_swcan;
+			return icsneo_msg_bus_type_swcan;
 		case NetID::ISO9141:
 		case NetID::ISO9141_2:
 		case NetID::ISO9141_3:
 		case NetID::ISO9141_4:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_iso9141;
+			return icsneo_msg_bus_type_iso9141;
 		case NetID::I2C:
 		case NetID::I2C2:
 		case NetID::I2C3:
 		case NetID::I2C4:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_i2c;
+			return icsneo_msg_bus_type_i2c;
 		case NetID::A2B1:
 		case NetID::A2B2:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_a2b;
+			return icsneo_msg_bus_type_a2b;
 		case NetID::SPI1:
 		case NetID::SPI2:
 		case NetID::SPI3:
@@ -617,7 +617,7 @@ public:
 		case NetID::SPI6:
 		case NetID::SPI7:
 		case NetID::SPI8:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_spi;
+			return icsneo_msg_bus_type_spi;
 		case NetID::MDIO1:
 		case NetID::MDIO2:
 		case NetID::MDIO3:
@@ -626,9 +626,9 @@ public:
 		case NetID::MDIO6:
 		case NetID::MDIO7:
 		case NetID::MDIO8:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_mdio;
+			return icsneo_msg_bus_type_mdio;
 		default:
-			return _icsneo_msg_bus_type_t::icsneo_msg_bus_type_other;
+			return icsneo_msg_bus_type_other;
 		}
 	}
 	static const char* GetNetIDString(NetID netid, bool expand = true) {

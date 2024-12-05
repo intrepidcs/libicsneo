@@ -83,21 +83,21 @@ static bool NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t
 
 	switch (Network::Type(frame.type))
 	{
-	case Network::Type::CAN:
-	case Network::Type::SWCAN:
-	case Network::Type::LSFTCAN:
+	case icsneo_msg_bus_type_can:
+	case icsneo_msg_bus_type_swcan:
+	case icsneo_msg_bus_type_lsftcan:
 		oldmsg.Protocol = frame.status.canfdFDF ? SPY_PROTOCOL_CANFD : SPY_PROTOCOL_CAN;
 		oldmsg.NumberBytesData = static_cast<uint8_t>(std::min(frame.length, (size_t)255));
 		oldmsg.NumberBytesHeader = 4;
 		copyFrameData();
 		break;
-	case Network::Type::Ethernet:
+	case icsneo_msg_bus_type_ethernet:
 		oldmsg.Protocol = SPY_PROTOCOL_ETHERNET;
 		oldmsg.NumberBytesData = static_cast<uint8_t>(frame.length & 0xFF);
 		oldmsg.NumberBytesHeader = static_cast<uint8_t>(frame.length >> 8);
 		copyFrameData();
 		break;
-	case Network::Type::LIN:
+	case icsneo_msg_bus_type_lin:
 	{
 		const neomessage_lin_t& linFrame = *reinterpret_cast<const neomessage_lin_t*>(&frame);
 		icsSpyMessageJ1850& linSpyMsg = *reinterpret_cast<icsSpyMessageJ1850*>(&oldmsg);

@@ -15,9 +15,9 @@ public:
 	MessageFilter(Message::Type type) : includeInternalInAny(neomessagetype_t(type) & 0x8000), messageType(type) {}
 	MessageFilter(Network::NetID netid) : MessageFilter(Network::GetTypeOfNetID(netid, false), netid) {} // Messages on the communication layer are never encoded as VNET ID + common ID, so skip the expansion step
 	MessageFilter(icsneo_msg_bus_type_t type, Network::NetID net = Network::NetID::Any) : networkType(type), netid(net) {
-		// If a Network::Type::Internal is used, we want to also get internal Message::Types
+		// If a icsneo_msg_bus_type_internal is used, we want to also get internal Message::Types
 		// The NetID we want may be in there
-		includeInternalInAny = (networkType == _icsneo_msg_bus_type_t::icsneo_msg_bus_type_internal);
+		includeInternalInAny = (networkType == icsneo_msg_bus_type_internal);
 	}
 	virtual ~MessageFilter() = default;
 	// When getting "all" types of messages, include the ones marked as "internal only"
@@ -34,7 +34,7 @@ public:
 				return false;
 			if(!matchNetID(frame->network.getNetID()))
 				return false;
-		} else if (netid != Network::NetID::Any || networkType != _icsneo_msg_bus_type_t::icsneo_msg_bus_type_any) {
+		} else if (netid != Network::NetID::Any || networkType != icsneo_msg_bus_type_any) {
 			return false; // Filtering on a NetID or Type, but this message doesn't have one
 		}
 		return true;
@@ -48,9 +48,9 @@ protected:
 		return messageType == mtype;
 	}
 
-	icsneo_msg_bus_type_t networkType = _icsneo_msg_bus_type_t::icsneo_msg_bus_type_any;
+	icsneo_msg_bus_type_t networkType = icsneo_msg_bus_type_any;
 	bool matchNetworkType(icsneo_msg_bus_type_t mtype) const {
-		if(networkType == _icsneo_msg_bus_type_t::icsneo_msg_bus_type_any && (mtype != _icsneo_msg_bus_type_t::icsneo_msg_bus_type_internal || includeInternalInAny))
+		if(networkType == icsneo_msg_bus_type_any && (mtype != icsneo_msg_bus_type_internal || includeInternalInAny))
 			return true;
 		return networkType == mtype;
 	}

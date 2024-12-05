@@ -13,8 +13,8 @@ namespace icsneo {
 
 class CANMessageFilter : public MessageFilter {
 public:
-	CANMessageFilter() : MessageFilter(_icsneo_msg_bus_type_t::icsneo_msg_bus_type_can), arbid(INVALID_ARBID) { messageType = Message::Type::Frame; }
-	CANMessageFilter(uint32_t arbid) : MessageFilter(_icsneo_msg_bus_type_t::icsneo_msg_bus_type_can), arbid(arbid) { messageType = Message::Type::Frame; }
+	CANMessageFilter() : MessageFilter(icsneo_msg_bus_type_can), arbid(INVALID_ARBID) { messageType = Message::Type::Frame; }
+	CANMessageFilter(uint32_t arbid) : MessageFilter(icsneo_msg_bus_type_can), arbid(arbid) { messageType = Message::Type::Frame; }
 
 	bool match(const std::shared_ptr<Message>& message) const {
 		if(!MessageFilter::match(message))
