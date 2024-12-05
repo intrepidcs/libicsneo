@@ -61,6 +61,9 @@ ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const cha
         case icsneo_error_rtc_failure:
             error = "RTC failure";
             break;
+        case icsneo_error_set_settings_failure:
+            error = "Setting settings failed";
+            break;
         // Don't default, let the compiler warn us if we forget to handle an error code
     }
     // Find the minimum length of the error string and set value_length
@@ -648,24 +651,14 @@ ICSNEO_API icsneo_error_t icsneo_device_set_rtc(icsneo_device_t* device, int64_t
     return icsneo_error_success;
 }
 
-/*
-	Type getType() const noexcept { return Type(eventStruct.eventNumber); }
-	Severity getSeverity() const noexcept { return Severity(eventStruct.severity); }
-	std::string getDescription() const noexcept { return std::string(eventStruct.description); }
-	const Device* getDevice() const noexcept { return device; } // Will return nullptr if this is an API-wide event
-	EventTimePoint getTimestamp() const noexcept { return timepoint; }
-	
-	void downgradeFromError() noexcept;
+ICSNEO_API icsneo_error_t icsneo_device_load_default_settings(icsneo_device_t* device, bool save) {
+    if (!device) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    if (!device->device->settings->applyDefaults(!save)) {
+        return icsneo_error_set_settings_failure;
+    }
 
-	bool isForDevice(const Device* forDevice) const noexcept { return forDevice == device; }
-	bool isForDevice(std::string serial) const noexcept;
-	
-	// As opposed to getDescription, this will also add text such as "neoVI FIRE 2 CY2468 Error: " to fully describe the problem
-	std::string describe() const noexcept;
-	friend std::ostream& operator<<(std::ostream& os, const APIEvent& event) {
-		os << event.describe();
-		return os;
-	}
-
-	static const char* DescriptionForType(Type type);
-*/
+    return icsneo_error_success;
+}

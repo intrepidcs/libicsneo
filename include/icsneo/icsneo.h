@@ -84,6 +84,8 @@ typedef enum _icsneo_error_t {
     icsneo_error_invalid_type,
     // Generic RTC error code
     icsneo_error_rtc_failure,
+    // Error setting settings
+    icsneo_error_set_settings_failure
 } _icsneo_error_t;
 
 /** @brief Integer representation of _icsneo_error_t enum. 
@@ -459,6 +461,14 @@ ICSNEO_API icsneo_error_t icsneo_device_get_rtc(icsneo_device_t* device, int64_t
  */
 ICSNEO_API icsneo_error_t icsneo_device_set_rtc(icsneo_device_t* device, int64_t* unix_epoch);
 
+/** @brief Load the default settings for a device
+ * 
+ * @param[in] icsneo_device_t device The device to load the settings for.
+ * @param[in] bool save True to make the settings permanent, false settings will be reverted on next boot.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_device_load_default_settings(icsneo_device_t* device, bool save);
 #ifdef __cplusplus
 }
 #endif
