@@ -9,12 +9,12 @@ namespace icsneo {
 void init_message(pybind11::module_& m) {
 	pybind11::class_<Message, std::shared_ptr<Message>> message(m, "Message");
 	pybind11::enum_<Message::Type>(message, "Type")
-		.value("Frame", Message::Type::Frame)
+		.value("BusMessage", Message::Type::BusMessage)
 		.value("CANErrorCount", Message::Type::CANErrorCount)
 		.value("LINHeaderOnly", Message::Type::LINHeaderOnly)
 		.value("LINBreak", Message::Type::LINBreak)
 		.value("Invalid", Message::Type::Invalid)
-		.value("RawMessage", Message::Type::RawMessage)
+		.value("InternalMessage", Message::Type::InternalMessage)
 		.value("ReadSettings", Message::Type::ReadSettings)
 		.value("ResetStatus", Message::Type::ResetStatus)
 		.value("DeviceVersion", Message::Type::DeviceVersion)
@@ -37,14 +37,14 @@ void init_message(pybind11::module_& m) {
 	message.def_readonly("type", &Message::type);
 	message.def_readwrite("timestamp", &Message::timestamp);
 
-	pybind11::class_<RawMessage, std::shared_ptr<RawMessage>, Message>(m, "RawMessage")
-		.def_readwrite("network", &RawMessage::network)
-		.def_readwrite("data", &RawMessage::data);
+	pybind11::class_<InternalMessage, std::shared_ptr<InternalMessage>, Message>(m, "InternalMessage")
+		.def_readwrite("network", &InternalMessage::network)
+		.def_readwrite("data", &InternalMessage::data);
 
-	pybind11::class_<Frame, std::shared_ptr<Frame>, RawMessage>(m, "Frame")
-		.def_readwrite("description", &Frame::description)
-		.def_readwrite("transmitted", &Frame::transmitted)
-		.def_readwrite("error", &Frame::error);
+	pybind11::class_<Frame, std::shared_ptr<Frame>, InternalMessage>(m, "BusMessage")
+		.def_readwrite("description", &BusMessage::description)
+		.def_readwrite("transmitted", &BusMessage::transmitted)
+		.def_readwrite("error", &BusMessage::error);
 }
 
 } // namespace icsneo

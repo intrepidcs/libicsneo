@@ -169,7 +169,7 @@ int main() {
 		// MessageCallbacks are powerful, and can filter on things like ArbID for you. See the documentation
 		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>([](std::shared_ptr<icsneo::Message> message) {
 			switch(message->type) {
-				case icsneo::Message::Type::Frame: {
+				case icsneo::Message::Type::BusMessage: {
 					// A message of type Frame is guaranteed to be a Frame, so we can static cast safely
 					auto frame = std::static_pointer_cast<icsneo::BusMessage>(message);
 					switch(frame->network.getType()) {

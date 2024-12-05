@@ -69,7 +69,7 @@ std::shared_ptr<Message> HardwareCANPacket::DecodeToMessage(const std::vector<ui
 
 		return msg;
 
-	} else { // CAN Frame
+	} else { // CAN BusMessage
 		auto msg = std::make_shared<CANMessage>();
 
 		// Arb ID
@@ -104,7 +104,7 @@ std::shared_ptr<Message> HardwareCANPacket::DecodeToMessage(const std::vector<ui
 
 		// Data
 		// The first 8 bytes are always in the standard place
-		if((data->dlc.RTR && data->header.IDE) || (!data->header.IDE && data->header.SRR)) { // Remote Request Frame
+		if((data->dlc.RTR && data->header.IDE) || (!data->header.IDE && data->header.SRR)) { // Remote Request BusMessage
 			msg->data.resize(length); // This data will be all zeros, but the length will be set
 			msg->isRemote = true;
 		} else {
@@ -197,7 +197,7 @@ bool HardwareCANPacket::EncodeFromMessage(const CANMessage& message, std::vector
 
 	// Status and DLC bits
 	if(message.isCANFD) {
-		result.push_back(0x0F); // FD Frame
+		result.push_back(0x0F); // FD BusMessage
 		uint8_t fdStatusByte = *dlc;
 		if(message.baudrateSwitch)
 			fdStatusByte |= 0x80; // BRS status bit

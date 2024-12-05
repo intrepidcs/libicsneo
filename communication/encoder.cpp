@@ -23,10 +23,10 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 	result.clear();
 
 	switch(message->type) {
-		case Message::Type::Frame: {
+		case Message::Type::BusMessage: {
 			auto frame = std::dynamic_pointer_cast<BusMessage>(message);
 
-			// Frame uses frame->data as the buffer unless directed otherwise
+			// BusMessage uses frame->data as the buffer unless directed otherwise
 			buffer = &frame->data;
 			netid = uint16_t(frame->network.getNetID());
 
@@ -130,7 +130,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 
 			break;
 		}
-		case Message::Type::RawMessage: {
+		case Message::Type::InternalMessage: {
 			auto raw = std::dynamic_pointer_cast<InternalMessage>(message);
 
 			// Raw message uses raw->data as the buffer unless directed otherwise

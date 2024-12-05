@@ -184,8 +184,8 @@ std::shared_ptr<icsneo::Device> selectDevice(const std::vector<std::shared_ptr<i
 
 void printMessage(const std::shared_ptr<icsneo::Message>& message) {
 	switch(message->type) {
-		case icsneo::Message::Type::Frame: {
-			// A message of type Frame is guaranteed to be a Frame, so we can static cast safely
+		case icsneo::Message::Type::BusMessage: {
+			// A message of type BusMessage is guaranteed to be a BusMessage, so we can static cast safely
 			auto frame = std::static_pointer_cast<icsneo::BusMessage>(message);
 			switch(frame->network.getType()) {
 				case icsneo_msg_bus_type_can: {
@@ -217,7 +217,7 @@ void printMessage(const std::shared_ptr<icsneo::Message>& message) {
 				case icsneo_msg_bus_type_ethernet: {
 					auto ethMessage = std::static_pointer_cast<icsneo::EthernetMessage>(message);
 
-					std::cout << "\t\t" << ethMessage->network << " Frame - " << std::dec
+					std::cout << "\t\t" << ethMessage->network << " BusMessage - " << std::dec
 						<< ethMessage->data.size() << " bytes on wire\n";
 					std::cout << "\t\t  Timestamped:\t"<< ethMessage->timestamp << " ns since 1/1/2007\n";
 
@@ -264,7 +264,7 @@ void printMessage(const std::shared_ptr<icsneo::Message>& message) {
 					break;
 			}
 			break;
-		} // end of icsneo::Message::Type::Frame
+		} // end of icsneo::Message::Type::BusMessage
 		case icsneo::Message::Type::CANErrorCount: {
 			// A message of type CANErrorCount is guaranteed to be a CANErrorCount, so we can static cast safely
 			auto cec = std::static_pointer_cast<icsneo::CANErrorCountMessage>(message);

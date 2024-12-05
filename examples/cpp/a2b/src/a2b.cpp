@@ -259,7 +259,7 @@ void example4(const std::shared_ptr<icsneo::Device>& rada2b) {
 	auto handler = rada2b->addMessageCallback(std::make_shared<icsneo::MessageCallback>(
 		[] (std::shared_ptr<icsneo::Message> newMsg) {
 
-			if(newMsg->type == icsneo::Message::Type::Frame) {
+			if(newMsg->type == icsneo::Message::Type::BusMessage) {
 				const auto& frame = std::dynamic_pointer_cast<icsneo::BusMessage>(newMsg);
 				if(frame && frame->network.getNetID() == icsneo::Network::NetID::I2C2) {
 					const auto& i2cMessage = std::dynamic_pointer_cast<icsneo::I2CMessage>(frame);

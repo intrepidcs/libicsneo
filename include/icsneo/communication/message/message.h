@@ -22,7 +22,7 @@ public:
 	virtual const icsneo_msg_type_t getMsgType() const { return icsneo_msg_type_device; }
 
 	enum class Type : neomessagetype_t {
-		Frame = 0,
+		BusMessage = 0,
 
 		CANErrorCount = 0x100,
 
@@ -31,7 +31,7 @@ public:
 
 		// Past 0x8000 are all for internal use only
 		Invalid = 0x8000,
-		RawMessage = 0x8001,
+		InternalMessage = 0x8001,
 		ReadSettings = 0x8002,
 		ResetStatus = 0x8003,
 		DeviceVersion = 0x8004,
@@ -59,10 +59,10 @@ public:
 
 class InternalMessage : public Message {
 public:
-	InternalMessage(Message::Type type = Message::Type::RawMessage) : Message(type) {}
+	InternalMessage(Message::Type type = Message::Type::InternalMessage) : Message(type) {}
 	InternalMessage(Message::Type type, Network net) : Message(type), network(net) {}
-	InternalMessage(Network net) : Message(Message::Type::RawMessage), network(net) {}
-	InternalMessage(Network net, std::vector<uint8_t> d) : Message(Message::Type::RawMessage), network(net), data(d) {}
+	InternalMessage(Network net) : Message(Message::Type::InternalMessage), network(net) {}
+	InternalMessage(Network net, std::vector<uint8_t> d) : Message(Message::Type::InternalMessage), network(net), data(d) {}
 
 	virtual const icsneo_msg_type_t getMsgType() const { return icsneo_msg_type_internal; }
 
@@ -72,7 +72,7 @@ public:
 
 class BusMessage : public InternalMessage {
 public:
-	BusMessage() : InternalMessage(Message::Type::Frame) {}
+	BusMessage() : InternalMessage(Message::Type::BusMessage) {}
 
 	const icsneo_msg_type_t getMsgType() const final { return icsneo_msg_type_bus; }
 

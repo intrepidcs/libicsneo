@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
 	uint64_t canFrameCount = 0;
 	uint64_t ethFrameCount = 0;
 	rxDevice->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> msg) {
-		if(msg->type != icsneo::Message::Type::Frame) {
+		if(msg->type != icsneo::Message::Type::BusMessage) {
 			return;
 		}
 		const auto frame = std::static_pointer_cast<icsneo::BusMessage>(msg);
@@ -216,7 +216,7 @@ int main(int argc, char* argv[]) {
 
 	size_t currentMessage = 0;
 	rxDevice->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> msg) {
-		if(msg->type != icsneo::Message::Type::Frame) {
+		if(msg->type != icsneo::Message::Type::BusMessage) {
 			return;
 		}
 		auto frame = std::static_pointer_cast<icsneo::BusMessage>(msg);

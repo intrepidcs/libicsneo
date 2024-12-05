@@ -1718,11 +1718,11 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 		case Message::Type::ResetStatus:
 			latestResetStatus = std::static_pointer_cast<ResetStatusMessage>(message);
 			break;
-		case Message::Type::RawMessage: {
+		case Message::Type::InternalMessage: {
 			auto rawMessage = std::static_pointer_cast<InternalMessage>(message);
 			switch(rawMessage->network.getNetID()) {
 				case Network::NetID::Device: {
-					// Device is not guaranteed to be a CANMessage, it might be a RawMessage
+					// Device is not guaranteed to be a CANMessage, it might be a InternalMessage
 					// if it couldn't be decoded to a CANMessage. We only care about the
 					// CANMessage decoding right now.
 					auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);

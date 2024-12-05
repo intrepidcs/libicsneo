@@ -87,7 +87,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			result->timestamp *= timestampResolution;
 
 			switch(result->type) {
-				case Message::Type::Frame: {
+				case Message::Type::BusMessage: {
 					CANMessage& can = *static_cast<CANMessage*>(result.get());
 					can.network = packet->network;
 					break;
@@ -308,7 +308,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							result = TC10StatusMessage::DecodeToMessage(packet->data);
 							return true;
 						default:
-							// No defined handler, treat this as a RawMessage
+							// No defined handler, treat this as a InternalMessage
 							break;
 					}
 					break;
