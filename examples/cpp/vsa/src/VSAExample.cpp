@@ -56,7 +56,7 @@ std::vector<std::shared_ptr<icsneo::BusMessage>> constructRandomFrames(size_t fr
 				// Classic CAN
 				{
 					auto frame = std::make_shared<icsneo::CANMessage>();
-					frame->network = icsneo::Network::_icsneo_netid_t::HSCAN2;
+					frame->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan2;
 					frames.push_back(frame);
 					frame->data.resize(ClassicCANSize);
 
@@ -67,7 +67,7 @@ std::vector<std::shared_ptr<icsneo::BusMessage>> constructRandomFrames(size_t fr
 				// CAN FD
 				{
 					auto frame = std::make_shared<icsneo::CANMessage>();
-					frame->network = icsneo::Network::_icsneo_netid_t::HSCAN3;
+					frame->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan3;
 					frames.push_back(frame);
 					frame->data.resize(CANFDSize);
 					std::generate(frame->data.begin(), frame->data.end(), randByteGen);

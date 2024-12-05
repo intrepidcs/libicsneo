@@ -49,10 +49,10 @@ protected:
 		static std::vector<Network> supportedRxNetworks = {
 			Network::_icsneo_netid_t::icsneo_netid_hscan,
 			Network::_icsneo_netid_t::icsneo_netid_mscan,
-			Network::_icsneo_netid_t::HSCAN2,
-			Network::_icsneo_netid_t::HSCAN3,
-			Network::_icsneo_netid_t::HSCAN4,
-			Network::_icsneo_netid_t::HSCAN5,
+			Network::_icsneo_netid_t::icsneo_netid_hscan2,
+			Network::_icsneo_netid_t::icsneo_netid_hscan3,
+			Network::_icsneo_netid_t::icsneo_netid_hscan4,
+			Network::_icsneo_netid_t::icsneo_netid_hscan5,
 
 			Network::_icsneo_netid_t::Ethernet,
 			Network::_icsneo_netid_t::Ethernet2,
@@ -62,8 +62,8 @@ protected:
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 
-			Network::_icsneo_netid_t::FlexRay1a,
-			Network::_icsneo_netid_t::FlexRay1b,
+			Network::_icsneo_netid_t::icsneo_netid_flexray1a,
+			Network::_icsneo_netid_t::icsneo_netid_flexray1b,
 
 			Network::_icsneo_netid_t::I2C,
 			Network::_icsneo_netid_t::I2C2,
@@ -79,10 +79,10 @@ protected:
 		static std::vector<Network> supportedTxNetworks = {
 			Network::_icsneo_netid_t::icsneo_netid_hscan,
 			Network::_icsneo_netid_t::icsneo_netid_mscan,
-			Network::_icsneo_netid_t::HSCAN2,
-			Network::_icsneo_netid_t::HSCAN3,
-			Network::_icsneo_netid_t::HSCAN4,
-			Network::_icsneo_netid_t::HSCAN5,
+			Network::_icsneo_netid_t::icsneo_netid_hscan2,
+			Network::_icsneo_netid_t::icsneo_netid_hscan3,
+			Network::_icsneo_netid_t::icsneo_netid_hscan4,
+			Network::_icsneo_netid_t::icsneo_netid_hscan5,
 
 			Network::_icsneo_netid_t::Ethernet,
 			Network::_icsneo_netid_t::Ethernet2,

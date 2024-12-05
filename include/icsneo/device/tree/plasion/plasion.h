@@ -15,10 +15,10 @@ public:
 		static std::vector<Network> supportedNetworks = {
 			Network::_icsneo_netid_t::icsneo_netid_hscan,
 			Network::_icsneo_netid_t::icsneo_netid_mscan,
-			Network::_icsneo_netid_t::HSCAN2,
-			Network::_icsneo_netid_t::HSCAN3,
-			Network::_icsneo_netid_t::HSCAN4,
-			Network::_icsneo_netid_t::HSCAN5,
+			Network::_icsneo_netid_t::icsneo_netid_hscan2,
+			Network::_icsneo_netid_t::icsneo_netid_hscan3,
+			Network::_icsneo_netid_t::icsneo_netid_hscan4,
+			Network::_icsneo_netid_t::icsneo_netid_hscan5,
 			Network::_icsneo_netid_t::HSCAN6,
 			Network::_icsneo_netid_t::HSCAN7,
 
@@ -26,16 +26,16 @@ public:
 			Network::_icsneo_netid_t::LSFTCAN2,
 
 			Network::_icsneo_netid_t::icsneo_netid_swcan,
-			Network::_icsneo_netid_t::SWCAN2,
+			Network::_icsneo_netid_t::icsneo_netid_swcan2,
 
 			Network::_icsneo_netid_t::Ethernet,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
-			Network::_icsneo_netid_t::LIN2,
-			Network::_icsneo_netid_t::LIN3,
-			Network::_icsneo_netid_t::LIN4,
+			Network::_icsneo_netid_t::icsneo_netid_lin2,
+			Network::_icsneo_netid_t::icsneo_netid_lin3,
+			Network::_icsneo_netid_t::icsneo_netid_lin4,
 
-			Network::_icsneo_netid_t::FlexRay
+			Network::_icsneo_netid_t::icsneo_netid_flexray
 		};
 		return supportedNetworks;
 	}
@@ -51,8 +51,8 @@ protected:
 	virtual bool isSupportedTXNetwork(const Network&) const override { return true; }
 	virtual void setupExtensions() override {
 		std::vector<Network> flexRayControllers;
-		flexRayControllers.push_back(Network::_icsneo_netid_t::FlexRay);
-		flexRayControllers.push_back(Network::_icsneo_netid_t::FlexRay); // TODO Becomes FlexRay2 if not in coldstart mode
+		flexRayControllers.push_back(Network::_icsneo_netid_t::icsneo_netid_flexray);
+		flexRayControllers.push_back(Network::_icsneo_netid_t::icsneo_netid_flexray); // TODO Becomes FlexRay2 if not in coldstart mode
 		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
 	}
 

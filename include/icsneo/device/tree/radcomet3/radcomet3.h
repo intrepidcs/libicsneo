@@ -19,17 +19,17 @@ public:
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
 			Network::_icsneo_netid_t::icsneo_netid_hscan,
-			Network::_icsneo_netid_t::HSCAN2,
+			Network::_icsneo_netid_t::icsneo_netid_hscan2,
 
 			Network::_icsneo_netid_t::Ethernet,
 
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet1,
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet2,
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet3,
-			Network::_icsneo_netid_t::OP_Ethernet4,
-			Network::_icsneo_netid_t::OP_Ethernet5,
-			Network::_icsneo_netid_t::OP_Ethernet6,
-			Network::_icsneo_netid_t::OP_Ethernet7,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet4,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet5,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet6,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet7,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 			Network::_icsneo_netid_t::icsneo_netid_iso9141,

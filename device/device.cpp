@@ -389,7 +389,7 @@ bool Device::goOnline() {
 
 	updateLEDState();
 
-	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::Reset_Status);
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_reset_status);
 	filter->includeInternalInAny = true;
 
 	// Wait until communication is enabled or 5 seconds, whichever comes first
@@ -432,7 +432,7 @@ bool Device::goOffline() {
 
 	updateLEDState();
 
-	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::Reset_Status);
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_reset_status);
 	filter->includeInternalInAny = true;
 
 	// Wait until communication is disabled or 5 seconds, whichever comes first
@@ -1888,7 +1888,7 @@ std::optional<bool> Device::SetRootDirectoryEntryFlags(uint8_t mask, uint8_t val
 
 std::optional<std::chrono::time_point<std::chrono::system_clock>> Device::getRTC()
 {
-	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::RED_GET_RTC);
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_red_get_rtc);
 	std::shared_ptr<Message> generic = com->waitForMessageSync([this]() {
 		return com->sendCommand(Command::GetRTC);
 	}, filter, std::chrono::milliseconds(3000));

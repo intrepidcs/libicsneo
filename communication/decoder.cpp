@@ -194,7 +194,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 		}
 		case icsneo_msg_bus_type_internal: {
 			switch(packet->network.getNetID()) {
-				case Network::_icsneo_netid_t::Reset_Status: {
+				case Network::_icsneo_netid_t::icsneo_netid_reset_status: {
 					// We can deal with not having the last two fields (voltage and temperature)
 					if(packet->data.size() < (sizeof(HardwareResetStatusPacket) - (sizeof(uint16_t) * 2))) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
@@ -397,7 +397,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							return true;
 					}
 				}
-				case Network::_icsneo_netid_t::RED_OLDFORMAT: {
+				case Network::_icsneo_netid_t::icsneo_netid_red_oldformat: {
 					/* So-called "old format" messages are a "new style, long format" wrapper around the old short messages.
 					 * They consist of a 16-bit LE length first, then the 8-bit length and netid combo byte, then the payload
 					 * with no checksum. The upper-nibble length of the combo byte should be ignored completely, using the
@@ -412,7 +412,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						packet->data.resize(length);
 					return decode(result, packet);
 				}
-				case Network::_icsneo_netid_t::RED_App_Error: {
+				case Network::_icsneo_netid_t::icsneo_netid_red_app_error: {
 					result = AppErrorMessage::DecodeToMessage(packet->data, report);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
@@ -420,7 +420,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					return true;
 				}
-				case Network::_icsneo_netid_t::ReadSettings: {
+				case Network::_icsneo_netid_t::icsneo_netid_read_settings: {
 					auto msg = std::make_shared<ReadSettingsMessage>();
 					msg->response = ReadSettingsMessage::Response(packet->data[0]);
 

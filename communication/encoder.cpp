@@ -141,7 +141,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 				case Network::_icsneo_netid_t::icsneo_netid_device:
 					shortFormat = true;
 					break;
-				case Network::_icsneo_netid_t::RED_OLDFORMAT: {
+				case Network::_icsneo_netid_t::icsneo_netid_red_oldformat: {
 					// See the decoder for an explanation
 					// We expect the network byte to be populated already in data, but not the length
 					uint16_t length = uint16_t(raw->data.size()) - 1;

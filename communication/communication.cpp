@@ -100,7 +100,7 @@ bool Communication::sendCommand(ExtendedCommand cmd, std::vector<uint8_t> argume
 }
 
 bool Communication::getSettingsSync(std::vector<uint8_t>& data, std::chrono::milliseconds timeout) {
-	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::ReadSettings);
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_read_settings);
 	std::shared_ptr<Message> msg = waitForMessageSync([this]() {
 		return sendCommand(Command::ReadSettings, { 0, 0, 0, 1 /* Get Global Settings */, 0, 1 /* Subversion 1 */ });
 	}, filter, timeout);

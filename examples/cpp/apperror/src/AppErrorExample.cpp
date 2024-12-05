@@ -40,7 +40,7 @@ int main() {
 		// Add your error handling here
 		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>(filter, [](std::shared_ptr<icsneo::Message> message) {
 			auto msg = std::static_pointer_cast<icsneo::AppErrorMessage>(message);
-			if(icsneo::Network::_icsneo_netid_t::RED_App_Error == msg->network.getNetID()) {
+			if(icsneo::Network::_icsneo_netid_t::icsneo_netid_red_app_error == msg->network.getNetID()) {
 				std::cout << std::endl << "App error reported:" << std::endl;
 				std::cout << msg->getAppErrorString() << std::endl << std::endl;
 			}

@@ -24,7 +24,7 @@ std::shared_ptr<Message> AppErrorMessage::DecodeToMessage(const std::vector<uint
 	appErr->errorNetID = static_cast<Network::_icsneo_netid_t>(data->network_id);
 	appErr->timestamp10us = data->uiTimeStamp10uS;
 	appErr->timestamp10usMSB = data->uiTimeStamp10uSMSB;
-	appErr->network = Network::_icsneo_netid_t::RED_App_Error;
+	appErr->network = Network::_icsneo_netid_t::icsneo_netid_red_app_error;
 	return appErr;
 }
 

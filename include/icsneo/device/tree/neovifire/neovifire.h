@@ -18,17 +18,17 @@ public:
 		static std::vector<Network> supportedNetworks = {
 			Network::_icsneo_netid_t::icsneo_netid_hscan,
 			Network::_icsneo_netid_t::icsneo_netid_mscan,
-			Network::_icsneo_netid_t::HSCAN2,
-			Network::_icsneo_netid_t::HSCAN3,
+			Network::_icsneo_netid_t::icsneo_netid_hscan2,
+			Network::_icsneo_netid_t::icsneo_netid_hscan3,
 
 			Network::_icsneo_netid_t::icsneo_netid_lsftcan,
 
 			Network::_icsneo_netid_t::icsneo_netid_swcan,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
-			Network::_icsneo_netid_t::LIN2,
-			Network::_icsneo_netid_t::LIN3,
-			Network::_icsneo_netid_t::LIN4
+			Network::_icsneo_netid_t::icsneo_netid_lin2,
+			Network::_icsneo_netid_t::icsneo_netid_lin3,
+			Network::_icsneo_netid_t::icsneo_netid_lin4
 		};
 		return supportedNetworks;
 	}

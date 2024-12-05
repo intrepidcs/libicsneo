@@ -25,10 +25,10 @@ public:
 		static std::vector<Network> supportedNetworks = {
 			Network::_icsneo_netid_t::icsneo_netid_hscan,
 			Network::_icsneo_netid_t::icsneo_netid_mscan,
-			Network::_icsneo_netid_t::HSCAN2,
-			Network::_icsneo_netid_t::HSCAN3,
-			Network::_icsneo_netid_t::HSCAN4,
-			Network::_icsneo_netid_t::HSCAN5,
+			Network::_icsneo_netid_t::icsneo_netid_hscan2,
+			Network::_icsneo_netid_t::icsneo_netid_hscan3,
+			Network::_icsneo_netid_t::icsneo_netid_hscan4,
+			Network::_icsneo_netid_t::icsneo_netid_hscan5,
 			Network::_icsneo_netid_t::HSCAN6,
 			Network::_icsneo_netid_t::HSCAN7,
 
@@ -36,19 +36,19 @@ public:
 			Network::_icsneo_netid_t::LSFTCAN2,
 
 			Network::_icsneo_netid_t::icsneo_netid_swcan,
-			Network::_icsneo_netid_t::SWCAN2,
+			Network::_icsneo_netid_t::icsneo_netid_swcan2,
 
 			Network::_icsneo_netid_t::Ethernet,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
-			Network::_icsneo_netid_t::LIN2,
-			Network::_icsneo_netid_t::LIN3,
-			Network::_icsneo_netid_t::LIN4,
+			Network::_icsneo_netid_t::icsneo_netid_lin2,
+			Network::_icsneo_netid_t::icsneo_netid_lin3,
+			Network::_icsneo_netid_t::icsneo_netid_lin4,
 
 			Network::_icsneo_netid_t::icsneo_netid_iso9141,
 			Network::_icsneo_netid_t::icsneo_netid_iso9141_2,
-			Network::_icsneo_netid_t::ISO9141_3,
-			Network::_icsneo_netid_t::ISO9141_4
+			Network::_icsneo_netid_t::icsneo_netid_iso9141_3,
+			Network::_icsneo_netid_t::icsneo_netid_iso9141_4
 		};
 		return supportedNetworks;
 	}

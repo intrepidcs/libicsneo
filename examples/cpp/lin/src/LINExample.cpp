@@ -37,7 +37,7 @@ int main() {
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Disable LIN2 commander resistor... ";
-		ret = device->settings->setCommanderResistorFor(icsneo::Network::_icsneo_netid_t::LIN2, false);
+		ret = device->settings->setCommanderResistorFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2, false);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Setting LIN to operate at " << baud << "bit/s... ";
@@ -45,7 +45,7 @@ int main() {
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Setting LIN2 to operate at " << baud << "bit/s... ";
-		ret = device->settings->setBaudrateFor(icsneo::Network::_icsneo_netid_t::LIN2, baud);
+		ret = device->settings->setBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2, baud);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Setting LIN mode to NORMAL... ";
@@ -53,7 +53,7 @@ int main() {
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Setting LIN2 mode to NORMAL... ";
-		ret = device->settings->setLINModeFor(icsneo::Network::_icsneo_netid_t::LIN2, NORMAL_MODE);
+		ret = device->settings->setLINModeFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2, NORMAL_MODE);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Applying settings... ";
@@ -68,7 +68,7 @@ int main() {
 			std::cout << "OK, " << (readBaud) << "bit/s" << std::endl;
 
 		std::cout << "Getting LIN2 Baudrate... ";
-		readBaud = device->settings->getBaudrateFor(icsneo::Network::_icsneo_netid_t::LIN2);
+		readBaud = device->settings->getBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2);
 		if(readBaud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
@@ -115,7 +115,7 @@ int main() {
 		// We can transmit messages
 		std::cout << "Transmitting a LIN responder data frame... ";
 		auto lin_r = std::make_shared<icsneo::LINMessage>();
-		lin_r->network = icsneo::Network::_icsneo_netid_t::LIN2;
+		lin_r->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2;
 		lin_r->ID = 0x11;
 		lin_r->linMsgType = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
 		lin_r->data = {0xaa, 0xbb, 0xcc, 0xdd, 0x11, 0x22, 0x33, 0x44};
