@@ -9,8 +9,11 @@ namespace icsneo {
 
 void init_devicetype(pybind11::module_& m) {
 	pybind11::class_<DeviceType> deviceType(m, "DeviceType");
-	// deviceType.def("get_device_type", &DeviceType::getDeviceType);
-	// deviceType.def("get_generic_product_name", &DeviceType::getGenericProductName);
+	deviceType.def("get_device_type", &DeviceType::getDeviceType);
+	deviceType.def(
+		"get_generic_product_name", [](DeviceType &self) -> std::string {
+			return self.getGenericProductName(self.getDeviceType());
+		});
 
 	pybind11::enum_<_icsneo_devicetype_t>(m, "icsneo_devicetype_t")
 		.value("Unknown", icsneo_devicetype_unknown)
