@@ -41,22 +41,25 @@ ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const cha
     std::string error;
     switch (error_code) {
         case icsneo_error_success:
-            error = "success";
+            error = "Success";
             break;
         case icsneo_error_invalid_parameters:
-            error = "invalid parameters";
+            error = "Invalid function parameters";
             break;
         case icsneo_error_open_failed:
-            error = "open failed";
+            error = "Open failed";
             break;
         case icsneo_error_go_online_failed:
-            error = "go online failed";
+            error = "Going online failed";
             break;
         case icsneo_error_enable_message_polling_failed:
-            error = "enable message polling failed";
+            error = "Enable message polling failed";
             break;
         case icsneo_error_sync_rtc_failed:
-            error = "sync RTC failed";
+            error = "Syncronizing RTC failed";
+            break;
+        case icsneo_error_rtc_failure:
+            error = "RTC failure";
             break;
         // Don't default, let the compiler warn us if we forget to handle an error code
     }
@@ -618,6 +621,30 @@ ICSNEO_API icsneo_error_t icsneo_event_get_description(icsneo_event_t* event, co
     // Copy the string into value
     strncpy(const_cast<char *>(value), ev.describe().c_str(), min_length);
 
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_device_get_rtc(icsneo_device_t* device, int64_t* unix_epoch) {
+    if (!device || !unix_epoch) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    if (auto rtc_time = device->device->getRTC(); rtc_time != std::nullopt) {
+        *unix_epoch = std::chrono::duration_cast<std::chrono::seconds>(rtc_time->time_since_epoch()).count();
+    } else {
+        *unix_epoch = 0;
+        return icsneo_error_rtc_failure;
+    }
+    return icsneo_error_success;
+}
+ICSNEO_API icsneo_error_t icsneo_device_set_rtc(icsneo_device_t* device, int64_t* unix_epoch) {
+    if (!device || !unix_epoch) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    if (!device->device->setRTC(std::chrono::system_clock::time_point(std::chrono::seconds(*unix_epoch)))) {
+        return icsneo_error_sync_rtc_failed;
+    }
     return icsneo_error_success;
 }
 

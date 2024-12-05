@@ -82,6 +82,8 @@ typedef enum _icsneo_error_t {
     icsneo_error_get_messages_failed,
     // Generic invalid type error
     icsneo_error_invalid_type,
+    // Generic RTC error code
+    icsneo_error_rtc_failure,
 } _icsneo_error_t;
 
 /** @brief Integer representation of _icsneo_error_t enum. 
@@ -408,17 +410,6 @@ ICSNEO_API icsneo_error_t icsneo_can_message_baudrate_switch(icsneo_device_t* de
 */
 ICSNEO_API icsneo_error_t icsneo_can_message_error_state_indicator(icsneo_device_t* device, icsneo_message_t* message, bool* value);
 
-
-/*
-	uint32_t arbid;
-	uint8_t dlcOnWire;
-	bool isRemote = false; // Not allowed if CAN FD
-	bool isExtended = false;
-	bool isCANFD = false;
-	bool baudrateSwitch = false; // CAN FD only
-	bool errorStateIndicator = false; // CAN FD only
-*/
-
 /** @brief Get the global events not specifically related to a device.
  * 
  * @param[out] icsneo_event_t** events Pointer to an array of icsneo_event_t to copy the events into.
@@ -449,6 +440,24 @@ ICSNEO_API icsneo_error_t icsneo_device_get_events(icsneo_device_t* device, icsn
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
 ICSNEO_API icsneo_error_t icsneo_event_get_description(icsneo_event_t* event, const char* value, uint32_t* value_length);
+
+/** @brief Get the RTC (Real time clock) of a device.
+ * 
+ * @param[in] icsneo_device_t device The device to get the RTC of.
+ * @param[out] int64_t* unix_epoch Pointer to an int64_t to copy the RTC into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_device_get_rtc(icsneo_device_t* device, int64_t* unix_epoch);
+
+/** @brief Set the RTC (Real time clock) of a device.
+ * 
+ * @param[in] icsneo_device_t device The device to get the RTC of.
+ * @param[in] int64_t* unix_epoch int64_t to copy the RTC into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_device_set_rtc(icsneo_device_t* device, int64_t* unix_epoch);
 
 #ifdef __cplusplus
 }
