@@ -570,7 +570,7 @@ ICSNEO_API icsneo_error_t icsneo_get_events(icsneo_event_t** events, uint32_t* e
     // Copy the events into the global event container
     for (uint32_t i = 0; i < min_size; i++) {
         auto e = icsneo_event_t {
-            .event = global_events[i],
+            global_events[i],
         };
         g_events.push_back(e);
     }
@@ -603,7 +603,7 @@ ICSNEO_API icsneo_error_t icsneo_device_get_events(icsneo_device_t* device, icsn
     auto device_events = icsneo::GetEvents(filter, min_size);
     for (uint32_t i = 0; i < min_size; i++) {
         auto e = icsneo_event_t {
-            .event = device_events[i],
+            device_events[i],
         };
         device->events.push_back(e);
     }
