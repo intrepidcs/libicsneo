@@ -478,6 +478,16 @@ ICSNEO_API icsneo_error_t icsneo_device_set_rtc(icsneo_device_t* device, int64_t
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
 ICSNEO_API icsneo_error_t icsneo_device_load_default_settings(icsneo_device_t* device, bool save);
+
+/** @brief Check if the device supports TC10. 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[out] bool* supported Pointer to a uint32_t to copy the value into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_device_supports_tc10(icsneo_device_t* device, bool* supported);
+
 #ifdef __cplusplus
 }
 #endif

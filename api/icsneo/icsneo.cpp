@@ -677,3 +677,13 @@ ICSNEO_API icsneo_error_t icsneo_device_load_default_settings(icsneo_device_t* d
 
     return icsneo_error_success;
 }
+
+ICSNEO_API icsneo_error_t icsneo_device_supports_tc10(icsneo_device_t* device, bool* supported) {
+    if (!device || !supported) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    *supported = device->device->supportsTC10();
+
+    return icsneo_error_success;
+}
