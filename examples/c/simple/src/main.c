@@ -37,7 +37,7 @@ void sleep_ms(uint32_t ms) {
 int print_error_code(const char* message, icsneo_error_t error) {
     char error_str[256] = {0};
     uint32_t error_length = 256;
-    icsneo_error_t res = icsneo_error_code(error, error_str, &error_length);
+    icsneo_error_t res = icsneo_get_error_code(error, error_str, &error_length);
     if (res != icsneo_error_success) {
         printf("%s: Failed to get string for error code %d with error code %d\n", message, error, res);
         return res;

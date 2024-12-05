@@ -103,7 +103,7 @@ typedef uint32_t icsneo_error_t;
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length);
+ICSNEO_API icsneo_error_t icsneo_get_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length);
 
 /** @brief Get the device type string for a icsneo_devicetype_t.
  * 

@@ -33,7 +33,7 @@ typedef struct icsneo_event_t {
 static std::vector<std::shared_ptr<icsneo_device_t>> g_devices;
 static std::vector<icsneo_event_t> g_events;
 
-ICSNEO_API icsneo_error_t icsneo_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length) {
+ICSNEO_API icsneo_error_t icsneo_get_error_code(icsneo_error_t error_code, const char* value, uint32_t* value_length) {
     if (!value || !value_length) {
         return icsneo_error_invalid_parameters;
     }
