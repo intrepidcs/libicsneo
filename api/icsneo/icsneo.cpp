@@ -197,8 +197,11 @@ ICSNEO_API icsneo_error_t icsneo_close(icsneo_device_t* device) {
         return icsneo_error_success;
     }
     dev->close();
-    // Clear out old messages
+    // Clear out old messages and events
     device->messages.clear();
+    device->messages.shrink_to_fit();
+    device->events.clear();
+    device->events.shrink_to_fit();
     return icsneo_error_success;
 }
 
@@ -369,7 +372,7 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
         message_t->message = message;
         device->messages.push_back(message_t);
     }
-
+    device->messages.shrink_to_fit();
     // Copy the messages into the output array
     for (uint32_t i = 0; i < min_size; i++) {
         messages[i] = device->messages[i].get();
@@ -571,6 +574,7 @@ ICSNEO_API icsneo_error_t icsneo_get_events(icsneo_event_t** events, uint32_t* e
         };
         g_events.push_back(e);
     }
+    g_events.shrink_to_fit();
     // Copy the global events references into the events array
     for (uint32_t i = 0; i < min_size; i++) {
         events[i] = &g_events[i];
@@ -603,6 +607,7 @@ ICSNEO_API icsneo_error_t icsneo_device_get_events(icsneo_device_t* device, icsn
         };
         device->events.push_back(e);
     }
+    device->events.shrink_to_fit();
     // Copy the device events references into the events array
     for (uint32_t i = 0; i < min_size; i++) {
         events[i] = &device->events[i];

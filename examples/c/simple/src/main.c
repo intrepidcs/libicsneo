@@ -233,7 +233,6 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
             printf(" ]\n");
             continue;
         }
-        
     }
 
     return icsneo_error_success;
