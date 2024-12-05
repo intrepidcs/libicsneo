@@ -90,7 +90,7 @@ ICSNEO_API icsneo_error_t icsneo_device_type_from_type(icsneo_devicetype_t devic
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_find(icsneo_device_t** devices, uint32_t* devices_count, void* reserved) {
+ICSNEO_API icsneo_error_t icsneo_device_find_all(icsneo_device_t** devices, uint32_t* devices_count, void* reserved) {
     if (!devices || !devices_count) {
         return icsneo_error_invalid_parameters;
     }
@@ -136,7 +136,7 @@ ICSNEO_API icsneo_error_t icsneo_device_is_valid(icsneo_device_t* device) {
     return !device->device ? icsneo_error_invalid_parameters : icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_get_open_options(icsneo_device_t* device, icsneo_open_options_t* options) {
+ICSNEO_API icsneo_error_t icsneo_device_get_open_options(icsneo_device_t* device, icsneo_open_options_t* options) {
     if (!device || !options) {
         return icsneo_error_invalid_parameters;
     }
@@ -145,7 +145,7 @@ ICSNEO_API icsneo_error_t icsneo_get_open_options(icsneo_device_t* device, icsne
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_set_open_options(icsneo_device_t* device, icsneo_open_options_t options) {
+ICSNEO_API icsneo_error_t icsneo_device_set_open_options(icsneo_device_t* device, icsneo_open_options_t options) {
     if (!device) {
         return icsneo_error_invalid_parameters;
     }
@@ -155,7 +155,7 @@ ICSNEO_API icsneo_error_t icsneo_set_open_options(icsneo_device_t* device, icsne
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_open(icsneo_device_t* device) {
+ICSNEO_API icsneo_error_t icsneo_device_open(icsneo_device_t* device) {
     if (!device || !device->device) {
         return icsneo_error_invalid_parameters;
     }
@@ -188,7 +188,7 @@ ICSNEO_API icsneo_error_t icsneo_open(icsneo_device_t* device) {
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_close(icsneo_device_t* device) {
+ICSNEO_API icsneo_error_t icsneo_device_close(icsneo_device_t* device) {
     if (!device || !device->device) {
         return icsneo_error_invalid_parameters;
     }
@@ -205,7 +205,7 @@ ICSNEO_API icsneo_error_t icsneo_close(icsneo_device_t* device) {
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_device_describe(icsneo_device_t* device, const char* value, uint32_t* value_length) {
+ICSNEO_API icsneo_error_t icsneo_device_get_description(icsneo_device_t* device, const char* value, uint32_t* value_length) {
     if (!device || !device->device) {
         return icsneo_error_invalid_parameters;
     }
@@ -219,7 +219,7 @@ ICSNEO_API icsneo_error_t icsneo_device_describe(icsneo_device_t* device, const 
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_devicetype_t* value) {
+ICSNEO_API icsneo_error_t icsneo_device_get_type(icsneo_device_t* device, icsneo_devicetype_t* value) {
     if (!device || !device->device) {
         return icsneo_error_invalid_parameters;
     }
@@ -229,7 +229,7 @@ ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_dev
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_device_serial(icsneo_device_t* device, const char* value, uint32_t* value_length) {
+ICSNEO_API icsneo_error_t icsneo_device_get_serial(icsneo_device_t* device, const char* value, uint32_t* value_length) {
     if (!device || !device->device) {
         return icsneo_error_invalid_parameters;
     }
@@ -244,7 +244,7 @@ ICSNEO_API icsneo_error_t icsneo_device_serial(icsneo_device_t* device, const ch
 }
 
 
-ICSNEO_API icsneo_error_t icsneo_go_online(icsneo_device_t* device, bool go_online) {
+ICSNEO_API icsneo_error_t icsneo_device_go_online(icsneo_device_t* device, bool go_online) {
     if (!device) {
         return icsneo_error_invalid_parameters;
     }
@@ -261,7 +261,7 @@ ICSNEO_API icsneo_error_t icsneo_go_online(icsneo_device_t* device, bool go_onli
     return icsneo_error_go_online_failed;
 }
 
-ICSNEO_API icsneo_error_t icsneo_is_online(icsneo_device_t* device, bool* is_online) {
+ICSNEO_API icsneo_error_t icsneo_device_is_online(icsneo_device_t* device, bool* is_online) {
     if (!device || !is_online) {
         return icsneo_error_invalid_parameters;
     }
@@ -271,7 +271,7 @@ ICSNEO_API icsneo_error_t icsneo_is_online(icsneo_device_t* device, bool* is_onl
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_is_online_supported(icsneo_device_t* device, bool* is_online_supported) {
+ICSNEO_API icsneo_error_t icsneo_device_is_online_supported(icsneo_device_t* device, bool* is_online_supported) {
     if (!device || !is_online_supported) {
         return icsneo_error_invalid_parameters;
     }
@@ -281,7 +281,7 @@ ICSNEO_API icsneo_error_t icsneo_is_online_supported(icsneo_device_t* device, bo
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_set_message_polling(icsneo_device_t* device, bool enable) {
+ICSNEO_API icsneo_error_t icsneo_device_set_message_polling(icsneo_device_t* device, bool enable) {
     if (!device) {
         return icsneo_error_invalid_parameters;
     }
@@ -298,7 +298,7 @@ ICSNEO_API icsneo_error_t icsneo_set_message_polling(icsneo_device_t* device, bo
     return icsneo_error_enable_message_polling_failed;
 }
 
-ICSNEO_API icsneo_error_t icsneo_get_message_polling(icsneo_device_t* device, bool* is_enabled) {
+ICSNEO_API icsneo_error_t icsneo_device_get_message_polling(icsneo_device_t* device, bool* is_enabled) {
     if (!device || !is_enabled) {
         return icsneo_error_invalid_parameters;
     }
@@ -308,7 +308,7 @@ ICSNEO_API icsneo_error_t icsneo_get_message_polling(icsneo_device_t* device, bo
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_set_message_polling_limit(icsneo_device_t* device, uint32_t limit) {
+ICSNEO_API icsneo_error_t icsneo_device_set_message_polling_limit(icsneo_device_t* device, uint32_t limit) {
     if (!device) {
         return icsneo_error_invalid_parameters;
     }
@@ -318,7 +318,7 @@ ICSNEO_API icsneo_error_t icsneo_set_message_polling_limit(icsneo_device_t* devi
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_get_message_polling_limit(icsneo_device_t* device, uint32_t* limit) {
+ICSNEO_API icsneo_error_t icsneo_device_get_message_polling_limit(icsneo_device_t* device, uint32_t* limit) {
     if (!device || !limit) {
         return icsneo_error_invalid_parameters;
     }
@@ -328,7 +328,7 @@ ICSNEO_API icsneo_error_t icsneo_get_message_polling_limit(icsneo_device_t* devi
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_get_message_count(icsneo_device_t* device, uint32_t* count)  {
+ICSNEO_API icsneo_error_t icsneo_device_get_message_count(icsneo_device_t* device, uint32_t* count)  {
     if (!device || !count) {
         return icsneo_error_invalid_parameters;
     }
@@ -338,7 +338,7 @@ ICSNEO_API icsneo_error_t icsneo_get_message_count(icsneo_device_t* device, uint
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_get_timestamp_resolution(icsneo_device_t* device, uint32_t* resolution) {
+ICSNEO_API icsneo_error_t icsneo_device_get_timestamp_resolution(icsneo_device_t* device, uint32_t* resolution) {
     if (!device || !resolution) {
         return icsneo_error_invalid_parameters;
     }
@@ -348,7 +348,7 @@ ICSNEO_API icsneo_error_t icsneo_get_timestamp_resolution(icsneo_device_t* devic
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count, uint32_t timeout_ms) {    
+ICSNEO_API icsneo_error_t icsneo_device_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count, uint32_t timeout_ms) {    
     if (!device || !messages || !messages_count) {
         return icsneo_error_invalid_parameters;
     }
@@ -391,7 +391,7 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_device_t* device, icsneo_message_t* message, bool* is_valid) {
+ICSNEO_API icsneo_error_t icsneo_message_is_valid(icsneo_device_t* device, icsneo_message_t* message, bool* is_valid) {
     if (!device || !message || !is_valid) {
         return icsneo_error_invalid_parameters;
     }
@@ -454,7 +454,7 @@ ICSNEO_API icsneo_error_t icsneo_message_get_data(icsneo_device_t* device, icsne
 }
 
 
-ICSNEO_API icsneo_error_t icsneo_can_message_arbid(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value) {
+ICSNEO_API icsneo_error_t icsneo_can_message_get_arbid(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value) {
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
@@ -470,7 +470,7 @@ ICSNEO_API icsneo_error_t icsneo_can_message_arbid(icsneo_device_t* device, icsn
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_can_message_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value) {
+ICSNEO_API icsneo_error_t icsneo_can_message_get_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value) {
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
@@ -534,7 +534,7 @@ ICSNEO_API icsneo_error_t icsneo_can_message_is_canfd(icsneo_device_t* device, i
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_can_message_baudrate_switch(icsneo_device_t* device, icsneo_message_t* message, bool* value) {
+ICSNEO_API icsneo_error_t icsneo_can_message_get_baudrate_switch(icsneo_device_t* device, icsneo_message_t* message, bool* value) {
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
@@ -550,7 +550,7 @@ ICSNEO_API icsneo_error_t icsneo_can_message_baudrate_switch(icsneo_device_t* de
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_can_message_error_state_indicator(icsneo_device_t* device, icsneo_message_t* message, bool* value) {
+ICSNEO_API icsneo_error_t icsneo_can_message_get_error_state_indicator(icsneo_device_t* device, icsneo_message_t* message, bool* value) {
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }

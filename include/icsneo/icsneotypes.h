@@ -7,7 +7,7 @@ extern "C" {
 #include <stdint.h>
 
 /** @brief
- * Options for opening a device. See icsneo_open() for more info.
+ * Options for opening a device. See icsneo_device_open() for more info.
  */
 typedef enum _icsneo_open_options_t {
     // No options

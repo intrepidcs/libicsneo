@@ -124,7 +124,7 @@ ICSNEO_API icsneo_error_t icsneo_device_type_from_type(icsneo_devicetype_t devic
  * 
  * @return icsneo_error_t icsneo_error_success if successful.
 */
-ICSNEO_API icsneo_error_t icsneo_find(icsneo_device_t** devices, uint32_t* devices_count, void* reserved);
+ICSNEO_API icsneo_error_t icsneo_device_find_all(icsneo_device_t** devices, uint32_t* devices_count, void* reserved);
 
 /** @brief Check to make sure a device is valid. 
  * 
@@ -141,7 +141,7 @@ ICSNEO_API icsneo_error_t icsneo_device_is_valid(icsneo_device_t* device);
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_get_open_options(icsneo_device_t* device, icsneo_open_options_t* options);
+ICSNEO_API icsneo_error_t icsneo_device_get_open_options(icsneo_device_t* device, icsneo_open_options_t* options);
 
 /** @brief Set the open options for a device 
  * 
@@ -150,31 +150,31 @@ ICSNEO_API icsneo_error_t icsneo_get_open_options(icsneo_device_t* device, icsne
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_set_open_options(icsneo_device_t* device, icsneo_open_options_t options);
+ICSNEO_API icsneo_error_t icsneo_device_set_open_options(icsneo_device_t* device, icsneo_open_options_t options);
 
 /** @brief Open a connection to a device.
  * 
- * After a successful call to this function, icsneo_close() must be called to close the device.
+ * After a successful call to this function, icsneo_device_close() must be called to close the device.
  * 
  * @param[in] icsneo_device_t device The device to open.
  * @param[out] icsneo_handle_t* handle Pointer to a handle to the opened device. Will be NULL on failure.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_failure otherwise.
  * 
- * @see icsneo_close
+ * @see icsneo_device_close
  */
-ICSNEO_API icsneo_error_t icsneo_open(icsneo_device_t* device);
+ICSNEO_API icsneo_error_t icsneo_device_open(icsneo_device_t* device);
 
 /** @brief Close a connection to a previously opened device.
  * 
- * After a successful call to icsneo_open(), this function must be called to close the device.
+ * After a successful call to icsneo_device_open(), this function must be called to close the device.
  * An already closed device will still succeed.
  * 
  * @param[in] icsneo_device_t device The device to close.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_failure otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_close(icsneo_device_t* device);
+ICSNEO_API icsneo_error_t icsneo_device_close(icsneo_device_t* device);
 
 /** @brief Get the description of a device
  * 
@@ -184,16 +184,16 @@ ICSNEO_API icsneo_error_t icsneo_close(icsneo_device_t* device);
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_device_describe(icsneo_device_t* device, const char* value, uint32_t* value_length);
+ICSNEO_API icsneo_error_t icsneo_device_get_description(icsneo_device_t* device, const char* value, uint32_t* value_length);
 
-/** @brief Get the description type a device
+/** @brief Get the type of a device
  * 
- * @param[in] icsneo_device_t device The device to get the description of.
+ * @param[in] icsneo_device_t device The device to get the type of.
  * @param[out] icsneo_devicetype_t* value Pointer to an icsneo_devicetype_t to copy the type into.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_devicetype_t* value);
+ICSNEO_API icsneo_error_t icsneo_device_get_type(icsneo_device_t* device, icsneo_devicetype_t* value);
 
 /** @brief Get the serial of a device
  * 
@@ -203,7 +203,7 @@ ICSNEO_API icsneo_error_t icsneo_device_type(icsneo_device_t* device, icsneo_dev
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_device_serial(icsneo_device_t* device, const char* value, uint32_t* value_length);
+ICSNEO_API icsneo_error_t icsneo_device_get_serial(icsneo_device_t* device, const char* value, uint32_t* value_length);
 
 /** @brief Set the online state of a device.
  * 
@@ -212,7 +212,7 @@ ICSNEO_API icsneo_error_t icsneo_device_serial(icsneo_device_t* device, const ch
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_go_online(icsneo_device_t* device, bool go_online);
+ICSNEO_API icsneo_error_t icsneo_device_go_online(icsneo_device_t* device, bool go_online);
 
 /** @brief Get the online state of a device.
  * 
@@ -221,7 +221,7 @@ ICSNEO_API icsneo_error_t icsneo_go_online(icsneo_device_t* device, bool go_onli
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_is_online(icsneo_device_t* device, bool* is_online);
+ICSNEO_API icsneo_error_t icsneo_device_is_online(icsneo_device_t* device, bool* is_online);
 
 /** @brief Get the online supported state of a device.
  * 
@@ -230,7 +230,7 @@ ICSNEO_API icsneo_error_t icsneo_is_online(icsneo_device_t* device, bool* is_onl
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_is_online_supported(icsneo_device_t* device, bool* is_online_supported);
+ICSNEO_API icsneo_error_t icsneo_device_is_online_supported(icsneo_device_t* device, bool* is_online_supported);
 
 
 /** @brief Set the message polling state of a device.
@@ -240,7 +240,7 @@ ICSNEO_API icsneo_error_t icsneo_is_online_supported(icsneo_device_t* device, bo
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_set_message_polling(icsneo_device_t* device, bool enable);
+ICSNEO_API icsneo_error_t icsneo_device_set_message_polling(icsneo_device_t* device, bool enable);
 
 /** @brief Get the message polling state of a device.
  * 
@@ -249,7 +249,7 @@ ICSNEO_API icsneo_error_t icsneo_set_message_polling(icsneo_device_t* device, bo
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_get_message_polling(icsneo_device_t* device, bool* is_enabled);
+ICSNEO_API icsneo_error_t icsneo_device_get_message_polling(icsneo_device_t* device, bool* is_enabled);
 
 /** @brief Set the message polling limit of a device.
  * 
@@ -260,18 +260,18 @@ ICSNEO_API icsneo_error_t icsneo_get_message_polling(icsneo_device_t* device, bo
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_set_message_polling_limit(icsneo_device_t* device, uint32_t limit);
+ICSNEO_API icsneo_error_t icsneo_device_set_message_polling_limit(icsneo_device_t* device, uint32_t limit);
 
 /** @brief Get the message polling limit of a device.
  * 
- * @see icsneo_set_message_polling_limit
+ * @see icsneo_device_set_message_polling_limit
  * 
  * @param[in] icsneo_device_t device The device to enforce the message polling limit.
  * @param[out] uint32_t limit The limit to get.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_get_message_polling_limit(icsneo_device_t* device, uint32_t* limit);
+ICSNEO_API icsneo_error_t icsneo_device_get_message_polling_limit(icsneo_device_t* device, uint32_t* limit);
 
 /** @brief Get the message count of a device
  * 
@@ -280,7 +280,7 @@ ICSNEO_API icsneo_error_t icsneo_get_message_polling_limit(icsneo_device_t* devi
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_get_message_count(icsneo_device_t* device, uint32_t* count);
+ICSNEO_API icsneo_error_t icsneo_device_get_message_count(icsneo_device_t* device, uint32_t* count);
 
 
 /** @brief Get the timestamp resolution (nanoseconds) of a device
@@ -290,7 +290,7 @@ ICSNEO_API icsneo_error_t icsneo_get_message_count(icsneo_device_t* device, uint
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_get_timestamp_resolution(icsneo_device_t* device, uint32_t* resolution);
+ICSNEO_API icsneo_error_t icsneo_device_get_timestamp_resolution(icsneo_device_t* device, uint32_t* resolution);
 
 /** @brief Get the messages of a device
  * 
@@ -304,7 +304,7 @@ ICSNEO_API icsneo_error_t icsneo_get_timestamp_resolution(icsneo_device_t* devic
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count, uint32_t timeout_ms);
+ICSNEO_API icsneo_error_t icsneo_device_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count, uint32_t timeout_ms);
 
 /** @brief Check if a message is valid
  * 
@@ -314,7 +314,7 @@ ICSNEO_API icsneo_error_t icsneo_get_messages(icsneo_device_t* device, icsneo_me
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
-ICSNEO_API icsneo_error_t icsneo_is_message_valid(icsneo_device_t* device, icsneo_message_t* message, bool* is_valid);
+ICSNEO_API icsneo_error_t icsneo_message_is_valid(icsneo_device_t* device, icsneo_message_t* message, bool* is_valid);
 
 /** @brief Get the type of a message
  * 
@@ -359,7 +359,7 @@ ICSNEO_API icsneo_error_t icsneo_message_get_data(icsneo_device_t* device, icsne
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_can_message_arbid(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value);
+ICSNEO_API icsneo_error_t icsneo_can_message_get_arbid(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value);
 
 /** @brief Get the DLC on wire of a CAN message 
  * 
@@ -369,7 +369,7 @@ ICSNEO_API icsneo_error_t icsneo_can_message_arbid(icsneo_device_t* device, icsn
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_can_message_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value);
+ICSNEO_API icsneo_error_t icsneo_can_message_get_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value);
 
 /** @brief Get the remote status of a CAN message 
  * 
@@ -409,7 +409,7 @@ ICSNEO_API icsneo_error_t icsneo_can_message_is_canfd(icsneo_device_t* device, i
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_can_message_baudrate_switch(icsneo_device_t* device, icsneo_message_t* message, bool* value);
+ICSNEO_API icsneo_error_t icsneo_can_message_get_baudrate_switch(icsneo_device_t* device, icsneo_message_t* message, bool* value);
 
 /** @brief Get the error state indicator status of a CAN message 
  * 
@@ -419,7 +419,7 @@ ICSNEO_API icsneo_error_t icsneo_can_message_baudrate_switch(icsneo_device_t* de
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_can_message_error_state_indicator(icsneo_device_t* device, icsneo_message_t* message, bool* value);
+ICSNEO_API icsneo_error_t icsneo_can_message_get_error_state_indicator(icsneo_device_t* device, icsneo_message_t* message, bool* value);
 
 /** @brief Get the global events not specifically related to a device.
  * 

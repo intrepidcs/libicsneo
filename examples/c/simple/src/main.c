@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
     icsneo_device_t* devices[255] = {0};
     uint32_t devices_count = 255;
 
-    icsneo_error_t res = icsneo_find(devices, &devices_count, NULL);
+    icsneo_error_t res = icsneo_device_find_all(devices, &devices_count, NULL);
     if (res != icsneo_error_success) {
         return print_error_code("Failed to find devices", res);
     };
@@ -82,14 +82,14 @@ int main(int argc, char* argv[]) {
         // Get description of the device
         const char description[255] = {0};
         uint32_t description_length = 255;
-        res = icsneo_device_describe(device, description, &description_length);
+        res = icsneo_device_get_description(device, description, &description_length);
         if (res != icsneo_error_success) {
             print_device_events(device, description);
             return print_error_code("Failed to get device description", res);
         };
         // Get timestamp resolution of the device
         uint32_t timestamp_resolution = 0;
-        res = icsneo_get_timestamp_resolution(device, &timestamp_resolution);
+        res = icsneo_device_get_timestamp_resolution(device, &timestamp_resolution);
         if (res != icsneo_error_success) {
             print_device_events(device, description);
             return print_error_code("Failed to get timestamp resolution", res);
@@ -97,21 +97,21 @@ int main(int argc, char* argv[]) {
         printf("%s timestamp resolution: %uns\n", description, timestamp_resolution);
         // Get/Set open options
         icsneo_open_options_t options = icsneo_open_options_none;
-        res = icsneo_get_open_options(device, &options);
+        res = icsneo_device_get_open_options(device, &options);
         if (res != icsneo_error_success) {
             print_device_events(device, description);
             return print_error_code("Failed to get open options", res);
         }
         // Disable Syncing RTC
         options &= ~icsneo_open_options_sync_rtc;
-        res = icsneo_set_open_options(device, options);
+        res = icsneo_device_set_open_options(device, options);
         if (res != icsneo_error_success) {
             print_device_events(device, description);
             return print_error_code("Failed to set open options", res);
         }
         // Open the device
         printf("Opening device: %s...\n", description);
-        res = icsneo_open(device);
+        res = icsneo_device_open(device);
         if (res != icsneo_error_success) {
             print_device_events(device, description);
             return print_error_code("Failed to open device", res);
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
         icsneo_message_t* messages[20000] = {0};
         uint32_t message_count = 20000;
         printf("Getting messages from device with timeout of 3000ms on %s...\n", description);
-        res = icsneo_get_messages(device, messages, &message_count, 3000);
+        res = icsneo_device_get_messages(device, messages, &message_count, 3000);
         if (res != icsneo_error_success) {
             print_device_events(device, description);
             return print_error_code("Failed to get messages from device", res);
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
         }
         // Finally, close the device.
         printf("Closing device: %s...\n", description);
-        res = icsneo_close(device);
+        res = icsneo_device_close(device);
         if (res != icsneo_error_success) {
             print_device_events(device, description);
             return print_error_code("Failed to close device", res);
@@ -215,8 +215,8 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
             bool is_extended = false;
             uint8_t data[64] = {0};
             uint32_t data_length = 64;
-            uint32_t result = icsneo_can_message_arbid(device, message, &arbid);
-            result += icsneo_can_message_dlc_on_wire(device, message, &dlc);
+            uint32_t result = icsneo_can_message_get_arbid(device, message, &arbid);
+            result += icsneo_can_message_get_dlc_on_wire(device, message, &dlc);
             result += icsneo_can_message_is_remote(device, message, &is_remote);
             result += icsneo_can_message_is_canfd(device, message, &is_canfd);
             result += icsneo_can_message_is_extended(device, message, &is_extended);
