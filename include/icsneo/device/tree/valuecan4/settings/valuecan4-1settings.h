@@ -15,7 +15,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::_icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->can1);
 			default:
 				return nullptr;

@@ -22,7 +22,7 @@ void VSAExtendedMessage::appendPacket(std::shared_ptr<Packet> packet) const
 {
 	packet->data.insert(packet->data.end(), payload.begin(), payload.end());
 	// Set the network if not already set (Happens in AA0F records)
-	if(packet->network.getNetID() == Network::NetID::Invalid) {
+	if(packet->network.getNetID() == Network::_icsneo_netid_t::Invalid) {
 		packet->network = network;
 	}
 }

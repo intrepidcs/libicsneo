@@ -194,7 +194,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 		}
 		case icsneo_msg_bus_type_internal: {
 			switch(packet->network.getNetID()) {
-				case Network::NetID::Reset_Status: {
+				case Network::_icsneo_netid_t::Reset_Status: {
 					// We can deal with not having the last two fields (voltage and temperature)
 					if(packet->data.size() < (sizeof(HardwareResetStatusPacket) - (sizeof(uint16_t) * 2))) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
@@ -225,12 +225,12 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = msg;
 					return true;
 				}
-				case Network::NetID::Device: {
+				case Network::_icsneo_netid_t::icsneo_netid_device: {
 					// These are neoVI network messages
 					// They come in as CAN but we will handle them in the device rather than
 					// passing them onto the user.
 					if(packet->data.size() < 24) {
-						auto rawmsg = std::make_shared<InternalMessage>(Network::NetID::Device);
+						auto rawmsg = std::make_shared<InternalMessage>(Network::_icsneo_netid_t::icsneo_netid_device);
 						result = rawmsg;
 						rawmsg->data = packet->data;
 						return true;
@@ -253,12 +253,12 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					raw->network = packet->network;
 					return true;
 				}
-				case Network::NetID::DeviceStatus: {
+				case Network::_icsneo_netid_t::DeviceStatus: {
 					// Just pass along the data, the device needs to handle this itself
 					result = std::make_shared<InternalMessage>(packet->network, packet->data);
 					return true;
 				}
-				case Network::NetID::RED_INT_MEMORYREAD: {
+				case Network::_icsneo_netid_t::icsneo_netid_red_int_memoryread: {
 					if(packet->data.size() != 512 + sizeof(uint16_t)) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 						return false; // Should get enough data for a start address and sector
@@ -270,7 +270,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					msg->data.insert(msg->data.end(), packet->data.begin() + 2, packet->data.end());
 					return true;
 				}
-				case Network::NetID::NeoMemorySDRead: {
+				case Network::_icsneo_netid_t::icsneo_netid_neo_memory_sdread: {
 					if(packet->data.size() != 512 + sizeof(uint32_t)) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 						return false; // Should get enough data for a start address and sector
@@ -282,7 +282,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					msg->data.insert(msg->data.end(), packet->data.begin() + 4, packet->data.end());
 					return true;
 				}
-				case Network::NetID::ExtendedCommand: {
+				case Network::_icsneo_netid_t::ExtendedCommand: {
 
 					if(packet->data.size() < sizeof(ExtendedResponseMessage::PackedGenericResponse))
 						break; // Handle as a raw message, might not be a generic response
@@ -313,7 +313,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					break;
 				}
-				case Network::NetID::ExtendedData: {
+				case Network::_icsneo_netid_t::ExtendedData: {
 					if(packet->data.size() < sizeof(ExtendedDataMessage::ExtendedDataHeader))
 						break;
 					const auto& header = *reinterpret_cast<ExtendedDataMessage::ExtendedDataHeader*>(packet->data.data());
@@ -328,7 +328,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							
 							std::copy(packet->data.begin() + sizeof(header), packet->data.begin() + sizeof(header) + numRead, extDataMsg->data.begin());
 
-							extDataMsg->network = Network(static_cast<uint16_t>(Network::NetID::ExtendedData), false);
+							extDataMsg->network = Network(static_cast<uint16_t>(Network::_icsneo_netid_t::ExtendedData), false);
 							return true;
 						}
 						default:
@@ -336,7 +336,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					break;
 				}
-				case Network::NetID::FlexRayControl: {
+				case Network::_icsneo_netid_t::FlexRayControl: {
 					auto frResult = std::make_shared<FlexRayControlMessage>(*packet);
 					if(!frResult->decoded) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
@@ -345,7 +345,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = frResult;
 					return true;
 				}
-				case Network::NetID::Main51: {
+				case Network::_icsneo_netid_t::icsneo_netid_main51: {
 					switch((Command)packet->data[0]) {
 						case Command::RequestSerialNumber: {
 							auto msg = std::make_shared<SerialNumberMessage>();
@@ -397,7 +397,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							return true;
 					}
 				}
-				case Network::NetID::RED_OLDFORMAT: {
+				case Network::_icsneo_netid_t::RED_OLDFORMAT: {
 					/* So-called "old format" messages are a "new style, long format" wrapper around the old short messages.
 					 * They consist of a 16-bit LE length first, then the 8-bit length and netid combo byte, then the payload
 					 * with no checksum. The upper-nibble length of the combo byte should be ignored completely, using the
@@ -412,7 +412,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						packet->data.resize(length);
 					return decode(result, packet);
 				}
-				case Network::NetID::RED_App_Error: {
+				case Network::_icsneo_netid_t::RED_App_Error: {
 					result = AppErrorMessage::DecodeToMessage(packet->data, report);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
@@ -420,7 +420,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					return true;
 				}
-				case Network::NetID::ReadSettings: {
+				case Network::_icsneo_netid_t::ReadSettings: {
 					auto msg = std::make_shared<ReadSettingsMessage>();
 					msg->response = ReadSettingsMessage::Response(packet->data[0]);
 
@@ -439,7 +439,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = msg;
 					return true;
 				}
-				case Network::NetID::LogicalDiskInfo: {
+				case Network::_icsneo_netid_t::LogicalDiskInfo: {
 					result = LogicalDiskInfoPacket::DecodeToMessage(packet->data);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
@@ -447,7 +447,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					return true;
 				}
-				case Network::NetID::WiVICommand: {
+				case Network::_icsneo_netid_t::WiVICommand: {
 					result = WiVI::CommandPacket::DecodeToMessage(packet->data);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
@@ -455,7 +455,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					return true;
 				}
-				case Network::NetID::EthPHYControl: {
+				case Network::_icsneo_netid_t::EthPHYControl: {
 					result = HardwareEthernetPhyRegisterPacket::DecodeToMessage(packet->data, report);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
@@ -463,7 +463,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					return true;
 				}
-				case Network::NetID::ScriptStatus: {
+				case Network::_icsneo_netid_t::ScriptStatus: {
 					result = ScriptStatus::DecodeToMessage(packet->data);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
@@ -471,7 +471,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					return true;
 				}
-				case Network::NetID::DiskData: {
+				case Network::_icsneo_netid_t::icsneo_netid_disk_data: {
 					result = std::make_shared<DiskDataMessage>(std::move(packet->data));
 					return true;
 				}

@@ -30,10 +30,10 @@ bool HardwareISO9141Packet::EncodeFromMessage(const ISO9141Message& message, std
 			currentSize = (uint8_t)(bytesToSend - currentStart);
 
 		packet.insert(packet.begin(), {
-			(uint8_t)Network::NetID::RED, // 0x0C for long message
+			(uint8_t)Network::_icsneo_netid_t::icsneo_netid_red, // 0x0C for long message
 			(uint8_t)0, // Size, little endian 16-bit, filled later
 			(uint8_t)0,
-			(uint8_t)message.network.getNetID(), // NetID, little endian 16-bit
+			(uint8_t)message.network.getNetID(), // _icsneo_netid_t, little endian 16-bit
 			(uint8_t)(uint16_t(message.network.getNetID()) >> 8)
 		});
 		packet.push_back(uint8_t(message.network.getNetID()) + uint8_t((currentSize + (firstPacket ? 6 : 3)) << 4));

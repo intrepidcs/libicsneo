@@ -10,7 +10,7 @@
 namespace icsneo {
 class LiveDataMessage : public InternalMessage {
 public:
-	LiveDataMessage() : InternalMessage(Message::Type::LiveData, Network::NetID::ExtendedCommand) {}
+	LiveDataMessage() : InternalMessage(Message::Type::LiveData, Network::_icsneo_netid_t::ExtendedCommand) {}
 	LiveDataHandle handle;
 	LiveDataCommand cmd;
 };

@@ -22,8 +22,8 @@ public:
 
 	const std::vector<Network>& GetSupportedNetworks() override {
 		static std::vector<Network> supportedNetworks = RADCometBase::GetSupportedNetworks();
-		supportedNetworks.push_back(Network::NetID::OP_Ethernet3);
-		supportedNetworks.push_back(Network::NetID::MDIO4);
+		supportedNetworks.push_back(Network::_icsneo_netid_t::icsneo_netid_op_ethernet3);
+		supportedNetworks.push_back(Network::_icsneo_netid_t::MDIO4);
 		return supportedNetworks;
 	}
 

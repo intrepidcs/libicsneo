@@ -101,17 +101,17 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::_icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->can1);
-			case Network::NetID::MSCAN:
+			case Network::_icsneo_netid_t::icsneo_netid_mscan:
 				return &(cfg->can2);
-			case Network::NetID::HSCAN2:
+			case Network::_icsneo_netid_t::HSCAN2:
 				return &(cfg->can3);
-			case Network::NetID::HSCAN3:
+			case Network::_icsneo_netid_t::HSCAN3:
 				return &(cfg->can4);
-			case Network::NetID::HSCAN4:
+			case Network::_icsneo_netid_t::HSCAN4:
 				return &(cfg->can5);
-			case Network::NetID::HSCAN5:
+			case Network::_icsneo_netid_t::HSCAN5:
 				return &(cfg->can6);
 			default:
 				return nullptr;
@@ -122,17 +122,17 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::_icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->canfd1);
-			case Network::NetID::MSCAN:
+			case Network::_icsneo_netid_t::icsneo_netid_mscan:
 				return &(cfg->canfd2);
-			case Network::NetID::HSCAN2:
+			case Network::_icsneo_netid_t::HSCAN2:
 				return &(cfg->canfd3);
-			case Network::NetID::HSCAN3:
+			case Network::_icsneo_netid_t::HSCAN3:
 				return &(cfg->canfd4);
-			case Network::NetID::HSCAN4:
+			case Network::_icsneo_netid_t::HSCAN4:
 				return &(cfg->canfd5);
-			case Network::NetID::HSCAN5:
+			case Network::_icsneo_netid_t::HSCAN5:
 				return &(cfg->canfd6);
 			default:
 				return nullptr;
@@ -142,14 +142,14 @@ public:
 	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
 		return {
 			{
-				Network(Network::NetID::HSCAN),
-				Network(Network::NetID::HSCAN2),
-				Network(Network::NetID::HSCAN3),
-				Network(Network::NetID::HSCAN4)
+				Network(Network::_icsneo_netid_t::icsneo_netid_hscan),
+				Network(Network::_icsneo_netid_t::HSCAN2),
+				Network(Network::_icsneo_netid_t::HSCAN3),
+				Network(Network::_icsneo_netid_t::HSCAN4)
 			},
 			{
-				Network(Network::NetID::MSCAN),
-				Network(Network::NetID::HSCAN5)
+				Network(Network::_icsneo_netid_t::icsneo_netid_mscan),
+				Network(Network::_icsneo_netid_t::HSCAN5)
 			}
 		};
 	}
@@ -159,7 +159,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::LIN:
+			case Network::_icsneo_netid_t::icsneo_netid_lin:
 				return &(cfg->lin1);
 			default:
 				return nullptr;

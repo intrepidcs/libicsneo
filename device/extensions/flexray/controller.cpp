@@ -610,7 +610,7 @@ uint16_t FlexRay::Controller::CalculateCycleFilter(uint8_t baseCycle, uint8_t cy
 }
 
 std::pair<bool, uint32_t> FlexRay::Controller::readRegister(ERAYRegister reg, std::chrono::milliseconds timeout) const {
-	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(icsneo::Network::NetID::FlexRayControl);
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(icsneo::Network::_icsneo_netid_t::FlexRayControl);
 	if(timeout.count() <= 20)
 		return {false, 0}; // Out of time!
 

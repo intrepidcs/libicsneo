@@ -14,12 +14,12 @@ public:
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::HSCAN2,
+			Network::_icsneo_netid_t::icsneo_netid_hscan,
+			Network::_icsneo_netid_t::HSCAN2,
 
-			Network::NetID::Ethernet, // Connected to port 6 on the switch
+			Network::_icsneo_netid_t::Ethernet, // Connected to port 6 on the switch
 
-			Network::NetID::LIN
+			Network::_icsneo_netid_t::icsneo_netid_lin
 		};
 		return supportedNetworks;
 	}

@@ -115,7 +115,7 @@ typedef struct {
 	uint8_t _reserved1[16];
 	uint64_t timestamp;
 	uint64_t _reservedTimestamp;
-	uint8_t _reserved2[sizeof(size_t) * 2 + 7 + sizeof(neonetid_t) + sizeof(icsneo_msg_bus_type_t)];
+	uint8_t _reserved2[sizeof(size_t) * 2 + 7 + sizeof(icsneo_netid_t) + sizeof(icsneo_msg_bus_type_t)];
 	neomessagetype_t messageType;
 	uint8_t _reserved3[12];
 } neomessage_t; // 72 bytes total
@@ -128,7 +128,7 @@ typedef struct {
 	const uint8_t* data;
 	size_t length;
 	uint8_t header[4];
-	neonetid_t netid;
+	icsneo_netid_t netid;
 	icsneo_msg_bus_type_t type;
 	uint8_t _reserved0;
 	uint16_t description;
@@ -143,7 +143,7 @@ typedef struct {
 	const uint8_t* data;
 	size_t length;
 	uint32_t arbid;
-	neonetid_t netid;
+	icsneo_netid_t netid;
 	icsneo_msg_bus_type_t type;
 	uint8_t dlcOnWire;
 	uint16_t description;
@@ -159,7 +159,7 @@ typedef struct {
 	uint8_t transmitErrorCount;
 	uint8_t receiveErrorCount;
 	uint8_t _reserved3[5];
-	neonetid_t netid;
+	icsneo_netid_t netid;
 	icsneo_msg_bus_type_t type;
 	neomessagetype_t messageType;
 	uint8_t _reserved4[12];
@@ -173,7 +173,7 @@ typedef struct {
 	size_t length;
 	uint8_t preemptionFlags;
 	uint8_t _reservedHeader[3];
-	neonetid_t netid;
+	icsneo_netid_t netid;
 	icsneo_msg_bus_type_t type;
 	uint8_t _reserved0;
 	uint16_t description;
@@ -199,7 +199,7 @@ typedef struct {
 	const uint8_t* data;
 	size_t length;
 	uint8_t header[4];
-	neonetid_t netid;
+	icsneo_netid_t netid;
 	icsneo_msg_bus_type_t type;
 	neomessage_linstatus_t linStatus;
 	uint16_t description;

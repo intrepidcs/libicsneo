@@ -13,29 +13,29 @@ class Plasion : public Device {
 public:
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::MSCAN,
-			Network::NetID::HSCAN2,
-			Network::NetID::HSCAN3,
-			Network::NetID::HSCAN4,
-			Network::NetID::HSCAN5,
-			Network::NetID::HSCAN6,
-			Network::NetID::HSCAN7,
+			Network::_icsneo_netid_t::icsneo_netid_hscan,
+			Network::_icsneo_netid_t::icsneo_netid_mscan,
+			Network::_icsneo_netid_t::HSCAN2,
+			Network::_icsneo_netid_t::HSCAN3,
+			Network::_icsneo_netid_t::HSCAN4,
+			Network::_icsneo_netid_t::HSCAN5,
+			Network::_icsneo_netid_t::HSCAN6,
+			Network::_icsneo_netid_t::HSCAN7,
 
-			Network::NetID::LSFTCAN,
-			Network::NetID::LSFTCAN2,
+			Network::_icsneo_netid_t::icsneo_netid_lsftcan,
+			Network::_icsneo_netid_t::LSFTCAN2,
 
-			Network::NetID::SWCAN,
-			Network::NetID::SWCAN2,
+			Network::_icsneo_netid_t::icsneo_netid_swcan,
+			Network::_icsneo_netid_t::SWCAN2,
 
-			Network::NetID::Ethernet,
+			Network::_icsneo_netid_t::Ethernet,
 
-			Network::NetID::LIN,
-			Network::NetID::LIN2,
-			Network::NetID::LIN3,
-			Network::NetID::LIN4,
+			Network::_icsneo_netid_t::icsneo_netid_lin,
+			Network::_icsneo_netid_t::LIN2,
+			Network::_icsneo_netid_t::LIN3,
+			Network::_icsneo_netid_t::LIN4,
 
-			Network::NetID::FlexRay
+			Network::_icsneo_netid_t::FlexRay
 		};
 		return supportedNetworks;
 	}
@@ -51,8 +51,8 @@ protected:
 	virtual bool isSupportedTXNetwork(const Network&) const override { return true; }
 	virtual void setupExtensions() override {
 		std::vector<Network> flexRayControllers;
-		flexRayControllers.push_back(Network::NetID::FlexRay);
-		flexRayControllers.push_back(Network::NetID::FlexRay); // TODO Becomes FlexRay2 if not in coldstart mode
+		flexRayControllers.push_back(Network::_icsneo_netid_t::FlexRay);
+		flexRayControllers.push_back(Network::_icsneo_netid_t::FlexRay); // TODO Becomes FlexRay2 if not in coldstart mode
 		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
 	}
 

@@ -38,38 +38,38 @@ int main() {
 		std::cout << "OK" << std::endl;
 
 		std::cout << "\tGetting HSCAN Baudrate... ";
-		int64_t baud = device->settings->getBaudrateFor(icsneo::Network::NetID::HSCAN);
+		int64_t baud = device->settings->getBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan);
 		if(baud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
 			std::cout << "OK, " << (baud/1000) << "kbit/s" << std::endl;
 
 		std::cout << "\tSetting HSCAN to operate at 125kbit/s... ";
-		ret = device->settings->setBaudrateFor(icsneo::Network::NetID::HSCAN, 125000);
+		ret = device->settings->setBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan, 125000);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		// Changes to the settings do not take affect until you call settings->apply()!
 		// When you get the baudrate here, you're reading what the device is currently operating on
 		std::cout << "\tGetting HSCAN Baudrate... (expected to be unchanged) ";
-		baud = device->settings->getBaudrateFor(icsneo::Network::NetID::HSCAN);
+		baud = device->settings->getBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan);
 		if(baud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
 			std::cout << "OK, " << (baud/1000) << "kbit/s" << std::endl;
 
 		std::cout << "\tGetting HSCANFD Baudrate... ";
-		baud = device->settings->getFDBaudrateFor(icsneo::Network::NetID::HSCAN);
+		baud = device->settings->getFDBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan);
 		if(baud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
 			std::cout << "OK, " << (baud/1000) << "kbit/s" << std::endl;
 
 		std::cout << "\tSetting HSCANFD to operate at 8Mbit/s... ";
-		ret = device->settings->setFDBaudrateFor(icsneo::Network::NetID::HSCAN, 8000000);
+		ret = device->settings->setFDBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan, 8000000);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "\tGetting HSCANFD Baudrate... (expected to be unchanged) ";
-		baud = device->settings->getFDBaudrateFor(icsneo::Network::NetID::HSCAN);
+		baud = device->settings->getFDBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan);
 		if(baud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
@@ -84,14 +84,14 @@ int main() {
 
 		// Now that we have applied, we expect that our operating baudrates have changed
 		std::cout << "\tGetting HSCAN Baudrate... ";
-		baud = device->settings->getBaudrateFor(icsneo::Network::NetID::HSCAN);
+		baud = device->settings->getBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan);
 		if(baud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
 			std::cout << "OK, " << (baud/1000) << "kbit/s" << std::endl;
 
 		std::cout << "\tGetting HSCANFD Baudrate... ";
-		baud = device->settings->getFDBaudrateFor(icsneo::Network::NetID::HSCAN);
+		baud = device->settings->getFDBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan);
 		if(baud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
@@ -155,7 +155,7 @@ int main() {
 		// We can transmit messages
 		std::cout << "\n\tTransmitting an extended CAN FD frame... ";
 		auto txMessage5 = std::make_shared<icsneo::CANMessage>();
-		txMessage5->network = icsneo::Network::NetID::HSCAN;
+		txMessage5->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan;
 		txMessage5->arbid = 0x1C5001C5;
 		txMessage5->data.insert(txMessage5->data.end(), {0xaa, 0xbb, 0xcc});
 		// The DLC will come from the length of the data vector
@@ -290,7 +290,7 @@ int main() {
 		// We can transmit messages
 		std::cout << "\tTransmitting an extended CAN FD frame... ";
 		auto txMessage = std::make_shared<icsneo::CANMessage>();
-		txMessage->network = icsneo::Network::NetID::HSCAN;
+		txMessage->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan;
 		txMessage->arbid = 0x1C5001C5;
 		txMessage->data.insert(txMessage->data.end(), {0xaa, 0xbb, 0xcc});
 		// The DLC will come from the length of the data vector
@@ -301,7 +301,7 @@ int main() {
 
 		std::cout << "\tTransmitting an ethernet frame on OP (BR) Ethernet 2... ";
 		auto ethTxMessage = std::make_shared<icsneo::EthernetMessage>();
-		ethTxMessage->network = icsneo::Network::NetID::OP_Ethernet2;
+		ethTxMessage->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_op_ethernet2;
 		ethTxMessage->data.insert(ethTxMessage->data.end(), {
 			0x00, 0xFC, 0x70, 0x00, 0x01, 0x02, /* Destination MAC */
 			0x00, 0xFC, 0x70, 0x00, 0x01, 0x01, /* Source MAC */

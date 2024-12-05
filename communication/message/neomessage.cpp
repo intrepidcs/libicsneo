@@ -19,7 +19,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 		auto framemsg = std::static_pointer_cast<BusMessage>(message);
 		const auto netType = framemsg->network.getType();
 
-		frame.netid = (neonetid_t)framemsg->network.getNetID();
+		frame.netid = (icsneo_netid_t)framemsg->network.getNetID();
 		frame.type = (icsneo_msg_bus_type_t)netType;
 		frame.description = framemsg->description;
 		frame.length = framemsg->data.size();
@@ -108,7 +108,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 		canerror.transmitErrorCount = canerrormsg->transmitErrorCount;
 		canerror.receiveErrorCount = canerrormsg->receiveErrorCount;
 		canerror.status.canBusOff = canerrormsg->busOff;
-		canerror.netid = (neonetid_t)canerrormsg->network.getNetID();
+		canerror.netid = (icsneo_netid_t)canerrormsg->network.getNetID();
 		canerror.type = (icsneo_msg_bus_type_t)canerrormsg->network.getType();
 		break;
 	}

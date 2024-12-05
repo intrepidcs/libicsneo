@@ -147,13 +147,13 @@ namespace icsneo
 				return nullptr;
 			switch (net.getNetID())
 			{
-			case Network::NetID::HSCAN:
+			case Network::_icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->can1);
-			case Network::NetID::HSCAN2:
+			case Network::_icsneo_netid_t::HSCAN2:
 				return &(cfg->can2);
-			case Network::NetID::HSCAN3:
+			case Network::_icsneo_netid_t::HSCAN3:
 				return &(cfg->can3);
-			case Network::NetID::HSCAN4:
+			case Network::_icsneo_netid_t::HSCAN4:
 				return &(cfg->can4);
 			default:
 				return nullptr;
@@ -166,13 +166,13 @@ namespace icsneo
 				return nullptr;
 			switch (net.getNetID())
 			{
-			case Network::NetID::HSCAN:
+			case Network::_icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->canfd1);
-			case Network::NetID::HSCAN2:
+			case Network::_icsneo_netid_t::HSCAN2:
 				return &(cfg->canfd2);
-			case Network::NetID::HSCAN3:
+			case Network::_icsneo_netid_t::HSCAN3:
 				return &(cfg->canfd3);
-			case Network::NetID::HSCAN4:
+			case Network::_icsneo_netid_t::HSCAN4:
 				return &(cfg->canfd4);
 			default:
 				return nullptr;
@@ -182,10 +182,10 @@ namespace icsneo
 		virtual std::vector<TerminationGroup> getTerminationGroups() const override
 		{
 			return {
-				{Network(Network::NetID::HSCAN)},
-				{Network(Network::NetID::HSCAN2)},
-				{Network(Network::NetID::HSCAN3)},
-				{Network(Network::NetID::HSCAN4)}};
+				{Network(Network::_icsneo_netid_t::icsneo_netid_hscan)},
+				{Network(Network::_icsneo_netid_t::HSCAN2)},
+				{Network(Network::_icsneo_netid_t::HSCAN3)},
+				{Network(Network::_icsneo_netid_t::HSCAN4)}};
 		}
 
 		const LIN_SETTINGS *getLINSettingsFor(Network net) const override
@@ -195,25 +195,25 @@ namespace icsneo
 				return nullptr;
 			switch (net.getNetID())
 			{
-			case Network::NetID::LIN:
+			case Network::_icsneo_netid_t::icsneo_netid_lin:
 				return &(cfg->lin1);
-			case Network::NetID::LIN2:
+			case Network::_icsneo_netid_t::LIN2:
 				return &(cfg->lin2);
-			case Network::NetID::LIN3:
+			case Network::_icsneo_netid_t::LIN3:
 				return &(cfg->lin3);
-			case Network::NetID::LIN4:
+			case Network::_icsneo_netid_t::LIN4:
 				return &(cfg->lin4);
-			case Network::NetID::LIN5:
+			case Network::_icsneo_netid_t::LIN5:
 				return &(cfg->lin5);
-			case Network::NetID::LIN6:
+			case Network::_icsneo_netid_t::LIN6:
 				return &(cfg->lin6);
-			case Network::NetID::LIN7:
+			case Network::_icsneo_netid_t::LIN7:
 				return &(cfg->lin7);
-			case Network::NetID::LIN8:
+			case Network::_icsneo_netid_t::LIN8:
 				return &(cfg->lin8);
-			case Network::NetID::LIN9:
+			case Network::_icsneo_netid_t::LIN9:
 				return &(cfg->lin9);
-			case Network::NetID::LIN10:
+			case Network::_icsneo_netid_t::LIN10:
 				return &(cfg->lin10);
 			default:
 				return nullptr;

@@ -47,59 +47,59 @@ protected:
 
 	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		static std::vector<Network> supportedRxNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::MSCAN,
-			Network::NetID::HSCAN2,
-			Network::NetID::HSCAN3,
-			Network::NetID::HSCAN4,
-			Network::NetID::HSCAN5,
+			Network::_icsneo_netid_t::icsneo_netid_hscan,
+			Network::_icsneo_netid_t::icsneo_netid_mscan,
+			Network::_icsneo_netid_t::HSCAN2,
+			Network::_icsneo_netid_t::HSCAN3,
+			Network::_icsneo_netid_t::HSCAN4,
+			Network::_icsneo_netid_t::HSCAN5,
 
-			Network::NetID::Ethernet,
-			Network::NetID::Ethernet2,
+			Network::_icsneo_netid_t::Ethernet,
+			Network::_icsneo_netid_t::Ethernet2,
 
-			Network::NetID::OP_Ethernet1,
-			Network::NetID::OP_Ethernet2,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet1,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet2,
 
-			Network::NetID::LIN,
+			Network::_icsneo_netid_t::icsneo_netid_lin,
 
-			Network::NetID::FlexRay1a,
-			Network::NetID::FlexRay1b,
+			Network::_icsneo_netid_t::FlexRay1a,
+			Network::_icsneo_netid_t::FlexRay1b,
 
-			Network::NetID::I2C,
-			Network::NetID::I2C2,
-			Network::NetID::I2C3,
+			Network::_icsneo_netid_t::I2C,
+			Network::_icsneo_netid_t::I2C2,
+			Network::_icsneo_netid_t::I2C3,
 
-			Network::NetID::MDIO1,
-			Network::NetID::MDIO2,
+			Network::_icsneo_netid_t::MDIO1,
+			Network::_icsneo_netid_t::MDIO2,
 		};
 		rxNetworks.insert(rxNetworks.end(), supportedRxNetworks.begin(), supportedRxNetworks.end());
 	}
 
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override {
 		static std::vector<Network> supportedTxNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::MSCAN,
-			Network::NetID::HSCAN2,
-			Network::NetID::HSCAN3,
-			Network::NetID::HSCAN4,
-			Network::NetID::HSCAN5,
+			Network::_icsneo_netid_t::icsneo_netid_hscan,
+			Network::_icsneo_netid_t::icsneo_netid_mscan,
+			Network::_icsneo_netid_t::HSCAN2,
+			Network::_icsneo_netid_t::HSCAN3,
+			Network::_icsneo_netid_t::HSCAN4,
+			Network::_icsneo_netid_t::HSCAN5,
 
-			Network::NetID::Ethernet,
-			Network::NetID::Ethernet2,
+			Network::_icsneo_netid_t::Ethernet,
+			Network::_icsneo_netid_t::Ethernet2,
 
-			Network::NetID::OP_Ethernet1,
-			Network::NetID::OP_Ethernet2,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet1,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet2,
 
-			Network::NetID::LIN,
+			Network::_icsneo_netid_t::icsneo_netid_lin,
 
 			// FlexRay is Receive Only
 
-			Network::NetID::I2C,
-			Network::NetID::I2C2,
-			Network::NetID::I2C3,
+			Network::_icsneo_netid_t::I2C,
+			Network::_icsneo_netid_t::I2C2,
+			Network::_icsneo_netid_t::I2C3,
 
-			Network::NetID::MDIO1,
-			Network::NetID::MDIO2,
+			Network::_icsneo_netid_t::MDIO1,
+			Network::_icsneo_netid_t::MDIO2,
 		};
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
 	}

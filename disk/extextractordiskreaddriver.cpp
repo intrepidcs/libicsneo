@@ -34,7 +34,7 @@ std::optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Commu
 
 std::optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, MemoryType) {
-	static std::shared_ptr<MessageFilter> NeoMemorySDRead = std::make_shared<MessageFilter>(Network::NetID::NeoMemorySDRead);
+	static std::shared_ptr<MessageFilter> NeoMemorySDRead = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_neo_memory_sdread);
 
 	uint64_t sector = pos / SectorSize;
 
@@ -67,7 +67,7 @@ std::optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligne
 				cv.notify_all();
 			}
 		}
-	}, std::make_shared<MessageFilter>(Network::NetID::DiskData)));
+	}, std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_disk_data)));
 
 	if(!com.sendCommand(ExtendedCommand::Extract, {
 		uint8_t(sector & 0xff),

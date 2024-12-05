@@ -18,13 +18,13 @@ public:
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::Ethernet,
+			Network::_icsneo_netid_t::Ethernet,
 
-			Network::NetID::OP_Ethernet1,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet1,
 
-			Network::NetID::MDIO1,
+			Network::_icsneo_netid_t::MDIO1,
 
-			Network::NetID::SPI1,
+			Network::_icsneo_netid_t::SPI1,
 		};
 		return supportedNetworks;
 	}

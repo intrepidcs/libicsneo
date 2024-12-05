@@ -389,7 +389,7 @@ bool Device::goOnline() {
 
 	updateLEDState();
 
-	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::Reset_Status);
 	filter->includeInternalInAny = true;
 
 	// Wait until communication is enabled or 5 seconds, whichever comes first
@@ -432,7 +432,7 @@ bool Device::goOffline() {
 
 	updateLEDState();
 
-	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::Reset_Status);
 	filter->includeInternalInAny = true;
 
 	// Wait until communication is disabled or 5 seconds, whichever comes first
@@ -457,7 +457,7 @@ int8_t Device::prepareScriptLoad() {
 		return false;
 	}
 
-	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::CoreMiniPreLoad);
+	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::CoreMiniPreLoad);
 
 	if(!com->sendCommand(Command::CoreMiniPreload))
 		return false;
@@ -488,7 +488,7 @@ bool Device::startScript(Disk::MemoryType memType)
 
 	uint8_t location = static_cast<uint8_t>(memType);
 
-	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Device);
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_device);
 	filter->includeInternalInAny = true;
 
 	const auto response = com->waitForMessageSync([&]() {
@@ -510,7 +510,7 @@ bool Device::stopScript()
 		return false;
 	}
 
-	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Device);
+	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_device);
 	filter->includeInternalInAny = true;
 
 	const auto response = com->waitForMessageSync([&]() {
@@ -597,7 +597,7 @@ bool Device::uploadCoremini(std::istream& stream, Disk::MemoryType memType) {
 }
 
 bool Device::eraseScriptMemory(Disk::MemoryType memType, uint64_t amount) {
-	static std::shared_ptr<MessageFilter> NeoEraseDone = std::make_shared<MessageFilter>(Network::NetID::NeoMemoryWriteDone);
+	static std::shared_ptr<MessageFilter> NeoEraseDone = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_neo_memory_write_done);
 
 	if(!supportsEraseMemory()) {
 		return true;
@@ -798,7 +798,7 @@ Network Device::getNetworkByNumber(icsneo_msg_bus_type_t type, size_t index) con
 				return net;
 		}
 	}
-	return Network::NetID::Invalid;
+	return Network::_icsneo_netid_t::Invalid;
 }
 
 std::shared_ptr<HardwareInfo> Device::getHardwareInfo(std::chrono::milliseconds timeout) {
@@ -1721,7 +1721,7 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 		case Message::Type::InternalMessage: {
 			auto rawMessage = std::static_pointer_cast<InternalMessage>(message);
 			switch(rawMessage->network.getNetID()) {
-				case Network::NetID::Device: {
+				case Network::_icsneo_netid_t::icsneo_netid_device: {
 					// Device is not guaranteed to be a CANMessage, it might be a InternalMessage
 					// if it couldn't be decoded to a CANMessage. We only care about the
 					// CANMessage decoding right now.
@@ -1730,7 +1730,7 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 						handleNeoVIMessage(std::move(canmsg));
 					break;
 				}
-				case Network::NetID::DeviceStatus:
+				case Network::_icsneo_netid_t::DeviceStatus:
 					// Device Status format is unique per device, so the devices need to decode it themselves
 					handleDeviceStatus(rawMessage);
 					break;
@@ -1817,7 +1817,7 @@ std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message,
 	HardwareEthernetPhyRegisterPacket::EncodeFromMessage(message, bytes, report);
 	std::shared_ptr<Message> response = com->waitForMessageSync(
 		[this, bytes](){ return com->sendCommand(Command::PHYControlRegisters, bytes); },
-		std::make_shared<MessageFilter>(Network::NetID::EthPHYControl), timeout);
+		std::make_shared<MessageFilter>(Network::_icsneo_netid_t::EthPHYControl), timeout);
 
 	if(!response) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
@@ -1888,7 +1888,7 @@ std::optional<bool> Device::SetRootDirectoryEntryFlags(uint8_t mask, uint8_t val
 
 std::optional<std::chrono::time_point<std::chrono::system_clock>> Device::getRTC()
 {
-	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::RED_GET_RTC);
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::RED_GET_RTC);
 	std::shared_ptr<Message> generic = com->waitForMessageSync([this]() {
 		return com->sendCommand(Command::GetRTC);
 	}, filter, std::chrono::milliseconds(3000));
@@ -2023,7 +2023,7 @@ bool Device::readBinaryFile(std::ostream& stream, uint16_t binaryIndex) {
 	std::vector<uint8_t> arguments(sizeof(ExtendedDataMessage::ExtendedDataHeader));
 	ExtendedDataMessage::ExtendedDataHeader& parameters = *reinterpret_cast<ExtendedDataMessage::ExtendedDataHeader*>(arguments.data());	
 
-	auto filter = std::make_shared<MessageFilter>(Network::NetID::ExtendedData);
+	auto filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::ExtendedData);
 	
 	for(size_t offset = 0; offset < *size; offset+=ExtendedDataMessage::MaxExtendedDataBufferSize) {
 		parameters.subCommand = ExtendedDataSubCommand::GenericBinaryRead;
@@ -3260,13 +3260,13 @@ std::optional<uint64_t> Device::getVSADiskSize() {
 	return diskSize;
 }
 
-bool Device::requestTC10Wake(Network::NetID network) {
+bool Device::requestTC10Wake(Network::_icsneo_netid_t network) {
 	if(!supportsTC10()) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
 		return false;
 	}
 	std::vector<uint8_t> args(sizeof(network));
-	*(Network::NetID*)args.data() = network;
+	*(Network::_icsneo_netid_t*)args.data() = network;
 	auto msg = com->waitForMessageSync([&] {
 		return com->sendCommand(ExtendedCommand::RequestTC10Wake, args);
 	}, std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), std::chrono::milliseconds(1000));
@@ -3285,13 +3285,13 @@ bool Device::requestTC10Wake(Network::NetID network) {
 	return resp->response == ExtendedResponse::OK;
 }
 
-bool Device::requestTC10Sleep(Network::NetID network) {
+bool Device::requestTC10Sleep(Network::_icsneo_netid_t network) {
 	if(!supportsTC10()) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
 		return false;
 	}
 	std::vector<uint8_t> args(sizeof(network));
-	*(Network::NetID*)args.data() = network;
+	*(Network::_icsneo_netid_t*)args.data() = network;
 	auto msg = com->waitForMessageSync([&] {
 		return com->sendCommand(ExtendedCommand::RequestTC10Sleep, args);
 	}, std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), std::chrono::milliseconds(1000));
@@ -3310,13 +3310,13 @@ bool Device::requestTC10Sleep(Network::NetID network) {
 	return typed->response == ExtendedResponse::OK;
 }
 
-std::optional<TC10StatusMessage> Device::getTC10Status(Network::NetID network) {
+std::optional<TC10StatusMessage> Device::getTC10Status(Network::_icsneo_netid_t network) {
 	if(!supportsTC10()) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
 	std::vector<uint8_t> args(sizeof(network));
-	*(Network::NetID*)args.data() = network;
+	*(Network::_icsneo_netid_t*)args.data() = network;
 	auto msg = com->waitForMessageSync([&] {
 		return com->sendCommand(ExtendedCommand::GetTC10Status, args);
 	}, std::make_shared<MessageFilter>(Message::Type::TC10Status), std::chrono::milliseconds(1000));

@@ -21,10 +21,10 @@ std::shared_ptr<Message> AppErrorMessage::DecodeToMessage(const std::vector<uint
 	}
 	auto appErr = std::make_shared<AppErrorMessage>();
 	appErr->errorType = data->error_type;
-	appErr->errorNetID = static_cast<Network::NetID>(data->network_id);
+	appErr->errorNetID = static_cast<Network::_icsneo_netid_t>(data->network_id);
 	appErr->timestamp10us = data->uiTimeStamp10uS;
 	appErr->timestamp10usMSB = data->uiTimeStamp10uSMSB;
-	appErr->network = Network::NetID::RED_App_Error;
+	appErr->network = Network::_icsneo_netid_t::RED_App_Error;
 	return appErr;
 }
 

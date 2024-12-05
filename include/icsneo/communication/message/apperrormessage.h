@@ -66,9 +66,9 @@ enum class AppErrorType : uint16_t {
 
 class AppErrorMessage : public InternalMessage {
 public:
-	AppErrorMessage() : InternalMessage(Message::Type::AppError, Network::NetID::RED_App_Error) {}
+	AppErrorMessage() : InternalMessage(Message::Type::AppError, Network::_icsneo_netid_t::RED_App_Error) {}
 	uint16_t errorType;
-	Network::NetID errorNetID;
+	Network::_icsneo_netid_t errorNetID;
 	uint32_t timestamp10us;
 	uint32_t timestamp10usMSB;
 
