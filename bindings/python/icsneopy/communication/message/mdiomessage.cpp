@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_mdiomessage(pybind11::module_& m) {
-	pybind11::class_<MDIOMessage, std::shared_ptr<MDIOMessage>, Frame> mdioMessage(m, "MDIOMessage");
+	pybind11::class_<MDIOMessage, std::shared_ptr<MDIOMessage>, BusMessage> mdioMessage(m, "MDIOMessage");
 	pybind11::enum_<MDIOMessage::Clause>(mdioMessage, "Clause")
 		.value("Clause45", MDIOMessage::Clause::Clause45)
 		.value("Clause22", MDIOMessage::Clause::Clause22);

@@ -41,7 +41,7 @@ void init_message(pybind11::module_& m) {
 		.def_readwrite("network", &InternalMessage::network)
 		.def_readwrite("data", &InternalMessage::data);
 
-	pybind11::class_<Frame, std::shared_ptr<Frame>, InternalMessage>(m, "BusMessage")
+	pybind11::class_<BusMessage, std::shared_ptr<BusMessage>, InternalMessage>(m, "BusMessage")
 		.def_readwrite("description", &BusMessage::description)
 		.def_readwrite("transmitted", &BusMessage::transmitted)
 		.def_readwrite("error", &BusMessage::error);
