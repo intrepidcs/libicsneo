@@ -271,6 +271,16 @@ ICSNEO_API icsneo_error_t icsneo_is_online(icsneo_device_t* device, bool* is_onl
     return icsneo_error_success;
 }
 
+ICSNEO_API icsneo_error_t icsneo_is_online_supported(icsneo_device_t* device, bool* is_online_supported) {
+    if (!device || !is_online_supported) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto dev = device->device;
+    *is_online_supported = dev->isOnlineSupported();
+    
+    return icsneo_error_success;
+}
+
 ICSNEO_API icsneo_error_t icsneo_set_message_polling(icsneo_device_t* device, bool enable) {
     if (!device) {
         return icsneo_error_invalid_parameters;

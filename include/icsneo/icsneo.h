@@ -216,12 +216,21 @@ ICSNEO_API icsneo_error_t icsneo_go_online(icsneo_device_t* device, bool go_onli
 
 /** @brief Get the online state of a device.
  * 
- * @param[in] icsneo_device_t device The device to set the online state of.
+ * @param[in] icsneo_device_t device The device to get the online state of.
  * @param[out] bool true if online, false if offline.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
 ICSNEO_API icsneo_error_t icsneo_is_online(icsneo_device_t* device, bool* is_online);
+
+/** @brief Get the online supported state of a device.
+ * 
+ * @param[in] icsneo_device_t device The device to get the online supported state of.
+ * @param[out] bool true if online, false if offline.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_is_online_supported(icsneo_device_t* device, bool* is_online_supported);
 
 
 /** @brief Set the message polling state of a device.
