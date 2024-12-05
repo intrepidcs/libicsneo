@@ -245,9 +245,9 @@ void example3(const std::shared_ptr<icsneo::Device>& rada2b) {
 */
 void example4(const std::shared_ptr<icsneo::Device>& rada2b) {
 	std::shared_ptr<icsneo::I2CMessage> msg = std::make_shared<icsneo::I2CMessage>();
-	std::shared_ptr<icsneo::MessageFilter> msgFilter = std::make_shared<icsneo::MessageFilter>(icsneo::Network::_icsneo_netid_t::I2C2);
+	std::shared_ptr<icsneo::MessageFilter> msgFilter = std::make_shared<icsneo::MessageFilter>(icsneo::Network::_icsneo_netid_t::icsneo_netid_i2c2);
 
-	msg->network = icsneo::Network(icsneo::Network::_icsneo_netid_t::I2C2);
+	msg->network = icsneo::Network(icsneo::Network::_icsneo_netid_t::icsneo_netid_i2c2);
 	msg->controlBytes.resize(1);
 	msg->controlBytes[0] = static_cast<uint8_t>(0x17u); // Register address for A2B INTTYPE
 	msg->dataBytes.resize(1, 0);
@@ -261,7 +261,7 @@ void example4(const std::shared_ptr<icsneo::Device>& rada2b) {
 
 			if(newMsg->type == icsneo::Message::Type::BusMessage) {
 				const auto& frame = std::dynamic_pointer_cast<icsneo::BusMessage>(newMsg);
-				if(frame && frame->network.getNetID() == icsneo::Network::_icsneo_netid_t::I2C2) {
+				if(frame && frame->network.getNetID() == icsneo::Network::_icsneo_netid_t::icsneo_netid_i2c2) {
 					const auto& i2cMessage = std::dynamic_pointer_cast<icsneo::I2CMessage>(frame);
 
 					if(!i2cMessage) {

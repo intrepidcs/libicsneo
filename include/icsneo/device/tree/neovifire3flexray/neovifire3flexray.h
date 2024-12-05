@@ -23,8 +23,8 @@ public:
 			Network::_icsneo_netid_t::icsneo_netid_hscan3,
 			Network::_icsneo_netid_t::icsneo_netid_hscan4,
 			Network::_icsneo_netid_t::icsneo_netid_hscan5,
-			Network::_icsneo_netid_t::HSCAN6,
-			Network::_icsneo_netid_t::HSCAN7,
+			Network::_icsneo_netid_t::icsneo_netid_hscan6,
+			Network::_icsneo_netid_t::icsneo_netid_hscan7,
 			Network::_icsneo_netid_t::DWCAN9,
 			Network::_icsneo_netid_t::DWCAN10,
 			Network::_icsneo_netid_t::DWCAN11,
@@ -33,8 +33,8 @@ public:
 			Network::_icsneo_netid_t::DWCAN14,
 			Network::_icsneo_netid_t::DWCAN15,
 
-			Network::_icsneo_netid_t::Ethernet,
-			Network::_icsneo_netid_t::Ethernet2,
+			Network::_icsneo_netid_t::icsneo_netid_ethernet,
+			Network::_icsneo_netid_t::icsneo_netid_ethernet2,
 			Network::_icsneo_netid_t::Ethernet3,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
@@ -45,7 +45,7 @@ public:
 			Network::_icsneo_netid_t::icsneo_netid_flexray,
 			Network::_icsneo_netid_t::icsneo_netid_flexray1a,
 			Network::_icsneo_netid_t::icsneo_netid_flexray1b,
-			Network::_icsneo_netid_t::FlexRay2,
+			Network::_icsneo_netid_t::icsneo_netid_flexray2,
 			Network::_icsneo_netid_t::icsneo_netid_flexray2a,
 			Network::_icsneo_netid_t::icsneo_netid_flexray2b,
 		};

@@ -28,8 +28,8 @@ namespace icsneo
 				Network::_icsneo_netid_t::icsneo_netid_hscan3,
 				Network::_icsneo_netid_t::icsneo_netid_hscan4,
 
-				Network::_icsneo_netid_t::Ethernet,
-				Network::_icsneo_netid_t::Ethernet2,
+				Network::_icsneo_netid_t::icsneo_netid_ethernet,
+				Network::_icsneo_netid_t::icsneo_netid_ethernet2,
 
 				Network::_icsneo_netid_t::icsneo_netid_op_ethernet1,
 				Network::_icsneo_netid_t::icsneo_netid_op_ethernet2,
@@ -47,14 +47,14 @@ namespace icsneo
 				Network::_icsneo_netid_t::icsneo_netid_lin3,
 				Network::_icsneo_netid_t::icsneo_netid_lin4,
 				Network::_icsneo_netid_t::icsneo_netid_lin5,
-				Network::_icsneo_netid_t::LIN6,
+				Network::_icsneo_netid_t::icsneo_netid_lin6,
 				Network::_icsneo_netid_t::LIN7,
 				Network::_icsneo_netid_t::LIN8,
 				Network::_icsneo_netid_t::LIN9,
 				Network::_icsneo_netid_t::LIN10,
 
-				Network::_icsneo_netid_t::I2C,
-				Network::_icsneo_netid_t::I2C2,
+				Network::_icsneo_netid_t::icsneo_netid_i2c,
+				Network::_icsneo_netid_t::icsneo_netid_i2c2,
 
 				Network::_icsneo_netid_t::MDIO1,
 				Network::_icsneo_netid_t::MDIO2,

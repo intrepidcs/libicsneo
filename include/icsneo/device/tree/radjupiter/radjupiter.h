@@ -22,7 +22,7 @@ public:
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 
-			Network::_icsneo_netid_t::Ethernet // Connected to port 6 on the switch
+			Network::_icsneo_netid_t::icsneo_netid_ethernet // Connected to port 6 on the switch
 		};
 		return supportedNetworks;
 	}

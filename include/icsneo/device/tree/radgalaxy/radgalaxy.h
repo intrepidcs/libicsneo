@@ -27,16 +27,16 @@ public:
 			Network::_icsneo_netid_t::icsneo_netid_hscan3,
 			Network::_icsneo_netid_t::icsneo_netid_hscan4,
 			Network::_icsneo_netid_t::icsneo_netid_hscan5,
-			Network::_icsneo_netid_t::HSCAN6,
-			Network::_icsneo_netid_t::HSCAN7,
+			Network::_icsneo_netid_t::icsneo_netid_hscan6,
+			Network::_icsneo_netid_t::icsneo_netid_hscan7,
 
 			Network::_icsneo_netid_t::icsneo_netid_swcan,
 			Network::_icsneo_netid_t::icsneo_netid_swcan2,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 
-			Network::_icsneo_netid_t::Ethernet,
-			Network::_icsneo_netid_t::Ethernet2,
+			Network::_icsneo_netid_t::icsneo_netid_ethernet,
+			Network::_icsneo_netid_t::icsneo_netid_ethernet2,
 			
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet1,
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet2,
@@ -49,7 +49,7 @@ public:
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet9,
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet10,
 			Network::_icsneo_netid_t::icsneo_netid_op_ethernet11,
-			Network::_icsneo_netid_t::OP_Ethernet12,
+			Network::_icsneo_netid_t::icsneo_netid_op_ethernet12,
 
 			Network::_icsneo_netid_t::MDIO1,
 			Network::_icsneo_netid_t::MDIO2,

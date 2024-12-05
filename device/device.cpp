@@ -457,7 +457,7 @@ int8_t Device::prepareScriptLoad() {
 		return false;
 	}
 
-	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::CoreMiniPreLoad);
+	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_coremini_preload);
 
 	if(!com->sendCommand(Command::CoreMiniPreload))
 		return false;
@@ -1730,7 +1730,7 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 						handleNeoVIMessage(std::move(canmsg));
 					break;
 				}
-				case Network::_icsneo_netid_t::DeviceStatus:
+				case Network::_icsneo_netid_t::icsneo_netid_device_status:
 					// Device Status format is unique per device, so the devices need to decode it themselves
 					handleDeviceStatus(rawMessage);
 					break;
@@ -1817,7 +1817,7 @@ std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message,
 	HardwareEthernetPhyRegisterPacket::EncodeFromMessage(message, bytes, report);
 	std::shared_ptr<Message> response = com->waitForMessageSync(
 		[this, bytes](){ return com->sendCommand(Command::PHYControlRegisters, bytes); },
-		std::make_shared<MessageFilter>(Network::_icsneo_netid_t::EthPHYControl), timeout);
+		std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_eth_phy_control), timeout);
 
 	if(!response) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
@@ -2023,7 +2023,7 @@ bool Device::readBinaryFile(std::ostream& stream, uint16_t binaryIndex) {
 	std::vector<uint8_t> arguments(sizeof(ExtendedDataMessage::ExtendedDataHeader));
 	ExtendedDataMessage::ExtendedDataHeader& parameters = *reinterpret_cast<ExtendedDataMessage::ExtendedDataHeader*>(arguments.data());	
 
-	auto filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::ExtendedData);
+	auto filter = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_extended_data);
 	
 	for(size_t offset = 0; offset < *size; offset+=ExtendedDataMessage::MaxExtendedDataBufferSize) {
 		parameters.subCommand = ExtendedDataSubCommand::GenericBinaryRead;

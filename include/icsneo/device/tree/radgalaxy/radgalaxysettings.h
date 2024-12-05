@@ -124,9 +124,9 @@ public:
 				return &(cfg->can5);
 			case Network::_icsneo_netid_t::icsneo_netid_hscan5:
 				return &(cfg->can6);
-			case Network::_icsneo_netid_t::HSCAN6:
+			case Network::_icsneo_netid_t::icsneo_netid_hscan6:
 				return &(cfg->can7);
-			case Network::_icsneo_netid_t::HSCAN7:
+			case Network::_icsneo_netid_t::icsneo_netid_hscan7:
 				return &(cfg->can8);
 			default:
 				return nullptr;
@@ -149,9 +149,9 @@ public:
 				return &(cfg->canfd5);
 			case Network::_icsneo_netid_t::icsneo_netid_hscan5:
 				return &(cfg->canfd6);
-			case Network::_icsneo_netid_t::HSCAN6:
+			case Network::_icsneo_netid_t::icsneo_netid_hscan6:
 				return &(cfg->canfd7);
-			case Network::_icsneo_netid_t::HSCAN7:
+			case Network::_icsneo_netid_t::icsneo_netid_hscan7:
 				return &(cfg->canfd8);
 			default:
 				return nullptr;

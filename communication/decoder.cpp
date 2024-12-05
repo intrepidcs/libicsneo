@@ -253,7 +253,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					raw->network = packet->network;
 					return true;
 				}
-				case Network::_icsneo_netid_t::DeviceStatus: {
+				case Network::_icsneo_netid_t::icsneo_netid_device_status: {
 					// Just pass along the data, the device needs to handle this itself
 					result = std::make_shared<InternalMessage>(packet->network, packet->data);
 					return true;
@@ -282,7 +282,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					msg->data.insert(msg->data.end(), packet->data.begin() + 4, packet->data.end());
 					return true;
 				}
-				case Network::_icsneo_netid_t::ExtendedCommand: {
+				case Network::_icsneo_netid_t::icsneo_netid_extended_command: {
 
 					if(packet->data.size() < sizeof(ExtendedResponseMessage::PackedGenericResponse))
 						break; // Handle as a raw message, might not be a generic response
@@ -313,7 +313,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					break;
 				}
-				case Network::_icsneo_netid_t::ExtendedData: {
+				case Network::_icsneo_netid_t::icsneo_netid_extended_data: {
 					if(packet->data.size() < sizeof(ExtendedDataMessage::ExtendedDataHeader))
 						break;
 					const auto& header = *reinterpret_cast<ExtendedDataMessage::ExtendedDataHeader*>(packet->data.data());
@@ -328,7 +328,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							
 							std::copy(packet->data.begin() + sizeof(header), packet->data.begin() + sizeof(header) + numRead, extDataMsg->data.begin());
 
-							extDataMsg->network = Network(static_cast<uint16_t>(Network::_icsneo_netid_t::ExtendedData), false);
+							extDataMsg->network = Network(static_cast<uint16_t>(Network::_icsneo_netid_t::icsneo_netid_extended_data), false);
 							return true;
 						}
 						default:
@@ -336,7 +336,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					break;
 				}
-				case Network::_icsneo_netid_t::FlexRayControl: {
+				case Network::_icsneo_netid_t::icsneo_netid_flexray_control: {
 					auto frResult = std::make_shared<FlexRayControlMessage>(*packet);
 					if(!frResult->decoded) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
@@ -439,7 +439,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					result = msg;
 					return true;
 				}
-				case Network::_icsneo_netid_t::LogicalDiskInfo: {
+				case Network::_icsneo_netid_t::icsneo_netid_logical_disk_info: {
 					result = LogicalDiskInfoPacket::DecodeToMessage(packet->data);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
@@ -447,7 +447,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					return true;
 				}
-				case Network::_icsneo_netid_t::WiVICommand: {
+				case Network::_icsneo_netid_t::icsneo_netid_wivi_command: {
 					result = WiVI::CommandPacket::DecodeToMessage(packet->data);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
@@ -455,7 +455,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					return true;
 				}
-				case Network::_icsneo_netid_t::EthPHYControl: {
+				case Network::_icsneo_netid_t::icsneo_netid_eth_phy_control: {
 					result = HardwareEthernetPhyRegisterPacket::DecodeToMessage(packet->data, report);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
@@ -463,7 +463,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					}
 					return true;
 				}
-				case Network::_icsneo_netid_t::ScriptStatus: {
+				case Network::_icsneo_netid_t::icsneo_netid_script_status: {
 					result = ScriptStatus::DecodeToMessage(packet->data);
 					if(!result) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);

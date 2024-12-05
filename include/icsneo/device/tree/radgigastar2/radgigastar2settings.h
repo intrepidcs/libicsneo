@@ -205,7 +205,7 @@ namespace icsneo
 				return &(cfg->lin4);
 			case Network::_icsneo_netid_t::icsneo_netid_lin5:
 				return &(cfg->lin5);
-			case Network::_icsneo_netid_t::LIN6:
+			case Network::_icsneo_netid_t::icsneo_netid_lin6:
 				return &(cfg->lin6);
 			case Network::_icsneo_netid_t::LIN7:
 				return &(cfg->lin7);

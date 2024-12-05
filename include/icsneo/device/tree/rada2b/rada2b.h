@@ -24,15 +24,15 @@ public:
 			Network::_icsneo_netid_t::icsneo_netid_hscan,
 			Network::_icsneo_netid_t::icsneo_netid_hscan2,
 
-			Network::_icsneo_netid_t::Ethernet,
+			Network::_icsneo_netid_t::icsneo_netid_ethernet,
 
 			Network::_icsneo_netid_t::icsneo_netid_lin,
 
 			Network::_icsneo_netid_t::A2B1,
 			Network::_icsneo_netid_t::A2B2,
 
-			Network::_icsneo_netid_t::I2C,
-			Network::_icsneo_netid_t::I2C2,
+			Network::_icsneo_netid_t::icsneo_netid_i2c,
+			Network::_icsneo_netid_t::icsneo_netid_i2c2,
 
 			Network::_icsneo_netid_t::MDIO1,
 		};

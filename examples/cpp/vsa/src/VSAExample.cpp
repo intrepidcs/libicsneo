@@ -36,7 +36,7 @@ std::vector<std::shared_ptr<icsneo::BusMessage>> constructRandomFrames(size_t fr
 				// Short Ethernet
 				{
 					auto frame = std::make_shared<icsneo::EthernetMessage>();
-					frame->network = icsneo::Network::_icsneo_netid_t::Ethernet;
+					frame->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_ethernet;
 					frames.push_back(frame);
 					frame->data.resize(ShortEthSize);
 					std::generate(frame->data.begin(), frame->data.end(), randByteGen);
@@ -46,7 +46,7 @@ std::vector<std::shared_ptr<icsneo::BusMessage>> constructRandomFrames(size_t fr
 				// Long Ethernet
 				{
 					auto frame = std::make_shared<icsneo::EthernetMessage>();
-					frame->network = icsneo::Network::_icsneo_netid_t::Ethernet;
+					frame->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_ethernet;
 					frames.push_back(frame);
 					frame->data.resize(LongEthSize);
 					std::generate(frame->data.begin(), frame->data.end(), randByteGen);
