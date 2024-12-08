@@ -15,14 +15,34 @@ using namespace icsneo;
 
 typedef struct icsneo_device_t {
     std::shared_ptr<Device> device;
+    // Received messages from the device, we can automatically free them without the user.
     std::vector<std::shared_ptr<icsneo_message_t>> messages;
+    // Seperate buffer for transmit messages for simplicity. User is responsible for freeing.
+    std::vector<std::shared_ptr<icsneo_message_t>> tx_messages;
     std::vector<icsneo_event_t> events;
 
     icsneo_open_options_t options;
+
+    icsneo_device_t(std::shared_ptr<Device>& device, icsneo_open_options_t options) : device(device), options(options) {}
+
+    // Take care of cleaning up the device buffers like when closing the device
+    void clean_up() {
+        messages.clear();
+        messages.shrink_to_fit();
+        events.clear();
+        events.shrink_to_fit();
+        tx_messages.clear();
+        tx_messages.shrink_to_fit();
+    }
 } icsneo_device_t;
 
+// Any new members to this struct should be initialized in icsneo_device_get_messages()
 typedef struct icsneo_message_t {
     std::shared_ptr<Message> message;
+    // Indicates this message is a transmit message and should be in the tx_messages vector
+    bool is_tx;
+
+    icsneo_message_t(std::shared_ptr<Message>& message, bool is_tx) : message(message), is_tx(is_tx) {}
 } icsneo_message_t;
 
 typedef struct icsneo_event_t {
@@ -113,10 +133,9 @@ ICSNEO_API icsneo_error_t icsneo_device_find_all(icsneo_device_t** devices, uint
             [&](const auto& device) { 
                 return device->device == found_device; 
             })) {
-            auto device = std::make_shared<icsneo_device_t>();
-            device->device = found_device;
-            device->options = icsneo_open_options_go_online | icsneo_open_options_enable_message_polling | icsneo_open_options_sync_rtc | icsneo_open_options_enable_auto_update;
-            g_devices.push_back(device);
+                auto default_options = icsneo_open_options_go_online | icsneo_open_options_enable_message_polling | icsneo_open_options_sync_rtc | icsneo_open_options_enable_auto_update;
+                auto device = std::make_shared<icsneo_device_t>(found_device, default_options);
+                g_devices.push_back(device);
         }
     }
     // Determine how many we can return to the caller
@@ -201,10 +220,7 @@ ICSNEO_API icsneo_error_t icsneo_device_close(icsneo_device_t* device) {
     }
     dev->close();
     // Clear out old messages and events
-    device->messages.clear();
-    device->messages.shrink_to_fit();
-    device->events.clear();
-    device->events.shrink_to_fit();
+    device->clean_up();
     return icsneo_error_success;
 }
 
@@ -381,8 +397,7 @@ ICSNEO_API icsneo_error_t icsneo_device_get_messages(icsneo_device_t* device, ic
     // Copy the messages into our device message container
     device->messages.clear();
     for (auto& message : queried_messages) {
-        auto message_t = std::make_shared<icsneo_message_t>();
-        message_t->message = message;
+        auto message_t = std::make_shared<icsneo_message_t>(message, false);
         device->messages.push_back(message_t);
     }
     device->messages.shrink_to_fit();

@@ -170,7 +170,7 @@ ICSNEO_API icsneo_error_t icsneo_device_open(icsneo_device_t* device);
 /** @brief Close a connection to a previously opened device.
  * 
  * After a successful call to icsneo_device_open(), this function must be called to close the device.
- * An already closed device will still succeed.
+ * An already closed device will still succeed. All messages and events related to the device will be freed.
  * 
  * @param[in] icsneo_device_t device The device to close.
  * 
