@@ -38,7 +38,7 @@ ICSNEO_API icsneo_error_t icsneo_get_error_code(icsneo_error_t error_code, const
         return icsneo_error_invalid_parameters;
     }
 
-    std::string error;
+    std::string error("Unknown");
     switch (error_code) {
         case icsneo_error_success:
             error = "Success";
@@ -63,6 +63,9 @@ ICSNEO_API icsneo_error_t icsneo_get_error_code(icsneo_error_t error_code, const
             break;
         case icsneo_error_set_settings_failure:
             error = "Setting settings failed";
+            break;
+        case icsneo_error_transmit_messages_failed:
+            error = "Transmitting messages failed";
             break;
         // Don't default, let the compiler warn us if we forget to handle an error code
     }
@@ -389,6 +392,26 @@ ICSNEO_API icsneo_error_t icsneo_device_get_messages(icsneo_device_t* device, ic
     }
     
     return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_device_transmit_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count) {
+    if (!device || !messages || !messages_count) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    auto dev = device->device;
+    uint32_t i = 0;
+    bool success = false;
+    for (;i < *messages_count; i++) {
+        // TODO: Check if message is valid
+        success = dev->transmit(std::static_pointer_cast<icsneo::BusMessage>(messages[i]->message));
+        if (!success) {
+            break;
+        }
+    }
+    *messages_count = i;
+
+    return success ? icsneo_error_success : icsneo_error_transmit_messages_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_message_is_valid(icsneo_device_t* device, icsneo_message_t* message, bool* is_valid) {

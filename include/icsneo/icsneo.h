@@ -85,7 +85,9 @@ typedef enum _icsneo_error_t {
     // Generic RTC error code
     icsneo_error_rtc_failure,
     // Error setting settings
-    icsneo_error_set_settings_failure
+    icsneo_error_set_settings_failure,
+    // Failed to transmit messages
+    icsneo_error_transmit_messages_failed,
 } _icsneo_error_t;
 
 /** @brief Integer representation of _icsneo_error_t enum. 
@@ -305,6 +307,17 @@ ICSNEO_API icsneo_error_t icsneo_device_get_timestamp_resolution(icsneo_device_t
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
 ICSNEO_API icsneo_error_t icsneo_device_get_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count, uint32_t timeout_ms);
+
+/** @brief Transmit messages from a device
+ * 
+ * @param[in] icsneo_device_t device The device to get the messages of.
+ * @param[out] icsneo_message_t** messages Pointer to an array of icsneo_message_t to copy the messages into.
+ *  Undefined behaviour if index is out of range of messages_count.
+ * @param[in,out] uint32_t* messages_count Size of the messages array. Modified with the number of messages actually transmitted.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters or icsneo_error_transmission_failed otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_device_transmit_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t* messages_count);
 
 /** @brief Check if a message is valid
  * 
