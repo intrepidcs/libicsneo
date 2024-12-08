@@ -16,13 +16,13 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_hscan:
+			case _icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->can1);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan2:
+			case _icsneo_netid_t::icsneo_netid_hscan2:
 				return &(cfg->can2);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan3:
+			case _icsneo_netid_t::icsneo_netid_hscan3:
 				return &(cfg->can3);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan4:
+			case _icsneo_netid_t::icsneo_netid_hscan4:
 				return &(cfg->can4);
 			default:
 				return nullptr;
@@ -33,13 +33,13 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_hscan:
+			case _icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->canfd1);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan2:
+			case _icsneo_netid_t::icsneo_netid_hscan2:
 				return &(cfg->canfd2);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan3:
+			case _icsneo_netid_t::icsneo_netid_hscan3:
 				return &(cfg->canfd3);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan4:
+			case _icsneo_netid_t::icsneo_netid_hscan4:
 				return &(cfg->canfd4);
 			default:
 				return nullptr;
@@ -49,12 +49,12 @@ public:
 	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
 		return {
 			{
-				Network(Network::_icsneo_netid_t::icsneo_netid_hscan),
-				Network(Network::_icsneo_netid_t::icsneo_netid_hscan3)
+				Network(_icsneo_netid_t::icsneo_netid_hscan),
+				Network(_icsneo_netid_t::icsneo_netid_hscan3)
 			},
 			{
-				Network(Network::_icsneo_netid_t::icsneo_netid_hscan2),
-				Network(Network::_icsneo_netid_t::icsneo_netid_hscan4)
+				Network(_icsneo_netid_t::icsneo_netid_hscan2),
+				Network(_icsneo_netid_t::icsneo_netid_hscan4)
 			}
 		};
 	}
@@ -64,7 +64,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_lin:
+			case _icsneo_netid_t::icsneo_netid_lin:
 				return &(cfg->lin1);
 			default:
 				return nullptr;

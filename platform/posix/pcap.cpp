@@ -126,7 +126,7 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 		memcpy(requestPacket.srcMAC, iface.macAddress, sizeof(requestPacket.srcMAC));
 		requestPacket.payload.reserve(4);
 		requestPacket.payload = {
-			((1 << 4) | (uint8_t)Network::_icsneo_netid_t::icsneo_netid_main51), // Packet size of 1 on NETID_MAIN51
+			((1 << 4) | (uint8_t)_icsneo_netid_t::icsneo_netid_main51), // Packet size of 1 on NETID_MAIN51
 			(uint8_t)Command::RequestSerialNumber
 		};
 		requestPacket.payload.push_back(Packetizer::ICSChecksum(requestPacket.payload));

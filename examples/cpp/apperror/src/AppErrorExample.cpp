@@ -40,7 +40,7 @@ int main() {
 		// Add your error handling here
 		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>(filter, [](std::shared_ptr<icsneo::Message> message) {
 			auto msg = std::static_pointer_cast<icsneo::AppErrorMessage>(message);
-			if(icsneo::Network::_icsneo_netid_t::icsneo_netid_red_app_error == msg->network.getNetID()) {
+			if(_icsneo_netid_t::icsneo_netid_red_app_error == msg->network.getNetID()) {
 				std::cout << std::endl << "App error reported:" << std::endl;
 				std::cout << msg->getAppErrorString() << std::endl << std::endl;
 			}
@@ -58,7 +58,7 @@ int main() {
 		// Prepare a CAN message
 		std::cout << std::endl << "Transmitting a CAN frame... ";
 		auto txMessage = std::make_shared<icsneo::CANMessage>();
-		txMessage->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_hscan;
+		txMessage->network = _icsneo_netid_t::icsneo_netid_hscan;
 		txMessage->arbid = 0x22;
 		txMessage->data.insert(txMessage->data.end(), {0xaa, 0xbb, 0xcc});
 		// The DLC will come from the length of the data vector

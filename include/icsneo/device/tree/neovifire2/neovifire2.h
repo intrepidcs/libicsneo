@@ -23,32 +23,32 @@ public:
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::_icsneo_netid_t::icsneo_netid_hscan,
-			Network::_icsneo_netid_t::icsneo_netid_mscan,
-			Network::_icsneo_netid_t::icsneo_netid_hscan2,
-			Network::_icsneo_netid_t::icsneo_netid_hscan3,
-			Network::_icsneo_netid_t::icsneo_netid_hscan4,
-			Network::_icsneo_netid_t::icsneo_netid_hscan5,
-			Network::_icsneo_netid_t::icsneo_netid_hscan6,
-			Network::_icsneo_netid_t::icsneo_netid_hscan7,
+			_icsneo_netid_t::icsneo_netid_hscan,
+			_icsneo_netid_t::icsneo_netid_mscan,
+			_icsneo_netid_t::icsneo_netid_hscan2,
+			_icsneo_netid_t::icsneo_netid_hscan3,
+			_icsneo_netid_t::icsneo_netid_hscan4,
+			_icsneo_netid_t::icsneo_netid_hscan5,
+			_icsneo_netid_t::icsneo_netid_hscan6,
+			_icsneo_netid_t::icsneo_netid_hscan7,
 
-			Network::_icsneo_netid_t::icsneo_netid_lsftcan,
-			Network::_icsneo_netid_t::icsneo_netid_lsftcan2,
+			_icsneo_netid_t::icsneo_netid_lsftcan,
+			_icsneo_netid_t::icsneo_netid_lsftcan2,
 
-			Network::_icsneo_netid_t::icsneo_netid_swcan,
-			Network::_icsneo_netid_t::icsneo_netid_swcan2,
+			_icsneo_netid_t::icsneo_netid_swcan,
+			_icsneo_netid_t::icsneo_netid_swcan2,
 
-			Network::_icsneo_netid_t::icsneo_netid_ethernet,
+			_icsneo_netid_t::icsneo_netid_ethernet,
 
-			Network::_icsneo_netid_t::icsneo_netid_lin,
-			Network::_icsneo_netid_t::icsneo_netid_lin2,
-			Network::_icsneo_netid_t::icsneo_netid_lin3,
-			Network::_icsneo_netid_t::icsneo_netid_lin4,
+			_icsneo_netid_t::icsneo_netid_lin,
+			_icsneo_netid_t::icsneo_netid_lin2,
+			_icsneo_netid_t::icsneo_netid_lin3,
+			_icsneo_netid_t::icsneo_netid_lin4,
 
-			Network::_icsneo_netid_t::icsneo_netid_iso9141,
-			Network::_icsneo_netid_t::icsneo_netid_iso9141_2,
-			Network::_icsneo_netid_t::icsneo_netid_iso9141_3,
-			Network::_icsneo_netid_t::icsneo_netid_iso9141_4
+			_icsneo_netid_t::icsneo_netid_iso9141,
+			_icsneo_netid_t::icsneo_netid_iso9141_2,
+			_icsneo_netid_t::icsneo_netid_iso9141_3,
+			_icsneo_netid_t::icsneo_netid_iso9141_4
 		};
 		return supportedNetworks;
 	}

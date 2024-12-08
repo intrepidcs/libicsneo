@@ -47,59 +47,59 @@ protected:
 
 	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		static std::vector<Network> supportedRxNetworks = {
-			Network::_icsneo_netid_t::icsneo_netid_hscan,
-			Network::_icsneo_netid_t::icsneo_netid_mscan,
-			Network::_icsneo_netid_t::icsneo_netid_hscan2,
-			Network::_icsneo_netid_t::icsneo_netid_hscan3,
-			Network::_icsneo_netid_t::icsneo_netid_hscan4,
-			Network::_icsneo_netid_t::icsneo_netid_hscan5,
+			_icsneo_netid_t::icsneo_netid_hscan,
+			_icsneo_netid_t::icsneo_netid_mscan,
+			_icsneo_netid_t::icsneo_netid_hscan2,
+			_icsneo_netid_t::icsneo_netid_hscan3,
+			_icsneo_netid_t::icsneo_netid_hscan4,
+			_icsneo_netid_t::icsneo_netid_hscan5,
 
-			Network::_icsneo_netid_t::icsneo_netid_ethernet,
-			Network::_icsneo_netid_t::icsneo_netid_ethernet2,
+			_icsneo_netid_t::icsneo_netid_ethernet,
+			_icsneo_netid_t::icsneo_netid_ethernet2,
 
-			Network::_icsneo_netid_t::icsneo_netid_op_ethernet1,
-			Network::_icsneo_netid_t::icsneo_netid_op_ethernet2,
+			_icsneo_netid_t::icsneo_netid_op_ethernet1,
+			_icsneo_netid_t::icsneo_netid_op_ethernet2,
 
-			Network::_icsneo_netid_t::icsneo_netid_lin,
+			_icsneo_netid_t::icsneo_netid_lin,
 
-			Network::_icsneo_netid_t::icsneo_netid_flexray1a,
-			Network::_icsneo_netid_t::icsneo_netid_flexray1b,
+			_icsneo_netid_t::icsneo_netid_flexray1a,
+			_icsneo_netid_t::icsneo_netid_flexray1b,
 
-			Network::_icsneo_netid_t::icsneo_netid_i2c,
-			Network::_icsneo_netid_t::icsneo_netid_i2c2,
-			Network::_icsneo_netid_t::icsneo_netid_i2c3,
+			_icsneo_netid_t::icsneo_netid_i2c,
+			_icsneo_netid_t::icsneo_netid_i2c2,
+			_icsneo_netid_t::icsneo_netid_i2c3,
 
-			Network::_icsneo_netid_t::icsneo_netid_mdio1,
-			Network::_icsneo_netid_t::icsneo_netid_mdio2,
+			_icsneo_netid_t::icsneo_netid_mdio1,
+			_icsneo_netid_t::icsneo_netid_mdio2,
 		};
 		rxNetworks.insert(rxNetworks.end(), supportedRxNetworks.begin(), supportedRxNetworks.end());
 	}
 
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override {
 		static std::vector<Network> supportedTxNetworks = {
-			Network::_icsneo_netid_t::icsneo_netid_hscan,
-			Network::_icsneo_netid_t::icsneo_netid_mscan,
-			Network::_icsneo_netid_t::icsneo_netid_hscan2,
-			Network::_icsneo_netid_t::icsneo_netid_hscan3,
-			Network::_icsneo_netid_t::icsneo_netid_hscan4,
-			Network::_icsneo_netid_t::icsneo_netid_hscan5,
+			_icsneo_netid_t::icsneo_netid_hscan,
+			_icsneo_netid_t::icsneo_netid_mscan,
+			_icsneo_netid_t::icsneo_netid_hscan2,
+			_icsneo_netid_t::icsneo_netid_hscan3,
+			_icsneo_netid_t::icsneo_netid_hscan4,
+			_icsneo_netid_t::icsneo_netid_hscan5,
 
-			Network::_icsneo_netid_t::icsneo_netid_ethernet,
-			Network::_icsneo_netid_t::icsneo_netid_ethernet2,
+			_icsneo_netid_t::icsneo_netid_ethernet,
+			_icsneo_netid_t::icsneo_netid_ethernet2,
 
-			Network::_icsneo_netid_t::icsneo_netid_op_ethernet1,
-			Network::_icsneo_netid_t::icsneo_netid_op_ethernet2,
+			_icsneo_netid_t::icsneo_netid_op_ethernet1,
+			_icsneo_netid_t::icsneo_netid_op_ethernet2,
 
-			Network::_icsneo_netid_t::icsneo_netid_lin,
+			_icsneo_netid_t::icsneo_netid_lin,
 
 			// FlexRay is Receive Only
 
-			Network::_icsneo_netid_t::icsneo_netid_i2c,
-			Network::_icsneo_netid_t::icsneo_netid_i2c2,
-			Network::_icsneo_netid_t::icsneo_netid_i2c3,
+			_icsneo_netid_t::icsneo_netid_i2c,
+			_icsneo_netid_t::icsneo_netid_i2c2,
+			_icsneo_netid_t::icsneo_netid_i2c3,
 
-			Network::_icsneo_netid_t::icsneo_netid_mdio1,
-			Network::_icsneo_netid_t::icsneo_netid_mdio2,
+			_icsneo_netid_t::icsneo_netid_mdio1,
+			_icsneo_netid_t::icsneo_netid_mdio2,
 		};
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
 	}

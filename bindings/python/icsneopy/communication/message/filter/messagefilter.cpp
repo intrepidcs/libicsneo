@@ -8,7 +8,7 @@ namespace icsneo {
 
 void init_messagefilter(pybind11::module_& m) {
 	pybind11::class_<MessageFilter, std::shared_ptr<MessageFilter>>(m, "MessageFilter")
-		.def(pybind11::init<Network::_icsneo_netid_t>());
+		.def(pybind11::init<_icsneo_netid_t>());
 }
 
 } // namespace icsneo 

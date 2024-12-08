@@ -41,9 +41,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_hscan:
+			case _icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->can1);
-			case Network::_icsneo_netid_t::icsneo_netid_mscan:
+			case _icsneo_netid_t::icsneo_netid_mscan:
 				return &(cfg->can2);
 			default:
 				return nullptr;

@@ -33,27 +33,27 @@ int main() {
 		int64_t baud = 19200;
 
 		std::cout << "Enable LIN commander resistor... ";
-		ret = device->settings->setCommanderResistorFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin, true);
+		ret = device->settings->setCommanderResistorFor(_icsneo_netid_t::icsneo_netid_lin, true);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Disable LIN2 commander resistor... ";
-		ret = device->settings->setCommanderResistorFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2, false);
+		ret = device->settings->setCommanderResistorFor(_icsneo_netid_t::icsneo_netid_lin2, false);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Setting LIN to operate at " << baud << "bit/s... ";
-		ret = device->settings->setBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin, baud);
+		ret = device->settings->setBaudrateFor(_icsneo_netid_t::icsneo_netid_lin, baud);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Setting LIN2 to operate at " << baud << "bit/s... ";
-		ret = device->settings->setBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2, baud);
+		ret = device->settings->setBaudrateFor(_icsneo_netid_t::icsneo_netid_lin2, baud);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Setting LIN mode to NORMAL... ";
-		ret = device->settings->setLINModeFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin, NORMAL_MODE);
+		ret = device->settings->setLINModeFor(_icsneo_netid_t::icsneo_netid_lin, NORMAL_MODE);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Setting LIN2 mode to NORMAL... ";
-		ret = device->settings->setLINModeFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2, NORMAL_MODE);
+		ret = device->settings->setLINModeFor(_icsneo_netid_t::icsneo_netid_lin2, NORMAL_MODE);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Applying settings... ";
@@ -61,14 +61,14 @@ int main() {
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 
 		std::cout << "Getting LIN Baudrate... ";
-		int64_t readBaud = device->settings->getBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin);
+		int64_t readBaud = device->settings->getBaudrateFor(_icsneo_netid_t::icsneo_netid_lin);
 		if(readBaud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
 			std::cout << "OK, " << (readBaud) << "bit/s" << std::endl;
 
 		std::cout << "Getting LIN2 Baudrate... ";
-		readBaud = device->settings->getBaudrateFor(icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2);
+		readBaud = device->settings->getBaudrateFor(_icsneo_netid_t::icsneo_netid_lin2);
 		if(readBaud < 0)
 			std::cout << "FAIL" << std::endl;
 		else
@@ -115,7 +115,7 @@ int main() {
 		// We can transmit messages
 		std::cout << "Transmitting a LIN responder data frame... ";
 		auto lin_r = std::make_shared<icsneo::LINMessage>();
-		lin_r->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_lin2;
+		lin_r->network = _icsneo_netid_t::icsneo_netid_lin2;
 		lin_r->ID = 0x11;
 		lin_r->linMsgType = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
 		lin_r->data = {0xaa, 0xbb, 0xcc, 0xdd, 0x11, 0x22, 0x33, 0x44};
@@ -124,7 +124,7 @@ int main() {
 
 		std::cout << "Transmitting a LIN commander header... ";
 		auto lin_c = std::make_shared<icsneo::LINMessage>();
-		lin_c->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_lin;
+		lin_c->network = _icsneo_netid_t::icsneo_netid_lin;
 		lin_c->ID = 0x11;
 		lin_c->linMsgType = icsneo::LINMessage::Type::LIN_HEADER_ONLY;
 		ret = device->transmit(lin_c);
@@ -134,7 +134,7 @@ int main() {
 
 		std::cout << "Transmitting a LIN commander frame with responder data... ";
 		auto lin_d = std::make_shared<icsneo::LINMessage>();
-		lin_d->network = icsneo::Network::_icsneo_netid_t::icsneo_netid_lin;
+		lin_d->network = _icsneo_netid_t::icsneo_netid_lin;
 		lin_d->ID = 0x22;
 		lin_d->isEnhancedChecksum = true;
 		lin_d->linMsgType = icsneo::LINMessage::Type::LIN_COMMANDER_MSG;

@@ -17,20 +17,20 @@ public:
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::_icsneo_netid_t::icsneo_netid_hscan,
-			Network::_icsneo_netid_t::icsneo_netid_mscan,
-			Network::_icsneo_netid_t::icsneo_netid_hscan2,
-			Network::_icsneo_netid_t::icsneo_netid_hscan3,
-			Network::_icsneo_netid_t::icsneo_netid_hscan4,
-			Network::_icsneo_netid_t::icsneo_netid_hscan5,
-			Network::_icsneo_netid_t::icsneo_netid_hscan6,
-			Network::_icsneo_netid_t::icsneo_netid_hscan7,
+			_icsneo_netid_t::icsneo_netid_hscan,
+			_icsneo_netid_t::icsneo_netid_mscan,
+			_icsneo_netid_t::icsneo_netid_hscan2,
+			_icsneo_netid_t::icsneo_netid_hscan3,
+			_icsneo_netid_t::icsneo_netid_hscan4,
+			_icsneo_netid_t::icsneo_netid_hscan5,
+			_icsneo_netid_t::icsneo_netid_hscan6,
+			_icsneo_netid_t::icsneo_netid_hscan7,
 
-			Network::_icsneo_netid_t::icsneo_netid_ethernet,
-			Network::_icsneo_netid_t::icsneo_netid_ethernet2,
+			_icsneo_netid_t::icsneo_netid_ethernet,
+			_icsneo_netid_t::icsneo_netid_ethernet2,
 
-			Network::_icsneo_netid_t::icsneo_netid_lin,
-			Network::_icsneo_netid_t::icsneo_netid_lin2
+			_icsneo_netid_t::icsneo_netid_lin,
+			_icsneo_netid_t::icsneo_netid_lin2
 		};
 		return supportedNetworks;
 	}

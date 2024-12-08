@@ -728,11 +728,11 @@ public:
 
 	virtual bool supportsTC10() const { return false; }
 
-	bool requestTC10Wake(Network::_icsneo_netid_t network);
+	bool requestTC10Wake(_icsneo_netid_t network);
 
-	bool requestTC10Sleep(Network::_icsneo_netid_t network);
+	bool requestTC10Sleep(_icsneo_netid_t network);
 
-	std::optional<TC10StatusMessage> getTC10Status(Network::_icsneo_netid_t network);
+	std::optional<TC10StatusMessage> getTC10Status(_icsneo_netid_t network);
 
 protected:
 	bool online = false;

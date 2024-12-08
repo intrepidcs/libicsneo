@@ -113,7 +113,7 @@ bool HardwareLiveDataPacket::EncodeFromMessage(LiveDataMessage& message, std::ve
 		return false;
 	}
 
-	header->netid = static_cast<uint8_t>(Network::_icsneo_netid_t::icsneo_netid_main51);
+	header->netid = static_cast<uint8_t>(_icsneo_netid_t::icsneo_netid_main51);
 	header->fullLength = fullSize;
 	header->command = static_cast<uint8_t>(Command::Extended);
 	header->extendedCommand = static_cast<uint16_t>(ExtendedCommand::LiveData);

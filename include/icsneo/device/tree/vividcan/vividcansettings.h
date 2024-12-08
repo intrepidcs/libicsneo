@@ -52,9 +52,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_hscan:
+			case _icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->can1);
-			case Network::_icsneo_netid_t::icsneo_netid_lsftcan:
+			case _icsneo_netid_t::icsneo_netid_lsftcan:
 				return &(cfg->lsftcan1);
 			default:
 				return nullptr;
@@ -65,7 +65,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_lsftcan:
+			case _icsneo_netid_t::icsneo_netid_lsftcan:
 				return &(cfg->lsftcan1);
 			default:
 				return nullptr;
@@ -76,7 +76,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_swcan:
+			case _icsneo_netid_t::icsneo_netid_swcan:
 				return &(cfg->swcan1);
 			default:
 				return nullptr;
@@ -85,7 +85,7 @@ public:
 
 	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
 		return {
-			{ Network(Network::_icsneo_netid_t::icsneo_netid_hscan) }
+			{ Network(_icsneo_netid_t::icsneo_netid_hscan) }
 		};
 	}
 

@@ -112,21 +112,21 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_hscan:
+			case _icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->can1);
-			case Network::_icsneo_netid_t::icsneo_netid_mscan:
+			case _icsneo_netid_t::icsneo_netid_mscan:
 				return &(cfg->can2);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan2:
+			case _icsneo_netid_t::icsneo_netid_hscan2:
 				return &(cfg->can3);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan3:
+			case _icsneo_netid_t::icsneo_netid_hscan3:
 				return &(cfg->can4);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan4:
+			case _icsneo_netid_t::icsneo_netid_hscan4:
 				return &(cfg->can5);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan5:
+			case _icsneo_netid_t::icsneo_netid_hscan5:
 				return &(cfg->can6);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan6:
+			case _icsneo_netid_t::icsneo_netid_hscan6:
 				return &(cfg->can7);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan7:
+			case _icsneo_netid_t::icsneo_netid_hscan7:
 				return &(cfg->can8);
 			default:
 				return nullptr;
@@ -137,21 +137,21 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_hscan:
+			case _icsneo_netid_t::icsneo_netid_hscan:
 				return &(cfg->canfd1);
-			case Network::_icsneo_netid_t::icsneo_netid_mscan:
+			case _icsneo_netid_t::icsneo_netid_mscan:
 				return &(cfg->canfd2);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan2:
+			case _icsneo_netid_t::icsneo_netid_hscan2:
 				return &(cfg->canfd3);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan3:
+			case _icsneo_netid_t::icsneo_netid_hscan3:
 				return &(cfg->canfd4);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan4:
+			case _icsneo_netid_t::icsneo_netid_hscan4:
 				return &(cfg->canfd5);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan5:
+			case _icsneo_netid_t::icsneo_netid_hscan5:
 				return &(cfg->canfd6);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan6:
+			case _icsneo_netid_t::icsneo_netid_hscan6:
 				return &(cfg->canfd7);
-			case Network::_icsneo_netid_t::icsneo_netid_hscan7:
+			case _icsneo_netid_t::icsneo_netid_hscan7:
 				return &(cfg->canfd8);
 			default:
 				return nullptr;
@@ -162,9 +162,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_swcan:
+			case _icsneo_netid_t::icsneo_netid_swcan:
 				return &(cfg->swcan1);
-			case Network::_icsneo_netid_t::icsneo_netid_swcan2:
+			case _icsneo_netid_t::icsneo_netid_swcan2:
 				return &(cfg->swcan2);
 			default:
 				return nullptr;
@@ -176,7 +176,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::_icsneo_netid_t::icsneo_netid_lin:
+			case _icsneo_netid_t::icsneo_netid_lin:
 				return &(cfg->lin1);
 			default:
 				return nullptr;

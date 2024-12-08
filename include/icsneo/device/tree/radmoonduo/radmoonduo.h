@@ -18,7 +18,7 @@ public:
 	static const std::vector<Network>& GetSupportedNetworks() {
 		// If Converter1 Target is set to USB/CM, OP_Ethernet2 will be exposed to the PC
 		static std::vector<Network> supportedNetworks = {
-			Network::_icsneo_netid_t::icsneo_netid_op_ethernet2
+			_icsneo_netid_t::icsneo_netid_op_ethernet2
 		};
 		return supportedNetworks;
 	}

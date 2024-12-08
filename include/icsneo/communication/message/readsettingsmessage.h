@@ -10,7 +10,7 @@ namespace icsneo {
 
 class ReadSettingsMessage : public InternalMessage {
 public:
-	ReadSettingsMessage() : InternalMessage(Message::Type::ReadSettings, Network::_icsneo_netid_t::icsneo_netid_read_settings) {}
+	ReadSettingsMessage() : InternalMessage(Message::Type::ReadSettings, _icsneo_netid_t::icsneo_netid_read_settings) {}
 	
 	enum class Response : uint8_t {
 		OK = 0,

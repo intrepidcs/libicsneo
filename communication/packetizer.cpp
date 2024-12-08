@@ -54,7 +54,7 @@ bool Packetizer::input(RingBuffer& bytes) {
 				if(packetLength == 0) {
 					state = ReadState::ParseLongStylePacketHeader;
 					break;
-				} else if(packetLength == 0xA && packet.network == Network::_icsneo_netid_t::icsneo_netid_disk_data) {
+				} else if(packetLength == 0xA && packet.network == _icsneo_netid_t::icsneo_netid_disk_data) {
 					state = ReadState::ParseDiskDataHeader;
 					break;
 				}
@@ -159,7 +159,7 @@ bool Packetizer::input(RingBuffer& bytes) {
 					processedPackets.push_back(std::make_shared<Packet>(packet));
 					bytes.pop(packetLength);
 
-					if(packet.network == Network::_icsneo_netid_t::icsneo_netid_disk_data && (packetLength - headerSize) % 2 == 0) {
+					if(packet.network == _icsneo_netid_t::icsneo_netid_disk_data && (packetLength - headerSize) % 2 == 0) {
 						bytes.pop_front();
 					}
 				} else {

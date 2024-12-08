@@ -138,10 +138,10 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			netid = uint16_t(raw->network.getNetID());
 
 			switch(raw->network.getNetID()) {
-				case Network::_icsneo_netid_t::icsneo_netid_device:
+				case _icsneo_netid_t::icsneo_netid_device:
 					shortFormat = true;
 					break;
-				case Network::_icsneo_netid_t::icsneo_netid_red_oldformat: {
+				case _icsneo_netid_t::icsneo_netid_red_oldformat: {
 					// See the decoder for an explanation
 					// We expect the network byte to be populated already in data, but not the length
 					uint16_t length = uint16_t(raw->data.size()) - 1;
@@ -162,7 +162,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			}
 
 			buffer = &m51msg->data;
-			netid = uint16_t(Network::_icsneo_netid_t::icsneo_netid_main51);
+			netid = uint16_t(_icsneo_netid_t::icsneo_netid_main51);
 
 			if(!m51msg->forceShortFormat) {
 				// Main51 can be sent as a long message without setting the NetID to RED first
@@ -172,7 +172,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 				size += 1; // Even though we are not including the NetID bytes, the device expects them to be counted in the length
 				size += 1; // Main51 Command
 				m51msg->data.insert(m51msg->data.begin(), {
-					(uint8_t)Network::_icsneo_netid_t::icsneo_netid_main51, // 0x0B for long message
+					(uint8_t)_icsneo_netid_t::icsneo_netid_main51, // 0x0B for long message
 					(uint8_t)size, // Size, little endian 16-bit
 					(uint8_t)(size >> 8),
 					(uint8_t)m51msg->command
@@ -223,7 +223,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 		uint16_t size = static_cast<uint16_t>(buffer->size()) + 1 + 1 + 2 + 2 + 1;
 
 		buffer->insert(buffer->begin(), {
-			(uint8_t)Network::_icsneo_netid_t::icsneo_netid_red, // 0x0C for long message
+			(uint8_t)_icsneo_netid_t::icsneo_netid_red, // 0x0C for long message
 			(uint8_t)size, // Size, little endian 16-bit
 			(uint8_t)(size >> 8),
 			(uint8_t)netid, // NetID, little endian 16-bit
@@ -243,7 +243,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 		 * In this case, command 0x06 is SetLEDState.
 		 * This old command type is not really used anywhere else.
 		 */
-		auto canmsg = std::make_shared<InternalMessage>(Network::_icsneo_netid_t::icsneo_netid_device);
+		auto canmsg = std::make_shared<InternalMessage>(_icsneo_netid_t::icsneo_netid_device);
 		msg = canmsg;
 		if(arguments.empty()) {
 			report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);

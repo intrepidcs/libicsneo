@@ -9,7 +9,7 @@ using namespace icsneo::Disk;
 
 std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType) {
-	const auto filter = std::make_shared<MessageFilter>((memType == MemoryType::SD ? Network::_icsneo_netid_t::icsneo_netid_neo_memory_sdread : Network::_icsneo_netid_t::icsneo_netid_red_int_memoryread));
+	const auto filter = std::make_shared<MessageFilter>((memType == MemoryType::SD ? _icsneo_netid_t::icsneo_netid_neo_memory_sdread : _icsneo_netid_t::icsneo_netid_red_int_memoryread));
 	filter->includeInternalInAny = true;
 
 	if(pos % SectorSize != 0)
@@ -61,7 +61,7 @@ std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communicatio
 std::optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType) {
 
-	static std::shared_ptr<MessageFilter> NeoMemoryDone = std::make_shared<MessageFilter>(Network::_icsneo_netid_t::icsneo_netid_neo_memory_write_done);
+	static std::shared_ptr<MessageFilter> NeoMemoryDone = std::make_shared<MessageFilter>(_icsneo_netid_t::icsneo_netid_neo_memory_write_done);
 
 	if(pos % SectorSize != 0)
 		return std::nullopt;

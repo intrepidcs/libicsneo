@@ -9,7 +9,7 @@ namespace icsneo {
 
 class FlashMemoryMessage : public InternalMessage {
 public:
-	FlashMemoryMessage() : InternalMessage(Message::Type::InternalMessage, Network::_icsneo_netid_t::icsneo_netid_red_int_memoryread) {}
+	FlashMemoryMessage() : InternalMessage(Message::Type::InternalMessage, _icsneo_netid_t::icsneo_netid_red_int_memoryread) {}
 	uint16_t startAddress = 0;
 };
 
