@@ -434,6 +434,17 @@ ICSNEO_API icsneo_error_t icsneo_can_message_get_baudrate_switch(icsneo_device_t
 */
 ICSNEO_API icsneo_error_t icsneo_can_message_get_error_state_indicator(icsneo_device_t* device, icsneo_message_t* message, bool* value);
 
+/** @brief Create CAN messages for a device
+ * 
+ * @param[in] icsneo_device_t device The device to get the messages of.
+ * @param[out] icsneo_message_t** messages Pointer to an array of icsneo_message_t to copy the messages into.
+ *  Undefined behaviour if index is out of range of messages_count.
+ * @param[in] uint32_t* messages_count Size of the messages array.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_can_messages_create(icsneo_device_t* device, icsneo_message_t** messages, uint32_t messages_count);
+
 /** @brief Get the global events not specifically related to a device.
  * 
  * @param[out] icsneo_event_t** events Pointer to an array of icsneo_event_t to copy the events into.

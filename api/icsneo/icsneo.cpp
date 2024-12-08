@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 #include <algorithm>
 
 using namespace icsneo;
@@ -18,7 +19,8 @@ typedef struct icsneo_device_t {
     // Received messages from the device, we can automatically free them without the user.
     std::vector<std::shared_ptr<icsneo_message_t>> messages;
     // Seperate buffer for transmit messages for simplicity. User is responsible for freeing.
-    std::vector<std::shared_ptr<icsneo_message_t>> tx_messages;
+    // This needs to be a deque so that pointers aren't invalidated on push_back.
+    std::deque<std::shared_ptr<icsneo_message_t>> tx_messages;
     std::vector<icsneo_event_t> events;
 
     icsneo_open_options_t options;
@@ -601,6 +603,23 @@ ICSNEO_API icsneo_error_t icsneo_can_message_get_error_state_indicator(icsneo_de
 
     *value = can_message->errorStateIndicator;
     
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_can_messages_create(icsneo_device_t* device, icsneo_message_t** messages, uint32_t messages_count) {
+    if (!device || !messages) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    auto dev = device->device;
+    // Get the device messages
+    for (uint32_t i = 0; i < messages_count; i++) {
+        auto can_message = std::static_pointer_cast<Message>(std::make_shared<CANMessage>());
+        auto message = std::make_shared<icsneo_message_t>(can_message, true);
+        device->tx_messages.push_back(message);
+        messages[i] = message.get();
+    }
+
     return icsneo_error_success;
 }
 
