@@ -560,6 +560,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_get_error_state_indicator(icsneo_de
  */
 ICSNEO_API icsneo_error_t icsneo_can_messages_create(icsneo_device_t* device, icsneo_message_t** messages, uint32_t messages_count);
 
+/** @brief Free CAN messages for a device
+ * 
+ * @param[in] icsneo_device_t device The device to free the messages of.
+ * @param[in] icsneo_message_t* message The message to free.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ * 
+ * @warning This function should only be called on messages created by icsneo_can_messages_create.
+ * 
+ * @see icsneo_can_messages_create
+ */
+ICSNEO_API icsneo_error_t icsneo_can_message_free(icsneo_device_t* device, icsneo_message_t* message);
+
 /** @brief Get the global events not specifically related to a device.
  * 
  * @param[out] icsneo_event_t** events Pointer to an array of icsneo_event_t to copy the events into.

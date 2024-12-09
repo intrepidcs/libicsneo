@@ -9,7 +9,7 @@
 
 #include <string>
 #include <vector>
-#include <deque>
+#include <list>
 #include <algorithm>
 
 using namespace icsneo;
@@ -19,8 +19,8 @@ typedef struct icsneo_device_t {
     // Received messages from the device, we can automatically free them without the user.
     std::vector<std::shared_ptr<icsneo_message_t>> messages;
     // Seperate buffer for transmit messages for simplicity. User is responsible for freeing.
-    // This needs to be a deque so that pointers aren't invalidated on push_back.
-    std::deque<std::shared_ptr<icsneo_message_t>> tx_messages;
+    // This needs to be a list so that pointers aren't invalidated on push_back or erase.
+    std::list<std::shared_ptr<icsneo_message_t>> tx_messages;
     std::vector<icsneo_event_t> events;
 
     icsneo_open_options_t options;
@@ -34,7 +34,6 @@ typedef struct icsneo_device_t {
         events.clear();
         events.shrink_to_fit();
         tx_messages.clear();
-        tx_messages.shrink_to_fit();
     }
 } icsneo_device_t;
 
@@ -438,7 +437,7 @@ ICSNEO_API icsneo_error_t icsneo_device_transmit_messages(icsneo_device_t* devic
     auto dev = device->device;
     uint32_t i = 0;
     bool success = false;
-    for (;i < *messages_count; i++) {
+    for (; i < *messages_count; i++) {
         // TODO: Check if message is valid
         success = dev->transmit(std::static_pointer_cast<icsneo::BusMessage>(messages[i]->message));
         if (!success) {
@@ -811,6 +810,23 @@ ICSNEO_API icsneo_error_t icsneo_can_messages_create(icsneo_device_t* device, ic
     }
 
     return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_can_message_free(icsneo_device_t* device, icsneo_message_t* message) {
+    if (!device || !message) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    bool removed = false;
+    for (auto it = device->tx_messages.begin(); it != device->tx_messages.end(); it++) {
+        if (it->get() == message) {
+            device->tx_messages.erase(it);
+            removed = true;
+            message = nullptr;
+            break;
+        }
+    }    
+    return removed ? icsneo_error_success : icsneo_error_invalid_parameters;
 }
 
 ICSNEO_API icsneo_error_t icsneo_get_events(icsneo_event_t** events, uint32_t* events_count) {
