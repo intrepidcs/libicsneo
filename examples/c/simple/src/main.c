@@ -206,7 +206,14 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
         if (res != icsneo_error_success) {
             return print_error_code("Failed to get message bus type", res);
         }
-        printf("\t%d) Message type: %u bus type: %u\n", i, msg_type, bus_type);
+        const char bus_name[128] = {0};
+        uint32_t bus_name_length = 128;
+        res += icsneo_get_bus_type_name(&bus_type, bus_name, &bus_name_length);
+        if (res != icsneo_error_success) {
+            return print_error_code("Failed to get message bus type name", res);
+        }
+
+        printf("\t%d) Message type: %u bus type: %s (%u)\n", i, msg_type, bus_name, bus_type);
         if (bus_type == icsneo_msg_bus_type_can) {
             uint32_t arbid = 0;
             uint32_t dlc = 0;
@@ -215,12 +222,14 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
             bool is_extended = false;
             uint8_t data[64] = {0};
             uint32_t data_length = 64;
+            
             uint32_t result = icsneo_can_message_get_arbid(device, message, &arbid);
             result += icsneo_can_message_get_dlc_on_wire(device, message, &dlc);
             result += icsneo_can_message_is_remote(device, message, &is_remote);
             result += icsneo_can_message_is_canfd(device, message, &is_canfd);
             result += icsneo_can_message_is_extended(device, message, &is_extended);
             result += icsneo_message_get_data(device, message, data, &data_length);
+
             if (result != icsneo_error_success) {
                 printf("\tFailed get get CAN parameters (error: %u) for index %u\n", result, i);
                 continue;
