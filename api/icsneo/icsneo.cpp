@@ -604,6 +604,22 @@ ICSNEO_API icsneo_error_t icsneo_can_message_get_arbid(icsneo_device_t* device, 
     return icsneo_error_success;
 }
 
+ICSNEO_API icsneo_error_t icsneo_can_message_set_arbid(icsneo_device_t* device, icsneo_message_t* message, uint32_t value) {
+        if (!device || !message) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    // TODO: Check if message is valid
+    auto* const can_message = dynamic_cast<CANMessage*>(message->message.get());
+    if (!can_message) {
+        return icsneo_error_invalid_type;
+    }
+
+    can_message->arbid = value;
+
+    return icsneo_error_success;
+}
+
 ICSNEO_API icsneo_error_t icsneo_can_message_get_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value) {
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;

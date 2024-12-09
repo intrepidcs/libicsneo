@@ -429,6 +429,16 @@ ICSNEO_API icsneo_error_t icsneo_message_get_data(icsneo_device_t* device, icsne
 */
 ICSNEO_API icsneo_error_t icsneo_can_message_get_arbid(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value);
 
+/** @brief Set the Arbitration ID of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] uint32_t value Arbitration ID to set.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_set_arbid(icsneo_device_t* device, icsneo_message_t* message, uint32_t value);
+
 /** @brief Get the DLC on wire of a CAN message 
  * 
  * @param[in] icsneo_device_t* device The device to check against.
