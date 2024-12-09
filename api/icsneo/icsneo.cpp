@@ -75,7 +75,7 @@ bool safe_str_copy(const char* dest, uint32_t dest_size, std::string src) {
     try {
         auto copied = src.copy(const_cast<char*>(dest), static_cast<size_t>(dest_size), 0);
         // Somehow we didn't copy the number of bytes we needed to? This check probably isn't needed.
-        if (copied != dest_size) {
+        if (copied != src.length()) {
             return false;
         }
         return true;
@@ -120,13 +120,13 @@ ICSNEO_API icsneo_error_t icsneo_get_error_code(icsneo_error_t error_code, const
         case icsneo_error_transmit_messages_failed:
             error = "Transmitting messages failed";
             break;
+        case icsneo_error_string_copy_failed:
+            error = "String copy failed";
+            break;
         // Don't default, let the compiler warn us if we forget to handle an error code
     }
-    // Find the minimum length of the error string and set value_length
-    auto min_length = std::minmax(static_cast<uint32_t>(error.length()), *value_length).first;
-    *value_length = min_length;
     // Copy the string into value
-    return safe_str_copy(value, min_length, error) ? icsneo_error_success : icsneo_error_invalid_parameters;
+    return safe_str_copy(value, *value_length, error) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_device_type_from_type(icsneo_devicetype_t device_type, const char* value, uint32_t* value_length) {
@@ -135,11 +135,8 @@ ICSNEO_API icsneo_error_t icsneo_device_type_from_type(icsneo_devicetype_t devic
     }
 
     auto device_type_str = DeviceType::getGenericProductName(device_type);
-    // Find the minimum length of the device type string and set value_length
-    auto min_length = std::minmax(static_cast<uint32_t>(device_type_str.length()), *value_length).first;
-    *value_length = min_length;
     // Copy the string into value
-    return safe_str_copy(value, min_length, device_type_str) ? icsneo_error_success : icsneo_error_invalid_parameters;
+    return safe_str_copy(value, *value_length, device_type_str) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_device_find_all(icsneo_device_t** devices, uint32_t* devices_count, void* reserved) {
@@ -259,11 +256,8 @@ ICSNEO_API icsneo_error_t icsneo_device_get_description(icsneo_device_t* device,
         return icsneo_error_invalid_parameters;
     }
     auto dev = device->device;
-    // Get and set the length
-    auto min_length = std::minmax(static_cast<uint32_t>(dev->describe().length()), *value_length).first;
-    *value_length = min_length;
     // Copy the string into value
-    return safe_str_copy(value, min_length, dev->describe()) ? icsneo_error_success : icsneo_error_invalid_parameters;
+    return safe_str_copy(value, *value_length, dev->describe()) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_device_get_type(icsneo_device_t* device, icsneo_devicetype_t* value) {
@@ -281,11 +275,8 @@ ICSNEO_API icsneo_error_t icsneo_device_get_serial(icsneo_device_t* device, cons
         return icsneo_error_invalid_parameters;
     }
     auto dev = device->device;
-    // Get and set the length
-    auto min_length = std::minmax(static_cast<uint32_t>(dev->getSerial().length()), *value_length).first;
-    *value_length = min_length;
     // Copy the string into value
-    return safe_str_copy(value, min_length, dev->getSerial()) ? icsneo_error_success : icsneo_error_invalid_parameters;
+    return safe_str_copy(value, *value_length, dev->getSerial()) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 
@@ -501,11 +492,8 @@ ICSNEO_API icsneo_error_t icsneo_get_bus_type_name(icsneo_msg_bus_type_t* bus_ty
         return icsneo_error_invalid_parameters;
     }
     auto bus_type_str = std::string(Network::GetTypeString(*bus_type));
-    // Find the minimum length of the bus type string and set value_length
-    auto min_length = std::minmax(static_cast<uint32_t>(bus_type_str.length()), *value_length).first;
-    *value_length = min_length;
     // Copy the string into value
-    return safe_str_copy(value, min_length, bus_type_str) ? icsneo_error_success : icsneo_error_invalid_parameters;
+    return safe_str_copy(value, *value_length, bus_type_str) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_message_get_data(icsneo_device_t* device, icsneo_message_t* message, uint8_t* data, uint32_t* data_length) {
@@ -725,12 +713,8 @@ ICSNEO_API icsneo_error_t icsneo_event_get_description(icsneo_event_t* event, co
     }
     // TODO: Check if event is valid
     auto ev = event->event;
-    
-    // Get and set the length
-    auto min_length = std::minmax(static_cast<uint32_t>(ev.describe().length()), *value_length).first;
-    *value_length = min_length;
     // Copy the string into value
-    return safe_str_copy(value, min_length, ev.describe()) ? icsneo_error_success : icsneo_error_invalid_parameters;
+    return safe_str_copy(value, *value_length, ev.describe()) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_device_get_rtc(icsneo_device_t* device, int64_t* unix_epoch) {

@@ -88,6 +88,8 @@ typedef enum _icsneo_error_t {
     icsneo_error_set_settings_failure,
     // Failed to transmit messages
     icsneo_error_transmit_messages_failed,
+    // Failed to copy string to buffer
+    icsneo_error_string_copy_failed
 } _icsneo_error_t;
 
 /** @brief Integer representation of _icsneo_error_t enum. 
