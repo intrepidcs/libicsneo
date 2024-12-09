@@ -525,6 +525,47 @@ ICSNEO_API icsneo_error_t icsneo_get_netid_name(icsneo_netid_t netid, const char
     return safe_str_copy(value, value_length, netid_str) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
+ICSNEO_API icsneo_error_t icsneo_message_set_netid(icsneo_device_t* device, icsneo_message_t* message, icsneo_netid_t netid) {
+    if (!device || !message) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    // TODO: Check if message is valid
+    // Make sure the message has the data field, internal and bus currently have this.
+    if (message->message->getMsgType() != icsneo_msg_type_internal && message->message->getMsgType() != icsneo_msg_type_bus) {
+        return icsneo_error_invalid_type;
+    }
+    auto* internal_message = dynamic_cast<InternalMessage*>(message->message.get());
+    if (!internal_message) {
+        return icsneo_error_invalid_type;
+    }
+    internal_message->network = Network(static_cast<_icsneo_netid_t>(netid), true);
+
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_message_set_data(icsneo_device_t* device, icsneo_message_t* message, uint8_t* data, uint32_t data_length) {
+        if (!device || !message | !data) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    // TODO: Check if message is valid
+    // Make sure the message has the data field, internal and bus currently have this.
+    if (message->message->getMsgType() != icsneo_msg_type_internal && message->message->getMsgType() != icsneo_msg_type_bus) {
+        return icsneo_error_invalid_type;
+    }
+    auto* internal_message = dynamic_cast<InternalMessage*>(message->message.get());
+    if (!internal_message) {
+        return icsneo_error_invalid_type;
+    }
+    internal_message->data.clear();
+    internal_message->data.resize(data_length);
+    internal_message->data.shrink_to_fit();
+    std::copy(data, data + data_length, internal_message->data.begin());
+
+    return icsneo_error_success;
+}
+
 ICSNEO_API icsneo_error_t icsneo_message_get_data(icsneo_device_t* device, icsneo_message_t* message, uint8_t* data, uint32_t* data_length) {
     if (!device || !message || !data || !data_length) {
         return icsneo_error_invalid_parameters;

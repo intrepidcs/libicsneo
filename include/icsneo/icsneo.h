@@ -387,13 +387,33 @@ ICSNEO_API icsneo_error_t icsneo_message_get_netid(icsneo_device_t* device, icsn
  */
 ICSNEO_API icsneo_error_t icsneo_get_netid_name(icsneo_netid_t netid, const char* value, uint32_t* value_length);
 
+/** @brief Set the Network ID (netid) of a bus message
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[in] icsneo_netid_t netid The netid to set.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_message_set_netid(icsneo_device_t* device, icsneo_message_t* message, icsneo_netid_t netid);
+
+/** @brief Set the data bytes of a message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to copy the data into.
+ * @param[out] uint8_t* data Pointer to a uint8_t array to copy from.
+ * @param[in] uint32_t data_length length of the data.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_message_set_data(icsneo_device_t* device, icsneo_message_t* message, uint8_t* data, uint32_t data_length);
 
 /** @brief Get the data bytes of a message 
  * 
  * @param[in] icsneo_device_t* device The device to check against.
  * @param[in] icsneo_message_t* message The message to check.
  * @param[out] uint8_t* data Pointer to a uint8_t to copy the data bytes into.
- * @param[out] uint32_t* data_length Pointer to a uint32_t to copy the length of the data into.
+ * @param[in,out] uint32_t* data_length Pointer to a uint32_t to copy the length of the data into.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
