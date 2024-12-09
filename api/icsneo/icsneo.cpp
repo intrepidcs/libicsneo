@@ -59,7 +59,7 @@ static std::vector<icsneo_event_t> g_events;
  * Safely copies a std::string to a char array.
  *
  * @param dest The buffer to copy the string into
- * @param dest_size The size of the buffer
+ * @param dest_size* The size of the buffer. Will be modified to the length of the string
  * @param src The string to copy
  *
  * @return true if the string was successfully copied, false otherwise
@@ -67,13 +67,17 @@ static std::vector<icsneo_event_t> g_events;
  * @note This function always null terminates the buffer, even if the string is too long.
  *       This is done for security reasons, not performance.
  */
-bool safe_str_copy(const char* dest, uint32_t dest_size, std::string src) {
+bool safe_str_copy(const char* dest, uint32_t* const dest_size, std::string src) {
+    if (!dest || !dest_size) {
+        return false;
+    }
     // zero terminate the entire string, this is done for security not for performance
-    memset(const_cast<char*>(dest), 0, dest_size);
+    memset(const_cast<char*>(dest), 0, *dest_size);
     // Need to save room for the null terminator
-    dest_size -= 1;
+    *dest_size -= 1;
     try {
-        auto copied = src.copy(const_cast<char*>(dest), static_cast<size_t>(dest_size), 0);
+        auto copied = src.copy(const_cast<char*>(dest), static_cast<size_t>(*dest_size), 0);
+        *dest_size = static_cast<uint32_t>(copied);
         // Somehow we didn't copy the number of bytes we needed to? This check probably isn't needed.
         if (copied != src.length()) {
             return false;
@@ -126,7 +130,7 @@ ICSNEO_API icsneo_error_t icsneo_get_error_code(icsneo_error_t error_code, const
         // Don't default, let the compiler warn us if we forget to handle an error code
     }
     // Copy the string into value
-    return safe_str_copy(value, *value_length, error) ? icsneo_error_success : icsneo_error_string_copy_failed;
+    return safe_str_copy(value, value_length, error) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_device_type_from_type(icsneo_devicetype_t device_type, const char* value, uint32_t* value_length) {
@@ -136,7 +140,7 @@ ICSNEO_API icsneo_error_t icsneo_device_type_from_type(icsneo_devicetype_t devic
 
     auto device_type_str = DeviceType::getGenericProductName(device_type);
     // Copy the string into value
-    return safe_str_copy(value, *value_length, device_type_str) ? icsneo_error_success : icsneo_error_string_copy_failed;
+    return safe_str_copy(value, value_length, device_type_str) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_device_find_all(icsneo_device_t** devices, uint32_t* devices_count, void* reserved) {
@@ -257,7 +261,7 @@ ICSNEO_API icsneo_error_t icsneo_device_get_description(icsneo_device_t* device,
     }
     auto dev = device->device;
     // Copy the string into value
-    return safe_str_copy(value, *value_length, dev->describe()) ? icsneo_error_success : icsneo_error_string_copy_failed;
+    return safe_str_copy(value, value_length, dev->describe()) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_device_get_type(icsneo_device_t* device, icsneo_devicetype_t* value) {
@@ -276,7 +280,7 @@ ICSNEO_API icsneo_error_t icsneo_device_get_serial(icsneo_device_t* device, cons
     }
     auto dev = device->device;
     // Copy the string into value
-    return safe_str_copy(value, *value_length, dev->getSerial()) ? icsneo_error_success : icsneo_error_string_copy_failed;
+    return safe_str_copy(value, value_length, dev->getSerial()) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 
@@ -493,7 +497,32 @@ ICSNEO_API icsneo_error_t icsneo_get_bus_type_name(icsneo_msg_bus_type_t* bus_ty
     }
     auto bus_type_str = std::string(Network::GetTypeString(*bus_type));
     // Copy the string into value
-    return safe_str_copy(value, *value_length, bus_type_str) ? icsneo_error_success : icsneo_error_string_copy_failed;
+    return safe_str_copy(value, value_length, bus_type_str) ? icsneo_error_success : icsneo_error_string_copy_failed;
+}
+
+ICSNEO_API icsneo_error_t icsneo_message_get_netid(icsneo_device_t* device, icsneo_message_t* message, icsneo_netid_t* netid) {
+    if (!device || !message || !netid) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if message is valid
+
+    // Make sure the message is a bus message
+    if (message->message->getMsgType() != icsneo_msg_type_bus) {
+        return icsneo_error_invalid_type;
+    }
+    // We can static cast here because we are relying on the type being correct at this point
+    auto bus_message = static_cast<BusMessage*>(message->message.get());
+    *netid = static_cast<icsneo_netid_t>(bus_message->network.getNetID());
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_get_netid_name(icsneo_netid_t netid, const char* value, uint32_t* value_length) {
+    if (!netid || !value || !value_length) {
+        return icsneo_error_invalid_parameters;
+    }
+    auto netid_str = std::string(Network::GetNetIDString(static_cast<_icsneo_netid_t>(netid), true));
+    // Copy the string into value
+    return safe_str_copy(value, value_length, netid_str) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_message_get_data(icsneo_device_t* device, icsneo_message_t* message, uint8_t* data, uint32_t* data_length) {
@@ -714,7 +743,7 @@ ICSNEO_API icsneo_error_t icsneo_event_get_description(icsneo_event_t* event, co
     // TODO: Check if event is valid
     auto ev = event->event;
     // Copy the string into value
-    return safe_str_copy(value, *value_length, ev.describe()) ? icsneo_error_success : icsneo_error_string_copy_failed;
+    return safe_str_copy(value, value_length, ev.describe()) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_device_get_rtc(icsneo_device_t* device, int64_t* unix_epoch) {

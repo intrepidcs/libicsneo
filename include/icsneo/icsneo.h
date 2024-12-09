@@ -357,13 +357,36 @@ ICSNEO_API icsneo_error_t icsneo_message_get_bus_type(icsneo_device_t* device, i
 
 /** @brief Get the bus type string for a icsneo_msg_bus_type_t.
  * 
- * @param[in] icsneo_event_t* event The event to get the description of.
+ * @param[in] icsneo_msg_bus_type_t* bus_type The bus type to get the description of.
  * @param[out] const char* value Pointer to a buffer to copy the description into. Null terminated.
  * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the description.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
 ICSNEO_API icsneo_error_t icsneo_get_bus_type_name(icsneo_msg_bus_type_t* bus_type, const char* value, uint32_t* value_length);
+
+/** @brief Get the Network ID (netid) of a bus message
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] icsneo_netid_t* netid Pointer to a icsneo_netid_t to copy the type of the value into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters or icsneo_error_invalid_type otherwise.
+ * 
+ * @see icsneo_netid_t, icsneo_get_netid_name
+ */
+ICSNEO_API icsneo_error_t icsneo_message_get_netid(icsneo_device_t* device, icsneo_message_t* message, icsneo_netid_t* netid);
+
+/** @brief Get the netid string for a icsneo_netid_t.
+ * 
+ * @param[in] icsneo_netid_t netid The network id to get the description of.
+ * @param[out] const char* value Pointer to a buffer to copy the description into. Null terminated.
+ * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the description.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_get_netid_name(icsneo_netid_t netid, const char* value, uint32_t* value_length);
+
 
 /** @brief Get the data bytes of a message 
  * 
