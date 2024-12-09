@@ -489,6 +489,16 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_remote(icsneo_device_t* device,
 */
 ICSNEO_API icsneo_error_t icsneo_can_message_is_extended(icsneo_device_t* device, icsneo_message_t* message, bool* value);
 
+/** @brief Set the extended status of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to modify.
+ * @param[out] bool value Extended status to set.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_set_extended(icsneo_device_t* device, icsneo_message_t* message, bool value);
+
 /** @brief Get the CANFD status of a CAN message 
  * 
  * @param[in] icsneo_device_t* device The device to check against.
@@ -499,15 +509,35 @@ ICSNEO_API icsneo_error_t icsneo_can_message_is_extended(icsneo_device_t* device
 */
 ICSNEO_API icsneo_error_t icsneo_can_message_is_canfd(icsneo_device_t* device, icsneo_message_t* message, bool* value);
 
-/** @brief Get the baudrate switch status of a CAN message 
+/** @brief Set the CANFD status of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to modify.
+ * @param[out] bool value CANFD status to set.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_set_canfd(icsneo_device_t* device, icsneo_message_t* message, bool value);
+
+/** @brief Get the baudrate switch status (BRS) of a CAN message 
  * 
  * @param[in] icsneo_device_t* device The device to check against.
  * @param[in] icsneo_message_t* message The message to check.
- * @param[out] bool* value Pointer to a uint32_t to copy the baudrate switch status into.
+ * @param[out] bool* value Pointer to a uint32_t to copy the baudrate switch (BRS) status into.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
 ICSNEO_API icsneo_error_t icsneo_can_message_get_baudrate_switch(icsneo_device_t* device, icsneo_message_t* message, bool* value);
+
+/** @brief Set the baudrate switch status (BRS) of a CAN message 
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to modify.
+ * @param[out] bool value baudrate switch status (BRS) to set.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_can_message_set_baudrate_switch(icsneo_device_t* device, icsneo_message_t* message, bool value);
 
 /** @brief Get the error state indicator status of a CAN message 
  * 
