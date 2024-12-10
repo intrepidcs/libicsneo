@@ -525,7 +525,7 @@ int main() {
 			/** Example of CAN FD
 			std::cout << "Transmitting an extended CAN FD frame... " << std::endl;
 			auto txMessage = std::make_shared<icsneo::CANMessage>();
-			txMessage->network = icsneo::Network::NetID::HSCAN;
+			txMessage->network = icsneo::icsneo_netid_hscan;
 			txMessage->arbid = 0x1C5001C5;
 			txMessage->data.insert(txMessage->data.end(), {0xaa, 0xbb, 0xcc});
 			// The DLC will come from the length of the data vector

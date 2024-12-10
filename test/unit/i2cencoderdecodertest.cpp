@@ -51,7 +51,7 @@ protected:
 TEST_F(I2CEncoderDecoderTest, PacketEncoderTest) {
 	std::vector<uint8_t> bytestream;
 	auto message = std::make_shared<icsneo::I2CMessage>();
-	message->network = icsneo::Network::NetID::I2C;
+	message->network = icsneo_netid_i2c;
 	message->controlBytes.push_back(static_cast<uint8_t>(0x12u)); //Product ID register address
 	message->dataBytes.push_back(static_cast<uint8_t>(0x00u));
 	message->address = 0x68u; //7 bit addressing, BASE_ADDR
@@ -66,7 +66,7 @@ TEST_F(I2CEncoderDecoderTest, PacketDecoderTest) {
 	std::shared_ptr<icsneo::Message> decodeMsg;
 	std::shared_ptr<icsneo::I2CMessage> message = std::make_shared<icsneo::I2CMessage>();
 
-	message->network = icsneo::Network::NetID::I2C;
+	message->network = icsneo_netid_i2c;
 	message->controlBytes.push_back(static_cast<uint8_t>(0x12u)); //Product ID register address
 	message->dataBytes.push_back(static_cast<uint8_t>(0x80u));
 	message->address = 0x68u; //7 bit addressing, BASE_ADDR

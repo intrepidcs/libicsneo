@@ -12,8 +12,8 @@ option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." O
 option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
 option(LIBICSNEO_BUILD_ICSNEO "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEO_STATIC "Build static C library" ON)
-option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C legacy library" OFF)
-option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C legacy library" OFF)
+option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C legacy library" ON)
+option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C legacy library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" OFF)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC "Build static icsnVC40 compatibility library" OFF)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
@@ -29,7 +29,7 @@ option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX"
 option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
 option(LIBICSNEO_ENABLE_FTD3XX "Enable devices which communicate over USB FTD3XX" ON)
 
-option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" OFF)
+option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" ON)
 
 if(NOT CMAKE_CXX_STANDARD)
 	set(CMAKE_CXX_STANDARD 17)

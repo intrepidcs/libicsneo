@@ -274,10 +274,10 @@ bool icsneo_removeMessageCallback(const neodevice_t* device, int id) {
 	return device->device->removeMessageCallback(id);
 }
 
-neonetid_t icsneo_getNetworkByNumber(const neodevice_t* device, icsneo_msg_bus_type_t type, unsigned int number) {
+icsneo_netid_t icsneo_getNetworkByNumber(const neodevice_t* device, icsneo_msg_bus_type_t type, unsigned int number) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
-	return neonetid_t(device->device->getNetworkByNumber(icsneo::icsneo_msg_bus_type_t(type), size_t(number)).getNetID());
+	return icsneo_netid_t(device->device->getNetworkByNumber(icsneo_msg_bus_type_t(type), size_t(number)).getNetID());
 }
 
 bool icsneo_getProductName(const neodevice_t* device, char* str, size_t* maxLength) {
@@ -430,28 +430,28 @@ bool icsneo_settingsApplyStructureTemporary(const neodevice_t* device, const voi
 	return icsneo_settingsWriteStructure(device, structure, structureSize) && icsneo_settingsApplyTemporary(device);
 }
 
-int64_t icsneo_getBaudrate(const neodevice_t* device, neonetid_t netid) {
+int64_t icsneo_getBaudrate(const neodevice_t* device, icsneo_netid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return -1;
 
 	return device->device->settings->getBaudrateFor(netid);
 }
 
-bool icsneo_setBaudrate(const neodevice_t* device, neonetid_t netid, int64_t newBaudrate) {
+bool icsneo_setBaudrate(const neodevice_t* device, icsneo_netid_t netid, int64_t newBaudrate) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->settings->setBaudrateFor(netid, newBaudrate);
 }
 
-int64_t icsneo_getFDBaudrate(const neodevice_t* device, neonetid_t netid) {
+int64_t icsneo_getFDBaudrate(const neodevice_t* device, icsneo_netid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return -1;
 
 	return device->device->settings->getFDBaudrateFor(netid);
 }
 
-bool icsneo_setFDBaudrate(const neodevice_t* device, neonetid_t netid, int64_t newBaudrate) {
+bool icsneo_setFDBaudrate(const neodevice_t* device, icsneo_netid_t netid, int64_t newBaudrate) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
@@ -628,7 +628,7 @@ bool icsneo_getSupportedDevices(icsneo_devicetype_t* devices, size_t* count) {
 	}
 
 	for(size_t i = 0; i < len; i++)
-		devices[i] = supported[i];
+		devices[i] = supported[i].getDeviceType();
 	*count = len;
 
 	return true;
@@ -671,28 +671,28 @@ bool icsneo_setDigitalIO(const neodevice_t* device, neoio_t type, uint32_t numbe
 	return device->device->setDigitalIO(static_cast<icsneo::IO>(type), number, value);
 }
 
-bool icsneo_isTerminationSupportedFor(const neodevice_t* device, neonetid_t netid) {
+bool icsneo_isTerminationSupportedFor(const neodevice_t* device, icsneo_netid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->settings->isTerminationSupportedFor(Network(netid));
 }
 
-bool icsneo_canTerminationBeEnabledFor(const neodevice_t* device, neonetid_t netid) {
+bool icsneo_canTerminationBeEnabledFor(const neodevice_t* device, icsneo_netid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->settings->canTerminationBeEnabledFor(Network(netid));
 }
 
-bool icsneo_isTerminationEnabledFor(const neodevice_t* device, neonetid_t netid) {
+bool icsneo_isTerminationEnabledFor(const neodevice_t* device, icsneo_netid_t netid) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
 	return device->device->settings->isTerminationEnabledFor(Network(netid)).value_or(false);
 }
 
-bool icsneo_setTerminationFor(const neodevice_t* device, neonetid_t netid, bool enabled) {
+bool icsneo_setTerminationFor(const neodevice_t* device, icsneo_netid_t netid, bool enabled) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
@@ -733,13 +733,13 @@ int icsneo_getDeviceStatus(const neodevice_t* device, void* status, size_t* size
 	
 	std::shared_ptr<Message> msg = device->device->com->waitForMessageSync([&]() {
 		return device->device->com->sendCommand(Command::RequestStatusUpdate);
-	}, std::make_shared<MessageFilter>(Network::NetID::DeviceStatus), std::chrono::milliseconds(100));
+	}, std::make_shared<MessageFilter>(icsneo_netid_device_status), std::chrono::milliseconds(100));
 
 	if(!msg) // Did not receive a message
 		return false;
 	
 	auto rawMessage = std::static_pointer_cast<InternalMessage>(msg);
-	if(!rawMessage || (rawMessage->network.getNetID() != Network::NetID::DeviceStatus))
+	if(!rawMessage || (rawMessage->network.getNetID() != icsneo_netid_device_status))
 		return false;
 
 	if(*size < rawMessage->data.size())

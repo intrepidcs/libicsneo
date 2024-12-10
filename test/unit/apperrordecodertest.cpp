@@ -46,10 +46,10 @@ TEST_F(REDAppErrorDecoderTest, PacketDecoderTest) {
 
 	auto msg1 = std::make_shared<icsneo::AppErrorMessage>();
 	msg1->errorType = static_cast<uint16_t>(AppErrorType::AppErrorNetworkNotEnabled);
-	msg1->errorNetID = Network::NetID::HSCAN;
+	msg1->errorNetID = icsneo_netid_hscan;
 	msg1->timestamp10us = 0x66554433;
 	msg1->timestamp10usMSB = 0xAA998877;
-	msg1->network = icsneo::Network::NetID::RED_App_Error;
+	msg1->network = icsneo_netid_red_app_error;
 
 	ringBuffer.clear();
 	ringBuffer.write(testErrorData);
