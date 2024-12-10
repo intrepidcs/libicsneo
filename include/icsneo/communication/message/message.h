@@ -78,7 +78,11 @@ public:
 
 	virtual const icsneo_msg_bus_type_t getBusType() const = 0;
 
+	// Description ID of the message. This is used for filtering / tracking in firmware and driver.
+	// This is equivalent to icsSpyMessage::DescriptionID
 	uint16_t description = 0;
+	// weather the message was originally transmitted on the bus. This is equivalent to 
+	// SPY_STATUS_TX_MSG bit field in icsSpyMessage::StatusBitField
 	bool transmitted = false;
 	bool error = false;
 };
