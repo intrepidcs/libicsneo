@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.12)
 project(fatfs VERSION 0.14.1) # R0.14b
 
 add_library(fatfs
