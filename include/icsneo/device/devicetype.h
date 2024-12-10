@@ -5,9 +5,12 @@
 #define ICSNEO_DEVICETYPE_LONGEST_NAME (35 + 1) // Add 1 so that if someone forgets, they still have space for null terminator
 #define ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION (ICSNEO_DEVICETYPE_LONGEST_NAME + 7) // 6 character serial, plus space
 
+
+#include <icsneo/icsneotypes.h>
+
+#ifdef __cplusplus
 #include <cstdint>
 #include <string>
-#include <icsneo/icsneotypes.h>
 
 
 namespace icsneo {
@@ -147,3 +150,5 @@ private:
 };
 
 }; // namespace icsneo
+
+#endif // __cplusplus

@@ -81,7 +81,7 @@ static bool NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t
 		copyStatusData();
 	};
 
-	switch (Network::Type(frame.type))
+	switch (frame.type)
 	{
 	case icsneo_msg_bus_type_can:
 	case icsneo_msg_bus_type_swcan:
