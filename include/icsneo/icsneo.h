@@ -365,6 +365,19 @@ ICSNEO_API icsneo_error_t icsneo_message_get_bus_type(icsneo_device_t* device, i
  */
 ICSNEO_API icsneo_error_t icsneo_get_bus_type_name(icsneo_msg_bus_type_t* bus_type, const char* value, uint32_t* value_length);
 
+/** @brief Get the transmission status of a message.
+ * 
+ * When a message is transmitted from the device, It will be returned in the receive buffer. 
+ * @see icsneo_device_transmit_messages
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to modify.
+ * @param[out] bool value Pointer to a bool to copy the tranmission status into.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_message_is_transmit(icsneo_device_t* device, icsneo_message_t* message, bool* value);
+
 /** @brief Get the Network ID (netid) of a bus message
  * 
  * @param[in] icsneo_device_t* device The device to check against.
@@ -398,6 +411,8 @@ ICSNEO_API icsneo_error_t icsneo_get_netid_name(icsneo_netid_t netid, const char
 ICSNEO_API icsneo_error_t icsneo_message_set_netid(icsneo_device_t* device, icsneo_message_t* message, icsneo_netid_t netid);
 
 /** @brief Set the data bytes of a message 
+ * 
+ * @note This function will not set the DLC of the message. @see icsneo_message_set_dlc
  * 
  * @param[in] icsneo_device_t* device The device to check against.
  * @param[in] icsneo_message_t* message The message to copy the data into.

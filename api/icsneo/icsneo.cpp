@@ -500,6 +500,23 @@ ICSNEO_API icsneo_error_t icsneo_get_bus_type_name(icsneo_msg_bus_type_t* bus_ty
     return safe_str_copy(value, value_length, bus_type_str) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
+ICSNEO_API icsneo_error_t icsneo_message_is_transmit(icsneo_device_t* device, icsneo_message_t* message, bool* value) {
+    if (!device || !message || !value) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if message is valid
+    
+    // Make sure the message is a bus message
+    if (message->message->getMsgType() != icsneo_msg_type_bus) {
+        return icsneo_error_invalid_type;
+    }
+    // We can static cast here because we are relying on the type being correct at this point
+    auto bus_message = static_cast<BusMessage*>(message->message.get());
+    *value = bus_message->transmitted;
+    
+    return icsneo_error_success;
+}
+
 ICSNEO_API icsneo_error_t icsneo_message_get_netid(icsneo_device_t* device, icsneo_message_t* message, icsneo_netid_t* netid) {
     if (!device || !message || !netid) {
         return icsneo_error_invalid_parameters;

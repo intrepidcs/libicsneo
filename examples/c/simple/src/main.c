@@ -229,6 +229,7 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
             bool is_remote = false;
             bool is_canfd = false;
             bool is_extended = false;
+            bool is_tx = false;
             uint8_t data[64] = {0};
             uint32_t data_length = 64;
             const char netid_name[128] = {0};
@@ -241,11 +242,12 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
             result += icsneo_can_message_is_canfd(device, message, &is_canfd);
             result += icsneo_can_message_is_extended(device, message, &is_extended);
             result += icsneo_message_get_data(device, message, data, &data_length);
+            result += icsneo_message_is_transmit(device, message, &is_tx);
             if (result != icsneo_error_success) {
                 printf("\tFailed get get CAN parameters (error: %u) for index %u\n", result, i);
                 continue;
             }
-            printf("\t  NetID: %s (0x%x)\tArbID: 0x%x\t DLC: %u\t Remote: %d\t CANFD: %d\t Extended: %d\t Data length: %u\n", netid_name, netid, arbid, dlc, is_remote, is_canfd, is_extended, data_length);
+            printf("\t  NetID: %s (0x%x)\tArbID: 0x%x\t DLC: %u\t TX: %d\t Remote: %d\t CANFD: %d\t Extended: %d\t Data length: %u\n", netid_name, netid, arbid, dlc, is_tx, is_remote, is_canfd, is_extended, data_length);
             printf("\t  Data: [");
             for (uint32_t x = 0; x < data_length; x++) {
                 printf(" 0x%x", data[x]);
@@ -273,8 +275,7 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
 int transmit_can_messages(icsneo_device_t* device) {
     uint64_t counter = 0;
 
-    
-    for (uint32_t i = 0; i < 20000; i++) {
+    for (uint32_t i = 0; i < 100; i++) {
         // Create the message
         icsneo_message_t* message = NULL;
         uint32_t message_count = 1;
@@ -289,7 +290,7 @@ int transmit_can_messages(icsneo_device_t* device) {
         res += icsneo_can_message_set_extended(device, message, true);
         res += icsneo_can_message_set_baudrate_switch(device, message, true);
         // Create the payload
-        uint8_t data[64] = {0};
+        uint8_t data[8] = {0};
         data[0] = (uint8_t)(counter >> 56);
         data[1] = (uint8_t)(counter >> 48);
         data[2] = (uint8_t)(counter >> 40);
@@ -298,7 +299,6 @@ int transmit_can_messages(icsneo_device_t* device) {
         data[5] = (uint8_t)(counter >> 16);
         data[6] = (uint8_t)(counter >> 8);
         data[7] = (uint8_t)(counter >> 0);
-        data[63] = 0xCA;
         res += icsneo_message_set_data(device, message, data, sizeof(data));
         res += icsneo_can_message_set_dlc(device, message, -1);
         if (res != icsneo_error_success) {
