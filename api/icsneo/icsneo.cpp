@@ -964,7 +964,7 @@ ICSNEO_API icsneo_error_t icsneo_device_get_baudrate(icsneo_device_t* device, ic
     }
     // TODO: Check if device is valid
     *baudrate = device->device->settings->getBaudrateFor(Network(netid));
-    if (baudrate < 0) {
+    if (*baudrate < 0) {
         return icsneo_error_invalid_type;
     }
 
@@ -994,7 +994,7 @@ ICSNEO_API icsneo_error_t icsneo_device_get_canfd_baudrate(icsneo_device_t* devi
     }
     // TODO: Check if device is valid
     *baudrate = device->device->settings->getFDBaudrateFor(Network(netid));
-    if (baudrate < 0) {
+    if (*baudrate < 0) {
         return icsneo_error_invalid_type;
     }
 
