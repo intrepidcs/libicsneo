@@ -13,6 +13,9 @@ namespace icsneo {
 
 typedef uint16_t icscm_bitfield;
 
+std::optional<uint8_t> CAN_DLCToLength(uint8_t length, bool fd);
+std::optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd);
+
 struct HardwareCANPacket {
 	static std::shared_ptr<Message> DecodeToMessage(const std::vector<uint8_t>& bytestream);
 	static bool EncodeFromMessage(const CANMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t& report);

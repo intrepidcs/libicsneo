@@ -447,23 +447,24 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_arbid(icsneo_device_t* device, 
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_can_message_get_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value);
+ICSNEO_API icsneo_error_t icsneo_can_message_get_dlc(icsneo_device_t* device, icsneo_message_t* message, int32_t* value);
 
 /** @brief Set the DLC on wire of a CAN message 
  * 
  * @param[in] icsneo_device_t* device The device to check against.
  * @param[in] icsneo_message_t* message The message to check.
- * @param[out] uint32_t value DLC to set.
+ * @param[out] int32_t value DLC to set. Set to a negative value to auto calculate. Auto setting assumes data and
+ *  canfd parameters are correct. Set to 0 on failure. @see icsneo_can_message_set_data and icsneo_can_message_set_canfd
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */
-ICSNEO_API icsneo_error_t icsneo_can_message_set_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t value);
+ICSNEO_API icsneo_error_t icsneo_can_message_set_dlc(icsneo_device_t* device, icsneo_message_t* message, int32_t value);
 
 /** @brief Get the Remote Transmission Request (RTR) status of a CAN message 
  * 
  * @param[in] icsneo_device_t* device The device to check against.
  * @param[in] icsneo_message_t* message The message to check.
- * @param[out] bool* value Pointer to a uint32_t to copy the remote status into.
+ * @param[in] int32_t value DLC to get. 
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
 */

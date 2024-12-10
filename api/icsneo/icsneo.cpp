@@ -6,6 +6,7 @@
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/message/linmessage.h"
 #include "icsneo/communication/message/ethernetmessage.h"
+#include "icsneo/communication/packet/canpacket.h"
 
 #include <string>
 #include <vector>
@@ -619,7 +620,7 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_arbid(icsneo_device_t* device, 
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_can_message_get_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t* value) {
+ICSNEO_API icsneo_error_t icsneo_can_message_get_dlc(icsneo_device_t* device, icsneo_message_t* message, int32_t* value) {
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
@@ -635,7 +636,7 @@ ICSNEO_API icsneo_error_t icsneo_can_message_get_dlc_on_wire(icsneo_device_t* de
     return icsneo_error_success;
 }
 
-ICSNEO_API icsneo_error_t icsneo_can_message_set_dlc_on_wire(icsneo_device_t* device, icsneo_message_t* message, uint32_t value) {
+ICSNEO_API icsneo_error_t icsneo_can_message_set_dlc(icsneo_device_t* device, icsneo_message_t* message, int32_t value) {
     if (!device || !message) {
         return icsneo_error_invalid_parameters;
     }
@@ -646,9 +647,14 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_dlc_on_wire(icsneo_device_t* de
         return icsneo_error_invalid_type;
     }
 
-    can_message->dlcOnWire = static_cast<uint8_t>(value);
-
-    return icsneo_error_success;
+    if (value < 0) {
+        auto res = CAN_LengthToDLC(static_cast<uint8_t>(can_message->data.size()), can_message->isCANFD);
+        can_message->dlcOnWire = res.value_or(0);
+        return res.has_value() ? icsneo_error_success : icsneo_error_invalid_parameters;
+    } else {
+        can_message->dlcOnWire = static_cast<uint8_t>(value);
+        return icsneo_error_success;
+    }
 }
 
 ICSNEO_API icsneo_error_t icsneo_can_message_is_remote(icsneo_device_t* device, icsneo_message_t* message, bool* value) {

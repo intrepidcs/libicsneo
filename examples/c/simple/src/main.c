@@ -63,6 +63,8 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
 
 void print_device_events(icsneo_device_t* device, const char* device_description);
 
+int transmit_can_messages(icsneo_device_t* device);
+
 int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
@@ -116,6 +118,12 @@ int main(int argc, char* argv[]) {
             print_device_events(device, description);
             return print_error_code("Failed to open device", res);
         };
+        // Transmit CAN messages
+        res = transmit_can_messages(device);
+        if (res != icsneo_error_success) {
+            print_device_events(device, description);
+            return print_error_code("Failed to transmit CAN messages", res);
+        }
         // Wait for the bus to collect some messages, requires an active bus to get messages
         printf("Waiting 1 second for messages...\n");
         sleep_ms(1000);
@@ -228,7 +236,7 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
             uint32_t result = icsneo_message_get_netid(device, message, &netid);
             result += icsneo_get_netid_name(netid, netid_name, &netid_name_length);
             result += icsneo_can_message_get_arbid(device, message, &arbid);
-            result += icsneo_can_message_get_dlc_on_wire(device, message, &dlc);
+            result += icsneo_can_message_get_dlc(device, message, &dlc);
             result += icsneo_can_message_is_remote(device, message, &is_remote);
             result += icsneo_can_message_is_canfd(device, message, &is_canfd);
             result += icsneo_can_message_is_extended(device, message, &is_extended);
@@ -243,9 +251,66 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
                 printf(" 0x%x", data[x]);
             }
             printf(" ]\n");
+            // Lets transmit the message back with an Arbitration ID 1 higher than the original.
+            result = icsneo_can_message_set_arbid(device, message, arbid + 1);
+            if (result != icsneo_error_success) {
+                printf("\tFailed to set CAN Arbitration ID (error: %u) for index %u\n", result, i);
+                continue;
+            }
+            uint32_t tx_msg_count = 1;
+            result = icsneo_device_transmit_messages(device, &message, &tx_msg_count);
+            if (result != icsneo_error_success) {
+                printf("\tFailed to transmit CAN message (error: %u) for index %u\n", result, i);
+                continue;
+            }
             continue;
         }
     }
 
+    return icsneo_error_success;
+}
+
+int transmit_can_messages(icsneo_device_t* device) {
+    uint64_t counter = 0;
+
+    
+    for (uint32_t i = 0; i < 20000; i++) {
+        // Create the message
+        icsneo_message_t* message = NULL;
+        uint32_t message_count = 1;
+        icsneo_error_t res = icsneo_can_messages_create(device, &message, message_count);
+        if (res != icsneo_error_success) {
+            return print_error_code("Failed to create messages", res);
+        }
+        // Set the message attributes
+        res = icsneo_message_set_netid(device, message, icsneo_netid_hscan);
+        res += icsneo_can_message_set_arbid(device, message, 0x10);
+        res += icsneo_can_message_set_canfd(device, message, true);
+        res += icsneo_can_message_set_extended(device, message, true);
+        res += icsneo_can_message_set_baudrate_switch(device, message, true);
+        // Create the payload
+        uint8_t data[64] = {0};
+        data[0] = (uint8_t)(counter >> 56);
+        data[1] = (uint8_t)(counter >> 48);
+        data[2] = (uint8_t)(counter >> 40);
+        data[3] = (uint8_t)(counter >> 32);
+        data[4] = (uint8_t)(counter >> 24);
+        data[5] = (uint8_t)(counter >> 16);
+        data[6] = (uint8_t)(counter >> 8);
+        data[7] = (uint8_t)(counter >> 0);
+        data[63] = 0xCA;
+        res += icsneo_message_set_data(device, message, data, sizeof(data));
+        res += icsneo_can_message_set_dlc(device, message, -1);
+        if (res != icsneo_error_success) {
+            return print_error_code("Failed to modify message", res);
+        }
+        res = icsneo_device_transmit_messages(device, &message, &message_count);
+        res += icsneo_can_message_free(device, message);
+        if (res != icsneo_error_success) {
+            return print_error_code("Failed to transmit messages", res);
+        }
+        counter++;
+    }
+    
     return icsneo_error_success;
 }
