@@ -52,7 +52,7 @@ TEST_F(A2BEncoderDecoderTest, PacketEncoderTest)
 		true
 	);
 
-	messagePtr->network = icsneo::icsneo_netid_a2b2;
+	messagePtr->network = icsneo_netid_a2b2;
 	A2BMessage& message = *messagePtr.get();
 
 	message.setChannelSample(
