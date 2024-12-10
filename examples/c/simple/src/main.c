@@ -217,8 +217,8 @@ void print_device_events(icsneo_device_t* device, const char* device_description
 }
 
 int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t messages_count) {
-    printf("Received %u messages\n", messages_count);
     // Print the type and bus type of each message
+    uint32_t tx_count = 0;
     for (uint32_t i = 0; i < messages_count; i++) {
         icsneo_message_t* message = messages[i];
         icsneo_msg_type_t msg_type = 0;
@@ -236,6 +236,15 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
         res = icsneo_get_bus_type_name(&bus_type, bus_name, &bus_name_length);
         if (res != icsneo_error_success) {
             return print_error_code("Failed to get message bus type name", res);
+        }
+        bool is_tx = false;
+        res = icsneo_message_is_transmit(device, message, &is_tx);
+        if (res != icsneo_error_success) {
+            return print_error_code("Failed to get message is transmit", res);
+        }
+        if (is_tx) {
+            tx_count++;
+            continue;
         }
 
         printf("\t%d) Message type: %u bus type: %s (%u)\n", i, msg_type, bus_name, bus_type);
@@ -285,6 +294,7 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
             continue;
         }
     }
+    printf("Received %u messages total, %u were TX messages\n", messages_count, tx_count);
 
     return icsneo_error_success;
 }
