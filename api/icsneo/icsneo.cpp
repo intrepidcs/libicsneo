@@ -958,6 +958,66 @@ ICSNEO_API icsneo_error_t icsneo_device_load_default_settings(icsneo_device_t* d
     return icsneo_error_success;
 }
 
+ICSNEO_API icsneo_error_t icsneo_device_get_baudrate(icsneo_device_t* device, icsneo_netid_t netid, uint64_t* baudrate) {
+    if (!device || !baudrate) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    *baudrate = device->device->settings->getBaudrateFor(Network(netid));
+    if (baudrate < 0) {
+        return icsneo_error_invalid_type;
+    }
+
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_device_set_baudrate(icsneo_device_t* device, icsneo_netid_t netid, uint64_t baudrate, bool save) {
+    if (!device) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    if (!device->device->settings->setBaudrateFor(Network(netid), baudrate)) {
+        return icsneo_error_set_settings_failure;
+    }
+    if (save) {
+        if (!device->device->settings->apply()) {
+            return icsneo_error_set_settings_failure;
+        }
+    }
+
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_device_get_canfd_baudrate(icsneo_device_t* device, icsneo_netid_t netid, uint64_t* baudrate) {
+    if (!device || !baudrate) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    *baudrate = device->device->settings->getFDBaudrateFor(Network(netid));
+    if (baudrate < 0) {
+        return icsneo_error_invalid_type;
+    }
+
+    return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_device_set_canfd_baudrate(icsneo_device_t* device, icsneo_netid_t netid, uint64_t baudrate, bool save) {
+    if (!device) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if device is valid
+    if (!device->device->settings->setFDBaudrateFor(Network(netid), baudrate)) {
+        return icsneo_error_set_settings_failure;
+    }
+    if (save) {
+        if (!device->device->settings->apply()) {
+            return icsneo_error_set_settings_failure;
+        }
+    }
+
+    return icsneo_error_success;
+}
+
 ICSNEO_API icsneo_error_t icsneo_device_supports_tc10(icsneo_device_t* device, bool* supported) {
     if (!device || !supported) {
         return icsneo_error_invalid_parameters;

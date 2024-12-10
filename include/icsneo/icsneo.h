@@ -641,11 +641,56 @@ ICSNEO_API icsneo_error_t icsneo_device_set_rtc(icsneo_device_t* device, int64_t
 /** @brief Load the default settings for a device
  * 
  * @param[in] icsneo_device_t device The device to load the settings for.
- * @param[in] bool save True to make the settings permanent, false settings will be reverted on next boot.
+ * @param[in] bool save True to make the settings permanent, false will be reverted on power cycle.
  * 
  * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
  */
 ICSNEO_API icsneo_error_t icsneo_device_load_default_settings(icsneo_device_t* device, bool save);
+
+/** @brief Get the baudrate for a network
+ * 
+ * @note @see icsneo_device_get_canfd_baudrate for CANFD.
+ * 
+ * @param[in] icsneo_device_t* device The device to get the baudrate value.
+ * @param[in] icsneo_netid_t netid The network to get the baudrate value.
+ * @param[in] uint64_t* baudrate The baudrate to get the network value.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_device_get_baudrate(icsneo_device_t* device, icsneo_netid_t netid, uint64_t* baudrate);
+
+/** @brief Set the baudrate for a network
+ *
+ * @note @see icsneo_device_set_canfd_baudrate for CANFD.
+ * 
+ * @param[in] icsneo_device_t* device The device to set the baudrate for.
+ * @param[in] icsneo_netid_t netid The network to set the baudrate for.
+ * @param[in] uint64_t baudrate The baudrate to set the network to.
+ * @param[in] bool save True to make the settings permanent, false will be reverted on power cycle.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_device_set_baudrate(icsneo_device_t* device, icsneo_netid_t netid, uint64_t baudrate, bool save);
+
+/** @brief Get the baudrate for a CAN FD network 
+ * 
+ * @param[in] icsneo_device_t* device The device to get the baudrate value.
+ * @param[in] icsneo_netid_t netid The network to get the baudrate value.
+ * @param[in] uint64_t* baudrate The baudrate to get the network value.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_device_get_canfd_baudrate(icsneo_device_t* device, icsneo_netid_t netid, uint64_t* baudrate);
+
+/** @brief Set the baudrate for a CANFD network 
+ * 
+ * @param[in] icsneo_device_t* device The device to set the baudrate for.
+ * @param[in] icsneo_netid_t netid The network to set the baudrate for.
+ * @param[in] uint64_t baudrate The baudrate to set the network to.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+*/
+ICSNEO_API icsneo_error_t icsneo_device_set_canfd_baudrate(icsneo_device_t* device, icsneo_netid_t netid, uint64_t baudrate, bool save);
 
 /** @brief Check if the device supports TC10. 
  * 

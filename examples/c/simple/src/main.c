@@ -118,6 +118,23 @@ int main(int argc, char* argv[]) {
             print_device_events(device, description);
             return print_error_code("Failed to open device", res);
         };
+        // Get/Set baudrate for HSCAN
+        uint64_t baudrate = 0;
+        res = icsneo_device_get_baudrate(device, icsneo_netid_hscan, &baudrate);
+        res += icsneo_device_set_baudrate(device, icsneo_netid_hscan, baudrate, true);
+        if (res != icsneo_error_success) {
+            print_device_events(device, description);
+            return print_error_code("Failed to transmit CAN messages", res);
+        };
+        printf("HSCAN baudrate: %llu\n", baudrate);
+        // Get/Set CAN FD baudrate for HSCAN
+        res = icsneo_device_get_canfd_baudrate(device, icsneo_netid_hscan, &baudrate);
+        res += icsneo_device_set_canfd_baudrate(device, icsneo_netid_hscan, baudrate, true);
+        if (res != icsneo_error_success) {
+            print_device_events(device, description);
+            return print_error_code("Failed to transmit CAN messages", res);
+        };
+        printf("HSCAN CANFD baudrate: %llu\n", baudrate);
         // Transmit CAN messages
         res = transmit_can_messages(device);
         if (res != icsneo_error_success) {
