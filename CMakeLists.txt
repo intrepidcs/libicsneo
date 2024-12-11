@@ -584,7 +584,7 @@ if(LIBICSNEO_BUILD_SYSTEM_TESTS)
 		FetchContent_Declare(
 			SystemTests
 			GIT_REPOSITORY $ENV{LIBICSNEO_SYSTEM_TESTS}
-			GIT_TAG main
+			GIT_TAG icsneo_api
 			SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test/system
 		)
 		FetchContent_MakeAvailable(SystemTests)
