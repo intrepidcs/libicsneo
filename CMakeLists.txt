@@ -30,6 +30,7 @@ option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
 option(LIBICSNEO_ENABLE_FTD3XX "Enable devices which communicate over USB FTD3XX" ON)
 
 option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" OFF)
+option(LIBICSNEO_ENABLE_BINDINGS_RUST "Enable Rust library" OFF)
 
 if(NOT CMAKE_CXX_STANDARD)
 	set(CMAKE_CXX_STANDARD 17)

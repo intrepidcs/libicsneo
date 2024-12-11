@@ -1,0 +1,18 @@
+[package]
+name = "icsneors"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+static = []
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.71.1"
+path-clean = "1.0.1"
+cmake = "0.1.52"
+which = "7.0.0"
