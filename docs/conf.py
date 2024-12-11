@@ -7,6 +7,7 @@ import subprocess
 
 subprocess.call('cd ..; doxygen docs/icsneocpp/Doxyfile', shell=True)
 subprocess.call('cd ..; doxygen docs/icsneoc/Doxyfile', shell=True)
+subprocess.call('cd ..; doxygen docs/icsneo/Doxyfile', shell=True)
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -26,6 +27,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 breathe_projects = {
     'icsneocpp': 'icsneocpp/doxygen/xml',
     'icsneoc': 'icsneoc/doxygen/xml',
+    'icsneo': 'icsneoc/doxygen/xml',
 }
 
 breathe_default_project = 'icsneocpp'

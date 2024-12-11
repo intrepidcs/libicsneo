@@ -13,3 +13,4 @@ communication library. The source code for libicsneo can be found on GitHub:
    icsneocpp/index
    icsneopy/index
    icsneoc/index
+   icsneo/index
