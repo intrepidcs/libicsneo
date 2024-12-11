@@ -250,7 +250,7 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
         printf("\t%d) Message type: %u bus type: %s (%u)\n", i, msg_type, bus_name, bus_type);
         if (bus_type == icsneo_msg_bus_type_can) {
             uint32_t arbid = 0;
-            uint32_t dlc = 0;
+            int32_t dlc = 0;
             icsneo_netid_t netid = 0;
             bool is_remote = false;
             bool is_canfd = false;
