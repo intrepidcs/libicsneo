@@ -88,6 +88,21 @@ void TCP::Socket::poll(uint16_t event, uint32_t msTimeout) {
 }
 
 void TCP::Find(std::vector<FoundDevice>& found) {
+	static const auto tcpDisabled = []() -> bool {
+		#ifdef _MSC_VER
+		#pragma warning(push)
+		#pragma warning(disable : 4996)
+		#endif
+		const auto disabled = std::getenv("LIBICSNEO_DISABLE_TCP");
+		return disabled ? std::stoi(disabled) : false;
+		#ifdef _MSC_VER
+		#pragma warning(pop)
+		#endif
+	};
+	if(tcpDisabled()) {
+		return;
+	}
+
 	static const auto MDNS_PORT = htons((unsigned short)5353);
 	static const auto MDNS_IP = htonl((((uint32_t)224U) << 24U) | ((uint32_t)251U));
 
