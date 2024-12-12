@@ -9,9 +9,9 @@
 #include <icsneo/icsneotypes.h>
 
 #ifdef __cplusplus
+
 #include <cstdint>
 #include <string>
-
 
 namespace icsneo {
 
@@ -153,3 +153,4 @@ private:
 
 }; // namespace icsneo
 
+#endif // __cplusplus

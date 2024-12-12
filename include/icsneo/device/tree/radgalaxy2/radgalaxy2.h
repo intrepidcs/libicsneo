@@ -17,47 +17,47 @@ class RADGalaxy2 : public Device {
 public:
 	// Serial numbers start with G2
 	// Ethernet MAC allocation is 0x17, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(RADGalaxy2, DeviceType::RADGalaxy2, "G2");
+	ICSNEO_FINDABLE_DEVICE(RADGalaxy2, icsneo_devicetype_rad_galaxy2, "G2");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::MSCAN,
-			Network::NetID::HSCAN2,
-			Network::NetID::HSCAN3,
-			Network::NetID::HSCAN4,
-			Network::NetID::HSCAN5,
-			Network::NetID::HSCAN6,
-			Network::NetID::HSCAN7,
+			icsneo_netid_hscan,
+			icsneo_netid_mscan,
+			icsneo_netid_hscan2,
+			icsneo_netid_hscan3,
+			icsneo_netid_hscan4,
+			icsneo_netid_hscan5,
+			icsneo_netid_hscan6,
+			icsneo_netid_hscan7,
 
-			Network::NetID::LIN,
-			Network::NetID::LIN2,
+			icsneo_netid_lin,
+			icsneo_netid_lin2,
 
-			Network::NetID::Ethernet,
-			Network::NetID::Ethernet2,
-			Network::NetID::Ethernet3,
+			icsneo_netid_ethernet,
+			icsneo_netid_ethernet2,
+			icsneo_netid_ethernet3,
 
-			Network::NetID::OP_Ethernet1,
-			Network::NetID::OP_Ethernet2,
-			Network::NetID::OP_Ethernet3,
-			Network::NetID::OP_Ethernet4,
-			Network::NetID::OP_Ethernet5,
-			Network::NetID::OP_Ethernet6,
-			Network::NetID::OP_Ethernet7,
-			Network::NetID::OP_Ethernet8,
-			Network::NetID::OP_Ethernet9,
-			Network::NetID::OP_Ethernet10,
-			Network::NetID::OP_Ethernet11,
-			Network::NetID::OP_Ethernet12,
+			icsneo_netid_op_ethernet1,
+			icsneo_netid_op_ethernet2,
+			icsneo_netid_op_ethernet3,
+			icsneo_netid_op_ethernet4,
+			icsneo_netid_op_ethernet5,
+			icsneo_netid_op_ethernet6,
+			icsneo_netid_op_ethernet7,
+			icsneo_netid_op_ethernet8,
+			icsneo_netid_op_ethernet9,
+			icsneo_netid_op_ethernet10,
+			icsneo_netid_op_ethernet11,
+			icsneo_netid_op_ethernet12,
 
-			Network::NetID::ISO9141,
-			Network::NetID::ISO9141_2,
+			icsneo_netid_iso9141,
+			icsneo_netid_iso9141_2,
 
-			Network::NetID::MDIO1,
-			Network::NetID::MDIO2,
-			Network::NetID::MDIO3,
-			Network::NetID::MDIO4,
-			Network::NetID::MDIO5,
+			icsneo_netid_mdio1,
+			icsneo_netid_mdio2,
+			icsneo_netid_mdio3,
+			icsneo_netid_mdio4,
+			icsneo_netid_mdio5,
 		};
 		return supportedNetworks;
 	}
@@ -96,7 +96,7 @@ protected:
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
-	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
+	void handleDeviceStatus(const std::shared_ptr<InternalMessage>& message) override {
 		if(message->data.size() < sizeof(radgalaxy2_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);
