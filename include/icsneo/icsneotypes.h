@@ -141,6 +141,8 @@ typedef enum _icsneo_devicetype_t {
     icsneo_devicetype_vividcan,
     // neoOBD2 SIM
     icsneo_devicetype_obd2_sim,
+    // RAD-Galaxy 2
+    icsneo_devicetype_rad_galaxy2,
 
 
     // Must be last entry
