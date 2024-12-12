@@ -30,7 +30,7 @@ void init_linmessage(pybind11::module_& m) {
 		.def_readwrite("BusRecovered", &LINStatusFlags::BusRecovered)
 		.def_readwrite("BreakOnly", &LINStatusFlags::BreakOnly);
 
-	pybind11::class_<LINMessage, std::shared_ptr<LINMessage>, Frame> linMessage(m, "LINMessage");
+	pybind11::class_<LINMessage, std::shared_ptr<LINMessage>, BusMessage> linMessage(m, "LINMessage");
 
 	pybind11::enum_<LINMessage::Type>(linMessage, "Type")
 		.value("NOT_SET", LINMessage::Type::NOT_SET)
