@@ -133,6 +133,12 @@ ICSNEO_API icsneo_error_t icsneo_get_error_code(icsneo_error_t error_code, const
         case icsneo_error_string_copy_failed:
             error = "String copy failed";
             break;
+        case icsneo_error_invalid_device:
+            error = "Invalid device";
+            break;
+        case icsneo_error_invalid_message:
+            error = "Invalid message";
+            break;
         // Don't default, let the compiler warn us if we forget to handle an error code
     }
     // Copy the string into value
@@ -192,7 +198,13 @@ ICSNEO_API icsneo_error_t icsneo_device_is_valid(icsneo_device_t* device) {
         return icsneo_error_invalid_parameters;
     }
 
-    return !device->device ? icsneo_error_invalid_parameters : icsneo_error_success;
+    if (!std::any_of(g_devices.begin(), g_devices.end(), [&](const auto& dev) {
+        return dev.get() == device;
+    })) {
+        return icsneo_error_invalid_device;
+    }
+
+    return !device->device ? icsneo_error_invalid_device : icsneo_error_success;
 }
 
 ICSNEO_API icsneo_error_t icsneo_device_get_open_options(icsneo_device_t* device, icsneo_open_options_t* options) {
@@ -398,7 +410,11 @@ ICSNEO_API icsneo_error_t icsneo_device_get_messages(icsneo_device_t* device, ic
     if (!device || !messages || !messages_count) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     auto dev = device->device;
     // Wait for messages
     auto start_time = std::chrono::steady_clock::now();
@@ -440,12 +456,23 @@ ICSNEO_API icsneo_error_t icsneo_device_transmit_messages(icsneo_device_t* devic
     if (!device || !messages || !messages_count) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     auto dev = device->device;
     uint32_t i = 0;
     bool success = false;
     for (; i < *messages_count; i++) {
-        // TODO: Check if message is valid
+        // Make sure the message is valid
+        bool is_msg_valid = false;
+        res = icsneo_message_is_valid(device, messages[i], &is_msg_valid);
+        if (res != icsneo_error_success) {
+            return res;
+        } else if (!is_msg_valid) {
+            return icsneo_error_invalid_message;
+        }
         success = dev->transmit(std::static_pointer_cast<icsneo::BusMessage>(messages[i]->message));
         if (!success) {
             break;
@@ -460,10 +487,21 @@ ICSNEO_API icsneo_error_t icsneo_message_is_valid(icsneo_device_t* device, icsne
     if (!device || !message || !is_valid) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    *is_valid = std::find_if(device->messages.begin(), device->messages.end(), [&](const auto& msg) {
-        return msg->message == message->message;
-    }) == device->messages.end();
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // See if the message is a valid received message
+    bool is_rx_msg = std::any_of(device->messages.begin(), device->messages.end(), [&](const auto& msg) {
+        return msg.get() == message;
+    });
+    // See if the message is a valid transmit message
+    bool is_tx_msg = std::any_of(device->tx_messages.begin(), device->tx_messages.end(), [&](const auto& msg) {
+        return msg.get() == message;
+    });
+    
+    *is_valid = (is_rx_msg || is_tx_msg) && message->message.get() != nullptr;
     
     return icsneo_error_success;
 }
@@ -472,7 +510,14 @@ ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsne
     if (!device || !message || !msg_type) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if message is valid
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    auto res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     
     // Assign the message type
     *msg_type = message->message->getMsgType();
@@ -484,7 +529,6 @@ ICSNEO_API icsneo_error_t icsneo_message_get_type_name(icsneo_msg_type_t msg_typ
     if (!value || !value_length) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if message is valid
     // Copy the string into value
     return safe_str_copy(value, value_length, Message::getMsgTypeName(msg_type)) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
@@ -493,7 +537,14 @@ ICSNEO_API icsneo_error_t icsneo_message_get_bus_type(icsneo_device_t* device, i
     if (!device || !message || !bus_type) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if message is valid
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    auto res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
 
     // Make sure the message is a bus message
     if (message->message->getMsgType() != icsneo_msg_type_bus) {
@@ -519,7 +570,14 @@ ICSNEO_API icsneo_error_t icsneo_message_is_transmit(icsneo_device_t* device, ic
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if message is valid
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    auto res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     
     // Make sure the message is a bus message
     if (message->message->getMsgType() != icsneo_msg_type_bus) {
@@ -536,7 +594,14 @@ ICSNEO_API icsneo_error_t icsneo_message_get_netid(icsneo_device_t* device, icsn
     if (!device || !message || !netid) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if message is valid
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    auto res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
 
     // Make sure the message is a bus message
     if (message->message->getMsgType() != icsneo_msg_type_bus) {
@@ -561,8 +626,19 @@ ICSNEO_API icsneo_error_t icsneo_message_set_netid(icsneo_device_t* device, icsn
     if (!device || !message) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     // Make sure the message has the data field, internal and bus currently have this.
     if (message->message->getMsgType() != icsneo_msg_type_internal && message->message->getMsgType() != icsneo_msg_type_bus) {
         return icsneo_error_invalid_type;
@@ -580,8 +656,19 @@ ICSNEO_API icsneo_error_t icsneo_message_set_data(icsneo_device_t* device, icsne
         if (!device || !message | !data) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     // Make sure the message has the data field, internal and bus currently have this.
     if (message->message->getMsgType() != icsneo_msg_type_internal && message->message->getMsgType() != icsneo_msg_type_bus) {
         return icsneo_error_invalid_type;
@@ -602,8 +689,19 @@ ICSNEO_API icsneo_error_t icsneo_message_get_data(icsneo_device_t* device, icsne
     if (!device || !message || !data || !data_length) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     // Make sure the message has the data field, internal and bus currently have this.
     if (message->message->getMsgType() != icsneo_msg_type_internal && message->message->getMsgType() != icsneo_msg_type_bus) {
         return icsneo_error_invalid_type;
@@ -624,8 +722,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_get_arbid(icsneo_device_t* device, 
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     const auto* can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -640,8 +749,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_arbid(icsneo_device_t* device, 
     if (!device || !message) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     auto* const can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -656,8 +776,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_get_dlc(icsneo_device_t* device, ic
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     const auto* can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -672,17 +803,28 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_dlc(icsneo_device_t* device, ic
     if (!device || !message) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     auto* const can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
     }
 
     if (value < 0) {
-        auto res = CAN_LengthToDLC(static_cast<uint8_t>(can_message->data.size()), can_message->isCANFD);
-        can_message->dlcOnWire = res.value_or(0);
-        return res.has_value() ? icsneo_error_success : icsneo_error_invalid_parameters;
+        auto dlc_res = CAN_LengthToDLC(static_cast<uint8_t>(can_message->data.size()), can_message->isCANFD);
+        can_message->dlcOnWire = dlc_res.value_or(0);
+        return dlc_res.has_value() ? icsneo_error_success : icsneo_error_invalid_parameters;
     } else {
         can_message->dlcOnWire = static_cast<uint8_t>(value);
         return icsneo_error_success;
@@ -693,8 +835,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_is_remote(icsneo_device_t* device, 
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     const auto* can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -709,8 +862,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_remote(icsneo_device_t* device,
     if (!device || !message) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     auto* const can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -725,8 +889,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_is_extended(icsneo_device_t* device
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     const auto* can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -741,8 +916,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_extended(icsneo_device_t* devic
     if (!device || !message) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     auto* const can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -757,8 +943,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_is_canfd(icsneo_device_t* device, i
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     const auto* can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -773,8 +970,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_canfd(icsneo_device_t* device, 
     if (!device || !message) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     auto* const can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -789,8 +997,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_get_baudrate_switch(icsneo_device_t
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     const auto* can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -805,8 +1024,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_set_baudrate_switch(icsneo_device_t
     if (!device || !message) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     auto* const can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -821,8 +1051,19 @@ ICSNEO_API icsneo_error_t icsneo_can_message_get_error_state_indicator(icsneo_de
     if (!device || !message || !value) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
-    // TODO: Check if message is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    // Make sure the message is valid
+    bool is_msg_valid = false;
+    res = icsneo_message_is_valid(device, message, &is_msg_valid);
+    if (res != icsneo_error_success) {
+        return res;
+    } else if (!is_msg_valid) {
+        return icsneo_error_invalid_message;
+    }
     const auto* can_message = dynamic_cast<CANMessage*>(message->message.get());
     if (!can_message) {
         return icsneo_error_invalid_type;
@@ -837,7 +1078,11 @@ ICSNEO_API icsneo_error_t icsneo_can_messages_create(icsneo_device_t* device, ic
     if (!device || !messages) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     auto dev = device->device;
     // Get the device messages
     for (uint32_t i = 0; i < messages_count; i++) {
@@ -854,7 +1099,11 @@ ICSNEO_API icsneo_error_t icsneo_can_message_free(icsneo_device_t* device, icsne
     if (!device || !message) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     bool removed = false;
     for (auto it = device->tx_messages.begin(); it != device->tx_messages.end(); it++) {
         if (it->get() == message) {
@@ -898,7 +1147,11 @@ ICSNEO_API icsneo_error_t icsneo_device_get_events(icsneo_device_t* device, icsn
     if (!device || !events || !events_count) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     // Setup the event filter
     EventFilter filter(device->device.get());
     // Clear the device events
@@ -941,7 +1194,11 @@ ICSNEO_API icsneo_error_t icsneo_device_get_rtc(icsneo_device_t* device, int64_t
     if (!device || !unix_epoch) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     if (auto rtc_time = device->device->getRTC(); rtc_time != std::nullopt) {
         *unix_epoch = std::chrono::duration_cast<std::chrono::seconds>(rtc_time->time_since_epoch()).count();
     } else {
@@ -954,7 +1211,11 @@ ICSNEO_API icsneo_error_t icsneo_device_set_rtc(icsneo_device_t* device, int64_t
     if (!device || !unix_epoch) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     if (!device->device->setRTC(std::chrono::system_clock::time_point(std::chrono::seconds(*unix_epoch)))) {
         return icsneo_error_sync_rtc_failed;
     }
@@ -965,7 +1226,11 @@ ICSNEO_API icsneo_error_t icsneo_device_load_default_settings(icsneo_device_t* d
     if (!device) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     if (!device->device->settings->applyDefaults(!save)) {
         return icsneo_error_set_settings_failure;
     }
@@ -977,7 +1242,11 @@ ICSNEO_API icsneo_error_t icsneo_device_get_baudrate(icsneo_device_t* device, ic
     if (!device || !baudrate) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     *baudrate = device->device->settings->getBaudrateFor(Network(netid));
     if (*baudrate < 0) {
         return icsneo_error_invalid_type;
@@ -990,7 +1259,11 @@ ICSNEO_API icsneo_error_t icsneo_device_set_baudrate(icsneo_device_t* device, ic
     if (!device) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     if (!device->device->settings->setBaudrateFor(Network(netid), baudrate)) {
         return icsneo_error_set_settings_failure;
     }
@@ -1007,7 +1280,11 @@ ICSNEO_API icsneo_error_t icsneo_device_get_canfd_baudrate(icsneo_device_t* devi
     if (!device || !baudrate) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     *baudrate = device->device->settings->getFDBaudrateFor(Network(netid));
     if (*baudrate < 0) {
         return icsneo_error_invalid_type;
@@ -1020,7 +1297,11 @@ ICSNEO_API icsneo_error_t icsneo_device_set_canfd_baudrate(icsneo_device_t* devi
     if (!device) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     if (!device->device->settings->setFDBaudrateFor(Network(netid), baudrate)) {
         return icsneo_error_set_settings_failure;
     }
@@ -1037,7 +1318,11 @@ ICSNEO_API icsneo_error_t icsneo_device_supports_tc10(icsneo_device_t* device, b
     if (!device || !supported) {
         return icsneo_error_invalid_parameters;
     }
-    // TODO: Check if device is valid
+    // Make sure the device is valid
+    auto res = icsneo_device_is_valid(device);
+    if (res != icsneo_error_success) {
+        return res;
+    }
     *supported = device->device->supportsTC10();
 
     return icsneo_error_success;

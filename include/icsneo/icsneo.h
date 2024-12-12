@@ -89,8 +89,11 @@ typedef enum _icsneo_error_t {
     // Failed to transmit messages
     icsneo_error_transmit_messages_failed,
     // Failed to copy string to buffer
-    icsneo_error_string_copy_failed
-
+    icsneo_error_string_copy_failed,
+    // Invalid device parameter
+    icsneo_error_invalid_device,
+    // Invalid message parameter
+    icsneo_error_invalid_message,
     // NOTE: Any new values added here should be updated in icsneo_get_error_code
 } _icsneo_error_t;
 
