@@ -115,6 +115,12 @@ ICSNEO_API icsneo_error_t icsneo_get_error_code(icsneo_error_t error_code, const
         case icsneo_error_sync_rtc_failed:
             error = "Syncronizing RTC failed";
             break;
+        case icsneo_error_get_messages_failed:
+            error = "Getting messages failed";
+            break;
+        case icsneo_error_invalid_type:
+            error = "Invalid type";
+            break;
         case icsneo_error_rtc_failure:
             error = "RTC failure";
             break;
@@ -472,6 +478,15 @@ ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsne
     *msg_type = message->message->getMsgType();
 
     return icsneo_error_success;
+}
+
+ICSNEO_API icsneo_error_t icsneo_message_get_type_name(icsneo_msg_type_t msg_type, const char* value, uint32_t* value_length) {
+    if (!value || !value_length) {
+        return icsneo_error_invalid_parameters;
+    }
+    // TODO: Check if message is valid
+    // Copy the string into value
+    return safe_str_copy(value, value_length, Message::getMsgTypeName(msg_type)) ? icsneo_error_success : icsneo_error_string_copy_failed;
 }
 
 ICSNEO_API icsneo_error_t icsneo_message_get_bus_type(icsneo_device_t* device, icsneo_message_t* message, icsneo_msg_bus_type_t* bus_type) {

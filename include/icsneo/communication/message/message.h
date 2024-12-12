@@ -9,8 +9,12 @@ typedef uint16_t neomessagetype_t;
 #include "icsneo/communication/network.h"
 #include "icsneo/icsneotypes.h"
 #include <vector>
+#include <sstream>
+#include <string>
 
 namespace icsneo {
+
+
 
 class AbstractMessage {
 public:
@@ -20,6 +24,28 @@ public:
 class Message : public AbstractMessage {
 public:
 	virtual const icsneo_msg_type_t getMsgType() const { return icsneo_msg_type_device; }
+
+	/**
+	 * @brief Get the string representation of the message type
+	 * 
+	 * @return String representation of the message type
+	 * 
+	 * @see AbstractMessage::getMsgType()
+	 */
+	static std::string getMsgTypeName(icsneo_msg_type_t msg_type) {
+		switch (msg_type) {
+			case icsneo_msg_type_device:
+				return "Device";
+			case icsneo_msg_type_internal:
+				return "Internal";
+			case icsneo_msg_type_bus:
+				return "Bus";
+			// Don't default here so we can rely on the compiler to warn us about missing cases
+		};
+		std::stringstream ss;
+		ss << "Unknown (" << (int)msg_type << ")";
+		return ss.str();
+	}
 
 	enum class Type : neomessagetype_t {
 		BusMessage = 0,

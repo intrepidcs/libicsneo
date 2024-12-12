@@ -90,6 +90,8 @@ typedef enum _icsneo_error_t {
     icsneo_error_transmit_messages_failed,
     // Failed to copy string to buffer
     icsneo_error_string_copy_failed
+
+    // NOTE: Any new values added here should be updated in icsneo_get_error_code
 } _icsneo_error_t;
 
 /** @brief Integer representation of _icsneo_error_t enum. 
@@ -342,6 +344,17 @@ ICSNEO_API icsneo_error_t icsneo_message_is_valid(icsneo_device_t* device, icsne
  * @see icsneo_msg_type_t
  */
 ICSNEO_API icsneo_error_t icsneo_message_get_type(icsneo_device_t* device, icsneo_message_t* message, icsneo_msg_type_t* msg_type);
+
+/** @brief Get the message type string for a icsneo_msg_bus_type_t.
+ * 
+ * @param[in] icsneo_device_t* device The device to check against.
+ * @param[in] icsneo_message_t* message The message to check.
+ * @param[out] const char* value Pointer to a buffer to copy the description into. Null terminated.
+ * @param[in,out] uint32_t* value_length Size of the value buffer. Modified with the length of the description.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+ICSNEO_API icsneo_error_t icsneo_message_get_type_name(icsneo_msg_type_t msg_type, const char* value, uint32_t* value_length);
 
 /** @brief Get the type of a bus message
  * 
