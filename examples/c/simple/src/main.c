@@ -234,10 +234,8 @@ icsneo_error_t get_and_print_rtc(icsneo_device_t* device, const char* descriptio
     if (res != icsneo_error_success) {
         return res;
     }
-    struct tm buf;
     char rtc_time[32] = {0};
-    localtime_s(&buf, &unix_epoch);
-    strftime(rtc_time, sizeof(rtc_time), "%Y-%m-%d %H:%M:%S", &buf);
+    strftime(rtc_time, sizeof(rtc_time), "%Y-%m-%d %H:%M:%S", localtime(&unix_epoch));
     printf("RTC: %lld %s\n", unix_epoch, rtc_time);
 
     return icsneo_error_success;
