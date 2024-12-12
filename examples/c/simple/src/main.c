@@ -229,16 +229,18 @@ int main(int argc, char* argv[]) {
 }
 
 icsneo_error_t get_and_print_rtc(icsneo_device_t* device, const char* description) {
-        time_t unix_epoch = 0;
-        icsneo_error_t res = icsneo_device_get_rtc(device, &unix_epoch);
-        if (res != icsneo_error_success) {
-            return res;
-        }
-        struct tm buf;
-        char rtc_time[32] = {0};
-        localtime_s(&buf, &unix_epoch);
-        strftime(rtc_time, sizeof(rtc_time), "%Y-%m-%d %H:%M:%S", &buf);
-        printf("RTC: %lld %s\n", unix_epoch, rtc_time);
+    time_t unix_epoch = 0;
+    icsneo_error_t res = icsneo_device_get_rtc(device, &unix_epoch);
+    if (res != icsneo_error_success) {
+        return res;
+    }
+    struct tm buf;
+    char rtc_time[32] = {0};
+    localtime_s(&buf, &unix_epoch);
+    strftime(rtc_time, sizeof(rtc_time), "%Y-%m-%d %H:%M:%S", &buf);
+    printf("RTC: %lld %s\n", unix_epoch, rtc_time);
+
+    return icsneo_error_success;
 }
 
 void print_device_events(icsneo_device_t* device, const char* device_description) {
@@ -289,10 +291,23 @@ int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint3
     uint32_t tx_count = 0;
     for (uint32_t i = 0; i < messages_count; i++) {
         icsneo_message_t* message = messages[i];
+        // Get the message type
         icsneo_msg_type_t msg_type = 0;
         icsneo_error_t res = icsneo_message_get_type(device, message, &msg_type);
         if (res != icsneo_error_success) {
             return print_error_code("Failed to get message type", res);
+        }
+        // Get the message type name
+        char msg_type_name[128] = {0};
+        uint32_t msg_type_name_length = 128;
+        res = icsneo_message_get_type_name(msg_type, msg_type_name, &msg_type_name_length);
+        if (res != icsneo_error_success) {
+            return print_error_code("Failed to get message type name", res);
+        }
+        // Check if the message is a bus message, ignore otherwise
+        if (msg_type != icsneo_msg_type_bus) {        
+            printf("Ignoring message type: %u (%s)\n", msg_type, msg_type_name);
+            continue;
         }
         icsneo_msg_bus_type_t bus_type = 0;
         res = icsneo_message_get_bus_type(device, message, &bus_type);
