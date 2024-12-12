@@ -9,7 +9,7 @@ namespace icsneo {
 void init_network(pybind11::module_& m) {
 	pybind11::class_<Network> network(m, "Network");
 
-	pybind11::enum_<_icsneo_netid_t>(network, "_icsneo_netid_t")
+	pybind11::enum_<_icsneo_netid_t>(network, "icsneo_netid_t")
 		.value("Device", _icsneo_netid_t::icsneo_netid_device)
 		.value("HSCAN", _icsneo_netid_t::icsneo_netid_hscan)
 		.value("MSCAN", _icsneo_netid_t::icsneo_netid_mscan)
@@ -168,6 +168,31 @@ void init_network(pybind11::module_& m) {
 		.value("Invalid", _icsneo_netid_t::icsneo_netid_invalid);
 	
     network.def(pybind11::init<_icsneo_netid_t>());
+
+	pybind11::enum_<_icsneo_msg_bus_type_t>(network, "icsneo_msg_bus_type_t")
+		.value("Invalid", icsneo_msg_bus_type_invalid)
+		.value("Internal", icsneo_msg_bus_type_internal)
+		.value("CAN", icsneo_msg_bus_type_can)
+		.value("LIN", icsneo_msg_bus_type_lin)
+		.value("FlexRay", icsneo_msg_bus_type_flexray)
+		.value("MOST", icsneo_msg_bus_type_most)
+		.value("Ethernet", icsneo_msg_bus_type_ethernet)
+		.value("LSFTCAN", icsneo_msg_bus_type_lsftcan)
+		.value("SWCAN", icsneo_msg_bus_type_swcan)
+		.value("ISO9141", icsneo_msg_bus_type_iso9141)
+		.value("I2C", icsneo_msg_bus_type_i2c)
+		.value("A2B", icsneo_msg_bus_type_a2b)
+		.value("SPI", icsneo_msg_bus_type_spi)
+		.value("MDIO", icsneo_msg_bus_type_mdio)
+		.value("Any", icsneo_msg_bus_type_any)
+		.value("Other", icsneo_msg_bus_type_other);
+
+    network
+		.def(pybind11::init<_icsneo_msg_bus_type_t>())
+		.def("__repr__", [](Network& self) { return Network::GetNetIDString(self.getNetID()); })
+		.def_static("get_net_id_string", &Network::GetNetIDString, pybind11::arg("netid"), pybind11::arg("expand") = true)
+		.def("get_net_id", &Network::getNetID)
+		.def("get_type", &Network::getType);
 }
 
 } // namespace icsneo 

@@ -118,6 +118,8 @@ public:
 				return "neoVI Flex";
 			case icsneo_devicetype_rad_galaxy:
 				return "RAD-Galaxy";
+			case icsneo_devicetype_rad_galaxy2:
+				return "RAD-Galaxy 2";
 			case icsneo_devicetype_rad_star2:
 				return "RAD-Star 2";
 			case icsneo_devicetype_vividcan:
@@ -151,4 +153,3 @@ private:
 
 }; // namespace icsneo
 
-#endif // __cplusplus
