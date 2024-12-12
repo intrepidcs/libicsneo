@@ -1,6 +1,7 @@
 #include <icsneo/icsneo.h>
 
 #include <stdio.h>
+#include <time.h>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
@@ -61,9 +62,43 @@ int print_error_code(const char* message, icsneo_error_t error) {
  */
 int process_messages(icsneo_device_t* device, icsneo_message_t** messages, uint32_t messages_count);
 
+/**
+ * @brief Prints device and global events for a given device.
+ *
+ * This function retrieves and prints all current events associated with the specified device,
+ * as well as any global events not tied to a specific device. For each event, it retrieves
+ * and prints a description. If retrieving events or their descriptions fails, an error
+ * message is printed. The function also prints a summary of the count of device-specific
+ * and global events processed.
+ *
+ * @param device A pointer to the icsneo_device_t structure representing the device to get events from.
+ * @param device_description A description of the device used in the output.
+ */
 void print_device_events(icsneo_device_t* device, const char* device_description);
 
+/**
+ * @brief Transmits a series of CAN messages from a device.
+ * 
+ * This function creates and transmits 100 CAN messages with incrementing payload data.
+ * Each message is configured with specific attributes such as network ID, arbitration
+ * ID, CANFD status, extended status, and baudrate switch. After successfully transmitting
+ * each message, it is freed from memory.
+ * 
+ * @param device A pointer to the icsneo_device_t structure representing the device to transmit messages from.
+ * 
+ * @return An icsneo_error_t value indicating success or failure of the message transmission process.
+ */
 int transmit_can_messages(icsneo_device_t* device);
+
+/**
+ * @brief Get the RTC (Real time clock) of a device and print it.
+ * 
+ * @param[in] device The device to get the RTC of.
+ * @param[in] description A description of the device for printing purpose.
+ * 
+ * @return icsneo_error_t icsneo_error_success if successful, icsneo_error_invalid_parameters otherwise.
+ */
+icsneo_error_t get_and_print_rtc(icsneo_device_t* device, const char* description);
 
 int main(int argc, char* argv[]) {
     (void)argc;
@@ -118,6 +153,25 @@ int main(int argc, char* argv[]) {
             print_device_events(device, description);
             return print_error_code("Failed to open device", res);
         };
+        // Get RTC
+        res = get_and_print_rtc(device, description);
+        if (res != icsneo_error_success) {
+            print_device_events(device, description);
+            return print_error_code("Failed to get RTC", res);
+        }
+        // Set RTC
+        time_t current_time = time(NULL);
+        res = icsneo_device_set_rtc(device, (int64_t*)&current_time);
+        if (res != icsneo_error_success) {
+            print_device_events(device, description);
+            return print_error_code("Failed to set RTC", res);
+        }
+        // Get RTC
+        res = get_and_print_rtc(device, description);
+        if (res != icsneo_error_success) {
+            print_device_events(device, description);
+            return print_error_code("Failed to get RTC", res);
+        }
         // Get/Set baudrate for HSCAN
         uint64_t baudrate = 0;
         res = icsneo_device_get_baudrate(device, icsneo_netid_hscan, &baudrate);
@@ -135,6 +189,7 @@ int main(int argc, char* argv[]) {
             return print_error_code("Failed to transmit CAN messages", res);
         };
         printf("HSCAN CANFD baudrate: %llu\n", baudrate);
+        
         // Transmit CAN messages
         res = transmit_can_messages(device);
         if (res != icsneo_error_success) {
@@ -171,6 +226,19 @@ int main(int argc, char* argv[]) {
     }
     
     return 0;
+}
+
+icsneo_error_t get_and_print_rtc(icsneo_device_t* device, const char* description) {
+        time_t unix_epoch = 0;
+        icsneo_error_t res = icsneo_device_get_rtc(device, &unix_epoch);
+        if (res != icsneo_error_success) {
+            return res;
+        }
+        struct tm buf;
+        char rtc_time[32] = {0};
+        localtime_s(&buf, &unix_epoch);
+        strftime(rtc_time, sizeof(rtc_time), "%Y-%m-%d %H:%M:%S", &buf);
+        printf("RTC: %lld %s\n", unix_epoch, rtc_time);
 }
 
 void print_device_events(icsneo_device_t* device, const char* device_description) {
