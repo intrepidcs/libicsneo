@@ -51,7 +51,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 				eth.status.incompleteFrame = ethmsg->frameTooShort;
 				// TODO Fill in extra status bits
 				//eth.status.xyz = ethmsg->preemptionEnabled;
-				//eth.status.xyz = ethmsg->fcsAvailable;
+				//eth.status.xyz = ethmsg->fcs;
 				//eth.status.xyz = ethmsg->noPadding;
 				break;
 			}

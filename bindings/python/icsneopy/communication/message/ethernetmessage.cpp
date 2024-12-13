@@ -15,7 +15,7 @@ void init_ethernetmessage(pybind11::module_& m) {
 		.def(pybind11::init())
 		.def_readwrite("preemptionEnabled", &EthernetMessage::preemptionEnabled)
 		.def_readwrite("preemptionFlags", &EthernetMessage::preemptionFlags)
-		.def_readwrite("fcsAvailable", &EthernetMessage::fcsAvailable)
+		.def_readwrite("fcs", &EthernetMessage::fcs)
 		.def_readwrite("frameTooShort", &EthernetMessage::frameTooShort)
 		.def_readwrite("noPadding", &EthernetMessage::noPadding)
 		.def("get_destination_mac", &EthernetMessage::getDestinationMAC, pybind11::return_value_policy::reference)
