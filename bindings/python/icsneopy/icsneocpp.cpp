@@ -19,12 +19,15 @@ void init_linmessage(pybind11::module_&);
 void init_tc10statusmessage(pybind11::module_&);
 void init_gptpstatusmessage(pybind11::module_&);
 void init_mdiomessage(pybind11::module_&);
+void init_ethernetstatusmessage(pybind11::module_&);
 void init_device(pybind11::module_&);
 void init_messagefilter(pybind11::module_&);
 void init_messagecallback(pybind11::module_&);
 void init_version(pybind11::module_&);
 
 PYBIND11_MODULE(icsneopy, m) {
+	pybind11::options options;
+	options.disable_enum_members_docstring();
 	m.doc() = "libicsneo Python module";
 
 	init_event(m);
@@ -41,6 +44,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_tc10statusmessage(m);
 	init_gptpstatusmessage(m);
 	init_mdiomessage(m);
+	init_ethernetstatusmessage(m);
 	init_messagefilter(m);
 	init_messagecallback(m);
 	init_device(m);

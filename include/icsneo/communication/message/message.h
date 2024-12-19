@@ -41,7 +41,8 @@ public:
 		HardwareInfo = 0x8010,
 		TC10Status = 0x8011,
 		AppError = 0x8012,
-		GPTPStatus = 0x8013
+		GPTPStatus = 0x8013,
+		EthernetStatus = 0x8014,
 	};
 
 	Message(Type t) : type(t) {}
