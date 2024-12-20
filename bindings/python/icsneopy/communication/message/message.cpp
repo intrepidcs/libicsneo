@@ -31,7 +31,8 @@ void init_message(pybind11::module_& m) {
 		.value("LiveData", Message::Type::LiveData)
 		.value("HardwareInfo", Message::Type::HardwareInfo)
 		.value("TC10Status", Message::Type::TC10Status)
-		.value("AppError", Message::Type::AppError);
+		.value("AppError", Message::Type::AppError)
+		.value("GPTPStatus", Message::Type::GPTPStatus);
 
 	message.def(pybind11::init<Message::Type>());
 	message.def_readonly("type", &Message::type);

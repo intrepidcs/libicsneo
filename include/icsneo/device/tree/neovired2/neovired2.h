@@ -36,6 +36,7 @@ public:
 	}
 
 	bool supportsComponentVersions() const override { return true; }
+	bool supportsGPTP() const override { return true; }
 
 protected:
 	NeoVIRED2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {

@@ -65,6 +65,7 @@ public:
 	size_t getEthernetActivationLineCount() const override { return 1; }
 
 	bool supportsTC10() const override { return true; }
+	bool supportsGPTP() const override { return true; }
 
 protected:
 	RADGalaxy2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {

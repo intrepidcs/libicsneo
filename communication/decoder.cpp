@@ -19,6 +19,7 @@
 #include "icsneo/communication/message/diskdatamessage.h"
 #include "icsneo/communication/message/hardwareinfo.h"
 #include "icsneo/communication/message/tc10statusmessage.h"
+#include "icsneo/communication/message/gptpstatusmessage.h"
 #include "icsneo/communication/message/apperrormessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
@@ -285,11 +286,11 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				}
 				case Network::NetID::ExtendedCommand: {
 
-					if(packet->data.size() < sizeof(ExtendedResponseMessage::PackedGenericResponse))
+					if(packet->data.size() < sizeof(ExtendedResponseMessage::ResponseHeader))
 						break; // Handle as a raw message, might not be a generic response
 
-					const auto& resp = *reinterpret_cast<ExtendedResponseMessage::PackedGenericResponse*>(packet->data.data());
-					switch(resp.header.command) {
+					const auto& resp = *reinterpret_cast<ExtendedResponseMessage::ResponseHeader*>(packet->data.data());
+					switch(resp.command) {
 						case ExtendedCommand::GetComponentVersions:
 							result = ComponentVersionPacket::DecodeToMessage(packet->data);
 							return true;
@@ -299,15 +300,23 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						case ExtendedCommand::GenericBinaryInfo:
 							result = GenericBinaryStatusPacket::DecodeToMessage(packet->data);
 							return true;
-						case ExtendedCommand::GenericReturn:
-							result = std::make_shared<ExtendedResponseMessage>(resp.command, resp.returnCode);
+						case ExtendedCommand::GenericReturn: {
+							if(packet->data.size() < sizeof(ExtendedResponseMessage::PackedGenericResponse))
+								break;
+							const auto& packedResp = *reinterpret_cast<ExtendedResponseMessage::PackedGenericResponse*>(packet->data.data());
+							result = std::make_shared<ExtendedResponseMessage>(packedResp.command, packedResp.returnCode);
 							return true;
+						}
 						case ExtendedCommand::LiveData:
 							result = HardwareLiveDataPacket::DecodeToMessage(packet->data, report);
 							return true;
 						case ExtendedCommand::GetTC10Status:
 							result = TC10StatusMessage::DecodeToMessage(packet->data);
 							return true;
+						case ExtendedCommand::GetGPTPStatus: {
+							result = GPTPStatus::DecodeToMessage(packet->data, report);
+							return true;
+						}
 						default:
 							// No defined handler, treat this as a RawMessage
 							break;

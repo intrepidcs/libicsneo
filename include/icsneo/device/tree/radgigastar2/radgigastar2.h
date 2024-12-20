@@ -76,7 +76,8 @@ namespace icsneo
 		bool getEthPhyRegControlSupported() const override { return true; }
 
 		bool supportsTC10() const override { return true; }
-
+		bool supportsGPTP() const override { return true; }
+	
 	protected:
 		RADGigastar2(neodevice_t neodevice, const driver_factory_t &makeDriver) : Device(neodevice)
 		{

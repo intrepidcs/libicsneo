@@ -19,6 +19,7 @@ public:
 	ICSNEO_FINDABLE_DEVICE(RADMars, DeviceType::RADMars, "GL");
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
+	bool supportsGPTP() const override { return true; }
 
 protected:
 	RADMars(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {

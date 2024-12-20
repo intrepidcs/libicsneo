@@ -50,6 +50,7 @@
 #include "icsneo/disk/vsa/vsa.h"
 #include "icsneo/disk/vsa/vsaparser.h"
 #include "icsneo/communication/message/versionmessage.h"
+#include "icsneo/communication/message/gptpstatusmessage.h"
 
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
@@ -727,12 +728,15 @@ public:
 	virtual bool supportsComponentVersions() const { return false; }
 
 	virtual bool supportsTC10() const { return false; }
+	
+	virtual bool supportsGPTP() const { return false; }
 
 	bool requestTC10Wake(Network::NetID network);
 
 	bool requestTC10Sleep(Network::NetID network);
 
 	std::optional<TC10StatusMessage> getTC10Status(Network::NetID network);
+	std::optional<GPTPStatus> getGPTPStatus(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
 
 protected:
 	bool online = false;

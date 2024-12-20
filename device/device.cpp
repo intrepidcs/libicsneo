@@ -3335,3 +3335,34 @@ std::optional<TC10StatusMessage> Device::getTC10Status(Network::NetID network) {
 
 	return *typed;
 }
+
+std::optional<GPTPStatus> Device::getGPTPStatus(std::chrono::milliseconds timeout) {
+	if(!supportsGPTP()) {
+		report(APIEvent::Type::GPTPNotSupported, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this](){ 
+			return com->sendCommand(ExtendedCommand::GetGPTPStatus, {}); 
+		},
+		std::make_shared<MessageFilter>(Message::Type::GPTPStatus),
+		timeout
+	);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	auto retMsg = std::static_pointer_cast<GPTPStatus>(response);
+	if(!retMsg) {
+		return std::nullopt;
+	}
+
+	return *retMsg;
+}

@@ -246,6 +246,7 @@ set(SRC_FILES
 	communication/message/linmessage.cpp
 	communication/message/livedatamessage.cpp
 	communication/message/tc10statusmessage.cpp
+	communication/message/gptpstatusmessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/a2bpacket.cpp

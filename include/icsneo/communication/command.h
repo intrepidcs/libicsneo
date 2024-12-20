@@ -51,6 +51,7 @@ enum class ExtendedCommand : uint16_t {
 	StartDHCPServer = 0x0016,
 	StopDHCPServer = 0x0017,
 	GetSupportedFeatures = 0x0018,
+	GetGPTPStatus = 0x0019,
 	GetComponentVersions = 0x001A,
 	Reboot = 0x001C,
 	SetRootFSEntryFlags = 0x0027,

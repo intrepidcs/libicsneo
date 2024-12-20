@@ -444,20 +444,21 @@ typedef struct LOGGER_SETTINGS_t
 #define RAD_GPTP_NUM_PORTS 1 // 1 because only supported as gPTP endpoint
 typedef struct RAD_GPTP_SETTINGS_t
 {
-	uint32_t neighborPropDelayThresh;//ns
-	uint32_t sys_phc_sync_interval;//ns
-	int8_t logPDelayReqInterval;// log2ms
-	int8_t logSyncInterval;// log2ms
-	int8_t logAnnounceInterval;// log2ms
+	uint32_t neighborPropDelayThresh; //ns
+	uint32_t sys_phc_sync_interval; //ns
+	int8_t logPDelayReqInterval; // log2ms
+	int8_t logSyncInterval; // log2ms
+	int8_t logAnnounceInterval; // log2ms
 	uint8_t profile;
 	uint8_t priority1;
 	uint8_t clockclass;
 	uint8_t clockaccuracy;
 	uint8_t priority2;
 	uint16_t offset_scaled_log_variance;
-	uint8_t gPTPportRole[RAD_GPTP_NUM_PORTS];
-	uint8_t portEnable[RAD_GPTP_NUM_PORTS];
-	uint8_t rsvd[16];
+	uint8_t gptpPortRole;
+	uint8_t gptpEnabledPort;
+	uint8_t enableClockSyntonization;
+	uint8_t rsvd[15];
 } RAD_GPTP_SETTINGS;//36 Bytes with RAD_GPTP_NUM_PORTS = 1
 #define RAD_GPTP_SETTINGS_SIZE 36
 

@@ -31,6 +31,7 @@ public:
 	}
 
 	bool getEthPhyRegControlSupported() const override { return true; }
+	bool supportsGPTP() const override { return true; }
 
 protected:
 	using Device::Device;

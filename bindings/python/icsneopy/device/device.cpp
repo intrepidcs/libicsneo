@@ -39,6 +39,7 @@ void init_device(pybind11::module_& m) {
 		.def("request_tc10_wake", &Device::requestTC10Wake, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("request_tc10_sleep", &Device::requestTC10Sleep, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("get_tc10_status", &Device::getTC10Status, pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def("get_gptp_status", &Device::getGPTPStatus, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("__repr__", &Device::describe);
 }
 
