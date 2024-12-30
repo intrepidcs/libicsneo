@@ -95,6 +95,8 @@ bool FTD3XX::close() {
 		addEvent(ret, APIEvent::Severity::EventWarning);
 	}
 
+	handle.reset();
+
 	setIsClosing(false);
 
 	return true;
