@@ -68,6 +68,8 @@ protected:
 	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
 		return 0;
 	}
+
+	bool supportsComponentVersions() const override { return true; }
 };
 
 }
