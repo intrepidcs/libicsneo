@@ -218,8 +218,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 	if(block) // Extensions say no
 		return false;
 
-	// Get component versions *after* the extension "onDeviceOpen" hooks (e.g. device reflashes)
-	
+	// Get component versions again *after* the extension "onDeviceOpen" hooks (e.g. device reflashes)
 	if(supportsComponentVersions()) {
 		if(auto compVersions = com->getComponentVersionsSync())
 			componentVersions = std::move(*compVersions);
@@ -347,6 +346,15 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		return getCommunicationNotEstablishedError();
 	else
 		versions = std::move(*maybeVersions);
+
+
+	// Get component versions before the extension "onDeviceOpen" hooks so that we can properly check verisons
+	if(supportsComponentVersions()) {
+		if(auto compVersions = com->getComponentVersionsSync())
+			componentVersions = std::move(*compVersions);
+		else
+			return getCommunicationNotEstablishedError();
+	}
 
 	return APIEvent::Type::NoErrorFound;
 }

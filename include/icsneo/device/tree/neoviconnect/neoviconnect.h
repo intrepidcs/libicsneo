@@ -70,6 +70,8 @@ protected:
 	}
 
 	bool supportsComponentVersions() const override { return true; }
+	bool supportsGPTP() const override { return true; }
+
 };
 
 }
