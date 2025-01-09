@@ -26,4 +26,8 @@ pybind11_add_module(icsneopy
 )
 target_link_libraries(icsneopy PRIVATE icsneocpp)
 
-install(TARGETS icsneopy LIBRARY DESTINATION .)
+install(TARGETS icsneopy LIBRARY DESTINATION icsneopy)
+
+add_custom_command(TARGET icsneopy POST_BUILD COMMAND stubgen -m icsneopy -o .)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsneopy.pyi __init__.py py.typed DESTINATION icsneopy)
