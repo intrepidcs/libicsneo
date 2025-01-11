@@ -24,8 +24,10 @@ public:
 	virtual bool isOpen() = 0;
 	virtual void modeChangeIncoming() {}
 	virtual void awaitModeChangeComplete() {}
-	virtual bool isDisconnected() { return disconnected; };
 	virtual bool close() = 0;
+
+	inline bool isDisconnected() const { return disconnected; };
+	inline bool isClosing() const { return closing; }
 
 	bool waitForRx(size_t limit, std::chrono::milliseconds timeout);
 	bool waitForRx(std::function<bool()> predicate, std::chrono::milliseconds timeout);
@@ -52,8 +54,8 @@ protected:
 		WAIT
 	};
 
-	virtual void readTask() = 0;
-	virtual void writeTask() = 0;
+	inline void setIsClosing(bool isClosing) { closing = isClosing; }
+	inline void setIsDisconnected(bool isDisconnected) { disconnected = isDisconnected; }
 
 	// Overridable in case the driver doesn't want to use writeTask and writeQueue
 	virtual bool writeQueueFull() { return writeQueue.size_approx() > writeQueueSize; }
@@ -61,13 +63,15 @@ protected:
 	virtual bool writeInternal(const std::vector<uint8_t>& b) { return writeQueue.enqueue(WriteOperation(b)); }
 
 	bool pushRx(const uint8_t* buf, size_t numReceived);
-	RingBuffer readBuffer = RingBuffer(ICSNEO_DRIVER_RINGBUFFER_SIZE);
-	std::atomic<bool> hasRxWaitRequest = false;
-	std::condition_variable rxWaitRequestCv;
-	std::mutex rxWaitMutex;
+	void clearBuffers();
 
 	moodycamel::BlockingConcurrentQueue<WriteOperation> writeQueue;
-	std::thread readThread, writeThread;
+
+private:
+	RingBuffer readBuffer = RingBuffer(ICSNEO_DRIVER_RINGBUFFER_SIZE);
+	std::condition_variable rxWaitCv;
+	std::mutex rxWaitMutex;
+
 	std::atomic<bool> closing{false};
 	std::atomic<bool> disconnected{false};
 };

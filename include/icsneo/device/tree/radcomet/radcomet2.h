@@ -27,6 +27,8 @@ public:
 		return supportedNetworks;
 	}
 
+	bool supportsTC10() const override { return true; }
+
 protected:
 	RADComet2(neodevice_t neodevice, const driver_factory_t& makeDriver) : RADCometBase(neodevice) {
 		initialize<RADCometSettings>(makeDriver);

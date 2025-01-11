@@ -37,6 +37,7 @@ private:
 	std::shared_ptr<Detail> detail;
 
 	std::vector<std::shared_ptr<std::thread>> threads;
+	std::thread readThread, writeThread;
 	void readTask();
 	void writeTask();
 };

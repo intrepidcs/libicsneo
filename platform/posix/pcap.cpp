@@ -258,28 +258,26 @@ bool PCAP::close() {
 	if(!isOpen())
 		return false;
 
-	closing = true; // Signal the threads that we are closing
+	setIsClosing(true); // Signal the threads that we are closing
 	pcap_breakloop(iface.fp);
 #ifndef __linux__
 	pthread_cancel(readThread.native_handle());
 #endif
 	readThread.join();
 	writeThread.join();
-	closing = false;
+	setIsClosing(false);
 
 	pcap_close(iface.fp);
 	iface.fp = nullptr;
 
-	WriteOperation flushop;
-	readBuffer.clear();
-	while(writeQueue.try_dequeue(flushop)) {}
+	clearBuffers();
 
 	return true;
 }
 
 void PCAP::readTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while (!closing) {
+	while (!isClosing()) {
 		pcap_dispatch(iface.fp, -1, [](uint8_t* obj, const struct pcap_pkthdr* header, const uint8_t* data) {
 			PCAP* driver = reinterpret_cast<PCAP*>(obj);
 			if(driver->ethPacketizer.inputUp({data, data + header->caplen})) {
@@ -294,7 +292,7 @@ void PCAP::writeTask() {
 	WriteOperation writeOp;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
-	while(!closing) {
+	while(!isClosing()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 

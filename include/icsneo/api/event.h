@@ -108,6 +108,8 @@ public:
 		LiveDataNotSupported = 0x2052,
 		LINSettingsNotAvailable = 0x2053,
 		ModeNotFound = 0x2054,
+		AppErrorParsingFailed = 0x2055,
+		GPTPNotSupported = 0x2056,
 
 		// Transport Events
 		FailedToRead = 0x3000,

@@ -10,6 +10,8 @@
 
 namespace icsneo {
 
+#pragma pack(push, 2)
+
 typedef uint16_t icscm_bitfield;
 
 struct HardwareEthernetPacket {
@@ -41,6 +43,8 @@ struct HardwareEthernetPacket {
 	uint16_t NetworkID;
 	uint16_t Length;
 };
+
+#pragma pack(pop)
 
 }
 

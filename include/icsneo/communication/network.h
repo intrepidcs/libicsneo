@@ -166,6 +166,24 @@ public:
 		MDIO6 = 550,
 		MDIO7 = 551,
 		MDIO8 = 552,
+		OP_Ethernet13 = 553,
+		OP_Ethernet14 = 554,
+		OP_Ethernet15 = 555,
+		OP_Ethernet16 = 556,
+		SPI3 = 557,
+		SPI4 = 558,
+		SPI5 = 559,
+		SPI6 = 560,
+		SPI7 = 561,
+		SPI8 = 562,
+		LIN9 = 563,
+		LIN10 = 564,
+		LIN11 = 565,
+		LIN12 = 566,
+		LIN13 = 567,
+		LIN14 = 568,
+		LIN15 = 569,
+		LIN16 = 570,
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};
@@ -270,6 +288,24 @@ public:
 		MDIO6 = 80,
 		MDIO7 = 81,
 		MDIO8 = 82,
+		OP_Ethernet13 = 83,
+		OP_Ethernet14 = 84,
+		OP_Ethernet15 = 85,
+		OP_Ethernet16 = 86,
+		SPI3 = 87,
+		SPI4 = 88,
+		SPI5 = 89,
+		SPI6 = 90,
+		SPI7 = 91,
+		SPI8 = 92,
+		LIN9 = 93,
+		LIN10 = 94,
+		LIN11 = 95,
+		LIN12 = 96,
+		LIN13 = 97,
+		LIN14 = 98,
+		LIN15 = 99,
+		LIN16 = 100,
 	};
 	static const char* GetTypeString(Type type) {
 		switch(type) {
@@ -506,6 +542,14 @@ public:
 		case NetID::LIN6:
 		case NetID::LIN7:
 		case NetID::LIN8:
+		case NetID::LIN9:
+		case NetID::LIN10:
+		case NetID::LIN11:
+		case NetID::LIN12:
+		case NetID::LIN13:
+		case NetID::LIN14:
+		case NetID::LIN15:
+		case NetID::LIN16:
 			return Type::LIN;
 		case NetID::FlexRay:
 		case NetID::FlexRay1a:
@@ -533,10 +577,12 @@ public:
 		case NetID::CoreMiniPreLoad:
 		case NetID::ExtendedCommand:
 		case NetID::ExtendedData:
+		case NetID::RED_INT_MEMORYREAD:
 		case NetID::NeoMemorySDRead:
 		case NetID::NeoMemoryWriteDone:
 		case NetID::RED_GET_RTC:
 		case NetID::DiskData:
+		case NetID::RED_App_Error:
 			return Type::Internal;
 		case NetID::Invalid:
 		case NetID::Any:
@@ -557,6 +603,10 @@ public:
 		case NetID::OP_Ethernet10:
 		case NetID::OP_Ethernet11:
 		case NetID::OP_Ethernet12:
+		case NetID::OP_Ethernet13:
+		case NetID::OP_Ethernet14:
+		case NetID::OP_Ethernet15:
+		case NetID::OP_Ethernet16:
 			return Type::Ethernet;
 		case NetID::LSFTCAN:
 		case NetID::LSFTCAN2:
@@ -579,6 +629,12 @@ public:
 			return Type::A2B;
 		case NetID::SPI1:
 		case NetID::SPI2:
+		case NetID::SPI3:
+		case NetID::SPI4:
+		case NetID::SPI5:
+		case NetID::SPI6:
+		case NetID::SPI7:
+		case NetID::SPI8:
 			return Type::SPI;
 		case NetID::MDIO1:
 		case NetID::MDIO2:
@@ -768,6 +824,14 @@ public:
 			return "FlexRay 2";
 		case NetID::OP_Ethernet12:
 			return "OP (BR) Ethernet 12";
+		case NetID::OP_Ethernet13:
+			return "OP (BR) Ethernet 13";
+		case NetID::OP_Ethernet14:
+			return "OP (BR) Ethernet 14";
+		case NetID::OP_Ethernet15:
+			return "OP (BR) Ethernet 15";
+		case NetID::OP_Ethernet16:
+			return "OP (BR) Ethernet 16";
 		case NetID::I2C:
 			return "I2C";
 		case NetID::MOST25:
@@ -848,12 +912,40 @@ public:
 			return "LIN 07";
 		case NetID::LIN8:
 			return "LIN 08";
+		case NetID::LIN9:
+			return "LIN 09";
+		case NetID::LIN10:
+			return "LIN 10";
+		case NetID::LIN11:
+			return "LIN 11";
+		case NetID::LIN12:
+			return "LIN 12";
+		case NetID::LIN13:
+			return "LIN 13";
+		case NetID::LIN14:
+			return "LIN 14";
+		case NetID::LIN15:
+			return "LIN 15";
+		case NetID::LIN16:
+			return "LIN 16";
 		case NetID::WBMS:
 			return "WBMS";
 		case NetID::SPI1:
 			return "SPI 1";
 		case NetID::SPI2:
 			return "SPI 2";
+		case NetID::SPI3:
+			return "SPI 3";
+		case NetID::SPI4:
+			return "SPI 4";
+		case NetID::SPI5:
+			return "SPI 5";
+		case NetID::SPI6:
+			return "SPI 6";
+		case NetID::SPI7:
+			return "SPI 7";
+		case NetID::SPI8:
+			return "SPI 8";
 		case NetID::MDIO1:
 			return "MDIO 1";
 		case NetID::MDIO2:
@@ -974,6 +1066,14 @@ public:
 			return CoreMini::OP_Ethernet11;
 		case NetID::OP_Ethernet12:
 			return CoreMini::OP_Ethernet12;
+		case NetID::OP_Ethernet13:
+			return CoreMini::OP_Ethernet13;
+		case NetID::OP_Ethernet14:
+			return CoreMini::OP_Ethernet14;
+		case NetID::OP_Ethernet15:
+			return CoreMini::OP_Ethernet15;
+		case NetID::OP_Ethernet16:
+			return CoreMini::OP_Ethernet16;
 		case NetID::TCP:
 			return CoreMini::TCPVirtual;
 		case NetID::UDP:
@@ -1022,10 +1122,38 @@ public:
 			return CoreMini::LIN7;
 		case NetID::LIN8:
 			return CoreMini::LIN8;
+		case NetID::LIN9:
+			return CoreMini::LIN9;
+		case NetID::LIN10:
+			return CoreMini::LIN10;
+		case NetID::LIN11:
+			return CoreMini::LIN11;
+		case NetID::LIN12:
+			return CoreMini::LIN12;
+		case NetID::LIN13:
+			return CoreMini::LIN13;
+		case NetID::LIN14:
+			return CoreMini::LIN14;
+		case NetID::LIN15:
+			return CoreMini::LIN15;
+		case NetID::LIN16:
+			return CoreMini::LIN16;
 		case NetID::SPI1:
 			return CoreMini::SPI1;
 		case NetID::SPI2:
 			return CoreMini::SPI2;
+		case NetID::SPI3:
+			return CoreMini::SPI3;
+		case NetID::SPI4:
+			return CoreMini::SPI4;
+		case NetID::SPI5:
+			return CoreMini::SPI5;
+		case NetID::SPI6:
+			return CoreMini::SPI6;
+		case NetID::SPI7:
+			return CoreMini::SPI7;
+		case NetID::SPI8:
+			return CoreMini::SPI8;
 		case NetID::MDIO1:
 			return CoreMini::MDIO1;
 		case NetID::MDIO2:
@@ -1144,6 +1272,14 @@ public:
 			return NetID::OP_Ethernet11;
 		case CoreMini::OP_Ethernet12:
 			return NetID::OP_Ethernet12;
+		case CoreMini::OP_Ethernet13:
+			return NetID::OP_Ethernet13;
+		case CoreMini::OP_Ethernet14:
+			return NetID::OP_Ethernet14;
+		case CoreMini::OP_Ethernet15:
+			return NetID::OP_Ethernet15;
+		case CoreMini::OP_Ethernet16:
+			return NetID::OP_Ethernet16;
 		case CoreMini::TCPVirtual:
 			return NetID::TCP;
 		case CoreMini::UDPVirtual:
@@ -1192,10 +1328,38 @@ public:
 			return NetID::LIN7;
 		case CoreMini::LIN8:
 			return NetID::LIN8;
+		case CoreMini::LIN9:
+			return NetID::LIN9;
+		case CoreMini::LIN10:
+			return NetID::LIN10;
+		case CoreMini::LIN11:
+			return NetID::LIN11;
+		case CoreMini::LIN12:
+			return NetID::LIN12;
+		case CoreMini::LIN13:
+			return NetID::LIN13;
+		case CoreMini::LIN14:
+			return NetID::LIN14;
+		case CoreMini::LIN15:
+			return NetID::LIN15;
+		case CoreMini::LIN16:
+			return NetID::LIN16;
 		case CoreMini::SPI1:
 			return NetID::SPI1;
 		case CoreMini::SPI2:
 			return NetID::SPI2;
+		case CoreMini::SPI3:
+			return NetID::SPI3;
+		case CoreMini::SPI4:
+			return NetID::SPI4;
+		case CoreMini::SPI5:
+			return NetID::SPI5;
+		case CoreMini::SPI6:
+			return NetID::SPI6;
+		case CoreMini::SPI7:
+			return NetID::SPI7;
+		case CoreMini::SPI8:
+			return NetID::SPI8;
 		case CoreMini::MDIO1:
 			return NetID::MDIO1;
 		case CoreMini::MDIO2:

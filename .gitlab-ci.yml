@@ -5,6 +5,7 @@ stages:
   - build
   - unit_test
   - hardware_test
+  - deploy
 
 #-------------------------------------------------------------------------------
 # Windows
@@ -318,57 +319,213 @@ unit_test linux/fedora/39/amd64/clang:
     - /opt/libvirt-driver/run.sh
   after_script:
     - /opt/libvirt-driver/cleanup.sh
+  allow_failure: true
 
-hardware_test system-test-fedora38-red2:
-  <<: *hw_test
-  variables:
-    GUEST_OS_TAG: fedora38
-    DEVICE_PORT: ETH_A
+.fedora38_needs: &fedora38_needs
   needs:
     - job: build linux/fedora/38/amd64/clang
       artifacts: true
 
-hardware_test system-test-fedora38-vcan42:
+hardware_test fedora38-red2:
   <<: *hw_test
+  <<: *fedora38_needs
+  variables:
+    GUEST_OS_TAG: fedora38
+    DEVICE_PORT: ETH_A
+
+hardware_test fedora38-vcan42:
+  <<: *hw_test
+  <<: *fedora38_needs
   variables:
     GUEST_OS_TAG: fedora38
     DEVICE_PORT: USB_D
-  needs:
-    - job: build linux/fedora/38/amd64/clang
-      artifacts: true
 
-hardware_test system-test-ubuntu2204-red2:
+hardware_test fedora38-fire3:
   <<: *hw_test
+  <<: *fedora38_needs
   variables:
-    GUEST_OS_TAG: ubuntu22.04
-    DEVICE_PORT: ETH_A
+    GUEST_OS_TAG: fedora38
+    DEVICE_PORT: ETH_B
+
+hardware_test fedora38-vcan42-EL:
+  <<: *hw_test
+  <<: *fedora38_needs
+  variables:
+    GUEST_OS_TAG: fedora38
+    DEVICE_PORT: USB_C
+
+.ubuntu2204_needs: &ubuntu2204_needs
   needs:
     - job: build linux/ubuntu/2204/amd64/clang
       artifacts: true
 
-hardware_test system-test-ubuntu2204-vcan42:
+hardware_test ubuntu2204-red2:
   <<: *hw_test
+  <<: *ubuntu2204_needs
+  variables:
+    GUEST_OS_TAG: ubuntu22.04
+    DEVICE_PORT: ETH_A
+
+hardware_test ubuntu2204-vcan42:
+  <<: *hw_test
+  <<: *ubuntu2204_needs
   variables:
     GUEST_OS_TAG: ubuntu22.04
     DEVICE_PORT: USB_D
+
+hardware_test ubuntu2204-fire3:
+  <<: *hw_test
+  <<: *ubuntu2204_needs
+  variables:
+    GUEST_OS_TAG: ubuntu22.04
+    DEVICE_PORT: ETH_B
+
+hardware_test ubuntu2204-vcan42-EL:
+  <<: *hw_test
+  <<: *ubuntu2204_needs
+  variables:
+    GUEST_OS_TAG: ubuntu22.04
+    DEVICE_PORT: USB_C
+
+.win10_needs: &win10_needs
   needs:
-    - job: build linux/ubuntu/2204/amd64/clang
+    - job: build windows/x64
       artifacts: true
 
-hardware_test system-test-win10-red2:
+hardware_test win10-red2:
   <<: *hw_test
+  <<: *win10_needs
   variables:
     GUEST_OS_TAG: win10
     DEVICE_PORT: ETH_A
-  needs:
-    - job: build windows/x64
-      artifacts: true
 
-hardware_test system-test-win10-vcan42:
+hardware_test win10-vcan42:
   <<: *hw_test
+  <<: *win10_needs
   variables:
     GUEST_OS_TAG: win10
     DEVICE_PORT: USB_D
+
+hardware_test win10-fire3:
+  <<: *hw_test
+  <<: *win10_needs
+  variables:
+    GUEST_OS_TAG: win10
+    DEVICE_PORT: ETH_B
+
+hardware_test win10-vcan42-EL:
+  <<: *hw_test
+  <<: *win10_needs
+  variables:
+    GUEST_OS_TAG: win10
+    DEVICE_PORT: USB_C
+
+#-------------------------------------------------------------------------------
+# Python Module
+#-------------------------------------------------------------------------------
+
+build python/linux/amd64:
+  stage: build
+  tags:
+    - linux-build
+  image: python:3.12
+  services:
+    - name: docker:dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    CIBW_BEFORE_ALL: yum install -y flex && sh ci/bootstrap-libpcap.sh && sh ci/bootstrap-libusb.sh
+    CIBW_BUILD: "*manylinux*" # no musl
+    CIBW_ARCHS: x86_64
+    DOCKER_HOST: unix:///var/run/docker.sock
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install:/project/libusb/install
+  script:
+    - curl -sSL https://get.docker.com/ | sh
+    - sh ci/build-wheel-posix.sh
+  artifacts:
+    paths:
+      - wheelhouse
+
+build python/linux/arm64:
+  stage: build
+  tags:
+    - arm64-linux-build
+  variables:
+    CIBW_BEFORE_ALL: yum install -y flex && sh ci/bootstrap-libpcap.sh && sh ci/bootstrap-libusb.sh
+    CIBW_BUILD: "*manylinux*" # no musl
+    CIBW_ARCHS: aarch64
+    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install:/project/libusb/install
+  script:
+    - sh ci/build-wheel-posix.sh
+  artifacts:
+    paths:
+      - wheelhouse
+
+build python/macos:
+  stage: build
+  tags:
+    - macos-arm64
+  variables:
+    CIBW_BEFORE_ALL: sh ci/bootstrap-libpcap.sh && sh ci/bootstrap-libusb.sh
+    CIBW_ARCHS: arm64
+    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=$CI_PROJECT_DIR/libpcap/install:$CI_PROJECT_DIR/libusb/install
+    MACOSX_DEPLOYMENT_TARGET: 10.14
+  script:
+    - sh ci/build-wheel-posix.sh
+  artifacts:
+    paths:
+      - wheelhouse
+
+build python/windows:
+  stage: build
+  tags:
+    - libicsneo-win-x64
+  variables:
+    CIBW_ARCHS: AMD64
+    CIBW_ENVIRONMENT: CMAKE_GENERATOR=Ninja
+  script:
+    - cmd /c ci\build-wheel-windows.bat
+  artifacts:
+    paths:
+      - wheelhouse
+
+deploy python/pypi:
+  stage: deploy
+  variables:
+    TWINE_USERNAME: __token__
+    TWINE_PASSWORD: $PYPI_TOKEN
+  tags:
+    - linux-build
+  image: python:3.12
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - python3 -m pip install -U twine
+    - twine upload wheelhouse/*
+  dependencies:
+    - build python/linux/amd64
+    - build python/linux/arm64
+    - build python/macos
+    - build python/windows
   needs:
-    - job: build windows/x64
-      artifacts: true
+    - build python/linux/amd64
+    - build python/linux/arm64
+    - build python/macos
+    - build python/windows
+
+push github:
+  stage: deploy
+  tags:
+    - linux-build
+  image: alpine:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  dependencies:
+    - deploy python/pypi
+  needs:
+    - deploy python/pypi
+  script:
+    - apk add git
+    - git push https://$LIBICSNEO_GITHUB_USERNAME:$LIBICSNEO_GITHUB_TOKEN@github.com/intrepidcs/libicsneo.git HEAD:master

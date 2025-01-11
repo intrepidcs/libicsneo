@@ -47,11 +47,14 @@ public:
 		EtherBADGE = (0x00000016),
 		RAD_A2B = (0x00000017),
 		RADEpsilon = (0x00000018),
+		RADGalaxy2 = (0x00000021),
 		RADMoon3 = (0x00000023),
 		RADComet = (0x00000024),
 		FIRE3_FlexRay = (0x00000025),
 		Connect = (0x00000026),
 		RADComet3 = (0x00000027),
+		RADMoonT1S = (0x00000028),
+		RADGigastar2 = (0x00000029),
 		RED = (0x00000040),
 		ECU = (0x00000080),
 		IEVB = (0x00000100),
@@ -180,6 +183,8 @@ public:
 				return "neoVI Flex";
 			case RADGalaxy:
 				return "RAD-Galaxy";
+			case RADGalaxy2:
+				return "RAD-Galaxy 2";
 			case RADStar2:
 				return "RAD-Star 2";
 			case VividCAN:
@@ -190,8 +195,12 @@ public:
 				return "neoVI FIRE3 FlexRay";
 			case RADComet3:
 				return "RAD-Comet 3";
+			case RADMoonT1S:
+				return "RAD-Moon T1S";
 			case Connect:
 				return "neoVI Connect";
+			case RADGigastar2:
+				return "RAD-Gigastar 2";
 			case DONT_REUSE0:
 			case DONT_REUSE1:
 			case DONT_REUSE2:
@@ -242,11 +251,14 @@ private:
 #define ICSNEO_DEVICETYPE_ETHERBADGE ((devicetype_t)0x00000016)
 #define ICSNEO_DEVICETYPE_RAD_A2B ((devicetype_t)0x00000017)
 #define ICSNEO_DEVICETYPE_RADEPSILON ((devicetype_t)0x00000018)
+#define ICSNEO_DEVICETYPE_RADGALAXY2 ((devicetype_t)0x00000021)
 #define ICSNEO_DEVICETYPE_RADMoon3 ((devicetype_t)0x00000023)
 #define ICSNEO_DEVICETYPE_RADCOMET ((devicetype_t)0x00000024)
 #define ICSNEO_DEVICETYPE_FIRE3FLEXRAY ((devicetype_t)0x00000025)
 #define ICSNEO_DEVICETYPE_CONNECT ((devicetype_t)0x00000026)
 #define ICSNEO_DEVICETYPE_RADCOMET3 ((devicetype_t)0x00000027)
+#define ICSNEO_DEVICETYPE_RADMOONT1S ((devicetype_t)0x00000028)
+#define ICSNEO_DEVICETYPE_RADGIGASTAR2 ((devicetype_t)0x00000029)
 #define ICSNEO_DEVICETYPE_RED ((devicetype_t)0x00000040)
 #define ICSNEO_DEVICETYPE_ECU ((devicetype_t)0x00000080)
 #define ICSNEO_DEVICETYPE_IEVB ((devicetype_t)0x00000100)

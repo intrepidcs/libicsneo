@@ -1,1 +1,4 @@
-breathe==4.12.0
+sphinx
+icsneopy
+breathe
+sphinx_rtd_theme

@@ -185,6 +185,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<RADComet3>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __RADMOONT1S_H_
+		makeIfSerialMatches<RADMoonT1S>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __RADEPSILON_H_
 		makeIfSerialMatches<RADEpsilon>(dev, newFoundDevices);
 		#endif
@@ -193,12 +197,20 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<RADGalaxy>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __RADGALAXY2_H_
+		makeIfSerialMatches<RADGalaxy2>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __RADMARS_H_
 		makeIfSerialMatches<RADMars>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADGIGASTAR_H_
 		makeIfSerialMatches<RADGigastar>(dev, newFoundDevices);
+		#endif
+		
+		#ifdef __RADGIGASTAR2_H_
+		makeIfSerialMatches<RADGigastar2>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADJUPITER_H_
@@ -332,6 +344,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 		RADComet3::DEVICE_TYPE,
 		#endif
 		
+		#ifdef __RADMOONT1S_H_
+		RADMoonT1S::DEVICE_TYPE,
+		#endif
+
 		#ifdef __RADEPSILON_H_
 		RADEpsilon::DEVICE_TYPE,
 		#endif
@@ -340,12 +356,20 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 		RADGalaxy::DEVICE_TYPE,
 		#endif
 
+		#ifdef __RADGALAXY2_H_
+		RADGalaxy2::DEVICE_TYPE,
+		#endif
+
 		#ifdef __RADMARS_H_
 		RADMars::DEVICE_TYPE,
 		#endif
 
 		#ifdef __RADGIGASTAR_H_
 		RADGigastar::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADGIGASTAR2_H_
+		RADGigastar2::DEVICE_TYPE,
 		#endif
 
 		#if defined __RADMOON2_H_ || defined __RADMOON2ZL_H_

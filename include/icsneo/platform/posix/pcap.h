@@ -30,8 +30,10 @@ private:
 	uint8_t deviceMAC[6];
 	bool openable = true;
 	EthernetPacketizer ethPacketizer;
-	void readTask() override;
-	void writeTask() override;
+
+	std::thread readThread, writeThread;
+	void readTask();
+	void writeTask();
 
 	class NetworkInterface {
 	public:

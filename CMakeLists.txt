@@ -27,6 +27,8 @@ option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX"
 option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
 option(LIBICSNEO_ENABLE_FTD3XX "Enable devices which communicate over USB FTD3XX" ON)
 
+option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" OFF)
+
 if(NOT CMAKE_CXX_STANDARD)
 	set(CMAKE_CXX_STANDARD 17)
 endif()
@@ -172,27 +174,27 @@ if(LIBICSNEO_ENABLE_FTD3XX)
 	if(NOT FTD3XX_ROOT) # allow system override
 		include(FetchContent)
 		if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-			set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/23.28.0/libftd3xx-1.3.0.4-win-x64.zip")
-			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=ee1289cdd5023de67275aaa1712e8e32e73e825a8392efb0a76f161e357fbdc9")
+			set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.3.0.10-win-x64.zip")
+			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=459e635496ab47d6069c9d3515fdd6d82cba3d95e7ae34f794d66ffdf336e9d1")
 		elseif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-			set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/23.28.0/libftd3xx-1.3.0.4-win-i686.zip")
-			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=bcd31f5c3cb39ecb9b09db5ce722bd79de6e0f813130e7b8f2c86879a60d8ff0")
+			set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.3.0.10-win-i686.zip")
+			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=ce4259ae11772d6ede7d217172156fa392f329b29d9455131f4126a2fb89dad1")
 		elseif(APPLE AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-			set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/23.28.0/libftd3xx-1.0.14-macos-universal2.zip")
-			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=74c0d35f04242d0841532c6325eb2932b8f627e3c395382a15d9f39974d27a90")
+			set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.0.16-macos-universal2.zip")
+			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=0904ac5eda8e1dc4b5aac3714383bcc7792b42dfeb585dce6cbfb8b67b8c0c51")
 		elseif(UNIX)
 			if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
 				if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-					set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/23.28.0/libftd3xx-1.0.14-linux-x64.zip")
-					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=a9dc7eb6948c8977fbd79f6700bec6f882d3da5667aea8f2175b8d1f6f08e456")
+					set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.0.16-linux-x64.zip")
+					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=cf66bf299fc722f050cdd3c36998a670f1df69f7c0df18afa73707277067114b")
 				endif()
 			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch64")
 				if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-					set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/23.28.0/libftd3xx-1.0.14-linux-aarch64.zip")
-					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=da4b90ea1cbb905874cd159ad2ab8c1bdde65cc22b3aa55bf2b5fd85ca6efd22")
+					set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.0.16-linux-aarch64.zip")
+					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=66341b5112b9841e959e81400b51711be96fec91894477c5cbfc29b10a0c00a6")
 				elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-					set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/23.28.0/libftd3xx-1.0.14-linux-armhf.zip")
-					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=d813008117422cae958f7c71a065cdac0d31dca3b24809d3ab5e13604a9c3fb1")
+					set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.0.16-linux-armhf.zip")
+					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=cec1f959b48a11eb6b829ed43c81b6ba1c0bcf3e797bafcc84a6376e5ffc3c47")
 				endif()
 			endif()
 		endif()
@@ -238,11 +240,14 @@ set(SRC_FILES
 	communication/message/flexray/control/flexraycontrolmessage.cpp
 	communication/message/callback/streamoutput/a2bwavoutput.cpp
 	communication/message/a2bmessage.cpp
+	communication/message/apperrormessage.cpp
 	communication/message/neomessage.cpp
 	communication/message/ethphymessage.cpp
 	communication/message/linmessage.cpp
 	communication/message/livedatamessage.cpp
 	communication/message/tc10statusmessage.cpp
+	communication/message/gptpstatusmessage.cpp
+	communication/message/ethernetstatusmessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/a2bpacket.cpp
@@ -493,6 +498,8 @@ if(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC)
 	target_compile_definitions(icsneolegacy-static PUBLIC ICSNEOC_BUILD_STATIC)
 endif()
 
+add_subdirectory(bindings)
+
 # googletest
 if(LIBICSNEO_BUILD_UNIT_TESTS)
 	if(WIN32)
@@ -519,6 +526,7 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/mdioencoderdecodertest.cpp
 		test/unit/livedataencoderdecodertest.cpp
 		test/unit/ringbuffertest.cpp
+		test/unit/apperrordecodertest.cpp
 	)
 
 	target_link_libraries(libicsneo-unit-tests gtest gtest_main)

@@ -71,6 +71,9 @@ typedef struct {
 	ETHERNET10T1S_SETTINGS t1s2;
 	uint64_t network_enables_5;
 	LIN_SETTINGS lin1;
+	// 10T1S Extended settings
+	ETHERNET10T1S_SETTINGS_EXT t1s1Ext;
+	ETHERNET10T1S_SETTINGS_EXT t1s2Ext;
 } radcomet_settings_t;
 #pragma pack(pop)
 
@@ -80,7 +83,7 @@ typedef struct {
 
 #ifdef __cplusplus
 
-static_assert(sizeof(radcomet_settings_t) == 466, "RADComet settings size mismatch");
+static_assert(sizeof(radcomet_settings_t) == 498, "RADComet settings size mismatch");
 
 #include <iostream>
 

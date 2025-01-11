@@ -16,8 +16,8 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	if(packet->Length < 4)
 		return nullptr;
 	
-	const size_t ethernetFrameSize = packet->Length - (sizeof(uint16_t) * 2);
-	const size_t bytestreamExpectedSize = sizeof(HardwareEthernetPacket) + ethernetFrameSize;
+	const size_t fcsSize = packet->header.FCS_AVAIL ? 4 : 0;
+	const size_t bytestreamExpectedSize = sizeof(HardwareEthernetPacket) + packet->Length;
 	const size_t bytestreamActualSize = bytestream.size();
 	if(bytestreamActualSize < bytestreamExpectedSize)
 		return nullptr;
@@ -36,8 +36,6 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	message.preemptionEnabled = packet->header.PREEMPTION_ENABLED;
 	if(message.preemptionEnabled)
 		message.preemptionFlags = (uint8_t)((rawWords[0] & 0x03F8) >> 4);
-	
-	message.fcsAvailable = packet->header.FCS_AVAIL;
 
 	message.frameTooShort = packet->header.RUNT_FRAME;
 	if(message.frameTooShort)
@@ -47,11 +45,14 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	// Decoder will fix as it has information about the timestampResolution increments
 	message.timestamp = packet->timestamp.TS;
 
-	// Network ID is also not set, this will be fixed in the Decoder as well
-
-	const std::vector<uint8_t>::const_iterator databegin = bytestream.begin() + (sizeof(HardwareEthernetPacket) - (sizeof(uint16_t) * 2));
-	const std::vector<uint8_t>::const_iterator dataend = databegin + ethernetFrameSize;
+	const std::vector<uint8_t>::const_iterator databegin = bytestream.begin() + sizeof(HardwareEthernetPacket);
+	const std::vector<uint8_t>::const_iterator dataend = databegin + packet->Length - fcsSize;
 	message.data.insert(message.data.begin(), databegin, dataend);
+	
+	if(fcsSize) {
+		uint32_t& fcs = message.fcs.emplace();
+		std::copy(dataend, dataend + fcsSize, (uint8_t*)&fcs);
+	}
 
 	return messagePtr;
 }

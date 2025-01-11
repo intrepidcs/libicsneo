@@ -6,6 +6,7 @@
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <poll.h>
 #include <unistd.h>
 #include <ifaddrs.h>
 #include <net/if.h>
@@ -72,7 +73,36 @@ TCP::Socket::~Socket() {
 	#endif
 }
 
+void TCP::Socket::poll(uint16_t event, uint32_t msTimeout) {
+	#ifdef _WIN32
+		WSAPOLLFD pfd;
+		pfd.fd = fd;
+		pfd.events = event;
+		::WSAPoll(&pfd, 1, msTimeout);
+	#else
+		struct pollfd pfd;
+		pfd.fd = fd;
+		pfd.events = event;
+		::poll(&pfd, 1, msTimeout);
+	#endif
+}
+
 void TCP::Find(std::vector<FoundDevice>& found) {
+	static const auto tcpDisabled = []() -> bool {
+		#ifdef _MSC_VER
+		#pragma warning(push)
+		#pragma warning(disable : 4996)
+		#endif
+		const auto disabled = std::getenv("LIBICSNEO_DISABLE_TCP");
+		return disabled ? std::stoi(disabled) : false;
+		#ifdef _MSC_VER
+		#pragma warning(pop)
+		#endif
+	};
+	if(tcpDisabled()) {
+		return;
+	}
+
 	static const auto MDNS_PORT = htons((unsigned short)5353);
 	static const auto MDNS_IP = htonl((((uint32_t)224U) << 24U) | ((uint32_t)251U));
 
@@ -256,16 +286,16 @@ void TCP::Find(std::vector<FoundDevice>& found) {
 			continue;
 		}
 
-		timeval timeout = {};
-		timeout.tv_usec = 50000;
-		fd_set readfs;
-		FD_ZERO(&readfs);
-		int nfds = WIN_INT(socket) + 1;
-		FD_SET(socket, &readfs);
-		while(true) {
+		const auto rxTill = std::chrono::steady_clock::now() + std::chrono::milliseconds(100);
+		while(std::chrono::steady_clock::now() < rxTill) {
 			static constexpr size_t bufferLen = 2048;
 			uint8_t buffer[bufferLen];
-			::select(nfds, &readfs, 0, 0, &timeout); // timeout is intentially not reset, we want timeout.tv_usec _total_
+			// keep trying till the timeout
+			const auto msWait = std::chrono::duration_cast<std::chrono::milliseconds>(rxTill - std::chrono::steady_clock::now()).count();
+			if(msWait < 0) {
+				break;
+			}
+			socket.poll(POLLIN, static_cast<uint32_t>(msWait));
 			const auto recvRet = ::recv(socket, (char*)buffer, bufferLen, 0);
 			static constexpr auto headerLength = 12;
 			if(recvRet < headerLength) {
@@ -460,13 +490,7 @@ bool TCP::open() {
 			}
 		#endif
 
-		timeval timeout = {};
-		timeout.tv_sec = 1;
-		fd_set writefs;
-		FD_ZERO(&writefs);
-		int nfds = WIN_INT(*partiallyOpenSocket) + 1;
-		FD_SET(*partiallyOpenSocket, &writefs);
-		::select(nfds, 0, &writefs, 0, &timeout);
+		partiallyOpenSocket->poll(POLLOUT, 1000);
 
 		if(::connect(*partiallyOpenSocket, (sockaddr*)&addr, sizeof(addr)) < 0) {
 			#ifdef _WIN32
@@ -502,20 +526,18 @@ bool TCP::close() {
 		return false;
 	}
 
-	closing = true;
-	disconnected = false;
+	setIsClosing(true);
+	setIsDisconnected(false);
 
 	if(readThread.joinable())
 		readThread.join();
 	if(writeThread.joinable())
 		writeThread.join();
 
-	WriteOperation flushop;
-	readBuffer.pop(readBuffer.size());
-	while(writeQueue.try_dequeue(flushop)) {}
+	clearBuffers();
 
 	socket.reset();
-	closing = false;
+	setIsClosing(false);
 
 	return true;
 }
@@ -523,21 +545,13 @@ bool TCP::close() {
 void TCP::readTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
-	const int nfds = WIN_INT(*socket) + 1;
-	fd_set readfs;
-	FD_ZERO(&readfs);
-	FD_SET(*socket, &readfs);
-	timeval timeout;
-
 	constexpr size_t READ_BUFFER_SIZE = 2048;
 	uint8_t readbuf[READ_BUFFER_SIZE];
-	while(!closing) {
+	while(!isClosing()) {
 		if(const auto received = ::recv(*socket, (char*)readbuf, READ_BUFFER_SIZE, 0); received > 0) {
 			pushRx(readbuf, received);
 		} else {
-			timeout.tv_sec = 0;
-			timeout.tv_usec = 50'000;
-			::select(nfds, &readfs, 0, 0, &timeout);
+			socket->poll(POLLIN, 100);
 		}
 	}
 }
@@ -545,23 +559,15 @@ void TCP::readTask() {
 void TCP::writeTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
-	const int nfds = WIN_INT(*socket) + 1;
-	fd_set writefs;
-	FD_ZERO(&writefs);
-	FD_SET(*socket, &writefs);
-	timeval timeout;
-
 	WriteOperation writeOp;
-	while(!closing) {
+	while(!isClosing()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
-		while(!closing) {
+		while(!isClosing()) {
 			if(::send(*socket, (char*)writeOp.bytes.data(), WIN_INT(writeOp.bytes.size()), 0) > 0)
 				break;
-			timeout.tv_sec = 0;
-			timeout.tv_usec = 100'000;
-			::select(nfds, 0, &writefs, 0, &timeout);
+			socket->poll(POLLOUT, 100);
 		}
 	}
 }

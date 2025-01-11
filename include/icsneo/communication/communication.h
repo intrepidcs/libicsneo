@@ -87,6 +87,9 @@ public:
 	std::unique_ptr<Driver> driver;
 	device_eventhandler_t report;
 
+	size_t readTaskWakeLimit = 1;
+	std::chrono::milliseconds readTaskWakeTimeout = std::chrono::milliseconds(1000);
+
 protected:
 	static int messageCallbackIDCounter;
 	std::mutex messageCallbacksLock;

@@ -81,7 +81,7 @@ bool FTDI::open() {
 	ftdi.flush();
 
 	// Create threads
-	closing = false;
+	setIsClosing(false);
 	readThread = std::thread(&FTDI::readTask, this);
 	writeThread = std::thread(&FTDI::writeTask, this);
 
@@ -94,7 +94,7 @@ bool FTDI::close() {
 		return false;
 	}
 		
-	closing = true;
+	setIsClosing(true);
 	
 	if(readThread.joinable())
 		readThread.join();
@@ -109,12 +109,10 @@ bool FTDI::close() {
 			report(APIEvent::Type::DriverFailedToClose, APIEvent::Severity::Error);
 	}
 	
-	WriteOperation flushop;
-	readBuffer.clear();
-	while(writeQueue.try_dequeue(flushop)) {}
+	clearBuffers();
 
-	closing = false;
-	disconnected = false;
+	setIsClosing(false);
+	setIsDisconnected(false);
 	return ret;
 }
 
@@ -202,12 +200,12 @@ void FTDI::readTask() {
 	constexpr size_t READ_BUFFER_SIZE = 8;
 	uint8_t readbuf[READ_BUFFER_SIZE];
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing && !isDisconnected()) {
+	while(!isClosing() && !isDisconnected()) {
 		auto readBytes = ftdi.read(readbuf, READ_BUFFER_SIZE);
 		if(readBytes < 0) {
 			if(ErrorIsDisconnection(readBytes)) {
 				if(!isDisconnected()) {
-					disconnected = true;
+					setIsDisconnected(true);
 					report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 				}
 			} else
@@ -220,7 +218,7 @@ void FTDI::readTask() {
 void FTDI::writeTask() {
 	WriteOperation writeOp;
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-	while(!closing && !isDisconnected()) {
+	while(!isClosing() && !isDisconnected()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
@@ -230,7 +228,7 @@ void FTDI::writeTask() {
 			if(writeBytes < 0) {
 				if(ErrorIsDisconnection(writeBytes)) {
 					if(!isDisconnected()) {
-						disconnected = true;
+						setIsDisconnected(true);
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 					}
 					break;

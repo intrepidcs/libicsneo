@@ -38,6 +38,7 @@ private:
 		~Socket();
 		explicit operator bool() const { return fd != -1; }
 		operator SocketFileDescriptor() const { return fd; }
+		void poll(uint16_t event, uint32_t msTimeout);
 	private:
 		SocketFileDescriptor fd;
 	};
@@ -46,8 +47,10 @@ private:
 	uint32_t dstIP;
 	uint16_t dstPort;
 	std::unique_ptr<Socket> socket;
-	void readTask() override;
-	void writeTask() override;
+
+	std::thread readThread, writeThread;
+	void readTask();
+	void writeTask();
 };
 
 }

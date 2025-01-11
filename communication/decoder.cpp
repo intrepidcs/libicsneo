@@ -5,6 +5,7 @@
 #include "icsneo/communication/message/readsettingsmessage.h"
 #include "icsneo/communication/message/canerrorcountmessage.h"
 #include "icsneo/communication/message/neoreadmemorysdmessage.h"
+#include "icsneo/communication/message/flashmemorymessage.h"
 #include "icsneo/communication/message/extendedresponsemessage.h"
 #include "icsneo/communication/message/wiviresponsemessage.h"
 #include "icsneo/communication/message/scriptstatusmessage.h"
@@ -18,6 +19,9 @@
 #include "icsneo/communication/message/diskdatamessage.h"
 #include "icsneo/communication/message/hardwareinfo.h"
 #include "icsneo/communication/message/tc10statusmessage.h"
+#include "icsneo/communication/message/gptpstatusmessage.h"
+#include "icsneo/communication/message/apperrormessage.h"
+#include "icsneo/communication/message/ethernetstatusmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -176,6 +180,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 
 			LINMessage& msg = *static_cast<LINMessage*>(result.get());
 			msg.network = packet->network;
+			msg.timestamp *= timestampResolution;
 			return true;
 		}
 		case Network::Type::MDIO: {
@@ -234,26 +239,43 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						return true;
 					}
 
-					result = HardwareCANPacket::DecodeToMessage(packet->data);
-					if(!result) {
+					const auto can = std::dynamic_pointer_cast<CANMessage>(HardwareCANPacket::DecodeToMessage(packet->data));
+					if(!can) {
 						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
-						return false; // A nullptr was returned, the packet was malformed
+						return false;
+					}
+					
+					if(can->arbid == 0x162) {
+						result = EthernetStatusMessage::DecodeToMessage(can->data);
+
+						if(!result) {
+							report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+							return false;
+						}
+					} else {
+						// TODO: move more handleNeoVIMessage handling here, the Decoder layer will parse the message and the Device layer can cache the values
+						can->network = packet->network;
+						result = can;
 					}
 
-					// Timestamps are in (resolution) ns increments since 1/1/2007 GMT 00:00:00.0000
-					// The resolution depends on the device
-					auto* raw = dynamic_cast<RawMessage*>(result.get());
-					if(raw == nullptr) {
-						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
-						return false; // A nullptr was returned, the packet was malformed
-					}
-					raw->timestamp *= timestampResolution;
-					raw->network = packet->network;
+					result->timestamp *= timestampResolution;
 					return true;
 				}
 				case Network::NetID::DeviceStatus: {
 					// Just pass along the data, the device needs to handle this itself
 					result = std::make_shared<RawMessage>(packet->network, packet->data);
+					return true;
+				}
+				case Network::NetID::RED_INT_MEMORYREAD: {
+					if(packet->data.size() != 512 + sizeof(uint16_t)) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+						return false; // Should get enough data for a start address and sector
+					}
+
+					const auto msg = std::make_shared<FlashMemoryMessage>();
+					result = msg;
+					msg->startAddress = *reinterpret_cast<uint16_t*>(packet->data.data());
+					msg->data.insert(msg->data.end(), packet->data.begin() + 2, packet->data.end());
 					return true;
 				}
 				case Network::NetID::NeoMemorySDRead: {
@@ -270,11 +292,11 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 				}
 				case Network::NetID::ExtendedCommand: {
 
-					if(packet->data.size() < sizeof(ExtendedResponseMessage::PackedGenericResponse))
+					if(packet->data.size() < sizeof(ExtendedResponseMessage::ResponseHeader))
 						break; // Handle as a raw message, might not be a generic response
 
-					const auto& resp = *reinterpret_cast<ExtendedResponseMessage::PackedGenericResponse*>(packet->data.data());
-					switch(resp.header.command) {
+					const auto& resp = *reinterpret_cast<ExtendedResponseMessage::ResponseHeader*>(packet->data.data());
+					switch(resp.command) {
 						case ExtendedCommand::GetComponentVersions:
 							result = ComponentVersionPacket::DecodeToMessage(packet->data);
 							return true;
@@ -284,15 +306,23 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						case ExtendedCommand::GenericBinaryInfo:
 							result = GenericBinaryStatusPacket::DecodeToMessage(packet->data);
 							return true;
-						case ExtendedCommand::GenericReturn:
-							result = std::make_shared<ExtendedResponseMessage>(resp.command, resp.returnCode);
+						case ExtendedCommand::GenericReturn: {
+							if(packet->data.size() < sizeof(ExtendedResponseMessage::PackedGenericResponse))
+								break;
+							const auto& packedResp = *reinterpret_cast<ExtendedResponseMessage::PackedGenericResponse*>(packet->data.data());
+							result = std::make_shared<ExtendedResponseMessage>(packedResp.command, packedResp.returnCode);
 							return true;
+						}
 						case ExtendedCommand::LiveData:
 							result = HardwareLiveDataPacket::DecodeToMessage(packet->data, report);
 							return true;
 						case ExtendedCommand::GetTC10Status:
 							result = TC10StatusMessage::DecodeToMessage(packet->data);
 							return true;
+						case ExtendedCommand::GetGPTPStatus: {
+							result = GPTPStatus::DecodeToMessage(packet->data, report);
+							return true;
+						}
 						default:
 							// No defined handler, treat this as a RawMessage
 							break;
@@ -397,6 +427,14 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					if(packet->data.size() != length)
 						packet->data.resize(length);
 					return decode(result, packet);
+				}
+				case Network::NetID::RED_App_Error: {
+					result = AppErrorMessage::DecodeToMessage(packet->data, report);
+					if(!result) {
+						report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
+						return false;
+					}
+					return true;
 				}
 				case Network::NetID::ReadSettings: {
 					auto msg = std::make_shared<ReadSettingsMessage>();

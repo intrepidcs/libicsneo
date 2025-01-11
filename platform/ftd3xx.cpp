@@ -64,7 +64,7 @@ bool FTD3XX::open() {
 	}
 	handle.emplace(tmpHandle);
 
-	closing = false;
+	setIsClosing(false);
 	readThread = std::thread(&FTD3XX::readTask, this);
 	writeThread = std::thread(&FTD3XX::writeTask, this);
 
@@ -81,23 +81,23 @@ bool FTD3XX::close() {
 		return false;
 	}
 
-	closing = true;
-	disconnected = false;
+	setIsClosing(true);
+	setIsDisconnected(false);
 
 	if(readThread.joinable())
 		readThread.join();
 	if(writeThread.joinable())
 		writeThread.join();
 
-	WriteOperation flushop;
-	readBuffer.pop(readBuffer.size());
-	while(writeQueue.try_dequeue(flushop)) {}
+	clearBuffers();
 
 	if(const auto ret = FT_Close(*handle); ret != FT_OK) {
 		addEvent(ret, APIEvent::Severity::EventWarning);
 	}
 
-	closing = false;
+	handle.reset();
+
+	setIsClosing(false);
 
 	return true;
 }
@@ -110,7 +110,7 @@ void FTD3XX::readTask() {
 
 	FT_SetStreamPipe(*handle, false, false, READ_PIPE_ID, bufferSize);
 	FT_SetPipeTimeout(*handle, READ_PIPE_ID, 1);
-	while(!closing && !isDisconnected()) {
+	while(!isClosing() && !isDisconnected()) {
 		ULONG received = 0;
 		OVERLAPPED overlap = {};
 		FT_InitializeOverlapped(*handle, &overlap);
@@ -119,13 +119,13 @@ void FTD3XX::readTask() {
 		#else
 			FT_ReadPipeAsync(*handle, 0, buffer, bufferSize, &received, &overlap);
 		#endif
-		while(!closing) {
+		while(!isClosing()) {
 			const auto ret = FT_GetOverlappedResult(*handle, &overlap, &received, true);
 			if(ret == FT_IO_PENDING)
 				continue;
 			if(ret != FT_OK) {
 				if(ret == FT_IO_ERROR) {
-					disconnected = true;
+					setIsDisconnected(true);
 					report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 				} else {
 					addEvent(ret, APIEvent::Severity::Error);
@@ -146,7 +146,7 @@ void FTD3XX::writeTask() {
 
 	FT_SetPipeTimeout(*handle, WRITE_PIPE_ID, 100);
 	WriteOperation writeOp;
-	while(!closing && !isDisconnected()) {
+	while(!isClosing() && !isDisconnected()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
@@ -160,13 +160,13 @@ void FTD3XX::writeTask() {
 		#else
 			FT_WritePipeAsync(*handle, 0, writeOp.bytes.data(), size, &sent, &overlap);
 		#endif
-		while(!closing) {
+		while(!isClosing()) {
 			const auto ret = FT_GetOverlappedResult(*handle, &overlap, &sent, true);
 			if(ret == FT_IO_PENDING)
 				continue;
 			if(ret != FT_OK) {
 				if(ret == FT_IO_ERROR) {
-					disconnected = true;
+					setIsDisconnected(true);
 					report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 				} else {
 					addEvent(ret, APIEvent::Severity::Error);

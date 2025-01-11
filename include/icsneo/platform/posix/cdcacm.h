@@ -47,8 +47,10 @@ private:
 
 	static std::string HandleToTTY(neodevice_handle_t handle);
 
-	void readTask() override;
-	void writeTask() override;
+	std::thread readThread, writeThread;
+	void readTask();
+	void writeTask();
+
 	bool fdIsValid();
 };
 

@@ -35,7 +35,7 @@ class EthernetMessage : public Frame {
 public:
 	bool preemptionEnabled = false;
 	uint8_t preemptionFlags = 0;
-	bool fcsAvailable = false;
+	std::optional<uint32_t> fcs;
 	bool frameTooShort = false;
 	bool noPadding = false;
 

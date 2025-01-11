@@ -120,6 +120,7 @@ static constexpr const char* DISK_NOT_CONNECTED = "The program tried to access a
 static constexpr const char* UNEXPECTED_RESPONSE = "Received an unexpected or invalid response from the device.";
 static constexpr const char* LIN_SETTINGS_NOT_AVAILABLE = "LIN settings are not available for this device.";
 static constexpr const char* MODE_NOT_FOUND = "The mode was not found.";
+static constexpr const char* GPTP_NOT_SUPPORTED = "GPTP clock synchronization is not supported on this device.";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -185,6 +186,7 @@ static constexpr const char* VSA_OTHER_ERROR = "Unknown error in VSA read API.";
 static constexpr const char* TOO_MANY_EVENTS = "Too many events have occurred. The list has been truncated.";
 static constexpr const char* UNKNOWN = "An unknown internal error occurred.";
 static constexpr const char* INVALID = "An invalid internal error occurred.";
+
 const char* APIEvent::DescriptionForType(Type type) {
 	switch(type) {
 		// API Errors
@@ -345,6 +347,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return GETIFADDRS_ERROR;
 		case Type::SendToError:
 			return SEND_TO_ERROR;
+		case Type::GPTPNotSupported:
+			return GPTP_NOT_SUPPORTED;
 	
 		// FTD3XX
 		case Type::FTOK:

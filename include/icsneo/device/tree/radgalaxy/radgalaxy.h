@@ -61,6 +61,7 @@ public:
 	}
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
+	bool supportsGPTP() const override { return true; }
 
 protected:
 	RADGalaxy(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {

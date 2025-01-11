@@ -32,6 +32,7 @@ private:
 	bool openable = true;
 	EthernetPacketizer ethPacketizer;
 	
+	std::thread readThread, writeThread;
 	std::thread transmitThread;
 	pcap_send_queue* transmitQueue = nullptr;
 	std::condition_variable transmitQueueCV;

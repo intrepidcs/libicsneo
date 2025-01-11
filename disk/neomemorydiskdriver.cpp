@@ -1,5 +1,6 @@
 #include "icsneo/disk/neomemorydiskdriver.h"
 #include "icsneo/communication/message/neoreadmemorysdmessage.h"
+#include "icsneo/communication/message/flashmemorymessage.h"
 #include <cstring>
 #include <iostream>
 
@@ -8,7 +9,8 @@ using namespace icsneo::Disk;
 
 std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communication& com, device_eventhandler_t report,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType) {
-	static std::shared_ptr<MessageFilter> NeoMemorySDRead = std::make_shared<MessageFilter>(Network::NetID::NeoMemorySDRead);
+	const auto filter = std::make_shared<MessageFilter>((memType == MemoryType::SD ? Network::NetID::NeoMemorySDRead : Network::NetID::RED_INT_MEMORYREAD));
+	filter->includeInternalInAny = true;
 
 	if(pos % SectorSize != 0)
 		return std::nullopt;
@@ -20,7 +22,7 @@ std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communicatio
 	const uint8_t memLocation = (uint8_t)memType;
 
 	uint64_t numWords = amount / 2;
-	
+
 	auto msg = com.waitForMessageSync([&currentSector, &memLocation, &com, &numWords] {
 		return com.sendCommand(Command::NeoReadMemory, {
 			memLocation,
@@ -33,18 +35,26 @@ std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communicatio
 			uint8_t((numWords >> 16) & 0xFF),
 			uint8_t((numWords >> 24) & 0xFF)
 		});
-	}, NeoMemorySDRead, timeout);
+	}, filter, timeout);
 
 	if(!msg)
 		return 0;
 
-	const auto sdmsg = std::dynamic_pointer_cast<NeoReadMemorySDMessage>(msg);
-	if(!sdmsg || sdmsg->data.size() != SectorSize) {
-		report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
-		return std::nullopt;
+	if(memType == MemoryType::SD) {
+		const auto mem = std::dynamic_pointer_cast<NeoReadMemorySDMessage>(msg);
+		if(!mem || mem->data.size() != SectorSize) {
+			report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		memcpy(into, mem->data.data(), SectorSize);
+	} else { // flash
+		const auto mem = std::dynamic_pointer_cast<FlashMemoryMessage>(msg);
+		if(!mem || mem->data.size() != SectorSize) {
+			report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		memcpy(into, mem->data.data(), SectorSize);
 	}
-
-	memcpy(into, sdmsg->data.data(), SectorSize);
 	return SectorSize;
 }
 

@@ -218,8 +218,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 	if(block) // Extensions say no
 		return false;
 
-	// Get component versions *after* the extension "onDeviceOpen" hooks (e.g. device reflashes)
-	
+	// Get component versions again *after* the extension "onDeviceOpen" hooks (e.g. device reflashes)
 	if(supportsComponentVersions()) {
 		if(auto compVersions = com->getComponentVersionsSync())
 			componentVersions = std::move(*compVersions);
@@ -347,6 +346,15 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		return getCommunicationNotEstablishedError();
 	else
 		versions = std::move(*maybeVersions);
+
+
+	// Get component versions before the extension "onDeviceOpen" hooks so that we can properly check verisons
+	if(supportsComponentVersions()) {
+		if(auto compVersions = com->getComponentVersionsSync())
+			componentVersions = std::move(*compVersions);
+		else
+			return getCommunicationNotEstablishedError();
+	}
 
 	return APIEvent::Type::NoErrorFound;
 }
@@ -654,6 +662,85 @@ bool Device::clearScript(Disk::MemoryType memType)
 	}
 
 	return true;
+}
+
+std::optional<CoreminiHeader> Device::readCoreminiHeader(Disk::MemoryType memType) {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	auto startAddress = getCoreminiStartAddress(memType);
+	if(!startAddress) {
+		return std::nullopt;
+	}
+
+	auto connected = isLogicalDiskConnected();
+	
+	if(!connected) {
+		return std::nullopt; // Already added an API error
+	}
+
+	#pragma pack(push, 2)
+	struct RawCoreminiHeader {
+		uint16_t fileType;
+		uint16_t fileVersion;
+		uint32_t storedFileSize;
+		uint32_t fileChecksum;
+		union
+		{
+			struct
+			{
+				uint32_t skipDecompression : 1;
+				uint32_t encryptedMode : 1;
+				uint32_t reserved : 30;
+			} bits;
+			uint32_t word;
+		} flags;
+		uint8_t fileHash[32];
+		union
+		{
+			struct
+			{
+				uint32_t lsb;
+				uint32_t msb;
+			} words;
+			uint64_t time64;
+		} createTime;
+		uint8_t reserved[8];
+	};
+	#pragma pack(pop)
+
+	RawCoreminiHeader header = {};
+	auto numRead = readLogicalDisk(*startAddress, (uint8_t*)&header, sizeof(header), std::chrono::milliseconds(2000), memType);
+
+	if(!numRead) {
+		return std::nullopt; // Already added an API error
+	}
+	
+	if(*numRead != sizeof(header)) {
+		report(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(header.fileType != 0x0907) {
+		report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	std::optional<CoreminiHeader> ret;
+	ret.emplace();
+	ret->coreminiVersion = header.fileVersion;
+	ret->storedFileSize = header.storedFileSize;
+	ret->fileChecksum = header.fileChecksum;
+	ret->skipDecompression = static_cast<bool>(header.flags.bits.skipDecompression);
+	ret->encryptedMode = static_cast<bool>(header.flags.bits.encryptedMode);
+	std::copy(std::begin(header.fileHash), std::end(header.fileHash), ret->fileHash.begin());
+	static constexpr std::chrono::seconds icsEpochDelta(1167609600);
+	static constexpr uint8_t timestampResolution = 25;
+	static constexpr uint16_t nsInUs = 1'000;
+	ret->timestamp += icsEpochDelta + std::chrono::microseconds(header.createTime.time64 * timestampResolution / nsInUs);
+	return ret;
 }
 
 bool Device::transmit(std::shared_ptr<Frame> frame) {
@@ -1642,15 +1729,6 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 		case Message::Type::RawMessage: {
 			auto rawMessage = std::static_pointer_cast<RawMessage>(message);
 			switch(rawMessage->network.getNetID()) {
-				case Network::NetID::Device: {
-					// Device is not guaranteed to be a CANMessage, it might be a RawMessage
-					// if it couldn't be decoded to a CANMessage. We only care about the
-					// CANMessage decoding right now.
-					auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
-					if(canmsg)
-						handleNeoVIMessage(std::move(canmsg));
-					break;
-				}
 				case Network::NetID::DeviceStatus:
 					// Device Status format is unique per device, so the devices need to decode it themselves
 					handleDeviceStatus(rawMessage);
@@ -1658,6 +1736,15 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 				default:
 					break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;
 			}
+			break;
+		}
+		case Message::Type::Frame: {
+			// Device is not guaranteed to be a CANMessage, it might be a RawMessage
+			// if it couldn't be decoded to a CANMessage. We only care about the
+			// CANMessage decoding right now.
+			auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
+			if(canmsg)
+				handleNeoVIMessage(std::move(canmsg));
 			break;
 		}
 		default: break;
@@ -1872,7 +1959,7 @@ bool Device::setRTC(const std::chrono::time_point<std::chrono::system_clock>& ti
 	}
 
 	auto m51msg = std::dynamic_pointer_cast<Main51Message>(generic);
-	if(!m51msg || m51msg->data.size() != 1) {
+	if(!m51msg || m51msg->data.empty() || m51msg->data.size() > 2) {
 		report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
 		return false;
 	}
@@ -2116,7 +2203,7 @@ bool Device::readVSA(const VSAExtractionSettings& extractionSettings) {
 	if(isOnline()) {
 		goOffline();
 	}
-	auto innerReadVSA = [&](uint64_t diskSize) -> const bool {
+	auto innerReadVSA = [&](uint64_t diskSize) -> bool {
 		// Adjust driver to offset to start of VSA file
 		const auto& offset = getVSAOffsetInLogicalDisk();
 		if(!offset) {
@@ -3255,4 +3342,35 @@ std::optional<TC10StatusMessage> Device::getTC10Status(Network::NetID network) {
 	}
 
 	return *typed;
+}
+
+std::optional<GPTPStatus> Device::getGPTPStatus(std::chrono::milliseconds timeout) {
+	if(!supportsGPTP()) {
+		report(APIEvent::Type::GPTPNotSupported, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this](){ 
+			return com->sendCommand(ExtendedCommand::GetGPTPStatus, {}); 
+		},
+		std::make_shared<MessageFilter>(Message::Type::GPTPStatus),
+		timeout
+	);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	auto retMsg = std::static_pointer_cast<GPTPStatus>(response);
+	if(!retMsg) {
+		return std::nullopt;
+	}
+
+	return *retMsg;
 }

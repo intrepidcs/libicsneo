@@ -79,6 +79,8 @@ protected:
 
 	bool supportsLiveData() const override { return true; }
 
+	bool supportsGPTP() const override { return true; }
+
 	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
 		return 33*1024*1024;
 	}
@@ -90,6 +92,7 @@ protected:
 	bool supportsEraseMemory() const override {
 		return true;
 	}
+
 };
 
 }

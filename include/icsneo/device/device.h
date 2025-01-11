@@ -13,6 +13,7 @@
 #include <optional>
 #include <unordered_map>
 #include <set>
+#include <chrono>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/api/lifetime.h"
 #include "icsneo/device/neodevice.h"
@@ -21,6 +22,7 @@
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/deviceversion.h"
 #include "icsneo/device/founddevice.h"
+#include "icsneo/device/coremini.h"
 #include "icsneo/disk/diskreaddriver.h"
 #include "icsneo/disk/diskwritedriver.h"
 #include "icsneo/disk/nulldiskdriver.h"
@@ -48,6 +50,7 @@
 #include "icsneo/disk/vsa/vsa.h"
 #include "icsneo/disk/vsa/vsaparser.h"
 #include "icsneo/communication/message/versionmessage.h"
+#include "icsneo/communication/message/gptpstatusmessage.h"
 
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
@@ -163,6 +166,7 @@ public:
 	bool stopScript();
 	bool clearScript(Disk::MemoryType memType = Disk::MemoryType::SD);
 	bool uploadCoremini(std::istream& stream, Disk::MemoryType memType = Disk::MemoryType::SD);
+	std::optional<CoreminiHeader> readCoreminiHeader(Disk::MemoryType memType = Disk::MemoryType::SD);
 
 	bool eraseScriptMemory(Disk::MemoryType memType, uint64_t amount);
 
@@ -226,7 +230,7 @@ public:
 	virtual size_t getNetworkCountByType(Network::Type) const;
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
-	std::shared_ptr<HardwareInfo> getHardwareInfo(std::chrono::milliseconds timeout = std::chrono::milliseconds(2));
+	std::shared_ptr<HardwareInfo> getHardwareInfo(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
 
 
 	/**
@@ -724,12 +728,15 @@ public:
 	virtual bool supportsComponentVersions() const { return false; }
 
 	virtual bool supportsTC10() const { return false; }
+	
+	virtual bool supportsGPTP() const { return false; }
 
 	bool requestTC10Wake(Network::NetID network);
 
 	bool requestTC10Sleep(Network::NetID network);
 
 	std::optional<TC10StatusMessage> getTC10Status(Network::NetID network);
+	std::optional<GPTPStatus> getGPTPStatus(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
 
 protected:
 	bool online = false;
