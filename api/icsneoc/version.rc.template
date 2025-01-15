@@ -29,7 +29,7 @@ BEGIN
             VALUE "FileDescription",  "Intrepid Control Systems Open Device Communication C API"
             VALUE "FileVersion",      VER_FILEVERSION_STR
             VALUE "InternalName",     "icsneoc.dll"
-            VALUE "LegalCopyright",   "Intrepid Control Systems, Inc. (C) 2018-2024"
+            VALUE "LegalCopyright",   "Intrepid Control Systems, Inc. (C) 2018-2025"
             VALUE "OriginalFilename", "icsneoc.dll"
             VALUE "ProductName",      "libicsneo"
             VALUE "ProductVersion",   VER_PRODUCTVERSION_STR

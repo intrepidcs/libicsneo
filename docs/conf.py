@@ -12,7 +12,7 @@ subprocess.call('cd ..; doxygen docs/icsneoc/Doxyfile', shell=True)
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'libicsneo'
-copyright = '2024, Intrepid Control Systems, Inc.'
+copyright = '2024-2025, Intrepid Control Systems, Inc.'
 author = 'Intrepid Control Systems, Inc.'
 
 # -- General configuration ---------------------------------------------------
