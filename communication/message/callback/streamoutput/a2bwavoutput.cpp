@@ -102,11 +102,11 @@ bool A2BWAVOutput::callIfMatch(const std::shared_ptr<Message>& message) const {
 		return false;
 	}
 
-	if(message->type != Message::Type::Frame) {
+	if(message->type != Message::Type::BusMessage) {
 		return false;
 	}
 
-	const auto& frameMsg = std::dynamic_pointer_cast<Frame>(message);
+	const auto& frameMsg = std::dynamic_pointer_cast<BusMessage>(message);
 
 	if(!frameMsg) {
 		return false;

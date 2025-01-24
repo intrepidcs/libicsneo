@@ -1,0 +1,22 @@
+[package]
+name = "icsneoc2rs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "icsneoc2rs"
+crate-type = ["rlib", "staticlib", "cdylib"]
+path = "src/lib.rs"
+
+[[example]]
+name = "simple"
+path = "examples/simple.rs"
+
+[dev-dependencies]
+scopeguard = "1.2.0"
+
+[features]
+static = []
+
+[build-dependencies]
+bindgen = "0.71.1"

@@ -462,7 +462,7 @@ bool icsneo_transmit(const neodevice_t* device, const neomessage_t* message) {
 	if(!icsneo_isValidNeoDevice(device))
 		return false;
 
-	if(auto frame = std::dynamic_pointer_cast<icsneo::Frame>(CreateMessageFromNeoMessage(message)))
+	if(auto frame = std::dynamic_pointer_cast<icsneo::BusMessage>(CreateMessageFromNeoMessage(message)))
 		return device->device->transmit(frame);
 
 	return false;
@@ -738,7 +738,7 @@ int icsneo_getDeviceStatus(const neodevice_t* device, void* status, size_t* size
 	if(!msg) // Did not receive a message
 		return false;
 	
-	auto rawMessage = std::static_pointer_cast<RawMessage>(msg);
+	auto rawMessage = std::static_pointer_cast<InternalMessage>(msg);
 	if(!rawMessage || (rawMessage->network.getNetID() != Network::NetID::DeviceStatus))
 		return false;
 

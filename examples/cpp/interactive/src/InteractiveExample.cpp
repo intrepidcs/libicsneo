@@ -184,9 +184,9 @@ std::shared_ptr<icsneo::Device> selectDevice(const std::vector<std::shared_ptr<i
 
 void printMessage(const std::shared_ptr<icsneo::Message>& message) {
 	switch(message->type) {
-		case icsneo::Message::Type::Frame: {
+		case icsneo::Message::Type::BusMessage: {
 			// A message of type Frame is guaranteed to be a Frame, so we can static cast safely
-			auto frame = std::static_pointer_cast<icsneo::Frame>(message);
+			auto frame = std::static_pointer_cast<icsneo::BusMessage>(message);
 			switch(frame->network.getType()) {
 				case icsneo::Network::Type::CAN: {
 					// A message of type CAN is guaranteed to be a CANMessage, so we can static cast safely
@@ -264,7 +264,7 @@ void printMessage(const std::shared_ptr<icsneo::Message>& message) {
 					break;
 			}
 			break;
-		} // end of icsneo::Message::Type::Frame
+		} // end of icsneo::Message::Type::BusMessage
 		case icsneo::Message::Type::CANErrorCount: {
 			// A message of type CANErrorCount is guaranteed to be a CANErrorCount, so we can static cast safely
 			auto cec = std::static_pointer_cast<icsneo::CANErrorMessage>(message);

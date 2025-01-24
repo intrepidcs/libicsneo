@@ -8,8 +8,10 @@
 
 namespace icsneo {
 
-class I2CMessage : public Frame {
+class I2CMessage : public BusMessage {
 public:
+	const BusMessage::Type getBusType() const final { return BusMessage::Type::I2C; }
+
 	enum class DeviceMode : uint8_t {
 		Target = 0,
 		Controller = 1

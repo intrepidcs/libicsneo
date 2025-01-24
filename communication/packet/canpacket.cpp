@@ -3,7 +3,7 @@
 
 using namespace icsneo;
 
-static std::optional<uint8_t> CAN_DLCToLength(uint8_t length, bool fd) {
+std::optional<uint8_t> icsneo::CAN_DLCToLength(uint8_t length, bool fd) {
 	if (length <= 8)
 		return length;
 
@@ -29,7 +29,7 @@ static std::optional<uint8_t> CAN_DLCToLength(uint8_t length, bool fd) {
 	return std::nullopt;
 }
 
-static std::optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd)
+std::optional<uint8_t> icsneo::CAN_LengthToDLC(size_t dataLength, bool fd)
 {
 	if (dataLength <= 8)
 		return uint8_t(dataLength);

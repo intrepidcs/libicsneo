@@ -14,9 +14,9 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 	neomsg.timestamp = message->timestamp;
 	switch (message->type)
 	{
-	case Message::Type::Frame: {
+	case Message::Type::BusMessage: {
 		neomessage_frame_t& frame = *(neomessage_frame_t*)&neomsg;
-		auto framemsg = std::static_pointer_cast<Frame>(message);
+		auto framemsg = std::static_pointer_cast<BusMessage>(message);
 		const auto netType = framemsg->network.getType();
 
 		frame.netid = (neonetid_t)framemsg->network.getNetID();
@@ -120,7 +120,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 
 std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t* neomessage) {
 	switch((Message::Type)neomessage->messageType) {
-		case Message::Type::Frame: {
+		case Message::Type::BusMessage: {
 			const Network network = ((neomessage_frame_t*)neomessage)->netid;
 			switch(network.getType()) {
 				case Network::Type::CAN:

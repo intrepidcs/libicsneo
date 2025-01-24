@@ -97,7 +97,7 @@ protected:
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
-	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
+	void handleDeviceStatus(const std::shared_ptr<InternalMessage>& message) override {
 		if(message->data.size() < sizeof(radgalaxy2_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);

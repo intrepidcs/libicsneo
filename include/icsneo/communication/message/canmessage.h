@@ -7,8 +7,10 @@
 
 namespace icsneo {
 
-class CANMessage : public Frame {
+class CANMessage : public BusMessage {
 public:
+	const BusMessage::Type getBusType() const final { return BusMessage::Type::CAN; }
+
 	uint32_t arbid;
 	uint8_t dlcOnWire;
 	bool isRemote = false; // Not allowed if CAN FD

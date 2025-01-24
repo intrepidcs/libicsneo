@@ -12,6 +12,8 @@ option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." O
 option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
 option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
+option(LIBICSNEO_BUILD_ICSNEOC2 "Build dynamic C2 library" ON)
+option(LIBICSNEO_BUILD_ICSNEOC2_STATIC "Build static C2 library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC "Build static icsnVC40 compatibility library" ON)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
@@ -28,6 +30,7 @@ option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
 option(LIBICSNEO_ENABLE_FTD3XX "Enable devices which communicate over USB FTD3XX" ON)
 
 option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" OFF)
+option(LIBICSNEO_ENABLE_BINDINGS_RUST "Enable Rust library" OFF)
 
 if(NOT CMAKE_CXX_STANDARD)
 	set(CMAKE_CXX_STANDARD 17)
@@ -334,6 +337,7 @@ endif()
 
 configure_file(api/icsneocpp/buildinfo.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated/buildinfo.h)
 configure_file(api/icsneoc/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
+configure_file(api/icsneoc2/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc2/version.rc)
 
 foreach(EXTINC ${LIBICSNEO_EXTENSION_INCLUDES})
 	message("Including " ${EXTINC})
@@ -461,6 +465,42 @@ if(LIBICSNEO_BUILD_ICSNEOC_STATIC)
 	target_compile_definitions(icsneoc-static PUBLIC ICSNEOC_BUILD_STATIC)
 endif()
 
+if(LIBICSNEO_BUILD_ICSNEOC2)
+	add_library(icsneoc2 SHARED api/icsneoc2/icsneoc2.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc2/version.rc)
+	target_include_directories(icsneoc2
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneoc2 PRIVATE icsneocpp)
+	target_compile_definitions(icsneoc2 
+		PRIVATE 
+			ICSNEO_EXPORTS _CRT_SECURE_NO_WARNINGS
+		PUBLIC
+			ICSNEO_IMPORTS _CRT_SECURE_NO_WARNINGS
+		INTERFACE
+			ICSNEO_IMPORTS _CRT_SECURE_NO_WARNINGS
+	)
+	target_compile_features(icsneoc2 PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	target_compile_definitions(icsneoc2 PUBLIC ICSNEOC2_BUILD_DYNAMIC)
+endif()
+
+if(LIBICSNEO_BUILD_ICSNEOC2_STATIC)
+	add_library(icsneoc2-static STATIC api/icsneoc2/icsneoc2.cpp)
+	target_include_directories(icsneoc2-static
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneoc2-static PUBLIC icsneocpp)
+	target_compile_features(icsneoc2-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	target_compile_definitions(icsneoc2-static PUBLIC ICSNEOC2_BUILD_STATIC)
+endif()
+
 if(LIBICSNEO_BUILD_ICSNEOLEGACY)
 	add_library(icsneolegacy SHARED
 		api/icsneolegacy/icsneolegacy.cpp
@@ -527,10 +567,12 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/livedataencoderdecodertest.cpp
 		test/unit/ringbuffertest.cpp
 		test/unit/apperrordecodertest.cpp
+		test/unit/icsneoc2.cpp
 	)
 
 	target_link_libraries(libicsneo-unit-tests gtest gtest_main)
 	target_link_libraries(libicsneo-unit-tests icsneocpp)
+	target_link_libraries(libicsneo-unit-tests icsneoc2-static)
 
 	target_include_directories(libicsneo-unit-tests PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 

@@ -7,9 +7,9 @@
 
 namespace icsneo {
 
-class NeoReadMemorySDMessage : public RawMessage {
+class NeoReadMemorySDMessage : public InternalMessage {
 public:
-	NeoReadMemorySDMessage() : RawMessage(Message::Type::RawMessage, Network::NetID::NeoMemorySDRead) {}
+	NeoReadMemorySDMessage() : InternalMessage(Message::Type::InternalMessage, Network::NetID::NeoMemorySDRead) {}
 	uint32_t startAddress = 0;
 };
 

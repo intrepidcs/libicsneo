@@ -10,8 +10,10 @@
 
 namespace icsneo {
 
-class FlexRayMessage : public Frame {
+class FlexRayMessage : public BusMessage {
 public:
+	const BusMessage::Type getBusType() const final { return BusMessage::Type::FlexRay; }
+	
 	uint16_t slotid = 0;
 	double tsslen = 0;
 	double framelen = 0;

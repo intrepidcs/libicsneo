@@ -92,8 +92,8 @@ int main()
 
 		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> message)
 																							{
-			if(icsneo::Message::Type::Frame == message->type) {
-				auto frame = std::static_pointer_cast<icsneo::Frame>(message);
+			if(icsneo::Message::Type::BusMessage == message->type) {
+				auto frame = std::static_pointer_cast<icsneo::BusMessage>(message);
 				if(icsneo::Network::Type::MDIO == frame->network.getType()) {
 					auto msg = std::static_pointer_cast<icsneo::MDIOMessage>(message);
 					std::cout << msg->network << " " << ((msg->isTXMsg)? "TX" : "RX") << " frame\n";

@@ -97,7 +97,7 @@ protected:
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
 	}
 
-	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
+	void handleDeviceStatus(const std::shared_ptr<InternalMessage>& message) override {
 		if(message->data.size() < sizeof(radmars_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);

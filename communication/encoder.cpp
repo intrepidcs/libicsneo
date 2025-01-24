@@ -23,8 +23,8 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 	result.clear();
 
 	switch(message->type) {
-		case Message::Type::Frame: {
-			auto frame = std::dynamic_pointer_cast<Frame>(message);
+		case Message::Type::BusMessage: {
+			auto frame = std::dynamic_pointer_cast<BusMessage>(message);
 
 			// Frame uses frame->data as the buffer unless directed otherwise
 			buffer = &frame->data;
@@ -130,8 +130,8 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 
 			break;
 		}
-		case Message::Type::RawMessage: {
-			auto raw = std::dynamic_pointer_cast<RawMessage>(message);
+		case Message::Type::InternalMessage: {
+			auto raw = std::dynamic_pointer_cast<InternalMessage>(message);
 
 			// Raw message uses raw->data as the buffer unless directed otherwise
 			buffer = &raw->data;
@@ -243,7 +243,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 		 * In this case, command 0x06 is SetLEDState.
 		 * This old command type is not really used anywhere else.
 		 */
-		auto canmsg = std::make_shared<RawMessage>(Network::NetID::Device);
+		auto canmsg = std::make_shared<InternalMessage>(Network::NetID::Device);
 		msg = canmsg;
 		if(arguments.empty()) {
 			report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);

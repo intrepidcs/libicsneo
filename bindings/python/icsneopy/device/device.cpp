@@ -28,7 +28,7 @@ void init_device(pybind11::module_& m) {
 		.def("set_polling_message_limit", &Device::setPollingMessageLimit)
 		.def("add_message_callback", &Device::addMessageCallback, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("remove_message_callback", &Device::removeMessageCallback, pybind11::call_guard<pybind11::gil_scoped_release>())
-		.def("transmit", pybind11::overload_cast<std::shared_ptr<Frame>>(&Device::transmit), pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def("transmit", pybind11::overload_cast<std::shared_ptr<BusMessage>>(&Device::transmit), pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("get_supported_rx_networks", &Device::getSupportedRXNetworks, pybind11::return_value_policy::reference)
 		.def("get_supported_tx_networks", &Device::getSupportedTXNetworks, pybind11::return_value_policy::reference)
 		.def("get_rtc", &Device::getRTC, pybind11::call_guard<pybind11::gil_scoped_release>())

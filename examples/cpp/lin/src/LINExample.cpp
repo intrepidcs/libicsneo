@@ -96,8 +96,8 @@ int main() {
 		std::cout << "OK" << std::endl << std::endl;
 
 		auto handler = device->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> message) {
-			if(icsneo::Message::Type::Frame == message->type) {
-				auto frame = std::static_pointer_cast<icsneo::Frame>(message);
+			if(icsneo::Message::Type::BusMessage == message->type) {
+				auto frame = std::static_pointer_cast<icsneo::BusMessage>(message);
 				if(icsneo::Network::Type::LIN == frame->network.getType()) {
 					auto msg = std::static_pointer_cast<icsneo::LINMessage>(message);
 					std::cout << msg->network << " RX frame | ID: 0x" << std::hex << static_cast<int>(msg->ID) << " | ";

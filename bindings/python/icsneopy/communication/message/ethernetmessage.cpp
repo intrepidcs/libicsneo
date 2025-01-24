@@ -11,7 +11,7 @@ void init_ethernetmessage(pybind11::module_& m) {
 		.def("to_string", &MACAddress::toString)
 		.def("__repr__", &MACAddress::toString);
 	
-	pybind11::class_<EthernetMessage, std::shared_ptr<EthernetMessage>, Frame>(m, "EthernetMessage")
+	pybind11::class_<EthernetMessage, std::shared_ptr<EthernetMessage>, BusMessage>(m, "EthernetMessage")
 		.def(pybind11::init())
 		.def_readwrite("preemptionEnabled", &EthernetMessage::preemptionEnabled)
 		.def_readwrite("preemptionFlags", &EthernetMessage::preemptionFlags)

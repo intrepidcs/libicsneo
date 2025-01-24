@@ -31,8 +31,10 @@ struct MACAddress {
 	}
 };
 
-class EthernetMessage : public Frame {
+class EthernetMessage : public BusMessage {
 public:
+	const BusMessage::Type getBusType() const final { return BusMessage::Type::Ethernet; }
+
 	bool preemptionEnabled = false;
 	uint8_t preemptionFlags = 0;
 	std::optional<uint32_t> fcs;

@@ -14,7 +14,9 @@ typedef uint32_t devicetype_t;
 #include <ostream>
 #include <cstdint>
 
-typedef uint32_t devicetype_t;
+#include <icsneo/icsneoc2types.h>
+
+typedef icsneoc2_devicetype_t devicetype_t;
 
 namespace icsneo {
 
@@ -22,65 +24,65 @@ class DeviceType {
 public:
 	// This enum used to be a bitfield, but has since become an enum as we have more than 32 devices
 	// Adding something? Make sure you update the type string and C-compatible defines below!
-	enum Enum : devicetype_t {
-		Unknown = (0x00000000),
-		BLUE = (0x00000001),
-		ECU_AVB = (0x00000002),
-		RADSupermoon = (0x00000003),
-		DW_VCAN = (0x00000004),
-		RADMoon2 = (0x00000005),
-		RADMars = (0x00000006),
-		VCAN4_1 = (0x00000007),
-		FIRE = (0x00000008),
-		RADPluto = (0x00000009),
-		VCAN4_2EL = (0x0000000a),
-		RADIO_CANHUB = (0x0000000b),
-		NEOECU12 = (0x0000000c),
-		OBD2_LCBADGE = (0x0000000d),
-		RADMoonDuo = (0x0000000e),
-		FIRE3 = (0x0000000f),
-		VCAN3 = (0x00000010),
-		RADJupiter = (0x00000011),
-		VCAN4_IND = (0x00000012),
-		RADGigastar = (0x00000013),
-		RED2 = (0x00000014),
-		EtherBADGE = (0x00000016),
-		RAD_A2B = (0x00000017),
-		RADEpsilon = (0x00000018),
-		RADGalaxy2 = (0x00000021),
-		RADMoon3 = (0x00000023),
-		RADComet = (0x00000024),
-		FIRE3_FlexRay = (0x00000025),
-		Connect = (0x00000026),
-		RADComet3 = (0x00000027),
-		RADMoonT1S = (0x00000028),
-		RADGigastar2 = (0x00000029),
-		RED = (0x00000040),
-		ECU = (0x00000080),
-		IEVB = (0x00000100),
-		Pendant = (0x00000200),
-		OBD2_PRO = (0x00000400),
-		ECUChip_UART = (0x00000800),
-		PLASMA = (0x00001000),
-		DONT_REUSE0 = (0x00002000), // Previously FIRE_VNET
-		NEOAnalog = (0x00004000),
-		CT_OBD = (0x00008000),
-		DONT_REUSE1 = (0x00010000), // Previously PLASMA_1_12
-		DONT_REUSE2 = (0x00020000), // Previously PLASMA_1_13
-		ION = (0x00040000),
-		RADStar = (0x00080000),
-		DONT_REUSE3 = (0x00100000), // Previously ION3
-		VCAN4_4 = (0x00200000),
-		VCAN4_2 = (0x00400000),
-		CMProbe = (0x00800000),
-		EEVB = (0x01000000),
-		VCANrf = (0x02000000),
-		FIRE2 = (0x04000000),
-		Flex = (0x08000000),
-		RADGalaxy = (0x10000000),
-		RADStar2 = (0x20000000),
-		VividCAN = (0x40000000),
-		OBD2_SIM = (0x80000000)
+	enum Enum : icsneoc2_devicetype_t {
+		Unknown = icsneoc2_devicetype_unknown,
+		BLUE = icsneoc2_devicetype_blue,
+		ECU_AVB = icsneoc2_devicetype_ecu_avb,
+		RADSupermoon = icsneoc2_devicetype_rad_supermoon,
+		DW_VCAN = icsneoc2_devicetype_dw_vcan,
+		RADMoon2 = icsneoc2_devicetype_rad_moon2,
+		RADMars = icsneoc2_devicetype_rad_mars,
+		VCAN4_1 = icsneoc2_devicetype_vcan41,
+		FIRE = icsneoc2_devicetype_fire,
+		RADPluto = icsneoc2_devicetype_rad_pluto,
+		VCAN4_2EL = icsneoc2_devicetype_vcan42_el,
+		RADIO_CANHUB = icsneoc2_devicetype_radio_canhub,
+		NEOECU12 = icsneoc2_devicetype_neo_ecu12,
+		OBD2_LCBADGE = icsneoc2_devicetype_obd2_lc_badge,
+		RADMoonDuo = icsneoc2_devicetype_rad_moon_duo,
+		FIRE3 = icsneoc2_devicetype_fire3,
+		VCAN3 = icsneoc2_devicetype_vcan3,
+		RADJupiter = icsneoc2_devicetype_rad_jupiter,
+		VCAN4_IND = icsneoc2_devicetype_vcan4_industrial,
+		RADGigastar = icsneoc2_devicetype_rad_gigastar,
+		RED2 = icsneoc2_devicetype_red2,
+		EtherBADGE = icsneoc2_devicetype_etherbadge,
+		RAD_A2B = icsneoc2_devicetype_rad_a2b,
+		RADEpsilon = icsneoc2_devicetype_rad_epsilon,
+		RADGalaxy2 = icsneoc2_devicetype_rad_galaxy2,
+		RADMoon3 = icsneoc2_devicetype_rad_moon3,
+		RADComet = icsneoc2_devicetype_rad_comet,
+		FIRE3_FlexRay = icsneoc2_devicetype_fire3_flexray,
+		Connect = icsneoc2_devicetype_connect,
+		RADComet3 = icsneoc2_devicetype_rad_comet3,
+		RADMoonT1S = icsneoc2_devicetype_rad_moon_t1s,
+		RADGigastar2 = icsneoc2_devicetype_rad_gigastar2,
+		RED = icsneoc2_devicetype_red,
+		ECU = icsneoc2_devicetype_ecu,
+		IEVB = icsneoc2_devicetype_ievb,
+		Pendant = icsneoc2_devicetype_pendant,
+		OBD2_PRO = icsneoc2_devicetype_obd2_pro,
+		ECUChip_UART = icsneoc2_devicetype_ecuchip_uart,
+		PLASMA = icsneoc2_devicetype_plasma,
+		//DONT_REUSE0 = , // Previously FIRE_VNET
+		NEOAnalog = icsneoc2_devicetype_neo_analog,
+		CT_OBD = icsneoc2_devicetype_ct_obd,
+		//DONT_REUSE1 = (0x00010000), // Previously PLASMA_1_12
+		//DONT_REUSE2 = (0x00020000), // Previously PLASMA_1_13
+		ION = icsneoc2_devicetype_ion,
+		RADStar = icsneoc2_devicetype_rad_star,
+		//DONT_REUSE3 = (0x00100000), // Previously ION3
+		VCAN4_4 = icsneoc2_devicetype_vcan44,
+		VCAN4_2 = icsneoc2_devicetype_vcan42,
+		CMProbe = icsneoc2_devicetype_cm_probe,
+		EEVB = icsneoc2_devicetype_eevb,
+		VCANrf = icsneoc2_devicetype_vcan_rf,
+		FIRE2 = icsneoc2_devicetype_fire2,
+		Flex = icsneoc2_devicetype_flex,
+		RADGalaxy = icsneoc2_devicetype_rad_galaxy,
+		RADStar2 = icsneoc2_devicetype_rad_star2,
+		VividCAN = icsneoc2_devicetype_vividcan,
+		OBD2_SIM = icsneoc2_devicetype_obd2_sim
 	};
 
 	/**
@@ -90,9 +92,10 @@ public:
 	 * as the product name may change based on device-specific factors, such as serial
 	 * number.
 	 */
-	static const char* GetGenericProductName(DeviceType::Enum type) {
+	template<typename T>
+	static std::string GetGenericProductName(T deviceType) {
 		// Adding something? Make sure you update DEVICE_TYPE_LONGEST_NAME at the top!
-		switch(type) {
+		switch(static_cast<icsneoc2_devicetype_t>(deviceType)) {
 			case Unknown:
 				return "Unknown";
 			case BLUE:
@@ -201,12 +204,7 @@ public:
 				return "neoVI Connect";
 			case RADGigastar2:
 				return "RAD-Gigastar 2";
-			case DONT_REUSE0:
-			case DONT_REUSE1:
-			case DONT_REUSE2:
-			case DONT_REUSE3:
-				// Intentionally don't use default so that the compiler throws a warning when something is added
-				return "Unknown neoVI";
+			// Intentionally don't use default so that the compiler throws a warning when something is added
 		}
 		return "Unknown neoVI";
 	}
@@ -214,8 +212,8 @@ public:
 	DeviceType() { value = DeviceType::Enum::Unknown; }
 	DeviceType(devicetype_t netid) { value = (DeviceType::Enum)netid; }
 	DeviceType(DeviceType::Enum netid) { value = netid; }
-	DeviceType::Enum getDeviceType() const { return value; }
-	std::string getGenericProductName() const { return GetGenericProductName(getDeviceType()); }
+	icsneoc2_devicetype_t getDeviceType() const { return value; }
+	std::string getGenericProductName() const { return DeviceType::GetGenericProductName(getDeviceType()); }
 	operator devicetype_t() const { return getDeviceType(); }
 
 private:

@@ -25,7 +25,7 @@ public:
 	void onGoOffline() override;
 
 	void handleMessage(const std::shared_ptr<Message>& message) override;
-	bool transmitHook(const std::shared_ptr<Frame>& frame, bool& success) override;
+	bool transmitHook(const std::shared_ptr<BusMessage>& frame, bool& success) override;
 
 	std::shared_ptr<Controller> getController(uint8_t index) const {
 		if(index >= controllers.size())

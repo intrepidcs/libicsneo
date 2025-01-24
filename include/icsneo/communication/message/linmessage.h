@@ -34,8 +34,10 @@ struct LINStatusFlags {
 	bool BreakOnly = false;
 };
 
-class LINMessage : public Frame {
+class LINMessage : public BusMessage {
 public:
+	const BusMessage::Type getBusType() const final { return BusMessage::Type::LIN; }
+	
 	enum class Type : uint8_t {
 		NOT_SET = 0,
 		LIN_COMMANDER_MSG,

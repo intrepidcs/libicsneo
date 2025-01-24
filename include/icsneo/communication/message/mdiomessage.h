@@ -7,8 +7,10 @@
 
 namespace icsneo {
 
-class MDIOMessage : public Frame {
+class MDIOMessage : public BusMessage {
 public:
+	const BusMessage::Type getBusType() const final { return BusMessage::Type::MDIO; }
+	
 	enum class Clause : uint8_t {
 		Clause45 = 0,
 		Clause22 = 1

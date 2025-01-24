@@ -75,7 +75,7 @@ protected:
 
 	size_t getEthernetActivationLineCount() const override { return 1; }
 
-	void handleDeviceStatus(const std::shared_ptr<RawMessage>& message) override {
+	void handleDeviceStatus(const std::shared_ptr<InternalMessage>& message) override {
 		if(message->data.size() < sizeof(valuecan4_2el_status_t))
 			return;
 		std::lock_guard<std::mutex> lk(ioMutex);

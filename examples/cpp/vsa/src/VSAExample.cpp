@@ -16,13 +16,13 @@ void onEvent(std::shared_ptr<icsneo::APIEvent> event) {
 	std::cout << event->describe() << std::endl;
 }
 
-std::vector<std::shared_ptr<icsneo::Frame>> constructRandomFrames(size_t frameCount, MessageType frameType) {
+std::vector<std::shared_ptr<icsneo::BusMessage>> constructRandomFrames(size_t frameCount, MessageType frameType) {
 	static constexpr size_t ClassicCANSize = 8;
 	static constexpr size_t CANFDSize = 64;
 	static constexpr size_t ShortEthSize = 500;
 	static constexpr size_t LongEthSize = 1500;
 
-	std::vector<std::shared_ptr<icsneo::Frame>> frames;
+	std::vector<std::shared_ptr<icsneo::BusMessage>> frames;
 	std::random_device randDev;
 	std::mt19937 randEngine(randDev());
 	std::uniform_int_distribution randByteDist(0,255);
@@ -166,10 +166,10 @@ int main(int argc, char* argv[]) {
 	uint64_t canFrameCount = 0;
 	uint64_t ethFrameCount = 0;
 	rxDevice->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> msg) {
-		if(msg->type != icsneo::Message::Type::Frame) {
+		if(msg->type != icsneo::Message::Type::BusMessage) {
 			return;
 		}
-		const auto frame = std::static_pointer_cast<icsneo::Frame>(msg);
+		const auto frame = std::static_pointer_cast<icsneo::BusMessage>(msg);
 		if(frame->network.getType() == icsneo::Network::Type::CAN) {
 			++canFrameCount;
 		} else if(frame->network.getType() == icsneo::Network::Type::Ethernet) {
@@ -200,7 +200,7 @@ int main(int argc, char* argv[]) {
 
 	const uint8_t NumFrameTypes = 4;
 	const size_t FrameCountPerType = 2500;
-	std::vector<std::shared_ptr<icsneo::Frame>> frames;
+	std::vector<std::shared_ptr<icsneo::BusMessage>> frames;
 	for(uint8_t i = 0; i < NumFrameTypes; i++) {
 		std::cout << "info: transmitting " << FrameCountPerType << " random " << MessageTypeLabels[i] << " frames" << std::endl;
 		auto tempFrames = constructRandomFrames(FrameCountPerType, static_cast<MessageType>(i));
@@ -216,10 +216,10 @@ int main(int argc, char* argv[]) {
 
 	size_t currentMessage = 0;
 	rxDevice->addMessageCallback(std::make_shared<icsneo::MessageCallback>([&](std::shared_ptr<icsneo::Message> msg) {
-		if(msg->type != icsneo::Message::Type::Frame) {
+		if(msg->type != icsneo::Message::Type::BusMessage) {
 			return;
 		}
-		auto frame = std::static_pointer_cast<icsneo::Frame>(msg);
+		auto frame = std::static_pointer_cast<icsneo::BusMessage>(msg);
 		if(frames[currentMessage]->data == frame->data) {
 			currentMessage++;
 		}

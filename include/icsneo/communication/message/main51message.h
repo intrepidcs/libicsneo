@@ -8,9 +8,9 @@
 
 namespace icsneo {
 
-class Main51Message : public RawMessage {
+class Main51Message : public InternalMessage {
 public:
-	Main51Message() : RawMessage(Message::Type::Main51, Network::NetID::Main51) {}
+	Main51Message() : InternalMessage(Message::Type::Main51, Network::NetID::Main51) {}
 	Command command = Command(0);
 	bool forceShortFormat = false; // Necessary for EnableNetworkCom and EnableNetworkComEx
 };
