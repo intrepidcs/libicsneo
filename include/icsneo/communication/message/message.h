@@ -17,6 +17,7 @@ public:
 		Frame = 0,
 
 		CANErrorCount = 0x100,
+		CANError = 0x100,
 
 		LINHeaderOnly = 0x200,
 		LINBreak = 0x201,

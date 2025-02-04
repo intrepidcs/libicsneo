@@ -11,6 +11,7 @@ void init_message(pybind11::module_& m) {
 	pybind11::enum_<Message::Type>(message, "Type")
 		.value("Frame", Message::Type::Frame)
 		.value("CANErrorCount", Message::Type::CANErrorCount)
+		.value("CANError", Message::Type::CANError)
 		.value("LINHeaderOnly", Message::Type::LINHeaderOnly)
 		.value("LINBreak", Message::Type::LINBreak)
 		.value("Invalid", Message::Type::Invalid)

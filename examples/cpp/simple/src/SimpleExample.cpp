@@ -252,7 +252,7 @@ int main() {
 				} // end of icsneo::Message::Type::Frame
 				case icsneo::Message::Type::CANErrorCount: {
 					// A message of type CANErrorCount is guaranteed to be a CANErrorCount, so we can static cast safely
-					auto cec = std::static_pointer_cast<icsneo::CANErrorCountMessage>(message);
+					auto cec = std::static_pointer_cast<icsneo::CANErrorMessage>(message);
 
 					// Print the error counts
 					std::cout << "\t\t" << cec->network << " error counts changed, REC=" << std::to_string(cec->receiveErrorCount)

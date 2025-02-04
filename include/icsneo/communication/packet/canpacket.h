@@ -13,6 +13,7 @@ namespace icsneo {
 
 typedef uint16_t icscm_bitfield;
 
+#pragma pack(push,2)
 struct HardwareCANPacket {
 	static std::shared_ptr<Message> DecodeToMessage(const std::vector<uint8_t>& bytestream);
 	static bool EncodeFromMessage(const CANMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t& report);
@@ -50,6 +51,28 @@ struct HardwareCANPacket {
 		uint64_t IsExtended : 1;
 	} timestamp;
 };
+struct HardwareCANErrorPacket {
+	uint8_t error_code;
+	uint8_t brs_data_error_code;
+
+	uint16_t reserved;
+
+	uint16_t DLC : 4;
+	uint16_t : 4;
+	uint16_t ERROR_INDICATOR : 1;
+	uint16_t : 7;
+
+	uint8_t flags;
+	uint8_t REC;
+	uint8_t TEC;
+
+	static bool GetErrorWarn(uint8_t flags) { return flags & 0b0000'0001; }
+	static bool GetErrorPassive(uint8_t flags) { return flags & 0b0000'1000; }
+	static bool GetBusOff(uint8_t flags) { return flags & 0b0010'0000; }
+};
+
+
+#pragma pack(pop)
 
 }
 

@@ -1,5 +1,5 @@
 #include "icsneo/communication/packet/canpacket.h"
-#include "icsneo/communication/message/canerrorcountmessage.h"
+#include "icsneo/communication/message/canerrormessage.h"
 
 using namespace icsneo;
 
@@ -53,16 +53,18 @@ static std::optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd)
 
 	return std::nullopt;
 }
-
 std::shared_ptr<Message> HardwareCANPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
 	const HardwareCANPacket* data = (const HardwareCANPacket*)bytestream.data();
-
-	if(data->dlc.RB1) { // Change counts reporting
-
-		const bool busOff = data->data[0] & 0b00100000;
-
-		auto msg = std::make_shared<CANErrorCountMessage>(data->data[2], data->data[1], busOff);
-
+	const HardwareCANErrorPacket* errPacket = (const HardwareCANErrorPacket*)bytestream.data();
+	if(errPacket->ERROR_INDICATOR) {
+		auto msg = std::make_shared<CANErrorMessage>();
+		msg->receiveErrorCount = errPacket->REC;
+		msg->transmitErrorCount = errPacket->TEC;
+		msg->errorWarn = HardwareCANErrorPacket::GetErrorWarn(errPacket->flags);
+		msg->errorPassive = HardwareCANErrorPacket::GetErrorPassive(errPacket->flags);
+		msg->busOff = HardwareCANErrorPacket::GetBusOff(errPacket->flags);
+		msg->errorCode = (CANErrorCode)errPacket->error_code;
+		msg->dataErrorCode = (CANErrorCode)errPacket->brs_data_error_code;
 		// This timestamp is raw off the device (in timestampResolution increments)
 		// Decoder will fix as it has information about the timestampResolution increments
 		msg->timestamp = data->timestamp.TS;

@@ -1,7 +1,7 @@
 #include "icsneo/communication/message/neomessage.h"
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/message/ethernetmessage.h"
-#include "icsneo/communication/message/canerrorcountmessage.h"
+#include "icsneo/communication/message/canerrormessage.h"
 #include "icsneo/communication/message/linmessage.h"
 
 using namespace icsneo;
@@ -104,7 +104,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 	}
 	case Message::Type::CANErrorCount: {
 		neomessage_can_error_t& canerror = *(neomessage_can_error_t*)&neomsg;
-		auto canerrormsg = std::static_pointer_cast<CANErrorCountMessage>(message);
+		auto canerrormsg = std::static_pointer_cast<CANErrorMessage>(message);
 		canerror.transmitErrorCount = canerrormsg->transmitErrorCount;
 		canerror.receiveErrorCount = canerrormsg->receiveErrorCount;
 		canerror.status.canBusOff = canerrormsg->busOff;

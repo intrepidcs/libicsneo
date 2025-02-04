@@ -814,12 +814,7 @@ std::shared_ptr<HardwareInfo> Device::getHardwareInfo(std::chrono::milliseconds 
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return nullptr;
 	}
-
-	if(!isOnline()) {
-		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
-		return nullptr;
-	}
-
+	
 	auto filter = std::make_shared<MessageFilter>(Message::Type::HardwareInfo);
 
 	auto response = com->waitForMessageSync([this]() {

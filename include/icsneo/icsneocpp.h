@@ -14,7 +14,7 @@
 #include "icsneo/communication/message/ethernetmessage.h"
 #include "icsneo/communication/message/flexray/flexraymessage.h"
 #include "icsneo/communication/message/iso9141message.h"
-#include "icsneo/communication/message/canerrorcountmessage.h"
+#include "icsneo/communication/message/canerrormessage.h"
 #include "icsneo/communication/message/ethphymessage.h"
 #include "icsneo/communication/message/i2cmessage.h"
 #include "icsneo/communication/message/a2bmessage.h"

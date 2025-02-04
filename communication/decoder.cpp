@@ -3,7 +3,7 @@
 #include "icsneo/communication/message/serialnumbermessage.h"
 #include "icsneo/communication/message/resetstatusmessage.h"
 #include "icsneo/communication/message/readsettingsmessage.h"
-#include "icsneo/communication/message/canerrorcountmessage.h"
+#include "icsneo/communication/message/canerrormessage.h"
 #include "icsneo/communication/message/neoreadmemorysdmessage.h"
 #include "icsneo/communication/message/flashmemorymessage.h"
 #include "icsneo/communication/message/extendedresponsemessage.h"
@@ -95,7 +95,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 					break;
 				}
 				case Message::Type::CANErrorCount: {
-					CANErrorCountMessage& can = *static_cast<CANErrorCountMessage*>(result.get());
+					CANErrorMessage& can = *static_cast<CANErrorMessage*>(result.get());
 					can.network = packet->network;
 					break;
 				}
