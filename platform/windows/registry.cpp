@@ -1,12 +1,11 @@
 #include "icsneo/platform/windows/registry.h"
+#include "icsneo/platform/windows/strings.h"
 #include "icsneo/platform/windows.h"
 #include <codecvt>
 #include <vector>
 #include <locale>
 
 using namespace icsneo;
-
-static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
 class Key {
 public:
@@ -95,8 +94,8 @@ bool Registry::Get(std::wstring path, std::wstring key, std::wstring& value) {
 
 bool Registry::Get(std::string path, std::string key, std::string& value) {
 	std::wstring wvalue;
-	bool ret = Get(converter.from_bytes(path), converter.from_bytes(key), wvalue);
-	value = converter.to_bytes(wvalue);
+	bool ret = Get(convertStringToWide(path), convertStringToWide(key), wvalue);
+	value = convertWideString(wvalue);
 	return ret;
 }
 
@@ -116,5 +115,5 @@ bool Registry::Get(std::wstring path, std::wstring key, uint32_t& value) {
 }
 
 bool Registry::Get(std::string path, std::string key, uint32_t& value) {
-	return Get(converter.from_bytes(path), converter.from_bytes(key), value);
+	return Get(convertStringToWide(path), convertStringToWide(key), value);
 }

@@ -1,4 +1,5 @@
 #include "icsneo/platform/windows/ftdi.h"
+#include "icsneo/platform/windows/strings.h"
 #include "icsneo/platform/ftdi.h"
 #include "icsneo/platform/registry.h"
 #include "icsneo/device/founddevice.h"
@@ -15,7 +16,6 @@
 
 using namespace icsneo;
 
-static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 static const std::wstring DRIVER_SERVICES_REG_KEY = L"SYSTEM\\CurrentControlSet\\services\\";
 static const std::wstring ALL_ENUM_REG_KEY = L"SYSTEM\\CurrentControlSet\\Enum\\";
 static constexpr unsigned int RETRY_TIMES = 5;
@@ -95,7 +95,7 @@ void VCP::Find(std::vector<FoundDevice>& found, std::vector<std::wstring> driver
 			if(!device.productId)
 				continue;
 
-			std::string serial = converter.to_bytes(oss.str());
+			std::string serial = convertWideString(oss.str());
 			// The serial number should not have a path slash in it. If it does, that means we don't have the real serial.
 			if(serial.find_first_of('\\') != std::string::npos) {
 				// The serial number was not in the first serenum key where we expected it.
@@ -142,12 +142,12 @@ void VCP::Find(std::vector<FoundDevice>& found, std::vector<std::wstring> driver
 					// This is a device with characters in the serial number
 					if(correctSerial.size() != 6)
 						continue;
-					serial = converter.to_bytes(correctSerial);
+					serial = convertWideString(correctSerial);
 				}
 				else {
 					std::wstringstream soss;
 					soss << sn;
-					serial = converter.to_bytes(soss.str());
+					serial = convertWideString(soss.str());
 				}
 
 				if(serial.find_first_of('\\') != std::string::npos)

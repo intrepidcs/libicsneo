@@ -2,6 +2,7 @@
 #include <winsock2.h>
 
 #include "icsneo/platform/windows/pcap.h"
+#include "icsneo/platform/windows/strings.h"
 #include "icsneo/communication/network.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/ethernetpacketizer.h"
@@ -11,14 +12,12 @@
 #include <pcap.h>
 #include <iphlpapi.h>
 #pragma comment(lib, "IPHLPAPI.lib")
-#include <codecvt>
 #include <chrono>
 #include <iostream>
 #include <locale>
 
 using namespace icsneo;
 
-static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
 std::vector<PCAP::NetworkInterface> PCAP::knownInterfaces;
 
@@ -80,8 +79,8 @@ void PCAP::Find(std::vector<FoundDevice>& found) {
 
 			memcpy(iface.macAddress, aa->PhysicalAddress, sizeof(iface.macAddress));
 			iface.nameFromWin32API = aa->AdapterName;
-			iface.descriptionFromWin32API = converter.to_bytes(aa->Description);
-			iface.friendlyNameFromWin32API = converter.to_bytes(aa->FriendlyName);
+			iface.descriptionFromWin32API = convertWideString(aa->Description);
+			iface.friendlyNameFromWin32API = convertWideString(aa->FriendlyName);
 			if(iface.descriptionFromWin32API.find("LAN9512/LAN9514") != std::string::npos) {
 				// This is an Ethernet EVB device
 				iface.fullName = "Intrepid Ethernet EVB ( " + iface.friendlyNameFromWin32API + " : " + iface.descriptionFromWin32API + " )";
@@ -187,7 +186,7 @@ bool PCAP::IsHandleValid(neodevice_handle_t handle) {
 	return (netifIndex < knownInterfaces.size());
 }
 
-PCAP::PCAP(const device_eventhandler_t& err, neodevice_t& forDevice) : Driver(err), device(forDevice), pcap(PCAPDLL::getInstance()), ethPacketizer(err) {
+PCAP::PCAP(const device_eventhandler_t& eventHandler, neodevice_t& forDevice) : Driver(eventHandler), pcap(PCAPDLL::getInstance()), device(forDevice), ethPacketizer(eventHandler) {
 	if(IsHandleValid(device.handle)) {
 		iface = knownInterfaces[(device.handle >> 24) & 0xFF];
 		iface.fp = nullptr; // We're going to open our own connection to the interface. This should already be nullptr but just in case.
