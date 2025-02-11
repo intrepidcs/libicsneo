@@ -1,7 +1,18 @@
 cmake_minimum_required(VERSION 3.20)
 
 set(PYBIND11_FINDPYTHON ON)
-find_package(pybind11 CONFIG REQUIRED)
+
+if(PYBIND11_ROOT)
+    find_package(pybind11 CONFIG REQUIRED)
+else()
+    include(FetchContent)
+    FetchContent_Declare(
+        pybind11
+        GIT_REPOSITORY https://github.com/pybind/pybind11.git
+        GIT_TAG v2.13.6
+    )
+    FetchContent_MakeAvailable(pybind11)
+endif()
 
 pybind11_add_module(icsneopy
     icsneopy/api/event.cpp
@@ -28,6 +39,10 @@ target_link_libraries(icsneopy PRIVATE icsneocpp)
 
 install(TARGETS icsneopy LIBRARY DESTINATION icsneopy)
 
-add_custom_command(TARGET icsneopy POST_BUILD COMMAND stubgen -m icsneopy -o .)
+find_program(STUBGEN_EXE stubgen)
+if(STUBGEN_EXE)
+    add_custom_command(TARGET icsneopy POST_BUILD COMMAND stubgen -m icsneopy -o .)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsneopy.pyi py.typed DESTINATION icsneopy)
+endif()
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsneopy.pyi __init__.py py.typed DESTINATION icsneopy)
+install(FILES __init__.py DESTINATION icsneopy)
