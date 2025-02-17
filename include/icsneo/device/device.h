@@ -40,6 +40,7 @@
 #include "icsneo/communication/message/extendeddatamessage.h"
 #include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/message/tc10statusmessage.h"
+#include "icsneo/communication/message/macsecmessage.h"
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
 #include "icsneo/communication/packet/livedatapacket.h"
 #include "icsneo/device/extensions/flexray/controller.h"
@@ -624,6 +625,7 @@ public:
 
 	std::optional<size_t> getGenericBinarySize(uint16_t binaryIndex);
 	bool readBinaryFile(std::ostream& stream, uint16_t binaryIndex);
+	bool writeBinaryFile(const std::vector<uint8_t>& in, uint16_t binaryIndex);
 	bool subscribeLiveData(std::shared_ptr<LiveDataCommandMessage> message);
 	bool unsubscribeLiveData(const LiveDataHandle& handle);
 	bool clearAllLiveData();
@@ -737,6 +739,9 @@ public:
 
 	std::optional<TC10StatusMessage> getTC10Status(Network::NetID network);
 	std::optional<GPTPStatus> getGPTPStatus(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
+
+	/* MACsec support */
+	virtual bool writeMACsecConfig(const MACsecMessage& message, uint16_t binaryIndex);
 
 protected:
 	bool online = false;

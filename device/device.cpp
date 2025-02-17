@@ -2054,6 +2054,40 @@ bool Device::readBinaryFile(std::ostream& stream, uint16_t binaryIndex) {
 	return true;
 }
 
+bool Device::writeBinaryFile(const std::vector<uint8_t>& in, uint16_t binaryIndex)
+{
+	auto timeout = std::chrono::milliseconds(100);
+
+	auto size = in.size();
+
+	std::vector<uint8_t> arguments(sizeof(ExtendedDataMessage::ExtendedDataHeader) + ExtendedDataMessage::MaxExtendedDataBufferSize);
+	ExtendedDataMessage::ExtendedDataHeader& parameters = *reinterpret_cast<ExtendedDataMessage::ExtendedDataHeader*>(arguments.data());
+
+	auto filter = std::make_shared<MessageFilter>(Network::NetID::ExtendedData);
+
+	for (size_t offset = 0; offset < size; offset += ExtendedDataMessage::MaxExtendedDataBufferSize)
+	{
+		parameters.subCommand = ExtendedDataSubCommand::GenericBinaryWrite;
+		parameters.userValue = static_cast<uint32_t>(binaryIndex);
+		parameters.offset = static_cast<uint32_t>(offset);
+		parameters.length = static_cast<uint32_t>(std::min(ExtendedDataMessage::MaxExtendedDataBufferSize, size - offset));
+		(void)memcpy(&arguments[sizeof(ExtendedDataMessage::ExtendedDataHeader)], &in[offset], parameters.length);
+
+		std::shared_ptr<Message> response = com->waitForMessageSync(
+			[this, arguments]() {
+				return com->sendCommand(Command::ExtendedData, arguments);
+			},
+			filter,
+			timeout
+		);
+		if (!response) {
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+			return false;
+		}
+	}
+	return true;
+}
+
 bool Device::subscribeLiveData(std::shared_ptr<LiveDataCommandMessage> message) {
 	if(!supportsLiveData()) {
 		report(APIEvent::Type::LiveDataNotSupported, APIEvent::Severity::Error);
@@ -3368,4 +3402,13 @@ std::optional<GPTPStatus> Device::getGPTPStatus(std::chrono::milliseconds timeou
 	}
 
 	return *retMsg;
+}
+
+bool Device::writeMACsecConfig(const MACsecMessage& message, uint16_t binaryIndex)
+{
+	std::vector<uint8_t> raw;
+
+	message.EncodeFromMessage(raw, report);
+
+	return writeBinaryFile(raw, binaryIndex);
 }

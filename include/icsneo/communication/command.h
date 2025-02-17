@@ -73,6 +73,7 @@ enum class ExtendedResponse : int32_t {
 
 enum class ExtendedDataSubCommand : uint32_t {
 	GenericBinaryRead = 13,
+	GenericBinaryWrite = 14,
 };
 
 #pragma pack(push,1)

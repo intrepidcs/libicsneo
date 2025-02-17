@@ -249,6 +249,7 @@ set(SRC_FILES
 	communication/message/tc10statusmessage.cpp
 	communication/message/gptpstatusmessage.cpp
 	communication/message/ethernetstatusmessage.cpp
+	communication/message/macsecmessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/a2bpacket.cpp
@@ -276,6 +277,7 @@ set(SRC_FILES
 	communication/driver.cpp
 	communication/livedata.cpp
 	communication/ringbuffer.cpp
+	communication/crc32.cpp
 	device/extensions/flexray/extension.cpp
 	device/extensions/flexray/controller.cpp
 	device/idevicesettings.cpp

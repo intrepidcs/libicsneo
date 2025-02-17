@@ -440,6 +440,7 @@ build python/linux/amd64:
     DOCKER_HOST: unix:///var/run/docker.sock
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: unix:///var/run/docker.sock
     CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install:/project/libusb/install
   script:
     - curl -sSL https://get.docker.com/ | sh
