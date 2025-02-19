@@ -37,28 +37,27 @@ bool Communication::open() {
 }
 
 void Communication::spawnThreads() {
+	closing = false;
 	readTaskThread = std::thread(&Communication::readTask, this);
 }
 
 void Communication::joinThreads() {
-	closing = true;
-
 	if(pauseReadTask) {
 		resumeReads();
 	}
 
+	closing = true;
 	if(readTaskThread.joinable())
 		readTaskThread.join();
-	closing = false;
 }
 
 bool Communication::close() {
-	joinThreads();
-
 	if(!isOpen() && !isDisconnected()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return false;
 	}
+
+	joinThreads();
 
 	return driver->close();
 }

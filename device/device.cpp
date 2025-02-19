@@ -88,6 +88,10 @@ Device::~Device() {
 		disableMessagePolling();
 	if(isOpen())
 		close();
+	if(heartbeatThread.joinable()) {
+		stopHeartbeatThread = true;		
+		heartbeatThread.join();
+	}
 }
 
 uint16_t Device::getTimestampResolution() const {
@@ -245,6 +249,12 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		handleInternalMessage(message);
 	}));
 
+	// Clear the previous heartbeat thread, in case open() was called on this instance more than once
+	if(heartbeatThread.joinable())
+		heartbeatThread.join();
+
+	stopHeartbeatThread = false;
+
 	heartbeatThread = std::thread([this]() {
 		EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
@@ -270,12 +280,12 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		}
 
 		while(!stopHeartbeatThread) {
-			// Wait for 110ms for a possible heartbeat
-			std::this_thread::sleep_for(std::chrono::milliseconds(110));
 			std::unique_lock<std::mutex> recvLk(receivedMessageMutex);
-			if(receivedMessage) {
+			// Wait for 110ms for a possible heartbeat
+			if(heartbeatCV.wait_for(recvLk, std::chrono::milliseconds(110), [&]() { return receivedMessage; })) {
 				receivedMessage = false;
-			} else {
+			} else if(!stopHeartbeatThread) { // Add this condition here in case the thread was stopped while waiting for the last message
+
 				// Some communication, such as the bootloader and extractor interfaces, must
 				// redirect the input stream from the device as it will no longer be in the
 				// packet format we expect here. As a result, status updates will not reach
@@ -284,9 +294,8 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 				// otherwise quiet stream. This lock makes sure suppressDisconnects() will
 				// block until we've either gotten our status update or disconnected from
 				// the device.
-				std::lock_guard<std::mutex> lk(heartbeatMutex);
-				if(heartbeatSuppressed())
-					continue;
+				std::unique_lock<std::mutex> lk(heartbeatMutex);
+				if(heartbeatSuppressed()) continue;
 
 				// No heartbeat received, request a status
 				com->sendCommand(Command::RequestStatusUpdate);
@@ -296,8 +305,8 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 					receivedMessage = false;
 				} else {
 					if(!stopHeartbeatThread && !isDisconnected()) {
+						close();
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
-						com->driver->close();
 					}
 					break;
 				}
@@ -378,10 +387,6 @@ bool Device::close() {
 		com->removeMessageCallback(internalHandlerCallbackID);
 
 	internalHandlerCallbackID = 0;
-
-	if(heartbeatThread.joinable())
-		heartbeatThread.join();
-	stopHeartbeatThread = false;
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onDeviceClose(); return true; });
 	return com->close();
@@ -814,7 +819,6 @@ std::shared_ptr<HardwareInfo> Device::getHardwareInfo(std::chrono::milliseconds 
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
 		return nullptr;
 	}
-	
 	auto filter = std::make_shared<MessageFilter>(Message::Type::HardwareInfo);
 
 	auto response = com->waitForMessageSync([this]() {
@@ -1694,7 +1698,10 @@ void Device::stopScriptStatusThreadIfNecessary(std::unique_lock<std::mutex> lk)
 Lifetime Device::suppressDisconnects() {
 	std::lock_guard<std::mutex> lk(heartbeatMutex);
 	heartbeatSuppressedByUser++;
-	return Lifetime([this] { std::lock_guard<std::mutex> lk2(heartbeatMutex); heartbeatSuppressedByUser--; });
+	return Lifetime([this] { 
+		std::lock_guard<std::mutex> lk2(heartbeatMutex);
+		heartbeatSuppressedByUser--;
+	});
 }
 
 void Device::addExtension(std::shared_ptr<DeviceExtension>&& extension) {
@@ -1984,11 +1991,6 @@ std::optional<size_t> Device::getGenericBinarySize(uint16_t binaryIndex) {
 	
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return std::nullopt;
-	}
-
-	if(!isOnline()) {
-		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
 
