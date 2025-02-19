@@ -31,8 +31,10 @@ pybind11_add_module(icsneopy
     icsneopy/communication/message/gptpstatusmessage.cpp
     icsneopy/communication/message/ethernetstatusmessage.cpp
     icsneopy/communication/message/macsecmessage.cpp
+    icsneopy/communication/message/scriptstatusmessage.cpp
     icsneopy/communication/message/callback/messagecallback.cpp
     icsneopy/communication/message/filter/messagefilter.cpp
+    icsneopy/disk/diskdriver.cpp
     icsneopy/device/device.cpp
     icsneopy/icsneocpp.cpp
 )

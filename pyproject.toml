@@ -48,3 +48,6 @@ local_scheme = "no-local-version"
 LIBICSNEO_ENABLE_BINDINGS_PYTHON = true
 LIBICSNEO_ENABLE_TCP = true
 CMAKE_MSVC_RUNTIME_LIBRARY = "MultiThreaded"
+
+[tool.cibuildwheel]
+skip = "pp*"
