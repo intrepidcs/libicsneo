@@ -7,7 +7,6 @@ if(POLICY CMP0135)
 endif()
 
 option(LIBICSNEO_BUILD_UNIT_TESTS "Build unit tests." OFF)
-option(LIBICSNEO_BUILD_SYSTEM_TESTS "Build system tests." OFF)
 option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." OFF)
 option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
 option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
@@ -541,22 +540,6 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 	enable_testing()
 
 	add_test(NAME libicsneo-unit-test-suite COMMAND libicsneo-unit-tests)
-endif()
-
-if(LIBICSNEO_BUILD_SYSTEM_TESTS)
-	if(DEFINED ENV{LIBICSNEO_SYSTEM_TESTS})
-		include(FetchContent)
-		file(MAKE_DIRECTORY test/system)
-		FetchContent_Declare(
-			SystemTests
-			GIT_REPOSITORY $ENV{LIBICSNEO_SYSTEM_TESTS}
-			GIT_TAG main
-			SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test/system
-		)
-		FetchContent_MakeAvailable(SystemTests)
-	else()
-		message("System test repo not defined!")
-	endif()
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
