@@ -6,8 +6,14 @@
 
 namespace icsneo {
 
+// binding namespace workaround to avoid submodules
+struct DiskNamespace {
+	using Access = icsneo::Disk::Access;
+	using MemoryType = icsneo::Disk::MemoryType;
+};
+
 void init_diskdriver(pybind11::module_& m) {
-	auto disk = m.def_submodule("disk");
+	pybind11::class_<DiskNamespace> disk(m, "Disk");
 	pybind11::enum_<Disk::Access>(disk, "Access")
 		.value("None", Disk::Access::None)
 		.value("EntireCard", Disk::Access::EntireCard)

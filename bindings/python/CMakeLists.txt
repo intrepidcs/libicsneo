@@ -44,7 +44,7 @@ install(TARGETS icsneopy LIBRARY DESTINATION icsneopy)
 
 find_program(STUBGEN_EXE stubgen)
 if(STUBGEN_EXE)
-    add_custom_command(TARGET icsneopy POST_BUILD COMMAND stubgen -m icsneopy -o .)
+    add_custom_command(TARGET icsneopy POST_BUILD COMMAND stubgen -v -p icsneopy -o .)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsneopy.pyi py.typed DESTINATION icsneopy)
 endif()
 
