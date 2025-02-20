@@ -408,6 +408,8 @@ push github:
   image: alpine:latest
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: delayed
+      start_in: 10 minutes
   dependencies:
     - deploy python/pypi
   needs:
