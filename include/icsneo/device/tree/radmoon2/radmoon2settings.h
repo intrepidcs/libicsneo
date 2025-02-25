@@ -27,6 +27,14 @@ typedef struct {
 	uint16_t pc_com_mode;
 	TIMESYNC_ICSHARDWARE_SETTINGS timeSyncSettings;
 	uint16_t hwComLatencyTestEn;
+	struct
+	{
+		uint16_t enableLatencyTest : 1;
+		uint16_t reserved : 15;
+	} flags;
+	RAD_GPTP_SETTINGS gPTP;
+	uint64_t network_enables_5;
+
 } radmoon2_settings_t;
 #pragma pack(pop)
 

@@ -27,6 +27,7 @@ typedef struct {
 		uint16_t enableLatencyTest : 1;
 		uint16_t reserved : 15;
 	} flags; // 2
+	uint64_t network_enables_5;
 } radmoon3_settings_t;
 #pragma pack(pop)
 
