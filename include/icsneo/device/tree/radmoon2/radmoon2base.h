@@ -48,23 +48,18 @@ public:
 		return Device::getProductName();
 	}
 
-	// RADMoon 2 does not go online, you can only set settings and
-	// view PHY information (when supported)
 	bool goOnline() override {
-		report(APIEvent::Type::OnlineNotSupported, APIEvent::Severity::Error);
-		return false;
-	}
-
-	bool goOffline() override {
-		report(APIEvent::Type::OnlineNotSupported, APIEvent::Severity::Error);
-		return false;
+		if(!com->sendCommand(Command::EnableNetworkCommunication, true))
+			return false;
+		
+		updateLEDState();
+		online = true;
+		return true;
 	}
 
 	bool getEthPhyRegControlSupported() const override { return true; }
 
 	virtual uint8_t getPhyAddrOrPort() const = 0;
-
-	bool isOnlineSupported() const override { return false; }
 
 protected:
 	using Device::Device;
