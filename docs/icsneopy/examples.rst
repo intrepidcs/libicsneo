@@ -128,3 +128,36 @@ TC10
       print(f"post wake status: wake: {status.wakeStatus}, sleep: {status.sleepStatus}")
    else:
       print(f"{device} does not support TC10")
+
+DoIP Ethernet Activation
+========================
+
+.. code-block:: python
+
+   import icsneopy
+   import time
+
+   devs = icsneopy.find_all_devices()
+
+   dev = devs[0]
+
+   dev.open()
+
+   # the device must be online for digital I/O
+   dev.go_online()
+
+   print(f"initial state: {dev.get_digital_io(icsneopy.IO.EthernetActivation, 1)}")
+
+   dev.set_digital_io(icsneopy.IO.EthernetActivation, 1, True)
+
+   print(f"after setting to true: {dev.get_digital_io(icsneopy.IO.EthernetActivation, 1)}")
+
+   # allow for observing the change
+   time.sleep(2)
+
+   dev.set_digital_io(icsneopy.IO.EthernetActivation, 1, False)
+
+   print(f"after setting to false: {dev.get_digital_io(icsneopy.IO.EthernetActivation, 1)}")
+
+   # allow for observing the change
+   time.sleep(2)

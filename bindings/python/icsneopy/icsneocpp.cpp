@@ -10,6 +10,7 @@ void init_event(pybind11::module_&);
 void init_eventcallback(pybind11::module_&);
 void init_eventmanager(pybind11::module_&);
 void init_network(pybind11::module_&);
+void init_io(pybind11::module_&);
 void init_devicetype(pybind11::module_&);
 void init_message(pybind11::module_&);
 void init_canmessage(pybind11::module_&);
@@ -39,6 +40,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_version(m);
 	init_devicetype(m);
 	init_network(m);
+	init_io(m);
 	init_message(m);
 	init_canmessage(m);
 	init_canerrormessage(m);

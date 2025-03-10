@@ -21,6 +21,7 @@ pybind11_add_module(icsneopy
     icsneopy/api/version.cpp
     icsneopy/device/devicetype.cpp
     icsneopy/communication/network.cpp
+    icsneopy/communication/io.cpp
     icsneopy/communication/message/message.cpp
     icsneopy/communication/message/canmessage.cpp
     icsneopy/communication/message/canerrormessage.cpp
