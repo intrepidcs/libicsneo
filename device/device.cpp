@@ -362,7 +362,7 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		if(auto compVersions = com->getComponentVersionsSync())
 			componentVersions = std::move(*compVersions);
 		else
-			return getCommunicationNotEstablishedError();
+			report(APIEvent::Type::NotSupported, APIEvent::Severity::EventWarning); // outdated firmware
 	}
 
 	return APIEvent::Type::NoErrorFound;
