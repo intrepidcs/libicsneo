@@ -126,13 +126,13 @@ public:
 		) {}
 
 	StreamOutput(const char* filename) : 
-		MessageCallback([](std::shared_ptr<Message> msg) {}),
+		MessageCallback([](std::shared_ptr<Message>) {}),
 		stream(
 			new std::ofstream(filename, std::ios::binary),
 			std::default_delete<std::ostream>()
 		) {}
 
-	StreamOutput(std::ostream& os) : MessageCallback([](std::shared_ptr<Message> msg) {}), stream(&os, [](std::ostream*){}) {}
+	StreamOutput(std::ostream& os) : MessageCallback([](std::shared_ptr<Message>) {}), stream(&os, [](std::ostream*){}) {}
 
 protected:
 	std::unique_ptr<std::ostream, std::function<void(std::ostream*)>> stream;
