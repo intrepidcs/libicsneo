@@ -31,7 +31,7 @@ std::shared_ptr<Message> HardwareLINPacket::DecodeToMessage(const std::vector<ui
 	auto isChecksumInvalid = [&]() -> bool {
 		/* messages with no data have no checksum (e.g. header only) */
 		if(!msg->data.size())
-			return true;
+			return false;
 
 		uint8_t checkSum = (8 > numDataBytes) ? *(dataStart + numDataBytes) : packet->CoreMiniBitsLIN.LINByte9;
 		LINMessage::calcChecksum(*msg);
