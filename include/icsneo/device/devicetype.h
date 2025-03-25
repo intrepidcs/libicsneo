@@ -47,6 +47,7 @@ public:
 		EtherBADGE = (0x00000016),
 		RAD_A2B = (0x00000017),
 		RADEpsilon = (0x00000018),
+		RADEpsilonXL = (0x0000001e),
 		RADGalaxy2 = (0x00000021),
 		RADMoon3 = (0x00000023),
 		RADComet = (0x00000024),
@@ -141,6 +142,8 @@ public:
 				return "RAD-A2B";
 			case RADEpsilon:
 				return "RAD-Epsilon";
+			case RADEpsilonXL:
+				return "RAD-EpsilonXL";
 			case RADMoon3:
 				return "RAD-Moon 3";
 			case RADComet:
@@ -251,6 +254,7 @@ private:
 #define ICSNEO_DEVICETYPE_ETHERBADGE ((devicetype_t)0x00000016)
 #define ICSNEO_DEVICETYPE_RAD_A2B ((devicetype_t)0x00000017)
 #define ICSNEO_DEVICETYPE_RADEPSILON ((devicetype_t)0x00000018)
+#define ICSNEO_DEVICETYPE_RADEPSILONXL ((devicetype_t)0x0000001e)
 #define ICSNEO_DEVICETYPE_RADGALAXY2 ((devicetype_t)0x00000021)
 #define ICSNEO_DEVICETYPE_RADMoon3 ((devicetype_t)0x00000023)
 #define ICSNEO_DEVICETYPE_RADCOMET ((devicetype_t)0x00000024)

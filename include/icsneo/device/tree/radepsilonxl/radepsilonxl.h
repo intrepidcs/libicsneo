@@ -1,17 +1,17 @@
-#ifndef __RADEPSILON_H_
-#define __RADEPSILON_H_
+#ifndef __RADEPSILONXL_H_
+#define __RADEPSILONXL_H_
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/device/tree/radepsilon/radepsilonsettings.h"
+#include "icsneo/device/tree/radepsilon/radepsilonsettings.h" // Shared settings with RADEpsilon
 
 namespace icsneo {
 
-class RADEpsilon : public Device {
+class RADEpsilonXL : public Device {
 public:
-	// Serial numbers start with RE
+	// Serial numbers start with PX
 	// USB PID is 0x1109, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(RADEpsilon, DeviceType::RADEpsilon, "RE");
+	ICSNEO_FINDABLE_DEVICE(RADEpsilonXL, DeviceType::RADEpsilonXL, "PX");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
@@ -24,11 +24,11 @@ public:
 		};
 		return supportedNetworks;
 	}
-
+	
 	bool supportsComponentVersions() const override { return true; }
-
+	
 protected:
-	RADEpsilon(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+	RADEpsilonXL(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADEpsilonSettings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
@@ -58,6 +58,6 @@ protected:
 	}
 };
 
-}
+}; // namespace icsneo
 
-#endif
+#endif // __RADEPSILONXL_H_

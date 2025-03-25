@@ -23,6 +23,8 @@ each of the respective APIs.
 - RAD-A2B
 - RAD-Comet 2
 - RAD-Comet 3
+- RAD-Epsilon
+- RAD-EpsilonXL
 - RAD-Galaxy
 - RAD-Galaxy 2
 - RAD-Gigastar

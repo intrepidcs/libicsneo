@@ -193,6 +193,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<RADEpsilon>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __RADEPSILONXL_H_
+		makeIfSerialMatches<RADEpsilonXL>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __RADGALAXY_H_
 		makeIfSerialMatches<RADGalaxy>(dev, newFoundDevices);
 		#endif
@@ -350,6 +354,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 
 		#ifdef __RADEPSILON_H_
 		RADEpsilon::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADEPSILONXL_H_
+		RADEpsilonXL::DEVICE_TYPE,
 		#endif
 
 		#ifdef __RADGALAXY_H_
