@@ -13,7 +13,7 @@ option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC "Build static icsnVC40 compatibility library" ON)
-set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
+set(LIBICSNEO_NPCAP_INCLUDE_DIR "C:/Users/Vit/source/repos/npcap-sdk-1.13/Include" CACHE STRING "Npcap include directory; set to build with Npcap") 
 
 # Device Drivers
 # You almost certainly don't want firmio for your build,
