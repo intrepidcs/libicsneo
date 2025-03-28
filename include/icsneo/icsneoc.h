@@ -43,7 +43,7 @@ extern void DLLExport icsneo_findAllDevices(neodevice_t* devices, size_t* count)
  *
  * See icsneo_findAllDevices() for information regarding the neodevice_t validity contract.
  */
-extern void DLLExport icsneo_freeUnconnectedDevices();
+extern void DLLExport icsneo_freeUnconnectedDevices(void);
 
 /**
  * \brief Convert a serial number in numerical format to its string representation.

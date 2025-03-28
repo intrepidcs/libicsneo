@@ -170,7 +170,6 @@ typedef union _MACSecSa
 	uint8_t byte[MACSEC_SETTINGS_SA_SIZE];
 } MACSecSa_t;
 /* MACsec Flags */
-static constexpr int MACSEC_SETTINGS_FLAGS_SIZE = 4;
 typedef union _MACSecFlags
 {
 	struct
@@ -180,6 +179,7 @@ typedef union _MACSecFlags
 	};
 	uint32_t flags_32b;
 } MACSecFlags_t;
+#define MACSEC_SETTINGS_FLAGS_SIZE (4)
 /* MACSec Settings for 1 port/phy */
 typedef struct MACSEC_CONFIG_t
 {

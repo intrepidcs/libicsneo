@@ -212,7 +212,7 @@ public:
 		}
 	}
 
-	static const uint8_t tdmModeToChannelNum(TDMMode mode) {
+	static uint8_t tdmModeToChannelNum(TDMMode mode) {
 
 		switch(mode) {
 			case TDMMode::TDM2:

@@ -128,7 +128,7 @@ void printAPIEvents() {
 void printDeviceEvents(neodevice_t* device) {
 	neoevent_t events[99];
 	size_t eventCount = 99;
-	if(icsneo_getDeviceEvents(selectedDevice, events, &eventCount)) {
+	if(icsneo_getDeviceEvents(device, events, &eventCount)) {
 		if(eventCount == 1) {
 			printf("1 device event found!\n");
 			printf("Event 0x%x: %s\n", events[0].eventNumber, events[0].description);
@@ -160,7 +160,7 @@ char getCharInput(int numArgs, ...) {
 
 	char* list = (char*) calloc(numArgs, sizeof(char));
 	for(int i = 0; i < numArgs; ++i) {
-		*(list + i) = va_arg(vaList, int);
+		*(list + i) = (char)va_arg(vaList, int);
 	}
 
 	va_end(vaList);
@@ -285,10 +285,10 @@ int main() {
 			printf("Would you like to open or close %s?\n", productDescription);
 			printf("[1] Open\n[2] Close\n[3] Cancel\n\n");
 
-			char input = getCharInput(3, '1', '2', '3');
+			char userSelection = getCharInput(3, '1', '2', '3');
 			printf("\n");
 
-			switch(input) {
+			switch(userSelection) {
 			case '1':
 				// Attempt to open the selected device
 				if(icsneo_openDevice(selectedDevice)) {
@@ -346,10 +346,10 @@ int main() {
 			printf("Would you like to have %s go online or offline?\n", productDescription);
 			printf("[1] Online\n[2] Offline\n[3] Cancel\n\n");
 
-			char input = getCharInput(3, '1', '2', '3');
+			char userSelection = getCharInput(3, '1', '2', '3');
 			printf("\n");
 
-			switch(input) {
+			switch(userSelection) {
 			case '1':
 				// Attempt to go online
 				if(icsneo_goOnline(selectedDevice)) {
@@ -394,10 +394,10 @@ int main() {
 			printf("Would you like to enable or disable message polling for %s?\n", productDescription);
 			printf("[1] Enable\n[2] Disable\n[3] Cancel\n\n");
 
-			char input = getCharInput(3, '1', '2', '3');
+			char userSelection = getCharInput(3, '1', '2', '3');
 			printf("\n");
 
-			switch(input) {
+			switch(userSelection) {
 			case '1':
 				// Attempt to enable message polling
 				if(icsneo_enableMessagePolling(selectedDevice)) {
@@ -481,8 +481,8 @@ int main() {
 							case ICSNEO_NETWORK_TYPE_CAN: {
 								neomessage_can_t* canMsg = (neomessage_can_t*)frame;
 								printf("\t0x%03x [%zu] ", canMsg->arbid, canMsg->length);
-								for(size_t i = 0; i < canMsg->length; i++) {
-									printf("%02x ", canMsg->data[i]);
+								for(size_t j = 0; j < canMsg->length; j++) {
+									printf("%02x ", canMsg->data[j]);
 								}
 								if(canMsg->status.transmitMessage)
 									printf("TX%s %04x ", canMsg->status.globalError ? " ERR" : "", canMsg->description);
@@ -502,11 +502,11 @@ int main() {
 									printf("LIN 2 | ID: 0x%02x [%zu] ", linMsg->header[0], dataLen);
 								}
 
-								for(size_t i = 0; i < dataLen; ++i) {
-									if (i < 2) {
-										printf("%02x ", linMsg->header[i+1]);
+								for(size_t j = 0; j < dataLen; ++j) {
+									if (j < 2) {
+										printf("%02x ", linMsg->header[j+1]);
 									} else {
-										printf("%02x ", linMsg->data[i-2]);
+										printf("%02x ", linMsg->data[j-2]);
 									}
 								}
 								if(numberBytesData > 0)
@@ -725,7 +725,7 @@ int main() {
 			}
 
 			const bool set = selection2 == '1';
-			neoio_t type;
+			neoio_t type = ICSNEO_IO_ETH_ACTIVATION;
 			switch (selection)
 			{
 			case '1': type = ICSNEO_IO_ETH_ACTIVATION; break;

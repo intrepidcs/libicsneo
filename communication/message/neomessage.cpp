@@ -75,13 +75,15 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 					lin.length = 1;
 				
 				lin.linStatus = {
-					linmsg->statusFlags.TxChecksumEnhanced,
-					linmsg->statusFlags.TxCommander,
-					linmsg->statusFlags.TxResponder,
-					linmsg->statusFlags.UpdateResponderOnce,
-					linmsg->statusFlags.HasUpdatedResponderOnce,
-					linmsg->statusFlags.BusRecovered,
-					linmsg->statusFlags.BreakOnly
+					linmsg->statusFlags.TxChecksumEnhanced, // .txChecksumEnhanced
+					linmsg->statusFlags.TxCommander, // .txCommander
+					linmsg->statusFlags.TxResponder, // .txResponder
+					0, // .txAborted
+					linmsg->statusFlags.UpdateResponderOnce, // .updateResponderOnce
+					linmsg->statusFlags.HasUpdatedResponderOnce, // .hasUpdatedResponderOnce
+					linmsg->statusFlags.BusRecovered, // .busRecovered
+					linmsg->statusFlags.BreakOnly // .breakOnly
+					
 				};
 
 				lin.status.linJustBreakSync = linmsg->errFlags.ErrRxBreakSyncOnly;

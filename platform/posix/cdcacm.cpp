@@ -173,7 +173,7 @@ void CDCACM::readTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	while(!isClosing() && !isDisconnected()) {
 		fd_set rfds = {0};
-		struct timeval tv = {0};
+		struct timeval tv = {};
 		FD_SET(fd, &rfds);
 		tv.tv_usec = 50000; // 50ms
 		::select(fd + 1, &rfds, NULL, NULL, &tv);
@@ -224,7 +224,7 @@ void CDCACM::writeTask() {
 				if(errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
 					// We filled the TX FIFO, use select to wait for it to become available again
 					fd_set wfds = {0};
-					struct timeval tv = {0};
+					struct timeval tv = {};
 					FD_SET(fd, &wfds);
 					tv.tv_usec = 50000; // 50ms
 					::select(fd + 1, nullptr, &wfds, nullptr, &tv);

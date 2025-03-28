@@ -123,7 +123,7 @@ void printAPIEvents() {
 void printDeviceEvents(neodevice_t* device) {
 	neoevent_t events[99];
 	size_t eventCount = 99;
-	if(icsneo_getDeviceEvents(selectedDevice, events, &eventCount)) {
+	if(icsneo_getDeviceEvents(device, events, &eventCount)) {
 		if(eventCount == 1) {
 			printf("1 device event found!\n");
 			printf("Event 0x%x: %s\n", events[0].eventNumber, events[0].description);
@@ -155,7 +155,7 @@ char getCharInput(int numArgs, ...) {
 
 	char* list = (char*) calloc(numArgs, sizeof(char));
 	for(int i = 0; i < numArgs; ++i) {
-		*(list + i) = va_arg(vaList, int);
+		*(list + i) = (char)va_arg(vaList, int);
 	}
 
 	va_end(vaList);
@@ -335,8 +335,8 @@ int main() {
 						case ICSNEO_NETWORK_TYPE_CAN: {
 							neomessage_can_t* canMsg = (neomessage_can_t*)frame;
 							printf("\t0x%03x [%zu] ", canMsg->arbid, canMsg->length);
-							for(size_t i = 0; i < canMsg->length; i++) {
-								printf("%02x ", canMsg->data[i]);
+							for(size_t j = 0; i < canMsg->length; j++) {
+								printf("%02x ", canMsg->data[j]);
 							}
 							if(canMsg->status.transmitMessage)
 								printf("TX%s %04x ", canMsg->status.globalError ? " ERR" : "", canMsg->description);
@@ -347,8 +347,6 @@ int main() {
 							neomessage_lin_t* linMsg = (neomessage_lin_t*)frame;
 							size_t frameLen = linMsg->length;
 							size_t dataLen = (frameLen > 2) ? (frameLen - 2) : 0;
-							size_t numberBytesHeader = (dataLen > 1) ? 3 : 1;
-							size_t numberBytesData = frameLen - numberBytesHeader;
 							if(linMsg->netid == ICSNEO_NETID_LIN) {
 								printf("LIN 1 | ID: 0x%02x [%zu] ", linMsg->header[0], dataLen);
 							}
@@ -356,11 +354,11 @@ int main() {
 								printf("LIN 2 | ID: 0x%02x [%zu] ", linMsg->header[0], dataLen);
 							}
 
-							for(size_t i = 0; i < dataLen; ++i) {
-								if (i < 2) {
-									printf("%02x ", linMsg->header[i+1]);
+							for(size_t j = 0; j < dataLen; ++j) {
+								if (j < 2) {
+									printf("%02x ", linMsg->header[j+1]);
 								} else {
-									printf("%02x ", linMsg->data[i-2]);
+									printf("%02x ", linMsg->data[j-2]);
 								}
 							}
 							printf("| Checksum: 0x%02x\n", linMsg->checksum);
