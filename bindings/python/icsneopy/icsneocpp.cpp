@@ -28,6 +28,7 @@ void init_device(pybind11::module_&);
 void init_messagefilter(pybind11::module_&);
 void init_messagecallback(pybind11::module_&);
 void init_version(pybind11::module_&);
+void init_flexraymessage(pybind11::module_& m);
 
 PYBIND11_MODULE(icsneopy, m) {
 	pybind11::options options;
@@ -56,6 +57,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_messagecallback(m);
 	init_diskdriver(m);
 	init_device(m);
+	init_flexraymessage(m);
 
 	m.def("find_all_devices", &FindAllDevices);
 	m.def("get_supported_devices", &GetSupportedDevices);
