@@ -121,6 +121,7 @@ static constexpr const char* UNEXPECTED_RESPONSE = "Received an unexpected or in
 static constexpr const char* LIN_SETTINGS_NOT_AVAILABLE = "LIN settings are not available for this device.";
 static constexpr const char* MODE_NOT_FOUND = "The mode was not found.";
 static constexpr const char* GPTP_NOT_SUPPORTED = "GPTP clock synchronization is not supported on this device.";
+static constexpr const char* SETTING_NOT_AVAILABLE = "Requested a setting that is not available on this device";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -316,6 +317,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return LIN_SETTINGS_NOT_AVAILABLE;
 		case Type::ModeNotFound:
 			return MODE_NOT_FOUND;
+		case Type::SettingNotAvaiableDevice:
+			return SETTING_NOT_AVAILABLE;
 		// Transport Errors
 		case Type::FailedToRead:
 			return FAILED_TO_READ;

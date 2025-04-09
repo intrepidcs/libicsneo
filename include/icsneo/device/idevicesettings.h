@@ -59,6 +59,9 @@ enum EthLinkSpeed
 	ETH_SPEED_10 = 0,
 	ETH_SPEED_100,
 	ETH_SPEED_1000,
+	ETH_SPEED_2500,
+	ETH_SPEED_5000,
+	ETH_SPEED_10000,
 };
 
 typedef struct
@@ -851,6 +854,38 @@ public:
 	 */
 	bool setLINCommanderResponseTimeFor(Network net, uint8_t bits);
 
+	virtual bool setPhyMode(uint8_t index, OPEthLinkMode mode) {
+		(void)index, (void)mode;
+		return false;
+	}
+
+	virtual bool setPhyEnable(uint8_t index, bool enable) {
+		(void)index, (void)enable;
+		return false;
+	}
+
+	virtual bool setPhySpeed(uint8_t index, EthLinkSpeed speed) {
+		(void)index, (void)speed;
+		return false;
+	}
+
+	virtual std::optional<OPEthLinkMode> getPhyMode(uint8_t index) {
+		(void)index;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual std::optional<bool> getPhyEnable(uint8_t index) {
+		(void)index;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual std::optional<EthLinkSpeed> getPhySpeed(uint8_t index) {
+		(void)index;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }
 	template<typename T> const T* getStructurePointer() const { return reinterpret_cast<const T*>(getRawStructurePointer()); }

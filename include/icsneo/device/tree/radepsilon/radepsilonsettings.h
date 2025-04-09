@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/communication/network.h"
+#include <optional>
 
 #ifdef __cplusplus
 
@@ -122,6 +123,155 @@ public:
 				return nullptr;
 		}
 	}
+
+	bool setPhyMode(uint8_t index, OPEthLinkMode mode) override {
+		if (index > RADEPSILON_MAX_PHY) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		auto cfg = getMutableStructurePointer<radepsilon_settings_t>();
+		if (cfg == nullptr) {
+			return false;
+		}
+		EpsilonPhyMode epsilonMode;
+		switch (mode) {
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return false;
+			case OPETH_LINK_AUTO:
+				epsilonMode = EpsilonPhyMode::Auto;
+				break;
+			case OPETH_LINK_SLAVE:
+				epsilonMode = EpsilonPhyMode::Slave;
+				break;
+			case OPETH_LINK_MASTER:
+				epsilonMode = EpsilonPhyMode::Master;
+				break;
+
+		}
+		cfg->switchSettings.phyMode[index] = static_cast<uint8_t>(epsilonMode);
+		return true;
+	}
+
+	bool setPhyEnable(uint8_t index, bool enable) override {
+		if (index > RADEPSILON_MAX_PHY) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		auto cfg = getMutableStructurePointer<radepsilon_settings_t>();
+		if (cfg == nullptr) {
+			return false;
+		}
+		cfg->switchSettings.enablePhy[index] = enable;
+		return true;
+	}
+
+	bool setPhySpeed(uint8_t index, EthLinkSpeed speed) override {
+		if (index > RADEPSILON_MAX_PHY) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		auto cfg = getMutableStructurePointer<radepsilon_settings_t>();
+		if (cfg == nullptr) {
+			return false;
+		}
+		EpsilonPhySpeed epsilonSpeed;
+		switch (speed) {
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return false;
+			case ETH_SPEED_100:
+				epsilonSpeed = EpsilonPhySpeed::Speed100;
+				break;
+			case ETH_SPEED_1000:
+				epsilonSpeed = EpsilonPhySpeed::Speed1000;
+				break;
+			case ETH_SPEED_10000:
+				epsilonSpeed = EpsilonPhySpeed::Speed10000;
+				break;
+		}
+		cfg->switchSettings.speed[index] = static_cast<uint8_t>(epsilonSpeed);
+		return true;
+	}
+
+	std::optional<OPEthLinkMode> getPhyMode(uint8_t index) override {
+		if (index > RADEPSILON_MAX_PHY) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		auto cfg = getStructurePointer<radepsilon_settings_t>();
+		if (cfg == nullptr) {
+			return std::nullopt;
+		}
+		OPEthLinkMode mode;
+		switch (static_cast<EpsilonPhyMode>(cfg->switchSettings.phyMode[index])) {
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return std::nullopt;
+			case EpsilonPhyMode::Auto:
+				mode = OPETH_LINK_AUTO;
+				break;
+			case EpsilonPhyMode::Slave:
+				mode = OPETH_LINK_SLAVE;
+				break;
+			case EpsilonPhyMode::Master:
+				mode = OPETH_LINK_MASTER;
+				break;
+		}
+		return std::make_optional(mode);
+	}
+
+	std::optional<bool> getPhyEnable(uint8_t index) override {
+		if (index > RADEPSILON_MAX_PHY) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		auto cfg = getStructurePointer<radepsilon_settings_t>();
+		if (cfg == nullptr) {
+			return false;
+		}
+		return std::make_optional(static_cast<bool>(cfg->switchSettings.enablePhy[index]));
+	}
+
+	std::optional<EthLinkSpeed> getPhySpeed(uint8_t index) override {
+		if (index > RADEPSILON_MAX_PHY) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		auto cfg = getStructurePointer<radepsilon_settings_t>();
+		if (cfg == nullptr) {
+			return std::nullopt;
+		}
+		EthLinkSpeed speed;
+		switch (static_cast<EpsilonPhySpeed>(cfg->switchSettings.speed[index])) {
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return std::nullopt;
+			case EpsilonPhySpeed::Speed100:
+				speed = ETH_SPEED_100;
+				break;
+			case EpsilonPhySpeed::Speed1000:
+				speed = ETH_SPEED_1000;
+				break;
+			case EpsilonPhySpeed::Speed10000:
+				speed = ETH_SPEED_10000;
+				break;
+		}
+		return std::make_optional(speed);
+	}
+
+private:
+	enum class EpsilonPhyMode : uint8_t {
+		Auto = 0,
+		Master = 1,
+		Slave = 2,
+	};
+	enum class EpsilonPhySpeed : uint8_t {
+		Speed100 = 0,
+		Speed1000 = 1,
+		Speed10000 = 2,
+	};
+	
 };
 
 }; // namespace icsneo

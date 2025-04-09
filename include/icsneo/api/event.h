@@ -110,6 +110,7 @@ public:
 		ModeNotFound = 0x2054,
 		AppErrorParsingFailed = 0x2055,
 		GPTPNotSupported = 0x2056,
+		SettingNotAvaiableDevice = 0x2057,
 
 		// Transport Events
 		FailedToRead = 0x3000,
@@ -186,19 +187,19 @@ public:
 
 	APIEvent() : eventStruct({}), serial(), timepoint(), device(nullptr) {}
 	APIEvent(APIEvent::Type event, APIEvent::Severity severity, const Device* device = nullptr);
-	
+
 	const neoevent_t* getNeoEvent() const noexcept { return &eventStruct; }
 	Type getType() const noexcept { return Type(eventStruct.eventNumber); }
 	Severity getSeverity() const noexcept { return Severity(eventStruct.severity); }
 	std::string getDescription() const noexcept { return std::string(eventStruct.description); }
 	const Device* getDevice() const noexcept { return device; } // Will return nullptr if this is an API-wide event
 	EventTimePoint getTimestamp() const noexcept { return timepoint; }
-	
+
 	void downgradeFromError() noexcept;
 
 	bool isForDevice(const Device* forDevice) const noexcept { return forDevice == device; }
 	bool isForDevice(std::string serial) const noexcept;
-	
+
 	// As opposed to getDescription, this will also add text such as "neoVI FIRE 2 CY2468 Error: " to fully describe the problem
 	std::string describe() const noexcept;
 	friend std::ostream& operator<<(std::ostream& os, const APIEvent& event) {

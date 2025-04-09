@@ -51,7 +51,8 @@ void init_device(pybind11::module_& m) {
 		.def("supports_tc10", &Device::supportsTC10)
 		.def("transmit", pybind11::overload_cast<std::shared_ptr<Frame>>(&Device::transmit), pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("upload_coremini", [](Device& device, std::string& path, Disk::MemoryType memType) { std::ifstream ifs(path, std::ios::binary); return device.uploadCoremini(ifs, memType); }, pybind11::call_guard<pybind11::gil_scoped_release>())
-		.def("write_macsec_config", &Device::writeMACsecConfig, pybind11::call_guard<pybind11::gil_scoped_release>());
+		.def("write_macsec_config", &Device::writeMACsecConfig, pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def_readonly("settings", &Device::settings);
 }
 
 } // namespace icsneo

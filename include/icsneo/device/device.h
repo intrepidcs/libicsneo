@@ -621,7 +621,7 @@ public:
 	std::optional<bool> SetRootDirectoryEntryFlags(uint8_t mask, uint8_t values, uint32_t collectionEntryByteAddress);
 
 	std::shared_ptr<Communication> com;
-	std::unique_ptr<IDeviceSettings> settings;
+	std::shared_ptr<IDeviceSettings> settings;
 
 	std::optional<size_t> getGenericBinarySize(uint16_t binaryIndex);
 	bool readBinaryFile(std::ostream& stream, uint16_t binaryIndex);
@@ -814,8 +814,8 @@ protected:
 	}
 
 	template<typename Settings>
-	std::unique_ptr<IDeviceSettings> makeSettings(std::shared_ptr<Communication> comm) {
-		return std::unique_ptr<IDeviceSettings>(new Settings(comm));
+	std::shared_ptr<IDeviceSettings> makeSettings(std::shared_ptr<Communication> comm) {
+		return std::make_shared<Settings>(comm);
 	}
 	virtual void setupSettings(IDeviceSettings&) {}
 

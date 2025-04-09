@@ -38,6 +38,7 @@ pybind11_add_module(icsneopy
     icsneopy/communication/message/flexray/flexraymessage.cpp
     icsneopy/disk/diskdriver.cpp
     icsneopy/device/device.cpp
+    icsneopy/device/idevicesettings.cpp
     icsneopy/icsneocpp.cpp
 )
 target_link_libraries(icsneopy PRIVATE icsneocpp)
