@@ -65,6 +65,7 @@ bool FTD3XX::open() {
 	handle.emplace(tmpHandle);
 
 	setIsClosing(false);
+	setIsDisconnected(false);
 	readThread = std::thread(&FTD3XX::readTask, this);
 	writeThread = std::thread(&FTD3XX::writeTask, this);
 
@@ -82,7 +83,9 @@ bool FTD3XX::close() {
 	}
 
 	setIsClosing(true);
-	setIsDisconnected(false);
+
+	// unblock the read thread
+	FT_AbortPipe(*handle, READ_PIPE_ID);
 
 	if(readThread.joinable())
 		readThread.join();
@@ -105,76 +108,75 @@ bool FTD3XX::close() {
 void FTD3XX::readTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
-	static constexpr auto bufferSize = 2048;
-	uint8_t buffer[bufferSize] = {};
+	std::vector<uint8_t> buffer(2 * 1024 * 1024);
 
-	FT_SetStreamPipe(*handle, false, false, READ_PIPE_ID, bufferSize);
-	FT_SetPipeTimeout(*handle, READ_PIPE_ID, 1);
+	FT_SetStreamPipe(*handle, false, false, READ_PIPE_ID, (ULONG)buffer.size());
+
+	// disable timeouts, we will interupt the read thread with AbortPipe
+	FT_SetPipeTimeout(*handle, READ_PIPE_ID, 0);
+
+	OVERLAPPED overlapped = {};
+	FT_InitializeOverlapped(*handle, &overlapped);
+
+	FT_STATUS status;
+	ULONG received = 0;
+
 	while(!isClosing() && !isDisconnected()) {
-		ULONG received = 0;
-		OVERLAPPED overlap = {};
-		FT_InitializeOverlapped(*handle, &overlap);
+		received = 0;
 		#ifdef _WIN32
-			FT_ReadPipe(*handle, READ_PIPE_ID, buffer, bufferSize, &received, &overlap);
+		status = FT_ReadPipe(*handle, READ_PIPE_ID, buffer.data(), (ULONG)buffer.size(), &received, &overlapped);
 		#else
-			FT_ReadPipeAsync(*handle, 0, buffer, bufferSize, &received, &overlap);
+		status = FT_ReadPipeAsync(*handle, 0, buffer.data(), buffer.size(), &received, &overlapped);
 		#endif
-		while(!isClosing()) {
-			const auto ret = FT_GetOverlappedResult(*handle, &overlap, &received, true);
-			if(ret == FT_IO_PENDING)
-				continue;
-			if(ret != FT_OK) {
-				if(ret == FT_IO_ERROR) {
-					setIsDisconnected(true);
-					report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
-				} else {
-					addEvent(ret, APIEvent::Severity::Error);
-				}
-				FT_AbortPipe(*handle, READ_PIPE_ID);
+		if(FT_FAILED(status)) {
+			if(status != FT_IO_PENDING) {
+				addEvent(status, APIEvent::Severity::Error);
+				setIsDisconnected(true);
+				break;
 			}
-			break;
-		}
-		FT_ReleaseOverlapped(*handle, &overlap);
-		if(received > 0) {
-			pushRx(buffer, received);
+			status = FT_GetOverlappedResult(*handle, &overlapped, &received, true);
+			if(FT_FAILED(status)) {
+				addEvent(status, APIEvent::Severity::Error);
+				setIsDisconnected(true);
+				break;
+			}
+			if(received > 0) {
+				pushRx(buffer.data(), received);
+			}
 		}
 	}
+
+	FT_ReleaseOverlapped(*handle, &overlapped);
 }
 
 void FTD3XX::writeTask() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
-	FT_SetPipeTimeout(*handle, WRITE_PIPE_ID, 100);
+	FT_SetPipeTimeout(*handle, WRITE_PIPE_ID, 0);
 	WriteOperation writeOp;
+	ULONG sent;
+	FT_STATUS status;
+
 	while(!isClosing() && !isDisconnected()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100)))
 			continue;
 
 		const auto size = static_cast<ULONG>(writeOp.bytes.size());
-		ULONG sent = 0;
-		OVERLAPPED overlap = {};
-		FT_InitializeOverlapped(*handle, &overlap);
-		FT_SetStreamPipe(*handle, false, false, WRITE_PIPE_ID, size);
+		sent = 0;
 		#ifdef _WIN32
-			FT_WritePipe(*handle, WRITE_PIPE_ID, writeOp.bytes.data(), size, &sent, &overlap);
+		status = FT_WritePipe(*handle, WRITE_PIPE_ID, writeOp.bytes.data(), size, &sent, nullptr);
 		#else
-			FT_WritePipeAsync(*handle, 0, writeOp.bytes.data(), size, &sent, &overlap);
+		status = FT_WritePipe(*handle, WRITE_PIPE_ID, writeOp.bytes.data(), size, &sent, 100);
 		#endif
-		while(!isClosing()) {
-			const auto ret = FT_GetOverlappedResult(*handle, &overlap, &sent, true);
-			if(ret == FT_IO_PENDING)
-				continue;
-			if(ret != FT_OK) {
-				if(ret == FT_IO_ERROR) {
-					setIsDisconnected(true);
-					report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
-				} else {
-					addEvent(ret, APIEvent::Severity::Error);
-				}
-				FT_AbortPipe(*handle, WRITE_PIPE_ID);
-			}
+		if(FT_FAILED(status)) {
+			addEvent(status, APIEvent::Severity::Error);
+			setIsDisconnected(true);
 			break;
 		}
-		FT_ReleaseOverlapped(*handle, &overlap);
+		if(sent != size) {
+			report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+			setIsDisconnected(true);
+			break;
+		}
 	}
 }
