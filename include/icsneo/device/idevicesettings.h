@@ -46,12 +46,12 @@ enum
 	LISTEN_ALL = 7
 };
 
-enum OPEthLinkMode
+enum AELinkMode
 {
-	OPETH_LINK_INVALID = -1,
-	OPETH_LINK_AUTO = 0,
-	OPETH_LINK_MASTER,
-	OPETH_LINK_SLAVE
+	AE_LINK_INVALID = -1,
+	AE_LINK_AUTO = 0,
+	AE_LINK_MASTER,
+	AE_LINK_SLAVE
 };
 
 enum EthLinkSpeed
@@ -70,7 +70,7 @@ typedef struct
 	uint8_t linkStatus;
 	uint8_t linkFullDuplex;
 	uint8_t linkSpeed; // see EthLinkSpeed
-	int8_t linkMode; // for automotive networks - see OPEthLinkMode
+	int8_t linkMode; // for automotive networks - see AELinkMode
 } EthernetNetworkStatus;
 
 typedef struct
@@ -124,7 +124,7 @@ typedef struct ETHERNET_SETTINGS_t
 } ETHERNET_SETTINGS;
 #define ETHERNET_SETTINGS_SIZE 8
 
-typedef struct OP_ETH_GENERAL_SETTINGS_t
+typedef struct AE_GENERAL_SETTINGS_t
 {
 	uint8_t ucInterfaceType;
 	uint8_t reserved0[3];
@@ -143,15 +143,15 @@ typedef struct OP_ETH_GENERAL_SETTINGS_t
 		} flags;
 		unsigned uFlags;
 	};
-} OP_ETH_GENERAL_SETTINGS;
-#define OP_ETH_GENERAL_SETTINGS_SIZE 20
-static_assert(sizeof(OP_ETH_GENERAL_SETTINGS) == OP_ETH_GENERAL_SETTINGS_SIZE, "OP_ETH_GENERAL_SETTINGS is the wrong size!");
+} AE_GENERAL_SETTINGS;
+#define AE_GENERAL_SETTINGS_SIZE 20
+static_assert(sizeof(AE_GENERAL_SETTINGS) == AE_GENERAL_SETTINGS_SIZE, "AE_GENERAL_SETTINGS is the wrong size!");
 
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4201) // nameless struct/union
 #endif
-typedef struct OP_ETH_SETTINGS_t
+typedef struct AE_SETTINGS_t
 {
 	uint8_t ucConfigMode;
 	unsigned char preemption_en;
@@ -168,9 +168,9 @@ typedef struct OP_ETH_SETTINGS_t
 		};
 		unsigned char reserved0[14];
 	};
-} OP_ETH_SETTINGS;
-#define OP_ETH_SETTINGS_SIZE 16
-static_assert(sizeof(OP_ETH_SETTINGS) == OP_ETH_SETTINGS_SIZE, "OP_ETH_SETTINGS is the wrong size!");
+} AE_SETTINGS;
+#define AE_SETTINGS_SIZE 16
+static_assert(sizeof(AE_SETTINGS) == AE_SETTINGS_SIZE, "AE_SETTINGS is the wrong size!");
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -854,7 +854,7 @@ public:
 	 */
 	bool setLINCommanderResponseTimeFor(Network net, uint8_t bits);
 
-	virtual bool setPhyMode(uint8_t index, OPEthLinkMode mode) {
+	virtual bool setPhyMode(uint8_t index, AELinkMode mode) {
 		(void)index, (void)mode;
 		return false;
 	}
@@ -869,7 +869,7 @@ public:
 		return false;
 	}
 
-	virtual std::optional<OPEthLinkMode> getPhyMode(uint8_t index) {
+	virtual std::optional<AELinkMode> getPhyMode(uint8_t index) {
 		(void)index;
 		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
 		return std::nullopt;

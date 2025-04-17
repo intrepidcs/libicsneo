@@ -52,9 +52,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::LSFTCAN:
+			case Network::NetID::LSFTCAN_01:
 				return &(cfg->lsftcan1);
 			default:
 				return nullptr;
@@ -65,7 +65,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::LSFTCAN:
+			case Network::NetID::LSFTCAN_01:
 				return &(cfg->lsftcan1);
 			default:
 				return nullptr;
@@ -76,7 +76,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::SWCAN:
+			case Network::NetID::SWCAN_01:
 				return &(cfg->swcan1);
 			default:
 				return nullptr;
@@ -85,7 +85,7 @@ public:
 
 	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
 		return {
-			{ Network(Network::NetID::HSCAN) }
+			{ Network(Network::NetID::DWCAN_01) }
 		};
 	}
 

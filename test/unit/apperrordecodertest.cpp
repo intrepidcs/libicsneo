@@ -46,7 +46,7 @@ TEST_F(REDAppErrorDecoderTest, PacketDecoderTest) {
 
 	auto msg1 = std::make_shared<icsneo::AppErrorMessage>();
 	msg1->errorType = static_cast<uint16_t>(AppErrorType::AppErrorNetworkNotEnabled);
-	msg1->errorNetID = Network::NetID::HSCAN;
+	msg1->errorNetID = Network::NetID::DWCAN_01;
 	msg1->timestamp10us = 0x66554433;
 	msg1->timestamp10usMSB = 0xAA998877;
 	msg1->network = icsneo::Network::NetID::RED_App_Error;
@@ -80,7 +80,7 @@ TEST_F(REDAppErrorDecoderTest, GetErrorStringTest) {
 	EXPECT_TRUE(packetDecoder->decode(decodeMsg, packets.back()));
 	EXPECT_NE(decodeMsg, nullptr);
 	auto testMessage = std::dynamic_pointer_cast<icsneo::AppErrorMessage>(decodeMsg);
-	EXPECT_EQ("HSCAN: Network not enabled", testMessage->getAppErrorString());
+	EXPECT_EQ("DW CAN 01: Network not enabled", testMessage->getAppErrorString());
 	packets.pop_back();
 }
 

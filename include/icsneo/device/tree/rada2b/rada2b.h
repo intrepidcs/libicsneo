@@ -21,20 +21,20 @@ public:
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::HSCAN2,
+			Network::NetID::DWCAN_01,
+			Network::NetID::DWCAN_02,
 
-			Network::NetID::Ethernet,
+			Network::NetID::ETHERNET_01,
 
-			Network::NetID::LIN,
+			Network::NetID::LIN_01,
 
-			Network::NetID::A2B1,
-			Network::NetID::A2B2,
+			Network::NetID::A2B_01,
+			Network::NetID::A2B_02,
 
-			Network::NetID::I2C,
-			Network::NetID::I2C2,
+			Network::NetID::I2C_01,
+			Network::NetID::I2C_02,
 
-			Network::NetID::MDIO1,
+			Network::NetID::MDIO_01,
 		};
 		return supportedNetworks;
 	}

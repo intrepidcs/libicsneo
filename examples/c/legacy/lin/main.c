@@ -58,7 +58,7 @@ int main() {
 		msg1.Protocol = SPY_PROTOCOL_LIN;
 		msg1.StatusBitField = 0;
 		msg1.StatusBitField2 = 0;
-		lNetworkID = NETID_LIN2;
+		lNetworkID = NETID_LIN_02;
 		msg1.Header[0] = 0x11; //protected ID
 		msg1.Header[1] = 0xaa;
 		msg1.Header[2] = 0xbb;
@@ -80,7 +80,7 @@ int main() {
 		icsSpyMessageJ1850 msg2 = {0};
 		msg2.Protocol = SPY_PROTOCOL_LIN;
 		msg2.StatusBitField = SPY_STATUS_INIT_MESSAGE;
-		lNetworkID = NETID_LIN;
+		lNetworkID = NETID_LIN_01;
 		msg2.Header[0] = 0x11; //protected ID
 		msg2.NumberBytesData = 0;
 		msg2.NumberBytesHeader = 1;
@@ -96,7 +96,7 @@ int main() {
 		msg3.Protocol = SPY_PROTOCOL_LIN;
 		msg3.StatusBitField = SPY_STATUS_INIT_MESSAGE;
 		msg3.StatusBitField2 = 0;
-		lNetworkID = NETID_LIN;
+		lNetworkID = NETID_LIN_01;
 		msg3.Header[0] = 0xe2; //protected ID
 		msg3.Header[1] = 0x44;
 		msg3.Header[2] = 0x33;
@@ -131,10 +131,10 @@ int main() {
 					const icsSpyMessageJ1850* linMsg = (icsSpyMessageJ1850*)&rxMsg[idx];
 					size_t frameLen = (linMsg->NumberBytesHeader + linMsg->NumberBytesData);
 					size_t dataLen = (frameLen > 2) ? (frameLen - 2) : 0;
-					if(linMsg->NetworkID == NETID_LIN) {
+					if(linMsg->NetworkID == NETID_LIN_01) {
 						printf("LIN 1 | ID: 0x%02x [%zu] ", linMsg->Header[0], dataLen);
 					}
-					else if (linMsg->NetworkID == NETID_LIN2) {
+					else if (linMsg->NetworkID == NETID_LIN_02) {
 						printf("LIN 2 | ID: 0x%02x [%zu] ", linMsg->Header[0], dataLen);
 					}
 

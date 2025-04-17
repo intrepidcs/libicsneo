@@ -14,8 +14,8 @@ namespace icsneo {
 typedef struct {
 	uint16_t perf_en;
 
-	OP_ETH_GENERAL_SETTINGS opEthGen;
-	OP_ETH_SETTINGS opEth1;
+	AE_GENERAL_SETTINGS aeGen;
+	AE_SETTINGS ae_01;
 
 	uint16_t network_enables;
 	uint16_t network_enables_2;

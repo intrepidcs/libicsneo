@@ -11,10 +11,6 @@ option(LIBICSNEO_BUILD_CPP_MDIO_EXAMPLE "Build the MDIO example." ON)
 option(LIBICSNEO_BUILD_CPP_VSA_EXAMPLE "Build the VSA example." ON)
 option(LIBICSNEO_BUILD_CPP_APP_ERROR_EXAMPLE "Build the app error example." ON)
 
-# Disabled until we properly build these in-tree
-# option(LIBICSNEO_BUILD_CSHARP_INTERACTIVE_EXAMPLE "Build the command-line interactive C# example." OFF)
-# option(LIBICSNEO_BUILD_JAVA_INTERACTIVE_EXAMPLE "Build the command-line interactive Java example." OFF)
-
 if(LIBICSNEO_BUILD_C_INTERACTIVE_EXAMPLE)
 	add_subdirectory(c/interactive)
 endif()
@@ -62,11 +58,3 @@ endif()
 if(LIBICSNEO_BUILD_CPP_APP_ERROR_EXAMPLE)
 	add_subdirectory(cpp/apperror)
 endif()
-
-# if(LIBICSNEO_BUILD_CSHARP_INTERACTIVE_EXAMPLE)
-# 	add_subdirectory(csharp)
-# endif()
-
-# if(LIBICSNEO_BUILD_JAVA_INTERACTIVE_EXAMPLE)
-# 	add_subdirectory(java)
-# endif()

@@ -310,8 +310,8 @@ extern bool DLLExport icsneo_removeMessageCallback(const neodevice_t* device, in
  * \returns The netid if the call succeeds, ICSNEO_NETID_INVALID otherwise
  *
  * This function is designed so that networks can be enumerated without knowledge of the specific
- * device. For instance, on a ValueCAN 4-2, the second CAN network is ICSNEO_NETID_HSCAN2, while
- * on a neoVI FIRE the second CAN network is ICSNEO_NETID_MSCAN.
+ * device. For instance, on a ValueCAN 4-2, the second CAN network is ICSNEO_NETID_DWCAN_02, while
+ * on a neoVI FIRE the second CAN network is ICSNEO_NETID_DWCAN_08.
  */
 extern neonetid_t DLLExport icsneo_getNetworkByNumber(const neodevice_t* device, neonettype_t type, unsigned int number);
 
@@ -536,7 +536,7 @@ extern bool DLLExport icsneo_setFDBaudrate(const neodevice_t* device, neonetid_t
  * ``` C
  * neomessage_can_t mySendMessage = {}; // Zero all before use
  * uint8_t myData[3] = { 0xAA, 0xBB, 0xCC }; // Either heap or stack allocated is okay
- * mySendMessage.netid = ICSNEO_NETID_HSCAN;
+ * mySendMessage.netid = ICSNEO_NETID_DWCAN_01;
  * mySendMessage.arbid = 0x1c5001c5;
  * mySendMessage.length = 3;
  * mySendMessage.data = myData;

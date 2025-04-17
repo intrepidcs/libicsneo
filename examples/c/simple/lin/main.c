@@ -285,7 +285,7 @@ int main() {
 		msg.header[1] = 0x11;
 		msg.header[2] = 0x22;
 		msg.length = 10;
-		msg.netid = ICSNEO_NETID_LIN;
+		msg.netid = ICSNEO_NETID_LIN_01;
 		msg.data = sendMessageData;
 		msg.linStatus.txCommander = 1;
 		msg.linStatus.txChecksumEnhanced = 1;
@@ -347,10 +347,10 @@ int main() {
 							neomessage_lin_t* linMsg = (neomessage_lin_t*)frame;
 							size_t frameLen = linMsg->length;
 							size_t dataLen = (frameLen > 2) ? (frameLen - 2) : 0;
-							if(linMsg->netid == ICSNEO_NETID_LIN) {
+							if(linMsg->netid == ICSNEO_NETID_LIN_01) {
 								printf("LIN 1 | ID: 0x%02x [%zu] ", linMsg->header[0], dataLen);
 							}
-							else if (linMsg->netid == ICSNEO_NETID_LIN2) {
+							else if (linMsg->netid == ICSNEO_NETID_LIN_02) {
 								printf("LIN 2 | ID: 0x%02x [%zu] ", linMsg->header[0], dataLen);
 							}
 

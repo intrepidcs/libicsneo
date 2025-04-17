@@ -44,55 +44,55 @@ protected:
 
 	void setupSupportedRXNetworks(std::vector<Network>& rxNetworks) override {
 		static std::vector<Network> supportedRxNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::MSCAN,
-			Network::NetID::HSCAN2,
-			Network::NetID::HSCAN3,
-			Network::NetID::HSCAN4,
-			Network::NetID::HSCAN5,
-			Network::NetID::HSCAN6,
-			Network::NetID::HSCAN7,
+			Network::NetID::DWCAN_01,
+			Network::NetID::DWCAN_08,
+			Network::NetID::DWCAN_02,
+			Network::NetID::DWCAN_03,
+			Network::NetID::DWCAN_04,
+			Network::NetID::DWCAN_05,
+			Network::NetID::DWCAN_06,
+			Network::NetID::DWCAN_07,
 
-			Network::NetID::Ethernet,
-			Network::NetID::Ethernet2,
-			Network::NetID::Ethernet3,
+			Network::NetID::ETHERNET_01,
+			Network::NetID::ETHERNET_02,
+			Network::NetID::ETHERNET_03,
 
-			Network::NetID::LIN,
+			Network::NetID::LIN_01,
 
-			Network::NetID::FlexRay1a,
-			Network::NetID::FlexRay1b,
+			Network::NetID::FLEXRAY_01A,
+			Network::NetID::FLEXRAY_01B,
 
-			Network::NetID::I2C,
+			Network::NetID::I2C_01,
 
-			Network::NetID::MDIO1,
-			Network::NetID::MDIO2,
+			Network::NetID::MDIO_01,
+			Network::NetID::MDIO_02,
 		};
 		rxNetworks.insert(rxNetworks.end(), supportedRxNetworks.begin(), supportedRxNetworks.end());
 	}
 
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override {
 		static std::vector<Network> supportedTxNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::MSCAN,
-			Network::NetID::HSCAN2,
-			Network::NetID::HSCAN3,
-			Network::NetID::HSCAN4,
-			Network::NetID::HSCAN5,
-			Network::NetID::HSCAN6,
-			Network::NetID::HSCAN7,
+			Network::NetID::DWCAN_01,
+			Network::NetID::DWCAN_08,
+			Network::NetID::DWCAN_02,
+			Network::NetID::DWCAN_03,
+			Network::NetID::DWCAN_04,
+			Network::NetID::DWCAN_05,
+			Network::NetID::DWCAN_06,
+			Network::NetID::DWCAN_07,
 
-			Network::NetID::Ethernet,
-			Network::NetID::Ethernet2,
-			Network::NetID::Ethernet3,
+			Network::NetID::ETHERNET_01,
+			Network::NetID::ETHERNET_02,
+			Network::NetID::ETHERNET_03,
 
-			Network::NetID::LIN,
+			Network::NetID::LIN_01,
 
 			// FlexRay is Receive Only
 			
-			Network::NetID::I2C,
+			Network::NetID::I2C_01,
 
-			Network::NetID::MDIO1,
-			Network::NetID::MDIO2,
+			Network::NetID::MDIO_01,
+			Network::NetID::MDIO_02,
 		};
 		txNetworks.insert(txNetworks.end(), supportedTxNetworks.begin(), supportedTxNetworks.end());
 	}

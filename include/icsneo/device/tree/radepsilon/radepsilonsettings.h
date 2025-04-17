@@ -90,9 +90,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->can2);
 			default:
 				return nullptr;
@@ -103,9 +103,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->canfd1);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->canfd2);
 			default:
 				return nullptr;
@@ -117,14 +117,14 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::LIN:
+			case Network::NetID::LIN_01:
 				return &(cfg->lin1);
 			default:
 				return nullptr;
 		}
 	}
 
-	bool setPhyMode(uint8_t index, OPEthLinkMode mode) override {
+	bool setPhyMode(uint8_t index, AELinkMode mode) override {
 		if (index > RADEPSILON_MAX_PHY) {
 			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 			return false;
@@ -138,13 +138,13 @@ public:
 			default:
 				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 				return false;
-			case OPETH_LINK_AUTO:
+			case AE_LINK_AUTO:
 				epsilonMode = EpsilonPhyMode::Auto;
 				break;
-			case OPETH_LINK_SLAVE:
+			case AE_LINK_SLAVE:
 				epsilonMode = EpsilonPhyMode::Slave;
 				break;
-			case OPETH_LINK_MASTER:
+			case AE_LINK_MASTER:
 				epsilonMode = EpsilonPhyMode::Master;
 				break;
 
@@ -194,7 +194,7 @@ public:
 		return true;
 	}
 
-	std::optional<OPEthLinkMode> getPhyMode(uint8_t index) override {
+	std::optional<AELinkMode> getPhyMode(uint8_t index) override {
 		if (index > RADEPSILON_MAX_PHY) {
 			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 			return std::nullopt;
@@ -203,19 +203,19 @@ public:
 		if (cfg == nullptr) {
 			return std::nullopt;
 		}
-		OPEthLinkMode mode;
+		AELinkMode mode;
 		switch (static_cast<EpsilonPhyMode>(cfg->switchSettings.phyMode[index])) {
 			default:
 				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 				return std::nullopt;
 			case EpsilonPhyMode::Auto:
-				mode = OPETH_LINK_AUTO;
+				mode = AE_LINK_AUTO;
 				break;
 			case EpsilonPhyMode::Slave:
-				mode = OPETH_LINK_SLAVE;
+				mode = AE_LINK_SLAVE;
 				break;
 			case EpsilonPhyMode::Master:
-				mode = OPETH_LINK_MASTER;
+				mode = AE_LINK_MASTER;
 				break;
 		}
 		return std::make_optional(mode);

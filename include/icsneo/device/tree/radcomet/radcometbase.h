@@ -12,20 +12,20 @@ class RADCometBase : public Device {
 public:
 	virtual const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::HSCAN2,
+			Network::NetID::DWCAN_01,
+			Network::NetID::DWCAN_02,
 
-			Network::NetID::Ethernet,
+			Network::NetID::ETHERNET_01,
 
-			Network::NetID::OP_Ethernet1,
-			Network::NetID::OP_Ethernet2,
+			Network::NetID::AE_01,
+			Network::NetID::AE_02,
 
-			Network::NetID::LIN,
-			Network::NetID::ISO9141,
+			Network::NetID::LIN_01,
+			Network::NetID::ISO9141_01,
 
-			Network::NetID::MDIO1,
-			Network::NetID::MDIO2,
-			Network::NetID::MDIO3,
+			Network::NetID::MDIO_01,
+			Network::NetID::MDIO_02,
+			Network::NetID::MDIO_03,
 		};
 		return supportedNetworks;
 	}

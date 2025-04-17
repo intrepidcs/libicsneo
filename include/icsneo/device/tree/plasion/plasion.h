@@ -13,29 +13,29 @@ class Plasion : public Device {
 public:
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::HSCAN,
-			Network::NetID::MSCAN,
-			Network::NetID::HSCAN2,
-			Network::NetID::HSCAN3,
-			Network::NetID::HSCAN4,
-			Network::NetID::HSCAN5,
-			Network::NetID::HSCAN6,
-			Network::NetID::HSCAN7,
+			Network::NetID::DWCAN_01,
+			Network::NetID::DWCAN_08,
+			Network::NetID::DWCAN_02,
+			Network::NetID::DWCAN_03,
+			Network::NetID::DWCAN_04,
+			Network::NetID::DWCAN_05,
+			Network::NetID::DWCAN_06,
+			Network::NetID::DWCAN_07,
 
-			Network::NetID::LSFTCAN,
-			Network::NetID::LSFTCAN2,
+			Network::NetID::LSFTCAN_01,
+			Network::NetID::LSFTCAN_02,
 
-			Network::NetID::SWCAN,
-			Network::NetID::SWCAN2,
+			Network::NetID::SWCAN_01,
+			Network::NetID::SWCAN_02,
 
-			Network::NetID::Ethernet,
+			Network::NetID::ETHERNET_01,
 
-			Network::NetID::LIN,
-			Network::NetID::LIN2,
-			Network::NetID::LIN3,
-			Network::NetID::LIN4,
+			Network::NetID::LIN_01,
+			Network::NetID::LIN_02,
+			Network::NetID::LIN_03,
+			Network::NetID::LIN_04,
 
-			Network::NetID::FlexRay
+			Network::NetID::FLEXRAY_01
 		};
 		return supportedNetworks;
 	}
@@ -51,8 +51,8 @@ protected:
 	virtual bool isSupportedTXNetwork(const Network&) const override { return true; }
 	virtual void setupExtensions() override {
 		std::vector<Network> flexRayControllers;
-		flexRayControllers.push_back(Network::NetID::FlexRay);
-		flexRayControllers.push_back(Network::NetID::FlexRay); // TODO Becomes FlexRay2 if not in coldstart mode
+		flexRayControllers.push_back(Network::NetID::FLEXRAY_01);
+		flexRayControllers.push_back(Network::NetID::FLEXRAY_01); // TODO Becomes FlexRay2 if not in coldstart mode
 		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
 	}
 

@@ -495,10 +495,10 @@ int main() {
 								size_t dataLen = (frameLen > 2) ? (frameLen - 2) : 0;
 								size_t numberBytesHeader = (dataLen > 1) ? 3 : 1;
 								size_t numberBytesData = frameLen - numberBytesHeader;
-								if(linMsg->netid == ICSNEO_NETID_LIN) {
+								if(linMsg->netid == ICSNEO_NETID_LIN_01) {
 									printf("LIN 1 | ID: 0x%02x [%zu] ", linMsg->header[0], dataLen);
 								}
-								else if (linMsg->netid == ICSNEO_NETID_LIN2) {
+								else if (linMsg->netid == ICSNEO_NETID_LIN_02) {
 									printf("LIN 2 | ID: 0x%02x [%zu] ", linMsg->header[0], dataLen);
 								}
 
@@ -562,7 +562,7 @@ int main() {
 			neomessage_can_t msg = {0};
 			msg.arbid = 0x120;
 			msg.length = 6;
-			msg.netid = ICSNEO_NETID_HSCAN;
+			msg.netid = ICSNEO_NETID_DWCAN_01;
 			msg.data = sendMessageData;
 			msg.description = 0x1c5; // Random description to match the receipt
 			msg.status.canfdFDF = false;
@@ -606,7 +606,7 @@ int main() {
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
 			// Attempt to set baudrate and apply settings
-			if(icsneo_setBaudrate(selectedDevice, ICSNEO_NETID_HSCAN, 250000) && icsneo_settingsApply(selectedDevice)) {
+			if(icsneo_setBaudrate(selectedDevice, ICSNEO_NETID_DWCAN_01, 250000) && icsneo_settingsApply(selectedDevice)) {
 				printf("Successfully set HS CAN baudrate for %s to 250k!\n\n", productDescription);
 			} else {
 				printf("Failed to set HS CAN for %s to 250k!\n\n", productDescription);
@@ -632,7 +632,7 @@ int main() {
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
 			// Attempt to set baudrate and apply settings
-			if(icsneo_setBaudrate(selectedDevice, ICSNEO_NETID_HSCAN, 500000) && icsneo_settingsApply(selectedDevice)) {
+			if(icsneo_setBaudrate(selectedDevice, ICSNEO_NETID_DWCAN_01, 500000) && icsneo_settingsApply(selectedDevice)) {
 				printf("Successfully set HS CAN baudrate for %s to 500k!\n\n", productDescription);
 			} else {
 				printf("Failed to set HS CAN for %s to 500k!\n\n", productDescription);
@@ -758,7 +758,7 @@ int main() {
 			icsneo_describeDevice(selectedDevice, productDescription, &descriptionLength);
 
 			printf("Termination is ");
-			const bool val = icsneo_isTerminationEnabledFor(selectedDevice, ICSNEO_NETID_HSCAN);
+			const bool val = icsneo_isTerminationEnabledFor(selectedDevice, ICSNEO_NETID_DWCAN_01);
 			neoevent_t err = { 0 };
 			if(icsneo_getLastError(&err)) {
 				printf("not available at this time: %s\n\n", err.description);
@@ -776,7 +776,7 @@ int main() {
 			}
 
 			// Attempt to set baudrate and apply settings
-			if(icsneo_setTerminationFor(selectedDevice, ICSNEO_NETID_HSCAN, selection2 == '1') && icsneo_settingsApply(selectedDevice)) {
+			if(icsneo_setTerminationFor(selectedDevice, ICSNEO_NETID_DWCAN_01, selection2 == '1') && icsneo_settingsApply(selectedDevice)) {
 				printf("Successfully set HS CAN termination for %s!\n\n", productDescription);
 			} else {
 				printf("Failed to set HS CAN termination for %s!\n\n", productDescription);

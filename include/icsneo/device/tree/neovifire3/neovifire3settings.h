@@ -166,21 +166,21 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::MSCAN:
+			case Network::NetID::DWCAN_08:
 				return &(cfg->can2);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->can3);
-			case Network::NetID::HSCAN3:
+			case Network::NetID::DWCAN_03:
 				return &(cfg->can4);
-			case Network::NetID::HSCAN4:
+			case Network::NetID::DWCAN_04:
 				return &(cfg->can5);
-			case Network::NetID::HSCAN5:
+			case Network::NetID::DWCAN_05:
 				return &(cfg->can6);
-			case Network::NetID::HSCAN6:
+			case Network::NetID::DWCAN_06:
 				return &(cfg->can7);
-			case Network::NetID::HSCAN7:
+			case Network::NetID::DWCAN_07:
 				return &(cfg->can8);
 			default:
 				return nullptr;
@@ -191,21 +191,21 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->canfd1);
-			case Network::NetID::MSCAN:
+			case Network::NetID::DWCAN_08:
 				return &(cfg->canfd2);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->canfd3);
-			case Network::NetID::HSCAN3:
+			case Network::NetID::DWCAN_03:
 				return &(cfg->canfd4);
-			case Network::NetID::HSCAN4:
+			case Network::NetID::DWCAN_04:
 				return &(cfg->canfd5);
-			case Network::NetID::HSCAN5:
+			case Network::NetID::DWCAN_05:
 				return &(cfg->canfd6);
-			case Network::NetID::HSCAN6:
+			case Network::NetID::DWCAN_06:
 				return &(cfg->canfd7);
-			case Network::NetID::HSCAN7:
+			case Network::NetID::DWCAN_07:
 				return &(cfg->canfd8);
 			default:
 				return nullptr;
@@ -215,16 +215,16 @@ public:
 	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
 		return {
 			{
-				Network(Network::NetID::HSCAN),
-				Network(Network::NetID::HSCAN3),
-				Network(Network::NetID::HSCAN5),
-				Network(Network::NetID::HSCAN7)
+				Network(Network::NetID::DWCAN_01),
+				Network(Network::NetID::DWCAN_03),
+				Network(Network::NetID::DWCAN_05),
+				Network(Network::NetID::DWCAN_07)
 			},
 			{
-				Network(Network::NetID::MSCAN),
-				Network(Network::NetID::HSCAN2),
-				Network(Network::NetID::HSCAN4),
-				Network(Network::NetID::HSCAN6)
+				Network(Network::NetID::DWCAN_08),
+				Network(Network::NetID::DWCAN_02),
+				Network(Network::NetID::DWCAN_04),
+				Network(Network::NetID::DWCAN_06)
 			}
 		};
 	}
@@ -234,21 +234,21 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::LIN:
+			case Network::NetID::LIN_01:
 				return &(cfg->lin1);
-			case Network::NetID::LIN2:
+			case Network::NetID::LIN_02:
 				return &(cfg->lin2);
-			case Network::NetID::LIN3:
+			case Network::NetID::LIN_03:
 				return &(cfg->lin3);
-			case Network::NetID::LIN4:
+			case Network::NetID::LIN_04:
 				return &(cfg->lin4);
-			case Network::NetID::LIN5:
+			case Network::NetID::LIN_05:
 				return &(cfg->lin5);
-			case Network::NetID::LIN6:
+			case Network::NetID::LIN_06:
 				return &(cfg->lin6);
-			case Network::NetID::LIN7:
+			case Network::NetID::LIN_07:
 				return &(cfg->lin7);
-			case Network::NetID::LIN8:
+			case Network::NetID::LIN_08:
 				return &(cfg->lin8);
 			default:
 				return nullptr;

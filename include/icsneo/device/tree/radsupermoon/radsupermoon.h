@@ -22,10 +22,10 @@ public:
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::Ethernet,
-			Network::NetID::OP_Ethernet1,
-			Network::NetID::MDIO1,
-			Network::NetID::MDIO2,
+			Network::NetID::ETHERNET_01,
+			Network::NetID::AE_01,
+			Network::NetID::MDIO_01,
+			Network::NetID::MDIO_02,
 		};
 		return supportedNetworks;
 	}

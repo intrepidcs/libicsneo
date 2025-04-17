@@ -62,10 +62,10 @@ typedef unsigned __int64 uint64_t;
 
 /* Network IDs -- value of NetworkID member of icsSpyMessage */
 #define NETID_DEVICE 0
-#define NETID_HSCAN 1
-#define NETID_MSCAN 2
-#define NETID_SWCAN 3
-#define NETID_LSFTCAN 4
+#define NETID_DWCAN_01 1
+#define NETID_DWCAN_08 2
+#define NETID_SWCAN_01 3
+#define NETID_LSFTCAN_01 4
 #define NETID_FORDSCP 5
 #define NETID_J1708 6
 #define NETID_AUX 7
@@ -75,21 +75,21 @@ typedef unsigned __int64 uint64_t;
 #define NETID_MAIN51 11
 #define NETID_RED 12
 #define NETID_SCI 13
-#define NETID_ISO2 14
+#define NETID_ISO9141_02 14
 #define NETID_ISO14230 15
-#define NETID_LIN 16
-#define NETID_OP_ETHERNET1 17
-#define NETID_OP_ETHERNET2 18
-#define NETID_OP_ETHERNET3 19
-#define NETID_ISO3 41
-#define NETID_HSCAN2 42
-#define NETID_HSCAN3 44
-#define NETID_OP_ETHERNET4 45
-#define NETID_OP_ETHERNET5 46
-#define NETID_ISO4 47
-#define NETID_LIN2 48
-#define NETID_LIN3 49
-#define NETID_LIN4 50
+#define NETID_LIN_01 16
+#define NETID_AE_01 17
+#define NETID_AE_02 18
+#define NETID_AE_03 19
+#define NETID_ISO9141_03 41
+#define NETID_DWCAN_02 42
+#define NETID_DWCAN_03 44
+#define NETID_AE_04 45
+#define NETID_AE_05 46
+#define NETID_ISO9141_04 47
+#define NETID_LIN_02 48
+#define NETID_LIN_03 49
+#define NETID_LIN_04 50
 #define NETID_MOST 51
 #define NETID_RED_APP_ERROR 52
 #define NETID_CGI 53
@@ -100,44 +100,44 @@ typedef unsigned __int64 uint64_t;
 #define NETID_3G_READ_DATALINK_CM_RX_MSG 58
 #define NETID_3G_LOGGING_OVERFLOW 59
 #define NETID_3G_READ_SETTINGS_EX 60
-#define NETID_HSCAN4 61
-#define NETID_HSCAN5 62
+#define NETID_DWCAN_04 61
+#define NETID_DWCAN_05 62
 #define NETID_RS232 63
-#define NETID_UART 64
-#define NETID_UART2 65
-#define NETID_UART3 66
-#define NETID_UART4 67
-#define NETID_SWCAN2 68
+#define NETID_UART_01 64
+#define NETID_UART_02 65
+#define NETID_UART_03 66
+#define NETID_UART_04 67
+#define NETID_SWCAN_02 68
 #define NETID_ETHERNET_DAQ 69
 #define NETID_DATA_TO_HOST 70
 #define NETID_TEXTAPI_TO_HOST 71
-#define NETID_SPI1 72
-#define NETID_OP_ETHERNET6 73
+#define NETID_SPI_01 72
+#define NETID_AE_06 73
 #define NETID_RED_VBAT 74
-#define NETID_OP_ETHERNET7 75
-#define NETID_OP_ETHERNET8 76
-#define NETID_OP_ETHERNET9 77
-#define NETID_OP_ETHERNET10 78
-#define NETID_OP_ETHERNET11 79
-#define NETID_FLEXRAY1A 80
-#define NETID_FLEXRAY1B 81
-#define NETID_FLEXRAY2A 82
-#define NETID_FLEXRAY2B 83
-#define NETID_LIN5 84
-#define NETID_FLEXRAY 85
-#define NETID_FLEXRAY2 86
-#define NETID_OP_ETHERNET12 87
-#define NETID_I2C1 88
-#define NETID_MOST25 90
-#define NETID_MOST50 91
-#define NETID_MOST150 92
-#define NETID_ETHERNET 93
+#define NETID_AE_07 75
+#define NETID_AE_08 76
+#define NETID_AE_09 77
+#define NETID_AE_10 78
+#define NETID_AE_11 79
+#define NETID_FLEXRAY_01A 80
+#define NETID_FLEXRAY_01B 81
+#define NETID_FLEXRAY_02A 82
+#define NETID_FLEXRAY_02B 83
+#define NETID_LIN_05 84
+#define NETID_FLEXRAY_01 85
+#define NETID_FLEXRAY_02 86
+#define NETID_AE_12 87
+#define NETID_I2C_01 88
+#define NETID_MOST_25 90
+#define NETID_MOST_50 91
+#define NETID_MOST_150 92
+#define NETID_ETHERNET_01 93
 #define NETID_GMFSA 94
 #define NETID_TCP 95
-#define NETID_HSCAN6 96
-#define NETID_HSCAN7 97
-#define NETID_LIN6 98
-#define NETID_LSFTCAN2 99
+#define NETID_DWCAN_06 96
+#define NETID_DWCAN_07 97
+#define NETID_LIN_06 98
+#define NETID_LSFTCAN_02 99
 /**
  * To the next person to add a network, please make it 523!
  */
@@ -146,19 +146,19 @@ typedef unsigned __int64 uint64_t;
 #define NETID_UDP 514
 #define NETID_AUTOSAR 515
 #define NETID_FORWARDED_MESSAGE 516
-#define NETID_I2C2 517
-#define NETID_I2C3 518
-#define NETID_I2C4 519
-#define NETID_ETHERNET2 520
+#define NETID_I2C_02 517
+#define NETID_I2C_03 518
+#define NETID_I2C_04 519
+#define NETID_ETHERNET_02 520
 #define NETID_ETHERNET_TX_WRAP 521
 #define NETID_A2B_01 522
 #define NETID_A2B_02 523
-#define NETID_ETHERNET3 524
+#define NETID_ETHERNET_03 524
 #define NETID_ISM_LOGGER 525
 #define NETID_CAN_SWITCH 526
 
-#define NETID_WBMS 532
-#define NETID_WBMS2 533
+#define NETID_WBMS_01 532
+#define NETID_WBMS_02 533
 #define NETID_DWCAN_09 534
 #define NETID_DWCAN_10 535
 #define NETID_DWCAN_11 536
@@ -169,7 +169,7 @@ typedef unsigned __int64 uint64_t;
 #define NETID_DWCAN_16 541
 #define NETID_LIN_07 542
 #define NETID_LIN_08 543
-#define NETID_SPI2 544
+#define NETID_SPI_02 544
 #define NETID_MDIO_01 545
 #define NETID_MDIO_02 546
 #define NETID_MDIO_03 547
@@ -259,16 +259,16 @@ typedef unsigned __int64 uint64_t;
 
 #define DEVICECOUNT_FOR_EXPLORER 45 //this value will be checked by the NeoViExplorer after #6453!
 
-#define ISO15765_2_NETWORK_HSCAN 0x01
-#define ISO15765_2_NETWORK_MSCAN 0x02
-#define ISO15765_2_NETWORK_HSCAN2 0x04
-#define ISO15765_2_NETWORK_HSCAN3 0x08
-#define ISO15765_2_NETWORK_SWCAN 0x10
-#define ISO15765_2_NETWORK_HSCAN4 0x14
-#define ISO15765_2_NETWORK_HSCAN5 0x18
-#define ISO15765_2_NETWORK_HSCAN6 0x1C
-#define ISO15765_2_NETWORK_HSCAN7 0x20
-#define ISO15765_2_NETWORK_SWCAN2 0x24
+#define ISO15765_2_NETWORK_DWCAN_01 0x01
+#define ISO15765_2_NETWORK_DWCAN_08 0x02
+#define ISO15765_2_NETWORK_DWCAN_02 0x04
+#define ISO15765_2_NETWORK_DWCAN_03 0x08
+#define ISO15765_2_NETWORK_SWCAN_01 0x10
+#define ISO15765_2_NETWORK_DWCAN_04 0x14
+#define ISO15765_2_NETWORK_DWCAN_05 0x18
+#define ISO15765_2_NETWORK_DWCAN_06 0x1C
+#define ISO15765_2_NETWORK_DWCAN_07 0x20
+#define ISO15765_2_NETWORK_SWCAN_02 0x24
 
 #define PLASMA_SLAVE1_OFFSET 100
 #define PLASMA_SLAVE2_OFFSET 200
@@ -381,7 +381,7 @@ typedef unsigned __int64 uint64_t;
 #define SPY_STATUS2_ERROR_FRAME 0x20000
 #define SPY_STATUS2_END_OF_LONG_MESSAGE 0x100000
 
-/* I2C Specific - check protocol before handling  */
+/* I2C_01 Specific - check protocol before handling  */
 #define SPY_STATUS2_I2C_ERR_TIMEOUT 0x200000
 #define SPY_STATUS2_I2C_ERR_NACK 0x400000
 #define SPY_STATUS2_I2C_DIR_READ 0x800000
@@ -426,8 +426,8 @@ typedef unsigned __int64 uint64_t;
 #define SPY_STATUS2_MOST_MHP_CONTROL_DATA 0x4000000 /* MOST HIGH Control Data */
 #define SPY_STATUS2_MOST_I2S_DUMP 0x8000000
 #define SPY_STATUS2_MOST_TOO_SHORT 0x10000000
-#define SPY_STATUS2_MOST_MOST50 0x20000000 /* absence of MOST50 and MOST150 implies it's MOST25 */
-#define SPY_STATUS2_MOST_MOST150 0x40000000
+#define SPY_STATUS2_MOST_MOST_50 0x20000000 /* absence of MOST_50 and MOST_150 implies it's MOST_25 */
+#define SPY_STATUS2_MOST_MOST_150 0x40000000
 #define SPY_STATUS2_MOST_CHANGED_PAR 0x80000000 /* first byte in ack reflects what changed. */
 
 /* Ethernet Specific - check protocol before handling */
@@ -465,7 +465,7 @@ typedef unsigned __int64 uint64_t;
 #define SPY_STATUS3_CANFD_BRS 0x10
 
 /* Configuration Array constants */
-/* HSCAN neoVI or ValueCAN */
+/* DWCAN_01 neoVI or ValueCAN */
 #define NEO_CFG_MPIC_HS_CAN_CNF1 (512 + 10)
 #define NEO_CFG_MPIC_HS_CAN_CNF2 (512 + 9)
 #define NEO_CFG_MPIC_HS_CAN_CNF3 (512 + 8)
@@ -477,14 +477,14 @@ typedef unsigned __int64 uint64_t;
 #define NEO_CFG_MPIC_MS_CAN_CNF3 (512 + 20)
 
 /* med speed neoVI CAN */
-#define NEO_CFG_MPIC_SW_CAN_CNF1 (512 + 34)
-#define NEO_CFG_MPIC_SW_CAN_CNF2 (512 + 33)
-#define NEO_CFG_MPIC_SW_CAN_CNF3 (512 + 32)
+#define NEO_CFG_MPIC_SWCAN_CNF1 (512 + 34)
+#define NEO_CFG_MPIC_SWCAN_CNF2 (512 + 33)
+#define NEO_CFG_MPIC_SWCAN_CNF3 (512 + 32)
 
 /* med speed neoVI CAN */
-#define NEO_CFG_MPIC_LSFT_CAN_CNF1 (512 + 46)
-#define NEO_CFG_MPIC_LSFT_CAN_CNF2 (512 + 45)
-#define NEO_CFG_MPIC_LSFT_CAN_CNF3 (512 + 44)
+#define NEO_CFG_MPIC_LSFTCAN_CNF1 (512 + 46)
+#define NEO_CFG_MPIC_LSFTCAN_CNF2 (512 + 45)
+#define NEO_CFG_MPIC_LSFTCAN_CNF3 (512 + 44)
 
 /* Constants used to calculate timestamps */
 #define NEOVI_TIMESTAMP_2 0.1048576
@@ -1146,7 +1146,7 @@ typedef struct _SNeoMostGatewaySettings
 } SNeoMostGatewaySettings;
 #define SNeoMostGatewaySettings_SIZE 4
 
-/* ucInterfaceType in OP_ETH_GENERAL_SETTINGS */
+/* ucInterfaceType in AE_GENERAL_SETTINGS */
 enum
 {
 	OPETH_FUNC_TAP = 0,
@@ -1157,7 +1157,7 @@ enum
 	OPETH_FUNC_RAW_MEDIA_CONVERTER2_LOW_LATENCY,
 };
 
-typedef struct OP_ETH_GENERAL_SETTINGS_t
+typedef struct AE_GENERAL_SETTINGS_t
 {
 	uint8_t ucInterfaceType;
 	uint8_t reserved0[3];
@@ -1179,8 +1179,8 @@ typedef struct OP_ETH_GENERAL_SETTINGS_t
 		} flags;
 		uint32_t uFlags;
 	};
-} OP_ETH_GENERAL_SETTINGS;
-#define OP_ETH_GENERAL_SETTINGS_SIZE 20
+} AE_GENERAL_SETTINGS;
+#define AE_GENERAL_SETTINGS_SIZE 20
 
 typedef struct SRAD_GPTP_SETTINGS_s
 {
@@ -1205,23 +1205,23 @@ typedef struct SRAD_GPTP_SETTINGS_s
 typedef struct SRAD_GPTP_AND_TAP_SETTINGS_s
 {
 	RAD_GPTP_SETTINGS gPTP;
-	OP_ETH_GENERAL_SETTINGS tap;
+	AE_GENERAL_SETTINGS tap;
 } RAD_GPTP_AND_TAP_SETTINGS;
 #define RAD_GPTP_AND_TAP_SETTINGS_SIZE 40
 
 typedef struct HW_ETH_SETTINGS_t
 {
-	OP_ETH_GENERAL_SETTINGS General_Settings;
+	AE_GENERAL_SETTINGS General_Settings;
 } HW_ETH_SETTINGS;
 #define HW_ETH_SETTINGS_SIZE 20
 
-/* ucConfigMode in OP_ETH_SETTINGS */
-typedef enum _opEthLinkMode
+/* ucConfigMode in AE_SETTINGS */
+typedef enum _AELinkMode
 {
-	OPETH_LINK_AUTO = 0,
-	OPETH_LINK_MASTER,
-	OPETH_LINK_SLAVE
-} opEthLinkMode;
+	AE_LINK_AUTO = 0,
+	AE_LINK_MASTER,
+	AE_LINK_SLAVE
+} AELinkMode;
 
 enum
 {
@@ -1229,7 +1229,7 @@ enum
 	OPETH_MAC_SPOOF_SRC_ADDR = 1,
 };
 
-typedef struct OP_ETH_SETTINGS_t
+typedef struct AE_SETTINGS_t
 {
 	uint8_t ucConfigMode;
 	unsigned char preemption_en;
@@ -1248,8 +1248,8 @@ typedef struct OP_ETH_SETTINGS_t
 		};
 		unsigned char reserved0[14];
 	};
-} OP_ETH_SETTINGS;
-#define OP_ETH_SETTINGS_SIZE 16
+} AE_SETTINGS;
+#define AE_SETTINGS_SIZE 16
 
 typedef struct ETHERNET_SETTINGS_t
 {
@@ -1907,7 +1907,7 @@ typedef struct SERDESGEN_SETTINGS_t
 
 typedef struct _RadMoonDuoConverterSettings
 {
-	// OPETH_LINK_AUTO/MASTER/SLAVE
+	// AE_LINK_AUTO/MASTER/SLAVE
 	uint8_t linkMode0;
 	uint8_t linkMode1;
 	// USB/CM or RJ45 selection
@@ -2213,7 +2213,7 @@ typedef struct _SCyanSettings
 	uint16_t idle_wakeup_network_enables_1;
 	uint16_t idle_wakeup_network_enables_2;
 
-	/* reserved for HSCAN6/7, LSFT2, etc.. */
+	/* reserved for DWCAN_06/7, LSFT2, etc.. */
 	uint16_t network_enables_3;
 	uint16_t idle_wakeup_network_enables_3;
 
@@ -2354,7 +2354,7 @@ typedef struct _SECUSettings
 	*/
 	uint32_t ecu_id;
 
-	uint16_t selected_network; // not supported yet - default to HSCAN
+	uint16_t selected_network; // not supported yet - default to DWCAN_01
 
 	CAN_SETTINGS can1;
 	CAN_SETTINGS can2;
@@ -2404,7 +2404,7 @@ typedef struct _SPendantSettings
 	/* see SECUSettings */
 	uint32_t ecu_id;
 
-	uint16_t selected_network; /* not supported yet - default to HSCAN */
+	uint16_t selected_network; /* not supported yet - default to DWCAN_01 */
 
 	CAN_SETTINGS can1;
 	CAN_SETTINGS can2;
@@ -2454,7 +2454,7 @@ typedef struct _SIEVBSettings
 	/* see SECUSettings */
 	uint32_t ecu_id;
 
-	uint16_t selected_network; /* not supported yet - default to HSCAN */
+	uint16_t selected_network; /* not supported yet - default to DWCAN_01 */
 
 	CAN_SETTINGS can1;
 	LIN_SETTINGS lin1;
@@ -2557,19 +2557,19 @@ typedef struct _SRADGalaxySettings
 {
 	uint16_t perf_en;
 
-	OP_ETH_GENERAL_SETTINGS opEthGen;
-	OP_ETH_SETTINGS opEth1;
-	OP_ETH_SETTINGS opEth2;
-	OP_ETH_SETTINGS opEth3;
-	OP_ETH_SETTINGS opEth4;
-	OP_ETH_SETTINGS opEth5;
-	OP_ETH_SETTINGS opEth6;
-	OP_ETH_SETTINGS opEth7;
-	OP_ETH_SETTINGS opEth8;
-	OP_ETH_SETTINGS opEth9;
-	OP_ETH_SETTINGS opEth10;
-	OP_ETH_SETTINGS opEth11;
-	OP_ETH_SETTINGS opEth12;
+	AE_GENERAL_SETTINGS aeGen;
+	AE_SETTINGS ae_01;
+	AE_SETTINGS ae_02;
+	AE_SETTINGS ae_03;
+	AE_SETTINGS ae_04;
+	AE_SETTINGS ae_05;
+	AE_SETTINGS ae_06;
+	AE_SETTINGS ae_07;
+	AE_SETTINGS ae_08;
+	AE_SETTINGS ae_09;
+	AE_SETTINGS ae_10;
+	AE_SETTINGS ae_11;
+	AE_SETTINGS ae_12;
 
 	CAN_SETTINGS can1;
 	CANFD_SETTINGS canfd1;
@@ -2643,10 +2643,9 @@ typedef struct _SRADStar2Settings
 {
 	uint16_t perf_en;
 
-	OP_ETH_GENERAL_SETTINGS opEthGen;
-	OP_ETH_SETTINGS opEth1;
-	OP_ETH_SETTINGS opEth2;
-
+	AE_GENERAL_SETTINGS aeGen;
+	AE_SETTINGS ae_01;
+	AE_SETTINGS ae_02;
 	CAN_SETTINGS can1;
 	CANFD_SETTINGS canfd1;
 	CAN_SETTINGS can2;
@@ -2701,9 +2700,8 @@ typedef struct _SRADSuperMoonSettings
 {
 	uint16_t perf_en;
 
-	OP_ETH_GENERAL_SETTINGS opEthGen;
-	OP_ETH_SETTINGS opEth1;
-
+	AE_GENERAL_SETTINGS aeGen;
+	AE_SETTINGS ae_01;
 	uint16_t network_enables;
 	uint16_t network_enables_2;
 	uint16_t network_enabled_on_boot;
@@ -2798,9 +2796,8 @@ typedef struct _SRADMoon2Settings
 {
 	uint16_t perf_en;
 
-	OP_ETH_GENERAL_SETTINGS opEthGen;
-	OP_ETH_SETTINGS opEth1;
-
+	AE_GENERAL_SETTINGS aeGen;
+	AE_SETTINGS ae_01;
 	uint16_t network_enables;
 	uint16_t network_enables_2;
 	uint16_t network_enabled_on_boot;
@@ -2979,10 +2976,9 @@ typedef struct _SRADGigastarSettings
 
 	LIN_SETTINGS lin1;
 
-	OP_ETH_GENERAL_SETTINGS opEthGen;
-	OP_ETH_SETTINGS opEth1;
-	OP_ETH_SETTINGS opEth2;
-
+	AE_GENERAL_SETTINGS aeGen;
+	AE_SETTINGS ae_01;
+	AE_SETTINGS ae_02;
 	SERDESCAM_SETTINGS serdescam1;
 	SERDESPOC_SETTINGS serdespoc;
 	LOGGER_SETTINGS logger;
@@ -3062,23 +3058,23 @@ typedef struct _SRADGalaxy2Settings
 
 	LIN_SETTINGS lin1;
 
-	OP_ETH_GENERAL_SETTINGS opEthGen;
-	OP_ETH_SETTINGS opEth1;
-	OP_ETH_SETTINGS opEth2;
-	OP_ETH_SETTINGS opEth3;
-	OP_ETH_SETTINGS opEth4;
-	OP_ETH_SETTINGS opEth5;
-	OP_ETH_SETTINGS opEth6;
-	OP_ETH_SETTINGS opEth7;
-	OP_ETH_SETTINGS opEth8;
-	OP_ETH_SETTINGS opEth9;
-	OP_ETH_SETTINGS opEth10;
-	OP_ETH_SETTINGS opEth11;
-	OP_ETH_SETTINGS opEth12;
-	OP_ETH_SETTINGS opEth13;
-	OP_ETH_SETTINGS opEth14;
-	OP_ETH_SETTINGS opEth15;
-	OP_ETH_SETTINGS opEth16;
+	AE_GENERAL_SETTINGS aeGen;
+	AE_SETTINGS ae_01;
+	AE_SETTINGS ae_02;
+	AE_SETTINGS ae_03;
+	AE_SETTINGS ae_04;
+	AE_SETTINGS ae_05;
+	AE_SETTINGS ae_06;
+	AE_SETTINGS ae_07;
+	AE_SETTINGS ae_08;
+	AE_SETTINGS ae_09;
+	AE_SETTINGS ae_10;
+	AE_SETTINGS ae_11;
+	AE_SETTINGS ae_12;
+	AE_SETTINGS ae_13;
+	AE_SETTINGS ae_14;
+	AE_SETTINGS ae_15;
+	AE_SETTINGS ae_16;
 
 	ETHERNET10G_SETTINGS ethernet10g;
 	ETHERNET10G_SETTINGS ethernet10g_2;
@@ -3161,8 +3157,7 @@ typedef struct _CmProbeSettings
 	//	uint16_t        perf_en;
 
 	//	ETHERNET_SETTINGS eth1;  // 16 bytes
-	//	OP_ETH_SETTINGS opEth1;
-
+	//	AE_SETTINGS ae_01;
 	uint16_t network_enables;
 
 	//	uint16_t        misc_io_initial_ddr;
@@ -4564,10 +4559,10 @@ typedef struct _SRADCometSettings
 	// Ethernet 10/100/1000
 	ETHERNET_SETTINGS2 ethernet;
 	// Ethernet General
-	OP_ETH_GENERAL_SETTINGS opEthGen;
+	AE_GENERAL_SETTINGS aeGen;
 	// 100/1000T1
 	ETHERNET_SETTINGS2 ethT1;
-	OP_ETH_SETTINGS opEth1;
+	AE_SETTINGS ae_01;
 	// 10T1S
 	ETHERNET_SETTINGS2 ethT1s1;
 	ETHERNET10T1S_SETTINGS t1s1;
@@ -5232,7 +5227,7 @@ typedef struct _ethernetNetworkStatus_t
 	uint8_t linkStatus;
 	uint8_t linkFullDuplex;
 	uint8_t linkSpeed; // see ethLinkSpeed
-	uint8_t linkMode; // for automotive networks - see opEthLinkMode
+	uint8_t linkMode; // for automotive networks - see AELinkMode
 } ethernetNetworkStatus_t;
 #pragma pack(pop)
 
@@ -5495,8 +5490,8 @@ CHECK_STRUCT_SIZE(SRedSettings);
 CHECK_STRUCT_SIZE(STextAPISettings);
 CHECK_STRUCT_SIZE(stChipVersions);
 CHECK_STRUCT_SIZE(SNeoMostGatewaySettings);
-CHECK_STRUCT_SIZE(OP_ETH_GENERAL_SETTINGS);
-CHECK_STRUCT_SIZE(OP_ETH_SETTINGS);
+CHECK_STRUCT_SIZE(AE_GENERAL_SETTINGS);
+CHECK_STRUCT_SIZE(AE_SETTINGS);
 CHECK_STRUCT_SIZE(ETHERNET_SETTINGS);
 CHECK_STRUCT_SIZE(ETHERNET_SETTINGS2);
 CHECK_STRUCT_SIZE(ETHERNET10G_SETTINGS);

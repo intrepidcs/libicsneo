@@ -14,10 +14,10 @@ enum LinkSpeed {
 };
 
 enum LinkMode {
-	OPETH_LINK_AUTO,
-	OPETH_LINK_MASTER,
-	OPETH_LINK_SLAVE,
-	OPETH_LINK_INVALID = 255,
+	AE_LINK_AUTO,
+	AE_LINK_MASTER,
+	AE_LINK_SLAVE,
+	AE_LINK_INVALID = 255,
 };
 
 struct Packet {
@@ -47,10 +47,10 @@ std::shared_ptr<Message> EthernetStatusMessage::DecodeToMessage(const std::vecto
 	}
 	LinkMode mode;
 	switch(packet->mode) {
-		case OPETH_LINK_INVALID: mode = EthernetStatusMessage::LinkMode::LinkModeInvalid; break;
-		case OPETH_LINK_AUTO: mode = EthernetStatusMessage::LinkMode::LinkModeAuto; break;
-		case OPETH_LINK_MASTER: mode = EthernetStatusMessage::LinkMode::LinkModeMaster; break;
-		case OPETH_LINK_SLAVE: mode = EthernetStatusMessage::LinkMode::LinkModeSlave; break;
+		case AE_LINK_INVALID: mode = EthernetStatusMessage::LinkMode::LinkModeInvalid; break;
+		case AE_LINK_AUTO: mode = EthernetStatusMessage::LinkMode::LinkModeAuto; break;
+		case AE_LINK_MASTER: mode = EthernetStatusMessage::LinkMode::LinkModeMaster; break;
+		case AE_LINK_SLAVE: mode = EthernetStatusMessage::LinkMode::LinkModeSlave; break;
 		default: return nullptr;
 	}
 	return std::make_shared<EthernetStatusMessage>(packet->network, packet->state, speed, packet->duplex, mode);

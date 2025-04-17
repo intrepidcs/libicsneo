@@ -508,7 +508,7 @@ int main() {
 
 			std::cout << "Transmitting a normal CAN frame..." << std::endl;
 			auto msg = std::make_shared<icsneo::CANMessage>();
-			msg->network = icsneo::Network::NetID::HSCAN;
+			msg->network = icsneo::Network::NetID::DWCAN_01;
 			msg->arbid = 0x120;
 			msg->data.insert(msg->data.end(), {0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff});
 			msg->isExtended = false;
@@ -525,7 +525,7 @@ int main() {
 			/** Example of CAN FD
 			std::cout << "Transmitting an extended CAN FD frame... " << std::endl;
 			auto txMessage = std::make_shared<icsneo::CANMessage>();
-			txMessage->network = icsneo::Network::NetID::HSCAN;
+			txMessage->network = icsneo::Network::NetID::DWCAN_01;
 			txMessage->arbid = 0x1C5001C5;
 			txMessage->data.insert(txMessage->data.end(), {0xaa, 0xbb, 0xcc});
 			// The DLC will come from the length of the data vector
@@ -565,7 +565,7 @@ int main() {
 			selectedDevice = selectDevice(devices);
 
 			// Attempt to set baudrate and apply settings
-			if(selectedDevice->settings->setBaudrateFor(icsneo::Network::NetID::HSCAN, 250000) && selectedDevice->settings->apply()) {
+			if(selectedDevice->settings->setBaudrateFor(icsneo::Network::NetID::DWCAN_01, 250000) && selectedDevice->settings->apply()) {
 				std::cout << "Successfully set HS CAN baudrate for " << selectedDevice->describe() << " to 250k!" << std::endl;
 			} else {
 				std::cout << "Failed to set HS CAN baudrate for " << selectedDevice->describe() << " to 250k!" << std::endl << std::endl;
@@ -586,7 +586,7 @@ int main() {
 			selectedDevice = selectDevice(devices);
 
 			// Attempt to set baudrate and apply settings
-			if(selectedDevice->settings->setBaudrateFor(icsneo::Network::NetID::LSFTCAN, 250000) && selectedDevice->settings->apply()) {
+			if(selectedDevice->settings->setBaudrateFor(icsneo::Network::NetID::LSFTCAN_01, 250000) && selectedDevice->settings->apply()) {
 				std::cout << "Successfully set LSFT CAN baudrate for " << selectedDevice->describe() << " to 250k!" << std::endl;
 			} else {
 				std::cout << "Failed to set LSFT CAN baudrate for " << selectedDevice->describe() << " to 250k!" << std::endl << std::endl;
@@ -790,7 +790,7 @@ int main() {
 			selectedDevice = selectDevice(devices);
 
 			std::cout << "Termination is ";
-			const auto val = selectedDevice->settings->isTerminationEnabledFor(icsneo::Network::NetID::HSCAN);
+			const auto val = selectedDevice->settings->isTerminationEnabledFor(icsneo::Network::NetID::DWCAN_01);
 			if(!val.has_value()) {
 				std::cout << "not available at this time: " << icsneo::GetLastError() << std::endl << std::endl;
 				break;
@@ -807,7 +807,7 @@ int main() {
 			}
 
 			// Attempt to set termination and apply settings
-			if(selectedDevice->settings->setTerminationFor(icsneo::Network::NetID::HSCAN, selection2 == '1') && selectedDevice->settings->apply()) {
+			if(selectedDevice->settings->setTerminationFor(icsneo::Network::NetID::DWCAN_01, selection2 == '1') && selectedDevice->settings->apply()) {
 				std::cout << "Successfully set HS CAN termination for " << selectedDevice->describe() << std::endl;
 			} else {
 				std::cout << "Failed to set HS CAN termination for " << selectedDevice->describe() << std::endl;

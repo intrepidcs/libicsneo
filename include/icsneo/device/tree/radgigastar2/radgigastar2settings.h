@@ -89,12 +89,12 @@ namespace icsneo
 		ETHERNET_SETTINGS2 ethernet1;
 		ETHERNET_SETTINGS2 ethernet2;
 		// Ethernet General
-		OP_ETH_GENERAL_SETTINGS opEthGen;
+		AE_GENERAL_SETTINGS aeGen;
 		// 100/1000T1
 		ETHERNET_SETTINGS2 ethT1;
-		OP_ETH_SETTINGS opEth1;
+		AE_SETTINGS ae_01;
 		ETHERNET_SETTINGS2 ethT12;
-		OP_ETH_SETTINGS opEth2;
+		AE_SETTINGS ae_02;
 		// 10T1S
 		ETHERNET_SETTINGS2 ethT1s1;
 		ETHERNET10T1S_SETTINGS t1s1;
@@ -147,13 +147,13 @@ namespace icsneo
 				return nullptr;
 			switch (net.getNetID())
 			{
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->can2);
-			case Network::NetID::HSCAN3:
+			case Network::NetID::DWCAN_03:
 				return &(cfg->can3);
-			case Network::NetID::HSCAN4:
+			case Network::NetID::DWCAN_04:
 				return &(cfg->can4);
 			default:
 				return nullptr;
@@ -166,13 +166,13 @@ namespace icsneo
 				return nullptr;
 			switch (net.getNetID())
 			{
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->canfd1);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->canfd2);
-			case Network::NetID::HSCAN3:
+			case Network::NetID::DWCAN_03:
 				return &(cfg->canfd3);
-			case Network::NetID::HSCAN4:
+			case Network::NetID::DWCAN_04:
 				return &(cfg->canfd4);
 			default:
 				return nullptr;
@@ -182,10 +182,10 @@ namespace icsneo
 		virtual std::vector<TerminationGroup> getTerminationGroups() const override
 		{
 			return {
-				{Network(Network::NetID::HSCAN)},
-				{Network(Network::NetID::HSCAN2)},
-				{Network(Network::NetID::HSCAN3)},
-				{Network(Network::NetID::HSCAN4)}};
+				{Network(Network::NetID::DWCAN_01)},
+				{Network(Network::NetID::DWCAN_02)},
+				{Network(Network::NetID::DWCAN_03)},
+				{Network(Network::NetID::DWCAN_04)}};
 		}
 
 		const LIN_SETTINGS *getLINSettingsFor(Network net) const override
@@ -195,25 +195,25 @@ namespace icsneo
 				return nullptr;
 			switch (net.getNetID())
 			{
-			case Network::NetID::LIN:
+			case Network::NetID::LIN_01:
 				return &(cfg->lin1);
-			case Network::NetID::LIN2:
+			case Network::NetID::LIN_02:
 				return &(cfg->lin2);
-			case Network::NetID::LIN3:
+			case Network::NetID::LIN_03:
 				return &(cfg->lin3);
-			case Network::NetID::LIN4:
+			case Network::NetID::LIN_04:
 				return &(cfg->lin4);
-			case Network::NetID::LIN5:
+			case Network::NetID::LIN_05:
 				return &(cfg->lin5);
-			case Network::NetID::LIN6:
+			case Network::NetID::LIN_06:
 				return &(cfg->lin6);
-			case Network::NetID::LIN7:
+			case Network::NetID::LIN_07:
 				return &(cfg->lin7);
-			case Network::NetID::LIN8:
+			case Network::NetID::LIN_08:
 				return &(cfg->lin8);
-			case Network::NetID::LIN9:
+			case Network::NetID::LIN_09:
 				return &(cfg->lin9);
-			case Network::NetID::LIN10:
+			case Network::NetID::LIN_10:
 				return &(cfg->lin10);
 			default:
 				return nullptr;

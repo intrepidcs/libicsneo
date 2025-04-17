@@ -16,9 +16,9 @@ public:
 	ICSNEO_FINDABLE_DEVICE(RADMoonDuo, DeviceType::RADMoonDuo, "MD");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
-		// If Converter1 Target is set to USB/CM, OP_Ethernet2 will be exposed to the PC
+		// If Converter1 Target is set to USB/CM, AE_02 will be exposed to the PC
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::OP_Ethernet2
+			Network::NetID::AE_02
 		};
 		return supportedNetworks;
 	}

@@ -36,7 +36,7 @@ std::vector<std::shared_ptr<icsneo::Frame>> constructRandomFrames(size_t frameCo
 				// Short Ethernet
 				{
 					auto frame = std::make_shared<icsneo::EthernetMessage>();
-					frame->network = icsneo::Network::NetID::Ethernet;
+					frame->network = icsneo::Network::NetID::ETHERNET_01;
 					frames.push_back(frame);
 					frame->data.resize(ShortEthSize);
 					std::generate(frame->data.begin(), frame->data.end(), randByteGen);
@@ -46,7 +46,7 @@ std::vector<std::shared_ptr<icsneo::Frame>> constructRandomFrames(size_t frameCo
 				// Long Ethernet
 				{
 					auto frame = std::make_shared<icsneo::EthernetMessage>();
-					frame->network = icsneo::Network::NetID::Ethernet;
+					frame->network = icsneo::Network::NetID::ETHERNET_01;
 					frames.push_back(frame);
 					frame->data.resize(LongEthSize);
 					std::generate(frame->data.begin(), frame->data.end(), randByteGen);
@@ -56,7 +56,7 @@ std::vector<std::shared_ptr<icsneo::Frame>> constructRandomFrames(size_t frameCo
 				// Classic CAN
 				{
 					auto frame = std::make_shared<icsneo::CANMessage>();
-					frame->network = icsneo::Network::NetID::HSCAN2;
+					frame->network = icsneo::Network::NetID::DWCAN_02;
 					frames.push_back(frame);
 					frame->data.resize(ClassicCANSize);
 
@@ -67,7 +67,7 @@ std::vector<std::shared_ptr<icsneo::Frame>> constructRandomFrames(size_t frameCo
 				// CAN FD
 				{
 					auto frame = std::make_shared<icsneo::CANMessage>();
-					frame->network = icsneo::Network::NetID::HSCAN3;
+					frame->network = icsneo::Network::NetID::DWCAN_03;
 					frames.push_back(frame);
 					frame->data.resize(CANFDSize);
 					std::generate(frame->data.begin(), frame->data.end(), randByteGen);

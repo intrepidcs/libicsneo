@@ -2,7 +2,7 @@
 Python Examples
 ===============
 
-Transmit CAN frames on HSCAN
+Transmit CAN frames on DW CAN 01
 ============================
 
 .. code-block:: python
@@ -15,7 +15,7 @@ Transmit CAN frames on HSCAN
    device: icsneopy.Device = devices[0]
 
    message = icsneopy.CANMessage()
-   message.network = icsneopy.Network(icsneopy.Network.NetID.HSCAN)
+   message.network = icsneopy.Network(icsneopy.Network.NetID.DWCAN_01)
    message.arbid = 0x56
    message.data = (0x11, 0x22, 0x33)
 
@@ -25,7 +25,7 @@ Transmit CAN frames on HSCAN
 
    device.transmit(message)
      
-Receive CAN frames on HSCAN
+Receive CAN frames on DW CAN 01
 ===========================
 
 .. code-block:: python
@@ -40,7 +40,7 @@ Receive CAN frames on HSCAN
 
    def on_message(message: icsneopy.CANMessage):
        print(message.arbid, message.data)
-   message_filter = icsneopy.MessageFilter(icsneopy.Network.NetID.HSCAN)
+   message_filter = icsneopy.MessageFilter(icsneopy.Network.NetID.DWCAN_01)
    callback = icsneopy.MessageCallback(on_message, message_filter)
 
    device.add_message_callback(callback)
@@ -105,7 +105,7 @@ TC10
 
    device.open()
 
-   netid = icsneopy.Network.NetID.OP_Ethernet1
+   netid = icsneopy.Network.NetID.AE_01
 
    if device.supports_tc10():
       # initial

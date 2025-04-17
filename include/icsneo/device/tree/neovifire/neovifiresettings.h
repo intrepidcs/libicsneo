@@ -105,15 +105,15 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::MSCAN:
+			case Network::NetID::DWCAN_08:
 				return &(cfg->can2);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->can3);
-			case Network::NetID::HSCAN3:
+			case Network::NetID::DWCAN_03:
 				return &(cfg->can4);
-			case Network::NetID::LSFTCAN:
+			case Network::NetID::LSFTCAN_01:
 				return &(cfg->lsftcan);
 			default:
 				return nullptr;
@@ -125,7 +125,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::SWCAN:
+			case Network::NetID::SWCAN_01:
 				return &(cfg->swcan);
 			default:
 				return nullptr;
@@ -136,13 +136,13 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::LIN:
+			case Network::NetID::LIN_01:
 				return &(cfg->lin1);
-			case Network::NetID::LIN2:
+			case Network::NetID::LIN_02:
 				return &(cfg->lin2);
-			case Network::NetID::LIN3:
+			case Network::NetID::LIN_03:
 				return &(cfg->lin3);
-			case Network::NetID::LIN4:
+			case Network::NetID::LIN_04:
 				return &(cfg->lin4);
 			default:
 				return nullptr;

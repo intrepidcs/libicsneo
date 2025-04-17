@@ -117,7 +117,7 @@ int main()
 		// We can transmit messages to read the PHY ID of BCM89810 PHY
 		std::cout << "\tTransmitting a MDIO request to read ID on BCM89810...\n";
 		auto mdio_r = std::make_shared<icsneo::MDIOMessage>();
-		mdio_r->network = icsneo::Network::NetID::MDIO1;
+		mdio_r->network = icsneo::Network::NetID::MDIO_01;
 		mdio_r->phyAddress = 0x00u;
 		mdio_r->regAddress = 0x02u;
 		mdio_r->direction = icsneo::MDIOMessage::Direction::Read;
@@ -128,7 +128,7 @@ int main()
 		// We can transmit messages to write to arbitrary register
 		std::cout << "\tTransmitting a MDIO request to write register on BCM89810...\n";
 		mdio_r = std::make_shared<icsneo::MDIOMessage>();
-		mdio_r->network = icsneo::Network::NetID::MDIO1;
+		mdio_r->network = icsneo::Network::NetID::MDIO_01;
 		mdio_r->phyAddress = 0x00u;
 		mdio_r->regAddress = 0x1Bu;
 		mdio_r->data = {0xAA, 0xAF};
@@ -140,7 +140,7 @@ int main()
 		// We can transmit messages to read back to arbitrary register
 		std::cout << "\tTransmitting a MDIO request to read register on BCM89810...\n";
 		mdio_r = std::make_shared<icsneo::MDIOMessage>();
-		mdio_r->network = icsneo::Network::NetID::MDIO1;
+		mdio_r->network = icsneo::Network::NetID::MDIO_01;
 		mdio_r->phyAddress = 0x00u;
 		mdio_r->regAddress = 0x1Bu;
 		mdio_r->direction = icsneo::MDIOMessage::Direction::Read;
@@ -154,7 +154,7 @@ int main()
 		// We can transmit messages to read the PHY ID of BCM89810 PHY
 		std::cout << "\tTransmitting a MDIO request to read ID on 88Q2112...\n";
 		mdio_r = std::make_shared<icsneo::MDIOMessage>();
-		mdio_r->network = icsneo::Network::NetID::MDIO1;
+		mdio_r->network = icsneo::Network::NetID::MDIO_01;
 		mdio_r->phyAddress = 0x06u;
 		mdio_r->devAddress = 0x01u;
 		mdio_r->regAddress = 0x0002u;
@@ -166,7 +166,7 @@ int main()
 		// We can transmit messages to write to arbitrary register
 		std::cout << "\tTransmitting a MDIO request to write register on 88Q2112...\n";
 		mdio_r = std::make_shared<icsneo::MDIOMessage>();
-		mdio_r->network = icsneo::Network::NetID::MDIO1;
+		mdio_r->network = icsneo::Network::NetID::MDIO_01;
 		mdio_r->phyAddress = 0x06u;
 		mdio_r->devAddress = 0x01u;
 		mdio_r->regAddress = 0x0902u;
@@ -179,7 +179,7 @@ int main()
 		// We can transmit messages to read back to arbitrary register
 		std::cout << "\tTransmitting a MDIO request to read register on 88Q2112...\n";
 		mdio_r = std::make_shared<icsneo::MDIOMessage>();
-		mdio_r->network = icsneo::Network::NetID::MDIO1;
+		mdio_r->network = icsneo::Network::NetID::MDIO_01;
 		mdio_r->phyAddress = 0x06u;
 		mdio_r->devAddress = 0x01u;
 		mdio_r->regAddress = 0x0902u;

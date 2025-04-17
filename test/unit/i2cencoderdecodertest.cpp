@@ -34,7 +34,7 @@ protected:
 	RingBuffer ringBuffer = RingBuffer(128);
 
 	//Read request to the device
-	//Control length 1, control bytes 0x12 (I2C register to read from)
+	//Control length 1, control bytes 0x12 (I2C_01 register to read from)
 	//data length 1: blank bytes padded in that the device will fill in the reply
 	std::vector<uint8_t> testBytes =
 	{0xaa, 0x0c, 0x11, 0x00, 0x58, 0x00, 0x01, 0x00,
@@ -51,7 +51,7 @@ protected:
 TEST_F(I2CEncoderDecoderTest, PacketEncoderTest) {
 	std::vector<uint8_t> bytestream;
 	auto message = std::make_shared<icsneo::I2CMessage>();
-	message->network = icsneo::Network::NetID::I2C;
+	message->network = icsneo::Network::NetID::I2C_01;
 	message->controlBytes.push_back(static_cast<uint8_t>(0x12u)); //Product ID register address
 	message->dataBytes.push_back(static_cast<uint8_t>(0x00u));
 	message->address = 0x68u; //7 bit addressing, BASE_ADDR
@@ -66,7 +66,7 @@ TEST_F(I2CEncoderDecoderTest, PacketDecoderTest) {
 	std::shared_ptr<icsneo::Message> decodeMsg;
 	std::shared_ptr<icsneo::I2CMessage> message = std::make_shared<icsneo::I2CMessage>();
 
-	message->network = icsneo::Network::NetID::I2C;
+	message->network = icsneo::Network::NetID::I2C_01;
 	message->controlBytes.push_back(static_cast<uint8_t>(0x12u)); //Product ID register address
 	message->dataBytes.push_back(static_cast<uint8_t>(0x80u));
 	message->address = 0x68u; //7 bit addressing, BASE_ADDR

@@ -17,7 +17,7 @@ enum RadMoonDuoConverterMode {
 };
 
 typedef struct {
-	// OPETH_LINK_AUTO/MASTER/SLAVE
+	// AE_LINK_AUTO/MASTER/SLAVE
 	uint8_t linkMode0;
 	uint8_t linkMode1;
 	// USB/CM or RJ45 selection (RadMoonDuoConverterMode)

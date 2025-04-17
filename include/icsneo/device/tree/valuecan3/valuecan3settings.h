@@ -41,9 +41,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::MSCAN:
+			case Network::NetID::DWCAN_08:
 				return &(cfg->can2);
 			default:
 				return nullptr;

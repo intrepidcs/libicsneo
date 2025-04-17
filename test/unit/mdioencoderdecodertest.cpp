@@ -82,7 +82,7 @@ protected:
 TEST_F(MDIOEncoderDecoderTest, PacketEncoderClause22Test) {
 	std::vector<uint8_t> bytestream;
 	auto message = std::make_shared<icsneo::MDIOMessage>();
-	message->network = icsneo::Network::NetID::MDIO1;
+	message->network = icsneo::Network::NetID::MDIO_01;
 	message->description = 0xABCD;
 	message->phyAddress = 0x18u;
 	message->devAddress = 0x13u;
@@ -98,7 +98,7 @@ TEST_F(MDIOEncoderDecoderTest, PacketEncoderClause22Test) {
 TEST_F(MDIOEncoderDecoderTest, PacketEncoderClause45Test) {
 	std::vector<uint8_t> bytestream;
 	auto message = std::make_shared<icsneo::MDIOMessage>();
-	message->network = icsneo::Network::NetID::MDIO1;
+	message->network = icsneo::Network::NetID::MDIO_01;
 	message->description = 0xABCD;
 	message->phyAddress = 0x06u;
 	message->devAddress = 0x14u;
@@ -114,7 +114,7 @@ TEST_F(MDIOEncoderDecoderTest, PacketEncoderClause45Test) {
 TEST_F(MDIOEncoderDecoderTest, PacketEncoderClause22MaskTest) {
 	std::vector<uint8_t> bytestream;
 	auto message = std::make_shared<icsneo::MDIOMessage>();
-	message->network = icsneo::Network::NetID::MDIO1;
+	message->network = icsneo::Network::NetID::MDIO_01;
 	message->description = 0xFFFFu;
 	message->phyAddress = 0xFFu;
 	message->devAddress = 0xFFu;
@@ -130,7 +130,7 @@ TEST_F(MDIOEncoderDecoderTest, PacketEncoderClause22MaskTest) {
 TEST_F(MDIOEncoderDecoderTest, PacketEncoderClause45MaskTest) {
 	std::vector<uint8_t> bytestream;
 	auto message = std::make_shared<icsneo::MDIOMessage>();
-	message->network = icsneo::Network::NetID::MDIO1;
+	message->network = icsneo::Network::NetID::MDIO_01;
 	message->description = 0xFFFFu;
 	message->phyAddress = 0xFFu;
 	message->devAddress = 0xFFu;
@@ -147,7 +147,7 @@ TEST_F(MDIOEncoderDecoderTest, PacketDecoderClause22Test) {
 	std::shared_ptr<icsneo::Message> decodeMsg;
 	std::shared_ptr<icsneo::MDIOMessage> message = std::make_shared<icsneo::MDIOMessage>();
 
-	message->network = icsneo::Network::NetID::MDIO1;
+	message->network = icsneo::Network::NetID::MDIO_01;
 	message->description = 0xABCD;
 	message->phyAddress = 0x06u;
 	message->devAddress = 0x00u;
@@ -188,7 +188,7 @@ TEST_F(MDIOEncoderDecoderTest, PacketDecoderClause45Test) {
 	std::shared_ptr<icsneo::Message> decodeMsg;
 	std::shared_ptr<icsneo::MDIOMessage> message = std::make_shared<icsneo::MDIOMessage>();
 
-	message->network = icsneo::Network::NetID::MDIO1;
+	message->network = icsneo::Network::NetID::MDIO_01;
 	message->description = 0xABCD;
 	message->phyAddress = 0x12u;
 	message->devAddress = 0x03u;

@@ -74,23 +74,23 @@ typedef struct {
 
 	LIN_SETTINGS lin1;
 
-	OP_ETH_GENERAL_SETTINGS opEthGen;
-	OP_ETH_SETTINGS opEth1;
-	OP_ETH_SETTINGS opEth2;
-	OP_ETH_SETTINGS opEth3;
-	OP_ETH_SETTINGS opEth4;
-	OP_ETH_SETTINGS opEth5;
-	OP_ETH_SETTINGS opEth6;
-	OP_ETH_SETTINGS opEth7;
-	OP_ETH_SETTINGS opEth8;
-	OP_ETH_SETTINGS opEth9;
-	OP_ETH_SETTINGS opEth10;
-	OP_ETH_SETTINGS opEth11;
-	OP_ETH_SETTINGS opEth12;
-	OP_ETH_SETTINGS opEth13;
-	OP_ETH_SETTINGS opEth14;
-	OP_ETH_SETTINGS opEth15;
-	OP_ETH_SETTINGS opEth16;
+	AE_GENERAL_SETTINGS aeGen;
+	AE_SETTINGS ae_01;
+	AE_SETTINGS ae_02;
+	AE_SETTINGS ae_03;
+	AE_SETTINGS ae_04;
+	AE_SETTINGS ae_05;
+	AE_SETTINGS ae_06;
+	AE_SETTINGS ae_07;
+	AE_SETTINGS ae_08;
+	AE_SETTINGS ae_09;
+	AE_SETTINGS ae_10;
+	AE_SETTINGS ae_11;
+	AE_SETTINGS ae_12;
+	AE_SETTINGS ae_13;
+	AE_SETTINGS ae_14;
+	AE_SETTINGS ae_15;
+	AE_SETTINGS ae_16;
 
 	ETHERNET10G_SETTINGS ethernet10g;
 	ETHERNET10G_SETTINGS ethernet10g_2;
@@ -124,21 +124,21 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::MSCAN:
+			case Network::NetID::DWCAN_08:
 				return &(cfg->can2);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->can3);
-			case Network::NetID::HSCAN3:
+			case Network::NetID::DWCAN_03:
 				return &(cfg->can4);
-			case Network::NetID::HSCAN4:
+			case Network::NetID::DWCAN_04:
 				return &(cfg->can5);
-			case Network::NetID::HSCAN5:
+			case Network::NetID::DWCAN_05:
 				return &(cfg->can6);
-			case Network::NetID::HSCAN6:
+			case Network::NetID::DWCAN_06:
 				return &(cfg->can7);
-			case Network::NetID::HSCAN7:
+			case Network::NetID::DWCAN_07:
 				return &(cfg->can8);
 			default:
 				return nullptr;
@@ -149,21 +149,21 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->canfd1);
-			case Network::NetID::MSCAN:
+			case Network::NetID::DWCAN_08:
 				return &(cfg->canfd2);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->canfd3);
-			case Network::NetID::HSCAN3:
+			case Network::NetID::DWCAN_03:
 				return &(cfg->canfd4);
-			case Network::NetID::HSCAN4:
+			case Network::NetID::DWCAN_04:
 				return &(cfg->canfd5);
-			case Network::NetID::HSCAN5:
+			case Network::NetID::DWCAN_05:
 				return &(cfg->canfd6);
-			case Network::NetID::HSCAN6:
+			case Network::NetID::DWCAN_06:
 				return &(cfg->canfd7);
-			case Network::NetID::HSCAN7:
+			case Network::NetID::DWCAN_07:
 				return &(cfg->canfd8);
 			default:
 				return nullptr;
@@ -175,9 +175,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::LIN:
+			case Network::NetID::LIN_01:
 				return &(cfg->lin1);
-			case Network::NetID::LIN2:
+			case Network::NetID::LIN_02:
 				return &(cfg->lin2);
 			default:
 				return nullptr;

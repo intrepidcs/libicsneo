@@ -14,9 +14,9 @@ namespace icsneo {
 typedef struct {
 	uint16_t perf_en;
 
-	OP_ETH_GENERAL_SETTINGS opEthGen;
-	OP_ETH_SETTINGS opEth1;
-	OP_ETH_SETTINGS opEth2;
+	AE_GENERAL_SETTINGS aeGen;
+	AE_SETTINGS ae_01;
+	AE_SETTINGS ae_02;
 
 	CAN_SETTINGS can1;
 	CANFD_SETTINGS canfd1;
@@ -78,9 +78,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::MSCAN:
+			case Network::NetID::DWCAN_08:
 				return &(cfg->can2);
 			default:
 				return nullptr;
@@ -91,9 +91,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->canfd1);
-			case Network::NetID::MSCAN:
+			case Network::NetID::DWCAN_08:
 				return &(cfg->canfd2);
 			default:
 				return nullptr;
@@ -105,7 +105,7 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::LIN:
+			case Network::NetID::LIN_01:
 				return &(cfg->lin1);
 			default:
 				return nullptr;

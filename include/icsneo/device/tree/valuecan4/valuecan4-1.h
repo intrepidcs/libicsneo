@@ -16,7 +16,7 @@ public:
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
-			Network::NetID::HSCAN
+			Network::NetID::DWCAN_01
 		};
 		return supportedNetworks;
 	}

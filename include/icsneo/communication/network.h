@@ -25,25 +25,25 @@ class Network {
 public:
 	enum class NetID : neonetid_t {
 		Device = 0,
-		HSCAN = 1,
-		MSCAN = 2,
-		SWCAN = 3,
-		LSFTCAN = 4,
+		DWCAN_01 = 1, // previously HSCAN
+		DWCAN_08 = 2, // previously MSCAN
+		SWCAN_01 = 3, // previously SWCAN
+		LSFTCAN_01 = 4, // previously LSFTCAN
 		FordSCP = 5,
 		J1708 = 6,
 		Aux = 7,
 		J1850VPW = 8,
-		ISO9141 = 9,
+		ISO9141_01 = 9, // previously ISO9141
 		DiskData = 10,
 		Main51 = 11,
 		RED = 12,
 		SCI = 13,
-		ISO9141_2 = 14,
+		ISO9141_02 = 14, // previously ISO9141_2
 		ISO14230 = 15,
-		LIN = 16,
-		OP_Ethernet1 = 17,
-		OP_Ethernet2 = 18,
-		OP_Ethernet3 = 19,
+		LIN_01 = 16, // previously LIN
+		AE_01 = 17, // previously OP_Ethernet1
+		AE_02 = 18, // previously OP_Ethernet2
+		AE_03 = 19, // previously OP_Ethernet3
 
 		// START Device Command Returns
 		// When we send a command, the device returns on one of these, depending on command
@@ -70,15 +70,15 @@ public:
 		RED_GET_RTC = 40,
 		// END Device Command Returns
 
-		ISO9141_3 = 41,
-		HSCAN2 = 42,
-		HSCAN3 = 44,
-		OP_Ethernet4 = 45,
-		OP_Ethernet5 = 46,
-		ISO9141_4 = 47,
-		LIN2 = 48,
-		LIN3 = 49,
-		LIN4 = 50,
+		ISO9141_03 = 41, // previously ISO9141_3
+		DWCAN_02 = 42, // previously HSCAN2
+		DWCAN_03 = 44, // previously HSCAN3
+		AE_04 = 45, // previously OP_Ethernet4
+		AE_05 = 46, // previously OP_Ethernet5
+		ISO9141_04 = 47, // previously ISO9141_4
+		LIN_02 = 48, // previously LIN2
+		LIN_03 = 49, // previously LIN3
+		LIN_04 = 50, // previously LIN4
 		// MOST = 51, Old and unused
 		RED_App_Error = 52,
 		CGI = 53,
@@ -89,44 +89,44 @@ public:
 		Read_Datalink_Cm_Rx_Msg = 58,
 		Logging_Overflow = 59,
 		ReadSettings = 60,
-		HSCAN4 = 61,
-		HSCAN5 = 62,
+		DWCAN_04 = 61, // previously HSCAN4
+		DWCAN_05 = 62, // previously HSCAN5
 		RS232 = 63,
-		UART = 64,
-		UART2 = 65,
-		UART3 = 66,
-		UART4 = 67,
-		SWCAN2 = 68,
-		Ethernet_DAQ = 69,
+		UART_01 = 64, // previously UART
+		UART_02 = 65, // previously UART2
+		UART_03 = 66, // previously UART3
+		UART_04 = 67, // previously UART4
+		SWCAN_02 = 68, // previously SWCAN2
+		ETHERNET_DAQ = 69, // previously Ethernet_DAQ
 		Data_To_Host = 70,
 		TextAPI_To_Host = 71,
-		SPI1 = 72,
-		OP_Ethernet6 = 73,
+		SPI_01 = 72, // previously SPI1
+		AE_06 = 73, // previously OP_Ethernet6
 		Red_VBat = 74,
-		OP_Ethernet7 = 75,
-		OP_Ethernet8 = 76,
-		OP_Ethernet9 = 77,
-		OP_Ethernet10 = 78,
-		OP_Ethernet11 = 79,
-		FlexRay1a = 80,
-		FlexRay1b = 81,
-		FlexRay2a = 82,
-		FlexRay2b = 83,
-		LIN5 = 84,
-		FlexRay = 85,
-		FlexRay2 = 86,
-		OP_Ethernet12 = 87,
-		I2C = 88,
-		MOST25 = 90,
-		MOST50 = 91,
-		MOST150 = 92,
-		Ethernet = 93,
+		AE_07 = 75, // previously OP_Ethernet7
+		AE_08 = 76, // previously OP_Ethernet8
+		AE_09 = 77, // previously OP_Ethernet9
+		AE_10 = 78, // previously OP_Ethernet10
+		AE_11 = 79, // previously OP_Ethernet11
+		FLEXRAY_01A = 80, // previously FlexRay1a
+		FLEXRAY_01B = 81, // previously FlexRay1b
+		FLEXRAY_02A = 82, // previously FlexRay2a
+		FLEXRAY_02B = 83, // previously FlexRay2b
+		LIN_05 = 84, // previously LIN5
+		FLEXRAY_01 = 85, // previously FlexRay
+		FLEXRAY_02 = 86, // previously FlexRay2
+		AE_12 = 87, // previously OP_Ethernet12
+		I2C_01 = 88, // previously I2C
+		MOST_25 = 90, // previously MOST25
+		MOST_50 = 91, // previously MOST50
+		MOST_150 = 92, // previously MOST150
+		ETHERNET_01 = 93, // previously Ethernet
 		GMFSA = 94,
 		TCP = 95,
-		HSCAN6 = 96,
-		HSCAN7 = 97,
-		LIN6 = 98,
-		LSFTCAN2 = 99,
+		DWCAN_06 = 96, // previously HSCAN6
+		DWCAN_07 = 97, // previously HSCAN7
+		LIN_06 = 98, // previously LIN6
+		LSFTCAN_02 = 99, // previously LSFTCAN2
 		LogicalDiskInfo = 187,
 		WiVICommand = 221,
 		ScriptStatus = 224,
@@ -139,51 +139,51 @@ public:
 		DeviceStatus = 513,
 		UDP = 514,
 		ForwardedMessage = 516,
-		I2C2 = 517,
-		I2C3 = 518,
-		I2C4 = 519,
-		Ethernet2 = 520,
-		A2B1 = 522,
-		A2B2 = 523,
-		Ethernet3 = 524,
-		WBMS = 532,
-		DWCAN9 = 534,
-		DWCAN10 = 535,
-		DWCAN11 = 536,
-		DWCAN12 = 537,
-		DWCAN13 = 538,
-		DWCAN14 = 539,
-		DWCAN15 = 540,
-		DWCAN16 = 541,
-		LIN7 = 542,
-		LIN8 = 543,
-		SPI2 = 544,
-		MDIO1 = 545,
-		MDIO2 = 546,
-		MDIO3 = 547,
-		MDIO4 = 548,
-		MDIO5 = 549,
-		MDIO6 = 550,
-		MDIO7 = 551,
-		MDIO8 = 552,
-		OP_Ethernet13 = 553,
-		OP_Ethernet14 = 554,
-		OP_Ethernet15 = 555,
-		OP_Ethernet16 = 556,
-		SPI3 = 557,
-		SPI4 = 558,
-		SPI5 = 559,
-		SPI6 = 560,
-		SPI7 = 561,
-		SPI8 = 562,
-		LIN9 = 563,
-		LIN10 = 564,
-		LIN11 = 565,
-		LIN12 = 566,
-		LIN13 = 567,
-		LIN14 = 568,
-		LIN15 = 569,
-		LIN16 = 570,
+		I2C_02 = 517, // previously I2C2
+		I2C_03 = 518, // previously I2C3
+		I2C_04 = 519, // previously I2C4
+		ETHERNET_02 = 520, // previously Ethernet2
+		A2B_01 = 522, // previously A2B1
+		A2B_02 = 523, // previously A2B2
+		ETHERNET_03 = 524, // previously Ethernet3
+		WBMS_01 = 532, // previously WBMS
+		DWCAN_09 = 534, // previously DWCAN9
+		DWCAN_10 = 535, // previously DWCAN10
+		DWCAN_11 = 536, // previously DWCAN11
+		DWCAN_12 = 537, // previously DWCAN12
+		DWCAN_13 = 538, // previously DWCAN13
+		DWCAN_14 = 539, // previously DWCAN14
+		DWCAN_15 = 540, // previously DWCAN15
+		DWCAN_16 = 541, // previously DWCAN16
+		LIN_07 = 542, // previously LIN7
+		LIN_08 = 543, // previously LIN8
+		SPI_02 = 544, // previously SPI2
+		MDIO_01 = 545, // previously MDIO1
+		MDIO_02 = 546, // previously MDIO2
+		MDIO_03 = 547, // previously MDIO3
+		MDIO_04 = 548, // previously MDIO4
+		MDIO_05 = 549, // previously MDIO5
+		MDIO_06 = 550, // previously MDIO6
+		MDIO_07 = 551, // previously MDIO7
+		MDIO_08 = 552, // previously MDIO8
+		AE_13 = 553, // previously OP_Ethernet13
+		AE_14 = 554, // previously OP_Ethernet14
+		AE_15 = 555, // previously OP_Ethernet15
+		AE_16 = 556, // previously OP_Ethernet16
+		SPI_03 = 557, // previously SPI3
+		SPI_04 = 558, // previously SPI4
+		SPI_05 = 559, // previously SPI5
+		SPI_06 = 560, // previously SPI6
+		SPI_07 = 561, // previously SPI7
+		SPI_08 = 562, // previously SPI8
+		LIN_09 = 563, // previously LIN9
+		LIN_10 = 564, // previously LIN10
+		LIN_11 = 565, // previously LIN11
+		LIN_12 = 566, // previously LIN12
+		LIN_13 = 567, // previously LIN13
+		LIN_14 = 568, // previously LIN14
+		LIN_15 = 569, // previously LIN15
+		LIN_16 = 570, // previously LIN16
 		Any = 0xfffe, // Never actually set as type, but used as flag for filtering
 		Invalid = 0xffff
 	};
@@ -206,106 +206,106 @@ public:
 		Other = 0xFF
 	};
 	enum class CoreMini : uint8_t {
-		HSCAN = 0,
-		MSCAN = 1,
-		LIN = 2,
-		LIN2 = 3,
+		DWCAN_01 = 0,
+		DWCAN_08 = 1,
+		LIN_01 = 2,
+		LIN_02 = 3,
 		Virtual = 4,
-		HSCAN2 = 5,
-		LSFTCAN = 6,
-		SWCAN = 7,
-		HSCAN3 = 8,
+		DWCAN_02 = 5,
+		LSFTCAN_01 = 6,
+		SWCAN_01 = 7,
+		DWCAN_03 = 8,
 		CGI = 9,
 		J1850VPW = 10,
-		LIN3 = 11,
-		LIN4 = 12,
+		LIN_03 = 11,
+		LIN_04 = 12,
 		J1708 = 13,
-		HSCAN4 = 14,
-		HSCAN5 = 15,
-		KLine1 = 16,
-		KLine2 = 17,
-		KLine3 = 18,
-		KLine4 = 19,
-		FlexRay1a = 20,
-		UART = 21,
-		UART2 = 22,
-		LIN5 = 23,
-		MOST25 = 24,
-		MOST50 = 25,
-		FlexRay1b = 26,
-		SWCAN2 = 27,
-		EthernetDAQ = 28,
-		Ethernet = 29,
-		FlexRay2a = 30,
-		FlexRay2b = 31,
-		HSCAN6 = 32,
-		HSCAN7 = 33,
-		LIN6 = 34,
-		LSFTCAN2 = 35,
-		OP_Ethernet1 = 36,
-		OP_Ethernet2 = 37,
-		OP_Ethernet3 = 38,
-		OP_Ethernet4 = 39,
-		OP_Ethernet5 = 40,
-		OP_Ethernet6 = 41,
-		OP_Ethernet7 = 42,
-		OP_Ethernet8 = 43,
-		OP_Ethernet9 = 44,
-		OP_Ethernet10 = 45,
-		OP_Ethernet11 = 46,
-		OP_Ethernet12 = 47,
+		DWCAN_04 = 14,
+		DWCAN_05 = 15,
+		ISO9141_01 = 16,
+		ISO9141_02 = 17,
+		ISO9141_03 = 18,
+		ISO9141_04 = 19,
+		FLEXRAY_01A = 20,
+		UART_01 = 21,
+		UART_02 = 22,
+		LIN_05 = 23,
+		MOST_25 = 24,
+		MOST_50 = 25,
+		FLEXRAY_01B = 26,
+		SWCAN_02 = 27,
+		ETHERNET_DAQ = 28,
+		ETHERNET_01 = 29,
+		FLEXRAY_02A = 30,
+		FLEXRAY_02B = 31,
+		DWCAN_06 = 32,
+		DWCAN_07 = 33,
+		LIN_06 = 34,
+		LSFTCAN_02 = 35,
+		AE_01 = 36,
+		AE_02 = 37,
+		AE_03 = 38,
+		AE_04 = 39,
+		AE_05 = 40,
+		AE_06 = 41,
+		AE_07 = 42,
+		AE_08 = 43,
+		AE_09 = 44,
+		AE_10 = 45,
+		AE_11 = 46,
+		AE_12 = 47,
 		TCPVirtual = 48,
 		UDPVirtual = 49,
-		FlexRay1 = 50,
-		FlexRay2 = 51,
+		FLEXRAY_01 = 50,
+		FLEXRAY_02 = 51,
 		ForwardedMessage = 52,
-		I2C1 = 53,
-		I2C2 = 54,
-		I2C3 = 55,
-		I2C4 = 56,
-		Ethernet2 = 57,
-		A2B1 = 58,
-		A2B2 = 59,
-		Ethernet3 = 60,
-		WBMS = 61,
-		DWCAN9 = 62,
-		DWCAN10 = 63,
-		DWCAN11 = 64,
-		DWCAN12 = 65,
-		DWCAN13 = 66,
-		DWCAN14 = 67,
-		DWCAN15 = 68,
-		DWCAN16 = 69,
-		LIN7 = 70,
-		LIN8 = 71,
-		SPI1 = 72,
-		SPI2 = 73,
-		MDIO1 = 75,
-		MDIO2 = 76,
-		MDIO3 = 77,
-		MDIO4 = 78,
-		MDIO5 = 79,
-		MDIO6 = 80,
-		MDIO7 = 81,
-		MDIO8 = 82,
-		OP_Ethernet13 = 83,
-		OP_Ethernet14 = 84,
-		OP_Ethernet15 = 85,
-		OP_Ethernet16 = 86,
-		SPI3 = 87,
-		SPI4 = 88,
-		SPI5 = 89,
-		SPI6 = 90,
-		SPI7 = 91,
-		SPI8 = 92,
-		LIN9 = 93,
-		LIN10 = 94,
-		LIN11 = 95,
-		LIN12 = 96,
-		LIN13 = 97,
-		LIN14 = 98,
-		LIN15 = 99,
-		LIN16 = 100,
+		I2C_01 = 53,
+		I2C_02 = 54,
+		I2C_03 = 55,
+		I2C_04 = 56,
+		ETHERNET_02 = 57,
+		A2B_01 = 58,
+		A2B_02 = 59,
+		ETHERNET_03 = 60,
+		WBMS_01 = 61,
+		DWCAN_09 = 62,
+		DWCAN_10 = 63,
+		DWCAN_11 = 64,
+		DWCAN_12 = 65,
+		DWCAN_13 = 66,
+		DWCAN_14 = 67,
+		DWCAN_15 = 68,
+		DWCAN_16 = 69,
+		LIN_07 = 70,
+		LIN_08 = 71,
+		SPI_01 = 72,
+		SPI_02 = 73,
+		MDIO_01 = 75,
+		MDIO_02 = 76,
+		MDIO_03 = 77,
+		MDIO_04 = 78,
+		MDIO_05 = 79,
+		MDIO_06 = 80,
+		MDIO_07 = 81,
+		MDIO_08 = 82,
+		AE_13 = 83,
+		AE_14 = 84,
+		AE_15 = 85,
+		AE_16 = 86,
+		SPI_03 = 87,
+		SPI_04 = 88,
+		SPI_05 = 89,
+		SPI_06 = 90,
+		SPI_07 = 91,
+		SPI_08 = 92,
+		LIN_09 = 93,
+		LIN_10 = 94,
+		LIN_11 = 95,
+		LIN_12 = 96,
+		LIN_13 = 97,
+		LIN_14 = 98,
+		LIN_15 = 99,
+		LIN_16 = 100,
 	};
 	static const char* GetTypeString(Type type) {
 		switch(type) {
@@ -330,7 +330,7 @@ public:
 		case Type::SWCAN:
 			return "Single Wire CAN";
 		case Type::I2C:
-			return "I²C";
+			return "I2C";
 		case Type::A2B:
 			return "A2B";
 		case Type::SPI:
@@ -360,13 +360,13 @@ public:
 		case 0:
 			return NetID::Device;
 		case 1:
-			return NetID::HSCAN;
+			return NetID::DWCAN_01;
 		case 2:
-			return NetID::MSCAN;
+			return NetID::DWCAN_08;
 		case 3:
-			return NetID::SWCAN;
+			return NetID::SWCAN_01;
 		case 4:
-			return NetID::LSFTCAN;
+			return NetID::LSFTCAN_01;
 		case 5:
 			return NetID::FordSCP;
 		case 6:
@@ -376,7 +376,7 @@ public:
 		case 8:
 			return NetID::J1850VPW;
 		case 9:
-			return NetID::ISO9141;
+			return NetID::ISO9141_01;
 		case 10:
 			return NetID::DiskData;
 		case 11:
@@ -386,79 +386,79 @@ public:
 		case 13:
 			return NetID::SCI;
 		case 14:
-			return NetID::ISO9141_2;
+			return NetID::ISO9141_02;
 		case 15:
 			return NetID::ISO14230;
 		case 16:
-			return NetID::LIN;
+			return NetID::LIN_01;
 		case 17:
-			return NetID::ISO9141_3;
+			return NetID::ISO9141_03;
 		case 18:
-			return NetID::HSCAN2;
+			return NetID::DWCAN_02;
 		case 19:
-			return NetID::HSCAN3;
+			return NetID::DWCAN_03;
 		case 20:
-			return NetID::ISO9141_4;
+			return NetID::ISO9141_04;
 		case 21:
-			return NetID::LIN2;
+			return NetID::LIN_02;
 		case 22:
-			return NetID::LIN3;
+			return NetID::LIN_03;
 		case 23:
-			return NetID::LIN4;
+			return NetID::LIN_04;
 		//case 24:
 		//	return NetID::MOST;	// Deprecated
 		case 25:
 			return NetID::CGI;
 		case 26:
-			return NetID::I2C;
+			return NetID::I2C_01;
 		case 27:
-			return NetID::SPI1;
+			return NetID::SPI_01;
 		case 28:
-			return NetID::FlexRay1a;
+			return NetID::FLEXRAY_01A;
 		case 29:
-			return NetID::MOST25;
+			return NetID::MOST_25;
 		case 30:
-			return NetID::MOST50;
+			return NetID::MOST_50;
 		case 31:
-			return NetID::MOST150;
+			return NetID::MOST_150;
 		case 32:
-			return NetID::HSCAN4;
+			return NetID::DWCAN_04;
 		case 33:
-			return NetID::HSCAN5;
+			return NetID::DWCAN_05;
 		case 34:
 			return NetID::RS232;
 		case 35:
-			return NetID::UART;
+			return NetID::UART_01;
 		case 36:
-			return NetID::UART2;
+			return NetID::UART_02;
 		case 37:
-			return NetID::UART3;
+			return NetID::UART_03;
 		case 38:
-			return NetID::UART4;
+			return NetID::UART_04;
 		case 39:
-			return NetID::SWCAN2;
+			return NetID::SWCAN_02;
 		case 40:
-			return NetID::FlexRay1b;
+			return NetID::FLEXRAY_01B;
 		case 41:
-			return NetID::FlexRay2a;
+			return NetID::FLEXRAY_02A;
 		case 42:
-			return NetID::FlexRay2b;
+			return NetID::FLEXRAY_02B;
 		case 43:
-			return NetID::LIN5;
+			return NetID::LIN_05;
 		case 44:
-			return NetID::Ethernet;
+			return NetID::ETHERNET_01;
 		case 45:
-			return NetID::Ethernet_DAQ;
+			return NetID::ETHERNET_DAQ;
 		case 46:
 			return NetID::RED_App_Error;
 		case 47:
-			return NetID::HSCAN6;
+			return NetID::DWCAN_06;
 		case 48:
-			return NetID::HSCAN7;
+			return NetID::DWCAN_07;
 		case 49:
-			return NetID::LIN6;
+			return NetID::LIN_06;
 		case 50:
-			return NetID::LSFTCAN2;
+			return NetID::LSFTCAN_02;
 		}
 	}
 	static bool Within(neonetid_t value, neonetid_t min, neonetid_t max) {
@@ -517,50 +517,50 @@ public:
 		}
 
 		switch(netid) {
-		case NetID::HSCAN:
-		case NetID::MSCAN:
-		case NetID::HSCAN2:
-		case NetID::HSCAN3:
-		case NetID::HSCAN4:
-		case NetID::HSCAN5:
-		case NetID::HSCAN6:
-		case NetID::HSCAN7:
-		case NetID::DWCAN9:
-		case NetID::DWCAN10:
-		case NetID::DWCAN11:
-		case NetID::DWCAN12:
-		case NetID::DWCAN13:
-		case NetID::DWCAN14:
-		case NetID::DWCAN15:
-		case NetID::DWCAN16:
+		case NetID::DWCAN_01:
+		case NetID::DWCAN_08:
+		case NetID::DWCAN_02:
+		case NetID::DWCAN_03:
+		case NetID::DWCAN_04:
+		case NetID::DWCAN_05:
+		case NetID::DWCAN_06:
+		case NetID::DWCAN_07:
+		case NetID::DWCAN_09:
+		case NetID::DWCAN_10:
+		case NetID::DWCAN_11:
+		case NetID::DWCAN_12:
+		case NetID::DWCAN_13:
+		case NetID::DWCAN_14:
+		case NetID::DWCAN_15:
+		case NetID::DWCAN_16:
 			return Type::CAN;
-		case NetID::LIN:
-		case NetID::LIN2:
-		case NetID::LIN3:
-		case NetID::LIN4:
-		case NetID::LIN5:
-		case NetID::LIN6:
-		case NetID::LIN7:
-		case NetID::LIN8:
-		case NetID::LIN9:
-		case NetID::LIN10:
-		case NetID::LIN11:
-		case NetID::LIN12:
-		case NetID::LIN13:
-		case NetID::LIN14:
-		case NetID::LIN15:
-		case NetID::LIN16:
+		case NetID::LIN_01:
+		case NetID::LIN_02:
+		case NetID::LIN_03:
+		case NetID::LIN_04:
+		case NetID::LIN_05:
+		case NetID::LIN_06:
+		case NetID::LIN_07:
+		case NetID::LIN_08:
+		case NetID::LIN_09:
+		case NetID::LIN_10:
+		case NetID::LIN_11:
+		case NetID::LIN_12:
+		case NetID::LIN_13:
+		case NetID::LIN_14:
+		case NetID::LIN_15:
+		case NetID::LIN_16:
 			return Type::LIN;
-		case NetID::FlexRay:
-		case NetID::FlexRay1a:
-		case NetID::FlexRay1b:
-		case NetID::FlexRay2:
-		case NetID::FlexRay2a:
-		case NetID::FlexRay2b:
+		case NetID::FLEXRAY_01:
+		case NetID::FLEXRAY_01A:
+		case NetID::FLEXRAY_01B:
+		case NetID::FLEXRAY_02:
+		case NetID::FLEXRAY_02A:
+		case NetID::FLEXRAY_02B:
 			return Type::FlexRay;
-		case NetID::MOST25:
-		case NetID::MOST50:
-		case NetID::MOST150:
+		case NetID::MOST_25:
+		case NetID::MOST_50:
+		case NetID::MOST_150:
 			return Type::MOST;
 		case NetID::RED:
 		case NetID::RED_OLDFORMAT:
@@ -587,63 +587,63 @@ public:
 		case NetID::Invalid:
 		case NetID::Any:
 			return Type::Invalid;
-		case NetID::Ethernet:
-		case NetID::Ethernet_DAQ:
-		case NetID::Ethernet2:
-		case NetID::Ethernet3:
-		case NetID::OP_Ethernet1:
-		case NetID::OP_Ethernet2:
-		case NetID::OP_Ethernet3:
-		case NetID::OP_Ethernet4:
-		case NetID::OP_Ethernet5:
-		case NetID::OP_Ethernet6:
-		case NetID::OP_Ethernet7:
-		case NetID::OP_Ethernet8:
-		case NetID::OP_Ethernet9:
-		case NetID::OP_Ethernet10:
-		case NetID::OP_Ethernet11:
-		case NetID::OP_Ethernet12:
-		case NetID::OP_Ethernet13:
-		case NetID::OP_Ethernet14:
-		case NetID::OP_Ethernet15:
-		case NetID::OP_Ethernet16:
+		case NetID::ETHERNET_01:
+		case NetID::ETHERNET_DAQ:
+		case NetID::ETHERNET_02:
+		case NetID::ETHERNET_03:
+		case NetID::AE_01:
+		case NetID::AE_02:
+		case NetID::AE_03:
+		case NetID::AE_04:
+		case NetID::AE_05:
+		case NetID::AE_06:
+		case NetID::AE_07:
+		case NetID::AE_08:
+		case NetID::AE_09:
+		case NetID::AE_10:
+		case NetID::AE_11:
+		case NetID::AE_12:
+		case NetID::AE_13:
+		case NetID::AE_14:
+		case NetID::AE_15:
+		case NetID::AE_16:
 			return Type::Ethernet;
-		case NetID::LSFTCAN:
-		case NetID::LSFTCAN2:
+		case NetID::LSFTCAN_01:
+		case NetID::LSFTCAN_02:
 			return Type::LSFTCAN;
-		case NetID::SWCAN:
-		case NetID::SWCAN2:
+		case NetID::SWCAN_01:
+		case NetID::SWCAN_02:
 			return Type::SWCAN;
-		case NetID::ISO9141:
-		case NetID::ISO9141_2:
-		case NetID::ISO9141_3:
-		case NetID::ISO9141_4:
+		case NetID::ISO9141_01:
+		case NetID::ISO9141_02:
+		case NetID::ISO9141_03:
+		case NetID::ISO9141_04:
 			return Type::ISO9141;
-		case NetID::I2C:
-		case NetID::I2C2:
-		case NetID::I2C3:
-		case NetID::I2C4:
+		case NetID::I2C_01:
+		case NetID::I2C_02:
+		case NetID::I2C_03:
+		case NetID::I2C_04:
 			return Type::I2C;
-		case NetID::A2B1:
-		case NetID::A2B2:
+		case NetID::A2B_01:
+		case NetID::A2B_02:
 			return Type::A2B;
-		case NetID::SPI1:
-		case NetID::SPI2:
-		case NetID::SPI3:
-		case NetID::SPI4:
-		case NetID::SPI5:
-		case NetID::SPI6:
-		case NetID::SPI7:
-		case NetID::SPI8:
+		case NetID::SPI_01:
+		case NetID::SPI_02:
+		case NetID::SPI_03:
+		case NetID::SPI_04:
+		case NetID::SPI_05:
+		case NetID::SPI_06:
+		case NetID::SPI_07:
+		case NetID::SPI_08:
 			return Type::SPI;
-		case NetID::MDIO1:
-		case NetID::MDIO2:
-		case NetID::MDIO3:
-		case NetID::MDIO4:
-		case NetID::MDIO5:
-		case NetID::MDIO6:
-		case NetID::MDIO7:
-		case NetID::MDIO8:
+		case NetID::MDIO_01:
+		case NetID::MDIO_02:
+		case NetID::MDIO_03:
+		case NetID::MDIO_04:
+		case NetID::MDIO_05:
+		case NetID::MDIO_06:
+		case NetID::MDIO_07:
+		case NetID::MDIO_08:
 			return Type::MDIO;
 		default:
 			return Type::Other;
@@ -656,14 +656,14 @@ public:
 		switch(netid) {
 		case NetID::Device:
 			return "neoVI";
-		case NetID::HSCAN:
-			return "HSCAN";
-		case NetID::MSCAN:
-			return "MSCAN";
-		case NetID::SWCAN:
-			return "SWCAN";
-		case NetID::LSFTCAN:
-			return "LSFTCAN";
+		case NetID::DWCAN_01:
+			return "DW CAN 01";
+		case NetID::DWCAN_08:
+			return "DW CAN 08";
+		case NetID::SWCAN_01:
+			return "SW CAN 01";
+		case NetID::LSFTCAN_01:
+			return "LSFT CAN 01";
 		case NetID::FordSCP:
 			return "FordSCP";
 		case NetID::J1708:
@@ -672,8 +672,8 @@ public:
 			return "Aux";
 		case NetID::J1850VPW:
 			return "J1850 VPW";
-		case NetID::ISO9141:
-			return "ISO 9141";
+		case NetID::ISO9141_01:
+			return "ISO 9141 01";
 		case NetID::DiskData:
 			return "Disk Data";
 		case NetID::Main51:
@@ -682,18 +682,18 @@ public:
 			return "RED";
 		case NetID::SCI:
 			return "SCI";
-		case NetID::ISO9141_2:
-			return "ISO 9141 2";
+		case NetID::ISO9141_02:
+			return "ISO 9141 02";
 		case NetID::ISO14230:
 			return "ISO 14230";
-		case NetID::LIN:
-			return "LIN";
-		case NetID::OP_Ethernet1:
-			return "OP (BR) Ethernet 1";
-		case NetID::OP_Ethernet2:
-			return "OP (BR) Ethernet 2";
-		case NetID::OP_Ethernet3:
-			return "OP (BR) Ethernet 3";
+		case NetID::LIN_01:
+			return "LIN 01";
+		case NetID::AE_01:
+			return "AE 01";
+		case NetID::AE_02:
+			return "AE 02";
+		case NetID::AE_03:
+			return "AE 03";
 		case NetID::RED_EXT_MEMORYREAD:
 			return "RED_EXT_MEMORYREAD";
 		case NetID::RED_INT_MEMORYREAD:
@@ -736,24 +736,24 @@ public:
 			return "RED_HARDWARE_EXCEP";
 		case NetID::RED_GET_RTC:
 			return "RED_GET_RTC";
-		case NetID::ISO9141_3:
-			return "ISO 9141 3";
-		case NetID::HSCAN2:
-			return "HSCAN 2";
-		case NetID::HSCAN3:
-			return "HSCAN 3";
-		case NetID::OP_Ethernet4:
-			return "OP (BR) Ethernet 4";
-		case NetID::OP_Ethernet5:
-			return "OP (BR) Ethernet 5";
-		case NetID::ISO9141_4:
-			return "ISO 9141 4";
-		case NetID::LIN2:
-			return "LIN 2";
-		case NetID::LIN3:
-			return "LIN 3";
-		case NetID::LIN4:
-			return "LIN 4";
+		case NetID::ISO9141_03:
+			return "ISO 9141 03";
+		case NetID::DWCAN_02:
+			return "DW CAN 02";
+		case NetID::DWCAN_03:
+			return "DW CAN 03";
+		case NetID::AE_04:
+			return "AE 04";
+		case NetID::AE_05:
+			return "AE 05";
+		case NetID::ISO9141_04:
+			return "ISO 9141 04";
+		case NetID::LIN_02:
+			return "LIN 02";
+		case NetID::LIN_03:
+			return "LIN 03";
+		case NetID::LIN_04:
+			return "LIN 04";
 		case NetID::RED_App_Error:
 			return "App Error";
 		case NetID::CGI:
@@ -772,88 +772,88 @@ public:
 			return "Logging Overflow";
 		case NetID::ReadSettings:
 			return "Read Settings";
-		case NetID::HSCAN4:
-			return "HSCAN 4";
-		case NetID::HSCAN5:
-			return "HSCAN 5";
+		case NetID::DWCAN_04:
+			return "DW CAN 04";
+		case NetID::DWCAN_05:
+			return "DW CAN 05";
 		case NetID::RS232:
 			return "RS232";
-		case NetID::UART:
-			return "UART";
-		case NetID::UART2:
-			return "UART 2";
-		case NetID::UART3:
-			return "UART 3";
-		case NetID::UART4:
-			return "UART 4";
-		case NetID::SWCAN2:
-			return "SWCAN 2";
-		case NetID::Ethernet_DAQ:
+		case NetID::UART_01:
+			return "UART 01";
+		case NetID::UART_02:
+			return "UART 02";
+		case NetID::UART_03:
+			return "UART 03";
+		case NetID::UART_04:
+			return "UART 04";
+		case NetID::SWCAN_02:
+			return "SW CAN 02";
+		case NetID::ETHERNET_DAQ:
 			return "Ethernet DAQ";
 		case NetID::Data_To_Host:
 			return "Data To Host";
 		case NetID::TextAPI_To_Host:
 			return "TextAPI To Host";
-		case NetID::OP_Ethernet6:
-			return "OP (BR) Ethernet 6";
+		case NetID::AE_06:
+			return "AE 06";
 		case NetID::Red_VBat:
 			return "Red VBat";
-		case NetID::OP_Ethernet7:
-			return "OP (BR) Ethernet 7";
-		case NetID::OP_Ethernet8:
-			return "OP (BR) Ethernet 8";
-		case NetID::OP_Ethernet9:
-			return "OP (BR) Ethernet 9";
-		case NetID::OP_Ethernet10:
-			return "OP (BR) Ethernet 10";
-		case NetID::OP_Ethernet11:
-			return "OP (BR) Ethernet 11";
-		case NetID::FlexRay1a:
-			return "FlexRay 1a";
-		case NetID::FlexRay1b:
-			return "FlexRay 1b";
-		case NetID::FlexRay2a:
-			return "FlexRay 2a";
-		case NetID::FlexRay2b:
-			return "FlexRay 2b";
-		case NetID::LIN5:
-			return "LIN 5";
-		case NetID::FlexRay:
-			return "FlexRay";
-		case NetID::FlexRay2:
-			return "FlexRay 2";
-		case NetID::OP_Ethernet12:
-			return "OP (BR) Ethernet 12";
-		case NetID::OP_Ethernet13:
-			return "OP (BR) Ethernet 13";
-		case NetID::OP_Ethernet14:
-			return "OP (BR) Ethernet 14";
-		case NetID::OP_Ethernet15:
-			return "OP (BR) Ethernet 15";
-		case NetID::OP_Ethernet16:
-			return "OP (BR) Ethernet 16";
-		case NetID::I2C:
-			return "I2C";
-		case NetID::MOST25:
-			return "MOST25";
-		case NetID::MOST50:
-			return "MOST50";
-		case NetID::MOST150:
-			return "MOST150";
-		case NetID::Ethernet:
+		case NetID::AE_07:
+			return "AE 07";
+		case NetID::AE_08:
+			return "AE 08";
+		case NetID::AE_09:
+			return "AE 09";
+		case NetID::AE_10:
+			return "AE 10";
+		case NetID::AE_11:
+			return "AE 11";
+		case NetID::FLEXRAY_01A:
+			return "FlexRay 01A";
+		case NetID::FLEXRAY_01B:
+			return "FlexRay 01B";
+		case NetID::FLEXRAY_02A:
+			return "FlexRay 02A";
+		case NetID::FLEXRAY_02B:
+			return "FlexRay 02B";
+		case NetID::LIN_05:
+			return "LIN 05";
+		case NetID::FLEXRAY_01:
+			return "FlexRay 01";
+		case NetID::FLEXRAY_02:
+			return "FlexRay 02";
+		case NetID::AE_12:
+			return "AE 12";
+		case NetID::AE_13:
+			return "AE 13";
+		case NetID::AE_14:
+			return "AE 14";
+		case NetID::AE_15:
+			return "AE 15";
+		case NetID::AE_16:
+			return "AE 16";
+		case NetID::I2C_01:
+			return "I2C 01";
+		case NetID::MOST_25:
+			return "MOST 25";
+		case NetID::MOST_50:
+			return "MOST 50";
+		case NetID::MOST_150:
+			return "MOST 150";
+		case NetID::ETHERNET_01:
 			return "Ethernet";
 		case NetID::GMFSA:
 			return "GMFSA";
 		case NetID::TCP:
 			return "TCP";
-		case NetID::HSCAN6:
-			return "HSCAN 6";
-		case NetID::HSCAN7:
-			return "HSCAN 7";
-		case NetID::LIN6:
-			return "LIN 6";
-		case NetID::LSFTCAN2:
-			return "LSFTCAN 2";
+		case NetID::DWCAN_06:
+			return "DW CAN 06";
+		case NetID::DWCAN_07:
+			return "DW CAN 07";
+		case NetID::LIN_06:
+			return "LIN 06";
+		case NetID::LSFTCAN_02:
+			return "LSFT CAN 02";
 		case NetID::LogicalDiskInfo:
 			return "Logical Disk Information";
 		case NetID::WiVICommand:
@@ -878,90 +878,90 @@ public:
 			return "UDP";
 		case NetID::ForwardedMessage:
 			return "Forwarded Message";
-		case NetID::I2C2:
-			return "I2C 2";
-		case NetID::I2C3:
-			return "I2C 3";
-		case NetID::I2C4:
-			return "I2C 4";
-		case NetID::Ethernet2:
-			return "Ethernet 2";
-		case NetID::A2B1:
-			return "A2B 1";
-		case NetID::A2B2:
-			return "A2B 2";
-		case NetID::DWCAN9:
-			return "DWCAN 09";
-		case NetID::DWCAN10:
-			return "DWCAN 10";
-		case NetID::DWCAN11:
-			return "DWCAN 11";
-		case NetID::DWCAN12:
-			return "DWCAN 12";
-		case NetID::DWCAN13:
-			return "DWCAN 13";
-		case NetID::DWCAN14:
-			return "DWCAN 14";
-		case NetID::DWCAN15:
-			return "DWCAN 15";
-		case NetID::DWCAN16:
-			return "DWCAN 16";
-		case NetID::Ethernet3:
+		case NetID::I2C_02:
+			return "I2C 02";
+		case NetID::I2C_03:
+			return "I2C 03";
+		case NetID::I2C_04:
+			return "I2C 04";
+		case NetID::ETHERNET_02:
+			return "Ethernet 02";
+		case NetID::A2B_01:
+			return "A2B 01";
+		case NetID::A2B_02:
+			return "A2B 02";
+		case NetID::DWCAN_09:
+			return "DW CAN 09";
+		case NetID::DWCAN_10:
+			return "DW CAN 10";
+		case NetID::DWCAN_11:
+			return "DW CAN 11";
+		case NetID::DWCAN_12:
+			return "DW CAN 12";
+		case NetID::DWCAN_13:
+			return "DW CAN 13";
+		case NetID::DWCAN_14:
+			return "DW CAN 14";
+		case NetID::DWCAN_15:
+			return "DW CAN 15";
+		case NetID::DWCAN_16:
+			return "DW CAN 16";
+		case NetID::ETHERNET_03:
 			return "Ethernet 03";
-		case NetID::LIN7:
+		case NetID::LIN_07:
 			return "LIN 07";
-		case NetID::LIN8:
+		case NetID::LIN_08:
 			return "LIN 08";
-		case NetID::LIN9:
+		case NetID::LIN_09:
 			return "LIN 09";
-		case NetID::LIN10:
+		case NetID::LIN_10:
 			return "LIN 10";
-		case NetID::LIN11:
+		case NetID::LIN_11:
 			return "LIN 11";
-		case NetID::LIN12:
+		case NetID::LIN_12:
 			return "LIN 12";
-		case NetID::LIN13:
+		case NetID::LIN_13:
 			return "LIN 13";
-		case NetID::LIN14:
+		case NetID::LIN_14:
 			return "LIN 14";
-		case NetID::LIN15:
+		case NetID::LIN_15:
 			return "LIN 15";
-		case NetID::LIN16:
+		case NetID::LIN_16:
 			return "LIN 16";
-		case NetID::WBMS:
-			return "WBMS";
-		case NetID::SPI1:
-			return "SPI 1";
-		case NetID::SPI2:
-			return "SPI 2";
-		case NetID::SPI3:
-			return "SPI 3";
-		case NetID::SPI4:
-			return "SPI 4";
-		case NetID::SPI5:
-			return "SPI 5";
-		case NetID::SPI6:
-			return "SPI 6";
-		case NetID::SPI7:
-			return "SPI 7";
-		case NetID::SPI8:
-			return "SPI 8";
-		case NetID::MDIO1:
-			return "MDIO 1";
-		case NetID::MDIO2:
-			return "MDIO 2";
-		case NetID::MDIO3:
-			return "MDIO 3";
-		case NetID::MDIO4:
-			return "MDIO 4";
-		case NetID::MDIO5:
-			return "MDIO 5";
-		case NetID::MDIO6:
-			return "MDIO 6";
-		case NetID::MDIO7:
-			return "MDIO 7";
-		case NetID::MDIO8:
-			return "MDIO 8";
+		case NetID::WBMS_01:
+			return "WBMS 01";
+		case NetID::SPI_01:
+			return "SPI 01";
+		case NetID::SPI_02:
+			return "SPI 02";
+		case NetID::SPI_03:
+			return "SPI 03";
+		case NetID::SPI_04:
+			return "SPI 04";
+		case NetID::SPI_05:
+			return "SPI 05";
+		case NetID::SPI_06:
+			return "SPI 06";
+		case NetID::SPI_07:
+			return "SPI 07";
+		case NetID::SPI_08:
+			return "SPI 08";
+		case NetID::MDIO_01:
+			return "MDIO 01";
+		case NetID::MDIO_02:
+			return "MDIO 02";
+		case NetID::MDIO_03:
+			return "MDIO 03";
+		case NetID::MDIO_04:
+			return "MDIO 04";
+		case NetID::MDIO_05:
+			return "MDIO 05";
+		case NetID::MDIO_06:
+			return "MDIO 06";
+		case NetID::MDIO_07:
+			return "MDIO 07";
+		case NetID::MDIO_08:
+			return "MDIO 08";
 		case NetID::Any:
 		case NetID::Invalid:
 			break;
@@ -970,412 +970,412 @@ public:
 	}
 	static std::optional<CoreMini> GetCoreMiniNetworkFromNetID(NetID netid) {
 		switch(netid) {
-		case NetID::HSCAN:
-			return CoreMini::HSCAN;
-		case NetID::MSCAN:
-			return CoreMini::MSCAN;
-		case NetID::LIN:
-			return CoreMini::LIN;
-		case NetID::LIN2:
-			return CoreMini::LIN2;
+		case NetID::DWCAN_01:
+			return CoreMini::DWCAN_01;
+		case NetID::DWCAN_08:
+			return CoreMini::DWCAN_08;
+		case NetID::LIN_01:
+			return CoreMini::LIN_01;
+		case NetID::LIN_02:
+			return CoreMini::LIN_02;
 		case NetID::Device:
 			return CoreMini::Virtual;
-		case NetID::HSCAN2:
-			return CoreMini::HSCAN2;
-		case NetID::LSFTCAN:
-			return CoreMini::LSFTCAN;
-		case NetID::SWCAN:
-			return CoreMini::SWCAN;
-		case NetID::HSCAN3:
-			return CoreMini::HSCAN3;
+		case NetID::DWCAN_02:
+			return CoreMini::DWCAN_02;
+		case NetID::LSFTCAN_01:
+			return CoreMini::LSFTCAN_01;
+		case NetID::SWCAN_01:
+			return CoreMini::SWCAN_01;
+		case NetID::DWCAN_03:
+			return CoreMini::DWCAN_03;
 		case NetID::CGI:
 			return CoreMini::CGI;
 		case NetID::J1850VPW:
 			return CoreMini::J1850VPW;
-		case NetID::LIN3:
-			return CoreMini::LIN3;
-		case NetID::LIN4:
-			return CoreMini::LIN4;
+		case NetID::LIN_03:
+			return CoreMini::LIN_03;
+		case NetID::LIN_04:
+			return CoreMini::LIN_04;
 		case NetID::J1708:
 			return CoreMini::J1708;
-		case NetID::HSCAN4:
-			return CoreMini::HSCAN4;
-		case NetID::HSCAN5:
-			return CoreMini::HSCAN5;
-		case NetID::ISO9141:
-			return CoreMini::KLine1;
-		case NetID::ISO9141_2:
-			return CoreMini::KLine2;
-		case NetID::ISO9141_3:
-			return CoreMini::KLine3;
-		case NetID::ISO9141_4:
-			return CoreMini::KLine4;
-		case NetID::FlexRay1a:
-			return CoreMini::FlexRay1a;
-		case NetID::UART:
-			return CoreMini::UART;
-		case NetID::UART2:
-			return CoreMini::UART2;
-		case NetID::LIN5:
-			return CoreMini::LIN5;
-		case NetID::MOST25:
-			return CoreMini::MOST25;
-		case NetID::MOST50:
-			return CoreMini::MOST50;
-		case NetID::FlexRay1b:
-			return CoreMini::FlexRay1b;
-		case NetID::SWCAN2:
-			return CoreMini::SWCAN2;
-		case NetID::Ethernet_DAQ:
-			return CoreMini::EthernetDAQ;
-		case NetID::Ethernet:
-			return CoreMini::Ethernet;
-		case NetID::FlexRay2a:
-			return CoreMini::FlexRay2a;
-		case NetID::FlexRay2b:
-			return CoreMini::FlexRay2b;
-		case NetID::HSCAN6:
-			return CoreMini::HSCAN6;
-		case NetID::HSCAN7:
-			return CoreMini::HSCAN7;
-		case NetID::LIN6:
-			return CoreMini::LIN6;
-		case NetID::LSFTCAN2:
-			return CoreMini::LSFTCAN2;
-		case NetID::OP_Ethernet1:
-			return CoreMini::OP_Ethernet1;
-		case NetID::OP_Ethernet2:
-			return CoreMini::OP_Ethernet2;
-		case NetID::OP_Ethernet3:
-			return CoreMini::OP_Ethernet3;
-		case NetID::OP_Ethernet4:
-			return CoreMini::OP_Ethernet4;
-		case NetID::OP_Ethernet5:
-			return CoreMini::OP_Ethernet5;
-		case NetID::OP_Ethernet6:
-			return CoreMini::OP_Ethernet6;
-		case NetID::OP_Ethernet7:
-			return CoreMini::OP_Ethernet7;
-		case NetID::OP_Ethernet8:
-			return CoreMini::OP_Ethernet8;
-		case NetID::OP_Ethernet9:
-			return CoreMini::OP_Ethernet9;
-		case NetID::OP_Ethernet10:
-			return CoreMini::OP_Ethernet10;
-		case NetID::OP_Ethernet11:
-			return CoreMini::OP_Ethernet11;
-		case NetID::OP_Ethernet12:
-			return CoreMini::OP_Ethernet12;
-		case NetID::OP_Ethernet13:
-			return CoreMini::OP_Ethernet13;
-		case NetID::OP_Ethernet14:
-			return CoreMini::OP_Ethernet14;
-		case NetID::OP_Ethernet15:
-			return CoreMini::OP_Ethernet15;
-		case NetID::OP_Ethernet16:
-			return CoreMini::OP_Ethernet16;
+		case NetID::DWCAN_04:
+			return CoreMini::DWCAN_04;
+		case NetID::DWCAN_05:
+			return CoreMini::DWCAN_05;
+		case NetID::ISO9141_01:
+			return CoreMini::ISO9141_01;
+		case NetID::ISO9141_02:
+			return CoreMini::ISO9141_02;
+		case NetID::ISO9141_03:
+			return CoreMini::ISO9141_03;
+		case NetID::ISO9141_04:
+			return CoreMini::ISO9141_04;
+		case NetID::FLEXRAY_01A:
+			return CoreMini::FLEXRAY_01A;
+		case NetID::UART_01:
+			return CoreMini::UART_01;
+		case NetID::UART_02:
+			return CoreMini::UART_02;
+		case NetID::LIN_05:
+			return CoreMini::LIN_05;
+		case NetID::MOST_25:
+			return CoreMini::MOST_25;
+		case NetID::MOST_50:
+			return CoreMini::MOST_50;
+		case NetID::FLEXRAY_01B:
+			return CoreMini::FLEXRAY_01B;
+		case NetID::SWCAN_02:
+			return CoreMini::SWCAN_02;
+		case NetID::ETHERNET_DAQ:
+			return CoreMini::ETHERNET_DAQ;
+		case NetID::ETHERNET_01:
+			return CoreMini::ETHERNET_01;
+		case NetID::FLEXRAY_02A:
+			return CoreMini::FLEXRAY_02A;
+		case NetID::FLEXRAY_02B:
+			return CoreMini::FLEXRAY_02B;
+		case NetID::DWCAN_06:
+			return CoreMini::DWCAN_06;
+		case NetID::DWCAN_07:
+			return CoreMini::DWCAN_07;
+		case NetID::LIN_06:
+			return CoreMini::LIN_06;
+		case NetID::LSFTCAN_02:
+			return CoreMini::LSFTCAN_02;
+		case NetID::AE_01:
+			return CoreMini::AE_01;
+		case NetID::AE_02:
+			return CoreMini::AE_02;
+		case NetID::AE_03:
+			return CoreMini::AE_03;
+		case NetID::AE_04:
+			return CoreMini::AE_04;
+		case NetID::AE_05:
+			return CoreMini::AE_05;
+		case NetID::AE_06:
+			return CoreMini::AE_06;
+		case NetID::AE_07:
+			return CoreMini::AE_07;
+		case NetID::AE_08:
+			return CoreMini::AE_08;
+		case NetID::AE_09:
+			return CoreMini::AE_09;
+		case NetID::AE_10:
+			return CoreMini::AE_10;
+		case NetID::AE_11:
+			return CoreMini::AE_11;
+		case NetID::AE_12:
+			return CoreMini::AE_12;
+		case NetID::AE_13:
+			return CoreMini::AE_13;
+		case NetID::AE_14:
+			return CoreMini::AE_14;
+		case NetID::AE_15:
+			return CoreMini::AE_15;
+		case NetID::AE_16:
+			return CoreMini::AE_16;
 		case NetID::TCP:
 			return CoreMini::TCPVirtual;
 		case NetID::UDP:
 			return CoreMini::UDPVirtual;
-		case NetID::FlexRay:
-			return CoreMini::FlexRay1;
-		case NetID::FlexRay2:
-			return CoreMini::FlexRay2;
+		case NetID::FLEXRAY_01:
+			return CoreMini::FLEXRAY_01;
+		case NetID::FLEXRAY_02:
+			return CoreMini::FLEXRAY_02;
 		case NetID::ForwardedMessage:
 			return CoreMini::ForwardedMessage;
-		case NetID::I2C:
-			return CoreMini::I2C1;
-		case NetID::I2C2:
-			return CoreMini::I2C2;
-		case NetID::I2C3:
-			return CoreMini::I2C3;
-		case NetID::I2C4:
-			return CoreMini::I2C4;
-		case NetID::Ethernet2:
-			return CoreMini::Ethernet2;
-		case NetID::A2B1:
-			return CoreMini::A2B1;
-		case NetID::A2B2:
-			return CoreMini::A2B2;
-		case NetID::Ethernet3:
-			return CoreMini::Ethernet3;
-		case NetID::WBMS:
-			return CoreMini::WBMS;
-		case NetID::DWCAN9:
-			return CoreMini::DWCAN9;
-		case NetID::DWCAN10:
-			return CoreMini::DWCAN10;
-		case NetID::DWCAN11:
-			return CoreMini::DWCAN11;
-		case NetID::DWCAN12:
-			return CoreMini::DWCAN12;
-		case NetID::DWCAN13:
-			return CoreMini::DWCAN13;
-		case NetID::DWCAN14:
-			return CoreMini::DWCAN14;
-		case NetID::DWCAN15:
-			return CoreMini::DWCAN15;
-		case NetID::DWCAN16:
-			return CoreMini::DWCAN16;
-		case NetID::LIN7:
-			return CoreMini::LIN7;
-		case NetID::LIN8:
-			return CoreMini::LIN8;
-		case NetID::LIN9:
-			return CoreMini::LIN9;
-		case NetID::LIN10:
-			return CoreMini::LIN10;
-		case NetID::LIN11:
-			return CoreMini::LIN11;
-		case NetID::LIN12:
-			return CoreMini::LIN12;
-		case NetID::LIN13:
-			return CoreMini::LIN13;
-		case NetID::LIN14:
-			return CoreMini::LIN14;
-		case NetID::LIN15:
-			return CoreMini::LIN15;
-		case NetID::LIN16:
-			return CoreMini::LIN16;
-		case NetID::SPI1:
-			return CoreMini::SPI1;
-		case NetID::SPI2:
-			return CoreMini::SPI2;
-		case NetID::SPI3:
-			return CoreMini::SPI3;
-		case NetID::SPI4:
-			return CoreMini::SPI4;
-		case NetID::SPI5:
-			return CoreMini::SPI5;
-		case NetID::SPI6:
-			return CoreMini::SPI6;
-		case NetID::SPI7:
-			return CoreMini::SPI7;
-		case NetID::SPI8:
-			return CoreMini::SPI8;
-		case NetID::MDIO1:
-			return CoreMini::MDIO1;
-		case NetID::MDIO2:
-			return CoreMini::MDIO2;
-		case NetID::MDIO3:
-			return CoreMini::MDIO3;
-		case NetID::MDIO4:
-			return CoreMini::MDIO4;
-		case NetID::MDIO5:
-			return CoreMini::MDIO5;
-		case NetID::MDIO6:
-			return CoreMini::MDIO6;
-		case NetID::MDIO7:
-			return CoreMini::MDIO7;
-		case NetID::MDIO8:
-			return CoreMini::MDIO8;
+		case NetID::I2C_01:
+			return CoreMini::I2C_01;
+		case NetID::I2C_02:
+			return CoreMini::I2C_02;
+		case NetID::I2C_03:
+			return CoreMini::I2C_03;
+		case NetID::I2C_04:
+			return CoreMini::I2C_04;
+		case NetID::ETHERNET_02:
+			return CoreMini::ETHERNET_02;
+		case NetID::A2B_01:
+			return CoreMini::A2B_01;
+		case NetID::A2B_02:
+			return CoreMini::A2B_02;
+		case NetID::ETHERNET_03:
+			return CoreMini::ETHERNET_03;
+		case NetID::WBMS_01:
+			return CoreMini::WBMS_01;
+		case NetID::DWCAN_09:
+			return CoreMini::DWCAN_09;
+		case NetID::DWCAN_10:
+			return CoreMini::DWCAN_10;
+		case NetID::DWCAN_11:
+			return CoreMini::DWCAN_11;
+		case NetID::DWCAN_12:
+			return CoreMini::DWCAN_12;
+		case NetID::DWCAN_13:
+			return CoreMini::DWCAN_13;
+		case NetID::DWCAN_14:
+			return CoreMini::DWCAN_14;
+		case NetID::DWCAN_15:
+			return CoreMini::DWCAN_15;
+		case NetID::DWCAN_16:
+			return CoreMini::DWCAN_16;
+		case NetID::LIN_07:
+			return CoreMini::LIN_07;
+		case NetID::LIN_08:
+			return CoreMini::LIN_08;
+		case NetID::LIN_09:
+			return CoreMini::LIN_09;
+		case NetID::LIN_10:
+			return CoreMini::LIN_10;
+		case NetID::LIN_11:
+			return CoreMini::LIN_11;
+		case NetID::LIN_12:
+			return CoreMini::LIN_12;
+		case NetID::LIN_13:
+			return CoreMini::LIN_13;
+		case NetID::LIN_14:
+			return CoreMini::LIN_14;
+		case NetID::LIN_15:
+			return CoreMini::LIN_15;
+		case NetID::LIN_16:
+			return CoreMini::LIN_16;
+		case NetID::SPI_01:
+			return CoreMini::SPI_01;
+		case NetID::SPI_02:
+			return CoreMini::SPI_02;
+		case NetID::SPI_03:
+			return CoreMini::SPI_03;
+		case NetID::SPI_04:
+			return CoreMini::SPI_04;
+		case NetID::SPI_05:
+			return CoreMini::SPI_05;
+		case NetID::SPI_06:
+			return CoreMini::SPI_06;
+		case NetID::SPI_07:
+			return CoreMini::SPI_07;
+		case NetID::SPI_08:
+			return CoreMini::SPI_08;
+		case NetID::MDIO_01:
+			return CoreMini::MDIO_01;
+		case NetID::MDIO_02:
+			return CoreMini::MDIO_02;
+		case NetID::MDIO_03:
+			return CoreMini::MDIO_03;
+		case NetID::MDIO_04:
+			return CoreMini::MDIO_04;
+		case NetID::MDIO_05:
+			return CoreMini::MDIO_05;
+		case NetID::MDIO_06:
+			return CoreMini::MDIO_06;
+		case NetID::MDIO_07:
+			return CoreMini::MDIO_07;
+		case NetID::MDIO_08:
+			return CoreMini::MDIO_08;
 		default:
 			return std::nullopt;
 		}
 	}
 	static NetID GetNetIDFromCoreMiniNetwork(CoreMini cm) {
 		switch(cm) {
-		case CoreMini::HSCAN:
-			return NetID::HSCAN;
-		case CoreMini::MSCAN:
-			return NetID::MSCAN;
-		case CoreMini::LIN:
-			return NetID::LIN;
-		case CoreMini::LIN2:
-			return NetID::LIN2;
+		case CoreMini::DWCAN_01:
+			return NetID::DWCAN_01;
+		case CoreMini::DWCAN_08:
+			return NetID::DWCAN_08;
+		case CoreMini::LIN_01:
+			return NetID::LIN_01;
+		case CoreMini::LIN_02:
+			return NetID::LIN_02;
 		case CoreMini::Virtual:
 			return NetID::Device;
-		case CoreMini::HSCAN2:
-			return NetID::HSCAN2;
-		case CoreMini::LSFTCAN:
-			return NetID::LSFTCAN;
-		case CoreMini::SWCAN:
-			return NetID::SWCAN;
-		case CoreMini::HSCAN3:
-			return NetID::HSCAN3;
+		case CoreMini::DWCAN_02:
+			return NetID::DWCAN_02;
+		case CoreMini::LSFTCAN_01:
+			return NetID::LSFTCAN_01;
+		case CoreMini::SWCAN_01:
+			return NetID::SWCAN_01;
+		case CoreMini::DWCAN_03:
+			return NetID::DWCAN_03;
 		case CoreMini::CGI:
 			return NetID::CGI;
 		case CoreMini::J1850VPW:
 			return NetID::J1850VPW;
-		case CoreMini::LIN3:
-			return NetID::LIN3;
-		case CoreMini::LIN4:
-			return NetID::LIN4;
+		case CoreMini::LIN_03:
+			return NetID::LIN_03;
+		case CoreMini::LIN_04:
+			return NetID::LIN_04;
 		case CoreMini::J1708:
 			return NetID::J1708;
-		case CoreMini::HSCAN4:
-			return NetID::HSCAN4;
-		case CoreMini::HSCAN5:
-			return NetID::HSCAN5;
-		case CoreMini::KLine1:
-			return NetID::ISO9141;
-		case CoreMini::KLine2:
-			return NetID::ISO9141_2;
-		case CoreMini::KLine3:
-			return NetID::ISO9141_3;
-		case CoreMini::KLine4:
-			return NetID::ISO9141_4;
-		case CoreMini::FlexRay1a:
-			return NetID::FlexRay1a;
-		case CoreMini::UART:
-			return NetID::UART;
-		case CoreMini::UART2:
-			return NetID::UART2;
-		case CoreMini::LIN5:
-			return NetID::LIN5;
-		case CoreMini::MOST25:
-			return NetID::MOST25;
-		case CoreMini::MOST50:
-			return NetID::MOST50;
-		case CoreMini::FlexRay1b:
-			return NetID::FlexRay1b;
-		case CoreMini::SWCAN2:
-			return NetID::SWCAN2;
-		case CoreMini::EthernetDAQ:
-			return NetID::Ethernet_DAQ;
-		case CoreMini::Ethernet:
-			return NetID::Ethernet;
-		case CoreMini::FlexRay2a:
-			return NetID::FlexRay2a;
-		case CoreMini::FlexRay2b:
-			return NetID::FlexRay2b;
-		case CoreMini::HSCAN6:
-			return NetID::HSCAN6;
-		case CoreMini::HSCAN7:
-			return NetID::HSCAN7;
-		case CoreMini::LIN6:
-			return NetID::LIN6;
-		case CoreMini::LSFTCAN2:
-			return NetID::LSFTCAN2;
-		case CoreMini::OP_Ethernet1:
-			return NetID::OP_Ethernet1;
-		case CoreMini::OP_Ethernet2:
-			return NetID::OP_Ethernet2;
-		case CoreMini::OP_Ethernet3:
-			return NetID::OP_Ethernet3;
-		case CoreMini::OP_Ethernet4:
-			return NetID::OP_Ethernet4;
-		case CoreMini::OP_Ethernet5:
-			return NetID::OP_Ethernet5;
-		case CoreMini::OP_Ethernet6:
-			return NetID::OP_Ethernet6;
-		case CoreMini::OP_Ethernet7:
-			return NetID::OP_Ethernet7;
-		case CoreMini::OP_Ethernet8:
-			return NetID::OP_Ethernet8;
-		case CoreMini::OP_Ethernet9:
-			return NetID::OP_Ethernet9;
-		case CoreMini::OP_Ethernet10:
-			return NetID::OP_Ethernet10;
-		case CoreMini::OP_Ethernet11:
-			return NetID::OP_Ethernet11;
-		case CoreMini::OP_Ethernet12:
-			return NetID::OP_Ethernet12;
-		case CoreMini::OP_Ethernet13:
-			return NetID::OP_Ethernet13;
-		case CoreMini::OP_Ethernet14:
-			return NetID::OP_Ethernet14;
-		case CoreMini::OP_Ethernet15:
-			return NetID::OP_Ethernet15;
-		case CoreMini::OP_Ethernet16:
-			return NetID::OP_Ethernet16;
+		case CoreMini::DWCAN_04:
+			return NetID::DWCAN_04;
+		case CoreMini::DWCAN_05:
+			return NetID::DWCAN_05;
+		case CoreMini::ISO9141_01:
+			return NetID::ISO9141_01;
+		case CoreMini::ISO9141_02:
+			return NetID::ISO9141_02;
+		case CoreMini::ISO9141_03:
+			return NetID::ISO9141_03;
+		case CoreMini::ISO9141_04:
+			return NetID::ISO9141_04;
+		case CoreMini::FLEXRAY_01A:
+			return NetID::FLEXRAY_01A;
+		case CoreMini::UART_01:
+			return NetID::UART_01;
+		case CoreMini::UART_02:
+			return NetID::UART_02;
+		case CoreMini::LIN_05:
+			return NetID::LIN_05;
+		case CoreMini::MOST_25:
+			return NetID::MOST_25;
+		case CoreMini::MOST_50:
+			return NetID::MOST_50;
+		case CoreMini::FLEXRAY_01B:
+			return NetID::FLEXRAY_01B;
+		case CoreMini::SWCAN_02:
+			return NetID::SWCAN_02;
+		case CoreMini::ETHERNET_DAQ:
+			return NetID::ETHERNET_DAQ;
+		case CoreMini::ETHERNET_01:
+			return NetID::ETHERNET_01;
+		case CoreMini::FLEXRAY_02A:
+			return NetID::FLEXRAY_02A;
+		case CoreMini::FLEXRAY_02B:
+			return NetID::FLEXRAY_02B;
+		case CoreMini::DWCAN_06:
+			return NetID::DWCAN_06;
+		case CoreMini::DWCAN_07:
+			return NetID::DWCAN_07;
+		case CoreMini::LIN_06:
+			return NetID::LIN_06;
+		case CoreMini::LSFTCAN_02:
+			return NetID::LSFTCAN_02;
+		case CoreMini::AE_01:
+			return NetID::AE_01;
+		case CoreMini::AE_02:
+			return NetID::AE_02;
+		case CoreMini::AE_03:
+			return NetID::AE_03;
+		case CoreMini::AE_04:
+			return NetID::AE_04;
+		case CoreMini::AE_05:
+			return NetID::AE_05;
+		case CoreMini::AE_06:
+			return NetID::AE_06;
+		case CoreMini::AE_07:
+			return NetID::AE_07;
+		case CoreMini::AE_08:
+			return NetID::AE_08;
+		case CoreMini::AE_09:
+			return NetID::AE_09;
+		case CoreMini::AE_10:
+			return NetID::AE_10;
+		case CoreMini::AE_11:
+			return NetID::AE_11;
+		case CoreMini::AE_12:
+			return NetID::AE_12;
+		case CoreMini::AE_13:
+			return NetID::AE_13;
+		case CoreMini::AE_14:
+			return NetID::AE_14;
+		case CoreMini::AE_15:
+			return NetID::AE_15;
+		case CoreMini::AE_16:
+			return NetID::AE_16;
 		case CoreMini::TCPVirtual:
 			return NetID::TCP;
 		case CoreMini::UDPVirtual:
 			return NetID::UDP;
-		case CoreMini::FlexRay1:
-			return NetID::FlexRay;
-		case CoreMini::FlexRay2:
-			return NetID::FlexRay2;
+		case CoreMini::FLEXRAY_01:
+			return NetID::FLEXRAY_01;
+		case CoreMini::FLEXRAY_02:
+			return NetID::FLEXRAY_02;
 		case CoreMini::ForwardedMessage:
 			return NetID::ForwardedMessage;
-		case CoreMini::I2C1:
-			return NetID::I2C;
-		case CoreMini::I2C2:
-			return NetID::I2C2;
-		case CoreMini::I2C3:
-			return NetID::I2C3;
-		case CoreMini::I2C4:
-			return NetID::I2C4;
-		case CoreMini::Ethernet2:
-			return NetID::Ethernet2;
-		case CoreMini::A2B1:
-			return NetID::A2B1;
-		case CoreMini::A2B2:
-			return NetID::A2B2;
-		case CoreMini::Ethernet3:
-			return NetID::Ethernet3;
-		case CoreMini::WBMS:
-			return NetID::WBMS;
-		case CoreMini::DWCAN9:
-			return NetID::DWCAN9;
-		case CoreMini::DWCAN10:
-			return NetID::DWCAN10;
-		case CoreMini::DWCAN11:
-			return NetID::DWCAN11;
-		case CoreMini::DWCAN12:
-			return NetID::DWCAN12;
-		case CoreMini::DWCAN13:
-			return NetID::DWCAN13;
-		case CoreMini::DWCAN14:
-			return NetID::DWCAN14;
-		case CoreMini::DWCAN15:
-			return NetID::DWCAN15;
-		case CoreMini::DWCAN16:
-			return NetID::DWCAN16;
-		case CoreMini::LIN7:
-			return NetID::LIN7;
-		case CoreMini::LIN8:
-			return NetID::LIN8;
-		case CoreMini::LIN9:
-			return NetID::LIN9;
-		case CoreMini::LIN10:
-			return NetID::LIN10;
-		case CoreMini::LIN11:
-			return NetID::LIN11;
-		case CoreMini::LIN12:
-			return NetID::LIN12;
-		case CoreMini::LIN13:
-			return NetID::LIN13;
-		case CoreMini::LIN14:
-			return NetID::LIN14;
-		case CoreMini::LIN15:
-			return NetID::LIN15;
-		case CoreMini::LIN16:
-			return NetID::LIN16;
-		case CoreMini::SPI1:
-			return NetID::SPI1;
-		case CoreMini::SPI2:
-			return NetID::SPI2;
-		case CoreMini::SPI3:
-			return NetID::SPI3;
-		case CoreMini::SPI4:
-			return NetID::SPI4;
-		case CoreMini::SPI5:
-			return NetID::SPI5;
-		case CoreMini::SPI6:
-			return NetID::SPI6;
-		case CoreMini::SPI7:
-			return NetID::SPI7;
-		case CoreMini::SPI8:
-			return NetID::SPI8;
-		case CoreMini::MDIO1:
-			return NetID::MDIO1;
-		case CoreMini::MDIO2:
-			return NetID::MDIO2;
-		case CoreMini::MDIO3:
-			return NetID::MDIO3;
-		case CoreMini::MDIO4:
-			return NetID::MDIO4;
-		case CoreMini::MDIO5:
-			return NetID::MDIO5;
-		case CoreMini::MDIO6:
-			return NetID::MDIO6;
-		case CoreMini::MDIO7:
-			return NetID::MDIO7;
-		case CoreMini::MDIO8:
-			return NetID::MDIO8;
+		case CoreMini::I2C_01:
+			return NetID::I2C_01;
+		case CoreMini::I2C_02:
+			return NetID::I2C_02;
+		case CoreMini::I2C_03:
+			return NetID::I2C_03;
+		case CoreMini::I2C_04:
+			return NetID::I2C_04;
+		case CoreMini::ETHERNET_02:
+			return NetID::ETHERNET_02;
+		case CoreMini::A2B_01:
+			return NetID::A2B_01;
+		case CoreMini::A2B_02:
+			return NetID::A2B_02;
+		case CoreMini::ETHERNET_03:
+			return NetID::ETHERNET_03;
+		case CoreMini::WBMS_01:
+			return NetID::WBMS_01;
+		case CoreMini::DWCAN_09:
+			return NetID::DWCAN_09;
+		case CoreMini::DWCAN_10:
+			return NetID::DWCAN_10;
+		case CoreMini::DWCAN_11:
+			return NetID::DWCAN_11;
+		case CoreMini::DWCAN_12:
+			return NetID::DWCAN_12;
+		case CoreMini::DWCAN_13:
+			return NetID::DWCAN_13;
+		case CoreMini::DWCAN_14:
+			return NetID::DWCAN_14;
+		case CoreMini::DWCAN_15:
+			return NetID::DWCAN_15;
+		case CoreMini::DWCAN_16:
+			return NetID::DWCAN_16;
+		case CoreMini::LIN_07:
+			return NetID::LIN_07;
+		case CoreMini::LIN_08:
+			return NetID::LIN_08;
+		case CoreMini::LIN_09:
+			return NetID::LIN_09;
+		case CoreMini::LIN_10:
+			return NetID::LIN_10;
+		case CoreMini::LIN_11:
+			return NetID::LIN_11;
+		case CoreMini::LIN_12:
+			return NetID::LIN_12;
+		case CoreMini::LIN_13:
+			return NetID::LIN_13;
+		case CoreMini::LIN_14:
+			return NetID::LIN_14;
+		case CoreMini::LIN_15:
+			return NetID::LIN_15;
+		case CoreMini::LIN_16:
+			return NetID::LIN_16;
+		case CoreMini::SPI_01:
+			return NetID::SPI_01;
+		case CoreMini::SPI_02:
+			return NetID::SPI_02;
+		case CoreMini::SPI_03:
+			return NetID::SPI_03;
+		case CoreMini::SPI_04:
+			return NetID::SPI_04;
+		case CoreMini::SPI_05:
+			return NetID::SPI_05;
+		case CoreMini::SPI_06:
+			return NetID::SPI_06;
+		case CoreMini::SPI_07:
+			return NetID::SPI_07;
+		case CoreMini::SPI_08:
+			return NetID::SPI_08;
+		case CoreMini::MDIO_01:
+			return NetID::MDIO_01;
+		case CoreMini::MDIO_02:
+			return NetID::MDIO_02;
+		case CoreMini::MDIO_03:
+			return NetID::MDIO_03;
+		case CoreMini::MDIO_04:
+			return NetID::MDIO_04;
+		case CoreMini::MDIO_05:
+			return NetID::MDIO_05;
+		case CoreMini::MDIO_06:
+			return NetID::MDIO_06;
+		case CoreMini::MDIO_07:
+			return NetID::MDIO_07;
+		case CoreMini::MDIO_08:
+			return NetID::MDIO_08;
 
 		}
 		return NetID::Invalid; // Should be unreachable, the compiler should warn about new CoreMini IDs
@@ -1421,25 +1421,25 @@ private:
 
 #ifdef __ICSNEOC_H_
 #define ICSNEO_NETID_DEVICE 0
-#define ICSNEO_NETID_HSCAN 1
-#define ICSNEO_NETID_MSCAN 2
-#define ICSNEO_NETID_SWCAN 3
-#define ICSNEO_NETID_LSFTCAN 4
+#define ICSNEO_NETID_DWCAN_01 1
+#define ICSNEO_NETID_DWCAN_08 2
+#define ICSNEO_NETID_SWCAN_01 3
+#define ICSNEO_NETID_LSFTCAN_01 4
 #define ICSNEO_NETID_FORDSCP 5
 #define ICSNEO_NETID_J1708 6
 #define ICSNEO_NETID_AUX 7
 #define ICSNEO_NETID_J1850VPW 8
-#define ICSNEO_NETID_ISO9141 9
+#define ICSNEO_NETID_ISO9141_01 9
 #define ICSNEO_NETID_DISK_DATA 10
 #define ICSNEO_NETID_MAIN51 11
 #define ICSNEO_NETID_RED 12
 #define ICSNEO_NETID_SCI 13
-#define ICSNEO_NETID_ISO9141_2 14
+#define ICSNEO_NETID_ISO9141_02 14
 #define ICSNEO_NETID_ISO14230 15
-#define ICSNEO_NETID_LIN 16
-#define ICSNEO_NETID_OP_ETHERNET1 17
-#define ICSNEO_NETID_OP_ETHERNET2 18
-#define ICSNEO_NETID_OP_ETHERNET3 19
+#define ICSNEO_NETID_LIN_01 16
+#define ICSNEO_NETID_AE_01 17
+#define ICSNEO_NETID_AE_02 18
+#define ICSNEO_NETID_AE_03 19
 
 // START Device Command Returns
 // When we send a command, the device returns on one of these, depending on command
@@ -1466,15 +1466,15 @@ private:
 #define ICSNEO_NETID_RED_GET_RTC 40
 // END Device Command Returns
 
-#define ICSNEO_NETID_ISO9141_3 41
-#define ICSNEO_NETID_HSCAN2 42
-#define ICSNEO_NETID_HSCAN3 44
-#define ICSNEO_NETID_OP_ETHERNET4 45
-#define ICSNEO_NETID_OP_ETHERNET5 46
-#define ICSNEO_NETID_ISO9141_4 47
-#define ICSNEO_NETID_LIN2 48
-#define ICSNEO_NETID_LIN3 49
-#define ICSNEO_NETID_LIN4 50
+#define ICSNEO_NETID_ISO9141_03 41
+#define ICSNEO_NETID_DWCAN_02 42
+#define ICSNEO_NETID_DWCAN_03 44
+#define ICSNEO_NETID_AE_04 45
+#define ICSNEO_NETID_AE_05 46
+#define ICSNEO_NETID_ISO9141_04 47
+#define ICSNEO_NETID_LIN_02 48
+#define ICSNEO_NETID_LIN_03 49
+#define ICSNEO_NETID_LIN_04 50
 //#define ICSNEO_NETID_MOST 51 Old and unused
 #define ICSNEO_NETID_RED_APP_ERROR 52
 #define ICSNEO_NETID_CGI 53
@@ -1485,43 +1485,43 @@ private:
 #define ICSNEO_NETID_READ_DATALINK_CM_RX_MSG 58
 #define ICSNEO_NETID_LOGGING_OVERFLOW 59
 #define ICSNEO_NETID_READ_SETTINGS 60
-#define ICSNEO_NETID_HSCAN4 61
-#define ICSNEO_NETID_HSCAN5 62
+#define ICSNEO_NETID_DWCAN_04 61
+#define ICSNEO_NETID_DWCAN_05 62
 #define ICSNEO_NETID_RS232 63
-#define ICSNEO_NETID_UART 64
-#define ICSNEO_NETID_UART2 65
-#define ICSNEO_NETID_UART3 66
-#define ICSNEO_NETID_UART4 67
-#define ICSNEO_NETID_SWCAN2 68
+#define ICSNEO_NETID_UART_01 64
+#define ICSNEO_NETID_UART_02 65
+#define ICSNEO_NETID_UART_03 66
+#define ICSNEO_NETID_UART_04 67
+#define ICSNEO_NETID_SWCAN_02 68
 #define ICSNEO_NETID_ETHERNET_DAQ 69
 #define ICSNEO_NETID_DATA_TO_HOST 70
 #define ICSNEO_NETID_TEXTAPI_TO_HOST 71
-#define ICSNEO_NETID_OP_ETHERNET6 73
+#define ICSNEO_NETID_AE_06 73
 #define ICSNEO_NETID_RED_VBAT 74
-#define ICSNEO_NETID_OP_ETHERNET7 75
-#define ICSNEO_NETID_OP_ETHERNET8 76
-#define ICSNEO_NETID_OP_ETHERNET9 77
-#define ICSNEO_NETID_OP_ETHERNET10 78
-#define ICSNEO_NETID_OP_ETHERNET11 79
-#define ICSNEO_NETID_FLEXRAY1A 80
-#define ICSNEO_NETID_FLEXRAY1B 81
-#define ICSNEO_NETID_FLEXRAY2A 82
-#define ICSNEO_NETID_FLEXRAY2B 83
-#define ICSNEO_NETID_LIN5 84
+#define ICSNEO_NETID_AE_07 75
+#define ICSNEO_NETID_AE_08 76
+#define ICSNEO_NETID_AE_09 77
+#define ICSNEO_NETID_AE_10 78
+#define ICSNEO_NETID_AE_11 79
+#define ICSNEO_NETID_FLEXRAY_01A 80
+#define ICSNEO_NETID_FLEXRAY_01B 81
+#define ICSNEO_NETID_FLEXRAY_02A 82
+#define ICSNEO_NETID_FLEXRAY_02B 83
+#define ICSNEO_NETID_LIN_05 84
 #define ICSNEO_NETID_FLEXRAY 85
-#define ICSNEO_NETID_FLEXRAY2 86
-#define ICSNEO_NETID_OP_ETHERNET12 87
-#define ICSNEO_NETID_I2C 88
-#define ICSNEO_NETID_MOST25 90
-#define ICSNEO_NETID_MOST50 91
-#define ICSNEO_NETID_MOST150 92
-#define ICSNEO_NETID_ETHERNET 93
+#define ICSNEO_NETID_FLEXRAY_02 86
+#define ICSNEO_NETID_AE_12 87
+#define ICSNEO_NETID_I2C_01 88
+#define ICSNEO_NETID_MOST_25 90
+#define ICSNEO_NETID_MOST_50 91
+#define ICSNEO_NETID_MOST_150 92
+#define ICSNEO_NETID_ETHERNET_01 93
 #define ICSNEO_NETID_GMFSA 94
 #define ICSNEO_NETID_TCP 95
-#define ICSNEO_NETID_HSCAN6 96
-#define ICSNEO_NETID_HSCAN7 97
-#define ICSNEO_NETID_LIN6 98
-#define ICSNEO_NETID_LSFTCAN2 99
+#define ICSNEO_NETID_DWCAN_06 96
+#define ICSNEO_NETID_DWCAN_07 97
+#define ICSNEO_NETID_LIN_06 98
+#define ICSNEO_NETID_LSFTCAN_02 99
 #define ICSNEO_NETID_LOGICAL_DISK_INFO 187
 #define ICSNEO_NETID_WIVI_COMMAND 221
 #define ICSNEO_NETID_SCRIPT_STATUS 224
@@ -1533,10 +1533,10 @@ private:
 #define ICSNEO_NETID_DEVICE_STATUS 513
 #define ICSNEO_NETID_UDP 514
 #define ICSNEO_NETID_FORWARDED_MESSAGE 516
-#define ICSNEO_NETID_I2C2 517
-#define ICSNEO_NETID_I2C3 518
-#define ICSNEO_NETID_I2C4 519
-#define ICSNEO_NETID_ETHERNET2 520
+#define ICSNEO_NETID_I2C_02 517
+#define ICSNEO_NETID_I2C_03 518
+#define ICSNEO_NETID_I2C_04 519
+#define ICSNEO_NETID_ETHERNET_02 520
 #define ICSNEO_NETID_ANY 0xfffe // Never actually set as type, but used as flag for filtering
 #define ICSNEO_NETID_INVALID 0xffff
 

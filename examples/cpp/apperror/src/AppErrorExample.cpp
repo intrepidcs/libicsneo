@@ -8,7 +8,7 @@
 #include "icsneo/communication/message/message.h"
 /*
  * App errors are responses from the device indicating internal runtime errors
- * NOTE: To trigger the app error in this example, disable the HSCAN network on the device 
+ * NOTE: To trigger the app error in this example, disable the DW CAN 01 network on the device 
  * (e.g. with neoVI Explorer)
  */
 int main() {
@@ -58,14 +58,14 @@ int main() {
 		// Prepare a CAN message
 		std::cout << std::endl << "Transmitting a CAN frame... ";
 		auto txMessage = std::make_shared<icsneo::CANMessage>();
-		txMessage->network = icsneo::Network::NetID::HSCAN;
+		txMessage->network = icsneo::Network::NetID::DWCAN_01;
 		txMessage->arbid = 0x22;
 		txMessage->data.insert(txMessage->data.end(), {0xaa, 0xbb, 0xcc});
 		// The DLC will come from the length of the data vector
 		txMessage->isExtended = false;
 		txMessage->isCANFD = false;
 
-		// Transmit a CAN message on HSCAN, even though HSCAN is disabled on the device!
+		// Transmit a CAN message on DW CAN 01, even though DW CAN 01 is disabled on the device!
 		// Expect to see an app error caught in the callback defined above
 		ret = device->transmit(txMessage); 
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;

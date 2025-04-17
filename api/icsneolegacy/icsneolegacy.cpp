@@ -29,25 +29,25 @@ static std::map<legacymaphandle_t, neodevice_t> neodevices;
 static std::map<neodevice_t*, NeoDeviceEx*> openneodevices;
 
 static const std::map<size_t, size_t> mp_netIDToVnetOffSet = {
-	{NETID_HSCAN, 1},
-	{NETID_MSCAN, 2},
-	{NETID_HSCAN2, 18},
-	{NETID_HSCAN3, 19},
-	{NETID_HSCAN4, 32},
-	{NETID_HSCAN5, 33},
-	{NETID_HSCAN6, 47},
-	{NETID_HSCAN7, 48},
+	{NETID_DWCAN_01, 1},
+	{NETID_DWCAN_08, 2},
+	{NETID_DWCAN_02, 18},
+	{NETID_DWCAN_03, 19},
+	{NETID_DWCAN_04, 32},
+	{NETID_DWCAN_05, 33},
+	{NETID_DWCAN_06, 47},
+	{NETID_DWCAN_07, 48},
 };
 
 static const std::map<size_t, size_t> mp_HWnetIDToCMnetID = {
-	{NETID_HSCAN, 0},
-	{NETID_MSCAN, 1},
-	{NETID_HSCAN2, 5},
-	{NETID_HSCAN3, 8},
-	{NETID_HSCAN4, 14},
-	{NETID_HSCAN5, 15},
-	{NETID_HSCAN6, 32},
-	{NETID_HSCAN7, 33},
+	{NETID_DWCAN_01, 0},
+	{NETID_DWCAN_08, 1},
+	{NETID_DWCAN_02, 5},
+	{NETID_DWCAN_03, 8},
+	{NETID_DWCAN_04, 14},
+	{NETID_DWCAN_05, 15},
+	{NETID_DWCAN_06, 32},
+	{NETID_DWCAN_07, 33},
 };
 
 static unsigned long vnet_table[] = {0, PLASMA_SLAVE1_OFFSET, PLASMA_SLAVE2_OFFSET};

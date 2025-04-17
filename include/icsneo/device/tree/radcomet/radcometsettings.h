@@ -59,10 +59,10 @@ typedef struct {
 	// Ethernet 10/100/1000
 	ETHERNET_SETTINGS2 ethernet;
 	// Ethernet General
-	OP_ETH_GENERAL_SETTINGS opEthGen;
+	AE_GENERAL_SETTINGS aeGen;
 	// 100/1000T1
 	ETHERNET_SETTINGS2 ethT1;
-	OP_ETH_SETTINGS opEth1;
+	AE_SETTINGS ae_01;
 	// 10T1S
 	ETHERNET_SETTINGS2 ethT1s1;
 	ETHERNET10T1S_SETTINGS t1s1;
@@ -95,9 +95,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->can2);
 			default:
 				return nullptr;
@@ -108,9 +108,9 @@ public:
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
-			case Network::NetID::HSCAN:
+			case Network::NetID::DWCAN_01:
 				return &(cfg->canfd1);
-			case Network::NetID::HSCAN2:
+			case Network::NetID::DWCAN_02:
 				return &(cfg->canfd2);
 			default:
 				return nullptr;

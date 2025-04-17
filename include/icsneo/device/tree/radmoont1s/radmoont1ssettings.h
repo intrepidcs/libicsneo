@@ -28,7 +28,7 @@ typedef struct {
 	// Ethernet 10/100/1000
 	ETHERNET_SETTINGS2 ethernet;
 	// Ethernet General
-	OP_ETH_GENERAL_SETTINGS opEthGen;
+	AE_GENERAL_SETTINGS aeGen;
 	// 10T1S
 	ETHERNET_SETTINGS2 ethT1s;
 	ETHERNET10T1S_SETTINGS t1s;

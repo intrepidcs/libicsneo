@@ -11,7 +11,7 @@
 namespace icsneo {
 
 struct DeviceSettingsNamespace {
-    using EthLinkMode = OPEthLinkMode;
+    using EthLinkMode = AELinkMode;
     using LinkSpeed = EthLinkSpeed;
 };
 
@@ -19,9 +19,9 @@ void init_idevicesettings(pybind11::module_& m) {
     pybind11::class_<DeviceSettingsNamespace> settings(m, "Settings");
 
     pybind11::enum_<DeviceSettingsNamespace::EthLinkMode>(settings, "EthernetLinkMode")
-        .value("Auto", DeviceSettingsNamespace::EthLinkMode::OPETH_LINK_AUTO)
-        .value("Slave", DeviceSettingsNamespace::EthLinkMode::OPETH_LINK_SLAVE)
-        .value("Master", DeviceSettingsNamespace::EthLinkMode::OPETH_LINK_MASTER);
+        .value("Auto", DeviceSettingsNamespace::EthLinkMode::AE_LINK_AUTO)
+        .value("Slave", DeviceSettingsNamespace::EthLinkMode::AE_LINK_SLAVE)
+        .value("Master", DeviceSettingsNamespace::EthLinkMode::AE_LINK_MASTER);
 
     pybind11::enum_<DeviceSettingsNamespace::LinkSpeed>(settings, "EthernetLinkSpeed")
         .value("Speed10M", DeviceSettingsNamespace::LinkSpeed::ETH_SPEED_10)
