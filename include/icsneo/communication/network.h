@@ -841,7 +841,7 @@ public:
 		case NetID::MOST_150:
 			return "MOST 150";
 		case NetID::ETHERNET_01:
-			return "Ethernet";
+			return "Ethernet 01";
 		case NetID::GMFSA:
 			return "GMFSA";
 		case NetID::TCP:
