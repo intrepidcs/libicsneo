@@ -28,6 +28,7 @@ public:
 	virtual void onGoOffline() {}
 	virtual void onDeviceClose() {}
 
+	virtual void setGenericData(void*) {} 
 	virtual bool providesFirmware() const { return false; }
 
 	virtual void handleMessage(const std::shared_ptr<Message>&) {}

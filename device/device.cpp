@@ -134,6 +134,18 @@ std::pair<std::vector<std::shared_ptr<Message>>, bool> Device::getMessages() {
 	return std::make_pair(ret, retBool);
 }
 
+std::shared_ptr<DeviceExtension> Device::getExtension(const std::string& name) const {
+	std::shared_ptr<DeviceExtension> ret;
+	std::lock_guard<std::mutex> lk(extensionsLock);
+	for(auto& ext : extensions) {
+		if((ext->getName() == name)) {
+			ret = ext;
+			break;
+		}
+	}
+	return ret;
+}
+
 bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_t limit, std::chrono::milliseconds timeout) {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
@@ -180,6 +192,14 @@ void Device::enforcePollingMessageLimit() {
 	}
 }
 
+bool Device::refreshComponentVersions() {
+	if(auto compVersions = com->getComponentVersionsSync()) {
+		componentVersions = std::move(*compVersions);
+		return true;
+	}
+	return false;
+}
+
 bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 	if(!com) {
 		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
@@ -199,6 +219,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 				tryAgain = true;
 			return true;
 		});
+
 		if(!tryAgain) {
 			com->close();
 			report(attemptErr, APIEvent::Severity::Error);
@@ -222,15 +243,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 	if(block) // Extensions say no
 		return false;
 
-	// Get component versions again *after* the extension "onDeviceOpen" hooks (e.g. device reflashes)
-	if(supportsComponentVersions()) {
-		if(auto compVersions = com->getComponentVersionsSync())
-			componentVersions = std::move(*compVersions);
-		else
-			// It's possible the device is on older firmware so don't return false here
-			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::EventWarning);
-	}
-
+	refreshComponentVersions();
 	if(!settings->disabled) {
 		// Since we will not fail the open if a settings read fails,
 		// downgrade any errors to warnings. Otherwise the error will
@@ -336,13 +349,14 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		return getCommunicationNotEstablishedError();
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-	auto serial = com->getSerialNumberSync();
+	auto serial = com->getSerialNumberSync(std::chrono::milliseconds(200));
 	int i = 0;
 	while(!serial) {
-		serial = com->getSerialNumberSync();
+		serial = com->getSerialNumberSync(std::chrono::milliseconds(200));
 		if(i++ > 5)
 			break;
 	}
+
 	if(!serial) // "Communication could not be established with the device. Perhaps it is not powered with 12 volts?"
 		return getCommunicationNotEstablishedError();
 
@@ -355,7 +369,6 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		return getCommunicationNotEstablishedError();
 	else
 		versions = std::move(*maybeVersions);
-
 
 	// Get component versions before the extension "onDeviceOpen" hooks so that we can properly check verisons
 	if(supportsComponentVersions()) {

@@ -28,8 +28,6 @@ public:
 
 	bool isOnlineSupported() const override { return false; }
 
-	bool supportsComponentVersions() const override { return true; }
-
 	bool supportsTC10() const override { return true; }
 
 protected:

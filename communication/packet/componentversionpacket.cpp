@@ -31,7 +31,7 @@ std::shared_ptr<ComponentVersionsMessage> ComponentVersionPacket::DecodeToMessag
 	// Get a reference to the payload to fully validate the length
 	const auto& response = *reinterpret_cast<const ComponentVersionsResponse*>(bytes.data());
 	// Expected size is the header, numVersions field, and numVersions ComponentVersion objects.
-	auto expectedSize = sizeof(ExtendedResponseMessage::ResponseHeader) + 2 + (response.numVersions * sizeof(ComponentVersion));
+	auto expectedSize = sizeof(ExtendedResponseMessage::ResponseHeader) + 2 + (response.numVersions * sizeof(PackedComponentVersion));
 	// If the response is malformed (too small), return an empty message.
 	if(bytes.size() < expectedSize) {
 		return msg; // Empty
@@ -39,7 +39,14 @@ std::shared_ptr<ComponentVersionsMessage> ComponentVersionPacket::DecodeToMessag
 	// Unpack into the portable class
 	for(unsigned int i = 0; i < response.numVersions; ++i) {
 		const auto& packedVersion = response.versions[i];
-		msg->versions.emplace_back(packedVersion.valid, packedVersion.componentInfo, packedVersion.identifier, packedVersion.dotVersion, packedVersion.commitHash);
+		msg->versions.emplace_back(
+			packedVersion.valid,
+			packedVersion.componentInfo,
+			packedVersion.identifier,
+			packedVersion.dotVersion,
+			packedVersion.commitHash,
+			packedVersion.expansionSlot
+		);
 	}
 	return msg;
 }

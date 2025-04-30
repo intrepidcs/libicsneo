@@ -87,8 +87,6 @@ public:
 		};
 	}
 
-	bool supportsComponentVersions() const override { return true; }
-
 protected:
 	NeoVIFIRE2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRE2Settings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

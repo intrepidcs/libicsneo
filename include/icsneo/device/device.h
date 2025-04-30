@@ -570,6 +570,7 @@ public:
 	NODISCARD("If the Lifetime is not held, disconnects will be immediately unsuppressed")
 	Lifetime suppressDisconnects();
 
+	bool refreshComponentVersions();
 	/**
 	 * For use by extensions only. A more stable API will be provided in the future.
 	 */
@@ -727,7 +728,9 @@ public:
 
 	virtual bool isOnlineSupported() const { return true; }
 
-	virtual bool supportsComponentVersions() const { return false; }
+	virtual bool supportsComponentVersions() const { 
+		return !getComponentVersions().empty();
+	}
 
 	virtual bool supportsTC10() const { return false; }
 	
@@ -742,6 +745,8 @@ public:
 
 	/* MACsec support */
 	virtual bool writeMACsecConfig(const MACsecMessage& message, uint16_t binaryIndex);
+
+	std::shared_ptr<DeviceExtension> getExtension(const std::string& name) const;
 
 protected:
 	bool online = false;
@@ -824,12 +829,6 @@ protected:
 
 	virtual void setupExtensions() {}
 
-	// Hook for devices such as FIRE which need to inject traffic before RequestSerialNumber
-	// Return false to bail
-	virtual bool afterCommunicationOpen() { return true; }
-
-	virtual bool requiresVehiclePower() const { return true; }
-
 	template<typename Extension>
 	std::shared_ptr<Extension> getExtension() const {
 		std::shared_ptr<Extension> ret;
@@ -841,6 +840,12 @@ protected:
 		return ret;
 	}
 	// END Initialization Functions
+	// Hook for devices such as FIRE which need to inject traffic before RequestSerialNumber
+	// Return false to bail
+	virtual bool afterCommunicationOpen() { return true; }
+
+	virtual bool requiresVehiclePower() const { return true; }
+
 
 	void handleInternalMessage(std::shared_ptr<Message> message);
 

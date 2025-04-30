@@ -16,8 +16,6 @@ public:
 
 	uint8_t getPhyAddrOrPort() const override { return 1; }
 
-	bool supportsComponentVersions() const override { return true; }
-
 	bool supportsTC10() const override { return true; }
 
 protected:
