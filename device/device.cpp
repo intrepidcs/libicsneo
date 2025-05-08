@@ -345,14 +345,14 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		return getCommunicationNotEstablishedError();
 	}
 
-	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
+	if(!enableNetworkCommunication(false))
 		return getCommunicationNotEstablishedError();
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-	auto serial = com->getSerialNumberSync(std::chrono::milliseconds(200));
+	auto serial = com->getSerialNumberSync();
 	int i = 0;
 	while(!serial) {
-		serial = com->getSerialNumberSync(std::chrono::milliseconds(200));
+		serial = com->getSerialNumberSync();
 		if(i++ > 5)
 			break;
 	}
@@ -406,7 +406,7 @@ bool Device::close() {
 }
 
 bool Device::goOnline() {
-	if(!com->sendCommand(Command::EnableNetworkCommunication, true))
+	if(!enableNetworkCommunication(true))
 		return false;
 
 	auto startTime = std::chrono::system_clock::now();
@@ -449,28 +449,12 @@ bool Device::goOffline() {
 		return true;
 	}
 
-	if(!com->sendCommand(Command::EnableNetworkCommunication, false))
+	if(!enableNetworkCommunication(false))
 		return false;
-
-	auto startTime = std::chrono::system_clock::now();
 
 	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
 
 	updateLEDState();
-
-	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
-	filter->includeInternalInAny = true;
-
-	// Wait until communication is disabled or 5 seconds, whichever comes first
-	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
-		if(latestResetStatus && !latestResetStatus->comEnabled)
-			break;
-
-		if(!com->sendCommand(Command::RequestStatusUpdate))
-			return false;
-
-		com->waitForMessageSync(filter, std::chrono::milliseconds(100));
-	}
 
 	online = false;
 
@@ -3426,4 +3410,17 @@ bool Device::writeMACsecConfig(const MACsecMessage& message, uint16_t binaryInde
 	message.EncodeFromMessage(raw, report);
 
 	return writeBinaryFile(raw, binaryIndex);
+}
+
+bool Device::enableNetworkCommunication(bool enable) {
+	bool sendMsg = false;
+	if(!com->driver->enableCommunication(enable, sendMsg)) {
+		return false;
+	}
+	if(sendMsg) {
+		if(!com->sendCommand(Command::EnableNetworkCommunication, enable)) {
+			return false;
+		}
+	}
+	return true;
 }

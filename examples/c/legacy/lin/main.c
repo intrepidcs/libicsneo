@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 #if defined _WIN32
-	#include "icsneo/platform/windows.h"
+	#include <windows.h>
 	#define SLEEP(msecs) Sleep(msecs)
 #elif defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 	#include <time.h>

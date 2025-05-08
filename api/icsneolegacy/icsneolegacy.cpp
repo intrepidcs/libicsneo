@@ -2,8 +2,6 @@
 #error "icsneolegacy.cpp must be compiled with a C++ compiler!"
 #endif
 
-#define NOMINMAX
-
 #define ICSNEOC_MAKEDLL
 #include "icsneo/icsneolegacy.h"
 #include "icsneo/J2534.h"

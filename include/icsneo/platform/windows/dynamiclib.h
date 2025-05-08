@@ -1,7 +1,7 @@
 #ifndef __DYNAMICLIB_WINDOWS_H_
 #define __DYNAMICLIB_WINDOWS_H_
 
-#include "icsneo/platform/windows.h"
+#include <windows.h>
 
 #ifndef ICSNEOC_BUILD_STATIC
 #ifdef ICSNEOC_MAKEDLL

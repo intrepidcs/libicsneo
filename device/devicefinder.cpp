@@ -2,6 +2,7 @@
 #include "icsneo/platform/devices.h"
 #include "icsneo/device/founddevice.h"
 #include "generated/extensions/builtin.h"
+#include "icsneo/platform/servd.h"
 
 #ifdef ICSNEO_ENABLE_FIRMIO
 #include "icsneo/platform/firmio.h"
@@ -63,29 +64,33 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	static std::vector<FoundDevice> newDriverFoundDevices;
 	newDriverFoundDevices.clear();
 
-	#ifdef ICSNEO_ENABLE_FIRMIO
-	FirmIO::Find(newDriverFoundDevices);
-	#endif
-
-	#ifdef ICSNEO_ENABLE_TCP
-	TCP::Find(newDriverFoundDevices);
-	#endif
-
-	#ifdef ICSNEO_ENABLE_RAW_ETHERNET
-	PCAP::Find(newDriverFoundDevices);
-	#endif
-
-	#ifdef ICSNEO_ENABLE_CDCACM
-	CDCACM::Find(newDriverFoundDevices);
-	#endif
-
-	#ifdef ICSNEO_ENABLE_FTDI
-	FTDI::Find(newDriverFoundDevices);
-	#endif
-
-	#ifdef ICSNEO_ENABLE_FTD3XX
-	FTD3XX::Find(newDriverFoundDevices);
-	#endif
+	if(Servd::Enabled()) {
+		Servd::Find(newDriverFoundDevices);
+	} else {
+		#ifdef ICSNEO_ENABLE_FIRMIO
+		FirmIO::Find(newDriverFoundDevices);
+		#endif
+	
+		#ifdef ICSNEO_ENABLE_TCP
+		TCP::Find(newDriverFoundDevices);
+		#endif
+	
+		#ifdef ICSNEO_ENABLE_RAW_ETHERNET
+		PCAP::Find(newDriverFoundDevices);
+		#endif
+	
+		#ifdef ICSNEO_ENABLE_CDCACM
+		CDCACM::Find(newDriverFoundDevices);
+		#endif
+	
+		#ifdef ICSNEO_ENABLE_FTDI
+		FTDI::Find(newDriverFoundDevices);
+		#endif
+	
+		#ifdef ICSNEO_ENABLE_FTD3XX
+		FTD3XX::Find(newDriverFoundDevices);
+		#endif
+	}
 
 	// Weak because we don't want to keep devices open if they go out of scope elsewhere
 	static std::vector<std::weak_ptr<Device>> foundDevices;

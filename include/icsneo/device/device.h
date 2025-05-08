@@ -1012,6 +1012,8 @@ private:
 	 * @return The size of the vsa log files on the disk
 	 */
 	std::optional<uint64_t> getVSADiskSize();
+
+	bool enableNetworkCommunication(bool enable);
 };
 
 }

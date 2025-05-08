@@ -109,6 +109,7 @@ if(LIBICSNEO_BUILD_DOCS)
 endif()
 
 if(WIN32)
+	add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS)
 	set(PLATFORM_SRC
 		platform/windows/strings.cpp
 		platform/windows/registry.cpp
@@ -306,6 +307,7 @@ set(SRC_FILES
 	disk/vsa/vsa0f.cpp
 	disk/vsa/vsa6a.cpp
 	disk/vsa/vsaparser.cpp
+	platform/servd.cpp
 	${PLATFORM_SRC}
 )
 
@@ -366,7 +368,7 @@ target_include_directories(icsneocpp
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 		${LIBICSNEO_EXTENSION_INCLUDE_PATHS}
 )
-target_link_libraries(icsneocpp PUBLIC Threads::Threads)
+target_link_libraries(icsneocpp PUBLIC Threads::Threads $<$<BOOL:${WIN32}>:ws2_32 iphlpapi>)
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
@@ -424,10 +426,10 @@ if(LIBICSNEO_ENABLE_RAW_ETHERNET)
 	if(WIN32)
 		if(LIBICSNEO_NPCAP_INCLUDE_DIR STREQUAL "")
 			target_include_directories(icsneocpp PUBLIC AFTER third-party/winpcap/include)
-			add_definitions(-DWPCAP -DHAVE_REMOTE -DWIN32_LEAN_AND_MEAN)
+			add_definitions(-DWPCAP -DHAVE_REMOTE)
 		else()
 			target_include_directories(icsneocpp PUBLIC AFTER ${LIBICSNEO_NPCAP_INCLUDE_DIR})
-			add_definitions(-DNPCAP -DWIN32_LEAN_AND_MEAN)
+			add_definitions(-DNPCAP)
 		endif()
 	else()
 		find_package(PCAP REQUIRED)

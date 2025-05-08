@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 
-#include "icsneo/platform/windows.h"
+#include <windows.h>
 #include <pcap.h>
 #include <memory>
 

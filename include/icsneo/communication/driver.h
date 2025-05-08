@@ -37,6 +37,8 @@ public:
 	bool readAvailable() { return readBuffer.size() > 0; }
 	RingBuffer& getReadBuffer() { return readBuffer; }
 
+	virtual bool enableCommunication(bool /* enable */, bool& sendMsg) { sendMsg = true; return true; }
+
 	device_eventhandler_t report;
 
 	size_t writeQueueSize = 50;

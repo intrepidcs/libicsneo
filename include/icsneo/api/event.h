@@ -174,6 +174,19 @@ public:
 		VSAExtendedMessageError = VSABufferCorrupted + 5,
 		VSAOtherError = VSABufferCorrupted + 6,
 
+		// Servd
+		ServdBindError = 0x6000,
+		ServdNonblockError = ServdBindError + 1,
+		ServdTransceiveError = ServdBindError + 2,
+		ServdOutdatedError = ServdBindError + 3,
+		ServdInvalidResponseError = ServdBindError + 4,
+		ServdLockError = ServdBindError + 5,
+		ServdSendError = ServdBindError + 6,
+		ServdRecvError = ServdBindError + 7,
+		ServdPollError = ServdBindError + 8,
+		ServdNoDataError = ServdBindError + 9,
+		ServdJoinMulticastError = ServdBindError + 10,
+
 		NoErrorFound = 0xFFFFFFFD,
 		TooManyEvents = 0xFFFFFFFE,
 		Unknown = 0xFFFFFFFF

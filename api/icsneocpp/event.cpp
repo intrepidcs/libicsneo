@@ -184,6 +184,19 @@ static constexpr const char* VSA_BYTE_PARSE_FAILURE = "Failure to parse record b
 static constexpr const char* VSA_EXTENDED_MESSAGE_ERROR = "Failure to parse extended message record sequence";
 static constexpr const char* VSA_OTHER_ERROR = "Unknown error in VSA read API.";
 
+// Servd
+static constexpr const char* SERVD_BIND_ERROR = "Error binding socket for Servd communication";
+static constexpr const char* SERVD_NONBLOCK_ERROR = "Error setting non-blocking mode for Servd socket";
+static constexpr const char* SERVD_TRANSCEIVE_ERROR = "Error while sending to or receiving from Servd";
+static constexpr const char* SERVD_OUTDATED_ERROR = "Servd version is lower than client (libicsneo) version, update Servd";
+static constexpr const char* SERVD_INVALID_RESPONSE_ERROR = "Unexpected response from Servd";
+static constexpr const char* SERVD_LOCK_ERROR = "Error locking Servd mutex";
+static constexpr const char* SERVD_SEND_ERROR = "Error sending to Servd";
+static constexpr const char* SERVD_RECV_ERROR = "Error receiving from Servd";
+static constexpr const char* SERVD_POLL_ERROR = "Error polling on Servd socket";
+static constexpr const char* SERVD_NODATA_ERROR = "No data received from Servd";
+static constexpr const char* SERVD_JOIN_MULTICAST_ERROR = "Error joining Servd multicast group";
+
 static constexpr const char* TOO_MANY_EVENTS = "Too many events have occurred. The list has been truncated.";
 static constexpr const char* UNKNOWN = "An unknown internal error occurred.";
 static constexpr const char* INVALID = "An invalid internal error occurred.";
@@ -436,6 +449,30 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return VSA_EXTENDED_MESSAGE_ERROR;
 		case Type::VSAOtherError:
 			return VSA_OTHER_ERROR;
+
+		// Servd
+		case Type::ServdBindError:
+			return SERVD_BIND_ERROR;
+		case Type::ServdNonblockError:
+			return SERVD_NONBLOCK_ERROR;
+		case Type::ServdTransceiveError:
+			return SERVD_TRANSCEIVE_ERROR;
+		case Type::ServdOutdatedError:
+			return SERVD_OUTDATED_ERROR;
+		case Type::ServdInvalidResponseError:
+			return SERVD_INVALID_RESPONSE_ERROR;
+		case Type::ServdLockError:
+			return SERVD_LOCK_ERROR;
+		case Type::ServdSendError:
+			return SERVD_SEND_ERROR;
+		case Type::ServdRecvError:
+			return SERVD_RECV_ERROR;
+		case Type::ServdPollError:
+			return SERVD_POLL_ERROR;
+		case Type::ServdNoDataError:
+			return SERVD_NODATA_ERROR;
+		case Type::ServdJoinMulticastError:
+			return SERVD_JOIN_MULTICAST_ERROR;
 
 		// Other Errors
 		case Type::TooManyEvents:
