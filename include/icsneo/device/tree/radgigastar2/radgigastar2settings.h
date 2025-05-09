@@ -127,12 +127,18 @@ namespace icsneo
 		ETHERNET_SETTINGS2 ethT1s8;
 		ETHERNET10T1S_SETTINGS t1s8;
 		ETHERNET10T1S_SETTINGS_EXT t1s8Ext;
+		LIN_SETTINGS lin11;
+		LIN_SETTINGS lin12;
+		LIN_SETTINGS lin13;
+		LIN_SETTINGS lin14;
+		LIN_SETTINGS lin15;
+		LIN_SETTINGS lin16;
 	} radgigastar2_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-	static_assert(sizeof(radgigastar2_settings_t) == 2024, "RADGigastar2 settings size mismatch");
+	static_assert(sizeof(radgigastar2_settings_t) == 2084, "RADGigastar2 settings size mismatch");
 
 #include <iostream>
 
@@ -215,6 +221,18 @@ namespace icsneo
 				return &(cfg->lin9);
 			case Network::NetID::LIN_10:
 				return &(cfg->lin10);
+			case Network::NetID::LIN_11:
+				return &(cfg->lin11);
+			case Network::NetID::LIN_12:
+				return &(cfg->lin12);
+			case Network::NetID::LIN_13:
+				return &(cfg->lin13);
+			case Network::NetID::LIN_14:
+				return &(cfg->lin14);
+			case Network::NetID::LIN_15:
+				return &(cfg->lin15);
+			case Network::NetID::LIN_16:
+				return &(cfg->lin16);
 			default:
 				return nullptr;
 			}

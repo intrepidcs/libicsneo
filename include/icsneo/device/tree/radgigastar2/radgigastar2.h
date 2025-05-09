@@ -24,9 +24,6 @@ namespace icsneo
 		{
 			static std::vector<Network> supportedNetworks = {
 				Network::NetID::DWCAN_01,
-				Network::NetID::DWCAN_02,
-				Network::NetID::DWCAN_03,
-				Network::NetID::DWCAN_04,
 
 				Network::NetID::ETHERNET_01,
 				Network::NetID::ETHERNET_02,
@@ -52,6 +49,12 @@ namespace icsneo
 				Network::NetID::LIN_08,
 				Network::NetID::LIN_09,
 				Network::NetID::LIN_10,
+				Network::NetID::LIN_11,
+				Network::NetID::LIN_12,
+				Network::NetID::LIN_13,
+				Network::NetID::LIN_14,
+				Network::NetID::LIN_15,
+				Network::NetID::LIN_16,
 
 				Network::NetID::I2C_01,
 				Network::NetID::I2C_02,
