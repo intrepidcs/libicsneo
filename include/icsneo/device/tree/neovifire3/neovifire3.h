@@ -49,6 +49,7 @@ public:
 		};
 		return supportedNetworks;
 	}
+	size_t getEthernetActivationLineCount() const override { return 2; }
 protected:
 	NeoVIFIRE3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRE3Settings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
