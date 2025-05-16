@@ -151,6 +151,8 @@ public:
 	virtual bool isDisconnected() const { return com->isDisconnected(); }
 	virtual bool goOnline();
 	virtual bool goOffline();
+	virtual bool enableLogData();
+	virtual bool disableLogData();
 
 	enum class PreloadReturn : uint8_t
 	{

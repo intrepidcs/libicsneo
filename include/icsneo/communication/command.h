@@ -38,6 +38,7 @@ enum class Command : uint8_t {
 	FlexRayControl = 0xF3,
 	CoreMiniPreload = 0xF4, // Previously known as RED_CMD_COREMINI_PRELOAD
 	PHYControlRegisters = 0xEF,
+	EnableLogData = 0xF6,
 };
 
 enum class ExtendedCommand : uint16_t {

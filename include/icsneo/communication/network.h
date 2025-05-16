@@ -583,6 +583,7 @@ public:
 		case NetID::RED_GET_RTC:
 		case NetID::DiskData:
 		case NetID::RED_App_Error:
+		case NetID::Data_To_Host:
 			return Type::Internal;
 		case NetID::Invalid:
 		case NetID::Any:

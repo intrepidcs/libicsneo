@@ -405,6 +405,14 @@ bool Device::close() {
 	return com->close();
 }
 
+bool Device::enableLogData() {
+	return com->sendCommand(Command::EnableLogData, true);
+}
+
+bool Device::disableLogData() {
+	return com->sendCommand(Command::EnableLogData, false);
+}
+
 bool Device::goOnline() {
 	if(!enableNetworkCommunication(true))
 		return false;

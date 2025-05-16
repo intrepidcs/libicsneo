@@ -246,6 +246,7 @@ set(SRC_FILES
 	communication/message/ethphymessage.cpp
 	communication/message/linmessage.cpp
 	communication/message/livedatamessage.cpp
+	communication/message/logdatamessage.cpp
 	communication/message/tc10statusmessage.cpp
 	communication/message/gptpstatusmessage.cpp
 	communication/message/ethernetstatusmessage.cpp

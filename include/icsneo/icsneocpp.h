@@ -20,6 +20,7 @@
 #include "icsneo/communication/message/a2bmessage.h"
 #include "icsneo/communication/message/linmessage.h"
 #include "icsneo/communication/message/mdiomessage.h"
+#include "icsneo/communication/message/logdatamessage.h"
 
 #include "icsneo/communication/message/callback/streamoutput/a2bwavoutput.h"
 

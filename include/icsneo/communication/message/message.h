@@ -44,6 +44,7 @@ public:
 		AppError = 0x8012,
 		GPTPStatus = 0x8013,
 		EthernetStatus = 0x8014,
+		LogData = 0x8015,
 	};
 
 	Message(Type t) : type(t) {}
