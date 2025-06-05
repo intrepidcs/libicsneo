@@ -46,7 +46,6 @@ local_scheme = "no-local-version"
 
 [tool.scikit-build.cmake.define]
 LIBICSNEO_ENABLE_BINDINGS_PYTHON = true
-LIBICSNEO_ENABLE_TCP = true
 CMAKE_MSVC_RUNTIME_LIBRARY = "MultiThreaded"
 
 [tool.cibuildwheel]

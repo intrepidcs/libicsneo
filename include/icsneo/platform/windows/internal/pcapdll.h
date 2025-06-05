@@ -50,7 +50,7 @@ public:
 	bool ok() const;
 private:
 	PCAPDLL();
-	HINSTANCE dll;
+	HINSTANCE dll = nullptr;
 	void closeDLL();
 };
 }
