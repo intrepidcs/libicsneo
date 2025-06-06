@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(libicsneo VERSION 0.3.0)
+project(libicsneo VERSION 1.0.0)
 
 cmake_policy(SET CMP0074 NEW)
 if(POLICY CMP0135)
