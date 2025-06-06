@@ -690,7 +690,7 @@ public:
 
 	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), report(com->report), structSize(size) {}
 	virtual ~IDeviceSettings() {}
-	bool ok() { return !disabled && settingsLoaded; }
+	bool ok() const { return !disabled && settingsLoaded; }
 
 	virtual bool refresh(bool ignoreChecksum = false); // Get from device
 

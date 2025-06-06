@@ -181,6 +181,10 @@ public:
 		return std::nullopt;
 	}
 
+	bool supportsCoreminiScript() const {
+		return (getCoreminiStartAddressFlash()) || (getCoreminiStartAddressSD());
+	}
+
 	std::optional<MemoryAddress> getCoreminiStartAddress(Disk::MemoryType memType) const {
 		switch(memType) {
 			case Disk::MemoryType::Flash:
