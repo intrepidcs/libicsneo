@@ -17,11 +17,11 @@ public:
 	bool isCoreminiRunning = false;
 	uint32_t sectorOverflows = 0;
 	uint32_t numRemainingSectorBuffers = 0;
-	int32_t lastSector = 0;
-	int32_t readBinSize = 0;
-	int32_t minSector = 0;
-	int32_t maxSector = 0;
-	int32_t currentSector = 0;
+	uint32_t lastSector = 0;
+	uint32_t readBinSize = 0;
+	uint32_t minSector = 0;
+	uint32_t maxSector = 0;
+	uint32_t currentSector = 0;
 	uint64_t coreminiCreateTime = 0;
 	uint16_t fileChecksum = 0;
 	uint16_t coreminiVersion = 0;

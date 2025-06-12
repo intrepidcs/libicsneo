@@ -47,11 +47,11 @@ struct ScriptStatus
 	CoreMiniStatus status;
 	uint32_t sectorOverflows;
 	uint32_t numRemainingSectorBuffers;
-	int32_t lastSector;
-	int32_t readBinSize;
-	int32_t minSector;
-	int32_t maxSector;
-	int32_t currentSector;
+	uint32_t lastSector;
+	uint32_t readBinSize;
+	uint32_t minSector;
+	uint32_t maxSector;
+	uint32_t currentSector;
 	uint32_t coreminiCreateTimeMsb;
 	uint32_t coreminiCreateTimeLsb;
 	uint16_t zero2;
