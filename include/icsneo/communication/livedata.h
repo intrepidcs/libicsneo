@@ -19,6 +19,7 @@ enum class LiveDataCommand : uint32_t {
 	UNSUBSCRIBE,
 	RESPONSE,
 	CLEAR_ALL,
+	SET_VALUE,
 };
 
 enum class LiveDataStatus : uint32_t {
@@ -41,10 +42,13 @@ enum class LiveDataValueType : uint32_t {
 	GPS_SPEED,
 	GPS_VALID,
 	GPS_ENABLE = 62,
+	MANUAL_TRIGGER = 108,
+	TIME_SINCE_MSG = 111,
 	GPS_ACCURACY = 120,
 	GPS_BEARING = 121,
 	GPS_TIME = 122,
 	GPS_TIME_VALID = 123,
+	DAQ_OVERRIDE = 124,
 };
 
 inline std::ostream& operator<<(std::ostream& os, const LiveDataCommand cmd) {
@@ -54,6 +58,7 @@ inline std::ostream& operator<<(std::ostream& os, const LiveDataCommand cmd) {
 		case LiveDataCommand::UNSUBSCRIBE: return os << "Unsubscribe";
 		case LiveDataCommand::RESPONSE: return os << "Response";
 		case LiveDataCommand::CLEAR_ALL: return os << "Clear All";
+		case LiveDataCommand::SET_VALUE: return os << "Set Value";
 	}
 	return os;
 }
@@ -81,6 +86,8 @@ inline std::ostream& operator<<(std::ostream& os, const LiveDataValueType cmd) {
 		case LiveDataValueType::GPS_BEARING: return os << "GPS Bearing";
 		case LiveDataValueType::GPS_TIME: return os << "GPS Time";
 		case LiveDataValueType::GPS_TIME_VALID: return os << "GPS Time Valid";
+		case LiveDataValueType::DAQ_OVERRIDE: return os << "DAQ Override";
+		case LiveDataValueType::MANUAL_TRIGGER: return os << "Manual Trigger";
 	}
 	return os;
 }
@@ -125,6 +132,17 @@ struct LiveDataSubscribe : public LiveDataHeader {
 	uint32_t freqMs;
 	uint32_t expireMs;
 	LiveDataArgument args[1];
+};
+
+struct LiveDataSetValueEntry
+{
+	LiveDataArgument arg;
+	LiveDataValue value;
+};
+
+struct LiveDataSetValue : public LiveDataHeader {
+	uint32_t numArgs;
+	LiveDataSetValueEntry values[1];
 };
 
 struct ExtResponseHeader {

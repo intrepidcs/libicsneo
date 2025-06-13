@@ -38,6 +38,13 @@ public:
 	LiveDataStatus status;
 };
 
+class LiveDataSetValueMessage : public LiveDataMessage {
+public:
+	LiveDataSetValueMessage() {}
+	std::vector<std::shared_ptr<LiveDataArgument>> args;
+	std::vector<std::shared_ptr<LiveDataValue>> values;
+};
+
 } // namespace icsneo
 
 #endif // __cplusplus

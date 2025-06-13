@@ -636,6 +636,7 @@ public:
 	bool subscribeLiveData(std::shared_ptr<LiveDataCommandMessage> message);
 	bool unsubscribeLiveData(const LiveDataHandle& handle);
 	bool clearAllLiveData();
+	bool setValueLiveData(std::shared_ptr<LiveDataSetValueMessage> message);
 
 	// VSA Read functions
 

@@ -99,6 +99,33 @@ bool HardwareLiveDataPacket::EncodeFromMessage(LiveDataMessage& message, std::ve
 			clearMsg->cmd = static_cast<uint32_t>(message.cmd);
 			break;
 		}
+		case LiveDataCommand::SET_VALUE: {
+			auto setValMsg = reinterpret_cast<LiveDataSetValueMessage*>(&message);
+			const auto numArgs = setValMsg->args.size();
+			if(numArgs) {
+				payloadSize = static_cast<uint16_t>(sizeof(LiveDataSetValue) + (sizeof(LiveDataSetValueEntry) * (numArgs-1)));
+				bytestream.resize((payloadSize + sizeof(ExtendedCommandHeader)),0);
+				LiveDataSetValue* out = reinterpret_cast<LiveDataSetValue*>(bytestream.data() + sizeof(ExtendedCommandHeader));
+				out->version = icsneo::LiveDataUtil::LiveDataVersion;
+				out->cmd = static_cast<uint32_t>(setValMsg->cmd);
+				if(!setValMsg->handle)
+					setValMsg->handle = LiveDataUtil::getNewHandle();
+				out->handle = setValMsg->handle;
+				out->numArgs = static_cast<uint32_t>(setValMsg->args.size());
+				for(size_t i = 0; i < numArgs; ++i) {
+					out->values[i].arg.objectType = setValMsg->args[i]->objectType;
+					out->values[i].arg.objectIndex = setValMsg->args[i]->objectIndex;
+					out->values[i].arg.signalIndex = setValMsg->args[i]->signalIndex;
+					out->values[i].arg.valueType = setValMsg->args[i]->valueType;
+					out->values[i].value.value = setValMsg->values[i]->value;
+					out->values[i].value.header.length = sizeof(int64_t);
+				}
+			} else {
+				report(APIEvent::Type::LiveDataInvalidArgument, APIEvent::Severity::Error);
+				return false;
+			}
+			break;
+		}
 		default: {
 			report(APIEvent::Type::LiveDataInvalidCommand, APIEvent::Severity::Error);
 			return false;
