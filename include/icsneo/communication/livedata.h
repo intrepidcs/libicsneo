@@ -156,6 +156,7 @@ namespace LiveDataUtil
 
 LiveDataHandle getNewHandle();
 double liveDataValueToDouble(const LiveDataValue& val);
+int liveDataDoubleToValue(LiveDataValue& value, const double& dFloat);
 static constexpr uint32_t LiveDataVersion = 1;
 
 } // namespace LiveDataUtil

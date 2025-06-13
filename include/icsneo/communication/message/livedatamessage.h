@@ -43,6 +43,7 @@ public:
 	LiveDataSetValueMessage() {}
 	std::vector<std::shared_ptr<LiveDataArgument>> args;
 	std::vector<std::shared_ptr<LiveDataValue>> values;
+	void appendSetValue(LiveDataValueType valueType, const LiveDataValue& value);
 };
 
 } // namespace icsneo
