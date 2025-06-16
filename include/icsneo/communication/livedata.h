@@ -48,7 +48,7 @@ enum class LiveDataValueType : uint32_t {
 	GPS_BEARING = 121,
 	GPS_TIME = 122,
 	GPS_TIME_VALID = 123,
-	DAQ_OVERRIDE = 124,
+	DAQ_ENABLE = 124,
 };
 
 inline std::ostream& operator<<(std::ostream& os, const LiveDataCommand cmd) {
@@ -86,7 +86,7 @@ inline std::ostream& operator<<(std::ostream& os, const LiveDataValueType cmd) {
 		case LiveDataValueType::GPS_BEARING: return os << "GPS Bearing";
 		case LiveDataValueType::GPS_TIME: return os << "GPS Time";
 		case LiveDataValueType::GPS_TIME_VALID: return os << "GPS Time Valid";
-		case LiveDataValueType::DAQ_OVERRIDE: return os << "DAQ Override";
+		case LiveDataValueType::DAQ_ENABLE: return os << "DAQ Enable";
 		case LiveDataValueType::MANUAL_TRIGGER: return os << "Manual Trigger";
 	}
 	return os;

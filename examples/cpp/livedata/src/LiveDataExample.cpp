@@ -35,7 +35,7 @@ int main() {
 		msg->appendSignalArg(icsneo::LiveDataValueType::GPS_LATITUDE);
 		msg->appendSignalArg(icsneo::LiveDataValueType::GPS_LONGITUDE);
 		msg->appendSignalArg(icsneo::LiveDataValueType::GPS_ACCURACY);
-		msg->appendSignalArg(icsneo::LiveDataValueType::DAQ_OVERRIDE);
+		msg->appendSignalArg(icsneo::LiveDataValueType::DAQ_ENABLE);
 		msg->appendSignalArg(icsneo::LiveDataValueType::MANUAL_TRIGGER);
 		msg->cmd = icsneo::LiveDataCommand::SUBSCRIBE;
 		msg->handle = icsneo::LiveDataUtil::getNewHandle();
@@ -102,7 +102,7 @@ int main() {
 			{
 				break;
 			}
-			setValMsg->appendSetValue(icsneo::LiveDataValueType::DAQ_OVERRIDE, ldValue);
+			setValMsg->appendSetValue(icsneo::LiveDataValueType::DAQ_ENABLE, ldValue);
 			device->setValueLiveData(setValMsg);
 			// Test setting values
 			std::this_thread::sleep_for(std::chrono::seconds(3));
