@@ -51,6 +51,8 @@ public:
 		WiVINotSupported = 0x1015,
 		RestrictedEntryFlag = 0x1016,
 		NotSupported = 0x1017,
+		FixedPointOverflow = 0x1018,
+		FixedPointPrecision = 0x1019,
 
 		// Device Events
 		PollingMessageOverflow = 0x2000,

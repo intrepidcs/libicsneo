@@ -35,6 +35,8 @@ int main() {
 		msg->appendSignalArg(icsneo::LiveDataValueType::GPS_LATITUDE);
 		msg->appendSignalArg(icsneo::LiveDataValueType::GPS_LONGITUDE);
 		msg->appendSignalArg(icsneo::LiveDataValueType::GPS_ACCURACY);
+		msg->appendSignalArg(icsneo::LiveDataValueType::DAQ_ENABLE);
+		msg->appendSignalArg(icsneo::LiveDataValueType::MANUAL_TRIGGER);
 		msg->cmd = icsneo::LiveDataCommand::SUBSCRIBE;
 		msg->handle = icsneo::LiveDataUtil::getNewHandle();
 		msg->updatePeriod = std::chrono::milliseconds(100);
@@ -77,6 +79,26 @@ int main() {
 		}));
 		// Run handler for three seconds to observe the signal data
 		std::this_thread::sleep_for(std::chrono::seconds(3));
+		double val = 0;
+		for (unsigned int i = 0; i < 10; ++i) {
+			// Set the values of signals we're watching so we can see them change live
+			auto setValMsg = std::make_shared<icsneo::LiveDataSetValueMessage>();
+			setValMsg->cmd = icsneo::LiveDataCommand::SET_VALUE;
+			setValMsg->handle = msg->handle;
+			// Convert the value format
+			icsneo::LiveDataValue ldValueDAQEnable;
+			icsneo::LiveDataValue ldValueManTrig;
+			if (!icsneo::LiveDataUtil::liveDataDoubleToValue(val / 3, ldValueDAQEnable) ||
+				!icsneo::LiveDataUtil::liveDataDoubleToValue(val, ldValueManTrig)) {
+				break;
+			}
+			setValMsg->appendSetValue(icsneo::LiveDataValueType::DAQ_ENABLE, ldValueDAQEnable);
+			setValMsg->appendSetValue(icsneo::LiveDataValueType::MANUAL_TRIGGER, ldValueManTrig);
+			device->setValueLiveData(setValMsg);
+			++val;
+			// Run handler for three seconds to observe the signal data
+			std::this_thread::sleep_for(std::chrono::seconds(3));
+		}
 		// Unsubscribe from the GPS signals and run handler for one more second
 		// Unsubscription only requires a valid in-use handle, in this case from our previous subscription
 		ret = device->unsubscribeLiveData(msg->handle);

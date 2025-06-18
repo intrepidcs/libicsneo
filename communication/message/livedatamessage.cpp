@@ -12,4 +12,14 @@ void LiveDataCommandMessage::appendSignalArg(LiveDataValueType valueType) {
 	arg->valueType = valueType;
 }
 
+void LiveDataSetValueMessage::appendSetValue(LiveDataValueType valueType, const LiveDataValue& value) {
+	auto& arg = args.emplace_back(std::make_shared<LiveDataArgument>());
+	arg->objectType = LiveDataObjectType::MISC;
+	arg->objectIndex = 0u;
+	arg->signalIndex = 0u;
+	arg->valueType = valueType;
+
+	values.push_back(std::make_shared<LiveDataValue>(value));
+}
+
 } // namespace icsneo

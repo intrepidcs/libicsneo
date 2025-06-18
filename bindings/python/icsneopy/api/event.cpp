@@ -142,7 +142,9 @@ void init_event(pybind11::module_& m) {
 		.value("VSAOtherError", APIEvent::Type::VSAOtherError)
 		.value("NoErrorFound", APIEvent::Type::NoErrorFound)
 		.value("TooManyEvents", APIEvent::Type::TooManyEvents)
-		.value("Unknown", APIEvent::Type::Unknown);
+		.value("Unknown", APIEvent::Type::Unknown)
+		.value("FixedPointOverflow", APIEvent::Type::FixedPointOverflow)
+		.value("FixedPointPrecision", APIEvent::Type::FixedPointPrecision);
 	
 	pybind11::enum_<APIEvent::Severity>(apiEvent, "Severity")
 		.value("Any", APIEvent::Severity::Any)
