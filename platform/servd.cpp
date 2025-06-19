@@ -1,5 +1,7 @@
 #include "icsneo/platform/servd.h"
 
+#include <string_view>
+
 using namespace icsneo;
 
 #define SERVD_VERSION 1
@@ -12,9 +14,9 @@ bool Servd::Enabled() {
 	return enabled ? enabled[0] == '1' : false;
 }
 
-std::vector<std::string_view> split(const std::string_view& str, char delim = ' ')
+std::vector<std::string> split(const std::string_view& str, char delim = ' ')
 {
-	std::vector<std::string_view> ret;
+	std::vector<std::string> ret;
 	size_t tail = 0;
 	size_t head = 0;
 	while (head < str.size()) {
@@ -114,8 +116,8 @@ bool Servd::open() {
 		return false;
 	}
 	aliveThread = std::thread(&Servd::alive, this);
-	readThread = std::thread(&Servd::read, this, Address{tokens[2].data(), (uint16_t)std::stol(tokens[3].data())});
-	writeThread = std::thread(&Servd::write, this, Address{tokens[0].data(), (uint16_t)std::stol(tokens[1].data())});
+	readThread = std::thread(&Servd::read, this, Address{tokens[2].c_str(), (uint16_t)std::stol(tokens[3].c_str())});
+	writeThread = std::thread(&Servd::write, this, Address{tokens[0].c_str(), (uint16_t)std::stol(tokens[1].c_str())});
 	opened = true;
 	return true;
 }

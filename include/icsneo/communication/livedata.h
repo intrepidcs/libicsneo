@@ -88,6 +88,7 @@ inline std::ostream& operator<<(std::ostream& os, const LiveDataValueType cmd) {
 		case LiveDataValueType::GPS_TIME_VALID: return os << "GPS Time Valid";
 		case LiveDataValueType::DAQ_ENABLE: return os << "DAQ Enable";
 		case LiveDataValueType::MANUAL_TRIGGER: return os << "Manual Trigger";
+		case LiveDataValueType::TIME_SINCE_MSG: return os << "Time Since Msg";
 	}
 	return os;
 }
