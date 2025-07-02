@@ -668,6 +668,37 @@ typedef struct
 } Fire3LinuxSettings;
 #define FIRE3LINUXSETTINGS_SIZE 8
 static_assert(sizeof(Fire3LinuxSettings) == FIRE3LINUXSETTINGS_SIZE, "Fire3LinuxSettings is the wrong size!");
+
+
+/* Define number of CMP streams per device*/
+#define CMP_STREAMS_FIRE3 (10)
+#define CMP_STREAMS_FIRE3FR (10)
+#define CMP_STREAMS_RED2 (10)
+#define CMP_STREAMS_A2B (3)
+#define CMP_STREAMS_GIGASTAR (10)
+
+/* CMP Network Enables */
+typedef struct
+{
+	uint8_t bStreamEnabled : 1;
+	uint8_t EthModule : 2;
+	uint8_t bControlEnabled : 1;
+	uint8_t spare : 4;
+	uint8_t streamId;
+	uint8_t dstMac[6];
+	uint64_t network_enables_1;
+	uint64_t network_enables_2;
+} CMP_NETWORK_DATA;
+
+/* Global CMP Data */
+typedef struct
+{
+	uint8_t cmp_enabled : 1;
+	uint8_t sparebits : 7;
+	uint8_t spare;
+	uint16_t cmp_device_id;
+} CMP_GLOBAL_DATA;
+
 #pragma pack(pop)
 
 #ifdef __cplusplus

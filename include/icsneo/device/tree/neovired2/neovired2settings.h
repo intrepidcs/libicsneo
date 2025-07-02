@@ -79,7 +79,15 @@ typedef struct {
 	uint16_t digitalIoThresholdEnable;
 	uint16_t misc_io_initial_ddr;
 	uint16_t misc_io_initial_latch;
-	ETHERNET_SETTINGS2 ethernet2;
+	ETHERNET_SETTINGS2 ethernet2_1;
+	ETHERNET_SETTINGS ethernet_2;
+	ETHERNET_SETTINGS2 ethernet2_2;
+	Fire3LinuxSettings os_settings;
+	RAD_GPTP_SETTINGS gPTP;
+	uint16_t iso_tester_pullup_enable;
+	CMP_GLOBAL_DATA cmp_global_data;
+	CMP_NETWORK_DATA cmp_stream_data[CMP_STREAMS_RED2];
+	uint32_t networkTimeSync;
 } neovired2_settings_t;
 
 typedef struct {
