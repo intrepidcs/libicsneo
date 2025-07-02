@@ -142,6 +142,7 @@ bool Servd::close() {
 		messageSocket.sendto(request.data(), request.size(), SERVD_ADDRESS);
 	}
 	opened = false;
+	setIsClosing(false);
 	return true;
 }
 
