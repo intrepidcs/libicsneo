@@ -757,3 +757,33 @@ bool icsneo_isOnlineSupported(const neodevice_t* device) {
 	
 	return device->device->isOnlineSupported();
 }
+
+bool icsneo_requestTC10Wake(const neodevice_t* device, neonetid_t netid) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	return device->device->requestTC10Wake((Network::NetID)netid);
+}
+
+bool icsneo_requestTC10Sleep(const neodevice_t* device, neonetid_t netid) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+
+	return device->device->requestTC10Sleep((Network::NetID)netid);
+}
+
+bool icsneo_getTC10Status(const neodevice_t* device, neonetid_t netid, neotc10status_t* status) {
+	if(!icsneo_isValidNeoDevice(device))
+		return false;
+	
+	const auto statusMsg = device->device->getTC10Status((Network::NetID)netid);
+
+	if(!statusMsg)
+		return false;
+
+	status->wakeStatus = (neotc10wakestatus_t)statusMsg->wakeStatus;
+	status->sleepStatus = (neotc10sleepstatus_t)statusMsg->sleepStatus;
+
+	return true;
+}
+

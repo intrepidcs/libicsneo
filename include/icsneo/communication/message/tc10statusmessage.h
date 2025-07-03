@@ -4,23 +4,12 @@
 #ifdef __cplusplus
 
 #include "icsneo/communication/message/message.h"
+#include "icsneo/communication/tc10.h"
 
 #include <memory>
 
 namespace icsneo
 {
-
-enum class TC10WakeStatus : uint8_t {
-	NoWakeReceived,
-	WakeReceived,
-};
-
-enum class TC10SleepStatus : uint8_t {
-	NoSleepReceived,
-	SleepReceived,
-	SleepFailed,
-	SleepAborted,
-};
 
 class TC10StatusMessage : public Message {
 public:

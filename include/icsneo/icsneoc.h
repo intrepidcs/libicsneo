@@ -9,6 +9,7 @@
 #include "icsneo/platform/dynamiclib.h" // Dynamic library loading and exporting
 #include "icsneo/communication/network.h" // Network type and netID defines
 #include "icsneo/communication/io.h" // IO enum defines
+#include "icsneo/communication/tc10.h"
 #include "icsneo/api/version.h" // For version info
 #include "icsneo/api/event.h" // For event and error info
 
@@ -845,6 +846,34 @@ extern bool DLLExport icsneo_setRTC(const neodevice_t* device, uint64_t input);
 */
 extern bool DLLExport icsneo_isOnlineSupported(const neodevice_t* device);
 
+/**
+ * \brief Request TC10 wake
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] netid The interface to request the TC10 wake on.
+
+ * \returns True if the device successfully sent the TC10 wake request.
+*/
+extern bool DLLExport icsneo_requestTC10Wake(const neodevice_t* device, neonetid_t netid);
+
+/**
+ * \brief Request TC10 sleep
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] netid The interface to request the TC10 sleep on.
+
+ * \returns True if the device successfully sent the TC10 sleep request.
+*/
+extern bool DLLExport icsneo_requestTC10Sleep(const neodevice_t* device, neonetid_t netid);
+
+/**
+ * \brief Query TC10 status
+ * \param[in] device A pointer to the neodevice_t structure specifying the device to operate on.
+ * \param[in] netid The interface to request the TC10 status for.
+ * \param[out] status The TC10 status for the given interface
+
+ * \returns True if the device successfully retreieved the TC10 status.
+*/
+extern bool DLLExport icsneo_getTC10Status(const neodevice_t* device, neonetid_t netid, neotc10status_t* status);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
@@ -1028,6 +1057,15 @@ fn_icsneo_setRTC icsneo_setRTC;
 typedef bool(*fn_icsneo_isOnlineSupported)(const neodevice_t* device);
 fn_icsneo_isOnlineSupported icsneo_isOnlineSupported;
 
+typedef bool(*fn_icsneo_requestTC10Wake)(const neodevice_t* device, neonetid_t netid);
+fn_icsneo_requestTC10Wake icsneo_requestTC10Wake;
+
+typedef bool(*fn_icsneo_requestTC10Sleep)(const neodevice_t* device, neonetid_t netid);
+fn_icsneo_requestTC10Sleep icsneo_requestTC10Sleep;
+
+typedef bool(*fn_icsneo_getTC10Status)(const neodevice_t* device, neonetid_t netid, neotc10status_t* status);
+fn_icsneo_getTC10Status icsneo_getTC10Status;
+
 #define ICSNEO_IMPORT(func) func = (fn_##func)icsneo_dynamicLibraryGetFunction(icsneo_libraryHandle, #func)
 #define ICSNEO_IMPORTASSERT(func) if((ICSNEO_IMPORT(func)) == NULL) return 3
 void* icsneo_libraryHandle = NULL;
@@ -1101,6 +1139,9 @@ int icsneo_init() {
 	ICSNEO_IMPORTASSERT(icsneo_getRTC);
 	ICSNEO_IMPORTASSERT(icsneo_setRTC);
 	ICSNEO_IMPORTASSERT(icsneo_isOnlineSupported);
+	ICSNEO_IMPORTASSERT(icsneo_requestTC10Wake);
+	ICSNEO_IMPORTASSERT(icsneo_requestTC10Sleep);
+	ICSNEO_IMPORTASSERT(icsneo_getTC10Status);
 
 	icsneo_initialized = true;
 	return 0;
