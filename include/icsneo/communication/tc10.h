@@ -33,8 +33,8 @@ typedef enum _neotc10wakestatus_t {
 typedef enum _neotc10sleepstatus_t {
 	ICSNEO_TC10_NO_SLEEP_RECEIVED = 0,
 	ICSNEO_TC10_SLEEP_RECEIVED = 1,
-	ICSNEO_TC10_SLEEP_FAILED = 1,
-	ICSNEO_TC10_SLEEP_ABORTED = 1,
+	ICSNEO_TC10_SLEEP_FAILED = 2,
+	ICSNEO_TC10_SLEEP_ABORTED = 3,
 } neotc10sleepstatus_t;
 
 typedef struct _neotc10status_t {
