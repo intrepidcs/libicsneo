@@ -143,6 +143,7 @@ public:
 		I2C_03 = 518, // previously I2C3
 		I2C_04 = 519, // previously I2C4
 		ETHERNET_02 = 520, // previously Ethernet2
+		ETHERNET_TX_WRAP = 521,
 		A2B_01 = 522, // previously A2B1
 		A2B_02 = 523, // previously A2B2
 		ETHERNET_03 = 524, // previously Ethernet3

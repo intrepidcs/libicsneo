@@ -35,15 +35,25 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 					auto ethmsg = std::dynamic_pointer_cast<EthernetMessage>(message);
 					if(!ethmsg) {
 						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
-						return false; // The message was not a properly formed EthernetMessage
+						return false;
 					}
 
+					shortFormat = false; // Ensure long-format RED header is added
+					netid = static_cast<uint16_t>(Network::NetID::ETHERNET_TX_WRAP);
 					buffer = &result;
-					if(!HardwareEthernetPacket::EncodeFromMessage(*ethmsg, result, report))
+
+					if(!HardwareEthernetPacket::EncodeFromMessage(*ethmsg, result, report)) {
+						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
 						return false;
+					}
+
+					if(result.empty()) {
+						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+						return false;
+					}
 
 					break;
-				} // End of Network::Type::Ethernet
+				}
 				case Network::Type::CAN:
 				case Network::Type::SWCAN:
 				case Network::Type::LSFTCAN: {
@@ -230,7 +240,6 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			(uint8_t)(netid >> 8)
 		});
 	}
-
 	result = packetizer.packetWrap(*buffer, shortFormat);
 	return true;
 }
