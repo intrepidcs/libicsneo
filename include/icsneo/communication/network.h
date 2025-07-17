@@ -592,6 +592,7 @@ public:
 		case NetID::ETHERNET_01:
 		case NetID::ETHERNET_DAQ:
 		case NetID::ETHERNET_02:
+		case NetID::ETHERNET_TX_WRAP:
 		case NetID::ETHERNET_03:
 		case NetID::AE_01:
 		case NetID::AE_02:
@@ -888,6 +889,8 @@ public:
 			return "I2C 04";
 		case NetID::ETHERNET_02:
 			return "Ethernet 02";
+		case NetID::ETHERNET_TX_WRAP:
+			return "Ethernet TX Wrap";
 		case NetID::A2B_01:
 			return "A2B 01";
 		case NetID::A2B_02:

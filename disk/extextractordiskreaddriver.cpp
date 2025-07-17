@@ -32,7 +32,7 @@ std::optional<uint64_t> ExtExtractorDiskReadDriver::readLogicalDiskAligned(Commu
 	return ret;
 }
 
-std::optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+std::optional<uint64_t> ExtExtractorDiskReadDriver::attemptReadLogicalDiskAligned(Communication& com, device_eventhandler_t,
 	uint64_t pos, uint8_t* into, uint64_t amount, std::chrono::milliseconds timeout, MemoryType) {
 	static std::shared_ptr<MessageFilter> NeoMemorySDRead = std::make_shared<MessageFilter>(Network::NetID::NeoMemorySDRead);
 

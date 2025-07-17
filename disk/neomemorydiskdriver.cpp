@@ -58,7 +58,7 @@ std::optional<uint64_t> NeoMemoryDiskDriver::readLogicalDiskAligned(Communicatio
 	return SectorSize;
 }
 
-std::optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communication& com, device_eventhandler_t report,
+std::optional<uint64_t> NeoMemoryDiskDriver::writeLogicalDiskAligned(Communication& com, device_eventhandler_t,
 	uint64_t pos, const uint8_t* from, uint64_t amount, std::chrono::milliseconds timeout, MemoryType memType) {
 
 	static std::shared_ptr<MessageFilter> NeoMemoryDone = std::make_shared<MessageFilter>(Network::NetID::NeoMemoryWriteDone);

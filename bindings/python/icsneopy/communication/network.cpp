@@ -123,6 +123,7 @@ void init_network(pybind11::module_& m) {
 		.value("I2C_03", Network::NetID::I2C_03)
 		.value("I2C_04", Network::NetID::I2C_04)
 		.value("ETHERNET_02", Network::NetID::ETHERNET_02)
+		.value("ETHERNET_TX_WRAP", Network::NetID::ETHERNET_TX_WRAP)
 		.value("A2B_01", Network::NetID::A2B_01)
 		.value("A2B_02", Network::NetID::A2B_02)
 		.value("ETHERNET_03", Network::NetID::ETHERNET_03)

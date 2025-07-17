@@ -277,7 +277,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		std::condition_variable heartbeatCV;
 		std::mutex receivedMessageMutex;
 		bool receivedMessage = false;
-		auto messageReceivedCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&](std::shared_ptr<Message> message) {
+		auto messageReceivedCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&](std::shared_ptr<Message>) {
 			{
 				std::scoped_lock<std::mutex> lk(receivedMessageMutex);
 				receivedMessage = true;
