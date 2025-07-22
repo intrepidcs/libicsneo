@@ -15,20 +15,36 @@ namespace icsneo {
 
 class ExtendedResponseFilter : public MessageFilter {
 public:
-	ExtendedResponseFilter(icsneo::ExtendedResponse resp) : MessageFilter(Message::Type::ExtendedResponse), response(resp) {}
+	ExtendedResponseFilter(icsneo::ExtendedCommand cmd) : MessageFilter(Message::Type::ExtendedResponse), command(cmd), response(std::nullopt) {}
+	ExtendedResponseFilter(icsneo::ExtendedResponse resp) : MessageFilter(Message::Type::ExtendedResponse), command(std::nullopt), response(resp) {}
+	ExtendedResponseFilter(icsneo::ExtendedCommand cmd, icsneo::ExtendedResponse resp) 
+		: MessageFilter(Message::Type::ExtendedResponse), command(cmd), response(resp) {}
 
 	bool match(const std::shared_ptr<Message>& message) const override {
 		if(!MessageFilter::match(message)) {
 			return false;
 		}
 		const auto respMsg = std::static_pointer_cast<ExtendedResponseMessage>(message);
-		return respMsg && matchResponse(respMsg->response);
+		return respMsg && matchResponse(respMsg->command, respMsg->response);
 	}
 
 private:
-	icsneo::ExtendedResponse response;
-	bool matchResponse(icsneo::ExtendedResponse resp) const {
-		return response == resp;
+	std::optional<icsneo::ExtendedCommand> command = std::nullopt;
+	std::optional<icsneo::ExtendedResponse> response = std::nullopt;
+
+	bool matchResponse(icsneo::ExtendedCommand cmd, icsneo::ExtendedResponse resp) const {
+		if(command) {
+			if(*command != cmd) {
+				return false;
+			}
+		}
+		if(response) {
+			if(*response != resp) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 };
 

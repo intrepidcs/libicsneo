@@ -26,6 +26,7 @@
 #include "icsneo/disk/diskreaddriver.h"
 #include "icsneo/disk/diskwritedriver.h"
 #include "icsneo/disk/nulldiskdriver.h"
+#include "icsneo/disk/diskdetails.h"
 #include "icsneo/communication/communication.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
@@ -637,6 +638,22 @@ public:
 	bool unsubscribeLiveData(const LiveDataHandle& handle);
 	bool clearAllLiveData();
 	bool setValueLiveData(std::shared_ptr<LiveDataSetValueMessage> message);
+	
+	enum class DiskFormatDirective : uint8_t {
+		Continue,
+		Stop
+	};
+
+	using DiskFormatProgress = std::function<DiskFormatDirective(uint64_t sectorsFormatted, uint64_t sectorsTotal)>;
+	bool formatDisk(
+		const DiskDetails& config,
+		const DiskFormatProgress& handler = {},
+		std::chrono::milliseconds interval = std::chrono::milliseconds(500) /** Send updates at an interval of 500ms */
+	);
+	bool forceDiskConfigUpdate(const DiskDetails& config); // Forces a disk layout and enables change without formatting
+	std::shared_ptr<DiskDetails> getDiskDetails(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
+	virtual size_t getDiskCount() const { return 0; }
+	bool supportsDiskFormatting() const { return getDiskCount() != 0; }
 
 	// VSA Read functions
 

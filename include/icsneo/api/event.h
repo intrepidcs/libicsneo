@@ -113,6 +113,8 @@ public:
 		AppErrorParsingFailed = 0x2055,
 		GPTPNotSupported = 0x2056,
 		SettingNotAvaiableDevice = 0x2057,
+		DiskFormatNotSupported = 0x2058,
+		DiskFormatInvalidCount = 0x2059,
 
 		// Transport Events
 		FailedToRead = 0x3000,

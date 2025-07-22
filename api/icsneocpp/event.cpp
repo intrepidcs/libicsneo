@@ -124,6 +124,10 @@ static constexpr const char* LIN_SETTINGS_NOT_AVAILABLE = "LIN settings are not 
 static constexpr const char* MODE_NOT_FOUND = "The mode was not found.";
 static constexpr const char* GPTP_NOT_SUPPORTED = "GPTP clock synchronization is not supported on this device.";
 static constexpr const char* SETTING_NOT_AVAILABLE = "Requested a setting that is not available on this device";
+static constexpr const char* DISK_FORMAT_NOT_SUPPORTED = "Disk formatting is not supported on this device.";
+static constexpr const char* DISK_FORMAT_INVALID_COUNT = "Disk format config disk count is mismatched with device disk count.";
+
+
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -371,6 +375,10 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return SEND_TO_ERROR;
 		case Type::GPTPNotSupported:
 			return GPTP_NOT_SUPPORTED;
+		case Type::DiskFormatNotSupported:
+			return DISK_FORMAT_NOT_SUPPORTED;
+		case Type::DiskFormatInvalidCount:
+			return DISK_FORMAT_INVALID_COUNT;
 	
 		// FTD3XX
 		case Type::FTOK:

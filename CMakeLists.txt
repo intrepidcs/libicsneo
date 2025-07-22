@@ -292,6 +292,7 @@ set(SRC_FILES
 	disk/plasiondiskreaddriver.cpp
 	disk/extextractordiskreaddriver.cpp
 	disk/fat.cpp
+	disk/diskdetails.cpp
 	disk/vsa/vsa.cpp
 	disk/vsa/vsa02.cpp
 	disk/vsa/vsa03.cpp

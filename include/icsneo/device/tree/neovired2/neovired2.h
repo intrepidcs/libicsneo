@@ -75,6 +75,10 @@ protected:
 	bool supportsEraseMemory() const override {
 		return true;
 	}
+	
+	size_t getDiskCount() const override {
+		return 2;
+	}
 };
 
 }

@@ -324,6 +324,17 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							result = GPTPStatus::DecodeToMessage(packet->data, report);
 							return true;
 						}
+						case ExtendedCommand::GetDiskDetails:
+						case ExtendedCommand::DiskFormatProgress: {
+							std::vector<uint8_t> responseBody(
+								packet->data.begin() + sizeof(ExtendedResponseMessage::ResponseHeader),
+								packet->data.end()
+							);
+							auto response = std::make_shared<ExtendedResponseMessage>(resp.command);
+							response->data = std::move(responseBody);
+							result = response;
+							return true;
+						}
 						default:
 							// No defined handler, treat this as a RawMessage
 							break;

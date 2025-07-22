@@ -924,7 +924,8 @@ public:
 	template<typename T> T getStructure() const { return *getStructurePointer<T>(); }
 	template<typename T> bool applyStructure(const T& newStructure);
 
-	const size_t& getSize() const { return structSize; }
+	size_t getSize() const { return structSize; }
+	size_t getSerialSize() const { return settings.size(); }
 
 	// if settings are disabled for this device. always false unless constructed null
 	bool disabled = false;

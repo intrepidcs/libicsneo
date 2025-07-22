@@ -137,6 +137,11 @@ namespace icsneo
 		{
 			return 0;
 		}
+		
+		size_t getDiskCount() const override 
+		{
+			return 1;
+		}
 	};
 
 }

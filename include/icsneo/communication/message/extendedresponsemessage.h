@@ -10,11 +10,12 @@ namespace icsneo {
 
 class ExtendedResponseMessage : public Message {
 public:
-	ExtendedResponseMessage(ExtendedCommand cmd, ExtendedResponse resp)
+	ExtendedResponseMessage(ExtendedCommand cmd, ExtendedResponse resp = ExtendedResponse::OK)
 		: Message(Message::Type::ExtendedResponse), command(cmd), response(resp) {}
 
 	const ExtendedCommand command;
 	const ExtendedResponse response;
+	std::vector<uint8_t> data;
 
 #pragma pack(push, 2)
 	struct ResponseHeader {

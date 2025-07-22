@@ -5,6 +5,7 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/extensions/deviceextension.h"
 #include "icsneo/disk/fat.h"
+#include "icsneo/communication/message/filter/extendedresponsefilter.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996) // STL time functions
@@ -3487,3 +3488,129 @@ bool Device::enableNetworkCommunication(bool enable) {
 	}
 	return true;
 }
+
+
+
+bool Device::formatDisk(const DiskDetails& config, const DiskFormatProgress& handler, std::chrono::milliseconds interval) {
+#pragma pack(push, 2)
+	struct DiskFormatProgressResponse {
+		uint16_t state;
+		uint64_t sectorsRemaining;
+	};
+#pragma pack(pop)
+
+	auto diskCount = getDiskCount();
+	
+	if(!diskCount) {
+		report(APIEvent::Type::DiskFormatNotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	if(config.disks.size() != diskCount) {
+		report(APIEvent::Type::DiskFormatInvalidCount, APIEvent::Severity::Error);
+		return false;
+	}
+
+	std::vector<uint8_t> payload = DiskDetails::Encode(config);
+	if(!com->sendCommand(ExtendedCommand::DiskFormatStart, payload)) {
+		return false;
+	}
+
+	uint64_t sectorsFormatted = 0;
+	uint64_t sectorsTotal = 0;
+	uint16_t lastState = 1;
+	do {
+		std::shared_ptr<Message> response = com->waitForMessageSync(
+			[this](){ 
+				return com->sendCommand(ExtendedCommand::DiskFormatProgress, {}); 
+			},
+			std::make_shared<ExtendedResponseFilter>(ExtendedCommand::DiskFormatProgress),
+			std::chrono::milliseconds(200)
+		);
+
+		if(!response) {
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+			return false;
+		}
+
+		auto extResponse = std::dynamic_pointer_cast<ExtendedResponseMessage>(response);
+		if(!extResponse) {
+			// Should never happen
+			return false;
+		}
+		
+		if(extResponse->data.size() < sizeof(DiskFormatProgressResponse)) {
+			report(APIEvent::Type::BufferInsufficient, APIEvent::Severity::Error);
+			return false;
+		}
+
+		auto* progress = reinterpret_cast<DiskFormatProgressResponse*>(extResponse->data.data());
+		lastState = progress->state;
+
+		if(sectorsTotal == 0) {
+			sectorsTotal = progress->sectorsRemaining;
+		} else {
+			sectorsFormatted = sectorsTotal - progress->sectorsRemaining;
+
+			if(handler) {
+				auto directive = handler(sectorsFormatted, sectorsTotal);
+
+				if(directive == DiskFormatDirective::Stop) {
+					return com->sendCommand(ExtendedCommand::DiskFormatCancel);
+				}
+			}
+		}
+
+		std::this_thread::sleep_for(interval);
+	} while(lastState);
+
+	return true;
+}
+
+bool Device::forceDiskConfigUpdate(const DiskDetails& config) {
+	auto diskCount = getDiskCount();
+	
+	if(!diskCount) {
+		report(APIEvent::Type::DiskFormatNotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	if(config.disks.size() != diskCount) {
+		report(APIEvent::Type::DiskFormatInvalidCount, APIEvent::Severity::Error);
+		return false;
+	}
+
+	return com->sendCommand(ExtendedCommand::DiskFormatUpdate, DiskDetails::Encode(config));
+}
+
+std::shared_ptr<DiskDetails> Device::getDiskDetails(std::chrono::milliseconds timeout) {
+	if(!supportsDiskFormatting()) {
+		report(APIEvent::Type::DiskFormatNotSupported, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this](){ 
+			return com->sendCommand(ExtendedCommand::GetDiskDetails, {}); 
+		},
+		std::make_shared<ExtendedResponseFilter>(ExtendedCommand::GetDiskDetails),
+		timeout
+	);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	auto extResponse = std::dynamic_pointer_cast<ExtendedResponseMessage>(response);
+	if(!extResponse) {
+		// Should never happen
+		return nullptr;
+	}
+
+	return DiskDetails::Decode(extResponse->data, getDiskCount(), report);
+}
+

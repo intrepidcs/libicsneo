@@ -36,6 +36,8 @@ void init_event(pybind11::module_& m) {
 		.value("SettingsLengthError", APIEvent::Type::SettingsLengthError)
 		.value("SettingsChecksumError", APIEvent::Type::SettingsChecksumError)
 		.value("SettingsNotAvailable", APIEvent::Type::SettingsNotAvailable)
+		.value("DiskFormatNotSupported", APIEvent::Type::DiskFormatNotSupported)
+		.value("DiskFormatInvalidCount", APIEvent::Type::DiskFormatInvalidCount)
 		.value("SettingsReadOnly", APIEvent::Type::SettingsReadOnly)
 		.value("CANSettingsNotAvailable", APIEvent::Type::CANSettingsNotAvailable)
 		.value("CANFDSettingsNotAvailable", APIEvent::Type::CANFDSettingsNotAvailable)

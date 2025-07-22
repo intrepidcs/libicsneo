@@ -120,6 +120,10 @@ protected:
 	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
 		return 0;
 	}
+
+	size_t getDiskCount() const override {
+		return 1;
+	}
 };
 
 }
