@@ -105,15 +105,21 @@ std::string Device::describe() const {
 	return ss.str();
 }
 
-bool Device::enableMessagePolling() {
+bool Device::enableMessagePolling(std::optional<MessageFilter> filter) {
 	if(isMessagePollingEnabled()) {// We are already polling
 		report(APIEvent::Type::DeviceCurrentlyPolling, APIEvent::Severity::Error);
 		return false;
 	}
-	messagePollingCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>([this](std::shared_ptr<Message> message) {
+	if(!filter.has_value()) {
+		// If no filter is provided, use a default that includes all messages
+		filter.emplace(MessageFilter());
+		filter->includeInternalInAny = true;
+	}
+	auto callback = std::make_shared<MessageCallback>(*filter, [this](std::shared_ptr<Message> message) {
 		pollingContainer.enqueue(message);
 		enforcePollingMessageLimit();
-	}));
+	});
+	messagePollingCallbackID = com->addMessageCallback(callback);
 	return true;
 }
 

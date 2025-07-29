@@ -15,3 +15,4 @@ third-party/concurrentqueue/tests
 examples/csharp/bin
 examples/csharp/obj
 test/system
+.env

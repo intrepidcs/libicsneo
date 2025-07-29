@@ -17,7 +17,7 @@ void init_device(pybind11::module_& m) {
 		.def("close", &Device::close, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("describe", &Device::describe)
 		.def("disable_message_polling", &Device::disableMessagePolling, pybind11::call_guard<pybind11::gil_scoped_release>())
-		.def("enable_message_polling", &Device::enableMessagePolling, pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def("enable_message_polling", &Device::enableMessagePolling, pybind11::arg("filter") = std::nullopt, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("get_current_message_count", &Device::getCurrentMessageCount)
 		.def("get_digital_io", &Device::getDigitalIO, pybind11::arg("type"), pybind11::arg("number"), pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("get_gptp_status", &Device::getGPTPStatus, pybind11::arg("timeout") = std::chrono::milliseconds(100), pybind11::call_guard<pybind11::gil_scoped_release>())

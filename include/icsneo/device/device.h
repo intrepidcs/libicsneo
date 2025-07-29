@@ -206,7 +206,7 @@ public:
 	// Message polling related functions
 
 
-	bool enableMessagePolling();
+	bool enableMessagePolling(std::optional<MessageFilter> filter = std::nullopt);
 	bool disableMessagePolling();
 	bool isMessagePollingEnabled() { return messagePollingCallbackID != 0; };
 	std::pair<std::vector<std::shared_ptr<Message>>, bool> getMessages();
