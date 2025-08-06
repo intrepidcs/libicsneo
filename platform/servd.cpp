@@ -14,13 +14,14 @@ bool Servd::Enabled() {
 	return enabled ? enabled[0] == '1' : false;
 }
 
-std::vector<std::string> split(const std::string_view& str, char delim = ' ')
-{
+std::vector<std::string> split(const std::string_view& str, char delim = ' ') {
+	if(str.empty())
+		return {};
 	std::vector<std::string> ret;
 	size_t tail = 0;
 	size_t head = 0;
-	while (head < str.size()) {
-		if (str[head] == delim) {
+	while(head < str.size()) {
+		if(str[head] == delim) {
 			ret.emplace_back(&str[tail], head - tail);
 			tail = head + 1;
 		}

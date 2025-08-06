@@ -16,6 +16,7 @@
 #include <chrono>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/api/lifetime.h"
+#include "icsneo/api/periodic.h"
 #include "icsneo/device/neodevice.h"
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/device/nullsettings.h"
@@ -1037,7 +1038,10 @@ private:
 	 */
 	std::optional<uint64_t> getVSADiskSize();
 
-	bool enableNetworkCommunication(bool enable);
+	bool enableNetworkCommunication(bool enable, uint32_t timeout = 0);
+
+	// Keeponline (keepalive for online)
+	std::unique_ptr<Periodic> keeponline;
 };
 
 }

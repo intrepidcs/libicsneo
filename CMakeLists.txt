@@ -533,6 +533,7 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/ringbuffertest.cpp
 		test/unit/apperrordecodertest.cpp
 		test/unit/windowsstrings.cpp
+		test/unit/periodictest.cpp
 	)
 
 	target_link_libraries(libicsneo-unit-tests gtest gtest_main)

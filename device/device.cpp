@@ -421,7 +421,8 @@ bool Device::disableLogData() {
 }
 
 bool Device::goOnline() {
-	if(!enableNetworkCommunication(true))
+	static constexpr uint32_t onlineTimeoutMs = 5000;
+	if(!enableNetworkCommunication(true, onlineTimeoutMs))
 		return false;
 
 	auto startTime = std::chrono::system_clock::now();
@@ -450,13 +451,19 @@ bool Device::goOnline() {
 			return false;
 	}
 
+	// (re)start the keeponline
+	keeponline = std::make_unique<Periodic>([this] { return enableNetworkCommunication(true, onlineTimeoutMs); }, std::chrono::milliseconds(onlineTimeoutMs / 4));
+
 	online = true;
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOnline(); return true; });
+
 	return true;
 }
 
 bool Device::goOffline() {
+	keeponline.reset();
+
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOffline(); return true; });
 
 	if(isDisconnected()) {
@@ -3482,13 +3489,14 @@ bool Device::writeMACsecConfig(const MACsecMessage& message, uint16_t binaryInde
 	return writeBinaryFile(raw, binaryIndex);
 }
 
-bool Device::enableNetworkCommunication(bool enable) {
+bool Device::enableNetworkCommunication(bool enable, uint32_t timeout) {
 	bool sendMsg = false;
 	if(!com->driver->enableCommunication(enable, sendMsg)) {
 		return false;
 	}
 	if(sendMsg) {
-		if(!com->sendCommand(Command::EnableNetworkCommunication, enable)) {
+		const uint8_t* i = (uint8_t*)&timeout;
+		if(!com->sendCommand(Command::EnableNetworkCommunication, {enable, 0, 0, 0, i[0], i[1], i[2], i[3]})) {
 			return false;
 		}
 	}
