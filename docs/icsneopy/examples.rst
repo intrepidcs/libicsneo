@@ -92,42 +92,9 @@ Monitor Ethernet Status
 TC10
 ====
 
-.. code-block:: python
+:download:`Download example <../../examples/python/tc10/tc10.py>`
 
-   import icsneopy
-   import time
-
-   devices: list[icsneopy.Device] = icsneopy.find_all_devices()
-
-   device: icsneopy.Device = devices[0]
-
-   print(f"using {device} for TC10")
-
-   device.open()
-
-   netid = icsneopy.Network.NetID.AE_01
-
-   if device.supports_tc10():
-      # initial
-      status = device.get_tc10_status(netid)
-      print(f"initial status: wake: {status.wakeStatus}, sleep: {status.sleepStatus}")
-      time.sleep(1)
-
-      # sleep
-      device.request_tc10_sleep(netid)
-      print("waiting 1s for sleep to occur")
-      time.sleep(1)
-      status = device.get_tc10_status(netid)
-      print(f"post sleep status: wake: {status.wakeStatus}, sleep: {status.sleepStatus}")
-      
-      # wake
-      device.request_tc10_wake(netid)
-      print("waiting 1s for wake to occur")
-      time.sleep(1)
-      status = device.get_tc10_status(netid)
-      print(f"post wake status: wake: {status.wakeStatus}, sleep: {status.sleepStatus}")
-   else:
-      print(f"{device} does not support TC10")
+.. literalinclude:: ../../examples/python/tc10/tc10.py
 
 DoIP Ethernet Activation
 ========================
