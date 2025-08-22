@@ -507,17 +507,12 @@ add_subdirectory(bindings)
 
 # googletest
 if(LIBICSNEO_BUILD_UNIT_TESTS)
-	if(WIN32)
-		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-	endif()
-
-	if (NOT TARGET gtest)
-		add_subdirectory(third-party/googletest-master)
-	endif()
-
-	if (CMAKE_VERSION VERSION_LESS 2.8.11)
-		include_directories("${gtest_SOURCE_DIR}/include")
-	endif()
+	include(FetchContent)
+	FetchContent_Declare(googletest
+		GIT_REPOSITORY https://github.com/google/googletest.git
+		GIT_TAG 6986c2b575f77135401a4e1c65a7a42f20e18fef
+	)
+	FetchContent_MakeAvailable(googletest)
 
 	add_executable(libicsneo-unit-tests
 		test/unit/main.cpp
