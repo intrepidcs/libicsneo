@@ -3,14 +3,34 @@
 
 #ifdef __cplusplus
 
-#include "icsneo/platform/windows/vcp.h"
+#include "icsneo/communication/driver.h"
+#include "icsneo/device/founddevice.h"
+
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+
+#include <string>
 
 namespace icsneo {
 
-class CDCACM : public VCP {
+class CDCACM : public Driver {
 public:
-	CDCACM(const device_eventhandler_t& err, neodevice_t& forDevice) : VCP(err, forDevice) {}
-	static void Find(std::vector<FoundDevice>& found) { return VCP::Find(found, { L"usbser" }); }
+	CDCACM(const device_eventhandler_t& err, const std::wstring& path);
+	static void Find(std::vector<FoundDevice>& found);
+	bool open() override;
+	bool isOpen() override;
+	bool close() override;
+
+private:
+	void read();
+	void write();
+	std::wstring path;
+	HANDLE handle = INVALID_HANDLE_VALUE;
+	std::thread readThread;
+	std::thread writeThread;
+	OVERLAPPED readOverlapped = {};
+	OVERLAPPED writeOverlapped = {};
 };
 
 }

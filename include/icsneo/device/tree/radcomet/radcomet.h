@@ -12,7 +12,7 @@ class RADComet : public RADCometBase {
 public:
 
 	// Serial numbers start with RC
-	// USB PID is 0x1207, standard driver is FTDI3
+	// USB PID is 0x1207, standard driver is DXX
 	// Ethernet MAC allocation is 0x1D, standard driver is Raw
 	ICSNEO_FINDABLE_DEVICE_BY_SERIAL_RANGE(RADComet, DeviceType::RADComet, "RC0000", "RC0299");
 

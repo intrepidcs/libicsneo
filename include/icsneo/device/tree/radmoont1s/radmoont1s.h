@@ -12,7 +12,7 @@ class RADMoonT1S : public Device {
 public:
 
 	// Serial numbers start with MS
-	// USB PID is 0x1209, standard driver is FTDI3
+	// USB PID is 0x1209, standard driver is DXX
 	// Ethernet MAC allocation is 0x21, standard driver is Raw
 	ICSNEO_FINDABLE_DEVICE(RADMoonT1S, DeviceType::RADMoonT1S, "MS");
 

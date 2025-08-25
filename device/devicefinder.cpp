@@ -16,12 +16,8 @@
 #include "icsneo/platform/cdcacm.h"
 #endif
 
-#ifdef ICSNEO_ENABLE_FTDI
-#include "icsneo/platform/ftdi.h"
-#endif
-
-#ifdef ICSNEO_ENABLE_FTD3XX
-#include "icsneo/platform/ftd3xx.h"
+#ifdef ICSNEO_ENABLE_DXX
+#include "icsneo/platform/dxx.h"
 #endif
 
 #ifdef ICSNEO_ENABLE_TCP
@@ -83,12 +79,8 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		CDCACM::Find(newDriverFoundDevices);
 		#endif
 	
-		#ifdef ICSNEO_ENABLE_FTDI
-		FTDI::Find(newDriverFoundDevices);
-		#endif
-	
-		#ifdef ICSNEO_ENABLE_FTD3XX
-		FTD3XX::Find(newDriverFoundDevices);
+		#ifdef ICSNEO_ENABLE_DXX
+		DXX::Find(newDriverFoundDevices);
 		#endif
 	}
 

@@ -2,6 +2,8 @@
 
 #include <string_view>
 
+#include <cstdlib>
+
 using namespace icsneo;
 
 #define SERVD_VERSION 1
@@ -10,7 +12,14 @@ static const Address SERVD_ADDRESS = Address("127.0.0.1", 26741);
 static const std::string SERVD_VERSION_STR = std::to_string(SERVD_VERSION);
 
 bool Servd::Enabled() {
+	#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable : 4996)
+	#endif
 	char* enabled = std::getenv("LIBICSNEO_USE_SERVD");
+	#ifdef _MSC_VER
+	#pragma warning(pop)
+	#endif
 	return enabled ? enabled[0] == '1' : false;
 }
 

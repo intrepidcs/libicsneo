@@ -1,6 +1,8 @@
 #include "icsneo/platform/windows/registry.h"
 #include "icsneo/platform/windows/strings.h"
 
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
 #include <codecvt>
 #include <vector>

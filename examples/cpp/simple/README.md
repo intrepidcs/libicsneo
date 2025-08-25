@@ -32,7 +32,7 @@ If you haven't done this, `third-party/libicsneo` will be empty and you won't be
 
 ### Ubuntu 18.04 LTS
 
-1. Install dependencies with `sudo apt update` then `sudo apt install build-essential cmake libusb-1.0-0-dev libpcap0.8-dev`
+1. Install dependencies with `sudo apt update` then `sudo apt install build-essential cmake libpcap0.8-dev`
 2. Change directories to your `libicsneo-examples/libicsneocpp-example` folder and create a build directory by running `mkdir -p build`
 3. Enter the build directory with `cd build`
 4. Run `cmake ..` to generate your Makefile.

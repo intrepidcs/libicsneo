@@ -53,6 +53,7 @@ public:
 		NotSupported = 0x1017,
 		FixedPointOverflow = 0x1018,
 		FixedPointPrecision = 0x1019,
+		SyscallError = 0x1020, // check errno/GetLastError() for details
 
 		// Device Events
 		PollingMessageOverflow = 0x2000,
@@ -134,41 +135,6 @@ public:
 		SendToError = 0x3109,
 		MDIOMessageExceedsMaxLength = 0x3110,
 
-		// FTD3XX
-		FTOK = 0x4000, // placeholder
-		FTInvalidHandle = FTOK + 1,
-		FTDeviceNotFound = FTOK + 2,
-		FTDeviceNotOpened = FTOK + 3,
-		FTIOError = FTOK + 4,
-		FTInsufficientResources = FTOK + 5,
-		FTInvalidParameter = FTOK + 6,
-		FTInvalidBaudRate = FTOK + 7,
-		FTDeviceNotOpenedForErase = FTOK + 8,
-		FTDeviceNotOpenedForWrite = FTOK + 9,
-		FTFailedToWriteDevice = FTOK + 10,
-		FTEEPROMReadFailed = FTOK + 11,
-		FTEEPROMWriteFailed = FTOK + 12,
-		FTEEPROMEraseFailed = FTOK + 13,
-		FTEEPROMNotPresent = FTOK + 14,
-		FTEEPROMNotProgrammed = FTOK + 15,
-		FTInvalidArgs = FTOK + 16,
-		FTNotSupported = FTOK + 17,
-		FTNoMoreItems = FTOK + 18,
-		FTTimeout = FTOK + 19,
-		FTOperationAborted = FTOK + 20,
-		FTReservedPipe = FTOK + 21,
-		FTInvalidControlRequestDirection = FTOK + 22,
-		FTInvalidControlRequestType = FTOK + 23,
-		FTIOPending = FTOK + 24,
-		FTIOIncomplete = FTOK + 25,
-		FTHandleEOF = FTOK + 26,
-		FTBusy = FTOK + 27,
-		FTNoSystemResources = FTOK + 28,
-		FTDeviceListNotReady = FTOK + 29,
-		FTDeviceNotConnected = FTOK + 30,
-		FTIncorrectDevicePath = FTOK + 31,
-		FTOtherError = FTOK + 32,
-
 		// VSA
 		VSABufferCorrupted = 0x5000,
 		VSATimestampNotFound = VSABufferCorrupted + 1,
@@ -190,6 +156,13 @@ public:
 		ServdPollError = ServdBindError + 8,
 		ServdNoDataError = ServdBindError + 9,
 		ServdJoinMulticastError = ServdBindError + 10,
+
+		// DXX
+		DXXErrorSys = 0x6100,
+		DXXErrorInt = 0x6101,
+		DXXErrorOverflow = 0x6102,
+		DXXErrorIO = 0x6103,
+		DXXErrorArg = 0x6104,
 
 		NoErrorFound = 0xFFFFFFFD,
 		TooManyEvents = 0xFFFFFFFE,

@@ -16,7 +16,7 @@ namespace icsneo
 	{
 	public:
 		// Serial numbers start with GT
-		// USB PID is 0x1210, standard driver is FTDI3
+		// USB PID is 0x1210, standard driver is DXX
 		// Ethernet MAC allocation is 0x22, standard driver is Raw
 		ICSNEO_FINDABLE_DEVICE(RADGigastar2, DeviceType::RADGigastar2, "GT");
 

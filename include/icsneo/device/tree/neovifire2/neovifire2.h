@@ -12,7 +12,7 @@ namespace icsneo {
 class NeoVIFIRE2 : public Device {
 public:
 	// Serial numbers start with CY
-	// USB PID is 0x1000, standard driver is FTDI
+	// USB PID is 0x1000, standard driver is DXX
 	// Ethernet MAC allocation is 0x04, standard driver is Raw
 	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE2, DeviceType::FIRE2, "CY");
 

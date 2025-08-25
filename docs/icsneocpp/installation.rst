@@ -8,7 +8,7 @@ Dependencies
 The minimum requirements to build libicsneo are:
 - CMake version 3.12 or newer
 - A C++17 compiler
-- libusb and libpcap on Linux and macOS
+- libpcap on Linux and macOS
 
 
 Building library & examples

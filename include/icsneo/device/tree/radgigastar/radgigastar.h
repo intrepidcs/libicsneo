@@ -14,7 +14,7 @@ namespace icsneo {
 class RADGigastar : public Device {
 public:
 	// Serial numbers start with GS
-	// USB PID is 0x1204, standard driver is FTDI3
+	// USB PID is 0x1204, standard driver is DXX
 	// Ethernet MAC allocation is 0x0F, standard driver is Raw
 	ICSNEO_FINDABLE_DEVICE(RADGigastar, DeviceType::RADGigastar, "GS");
 

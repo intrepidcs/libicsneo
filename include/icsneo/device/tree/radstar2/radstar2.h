@@ -12,7 +12,7 @@ namespace icsneo {
 class RADStar2 : public Device {
 public:
 	// Serial numbers start with RS
-	// USB PID is 0x0005, standard driver is FTDI
+	// USB PID is 0x0005, standard driver is DXX
 	// Ethernet MAC allocation is 0x05, standard driver is Raw
 	ICSNEO_FINDABLE_DEVICE(RADStar2, DeviceType::RADStar2, "RS");
 

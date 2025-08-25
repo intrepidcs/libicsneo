@@ -20,7 +20,7 @@ public:
 	EventCallback(std::shared_ptr<EventFilter> f, fn_eventCallback cb) : callback(cb), filter(f) {}
 	EventCallback(EventFilter f, fn_eventCallback cb) : callback(cb), filter(std::make_shared<EventFilter>(f)) {}
 
-	virtual bool callIfMatch(const std::shared_ptr<APIEvent>& event) const {
+	bool callIfMatch(const std::shared_ptr<APIEvent>& event) const {
 		bool ret = filter->match(*event);
 		if(ret)
 			callback(event);

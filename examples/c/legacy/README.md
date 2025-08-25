@@ -52,7 +52,7 @@ Although the example program will build without successfully completing the step
 
 First, we are going to build the icsneoc library into a .so file that we can later use in order to access the library functions.
 
-1. Install dependencies with `sudo apt update` then `sudo apt install build-essential cmake libusb-1.0-0-dev libpcap0.8-dev`
+1. Install dependencies with `sudo apt update` then `sudo apt install build-essential cmake libpcap0.8-dev`
 2. Change directories to `libicsneo-examples/third-party/libicsneo` and create a build directory by running `mkdir -p build`
 3. Enter the build directory with `cd build`
 4. Run `cmake ..` to generate your Makefile.

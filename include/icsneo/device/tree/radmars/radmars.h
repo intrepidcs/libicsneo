@@ -14,7 +14,7 @@ namespace icsneo {
 class RADMars : public Device {
 public:
 	// Serial numbers start with GL (previously, RAD-Gigalog)
-	// USB PID is 0x1203, standard driver is FTDI3
+	// USB PID is 0x1203, standard driver is DXX
 	// Ethernet MAC allocation is 0x0A, standard driver is Raw
 	ICSNEO_FINDABLE_DEVICE(RADMars, DeviceType::RADMars, "GL");
 

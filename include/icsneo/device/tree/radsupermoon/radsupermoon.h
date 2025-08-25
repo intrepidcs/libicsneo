@@ -12,7 +12,7 @@ namespace icsneo {
 class RADSupermoon : public Device {
 public:
 	// Serial numbers start with SM
-	// USB PID is 0x1201, standard driver is FTDI3
+	// USB PID is 0x1201, standard driver is DXX
 	ICSNEO_FINDABLE_DEVICE(RADSupermoon, DeviceType::RADSupermoon, "SM");
 
 	enum class SKU {

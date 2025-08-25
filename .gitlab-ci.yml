@@ -67,7 +67,7 @@ unit_test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y g++ ninja-build cmake libusb-1.0-0-dev libpcap-dev git
+    - apt install -y g++ ninja-build cmake libpcap-dev git
     - sh ci/build-posix.sh
   artifacts:
     when: always
@@ -82,7 +82,7 @@ unit_test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y libusb-1.0-0-dev libpcap-dev
+    - apt install -y libpcap-dev
     - build/libicsneo-unit-tests
   tags:
     - linux-build
@@ -93,7 +93,7 @@ unit_test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y clang lld ninja-build cmake libusb-1.0-0-dev libpcap-dev git
+    - apt install -y clang lld ninja-build cmake libpcap-dev git
     - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
   artifacts:
     when: always
@@ -108,7 +108,7 @@ unit_test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y libusb-1.0-0-dev libpcap-dev
+    - apt install -y libpcap-dev
     - build/libicsneo-unit-tests
   tags:
     - linux-build
@@ -175,7 +175,7 @@ unit_test linux/ubuntu/2204/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y g++ libpcap-devel cmake ninja-build libusb1-devel git
+    - dnf install -y g++ libpcap-devel cmake ninja-build git
     - sh ci/build-posix.sh
   artifacts:
     when: always
@@ -194,7 +194,7 @@ unit_test linux/ubuntu/2204/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y libpcap-devel libusb1-devel
+    - dnf install -y libpcap-devel
     - build/libicsneo-unit-tests
   tags:
     - linux-build
@@ -209,7 +209,7 @@ unit_test linux/ubuntu/2204/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y clang lld libpcap-devel cmake ninja-build libusb1-devel git
+    - dnf install -y clang lld libpcap-devel cmake ninja-build git
     - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
   artifacts:
     when: always
@@ -228,7 +228,7 @@ unit_test linux/ubuntu/2204/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y libpcap-devel libusb1-devel
+    - dnf install -y libpcap-devel
     - build/libicsneo-unit-tests
   tags:
     - linux-build
@@ -320,13 +320,13 @@ build python/linux/amd64:
       entrypoint: ["env", "-u", "DOCKER_HOST"]
       command: ["dockerd-entrypoint.sh"]
   variables:
-    CIBW_BEFORE_ALL: yum install -y flex && sh ci/bootstrap-libpcap.sh && sh ci/bootstrap-libusb.sh
+    CIBW_BEFORE_ALL: yum install -y flex && sh ci/bootstrap-libpcap.sh
     CIBW_BUILD: "*manylinux*" # no musl
     CIBW_ARCHS: x86_64
     DOCKER_HOST: unix:///var/run/docker.sock
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install:/project/libusb/install
+    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install
   script:
     - curl -sSL https://get.docker.com/ | sh
     - sh ci/build-wheel-posix.sh
@@ -339,10 +339,10 @@ build python/linux/arm64:
   tags:
     - arm64-linux-build
   variables:
-    CIBW_BEFORE_ALL: yum install -y flex && sh ci/bootstrap-libpcap.sh && sh ci/bootstrap-libusb.sh
+    CIBW_BEFORE_ALL: yum install -y flex && sh ci/bootstrap-libpcap.sh
     CIBW_BUILD: "*manylinux*" # no musl
     CIBW_ARCHS: aarch64
-    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install:/project/libusb/install
+    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install
   script:
     - sh ci/build-wheel-posix.sh
   artifacts:
@@ -354,9 +354,9 @@ build python/macos:
   tags:
     - macos-arm64
   variables:
-    CIBW_BEFORE_ALL: sh ci/bootstrap-libpcap.sh && sh ci/bootstrap-libusb.sh
+    CIBW_BEFORE_ALL: sh ci/bootstrap-libpcap.sh
     CIBW_ARCHS: arm64
-    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=$CI_PROJECT_DIR/libpcap/install:$CI_PROJECT_DIR/libusb/install
+    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=$CI_PROJECT_DIR/libpcap/install
     MACOSX_DEPLOYMENT_TARGET: 10.14
   script:
     - sh ci/build-wheel-posix.sh

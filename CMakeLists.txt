@@ -22,9 +22,8 @@ set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to
 option(LIBICSNEO_ENABLE_FIRMIO "Enable communication between Linux and CoreMini within the same device" OFF)
 option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw ethernet" ON)
 option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" ON)
-option(LIBICSNEO_ENABLE_FTDI "Enable devices which communicate over USB FTDI2XX" ON)
 option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
-option(LIBICSNEO_ENABLE_FTD3XX "Enable devices which communicate over USB FTD3XX" ON)
+option(LIBICSNEO_ENABLE_DXX "Enable devices which communicate over D2XX/D3XX via libredxx" ON)
 
 option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" OFF)
 
@@ -109,7 +108,6 @@ if(LIBICSNEO_BUILD_DOCS)
 endif()
 
 if(WIN32)
-	add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS)
 	set(PLATFORM_SRC
 		platform/windows/strings.cpp
 		platform/windows/registry.cpp
@@ -122,9 +120,9 @@ if(WIN32)
 		)
 	endif()
 
-	if(LIBICSNEO_ENABLE_CDCACM OR LIBICSNEO_ENABLE_FTDI)
+	if(LIBICSNEO_ENABLE_CDCACM)
 		list(APPEND PLATFORM_SRC
-			platform/windows/vcp.cpp
+			platform/windows/cdcacm.cpp
 		)
 	endif()
 else() # Darwin or Linux
@@ -139,12 +137,6 @@ else() # Darwin or Linux
 	if(LIBICSNEO_ENABLE_RAW_ETHERNET)
 		list(APPEND PLATFORM_SRC
 			platform/posix/pcap.cpp
-		)
-	endif()
-
-	if(LIBICSNEO_ENABLE_FTDI)
-		list(APPEND PLATFORM_SRC
-			platform/posix/ftdi.cpp
 		)
 	endif()
 
@@ -171,51 +163,9 @@ else() # Darwin or Linux
 	endif()
 endif()
 
-if(LIBICSNEO_ENABLE_FTD3XX)
-	if(NOT FTD3XX_ROOT) # allow system override
-		include(FetchContent)
-		if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-			set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.3.0.10-win-x64.zip")
-			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=459e635496ab47d6069c9d3515fdd6d82cba3d95e7ae34f794d66ffdf336e9d1")
-		elseif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-			set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.3.0.10-win-i686.zip")
-			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=ce4259ae11772d6ede7d217172156fa392f329b29d9455131f4126a2fb89dad1")
-		elseif(APPLE AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-			set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.0.16-macos-universal2.zip")
-			set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=0904ac5eda8e1dc4b5aac3714383bcc7792b42dfeb585dce6cbfb8b67b8c0c51")
-		elseif(UNIX)
-			if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
-				if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-					set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.0.16-linux-x64.zip")
-					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=cf66bf299fc722f050cdd3c36998a670f1df69f7c0df18afa73707277067114b")
-				endif()
-			elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*|aarch64")
-				if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-					set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.0.16-linux-aarch64.zip")
-					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=66341b5112b9841e959e81400b51711be96fec91894477c5cbfc29b10a0c00a6")
-				elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-					set(LIBICSNEO_FTD3XX_URL "https://github.com/intrepidcs/libftd3xx-repack/releases/download/24.34.0/libftd3xx-1.0.16-linux-armhf.zip")
-					set(LIBICSNEO_FTD3XX_URL_HASH "SHA256=cec1f959b48a11eb6b829ed43c81b6ba1c0bcf3e797bafcc84a6376e5ffc3c47")
-				endif()
-			endif()
-		endif()
-		if(NOT LIBICSNEO_FTD3XX_URL)
-			message(FATAL_ERROR "Unsupported platform for FTD3XX driver")
-		endif()
-		FetchContent_Declare(
-			ftdi3xx
-			URL ${LIBICSNEO_FTD3XX_URL}
-			URL_HASH ${LIBICSNEO_FTD3XX_URL_HASH}
-		)
-		FetchContent_GetProperties(ftdi3xx)
-		if(NOT ftdi3xx_POPULATED)
-			FetchContent_Populate(ftdi3xx)
-		endif()
-		set(FTD3XX_ROOT "${ftdi3xx_SOURCE_DIR}")
-	endif()
-	find_package(FTD3XX REQUIRED)
+if(LIBICSNEO_ENABLE_DXX)
 	list(APPEND PLATFORM_SRC
-		platform/ftd3xx.cpp
+		platform/dxx.cpp
 	)
 endif()
 
@@ -384,12 +334,9 @@ endif()
 if(LIBICSNEO_ENABLE_CDCACM)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_CDCACM)
 endif()
-if(LIBICSNEO_ENABLE_FTDI)
-	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FTDI)
-endif()
-if(LIBICSNEO_ENABLE_FTD3XX)
-	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FTD3XX)
-	target_link_libraries(icsneocpp PRIVATE FTD3XX::FTD3XX)
+if(LIBICSNEO_ENABLE_DXX)
+	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_DXX)
+	target_link_libraries(icsneocpp PRIVATE libredxx::libredxx)
 endif()
 if(LIBICSNEO_ENABLE_TCP)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_TCP)
@@ -403,25 +350,15 @@ add_subdirectory(third-party/fatfs)
 set_property(TARGET fatfs PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(icsneocpp PRIVATE fatfs)
 
-# libftdi
-if(LIBICSNEO_ENABLE_FTDI)
-	if(NOT WIN32)
-		target_include_directories(icsneocpp PUBLIC third-party/libftdi/src)
-		set(LIBFTDI_DOCUMENTATION OFF CACHE INTERNAL "")
-		set(LIBFTDI_BUILD_TESTS OFF CACHE INTERNAL "")
-		set(LIBFTDI_INSTALL OFF CACHE INTERNAL "")
-		set(LIBFTDI_PYTHON_BINDINGS OFF CACHE INTERNAL "")
-		set(LIBFTDI_LINK_PYTHON_LIBRARY OFF CACHE INTERNAL "")
-		set(FTDIPP OFF CACHE INTERNAL "")
-		set(FTDI_EEPROM OFF CACHE INTERNAL "")
-		add_subdirectory(third-party/libftdi)
-		target_include_directories(icsneocpp PRIVATE ${LIBUSB_INCLUDE_DIR})
-
-		set_property(TARGET ftdi1-static PROPERTY POSITION_INDEPENDENT_CODE ON)
-		target_link_libraries(icsneocpp PUBLIC ftdi1-static)
-		target_link_libraries(icsneocpp PUBLIC ${CMAKE_THREAD_LIBS_INIT})
-	endif(NOT WIN32)
-endif(LIBICSNEO_ENABLE_FTDI)
+# dxx
+if(LIBICSNEO_ENABLE_DXX)
+	include(FetchContent)
+	FetchContent_Declare(libredxx
+		GIT_REPOSITORY https://github.com/Zeranoe/libredxx.git
+		GIT_TAG 2b7932fe7f2fc006ef269c7a72595f3940178a10
+	)
+	FetchContent_MakeAvailable(libredxx)
+endif()
 
 # pcap
 if(LIBICSNEO_ENABLE_RAW_ETHERNET)

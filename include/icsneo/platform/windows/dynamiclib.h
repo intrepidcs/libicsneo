@@ -1,6 +1,8 @@
 #ifndef __DYNAMICLIB_WINDOWS_H_
 #define __DYNAMICLIB_WINDOWS_H_
 
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
 
 #ifndef ICSNEOC_BUILD_STATIC
