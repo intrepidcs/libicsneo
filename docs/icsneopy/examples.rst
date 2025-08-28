@@ -3,128 +3,66 @@ Python Examples
 ===============
 
 Transmit CAN frames on DW CAN 01
-============================
+=================================
 
-.. code-block:: python
+:download:`Download example <../../examples/python/can/can_transmit_basic.py>`
 
-   import icsneopy
-
-   devices: list[icsneopy.Device] = icsneopy.find_all_devices()
-
-   # grab the first/only device found
-   device: icsneopy.Device = devices[0]
-
-   message = icsneopy.CANMessage()
-   message.network = icsneopy.Network(icsneopy.Network.NetID.DWCAN_01)
-   message.arbid = 0x56
-   message.data = (0x11, 0x22, 0x33)
-
-   device.open()
-
-   device.go_online()
-
-   device.transmit(message)
+.. literalinclude:: ../../examples/python/can/can_transmit_basic.py
+   :language: python
      
 Receive CAN frames on DW CAN 01
-===========================
+================================
 
-.. code-block:: python
+:download:`Download example <../../examples/python/can/can_receive_basic.py>`
 
-   import icsneopy
-   import time
+.. literalinclude:: ../../examples/python/can/can_receive_basic.py
+   :language: python
 
-   devices: list[icsneopy.Device] = icsneopy.find_all_devices()
+Complete CAN Example
+====================
 
-   # grab the first/only device found
-   device: icsneopy.Device = devices[0]
+:download:`Download example <../../examples/python/can/can_complete_example.py>`
 
-   def on_message(message: icsneopy.CANMessage):
-       print(message.arbid, message.data)
-   message_filter = icsneopy.MessageFilter(icsneopy.Network.NetID.DWCAN_01)
-   callback = icsneopy.MessageCallback(on_message, message_filter)
+.. literalinclude:: ../../examples/python/can/can_complete_example.py
+   :language: python
 
-   device.add_message_callback(callback)
 
-   device.open()
-   device.go_online()
+Transmit Ethernet frames on Ethernet 01
+========================================
 
-   # rx for 10s
-   time.sleep(10)
+:download:`Download example <../../examples/python/ethernet/ethernet_transmit_basic.py>`
 
+.. literalinclude:: ../../examples/python/ethernet/ethernet_transmit_basic.py
+   :language: python
 
 Monitor Ethernet Status
 =======================
 
-.. code-block:: python
+:download:`Download example <../../examples/python/ethernet/ethernet_monitor_status.py>`
 
-   import icsneopy
-   import time
+.. literalinclude:: ../../examples/python/ethernet/ethernet_monitor_status.py
+   :language: python
 
-   def main():
-      devices = icsneopy.find_all_devices()
-      if len(devices) == 0:
-         print("error: no devices found")
-         return False
-
-      device = devices[0]
-      print(f"info: monitoring Ethernet status on {device}")
-
-      def on_message(message):
-         print(f"info: network: {message.network}, state: {message.state}, speed: {message.speed}, duplex: {message.duplex}, mode: {message.mode}")
-
-      filter = icsneopy.MessageFilter(icsneopy.Message.Type.EthernetStatus)
-      callback = icsneopy.MessageCallback(on_message, filter)
-      device.add_message_callback(callback)
-
-      if not device.open():
-         print("error: unable to open device")
-         return False
-
-      if not device.go_online():
-         print("error: unable to go online")
-         return False
-
-      while True:
-         time.sleep(1)
-
-   main()
-
-TC10
-====
+TC10 Power Management
+=====================
 
 :download:`Download example <../../examples/python/tc10/tc10.py>`
 
 .. literalinclude:: ../../examples/python/tc10/tc10.py
+   :language: python
 
 DoIP Ethernet Activation
 ========================
 
-.. code-block:: python
+:download:`Download example <../../examples/python/doip/doip_activation_control.py>`
 
-   import icsneopy
-   import time
+.. literalinclude:: ../../examples/python/doip/doip_activation_control.py
+   :language: python
 
-   devs = icsneopy.find_all_devices()
+Complete Ethernet Example
+=========================
 
-   dev = devs[0]
+:download:`Download example <../../examples/python/ethernet/ethernet_complete_example.py>`
 
-   dev.open()
-
-   # the device must be online for digital I/O
-   dev.go_online()
-
-   print(f"initial state: {dev.get_digital_io(icsneopy.IO.EthernetActivation, 1)}")
-
-   dev.set_digital_io(icsneopy.IO.EthernetActivation, 1, True)
-
-   print(f"after setting to true: {dev.get_digital_io(icsneopy.IO.EthernetActivation, 1)}")
-
-   # allow for observing the change
-   time.sleep(2)
-
-   dev.set_digital_io(icsneopy.IO.EthernetActivation, 1, False)
-
-   print(f"after setting to false: {dev.get_digital_io(icsneopy.IO.EthernetActivation, 1)}")
-
-   # allow for observing the change
-   time.sleep(2)
+.. literalinclude:: ../../examples/python/ethernet/ethernet_complete_example.py
+   :language: python
