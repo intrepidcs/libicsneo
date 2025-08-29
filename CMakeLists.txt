@@ -355,7 +355,7 @@ if(LIBICSNEO_ENABLE_DXX)
 	include(FetchContent)
 	FetchContent_Declare(libredxx
 		GIT_REPOSITORY https://github.com/Zeranoe/libredxx.git
-		GIT_TAG 1e3798655a6376d2085ef8d0267c035ae78c6446
+		GIT_TAG 3acc754d0af4fe529f05dbc2488b2da77ad9729c
 	)
 	set(LIBREDXX_DISABLE_INSTALL ON)
 	FetchContent_MakeAvailable(libredxx)
