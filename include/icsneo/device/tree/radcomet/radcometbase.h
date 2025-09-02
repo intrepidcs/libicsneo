@@ -20,9 +20,6 @@ public:
 			Network::NetID::AE_01,
 			Network::NetID::AE_02,
 
-			Network::NetID::LIN_01,
-			Network::NetID::ISO9141_01,
-
 			Network::NetID::MDIO_01,
 			Network::NetID::MDIO_02,
 			Network::NetID::MDIO_03,

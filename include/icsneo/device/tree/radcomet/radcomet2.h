@@ -24,6 +24,8 @@ public:
 		static std::vector<Network> supportedNetworks = RADCometBase::GetSupportedNetworks();
 		supportedNetworks.push_back(Network::NetID::AE_03);
 		supportedNetworks.push_back(Network::NetID::MDIO_04);
+		supportedNetworks.push_back(Network::NetID::LIN_01);
+		supportedNetworks.push_back(Network::NetID::ISO9141_01);
 		return supportedNetworks;
 	}
 

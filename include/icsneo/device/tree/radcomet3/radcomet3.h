@@ -36,6 +36,13 @@ public:
 
 			Network::NetID::MDIO_01,
 			Network::NetID::MDIO_02,
+
+			Network::NetID::SPI_01,
+			Network::NetID::SPI_02,
+			Network::NetID::SPI_03,
+			Network::NetID::SPI_04,
+			Network::NetID::SPI_05,
+			Network::NetID::SPI_06,
 		};
 		return supportedNetworks;
 	}
