@@ -6,6 +6,7 @@
 #include "icsneo/disk/extextractordiskreaddriver.h"
 #include "icsneo/disk/neomemorydiskdriver.h"
 #include "icsneo/device/tree/neovifire3flexray/neovifire3flexraysettings.h"
+#include "icsneo/device/extensions/flexray/extension.h"
 
 namespace icsneo {
 
@@ -89,6 +90,30 @@ protected:
 	
 	bool supportsEraseMemory() const override {
 		return true;
+	}
+
+    virtual void setupExtensions() override {
+		std::vector<Network> flexRayControllers;
+		flexRayControllers.push_back(Network::NetID::FLEXRAY_01);
+		flexRayControllers.push_back(Network::NetID::FLEXRAY_01);
+		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
+
+	}
+
+    virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const override {
+		auto extension = getExtension<FlexRay::Extension>();
+		if(!extension)
+			return Device::getFlexRayControllers();
+		
+		std::vector<std::shared_ptr<FlexRay::Controller>> ret;
+
+		if(auto ctrl1 = extension->getController(0))
+			ret.push_back(std::move(ctrl1));
+
+		if(auto ctrl2 = extension->getController(1))
+			ret.push_back(std::move(ctrl2));
+
+		return ret;
 	}
 };
 

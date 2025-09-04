@@ -24,11 +24,12 @@ void init_ethernetstatusmessage(pybind11::module_&);
 void init_macsecmessage(pybind11::module_&);
 void init_scriptstatusmessage(pybind11::module_&);
 void init_diskdriver(pybind11::module_&);
+void init_deviceextension(pybind11::module_&);
 void init_device(pybind11::module_&);
 void init_messagefilter(pybind11::module_&);
 void init_messagecallback(pybind11::module_&);
 void init_version(pybind11::module_&);
-void init_flexraymessage(pybind11::module_& m);
+void init_flexray(pybind11::module_& m);
 void init_idevicesettings(pybind11::module_&);
 
 PYBIND11_MODULE(icsneopy, m) {
@@ -57,8 +58,9 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_messagefilter(m);
 	init_messagecallback(m);
 	init_diskdriver(m);
+    init_flexray(m);
 	init_device(m);
-	init_flexraymessage(m);
+    init_deviceextension(m);
 	init_idevicesettings(m);
 
 	m.def("find_all_devices", &FindAllDevices);

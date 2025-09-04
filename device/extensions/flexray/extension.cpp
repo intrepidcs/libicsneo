@@ -25,26 +25,6 @@ void FlexRay::Extension::onGoOffline() {
 		controller->halt();
 }
 
-void FlexRay::Extension::handleMessage(const std::shared_ptr<Message>& message) {
-	switch(message->type) {
-		case Message::Type::FlexRayControl: {
-			auto msg = std::dynamic_pointer_cast<FlexRayControlMessage>(message);
-			if(!msg || !msg->decoded)
-				return;
-			switch(msg->opcode) {
-				case FlexRay::Opcode::ReadCCStatus:
-					if(msg->controller >= controllers.size())
-						return; // TODO error
-					controllers[msg->controller]->_setStatus(msg);
-					break;
-			}
-			break;
-		}
-		default:
-			break;
-	}
-}
-
 bool FlexRay::Extension::transmitHook(const std::shared_ptr<Frame>& frame, bool& success) {
 	if(!frame || frame->network.getType() != Network::Type::FlexRay)
 		return true; // Don't hook non-FlexRay messages

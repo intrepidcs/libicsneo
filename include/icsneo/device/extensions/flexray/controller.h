@@ -26,11 +26,8 @@ namespace FlexRay {
 class Controller {
 public:
 	Controller(Device& device, uint8_t index, Network net) : device(device), index(index), network(net) {}
-	void _setStatus(std::shared_ptr<FlexRayControlMessage> msg);
 
 	// Begin Public Interface
-	std::shared_ptr<FlexRayControlMessage> getStatus() const;
-
 	const Network& getNetwork() const { return network; }
 
 	struct Configuration; // Forward declaration
@@ -104,7 +101,6 @@ private:
 	Network network;
 	mutable std::mutex statusLock;
 	mutable std::mutex readRegisterLock;
-	std::shared_ptr<FlexRayControlMessage> status;
 	bool startWhenGoingOnline = false;
 	bool allowColdstart = false;
 	bool wakeupBeforeStart = false;
@@ -124,29 +120,23 @@ public:
 	typedef struct {
 #endif // __cplusplus
 
-		uint16_t AcceptStartupRangeMicroticks INIT(0);
-		bool AllowHaltDueToClock INIT(false);
+		uint16_t AcceptStartupRangeMicroticks INIT(0); // pdAcceptedStartupRange
+		bool AllowHaltDueToClock INIT(false); // pAllowHaltDueToClock
 
-		uint8_t AllowPassiveToActiveCyclePairs INIT(0);
+		uint8_t AllowPassiveToActiveCyclePairs INIT(0); // pAllowPassiveToActive
 
-		uint8_t ClusterDriftDamping INIT(0);
+		uint8_t ClusterDriftDamping INIT(0); // pClusterDriftDamping
 
-		bool ChannelA INIT(false);
-		bool ChannelB INIT(false);
+		bool ChannelA INIT(false); // pChannels
+		bool ChannelB INIT(false); // pChannels
 
-		uint8_t DecodingCorrectionMicroticks INIT(0);
-		uint8_t DelayCompensationAMicroticks INIT(0);
-		uint8_t DelayCompensationBMicroticks INIT(0);
-		uint8_t ExternOffsetCorrectionControl INIT(0);
-		uint8_t ExternRateCorrectionControl INIT(0);
-		uint8_t ExternOffsetCorrectionMicroticks INIT(0);
-		uint8_t ExternRateCorrectionMicroticks INIT(0);
-
-		bool ExternalSync INIT(false);
-		bool UseExternalSync INIT(false);
-
-		bool FallBackInternal INIT(false);
-		bool UseFallBackInternal INIT(false);
+		uint8_t DecodingCorrectionMicroticks INIT(0); // pDecodingCorrection
+		uint8_t DelayCompensationAMicroticks INIT(0); // pDelayCompensation[A]
+		uint8_t DelayCompensationBMicroticks INIT(0); // pDelayCompensation[B]
+		uint8_t ExternOffsetCorrectionControl INIT(0); // pExternOffsetControl
+		uint8_t ExternRateCorrectionControl INIT(0); // pExternRateControl
+		uint8_t ExternOffsetCorrectionMicroticks INIT(0); // pExternOffsetCorrection
+		uint8_t ExternRateCorrectionMicroticks INIT(0); // pExternRateCorrection
 
 		uint16_t KeySlotID INIT(0);
 
@@ -154,39 +144,28 @@ public:
 		bool KeySlotUsedForStartup INIT(false); // pKeySlotUsedForStartup (TXST)
 		bool KeySlotUsedForSync INIT(false); // pKeySlotUsedForSync (TXSY)
 
-		uint16_t LatestTxMinislot INIT(0);
-		uint32_t ListenTimeout INIT(0);
+		uint16_t LatestTxMinislot INIT(0); // pLatestTx
+		uint32_t ListenTimeout INIT(0); // pdListenTimeout
 
-		uint8_t MacroInitialOffsetA INIT(0); // Valid 2..72
-		uint8_t MacroInitialOffsetB INIT(0); // Valid 2..72
+		uint8_t MacroInitialOffsetA INIT(0); // pMacroInitialOffset[A],  Valid 2..72
+		uint8_t MacroInitialOffsetB INIT(0); // pMacroInitialOffset[B], Valid 2..72
 
-		uint32_t MaximumDynamicPayloadLengthWords INIT(0);
+		uint8_t MicroInitialOffsetA INIT(0); // pMicroInitialOffset[A],  Valid 0..240
+		uint8_t MicroInitialOffsetB INIT(0); // pMicroInitialOffset[B], Valid 0..240
 
-		uint8_t MicroInitialOffsetA INIT(0); // Valid 0..240
-		uint8_t MicroInitialOffsetB INIT(0); // Valid 0..240
-
-		uint32_t MicroPerCycle INIT(0);
-
-		double MicrotickDurationSec INIT(0);
-		bool UseMicrotickDurationSec INIT(false);
+		uint32_t MicroPerCycle INIT(0); // pMicroPerCycle
 
 		bool MTSOnA INIT(false);
 		bool MTSOnB INIT(false);
 
-		bool NMVectorEarlyUpdate INIT(false);
-		bool UseNMVectorEarlyUpdate INIT(false);
-
-		uint16_t OffsetCorrectionOutMicroticks INIT(0);
+		uint16_t OffsetCorrectionOutMicroticks INIT(0); // pOffsetCorrectionOut
 		uint16_t RateCorrectionOutMicroticks INIT(0); // pdMaxDrift and pRateCorrectionOut
-
-		uint32_t SamplesPerMicrotick INIT(0);
-		bool UseSamplesPerMicrotick INIT(false);
 
 		uint16_t SecondKeySlotID INIT(0);
 		bool TwoKeySlotMode INIT(false);
 
 		uint8_t WakeupPattern INIT(0);
-		bool WakeupOnChannelB INIT(false);
+		bool WakeupOnChannelB INIT(false); // pWakeupChannel
 
 #ifndef __cplusplus
 	} neoflexray_controller_config_t;

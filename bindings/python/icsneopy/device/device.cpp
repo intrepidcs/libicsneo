@@ -4,6 +4,7 @@
 #include <pybind11/chrono.h>
 
 #include "icsneo/device/device.h"
+#include "icsneo/device/extensions/deviceextension.h"
 
 #include <fstream>
 
@@ -20,6 +21,8 @@ void init_device(pybind11::module_& m) {
 		.def("enable_message_polling", &Device::enableMessagePolling, pybind11::arg("filter") = std::nullopt, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("get_current_message_count", &Device::getCurrentMessageCount)
 		.def("get_digital_io", &Device::getDigitalIO, pybind11::arg("type"), pybind11::arg("number"), pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_extension", static_cast<std::shared_ptr<DeviceExtension>(Device::*)(const std::string&) const>(&Device::getExtension)) // This has to be static_casted rather than overload_casted because DeviceExtension is forward declared in device.h
+        .def("get_flexray_controllers", &Device::getFlexRayControllers)
 		.def("get_gptp_status", &Device::getGPTPStatus, pybind11::arg("timeout") = std::chrono::milliseconds(100), pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("get_messages", [](Device& device) { return device.getMessages(); }, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("get_polling_message_limit", &Device::getPollingMessageLimit)

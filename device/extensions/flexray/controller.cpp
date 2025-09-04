@@ -3,16 +3,6 @@
 
 using namespace icsneo;
 
-void FlexRay::Controller::_setStatus(std::shared_ptr<FlexRayControlMessage> msg) {
-	std::lock_guard<std::mutex> lk(statusLock);
-	status = msg;
-}
-
-std::shared_ptr<FlexRayControlMessage> FlexRay::Controller::getStatus() const {
-	std::lock_guard<std::mutex> lk(statusLock);
-	return status;
-}
-
 std::pair<const FlexRay::Cluster::Configuration&, const FlexRay::Controller::Configuration&> FlexRay::Controller::getConfiguration() const {
 	return { clusterConfig, controllerConfig };
 }
@@ -74,7 +64,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		((controllerConfig.KeySlotUsedForStartup & 0x1) << 8) | // TXST
 		((controllerConfig.KeySlotUsedForSync & 0x1) << 9) | // TXSY
 		((clusterConfig.ColdStartAttempts & 0x1f) << 11) | // CSA
-		((controllerConfig.AllowPassiveToActiveCyclePairs & 0x1f) << 16) | // PTA
+		((controllerConfig.AllowPassiveToActiveCyclePairs & 0x1F) << 16) | // PTA
 		((controllerConfig.WakeupOnChannelB & 0x1) << 21) | // WUCS
 		((controllerConfig.KeySlotOnlyEnabled & 0x1) << 22) | // TSM
 		((controllerConfig.AllowHaltDueToClock & 0x1) << 23) | // HCSE
@@ -85,99 +75,100 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 	});
 
 	registerWrites.push_back({ ERAYRegister::SUCC2,
-		((controllerConfig.ListenTimeout & 0x1fffff)) |
-		((clusterConfig.ListenNoiseMacroticks - 1) << 24)
+		((controllerConfig.ListenTimeout & 0x1FFFFF)) |
+		(((clusterConfig.ListenNoiseMacroticks - 1) & 0xF) << 24)
 	});
 
 	registerWrites.push_back({ ERAYRegister::SUCC3,
 		(clusterConfig.MaxWithoutClockCorrectionPassive & 0xF) |
-		((clusterConfig.MaxWithoutClockCorrectionFatal) << 4)
+		((clusterConfig.MaxWithoutClockCorrectionFatal & 0xF) << 4)
 	});
 
 	registerWrites.push_back({ ERAYRegister::NEMC,
-		clusterConfig.NetworkManagementVectorLengthBytes
+		clusterConfig.NetworkManagementVectorLengthBytes & 0xF
 	});
 
 	registerWrites.push_back({ ERAYRegister::PRTC1,
 		(clusterConfig.TransmissionStartSequenceDurationBits & 0xF) |
-		((clusterConfig.CASRxLowMax & 0x3F) << 4) |
+		((clusterConfig.CASRxLowMax & 0x1F) << 4) |
+        (0x1 << 10) | // Most significant bit of CASRxLowMax. Hardwired to 1 and cannot be modified
 		((clusterConfig.StrobePointPosition & 0x3) << 12) |
 		((clusterConfig.Speed & 0x3) << 14) |
-		((clusterConfig.WakeupRxWindowBits & 0x1ff) << 16) |
-		((controllerConfig.WakeupPattern) << 26)
+		((clusterConfig.WakeupRxWindowBits & 0x1FF) << 16) |
+		((controllerConfig.WakeupPattern & 0x3F) << 26)
 	});
 
 	registerWrites.push_back({ ERAYRegister::PRTC2,
-		(clusterConfig.WakeupRxIdleBits) |
-		((clusterConfig.WakeupRxLowBits) << 8) |
+		(clusterConfig.WakeupRxIdleBits & 0x3F) |
+		((clusterConfig.WakeupRxLowBits & 0x3F) << 8) |
 		((clusterConfig.WakeupTxIdleBits) << 16) |
-		((clusterConfig.WakeupTxActiveBits) << 24)
+		((clusterConfig.WakeupTxActiveBits & 0x3F) << 24)
 	});
 
 	registerWrites.push_back({ ERAYRegister::MHDC,
-		(clusterConfig.PayloadLengthOfStaticSlotInWords) |
-		((controllerConfig.LatestTxMinislot) << 16)
+		(clusterConfig.PayloadLengthOfStaticSlotInWords & 0x7F) |
+		((controllerConfig.LatestTxMinislot & 0x1FFF) << 16)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC1,
-		controllerConfig.MicroPerCycle
+		controllerConfig.MicroPerCycle & 0xFFFFF
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC2,
 		(clusterConfig.SyncFrameIDCountMax << 16) |
-		clusterConfig.MacroticksPerCycle
+		(clusterConfig.MacroticksPerCycle & 0x3FFF)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC3,
 		(controllerConfig.MicroInitialOffsetA) |
 		((controllerConfig.MicroInitialOffsetB) << 8) |
-		((controllerConfig.MacroInitialOffsetA) << 16) |
-		((controllerConfig.MacroInitialOffsetB) << 24)
+		((controllerConfig.MacroInitialOffsetA & 0x7F) << 16) |
+		((controllerConfig.MacroInitialOffsetB & 0x7F) << 24)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC4,
-		((clusterConfig.MacroticksPerCycle - clusterConfig.NetworkIdleTimeMacroticks - 1) & 0xFFFF) |
-		((clusterConfig.OffsetCorrectionStartMacroticks - 1) << 16)
+		((clusterConfig.MacroticksPerCycle - clusterConfig.NetworkIdleTimeMacroticks - 1) & 0x3FFF) |
+		(((clusterConfig.OffsetCorrectionStartMacroticks - 1) & 0x3FFF) << 16)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC5,
 		controllerConfig.DelayCompensationAMicroticks |
 		(controllerConfig.DelayCompensationBMicroticks << 8) |
-		(controllerConfig.ClusterDriftDamping << 16) |
+		((controllerConfig.ClusterDriftDamping & 0x1F) << 16) |
 		(controllerConfig.DecodingCorrectionMicroticks << 24)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC6,
-		controllerConfig.AcceptStartupRangeMicroticks |
-		(controllerConfig.RateCorrectionOutMicroticks << 16)
+		(controllerConfig.AcceptStartupRangeMicroticks & 0x7FF) |
+		((controllerConfig.RateCorrectionOutMicroticks & 0x7FF) << 16)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC7,
-		(clusterConfig.StaticSlotMacroticks) |
-		(clusterConfig.NumberOfStaticSlots << 16)
+		(clusterConfig.StaticSlotMacroticks & 0x3FF) |
+		((clusterConfig.NumberOfStaticSlots & 0x3FF) << 16)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC8,
-		clusterConfig.MinislotDurationMacroticks |
-		(clusterConfig.NumberOfMinislots << 16)
+		(clusterConfig.MinislotDurationMacroticks & 0x3F) |
+		((clusterConfig.NumberOfMinislots & 0x1FFF) << 16)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC9,
-		clusterConfig.ActionPointOffset |
-		(clusterConfig.MinislotActionPointOffsetMacroticks << 8) |
-		(clusterConfig.DynamicSlotIdlePhaseMinislots << 16)
+		(clusterConfig.ActionPointOffset & 0x3F) |
+		((clusterConfig.MinislotActionPointOffsetMacroticks & 0x1F) << 8) |
+		((clusterConfig.DynamicSlotIdlePhaseMinislots & 0x03) << 16)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC10,
-		controllerConfig.OffsetCorrectionOutMicroticks |
-		(controllerConfig.RateCorrectionOutMicroticks << 16)
+		(controllerConfig.OffsetCorrectionOutMicroticks & 0x3FFF) |
+		((controllerConfig.RateCorrectionOutMicroticks & 0x7FF) << 16)
 	});
 
 	registerWrites.push_back({ ERAYRegister::GTUC11,
-		controllerConfig.ExternOffsetCorrectionControl |
-		(controllerConfig.ExternRateCorrectionControl << 8) |
-		(controllerConfig.ExternOffsetCorrectionMicroticks << 16) |
-		(controllerConfig.ExternRateCorrectionMicroticks << 24)
+		(controllerConfig.ExternOffsetCorrectionControl & 0x3) |
+		((controllerConfig.ExternRateCorrectionControl & 0x3) << 8) |
+		((controllerConfig.ExternOffsetCorrectionMicroticks & 0x7) << 16) |
+		((controllerConfig.ExternRateCorrectionMicroticks & 0x7) << 24)
 	});
 
 	std::vector<std::shared_ptr<MessageBuffer>> staticTx;
@@ -210,7 +201,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 			second->isStartup = controllerConfig.KeySlotUsedForStartup;
 			second->isSync = controllerConfig.KeySlotUsedForSync;
 			second->isTransmit = true;
-			second->channelB =true;
+			second->channelB = true;
 			second->frameID = controllerConfig.SecondKeySlotID;
 			second->frameLengthBytes = clusterConfig.PayloadLengthOfStaticSlotInWords * 2;
 			second->baseCycle = 0;
@@ -266,7 +257,7 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 		totalBuffers = 128;
 
 	registerWrites.push_back({ ERAYRegister::MRC,
-		(uint8_t(staticTx.size())) | // FDB[7:0] message buffers exclusively for the static segment
+		(static_cast<uint8_t>(staticTx.size())) | // FDB[7:0] message buffers exclusively for the static segment
 		// FFB[7:0] set to 0x80, No message buffer assigned to the FIFO
 		(0x80 << 8) |
 		(uint8_t(totalBuffers - 1) << 16) |
@@ -287,12 +278,12 @@ bool FlexRay::Controller::configure(std::chrono::milliseconds timeout) {
 			buf.frameID = static_cast<uint16_t>(i | (1 << 10));
 
 		uint32_t hs1 = (
-			(buf.frameID) |
-			(CalculateCycleFilter(buf.baseCycle, buf.cycleRepetition) << 16) |
-			((buf.channelA & 0x1) << 24) |
-			((buf.channelB & 0x1) << 25) |
+			(buf.frameID) | // FID
+			(CalculateCycleFilter(buf.baseCycle, buf.cycleRepetition) << 16) | // CYA
+			((buf.channelA & 0x1) << 24) | // CHA
+			((buf.channelB & 0x1) << 25) | // CHB
 			((buf.isTransmit & 0x1) << 26) | // CFG
-			((buf.isNMFrame & 0x1) << 27) | // PPIT
+			((buf.isNetworkManagementFrame & 0x1) << 27) | // PPIT
 			((!buf.continuousMode & 0x1) << 28) | // TXM
 			((0 & 0x1) << 29) // MBI, disabled for now but we might want confirmations in the future
 		);
@@ -610,7 +601,8 @@ uint16_t FlexRay::Controller::CalculateCycleFilter(uint8_t baseCycle, uint8_t cy
 }
 
 std::pair<bool, uint32_t> FlexRay::Controller::readRegister(ERAYRegister reg, std::chrono::milliseconds timeout) const {
-	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(icsneo::Network::NetID::FlexRayControl);
+	static const std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>();
+    filter->includeInternalInAny = true;
 	if(timeout.count() <= 20)
 		return {false, 0}; // Out of time!
 

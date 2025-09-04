@@ -1,0 +1,2 @@
+add_executable(libicsneocpp-flexray-example src/FlexRayExample.cpp)
+target_link_libraries(libicsneocpp-flexray-example icsneocpp)

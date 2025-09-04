@@ -35,9 +35,10 @@ pybind11_add_module(icsneopy
     icsneopy/communication/message/scriptstatusmessage.cpp
     icsneopy/communication/message/callback/messagecallback.cpp
     icsneopy/communication/message/filter/messagefilter.cpp
-    icsneopy/communication/message/flexray/flexraymessage.cpp
+    icsneopy/flexray/flexray.cpp
     icsneopy/disk/diskdriver.cpp
     icsneopy/device/device.cpp
+    icsneopy/device/extensions/deviceextension.cpp
     icsneopy/device/idevicesettings.cpp
     icsneopy/icsneocpp.cpp
 )

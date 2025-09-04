@@ -10,8 +10,6 @@
 
 namespace icsneo {
 
-class Device;
-
 class DeviceExtension {
 public:
 	DeviceExtension(Device& device) : device(device) {}

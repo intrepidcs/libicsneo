@@ -7,9 +7,9 @@
 using namespace icsneo;
 
 std::vector<uint8_t> FlexRayControlMessage::BuildBaseControlArgs(uint8_t controller, FlexRay::Opcode op, const std::vector<uint8_t>& args) {
-	std::vector<uint8_t> ret(args.size() + 4);
+	std::vector<uint8_t> ret;
 	ret.push_back(controller);
-	const uint16_t size = uint16_t((std::min)(args.size() + 1, size_t(std::numeric_limits<uint16_t>::max()))); // Add 1 for the opcode
+	const uint16_t size = static_cast<uint16_t>(std::min(args.size() + 1, size_t(std::numeric_limits<uint16_t>::max()))); // Add 1 for the opcode
 	ret.push_back(uint8_t(size));
 	ret.push_back(uint8_t(size >> 8));
 	ret.push_back(uint8_t(op));

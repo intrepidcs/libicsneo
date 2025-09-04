@@ -27,15 +27,15 @@ typedef struct {
 	bool isDynamic INIT(false);
 	bool isSync INIT(false); // Must be set if isStartup is set!
 	bool isStartup INIT(false);
-	bool isNMFrame INIT(false);
+	bool isNetworkManagementFrame INIT(false);
 	bool isTransmit INIT(false);
-	uint16_t frameID INIT(0);
+	uint16_t frameID INIT(0); // Frame/Slot ID
 	bool channelA INIT(false);
 	bool channelB INIT(false);
 	uint8_t frameLengthBytes INIT(0);
 	uint8_t baseCycle INIT(0);
 	uint8_t cycleRepetition INIT(0);
-	bool continuousMode INIT(false);
+	bool continuousMode INIT(false); // If false, mode is continuous mode
 	uint16_t _dataPointer INIT(0); // For internal use
 	uint16_t _id INIT(0); // For internal use
 
