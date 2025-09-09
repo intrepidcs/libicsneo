@@ -113,6 +113,10 @@ private:
 	std::vector< moodycamel::BlockingReaderWriterQueue< std::vector<uint8_t> > > vnetQueues;
 	void hidReadTask();
 	void vnetReadTask(size_t vnetIndex);
+
+    RingBuffer packetRB;
+    std::mutex ringBufMutex;
+    std::condition_variable ringBufCV;
 };
 
 }
