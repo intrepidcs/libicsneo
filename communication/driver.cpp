@@ -38,18 +38,10 @@ bool Driver::waitForRx(std::function<bool()> predicate, std::chrono::millisecond
 }
 
 bool Driver::readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout, size_t limit) {
-	// A limit of zero indicates no limit
-	if(limit == 0)
-		limit = (size_t)-1;
-
-	if(limit > (readBuffer.size() + 4))
-		limit = (readBuffer.size() + 4);
-
-
-	// wait until we have enough data, or the timout occurs
+	// wait until we have enough data, or the timeout occurs
 	waitForRx(limit, timeout);
 
-	size_t actuallyRead = std::min(readBuffer.size(), limit);
+	size_t actuallyRead = readBuffer.size();
 	bytes.resize(actuallyRead);
 
 	readBuffer.read(bytes.data(), 0, actuallyRead);

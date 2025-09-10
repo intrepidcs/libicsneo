@@ -31,7 +31,7 @@ public:
 
 	bool waitForRx(size_t limit, std::chrono::milliseconds timeout);
 	bool waitForRx(std::function<bool()> predicate, std::chrono::milliseconds timeout);
-	bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 0);
+	bool readWait(std::vector<uint8_t>& bytes, std::chrono::milliseconds timeout = std::chrono::milliseconds(100), size_t limit = 1);
 	bool write(const std::vector<uint8_t>& bytes);
 	virtual bool isEthernet() const { return false; }
 	bool readAvailable() { return readBuffer.size() > 0; }

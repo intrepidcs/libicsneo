@@ -36,15 +36,6 @@ static void makeIfSerialMatches(const FoundDevice& dev, std::vector<std::shared_
 }
 
 template<typename T>
-static void makeIfPIDMatches(const FoundDevice& dev, std::vector<std::shared_ptr<Device>>& into) {
-	// Relies on the subclass to have a `static constexpr uint16_t PRODUCT_ID = 0x1111`
-	// and also a public constructor `T(const FoundDevice& dev)`
-	// Use macro ICSNEO_FINDABLE_DEVICE_BY_PID() to create these
-	if(dev.productId == T::PRODUCT_ID)
-		into.push_back(std::make_shared<T>(dev));
-}
-
-template<typename T>
 static void makeIfSerialRangeMatches(const FoundDevice& dev, std::vector<std::shared_ptr<Device>>& into) {
 	// Relies on the subclass to have 
 	// `static constexpr uint32_t SERIAL_RANGE_LOW = 0x12345678`
@@ -139,7 +130,7 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		#endif
 
 		#ifdef __NEOVIFIRE_H_
-		makeIfPIDMatches<NeoVIFIRE>(dev, newFoundDevices);
+		makeIfSerialRangeMatches<NeoVIFIRE>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __NEOVIFIRE2_H_
@@ -159,11 +150,11 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		#endif
 
 		#ifdef __NEOVIION_H_
-		makeIfPIDMatches<NeoVIION>(dev, newFoundDevices);
+		makeIfSerialMatches<NeoVIION>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __NEOVIPLASMA_H_
-		makeIfPIDMatches<NeoVIPLASMA>(dev, newFoundDevices);
+		makeIfSerialMatches<NeoVIPLASMA>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __RADA2B_H_
@@ -247,7 +238,7 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		#endif
 
 		#ifdef __VALUECAN3_H_
-		makeIfPIDMatches<ValueCAN3>(dev, newFoundDevices);
+		makeIfSerialRangeMatches<ValueCAN3>(dev, newFoundDevices);
 		#endif
 
 		#ifdef __VALUECAN4_1_H_

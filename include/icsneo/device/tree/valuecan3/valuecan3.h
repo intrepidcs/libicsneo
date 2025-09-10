@@ -12,7 +12,7 @@ namespace icsneo {
 class ValueCAN3 : public Device {
 public:
 	// USB PID is 0x0601, standard driver is DXX
-	ICSNEO_FINDABLE_DEVICE_BY_PID(ValueCAN3, DeviceType::VCAN3, 0x0601);
+	ICSNEO_FINDABLE_DEVICE_BY_SERIAL_RANGE(ValueCAN3, DeviceType::VCAN3, "80000", "139999");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

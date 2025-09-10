@@ -43,6 +43,8 @@ public:
 	// Until VNET support is added, assume we have one FIRE 2 VNET or FlexRay VNETZ as the main
 	size_t getEthernetActivationLineCount() const override { return 1; }
 
+	bool supportsComponentVersions() const override { return true; }
+
 protected:
 	using Device::Device;
 

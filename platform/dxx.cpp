@@ -20,9 +20,13 @@ void DXX::Find(std::vector<FoundDevice>& found) {
 	static libredxx_find_filter filters[] = {
 		{ LIBREDXX_DEVICE_TYPE_D2XX, { ICS_USB_VID, 0x0005 } }, // RAD-Star 2
 		{ LIBREDXX_DEVICE_TYPE_D2XX, { ICS_USB_VID, 0x0006 } }, // RAD-A2B Rev A
+		{ LIBREDXX_DEVICE_TYPE_D2XX, { ICS_USB_VID, 0x0601 } }, // ValueCAN 3
+		{ LIBREDXX_DEVICE_TYPE_D2XX, { ICS_USB_VID, 0x0701 } }, // FIRE
+		{ LIBREDXX_DEVICE_TYPE_D2XX, { ICS_USB_VID, 0x0901 } }, // neoVI ION
 		{ LIBREDXX_DEVICE_TYPE_D2XX, { ICS_USB_VID, 0x1000 } }, // neoVI FIRE2
 		{ LIBREDXX_DEVICE_TYPE_D3XX, { ICS_USB_VID, 0x1201 } }, // RAD-SuperMoon
 		{ LIBREDXX_DEVICE_TYPE_D3XX, { ICS_USB_VID, 0x1202 } }, // RAD-Moon2
+		{ LIBREDXX_DEVICE_TYPE_D3XX, { ICS_USB_VID, 0x1205 } }, // RAD-Moon2
 		{ LIBREDXX_DEVICE_TYPE_D3XX, { ICS_USB_VID, 0x1203 } }, // RAD-Gigalog
 		{ LIBREDXX_DEVICE_TYPE_D3XX, { ICS_USB_VID, 0x1204 } }, // RAD-Gigastar
 		{ LIBREDXX_DEVICE_TYPE_D3XX, { ICS_USB_VID, 0x1206 } }, // RAD-A2B Rev B
@@ -67,7 +71,8 @@ void DXX::Find(std::vector<FoundDevice>& found) {
 		}
 
 		auto& device = found.emplace_back();
-		std::copy(serial.serial, serial.serial + sizeof(device.serial), device.serial);
+		// -1 to make sure serial has a trailing '\0'
+		std::copy(serial.serial, serial.serial + (sizeof(device.serial) - 1), device.serial);
 		device.makeDriver = [id, type](device_eventhandler_t err, neodevice_t& forDevice) {
 			return std::make_unique<DXX>(err, forDevice, id.pid, type);
 		};
@@ -104,7 +109,8 @@ bool DXX::open() {
 			EventManager::GetInstance().add(eventError(status), APIEvent::Severity::EventWarning);
 			continue;
 		}
-		if(strcmp(serial.serial, neodevice.serial) == 0) {
+
+		if(strncmp(serial.serial, neodevice.serial, sizeof(neodevice.serial) - 1) == 0) {
 			foundDevice = foundDevices[i];
 			break;
 		}

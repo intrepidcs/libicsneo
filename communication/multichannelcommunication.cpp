@@ -24,6 +24,7 @@ void MultiChannelCommunication::spawnThreads() {
 
 void MultiChannelCommunication::joinThreads() {
 	closing = true;
+	ringBufCV.notify_all();
 	if(hidReadThread.joinable())
 		hidReadThread.join();
 	for(auto& thread : vnetThreads) {
@@ -179,6 +180,9 @@ void MultiChannelCommunication::vnetReadTask(size_t vnetIndex) {
 	while(!closing) {
         std::unique_lock lk(ringBufMutex);
         ringBufCV.wait(lk);
+		if(closing) {
+			break;
+		}
         if(vnetPacketizer->input(packetRB)) {
             for(const auto& packet : vnetPacketizer->output()) {
                 std::shared_ptr<Message> msg;

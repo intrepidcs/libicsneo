@@ -7,6 +7,8 @@
 
 using namespace icsneo;
 
+#define SERIAL_SIZE 6
+
 CDCACM::CDCACM(const device_eventhandler_t& err, const std::wstring& path) : Driver(err), path(path) {
 }
 
@@ -205,14 +207,23 @@ void CDCACM::Find(std::vector<FoundDevice>& found) {
 			continue;
 		}
 
-		std::wstring wserial;
-		while(!SetupDiGetDevicePropertyW(deviceInfoSet, deviceInfoData, &DEVPKEY_Device_BusReportedDeviceDesc, &DataT, reinterpret_cast<PBYTE>(wserial.data()), static_cast<DWORD>((wserial.size() + 1) * WSTRING_ELEMENT_SIZE), &buffersize, 0)) {
-			wserial.resize((buffersize - 1) / WSTRING_ELEMENT_SIZE);
+		auto serialOffset = deviceInstanceId.find_last_of('\\');
+
+		if(serialOffset == std::string::npos) {
+			continue;
 		}
 
-		FoundDevice device;
+		++serialOffset; // move past '\'
 
-		if(WideCharToMultiByte(CP_ACP, 0, wserial.c_str(), (int)wserial.size(), device.serial, sizeof(device.serial), NULL, NULL) == 0) {
+		if(deviceInstanceId.size() < serialOffset + SERIAL_SIZE) {
+			continue;
+		}
+
+		std::wstring wserial(deviceInstanceId.c_str() + serialOffset, SERIAL_SIZE);
+
+		FoundDevice device = {0};
+
+		if(WideCharToMultiByte(CP_ACP, 0, wserial.c_str(), (int)wserial.size(), device.serial, SERIAL_SIZE, NULL, NULL) == 0) {
 			EventManager::GetInstance().add(APIEvent::Type::SyscallError, APIEvent::Severity::Error);
 			continue;
 		}

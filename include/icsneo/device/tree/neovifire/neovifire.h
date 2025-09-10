@@ -12,7 +12,7 @@ namespace icsneo {
 class NeoVIFIRE : public Device {
 public:
 	// USB PID is 0x0701, standard driver is DXX
-	ICSNEO_FINDABLE_DEVICE_BY_PID(NeoVIFIRE, DeviceType::FIRE, 0x0701);
+	ICSNEO_FINDABLE_DEVICE_BY_SERIAL_RANGE(NeoVIFIRE, DeviceType::FIRE, "50000", "79999");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {

@@ -13,7 +13,7 @@ namespace icsneo {
 class NeoVIION : public Plasion {
 public:
 	// USB PID is 0x0901, standard driver is DXX
-	ICSNEO_FINDABLE_DEVICE_BY_PID(NeoVIION, DeviceType::ION, 0x0901);
+	ICSNEO_FINDABLE_DEVICE(NeoVIION, DeviceType::ION, "40");
 
 private:
 	NeoVIION(neodevice_t neodevice, const driver_factory_t& makeDriver) : Plasion(neodevice) {
