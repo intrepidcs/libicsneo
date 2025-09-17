@@ -43,6 +43,7 @@
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
 #include "icsneo/communication/packet/livedatapacket.h"
 #include "icsneo/communication/packet/hardwareinfopacket.h"
+#include "icsneo/communication/packet/spipacket.h"
 
 #include <iostream>
 
@@ -180,6 +181,19 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			}
 
 			LINMessage& msg = *static_cast<LINMessage*>(result.get());
+			msg.network = packet->network;
+			msg.timestamp *= timestampResolution;
+			return true;
+		}
+		case Network::Type::SPI: {
+			result = HardwareSPIPacket::DecodeToMessage(packet->data);
+
+			if(!result) {
+				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+				return false; // A nullptr was returned, the packet was not long enough to decode
+			}
+
+			SPIMessage& msg = *static_cast<SPIMessage*>(result.get());
 			msg.network = packet->network;
 			msg.timestamp *= timestampResolution;
 			return true;

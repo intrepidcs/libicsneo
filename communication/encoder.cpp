@@ -13,6 +13,7 @@
 #include "icsneo/communication/packet/a2bpacket.h"
 #include "icsneo/communication/packet/linpacket.h"
 #include "icsneo/communication/packet/mdiopacket.h"
+#include "icsneo/communication/packet/spipacket.h"
 
 using namespace icsneo;
 
@@ -133,6 +134,17 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 					}
 					break;
 				} // End of Network::Type::MDIO
+				case Network::Type::SPI: {
+					auto msg = std::dynamic_pointer_cast<SPIMessage>(message);
+					if(!msg) {
+						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+						return false; // The message was not a properly formed LiveDataMessage
+					}
+					if(!HardwareSPIPacket::EncodeFromMessage(*msg, result, report))
+						return false;
+					result = packetizer.packetWrap(result, false);
+					return true;
+				} // End of Network::Type::SPI
 				default:
 					report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
 					return false;

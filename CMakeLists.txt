@@ -204,6 +204,7 @@ set(SRC_FILES
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/a2bpacket.cpp
+	communication/packet/spipacket.cpp
 	communication/packet/ethernetpacket.cpp
 	communication/packet/versionpacket.cpp
 	communication/packet/iso9141packet.cpp

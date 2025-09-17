@@ -56,6 +56,7 @@ enum class ExtendedCommand : uint16_t {
 	GetComponentVersions = 0x001A,
 	Reboot = 0x001C,
 	SetRootFSEntryFlags = 0x0027,
+	TransmitCoreminiMessage = 0x0028,
 	GenericBinaryInfo = 0x0030,
 	LiveData = 0x0035,
 	RequestTC10Wake = 0x003D,
