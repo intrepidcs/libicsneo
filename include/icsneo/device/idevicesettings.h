@@ -669,10 +669,15 @@ typedef struct
 #define FIRE3LINUXSETTINGS_SIZE 8
 static_assert(sizeof(Fire3LinuxSettings) == FIRE3LINUXSETTINGS_SIZE, "Fire3LinuxSettings is the wrong size!");
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201) // nameless struct/union
+#endif
 
 /* Define number of CMP streams per device*/
 #define CMP_STREAMS_FIRE3 (10)
 #define CMP_STREAMS_FIRE3FR (10)
+#define CMP_STREAMS_FIRE3T1SLIN (10)
 #define CMP_STREAMS_RED2 (10)
 #define CMP_STREAMS_A2B (3)
 #define CMP_STREAMS_GIGASTAR (10)
@@ -686,7 +691,17 @@ typedef struct
 	uint8_t spare : 4;
 	uint8_t streamId;
 	uint8_t dstMac[6];
-	uint64_t network_enables_1;
+	union
+	{
+		uint64_t word;
+		struct
+		{
+			uint16_t network_enables;
+			uint16_t network_enables_2;
+			uint16_t network_enables_3;
+			uint16_t network_enables_4;
+		};
+	} network_enables;
 	uint64_t network_enables_2;
 } CMP_NETWORK_DATA;
 

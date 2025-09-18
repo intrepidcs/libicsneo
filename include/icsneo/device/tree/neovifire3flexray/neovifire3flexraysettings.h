@@ -122,6 +122,10 @@ typedef struct {
 
 	uint16_t flex_mode;
 	uint16_t flex_termination;
+	uint16_t iso_tester_pullup_enable;
+	CMP_GLOBAL_DATA cmp_global_data;
+	CMP_NETWORK_DATA cmp_stream_data[CMP_STREAMS_FIRE3FR];
+	uint32_t networkTimeSync;
 } neovifire3flexray_settings_t;
 
 typedef struct {

@@ -38,6 +38,8 @@ void init_devicetype(pybind11::module_& m) {
 		.value("RADMoon3", DeviceType::Enum::RADMoon3)
 		.value("RADComet", DeviceType::Enum::RADComet)
 		.value("FIRE3_FlexRay", DeviceType::Enum::FIRE3_FlexRay)
+		.value("FIRE3_T1S_LIN", DeviceType::Enum::FIRE3_T1S_LIN)
+		.value("FIRE3_T1S_SENT", DeviceType::Enum::FIRE3_T1S_SENT)
 		.value("Connect", DeviceType::Enum::Connect)
 		.value("RADComet3", DeviceType::Enum::RADComet3)
 		.value("RADMoonT1S", DeviceType::Enum::RADMoonT1S)

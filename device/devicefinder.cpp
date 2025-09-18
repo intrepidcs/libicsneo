@@ -145,6 +145,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<NeoVIFIRE3FlexRay>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __NEOVIFIRE3T1SLIN_H_
+		makeIfSerialMatches<NeoVIFIRE3T1SLIN>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __NEOVIRED2_H_
 		makeIfSerialMatches<NeoVIRED2>(dev, newFoundDevices);
 		#endif
@@ -314,6 +318,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 
 		#ifdef __NEOVIFIRE3FLEXRAY_H_
 		NeoVIFIRE3FlexRay::DEVICE_TYPE,
+		#endif
+
+		#ifdef __NEOVIFIRE3T1SLIN_H_
+		NeoVIFIRE3T1SLIN::DEVICE_TYPE,
 		#endif
 
 		#ifdef __NEOVIION_H_

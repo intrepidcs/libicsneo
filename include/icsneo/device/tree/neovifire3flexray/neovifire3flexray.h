@@ -13,7 +13,7 @@ namespace icsneo {
 class NeoVIFIRE3FlexRay : public Device {
 public:
 	// Serial numbers start with FF
-	// Ethernet MAC allocation is 1F, standard driver is Raw
+	// Ethernet MAC allocation is 0x1E, standard driver is Raw
 	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE3FlexRay, DeviceType::FIRE3_FlexRay, "FF");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
@@ -81,7 +81,7 @@ protected:
 	bool supportsLiveData() const override { return true; }
 
 	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
-		return 512*4;
+		return std::nullopt;
 	}
 
 	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {

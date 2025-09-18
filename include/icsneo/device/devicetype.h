@@ -56,6 +56,8 @@ public:
 		RADComet3 = (0x00000027),
 		RADMoonT1S = (0x00000028),
 		RADGigastar2 = (0x00000029),
+		FIRE3_T1S_LIN = (0x0000002A),
+		FIRE3_T1S_SENT = (0x0000002B),
 		RED = (0x00000040),
 		ECU = (0x00000080),
 		IEVB = (0x00000100),
@@ -196,6 +198,10 @@ public:
 				return "neoOBD2 SIM";
 			case FIRE3_FlexRay:
 				return "neoVI FIRE3 FlexRay";
+			case FIRE3_T1S_LIN:
+				return "neoVI FIRE3 T1S/LIN";
+			case FIRE3_T1S_SENT:
+				return "neoVI FIRE3 T1S/SENT";
 			case RADComet3:
 				return "RAD-Comet 3";
 			case RADMoonT1S:
@@ -263,6 +269,8 @@ private:
 #define ICSNEO_DEVICETYPE_RADCOMET3 ((devicetype_t)0x00000027)
 #define ICSNEO_DEVICETYPE_RADMOONT1S ((devicetype_t)0x00000028)
 #define ICSNEO_DEVICETYPE_RADGIGASTAR2 ((devicetype_t)0x00000029)
+#define ICSNEO_DEVICETYPE_FIRE3_T1S_LIN ((devicetype_t)0x0000002A)
+#define ICSNEO_DEVICETYPE_FIRE3_T1S_SENT ((devicetype_t)0x0000002B)
 #define ICSNEO_DEVICETYPE_RED ((devicetype_t)0x00000040)
 #define ICSNEO_DEVICETYPE_ECU ((devicetype_t)0x00000080)
 #define ICSNEO_DEVICETYPE_IEVB ((devicetype_t)0x00000100)

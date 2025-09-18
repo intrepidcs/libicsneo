@@ -9,6 +9,7 @@
 #include "icsneo/device/tree/neovifire2/neovifire2.h"
 #include "icsneo/device/tree/neovifire3/neovifire3.h"
 #include "icsneo/device/tree/neovifire3flexray/neovifire3flexray.h"
+#include "icsneo/device/tree/neovifire3t1slin/neovifire3t1slin.h"
 #include "icsneo/device/tree/neovired2/neovired2.h"
 #include "icsneo/device/tree/plasion/neoviion.h"
 #include "icsneo/device/tree/plasion/neoviplasma.h"

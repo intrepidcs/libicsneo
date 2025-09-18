@@ -1,19 +1,19 @@
-#ifndef __NEOVIFIRE3_H_
-#define __NEOVIFIRE3_H_
+#ifndef __NEOVIFIRE3T1SLIN_H_
+#define __NEOVIFIRE3T1SLIN_H_
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/disk/extextractordiskreaddriver.h"
 #include "icsneo/disk/neomemorydiskdriver.h"
-#include "icsneo/device/tree/neovifire3/neovifire3settings.h"
+#include "icsneo/device/tree/neovifire3t1slin/neovifire3t1slinsettings.h"
 
 namespace icsneo {
 
-class NeoVIFIRE3 : public Device {
+class NeoVIFIRE3T1SLIN : public Device {
 public:
-	// Serial numbers start with ON
-	// Ethernet MAC allocation is 0x0E, standard driver is Raw
-	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE3, DeviceType::FIRE3, "ON");
+	// Serial numbers start with FT
+	// Ethernet MAC allocation is 0x1E, standard driver is Raw
+	ICSNEO_FINDABLE_DEVICE(NeoVIFIRE3T1SLIN, DeviceType::FIRE3_T1S_LIN, "FT");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
@@ -25,18 +25,6 @@ public:
 			Network::NetID::DWCAN_05,
 			Network::NetID::DWCAN_06,
 			Network::NetID::DWCAN_07,
-			Network::NetID::DWCAN_09,
-			Network::NetID::DWCAN_10,
-			Network::NetID::DWCAN_11,
-			Network::NetID::DWCAN_12,
-			Network::NetID::DWCAN_13,
-			Network::NetID::DWCAN_14,
-			Network::NetID::DWCAN_15,
-			Network::NetID::DWCAN_16,
-
-			Network::NetID::ETHERNET_01,
-			Network::NetID::ETHERNET_02,
-			Network::NetID::ETHERNET_03,
 
 			Network::NetID::LIN_01,
 			Network::NetID::LIN_02,
@@ -46,13 +34,34 @@ public:
 			Network::NetID::LIN_06,
 			Network::NetID::LIN_07,
 			Network::NetID::LIN_08,
+			Network::NetID::LIN_09,
+			Network::NetID::LIN_10,
+			
+			Network::NetID::ISO9141_01,
+			Network::NetID::ISO9141_02,
+			Network::NetID::ISO9141_03,
+			Network::NetID::ISO9141_04,
+
+			Network::NetID::ETHERNET_01,
+			Network::NetID::ETHERNET_02,
+
+			Network::NetID::AE_01,
+			Network::NetID::AE_02,
+			Network::NetID::AE_03,
+			Network::NetID::AE_04,
+			Network::NetID::AE_05,
+			Network::NetID::AE_06,
+			Network::NetID::AE_07,
+			Network::NetID::AE_08,
 		};
 		return supportedNetworks;
 	}
-	size_t getEthernetActivationLineCount() const override { return 2; }
+
+	bool supportsTC10() const override { return true; }
+
 protected:
-	NeoVIFIRE3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<NeoVIFIRE3Settings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
+	NeoVIFIRE3T1SLIN(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<NeoVIFIRE3T1SLINSettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	virtual void setupEncoder(Encoder& encoder) override {
@@ -74,7 +83,7 @@ protected:
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	bool supportsWiVI() const override { return true; }
-
+	
 	bool supportsLiveData() const override { return true; }
 
 	bool supportsGPTP() const override { return true; }
@@ -86,15 +95,10 @@ protected:
 	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
 		return 0;
 	}
-
+	
 	bool supportsEraseMemory() const override {
 		return true;
 	}
-
-	size_t getDiskCount() const override {
-		return 2;
-	}
-
 };
 
 }

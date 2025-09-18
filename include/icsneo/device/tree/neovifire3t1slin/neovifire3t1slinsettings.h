@@ -1,5 +1,5 @@
-#ifndef __NEOVIFIRE3SETTINGS_H_
-#define __NEOVIFIRE3SETTINGS_H_
+#ifndef __NEOVIFIRE3T1SLINSETTINGS_H_
+#define __NEOVIFIRE3T1SLINSETTINGS_H_
 
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
@@ -25,17 +25,7 @@ typedef struct {
 	uint16_t slaveVnetA;
 	uint32_t reserved;
 	uint64_t termination_enables;
-	union
-	{
-		uint64_t word;
-		struct
-		{
-			uint16_t network_enables;
-			uint16_t network_enables_2;
-			uint16_t network_enables_3;
-			uint16_t network_enables_4;
-		};
-	} network_enables;
+	uint64_t network_enables;
 	uint32_t pwr_man_timeout;
 	CAN_SETTINGS can1;
 	CANFD_SETTINGS canfd1;
@@ -86,33 +76,41 @@ typedef struct {
 	ETHERNET_SETTINGS ethernet_2;
 	ETHERNET_SETTINGS2 ethernet2_2;
 	Fire3LinuxSettings os_settings;
-
 	RAD_GPTP_SETTINGS gPTP;
-	// VEM Networks
-	CAN_SETTINGS can9;
-	CANFD_SETTINGS canfd9;
-	CAN_SETTINGS can10;
-	CANFD_SETTINGS canfd10;
-	CAN_SETTINGS can11;
-	CANFD_SETTINGS canfd11;
-	CAN_SETTINGS can12;
-	CANFD_SETTINGS canfd12;
-	CAN_SETTINGS can13;
-	CANFD_SETTINGS canfd13;
-	CAN_SETTINGS can14;
-	CANFD_SETTINGS canfd14;
-	CAN_SETTINGS can15;
-	CANFD_SETTINGS canfd15;
-	CAN_SETTINGS can16;
-	CANFD_SETTINGS canfd16;
 
-	SWCAN_SETTINGS swcan1;
-	SWCAN_SETTINGS swcan2;
-	CAN_SETTINGS lsftcan1;
-	CAN_SETTINGS lsftcan2;
-
-	ETHERNET_SETTINGS ethernet_3;
-	ETHERNET_SETTINGS2 ethernet2_3;
+	/* VEM */
+	// 10T1S
+	ETHERNET_SETTINGS2 ethT1s1;
+	ETHERNET10T1S_SETTINGS t1s1;
+	ETHERNET10T1S_SETTINGS_EXT t1s1Ext;
+	// 10T1S
+	ETHERNET_SETTINGS2 ethT1s2;
+	ETHERNET10T1S_SETTINGS t1s2;
+	ETHERNET10T1S_SETTINGS_EXT t1s2Ext;
+	// 10T1S
+	ETHERNET_SETTINGS2 ethT1s3;
+	ETHERNET10T1S_SETTINGS t1s3;
+	ETHERNET10T1S_SETTINGS_EXT t1s3Ext;
+	// 10T1S
+	ETHERNET_SETTINGS2 ethT1s4;
+	ETHERNET10T1S_SETTINGS t1s4;
+	ETHERNET10T1S_SETTINGS_EXT t1s4Ext;
+	// 10T1S
+	ETHERNET_SETTINGS2 ethT1s5;
+	ETHERNET10T1S_SETTINGS t1s5;
+	ETHERNET10T1S_SETTINGS_EXT t1s5Ext;
+	// 10T1S
+	ETHERNET_SETTINGS2 ethT1s6;
+	ETHERNET10T1S_SETTINGS t1s6;
+	ETHERNET10T1S_SETTINGS_EXT t1s6Ext;
+	// 10T1S
+	ETHERNET_SETTINGS2 ethT1s7;
+	ETHERNET10T1S_SETTINGS t1s7;
+	ETHERNET10T1S_SETTINGS_EXT t1s7Ext;
+	// 10T1S
+	ETHERNET_SETTINGS2 ethT1s8;
+	ETHERNET10T1S_SETTINGS t1s8;
+	ETHERNET10T1S_SETTINGS_EXT t1s8Ext;
 
 	LIN_SETTINGS lin3;
 	LIN_SETTINGS lin4;
@@ -120,6 +118,8 @@ typedef struct {
 	LIN_SETTINGS lin6;
 	LIN_SETTINGS lin7;
 	LIN_SETTINGS lin8;
+	LIN_SETTINGS lin9;
+	LIN_SETTINGS lin10;
 
 	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_3;
 	uint16_t iso_parity_3;
@@ -127,23 +127,15 @@ typedef struct {
 	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_4;
 	uint16_t iso_parity_4;
 	uint16_t iso_msg_termination_4;
-	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_5;
-	uint16_t iso_parity_5;
-	uint16_t iso_msg_termination_5;
-	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_6;
-	uint16_t iso_parity_6;
-	uint16_t iso_msg_termination_6;
 
-	uint16_t selectable_network_1;
-	uint16_t selectable_network_2;
-
-	uint64_t network_enables_2;
-	uint64_t termination_enables_2;
 	uint16_t iso_tester_pullup_enable;
+
+	uint64_t network_enables_5;
+
 	CMP_GLOBAL_DATA cmp_global_data;
-	CMP_NETWORK_DATA cmp_stream_data[CMP_STREAMS_FIRE3];
+	CMP_NETWORK_DATA cmp_stream_data[CMP_STREAMS_FIRE3T1SLIN];
 	uint32_t networkTimeSync;
-} neovifire3_settings_t;
+} neovifire3t1slin_settings_t;
 
 typedef struct {
 	uint8_t backupPowerGood;
@@ -151,7 +143,7 @@ typedef struct {
 	uint8_t usbHostPowerEnabled;
 	uint8_t ethernetActivationLineEnabled;
 	EthernetNetworkStatus ethernetStatus;
-} neovifire3_status_t;
+} neovifire3t1slin_status_t;
 #pragma pack(pop)
 
 #ifdef _MSC_VER
@@ -162,11 +154,11 @@ typedef struct {
 
 #include <iostream>
 
-class NeoVIFIRE3Settings : public IDeviceSettings {
+class NeoVIFIRE3T1SLINSettings : public IDeviceSettings {
 public:
-	NeoVIFIRE3Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire3_settings_t)) {}
+	NeoVIFIRE3T1SLINSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire3t1slin_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		auto cfg = getStructurePointer<neovifire3t1slin_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -191,7 +183,7 @@ public:
 		}
 	}
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		auto cfg = getStructurePointer<neovifire3t1slin_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -234,7 +226,7 @@ public:
 	}
 
 	const LIN_SETTINGS* getLINSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		auto cfg = getStructurePointer<neovifire3t1slin_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -254,6 +246,10 @@ public:
 				return &(cfg->lin7);
 			case Network::NetID::LIN_08:
 				return &(cfg->lin8);
+			case Network::NetID::LIN_09:
+				return &(cfg->lin9);
+			case Network::NetID::LIN_10:
+				return &(cfg->lin10);
 			default:
 				return nullptr;
 		}
@@ -261,7 +257,7 @@ public:
 
 protected:
 	ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const override {
-		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		auto cfg = getStructurePointer<neovifire3t1slin_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		return &cfg->termination_enables;
