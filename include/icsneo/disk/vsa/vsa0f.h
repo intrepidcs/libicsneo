@@ -57,7 +57,7 @@ public:
 	 *
 	 * @return The timestamp of this record
 	 */
-	uint64_t getTimestamp() override { return timestamp; }
+	uint64_t getTimestamp() override { return timestamp & UINT63_MAX; }
 
 private:
 	/**

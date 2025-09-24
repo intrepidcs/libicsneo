@@ -8,7 +8,7 @@ VSA03::VSA03(uint8_t* const recordBytes)
 	setType(VSA::Type::AA03);
 	eventType = static_cast<EventType>(*reinterpret_cast<uint16_t*>(recordBytes + 2));
 	eventData = *reinterpret_cast<uint16_t*>(recordBytes + 4);
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 6) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 6);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 14);
 	doChecksum(recordBytes);
 }

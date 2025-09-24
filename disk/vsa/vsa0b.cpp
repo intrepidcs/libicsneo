@@ -11,7 +11,7 @@ VSA0B::VSA0B(uint8_t* const recordBytes)
 {
 	setType(VSA::Type::AA0B);
 	captureBitfield = reinterpret_cast<uint16_t*>(recordBytes)[1];
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 20) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 20);
 	reserved = recordBytes[28];
 	checksum = reinterpret_cast<uint16_t*>(recordBytes)[15];
 	doChecksum(recordBytes);
@@ -30,8 +30,8 @@ void VSA0B::doChecksum(uint8_t* recordBytes)
 bool VSA0B::filter(const std::shared_ptr<VSAMessageReadFilter> filter)
 {
 	if((filter->captureBitfield != captureBitfield && filter->captureBitfield != UINT16_MAX) ||
-		getICSTimestampFromTimepoint(filter->readRange.first) > timestamp ||
-		getICSTimestampFromTimepoint(filter->readRange.second) < timestamp) {
+		getICSTimestampFromTimepoint(filter->readRange.first) > getTimestamp() ||
+		getICSTimestampFromTimepoint(filter->readRange.second) < getTimestamp()) {
 		return false;
 	}
 	return true;

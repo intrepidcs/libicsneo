@@ -76,8 +76,8 @@ void VSA0DFirst::reorderPayload(std::vector<uint8_t>& secondPayload)
 bool VSA0DFirst::filter(const std::shared_ptr<VSAMessageReadFilter> filter)
 {
 	if((filter->captureBitfield != captureBitfield && filter->captureBitfield != UINT16_MAX) ||
-		getICSTimestampFromTimepoint(filter->readRange.first) > timestamp ||
-		getICSTimestampFromTimepoint(filter->readRange.second) < timestamp) {
+		getICSTimestampFromTimepoint(filter->readRange.first) > getTimestamp() ||
+		getICSTimestampFromTimepoint(filter->readRange.second) < getTimestamp()) {
 		return false;
 	}
 	return true;

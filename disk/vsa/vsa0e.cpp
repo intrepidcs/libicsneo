@@ -66,8 +66,8 @@ void VSA0EFirst::reservePacketData(std::shared_ptr<Packet>& packet) const
 bool VSA0EFirst::filter(const std::shared_ptr<VSAMessageReadFilter> filter)
 {
 	if((filter->captureBitfield != captureBitfield && filter->captureBitfield != UINT16_MAX) ||
-		getICSTimestampFromTimepoint(filter->readRange.first) > timestamp ||
-		getICSTimestampFromTimepoint(filter->readRange.second) < timestamp) {
+		getICSTimestampFromTimepoint(filter->readRange.first) > getTimestamp() ||
+		getICSTimestampFromTimepoint(filter->readRange.second) < getTimestamp()) {
 		return false;
 	}
 	return true;

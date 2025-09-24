@@ -16,7 +16,7 @@ VSA6A::VSA6A(uint8_t* const recordBytes)
 	sequenceNum = *reinterpret_cast<uint32_t*>(recordBytes + 34);
 	totalSectors = *reinterpret_cast<uint32_t*>(recordBytes + 38);
 	reserved = *reinterpret_cast<uint32_t*>(recordBytes + 42);
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 46) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 46);
 	timestampSum = *reinterpret_cast<uint16_t*>(recordBytes + 54);
 	data.insert(data.end(), recordBytes + 56, recordBytes + 508);
 	checksum = *reinterpret_cast<uint32_t*>(recordBytes + 508);

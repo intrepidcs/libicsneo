@@ -8,7 +8,7 @@ VSA05::VSA05(uint8_t* const recordBytes)
 	setType(VSA::Type::AA05);
 	errorType = static_cast<ErrorType>(*reinterpret_cast<uint16_t*>(recordBytes + 2));
 	errorNetwork = *reinterpret_cast<uint16_t*>(recordBytes + 4);
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 6) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 6);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 14);
 }
 

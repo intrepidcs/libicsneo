@@ -16,7 +16,7 @@ VSA09::VSA09(uint8_t* const recordBytes)
 	reserved0.insert(reserved0.end(), recordBytes + 12, recordBytes + 18);
 	hardwareID = static_cast<HardwareID>(recordBytes[18]);
 	reserved1.insert(reserved1.end(), recordBytes + 19, recordBytes + 22);
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 22) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 22);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 30);
 	doChecksum(recordBytes);
 }

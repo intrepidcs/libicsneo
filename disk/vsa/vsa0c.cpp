@@ -10,7 +10,7 @@ VSA0C::VSA0C(uint8_t* const recordBytes)
 	audioPreamble = recordBytes[4];
 	audioHeader = recordBytes[5];
 	pcmData.insert(pcmData.end(), recordBytes + 6, recordBytes + 20);
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 20) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 20);
 	vNetBitfield = *reinterpret_cast<VSA0C::VNet*>(recordBytes + 28);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 30);
 	doChecksum(recordBytes);

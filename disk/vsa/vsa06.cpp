@@ -9,7 +9,7 @@ VSA06::VSA06(uint8_t* const recordBytes)
 	savedSectors.insert(savedSectors.end(), reinterpret_cast<uint32_t*>(recordBytes + 2), reinterpret_cast<uint32_t*>(recordBytes + 18));
 	error = *reinterpret_cast<uint16_t*>(recordBytes + 18);
 	savedSectorsHigh = *reinterpret_cast<uint16_t*>(recordBytes + 20);
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 22) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 22);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 30);
 	doChecksum(recordBytes);
 }

@@ -8,7 +8,7 @@ VSA04::VSA04(uint8_t* const recordBytes)
 	setType(VSA::Type::AA04);
 	flags = *reinterpret_cast<Flags*>(recordBytes + 2);
 	partitionIndex = *reinterpret_cast<uint16_t*>(recordBytes + 4);
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 6) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 6);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 14);
 	doChecksum(recordBytes);
 }

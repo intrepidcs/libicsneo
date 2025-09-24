@@ -8,7 +8,7 @@ VSA08::VSA08(uint8_t* const recordBytes)
 	setType(VSA::Type::AA08);
 	troubleSramCount.insert(troubleSramCount.end(), recordBytes + 2, recordBytes + 6);
 	troubleSectors.insert(troubleSectors.end(), reinterpret_cast<uint32_t*>(recordBytes + 6), reinterpret_cast<uint32_t*>(recordBytes + 22));
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 22) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 22);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 30);
 	doChecksum(recordBytes);
 }

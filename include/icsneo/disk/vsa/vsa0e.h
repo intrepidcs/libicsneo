@@ -57,7 +57,7 @@ public:
 	 *
 	 * @return The timestamp of this record
 	 */
-	uint64_t getTimestamp() override { return timestamp; }
+	uint64_t getTimestamp() override { return timestamp & UINT63_MAX; }
 
 	/**
 	 * Reorder bytes in the payload between this record and the second record in the sequence. The bytes are reordered to allow

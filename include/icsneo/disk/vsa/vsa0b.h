@@ -34,7 +34,7 @@ public:
 	 *
 	 * @return Timestamp of this record in 25 nanosecond ticks since January 1, 2007
 	 */
-	uint64_t getTimestamp() override { return timestamp; }
+	uint64_t getTimestamp() override { return timestamp & UINT63_MAX; }
 
 private:
 	/**

@@ -9,7 +9,7 @@ VSA02::VSA02(uint8_t* const recordBytes)
 	constantIndex = *reinterpret_cast<uint16_t*>(recordBytes + 2);
 	flags = *reinterpret_cast<Flags*>(recordBytes + 4);
 	pieceCount = recordBytes[5];
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 6) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 6);
 	samples.insert(samples.end(), recordBytes + 14, recordBytes + 30);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 30);
 	doChecksum(recordBytes);

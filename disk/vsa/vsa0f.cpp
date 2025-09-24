@@ -78,8 +78,8 @@ void VSA0FFirst::reservePacketData(std::shared_ptr<Packet>& packet) const
 bool VSA0FFirst::filter(const std::shared_ptr<VSAMessageReadFilter> filter)
 {
 	if(filter->captureBitfield != captureBitfield ||
-		getICSTimestampFromTimepoint(filter->readRange.first) > timestamp ||
-		getICSTimestampFromTimepoint(filter->readRange.second) < timestamp) {
+		getICSTimestampFromTimepoint(filter->readRange.first) > getTimestamp() ||
+		getICSTimestampFromTimepoint(filter->readRange.second) < getTimestamp()) {
 		return false;
 	}
 	return true;

@@ -9,7 +9,7 @@ VSA07::VSA07(uint8_t* const recordBytes)
 	lastSector = *reinterpret_cast<uint32_t*>(recordBytes + 2);
 	currentSector = *reinterpret_cast<uint32_t*>(recordBytes + 6);
 	reserved.insert(reserved.end(), recordBytes + 10, recordBytes + 22);
-	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 22) & UINT63_MAX;
+	timestamp = *reinterpret_cast<uint64_t*>(recordBytes + 22);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 30);
 	doChecksum(recordBytes);
 }
