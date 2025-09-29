@@ -32,6 +32,7 @@ void init_messagecallback(pybind11::module_&);
 void init_version(pybind11::module_&);
 void init_flexray(pybind11::module_& m);
 void init_idevicesettings(pybind11::module_&);
+void init_ethphymessage(pybind11::module_&);
 
 PYBIND11_MODULE(icsneopy, m) {
 	pybind11::options options;
@@ -61,6 +62,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_messagecallback(m);
 	init_diskdriver(m);
     init_flexray(m);
+	init_ethphymessage(m);
 	init_device(m);
     init_deviceextension(m);
 	init_idevicesettings(m);

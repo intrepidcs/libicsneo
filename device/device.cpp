@@ -1846,7 +1846,7 @@ std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message,
 	HardwareEthernetPhyRegisterPacket::EncodeFromMessage(message, bytes, report);
 	std::shared_ptr<Message> response = com->waitForMessageSync(
 		[this, bytes](){ return com->sendCommand(Command::PHYControlRegisters, bytes); },
-		std::make_shared<MessageFilter>(Network::NetID::EthPHYControl), timeout);
+		std::make_shared<MessageFilter>(Message::Type::EthernetPhyRegister), timeout);
 
 	if(!response) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);

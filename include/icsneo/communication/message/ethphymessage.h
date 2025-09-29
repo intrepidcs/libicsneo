@@ -21,10 +21,11 @@ struct PhyMessage {
 	bool Enabled;
 	bool WriteEnable;
 	bool Clause45Enable;
-	uint8_t version;
+	uint8_t BusIndex;
+	uint8_t Version;
 	union {
-		Clause22Message clause22;
-		Clause45Message clause45;
+		Clause22Message Clause22;
+		Clause45Message Clause45;
 	};
 };
 

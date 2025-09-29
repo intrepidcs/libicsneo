@@ -8,7 +8,7 @@ bool EthPhyMessage::appendPhyMessage(bool writeEnable, bool clause45, uint8_t ph
 	msg->Clause45Enable = clause45;
 	msg->Enabled = enabled;
 	msg->WriteEnable = writeEnable;
-	msg->version = 1u;
+	msg->Version = 1u;
 	if( (FiveBits < phyAddrOrPort) ||
 		(clause45 && (FiveBits < pageOrDevice)) ||
 		(!clause45 && (FiveBits < regAddr)) )
@@ -18,17 +18,17 @@ bool EthPhyMessage::appendPhyMessage(bool writeEnable, bool clause45, uint8_t ph
 
 	if(clause45)
 	{
-		msg->clause45.port    = phyAddrOrPort;
-		msg->clause45.device  = pageOrDevice;
-		msg->clause45.regAddr = regAddr;
-		msg->clause45.regVal  = regVal;
+		msg->Clause45.port    = phyAddrOrPort;
+		msg->Clause45.device  = pageOrDevice;
+		msg->Clause45.regAddr = regAddr;
+		msg->Clause45.regVal  = regVal;
 	}
 	else
 	{
-		msg->clause22.phyAddr = phyAddrOrPort;
-		msg->clause22.page    = pageOrDevice;
-		msg->clause22.regAddr = regAddr;
-		msg->clause22.regVal  = regVal;
+		msg->Clause22.phyAddr = phyAddrOrPort;
+		msg->Clause22.page    = pageOrDevice;
+		msg->Clause22.regAddr = regAddr;
+		msg->Clause22.regVal  = regVal;
 	}
 	return appendPhyMessage(msg);
 }

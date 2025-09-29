@@ -45,7 +45,9 @@ struct PhyRegisterPacket_t {
 			uint16_t Enabled : 1;
 			uint16_t WriteEnable : 1;
 			uint16_t Clause45Enable : 1;
-			uint16_t reserved : 9;
+			uint16_t status : 3;
+			uint16_t reserved : 2;
+			uint16_t BusIndex : 4;
 			uint16_t version : 4;
 		};
 		uint16_t flags;
