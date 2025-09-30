@@ -4,7 +4,7 @@
 
 using namespace icsneo;
 
-std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream, const device_eventhandler_t& report) {
+std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
 	const HardwareEthernetPacket* packet = (const HardwareEthernetPacket*)((const void*)bytestream.data());
 	const uint16_t* rawWords = (const uint16_t*)bytestream.data();
 	// Make sure we have enough to read the packet length first
@@ -18,9 +18,6 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	const size_t bytestreamActualSize = bytestream.size();
 	if(bytestreamActualSize < bytestreamExpectedSize)
 		return nullptr;
-	// Check for oversized packets, noting that some devices will send an extra byte to have an even number of bytes
-	if(bytestreamActualSize > bytestreamExpectedSize + 1)
-		report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::EventWarning);
 	auto messagePtr = std::make_shared<EthernetMessage>();
 	EthernetMessage& message = *messagePtr;
 	message.transmitted = packet->eid.TXMSG;

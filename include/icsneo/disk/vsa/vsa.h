@@ -238,8 +238,6 @@ protected:
  */
 class VSAExtendedMessage : public VSAMessage {
 public:
-	static void truncatePacket(std::shared_ptr<Packet> packet);
-
 	/**
 	 * Appends the payload for this message to the given packet.
 	 * Also sets the network of the packet if unset (used primarily for AA0F records which do not contain the network in the first extended message record).

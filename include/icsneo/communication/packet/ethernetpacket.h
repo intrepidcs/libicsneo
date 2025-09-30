@@ -18,7 +18,7 @@ namespace icsneo {
 typedef uint16_t icscm_bitfield;
 
 struct HardwareEthernetPacket {
-	static std::shared_ptr<EthernetMessage> DecodeToMessage(const std::vector<uint8_t>& bytestream, const device_eventhandler_t& report);
+	static std::shared_ptr<EthernetMessage> DecodeToMessage(const std::vector<uint8_t>& bytestream);
 	static bool EncodeFromMessage(const EthernetMessage& message, std::vector<uint8_t>& bytestream, const device_eventhandler_t& report);
 
 	// Word 0 - Header flags (offset 0)
@@ -57,8 +57,9 @@ struct HardwareEthernetPacket {
 	struct {
 		icscm_bitfield T1S_BURST_COUNT : 8;
 		icscm_bitfield T1S_NODE_ID : 8;
-		uint8_t RESERVED[6];
 	} t1s_node;
+	
+    uint8_t RESERVED[6];
 
 	// Words 4-7 - Reserved/Padding
 	uint16_t stats;

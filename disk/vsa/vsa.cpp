@@ -26,18 +26,3 @@ void VSAExtendedMessage::appendPacket(std::shared_ptr<Packet> packet) const
 		packet->network = network;
 	}
 }
-
-void VSAExtendedMessage::truncatePacket(std::shared_ptr<Packet> packet)
-{
-	static constexpr auto EthernetLengthOffset = 26u;
-	switch(packet->network.getType()) {
-		case Network::Type::Ethernet:
-			{
-				const auto& packetLength = *reinterpret_cast<uint16_t*>(packet->data.data() + EthernetLengthOffset);
-				const size_t ethernetFrameSize = packetLength - (sizeof(uint16_t) * 2);
-				const size_t bytestreamExpectedSize = sizeof(HardwareEthernetPacket) + ethernetFrameSize;
-				packet->data.resize(bytestreamExpectedSize);
-			}	
-			break;
-	}
-}

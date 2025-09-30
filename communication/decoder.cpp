@@ -59,7 +59,7 @@ uint64_t Decoder::GetUInt64FromLEBytes(const uint8_t* bytes) {
 bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet) {
 	switch(packet->network.getType()) {
 		case Network::Type::Ethernet: {
-			result = HardwareEthernetPacket::DecodeToMessage(packet->data, report);
+			result = HardwareEthernetPacket::DecodeToMessage(packet->data);
 			if(!result) {
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
 				return false; // A nullptr was returned, the packet was not long enough to decode

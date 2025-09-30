@@ -430,7 +430,6 @@ bool VSAParser::extractMessagePackets(std::vector<std::shared_ptr<Packet>>& pack
 					extendedMessageRecord->appendPacket(packet);
 					if(extendedMessageRecord->getRecordCount() == static_cast<uint32_t>(extendedMessageRecord->getIndex() + 1)) { // Last record in sequence
 						if(!settings.messageFilter || extendedMessageRecord->filter(settings.messageFilter)) {
-							VSAExtendedMessage::truncatePacket(packet);
 							packets.push_back(packet);
 						}
 						activeExtendedMessage = false;

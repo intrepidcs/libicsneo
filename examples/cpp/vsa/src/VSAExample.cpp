@@ -239,6 +239,9 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+    std::cout << "Waiting for 5 seconds..." << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
 	std::cout << "info: " << currentMessage << " transmitted frames found" << std::endl;
 	resetScriptStatus(rxDevice, txDevice, rxInitialCoreminiStatus, txInitialCoreminiStatus);
 
