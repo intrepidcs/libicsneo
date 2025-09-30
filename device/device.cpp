@@ -3315,10 +3315,18 @@ std::optional<uint64_t> Device::vsaReadLogicalDisk(uint64_t pos, uint8_t* into, 
 		return readLogicalDisk(pos, into, amount);
 	}
 	uint64_t firstReadAmount = diskSize - pos;
-	if(!readLogicalDisk(pos, into, firstReadAmount)) {
+	uint64_t bytesRead = 0;
+	if(auto optBytesReadFirst = readLogicalDisk(pos, into, firstReadAmount)) {
+		bytesRead = *optBytesReadFirst;
+	} else {
 		return std::nullopt;
 	}
-	return readLogicalDisk(VSA::RecordStartOffset, into + firstReadAmount, amount - firstReadAmount);
+	if(auto optBytesReadSecond = readLogicalDisk(VSA::RecordStartOffset, into + firstReadAmount, amount - firstReadAmount)) {
+		bytesRead += *optBytesReadSecond;
+	} else {
+		return std::nullopt;
+	}
+	return bytesRead;
 }
 
 bool Device::dispatchVSAMessages(VSAParser& parser) {
