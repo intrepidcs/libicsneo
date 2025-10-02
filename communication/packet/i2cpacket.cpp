@@ -49,7 +49,7 @@ namespace icsneo
 			report(APIEvent::Type::I2CMessageExceedsMaxLength, APIEvent::Severity::Error);
 			return false;
 		}
-		if(message.controlBytes.empty() || message.dataBytes.empty())
+		if(message.controlBytes.empty() && message.dataBytes.empty())
 		{
 			//You'll need to provide a target R/W register in controlBytes
 			//alternatively, you're expecting to read without providing a dataBytes payload
