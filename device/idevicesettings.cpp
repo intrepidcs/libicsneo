@@ -4,9 +4,9 @@
 
 using namespace icsneo;
 
-std::optional<uint16_t> IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settings, std::optional<size_t> knownSize) {
+std::optional<uint16_t> IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settings) {
 	const uint16_t* p = reinterpret_cast<const uint16_t*>(settings.data());
-	size_t words = std::min(knownSize.value_or(0), settings.size());
+	size_t words = settings.size();
 	if(words % 2 == 1)
 		return std::nullopt; // Somehow settings is not word aligned
 	words /= 2;
@@ -159,14 +159,11 @@ bool IDeviceSettings::ValidateLINBaudrate(int64_t baudrate) {
 	}
 }
 
-bool IDeviceSettings::refresh(bool ignoreChecksum) {
+bool IDeviceSettings::refresh() {
 	if(disabled) {
 		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
 		return false;
 	}
-
-	if(disableGSChecksumming)
-		ignoreChecksum = true;
 
 	std::vector<uint8_t> rxSettings;
 	bool ret = com->getSettingsSync(rxSettings);
@@ -175,41 +172,18 @@ bool IDeviceSettings::refresh(bool ignoreChecksum) {
 		return false;
 	}
 
-	constexpr size_t GsSize = 3 * sizeof(uint16_t);
+	constexpr size_t GsSize = 3 * sizeof(uint16_t); // <version> <length> <checksum>
 	if(rxSettings.size() < GsSize) { // We need to at least have the header of GLOBAL_SETTINGS
 		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
 	}
 
-	// The length of the settings structure sent to us
-	// This is the length the firmware thinks the current version of the structure is
-	const size_t rxLen = rxSettings.size() - GsSize;
-
 	const uint16_t gsVersion = rxSettings[0] | (rxSettings[1] << 8);
 
-	// The length of the settings last saved
-	// If the firmware is updated, it will have either extended (with zeros) or truncated
-	// the structure, but this value will continue to be set to the last saved value
-	const uint16_t gsLen = rxSettings[2] | (rxSettings[3] << 8);
-
-	const uint16_t gsChecksum = rxSettings[4] | (rxSettings[5] << 8);
 	rxSettings.erase(rxSettings.begin(), rxSettings.begin() + GsSize);
 
 	if(gsVersion != GS_VERSION) {
 		report(APIEvent::Type::SettingsVersionError, APIEvent::Severity::Error);
-		return false;
-	}
-
-	if(rxLen < gsLen) {
-		// We got less data, i.e. the firmware thinks the strucure is smaller than what
-		// was last saved. Usually this is due to a firmware downgrade. We'll ignore the
-		// checksum for now, because it will definitely be wrong.
-		ignoreChecksum = true;
-	}
-
-	// We check the checksum against the data last saved
-	if(!ignoreChecksum && gsChecksum != CalculateGSChecksum(rxSettings, gsLen)) {
-		report(APIEvent::Type::SettingsChecksumError, APIEvent::Severity::Error);
 		return false;
 	}
 
@@ -261,7 +235,7 @@ bool IDeviceSettings::apply(bool temporary) {
 
 	std::shared_ptr<Main51Message> msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
-	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000)));
+	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(2000)));
 
 	if(!msg || msg->data[0] != 1) { // We did not receive a response
 		// Attempt to get the settings from the device so we're up to date if possible
@@ -272,7 +246,7 @@ bool IDeviceSettings::apply(bool temporary) {
 		return false;
 	}
 
-	refresh(true); // Refresh ignoring checksum
+	refresh();
 	// The device might modify the settings once they are applied, however in this case it does not update the checksum
 	// We refresh to get these updates, update the checksum, and send it back so it's all in sync
 	gsChecksum = CalculateGSChecksum(settings);
@@ -287,7 +261,7 @@ bool IDeviceSettings::apply(bool temporary) {
 
 	msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
-	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000)));
+	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(2000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) {
@@ -342,7 +316,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	// This short wait helps on FIRE devices, otherwise the checksum might be wrong!
 	std::this_thread::sleep_for(std::chrono::milliseconds(3));
 
-	refresh(true); // Refresh ignoring checksum
+	refresh();
 	// The device might modify the settings once they are applied, however in this case it does not update the checksum
 	// We refresh to get these updates, update the checksum, and send it back so it's all in sync
 	std::vector<uint8_t> bytestream;
@@ -364,7 +338,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 
 	msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
-	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(1000)));
+	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(2000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) {

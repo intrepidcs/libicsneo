@@ -89,11 +89,11 @@ public:
 		};
 	}
 
-	bool refresh(bool ignoreChecksum = false) override {
+	bool refresh() override {
 		// Because VividCAN uses a nonstandard 16-bit termination_enables
 		// we need to keep the standard 64-bit values in memory and update
 		// the structure when applying
-		if(!IDeviceSettings::refresh(ignoreChecksum))
+		if(!IDeviceSettings::refresh())
 			return false;
 		auto cfg = getStructurePointer<vividcan_settings_t>();
 		if(cfg == nullptr)

@@ -70,7 +70,6 @@ typedef struct {
 class RADStar2Settings : public IDeviceSettings {
 public:
 	RADStar2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radstar2_settings_t)) {
-		disableGSChecksumming = true;
 	}
 	
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {

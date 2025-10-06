@@ -729,7 +729,7 @@ public:
 	using TerminationGroup = std::vector<Network>;
 
 	static constexpr uint16_t GS_VERSION = 5;
-	static std::optional<uint16_t> CalculateGSChecksum(const std::vector<uint8_t>& settings, std::optional<size_t> knownSize = std::nullopt);
+	static std::optional<uint16_t> CalculateGSChecksum(const std::vector<uint8_t>& settings);
 	static CANBaudrate GetEnumValueForBaudrate(int64_t baudrate);
 	static int64_t GetBaudrateValueForEnum(CANBaudrate enumValue);
 	static bool ValidateLINBaudrate(int64_t baudrate);
@@ -738,7 +738,7 @@ public:
 	virtual ~IDeviceSettings() {}
 	bool ok() const { return !disabled && settingsLoaded; }
 
-	virtual bool refresh(bool ignoreChecksum = false); // Get from device
+	virtual bool refresh(); // Get from device
 
 	// Send to device, if temporary device keeps settings in volatile RAM until power cycle, otherwise saved to EEPROM
 	virtual bool apply(bool temporary = false);
@@ -946,7 +946,6 @@ public:
 	bool disabled = false;
 
 	bool readonly = false;
-	bool disableGSChecksumming = false;
 
 	std::atomic<bool> applyingSettings{false};
 protected:

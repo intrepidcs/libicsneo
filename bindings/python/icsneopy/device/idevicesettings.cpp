@@ -40,7 +40,7 @@ void init_idevicesettings(pybind11::module_& m) {
         .def("set_phy_enable", &IDeviceSettings::setPhyEnable, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_phy_mode", &IDeviceSettings::setPhyMode, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_phy_speed", &IDeviceSettings::setPhySpeed, pybind11::call_guard<pybind11::gil_scoped_release>())
-        .def("refresh", &IDeviceSettings::refresh, pybind11::arg("ignoreChecksum") = 0, pybind11::call_guard<pybind11::gil_scoped_release>());
+        .def("refresh", &IDeviceSettings::refresh, pybind11::call_guard<pybind11::gil_scoped_release>());
 }
 
 } // namespace icsneo
