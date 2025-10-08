@@ -568,6 +568,12 @@ public:
 	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
 	Lifetime addLoggingCallback(ScriptStatusCallback cb) { return addScriptStatusCallback(ScriptStatus::Logging, std::move(cb)); }
 
+	typedef std::function<void(void)> VINAvailableCallback;
+	NODISCARD("If the Lifetime is not held, the callback will be immediately removed")
+	Lifetime addVINAvailableCallback(VINAvailableCallback cb);
+	std::optional<bool> isVINEnabled() const;
+	std::optional<std::string> getVIN() const;
+
 	virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const { return {}; }
 
 	void addExtension(std::shared_ptr<DeviceExtension>&& extension);
@@ -931,6 +937,7 @@ private:
 	std::atomic<bool> wiviSleepRequested{false};
 	std::vector<NewCaptureCallback> newCaptureCallbacks;
 	std::vector< std::pair<SleepRequestedCallback, bool /* notified */> > sleepRequestedCallbacks;
+	std::vector<std::pair<VINAvailableCallback, bool /* notified */>> vinAvailableCallbacks;
 	void wiviThreadBody();
 	void stopWiVIThreadIfNecessary(std::unique_lock<std::mutex> lk);
 

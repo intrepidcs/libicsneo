@@ -17,6 +17,7 @@ struct Info {
 	uint8_t sleepRequest;
 	uint16_t connectionTimeoutMinutes;
 	std::vector<CaptureInfo> captures;
+	uint8_t vinAvailable;
 };
 
 // The response for Command::WiVICommand
@@ -27,6 +28,7 @@ public:
 	std::optional<Command> responseTo;
 	std::optional<int32_t> value;
 	std::optional<Info> info;
+	std::optional<std::string> vin;
 };
 
 } // namespace WiVI

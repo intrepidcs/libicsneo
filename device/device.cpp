@@ -1178,7 +1178,7 @@ void Device::wiviThreadBody() {
 
 		// Use the command GetAll to get a WiVI::Info structure from the device
 		const auto generic = com->waitForMessageSync([this]() {
-			return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetAll::Encode());
+			return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetAllHeader::Encode());
 		}, filter, std::chrono::milliseconds(1000));
 
 		if(!generic || generic->type != Message::Type::WiVICommandResponse) {
@@ -1289,6 +1289,22 @@ void Device::wiviThreadBody() {
 			// If the sleepRequest becomes 1 again we will notify again
 			for(auto& cb : sleepRequestedCallbacks)
 				cb.second = false;
+		}
+
+		// Process vin available callbacks
+		if (resp->info->vinAvailable & 1) {
+			for (auto& cb : vinAvailableCallbacks) {
+				if (!cb.second && cb.first) {
+					cb.second = true;
+					lk.unlock();
+					try {
+						cb.first();
+					} catch(...) {
+						report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
+					}
+					lk.lock();
+				}
+			}
 		}
 	}
 }
@@ -1462,6 +1478,110 @@ bool Device::allowSleep(bool remoteWakeup) {
 	}
 
 	return true;
+}
+
+Lifetime Device::addVINAvailableCallback(VINAvailableCallback cb)
+{
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return {};
+	}
+
+	if(!supportsWiVI()) {
+		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::Error);
+		return {};
+	}
+
+	std::lock_guard<std::mutex> lk(wiviMutex);
+	if(!wiviThread.joinable()) {
+		// Start the thread
+		stopWiVIThread = false;
+		wiviThread = std::thread([this]() { wiviThreadBody(); });
+	}
+
+	size_t idx = 0;
+	for(; idx < vinAvailableCallbacks.size(); idx++) {
+		if(!vinAvailableCallbacks[idx].first) // Empty space (previously erased callback)
+			break;
+	}
+
+	if(idx == vinAvailableCallbacks.size()) // Create a new space
+		vinAvailableCallbacks.emplace_back(std::move(cb), false);
+	else
+		vinAvailableCallbacks[idx] = { std::move(cb), false };
+
+	// Cleanup function to remove this sleep requested callback
+	return Lifetime([this, idx]() {
+		// TODO: Hold a weak ptr to the `this` instead of relying on the user to keep `this` valid
+		std::unique_lock<std::mutex> lk2(wiviMutex);
+		vinAvailableCallbacks[idx].first = VINAvailableCallback();
+		stopWiVIThreadIfNecessary(std::move(lk2));
+	});
+}
+
+std::optional<bool> Device::isVINEnabled() const
+{
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(!supportsWiVI()) {
+		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
+	// Hold this lock so the WiVI stack doesn't issue a WiVICommand at the same time as us
+	std::lock_guard<std::mutex> lk(wiviMutex);
+	const auto generic = com->waitForMessageSync([this]() {
+		return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetSignal::Encode(WiVI::SignalType::VINEnabled));
+	}, filter, std::chrono::milliseconds(1000));
+
+	if(!generic || generic->type != Message::Type::WiVICommandResponse) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	const auto resp = std::static_pointer_cast<WiVI::ResponseMessage>(generic);
+	if(!resp->success || !resp->value.has_value()) {
+		report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	return *resp->value;
+}
+
+std::optional<std::string> Device::getVIN() const
+{
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(!supportsWiVI()) {
+		report(APIEvent::Type::WiVINotSupported, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Message::Type::WiVICommandResponse);
+	std::lock_guard<std::mutex> lk(wiviMutex);
+	const auto generic = com->waitForMessageSync([this]() {
+		return com->sendCommand(Command::WiVICommand, WiVI::CommandPacket::GetVIN::Encode());
+	}, filter, std::chrono::milliseconds(1000));
+
+	if(!generic || generic->type != Message::Type::WiVICommandResponse) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	const auto resp = std::static_pointer_cast<WiVI::ResponseMessage>(generic);
+	if(!resp->success || !resp->vin.has_value()) {
+		report(APIEvent::Type::ValueNotYetPresent, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	return *resp->vin;
 }
 
 void Device::scriptStatusThreadBody()

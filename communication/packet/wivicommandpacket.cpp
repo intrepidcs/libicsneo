@@ -31,24 +31,46 @@ std::shared_ptr<WiVI::ResponseMessage> WiVI::CommandPacket::DecodeToMessage(cons
 			break;
 		}
 		case WiVI::Command::GetAll: {
-			if(bytestream.size() < sizeof(WiVI::CommandPacket::GetAll))
+			if(bytestream.size() < sizeof(WiVI::CommandPacket::GetAllHeader))
 				return {};
 
-			const auto& getAll = *reinterpret_cast<const WiVI::CommandPacket::GetAll*>(bytestream.data());
+			const auto& getAll = *reinterpret_cast<const WiVI::CommandPacket::GetAllHeader*>(bytestream.data());
 			msg->responseTo = WiVI::Command::GetAll;
 			msg->info.emplace();
 			msg->info->sleepRequest = getAll.sleepRequest;
 			msg->info->connectionTimeoutMinutes = getAll.connectionTimeoutMinutes;
 
 			// Check that we have enough data for the capture infos
-			if(bytestream.size() < sizeof(WiVI::CommandPacket::GetAll) + (sizeof(WiVI::CaptureInfo) * getAll.numCaptureInfos))
+			size_t captureInfosSize = sizeof(WiVI::CaptureInfo) * getAll.numCaptureInfos;
+			if(bytestream.size() < sizeof(WiVI::CommandPacket::GetAllHeader) + captureInfosSize)
 				return {};
 
+			const WiVI::CaptureInfo* const captureInfos = (const WiVI::CaptureInfo*)(bytestream.data() + sizeof(WiVI::CommandPacket::GetAllHeader));
 			msg->info->captures.resize(getAll.numCaptureInfos);
 			for(uint16_t i = 0; i < getAll.numCaptureInfos; i++)
-				msg->info->captures[i] = getAll.captureInfos[i];
+				msg->info->captures[i] = captureInfos[i];
+
+			
+			// New field vinAvail was added - check if it is present:
+			if(bytestream.size() >= sizeof(WiVI::CommandPacket::GetAllHeader) + captureInfosSize + 2) {
+				msg->info->vinAvailable = *(bytestream.data() + sizeof(WiVI::CommandPacket::GetAllHeader) + captureInfosSize);
+			} else {
+				msg->info->vinAvailable = 0;
+			}
+				
 			break;
 		}
+		case WiVI::Command::GetVIN: {
+			if (bytestream.size() < sizeof(WiVI::CommandPacket::GetVIN))
+				return {};
+
+			const auto& getVIN = *reinterpret_cast<const WiVI::CommandPacket::GetVIN*>(bytestream.data());
+			msg->responseTo = WiVI::Command::GetVIN;
+			msg->vin  = getVIN.VIN;
+
+			break;
+		}
+
 		default: // Unknown command response
 			return {};
 	}
@@ -78,9 +100,9 @@ std::vector<uint8_t> WiVI::CommandPacket::SetSignal::Encode(WiVI::SignalType typ
 	return ret;
 }
 
-std::vector<uint8_t> WiVI::CommandPacket::GetAll::Encode() {
-	std::vector<uint8_t> ret(sizeof(WiVI::CommandPacket::GetAll));
-	auto& frame = *reinterpret_cast<WiVI::CommandPacket::GetAll*>(ret.data());
+std::vector<uint8_t> WiVI::CommandPacket::GetAllHeader::Encode() {
+	std::vector<uint8_t> ret(sizeof(WiVI::CommandPacket::GetAllHeader));
+	auto& frame = *reinterpret_cast<WiVI::CommandPacket::GetAllHeader*>(ret.data());
 
 	frame.header.cmd = WiVI::Command::GetAll;
 	frame.header.length = sizeof(frame) - sizeof(frame.header);
@@ -98,3 +120,15 @@ std::vector<uint8_t> WiVI::CommandPacket::ClearUploads::Encode(const std::vector
 
 	return ret;
 }
+
+std::vector<uint8_t> WiVI::CommandPacket::GetVIN::Encode()
+{
+	std::vector<uint8_t> ret(sizeof(WiVI::CommandPacket::GetVIN));
+	auto& frame = *reinterpret_cast<WiVI::CommandPacket::GetVIN*>(ret.data());
+
+	frame.header.cmd = WiVI::Command::GetVIN;
+	frame.header.length = sizeof(frame) - sizeof(frame.header);
+
+	return ret;
+}
+

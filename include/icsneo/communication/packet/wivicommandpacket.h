@@ -56,6 +56,7 @@ enum class Command : uint16_t {
 	GetSignal = 0x0013,
 	Result = 0x0014,
 	GetPhysicalSignal = 0x0015,
+	GetVIN = 0x0016,
 };
 
 enum class SignalType : uint16_t { // enumCoreMiniValueMiscValueType
@@ -66,6 +67,7 @@ enum class SignalType : uint16_t { // enumCoreMiniValueMiscValueType
 	ConnectionTimeout = 0x006e,
 	TimeSinceLastMessageMs = 0x006f,
 	UploadsPending = 0x0077,
+	VINEnabled = 0x007D,
 };
 
 struct Upload {
@@ -125,7 +127,7 @@ struct CommandPacket {
 		CoreMiniFixedPointValue value;
 	};
 
-	struct GetAll {
+	struct GetAllHeader {
 		static std::vector<uint8_t> Encode();
 
 		Header header;
@@ -133,7 +135,6 @@ struct CommandPacket {
 		uint8_t sleepRequest;
 		uint16_t connectionTimeoutMinutes;
 		uint16_t numCaptureInfos;
-		CaptureInfo captureInfos[0];
 	};
 
 	struct ClearUploads {
@@ -141,6 +142,13 @@ struct CommandPacket {
 
 		Header header;
 		uint8_t bitmask[0];
+	};
+
+	struct GetVIN {
+		static std::vector<uint8_t> Encode();
+
+		Header header;
+		char VIN[17];
 	};
 };
 
