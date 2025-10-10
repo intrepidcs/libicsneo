@@ -2,25 +2,3 @@
 SUBSYSTEM=="usb", ATTRS{idVendor}=="093c", GROUP="users", MODE="0666"
 KERNEL=="ttyUSB?", ATTRS{idVendor}=="093c", GROUP="users", MODE="0666"
 KERNEL=="ttyACM?", ATTRS{idVendor}=="093c", GROUP="users", MODE="0666"
-
-# neoVI ION/PLASMA PIDs are not in the latest ftdi_sio driver so lets make a
-# rule to add it when we see a new unclaimed device.
-# PLASMA = 0x0801, ION = 0x0901
-ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", \
-        ATTRS{idVendor}=="093c", ATTRS{idProduct}=="0801", \
-        DRIVER=="", \
-        RUN+="/sbin/modprobe -b ftdi_sio"
-ACTION=="add", SUBSYSTEM=="drivers", \
-        ENV{DEVPATH}=="/bus/usb-serial/drivers/ftdi_sio", \
-        ATTR{new_id}="093c 0801"
-ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", \
-        ATTRS{idVendor}=="093c", ATTRS{idProduct}=="0901", \
-        DRIVER=="", \
-        RUN+="/sbin/modprobe -b ftdi_sio"
-ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", \
-        ATTRS{idVendor}=="093c", ATTRS{idProduct}=="1000", \
-        DRIVER=="", \
-        RUN+="/sbin/modprobe -b ftdi_sio"
-ACTION=="add", SUBSYSTEM=="drivers", \
-        ENV{DEVPATH}=="/bus/usb-serial/drivers/ftdi_sio", \
-        ATTR{new_id}="093c 0901"
