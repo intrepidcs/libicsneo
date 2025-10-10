@@ -66,3 +66,11 @@ Complete Ethernet Example
 
 .. literalinclude:: ../../examples/python/ethernet/ethernet_complete_example.py
    :language: python
+
+Device Firmware/Chip Versions
+=============================
+
+:download:`Download example <../../examples/python/device/chip_versions.py>`
+
+.. literalinclude:: ../../examples/python/device/chip_versions.py
+   :language: python

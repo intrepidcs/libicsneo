@@ -39,6 +39,8 @@ pybind11_add_module(icsneopy
     icsneopy/communication/message/filter/messagefilter.cpp
     icsneopy/flexray/flexray.cpp
     icsneopy/disk/diskdriver.cpp
+    icsneopy/device/chipid.cpp
+    icsneopy/device/versionreport.cpp
     icsneopy/device/device.cpp
     icsneopy/device/extensions/deviceextension.cpp
     icsneopy/device/idevicesettings.cpp
