@@ -57,6 +57,9 @@ public:
 		return true;
 	}
 
+	ProductID getProductID() const override {
+		return ProductID::neoVIFIRE;
+	}
 private:
 	NeoVIFIRE(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRESettings>(makeDriver);

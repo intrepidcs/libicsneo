@@ -28,6 +28,23 @@ public:
 	bool supportsComponentVersions() const override { return true; }
 
 	bool getEthPhyRegControlSupported() const override { return true; }
+	ProductID getProductID() const override {
+		return ProductID::RADEpsilon;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADProxima_MCHIP, true, "MCHIP", "epsilon_mchip_ief", 0, FirmwareType::IEF},
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADProxima_MCHIP, BootloaderCommunication::RED)
+			.add<ReconnectPhase>();
+	}
 
 protected:
 	RADEpsilonXL(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
@@ -57,6 +74,10 @@ protected:
 
 	bool supportsEraseMemory() const override {
 		return true;
+	}
+
+	size_t getDiskCount() const override {
+		return 1;
 	}
 };
 

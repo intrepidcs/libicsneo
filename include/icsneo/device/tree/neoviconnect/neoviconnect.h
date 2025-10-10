@@ -34,6 +34,28 @@ public:
 		return supportedNetworks;
 	}
 
+	ProductID getProductID() const override {
+		return ProductID::Connect;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::Connect_ZCHIP, true, "ZCHIP", "neovi_connect_zchip_ief", 0, FirmwareType::IEF},
+			{ChipID::Connect_LINUX, true, "Linux Flash", "neovi_connect_lnx_flash_ief", 1, FirmwareType::IEF},
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<FlashPhase>(ChipID::Connect_ZCHIP, BootloaderCommunication::Application, true, false, false)
+			.add<FlashPhase>(ChipID::Connect_LINUX, BootloaderCommunication::Application, false, false, false)
+			.add<FinalizePhase>(ChipID::Connect_ZCHIP, BootloaderCommunication::Application)
+			.add<FinalizePhase>(ChipID::Connect_LINUX, BootloaderCommunication::Application)
+			.add<ReconnectPhase>()
+			.addSetting(BootloaderSetting::UpdateAll, true);
+	}
+
 protected:
 	NeoVIConnect(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIConnectSettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

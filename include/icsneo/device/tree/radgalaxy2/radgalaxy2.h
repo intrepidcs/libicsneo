@@ -67,6 +67,28 @@ public:
 	bool supportsTC10() const override { return true; }
 	bool supportsGPTP() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADGalaxy2;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RAD_GALAXY_2_ZMPCHIP_ID, true, "ZCHIP", "RADGalaxy2_SW_bin_p1", {"RADGalaxy2_SW_bin_p1",  "RADGalaxy2_SW_bin_p2"}, 0, FirmwareType::Zip},
+			{ChipID::RADGALAXY2_SYSMON_CHIP, true, "MCHIP", "galaxy2_sysmon_ief", 1, FirmwareType::IEF}
+		};
+		return chips;
+	}
+	
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RAD_GALAXY_2_ZMPCHIP_ID, BootloaderCommunication::RAD)
+			.add<ReconnectPhase>()
+			.add<FlashPhase>(ChipID::RADGALAXY2_SYSMON_CHIP, BootloaderCommunication::RADGalaxy2Peripheral)
+			.add<ReconnectPhase>()
+			.add<WaitPhase>(std::chrono::milliseconds(3000));
+	}
+
 protected:
 	RADGalaxy2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADGalaxy2Settings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

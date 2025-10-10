@@ -15,6 +15,9 @@ public:
 	// USB PID is 0x0901, standard driver is DXX
 	ICSNEO_FINDABLE_DEVICE(NeoVIION, DeviceType::ION, "40");
 
+	ProductID getProductID() const override {
+		return ProductID::neoVIION;
+	}
 private:
 	NeoVIION(neodevice_t neodevice, const driver_factory_t& makeDriver) : Plasion(neodevice) {
 		initialize<NullSettings, Disk::PlasionDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

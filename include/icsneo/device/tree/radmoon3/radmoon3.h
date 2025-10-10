@@ -30,6 +30,24 @@ public:
 
 	bool supportsTC10() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADMoon3;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADMoon3_MCHIP, true, "MCHIP", "radmoon3_mchip_ief", 0, FirmwareType::IEF},
+		};
+		return chips;
+	}
+	
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADMoon3_MCHIP, BootloaderCommunication::RED)
+			.add<ReconnectPhase>()
+			.add<WaitPhase>(std::chrono::milliseconds(3000));
+	}
 protected:
 	RADMoon3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADMoon3Settings>(makeDriver);

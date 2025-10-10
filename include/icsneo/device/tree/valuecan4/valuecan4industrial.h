@@ -27,6 +27,9 @@ public:
 		return supportedNetworks;
 	}
 
+	ProductID getProductID() const override {
+		return ProductID::ValueCAN4Industrial;
+	}
 protected:
 	ValueCAN4Industrial(neodevice_t neodevice, const driver_factory_t& makeDriver) : ValueCAN4(neodevice) {
 		initialize<ValueCAN4IndustrialSettings>(makeDriver);

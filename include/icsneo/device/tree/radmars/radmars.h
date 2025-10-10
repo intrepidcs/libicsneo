@@ -21,6 +21,9 @@ public:
 	size_t getEthernetActivationLineCount() const override { return 1; }
 	bool supportsGPTP() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADMars;
+	}
 protected:
 	RADMars(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADMarsSettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

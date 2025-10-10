@@ -29,6 +29,24 @@ public:
 
 	bool getEthPhyRegControlSupported() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADEpsilon;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADEpsilon_MCHIP, true, "MCHIP", "epsilon_mchip_ief", 0, FirmwareType::IEF},
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADEpsilon_MCHIP, BootloaderCommunication::RED)
+			.add<ReconnectPhase>();
+	}
+
 protected:
 	RADEpsilon(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADEpsilonSettings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

@@ -87,6 +87,28 @@ public:
 		};
 	}
 
+	ProductID getProductID() const override {
+		return ProductID::neoVIFIRE2;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::neoVIFIRE2_MCHIP, true, "MCHIP", "fire2_mchip_ief", 0, FirmwareType::IEF},
+			{ChipID::neoVIFIRE2_ZYNQ, true, "ZCHIP", "fire2_zchip_ief", 1, FirmwareType::IEF},
+			{ChipID::neoVIFIRE2_Core, true, "Core", "fire2_core", 2, FirmwareType::IEF},
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::neoVIFIRE2_MCHIP, BootloaderCommunication::RED)
+			.add<FlashPhase>(ChipID::neoVIFIRE2_ZYNQ, BootloaderCommunication::RED, false, true)
+			.add<FlashPhase>(ChipID::neoVIFIRE2_Core, BootloaderCommunication::REDCore, false, false)
+			.add<ReconnectPhase>();
+	}
+	
 protected:
 	NeoVIFIRE2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRE2Settings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

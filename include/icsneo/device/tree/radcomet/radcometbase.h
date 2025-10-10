@@ -30,6 +30,25 @@ public:
 	bool getEthPhyRegControlSupported() const override { return true; }
 	bool supportsGPTP() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADComet;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADComet_ZYNQ, true, "ZCHIP", "RADComet_SW_bin", 0, FirmwareType::Zip},
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override { 
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADComet_ZYNQ, BootloaderCommunication::RAD)
+			.add<ReconnectPhase>()
+			.add<WaitPhase>(std::chrono::milliseconds(3000));
+	}
+
 protected:
 	using Device::Device;
 

@@ -207,6 +207,71 @@ bool Device::refreshComponentVersions() {
 	return false;
 }
 
+std::vector<VersionReport> Device::getChipVersions(bool refreshComponents) {
+	if(refreshComponents) {
+		refreshComponentVersions();
+	}
+	std::vector<VersionReport> chipVersions;
+
+	if (supportsComponentVersions()) {
+		const auto& compVersions = getComponentVersions();
+		auto disectVersion = [](uint32_t dotVersion) {
+			std::array<uint8_t, 4> result = {0,0,0,0};
+			size_t i = 0;
+
+			if(dotVersion & 0xFF000000ul) {
+				result[i++] = (uint8_t)((dotVersion & 0xFF000000ul) >> 24);
+				result[i++] = (uint8_t)((dotVersion & 0x00FF0000ul) >> 16);
+			} else if(dotVersion & 0x00FF0000ul) {
+				result[i++] = (uint8_t)((dotVersion & 0x00FF0000ul) >> 16);
+			}
+			result[i++] = (uint8_t)((dotVersion & 0x0000FF00ul) >> 8);
+			result[i] = (uint8_t)((dotVersion & 0x000000FFul) >> 0);
+			return result;
+		};
+		for(const auto& chipInfo : getChipInfo()) {
+			for(const auto& component : compVersions) {
+				if(component.identifier == (uint32_t)chipInfo.id) {
+					chipVersions.emplace_back();
+					auto& version = chipVersions.back();
+
+					auto disectedVersion = disectVersion(component.dotVersion);
+					version.id          = chipInfo.id;
+					version.name        = chipInfo.name;
+					version.major       = disectedVersion[0];
+					version.minor       = disectedVersion[1];
+					version.maintenance = disectedVersion[2];
+					version.build       = disectedVersion[3];
+				}
+			}
+		}
+	} else {
+		const auto& appVersions = getVersions();
+		for(const auto& chipInfo : getChipInfo()) {
+			if(!chipInfo.defaultEnabled) {
+				continue;
+			}
+			if(appVersions.size() <= chipInfo.versionIndex) {
+				continue;
+			}
+			const auto& appVer = appVersions[chipInfo.versionIndex];
+			if(!appVer) {
+				continue;
+			}
+			chipVersions.emplace_back();
+			auto& version = chipVersions.back();
+
+			version.id          = chipInfo.id;
+			version.name        = chipInfo.name;
+			version.major       = appVer->major;
+			version.minor       = appVer->minor;
+			version.maintenance = 0;
+			version.build       = 0;
+		}			
+	}
+	return chipVersions;
+}
+
 bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 	if(!com) {
 		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);

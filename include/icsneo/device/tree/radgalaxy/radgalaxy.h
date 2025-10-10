@@ -63,6 +63,26 @@ public:
 	size_t getEthernetActivationLineCount() const override { return 1; }
 	bool supportsGPTP() const override { return true; }
 
+
+	ProductID getProductID() const override {
+		return ProductID::RADGalaxy;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADGalaxy_ZYNQ, true, "ZCHIP", "RADGalaxy_SG2_SW_bin", 0, FirmwareType::Zip},
+			{ChipID::RADGalaxy_FFG_Zynq, false, "ZCHIP", "RADGalaxy_SG2_FFG_SW_bin", 0, FirmwareType::Zip}
+		};
+		return chips;
+	}
+	
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADGalaxy_ZYNQ, BootloaderCommunication::RAD)
+			.add<ReconnectPhase>()
+			.add<WaitPhase>(std::chrono::milliseconds(3000));
+	}
 protected:
 	RADGalaxy(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADGalaxySettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

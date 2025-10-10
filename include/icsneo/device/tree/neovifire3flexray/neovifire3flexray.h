@@ -53,6 +53,36 @@ public:
 		return supportedNetworks;
 	}
 
+	ProductID getProductID() const override {
+		return ProductID::neoVIFIRE3;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::neoVIFIRE3_ZCHIP, true, "ZCHIP", "fire3_zchip_ief", 0, FirmwareType::IEF},
+			{ChipID::neoVIFIRE3_SCHIP, true, "SCHIP", "fire3_schip_ief", 1, FirmwareType::IEF},
+			{ChipID::neoVIFIRE3_LINUX, true, "Linux Flash", "fire3_lnx_flash_ief", 2, FirmwareType::IEF},
+			{ChipID::VEM_02_FR_ZCHIP, true, "VEM-02-Z", "vem_02_fr_zchip_ief", 3, FirmwareType::IEF},
+			{ChipID::VEM_02_FR_FCHIP, true, "VEM-02-F", "vem_02_fr_fchip_ief", 4, FirmwareType::IEF},
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<FlashPhase>(ChipID::neoVIFIRE3_ZCHIP, BootloaderCommunication::Application, true, false)
+			.add<FlashPhase>(ChipID::neoVIFIRE3_SCHIP, BootloaderCommunication::Application, false, true)
+			.add<FlashPhase>(ChipID::neoVIFIRE3_LINUX, BootloaderCommunication::Application, false, false, false)
+			.add<FlashPhase>(ChipID::VEM_02_FR_FCHIP, BootloaderCommunication::Application, false, false)
+			.add<FlashPhase>(ChipID::VEM_02_FR_ZCHIP, BootloaderCommunication::Application, false, false)
+			.add<FinalizePhase>(ChipID::neoVIFIRE3_ZCHIP, BootloaderCommunication::Application)
+			.add<FinalizePhase>(ChipID::neoVIFIRE3_SCHIP, BootloaderCommunication::Application)
+			.add<FinalizePhase>(ChipID::neoVIFIRE3_LINUX, BootloaderCommunication::Application)
+			.add<FinalizePhase>(ChipID::VEM_02_FR_FCHIP, BootloaderCommunication::Application)
+			.add<FinalizePhase>(ChipID::VEM_02_FR_ZCHIP, BootloaderCommunication::Application)
+			.add<ReconnectPhase>()
+			.addSetting(BootloaderSetting::UpdateAll, true);
+	}
 protected:
 	NeoVIFIRE3FlexRay(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRE3FlexRaySettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

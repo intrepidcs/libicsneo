@@ -34,6 +34,9 @@ public:
 
 	bool getEthPhyRegControlSupported() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADPluto;
+	}
 protected:
 	RADPluto(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADPlutoSettings>(makeDriver);

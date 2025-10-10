@@ -22,6 +22,9 @@ public:
 		return supportedNetworks;
 	}
 
+	ProductID getProductID() const override {
+		return ProductID::ValueCAN3;
+	}
 private:
 	ValueCAN3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<ValueCAN3Settings>(makeDriver);

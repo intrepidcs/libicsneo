@@ -26,6 +26,10 @@ public:
 		return supportedNetworks;
 	}
 
+	ProductID getProductID() const override {
+		return ProductID::EtherBADGE;
+	}
+
 protected:
 	EtherBADGE(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<EtherBADGESettings>(makeDriver);

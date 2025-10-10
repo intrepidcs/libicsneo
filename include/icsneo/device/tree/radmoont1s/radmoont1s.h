@@ -34,6 +34,9 @@ public:
 
 	bool supportsTC10() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADMoonT1S;
+	}
 protected:
 	RADMoonT1S(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADMoonT1SSettings>(makeDriver);

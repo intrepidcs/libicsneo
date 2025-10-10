@@ -18,6 +18,23 @@ public:
 
 	bool supportsTC10() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADMoon2;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADMoon2_ZL_MCHIP, true, "MCHIP", "radmoon2_zl_mchip_ief", 0, FirmwareType::IEF}
+		};
+		return chips;
+	}
+	
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADMoon2_ZL_MCHIP, BootloaderCommunication::RED)
+			.add<ReconnectPhase>();
+	}
 protected:
 	RADMoon2ZL(neodevice_t neodevice, const driver_factory_t& makeDriver) : RADMoon2Base(neodevice) {
 		initialize<RADMoon2Settings>(makeDriver);

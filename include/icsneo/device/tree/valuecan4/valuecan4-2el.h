@@ -60,6 +60,25 @@ public:
 		return supportedNetworks;
 	}
 
+	ProductID getProductID() const override {
+		return ProductID::ValueCAN4_2EL_4;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::ValueCAN4_2EL_MCHIP, true, "MCHIP", "vcan44_mchip_ief", 0, FirmwareType::IEF}
+		};
+		return chips;
+	}
+	
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::ValueCAN4_2EL_MCHIP, BootloaderCommunication::RED)
+			.add<ReconnectPhase>();
+	}
+
+
 protected:
 	ValueCAN4_2EL(neodevice_t neodevice, const driver_factory_t& makeDriver) : ValueCAN4(neodevice) {
 		initialize<ValueCAN4_2ELSettings>(makeDriver);

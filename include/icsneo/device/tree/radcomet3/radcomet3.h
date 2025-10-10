@@ -54,6 +54,25 @@ public:
 	bool supportsTC10() const override { return true; }
 	bool supportsGPTP() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADComet3;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADCOMET3_ZCHIP, true, "ZCHIP", "RADComet3_SW_bin", 0, FirmwareType::Zip},
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADCOMET3_ZCHIP, BootloaderCommunication::RAD)
+			.add<ReconnectPhase>()
+			.add<WaitPhase>(std::chrono::milliseconds(3000));
+	}
+
 protected:
 	RADComet3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADComet3Settings>(makeDriver);

@@ -21,7 +21,10 @@ public:
 		};
 		return supportedNetworks;
 	}
-
+	
+	ProductID getProductID() const override {
+		return ProductID::neoOBD2Sim;
+	}
 private:
 	NeoOBD2SIM(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize(makeDriver);

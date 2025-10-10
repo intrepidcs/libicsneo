@@ -42,10 +42,31 @@ public:
 	size_t getEthernetActivationLineCount() const override { return 1; }
 	bool supportsGPTP() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::RADA2B;
+	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADA2B_ZCHIP, true, "ZCHIP", "RADA2B_SW_bin", 0, FirmwareType::Zip},
+			{ChipID::RADA2B_REVB_ZCHIP, false, "ZCHIP", "RADA2B_REVB_SW_bin", 0, FirmwareType::Zip}
+		};
+		return chips;
+	}
+	
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADA2B_ZCHIP, BootloaderCommunication::RAD)
+			.add<ReconnectPhase>()
+			.add<WaitPhase>(std::chrono::milliseconds(3000));
+	}
 protected:
 	RADA2B(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADA2BSettings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
+
+
 
 	void setupPacketizer(Packetizer& packetizer) override {
 		Device::setupPacketizer(packetizer);

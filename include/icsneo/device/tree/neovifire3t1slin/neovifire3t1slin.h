@@ -59,6 +59,9 @@ public:
 
 	bool supportsTC10() const override { return true; }
 
+	ProductID getProductID() const override {
+		return ProductID::neoVIFIRE3;
+	}
 protected:
 	NeoVIFIRE3T1SLIN(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRE3T1SLINSettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

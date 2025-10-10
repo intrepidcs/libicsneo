@@ -24,6 +24,9 @@
 #include "icsneo/device/deviceversion.h"
 #include "icsneo/device/founddevice.h"
 #include "icsneo/device/coremini.h"
+#include "icsneo/device/bootloaderpipeline.h"
+#include "icsneo/device/chipinfo.h"
+#include "icsneo/device/versionreport.h"
 #include "icsneo/disk/diskreaddriver.h"
 #include "icsneo/disk/diskwritedriver.h"
 #include "icsneo/disk/nulldiskdriver.h"
@@ -85,6 +88,77 @@ typedef uint64_t MemoryAddress;
 class Device {
 public:
 	virtual ~Device();
+
+	enum class ProductID : uint8_t {
+		neoVIRED = 0,
+		neoVIFIRE = 1,
+		ValueCAN3 = 2,
+		VividCANPro = 3, // Previously neoVI Yellow
+		neoECU = 4,
+		IEVB = 5,
+		Pendant = 6,
+		neoAnalog = 7,
+		neoECU12 = 8,
+		neoVIPLASMA = 10,
+		neoVIION = 11,
+		ValueCAN4_2EL_4 = 12,
+		cmProbe = 14,
+		EEVB = 15,
+		RADStar = 16,
+		ValueCANrf = 17,
+		neoVIFIRE2 = 18,
+		RADGalaxy = 19,
+		RADStar2 = 20,
+		VividCAN = 21,
+		neoOBD2Sim = 22,
+		neoOBD2Pro = 23,
+		ValueCAN4_1_2 = 24,
+		neoECUAVBTSN = 25,
+		RADSupermoon = 26,
+		RADMoon2 = 27,
+		RADPluto = 28,
+		RADMars = 29,
+		RADIOCANHUB = 30,
+		neoOBD2LCBadge = 31,
+		RADMoonDuo = 32,
+		neoVIFIRE3 = 33,
+		RADJupiter = 34,
+		ValueCAN4Industrial = 35,
+		RADGigastar = 36,
+		VividCANProUnused = 37, // The VividCAN Pro was double allocated
+		EtherBADGE = 38,
+		RADEpsilon = 39,
+		RADA2B = 40,
+		SFPModule = 41,
+		RADGalaxy2 = 47,
+		RADMoon3 = 49,
+		RADComet = 50,
+		Connect = 51,
+		RADComet3 = 54,
+		RADMoonT1S = 56,
+		RADGigastar2 = 57
+	};
+
+	virtual ProductID getProductID() const = 0;
+
+	/**
+	 * Returns information for all potential chips, note some chips
+	 * might not apply to a specific device depending on different
+	 * hardware versions
+	 */
+	virtual const std::vector<ChipInfo>& getChipInfo() const {
+		static std::vector<ChipInfo> placeHolder;
+		return placeHolder; // TODO: Make pure virtual maybe? 
+	}
+
+	/**
+	 * Returns bootloader instructions
+	 */
+	virtual BootloaderPipeline getBootloader() {
+		return {};
+	}
+
+	bool hasBootloader() { return !!getBootloader(); }
 
 	static std::string SerialNumToString(uint32_t serial);
 	static uint32_t SerialStringToNum(const std::string& serial);
@@ -586,10 +660,13 @@ public:
 
 	bool refreshComponentVersions();
 	/**
-	 * For use by extensions only. A more stable API will be provided in the future.
+	 * For use by extensions only.
 	 */
 	const std::vector<std::optional<DeviceAppVersion>>& getVersions() const { return versions; }
 	const std::vector<ComponentVersion>& getComponentVersions() const { return componentVersions; }
+	
+	virtual std::vector<VersionReport> getChipVersions(bool refreshComponents = true);
+
 
 	/**
 	 * Some alternate communication protocols do not support DFU
