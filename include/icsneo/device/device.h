@@ -229,6 +229,7 @@ public:
 	virtual bool goOffline();
 	virtual bool enableLogData();
 	virtual bool disableLogData();
+	virtual bool reconnect(std::chrono::milliseconds timeout, std::chrono::milliseconds interval = std::chrono::milliseconds(100));
 
 	enum class PreloadReturn : uint8_t
 	{

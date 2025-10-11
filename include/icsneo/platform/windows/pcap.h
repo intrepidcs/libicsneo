@@ -24,6 +24,8 @@ public:
 	bool isOpen() override;
 	bool close() override;
 	bool isEthernet() const override { return true; }
+	driver_finder_t getFinder() override { return PCAP::Find; }
+
 private:
 	const PCAPDLL& pcap;
 	char errbuf[PCAP_ERRBUF_SIZE] = { 0 };

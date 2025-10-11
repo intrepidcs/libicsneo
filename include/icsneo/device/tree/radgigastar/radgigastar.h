@@ -30,7 +30,7 @@ public:
 
 	const std::vector<ChipInfo>& getChipInfo() const override {
 		static std::vector<ChipInfo> chips = {
-			{ChipID::RADGigastar_ZYNQ, true, "ZCHIP", "RADGigastar2_T1S_LIN_SW_bin", 1, FirmwareType::Zip},
+			{ChipID::RADGigastar_ZYNQ, true, "ZCHIP", "RADGigastar_SW_bin", 1, FirmwareType::Zip},
 			{ChipID::RADGigastar_FFG_ZYNQ, false, "ZCHIP", "RADGigastar_FFG_SW_bin", 1, FirmwareType::Zip},
 			{ChipID::RADGigastar_USBZ_ZYNQ, true, "USB ZCHIP", "RADGigastar_USBz_SW_bin", 2, FirmwareType::Zip},
 			{ChipID::RADGigastar_USBZ_Z7010_ZYNQ, false, "USB ZCHIP", "RADGigastar_USBz_Z7010_SW_bin", 2, FirmwareType::Zip},
@@ -41,24 +41,39 @@ public:
 
 	BootloaderPipeline getBootloader() override {
 		if(supportsComponentVersions()) {
+			// main: 16.1, usb: 14.0
 			auto chipVersions = getChipVersions();
 			auto mainVersion = std::find_if(chipVersions.begin(), chipVersions.end(), [](const auto& ver) { return ver.name == "ZCHIP"; });
+			auto usbVersion = std::find_if(chipVersions.begin(), chipVersions.end(), [](const auto& ver) { return ver.name == "USB ZCHIP"; });
+			
+			bool useNewBootloader = false;
 			if(mainVersion != chipVersions.end()) {
-				static constexpr uint8_t NewBootloaderMajor = 0;
-				static constexpr uint8_t NewBootloaderMinor = 0;
-
+				static constexpr uint8_t NewBootloaderMajor = 16;
+				static constexpr uint8_t NewBootloaderMinor = 1;
 				if(
 					mainVersion->major > NewBootloaderMajor || 
-					(mainVersion->major == NewBootloaderMajor && mainVersion->minor > NewBootloaderMinor)
+					(mainVersion->major == NewBootloaderMajor && mainVersion->minor >= NewBootloaderMinor)
 				) {
-					BootloaderPipeline pipeline;
-					for(const auto& version : chipVersions) {
-						pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip);
-					}
-					pipeline.add<ReconnectPhase>();
-					pipeline.add<WaitPhase>(std::chrono::milliseconds(3000));
-					return pipeline;
+					useNewBootloader = true;
 				}
+			} else if(usbVersion != chipVersions.end()) {
+				static constexpr uint8_t NewBootloaderMajorUSB = 14;
+				static constexpr uint8_t NewBootloaderMinorUSB= 0;
+				if(
+					usbVersion->major > NewBootloaderMajorUSB || 
+					(usbVersion->major == NewBootloaderMajorUSB && usbVersion->minor >= NewBootloaderMinorUSB)
+				) {
+					useNewBootloader = true;
+				}				
+			}
+			if(useNewBootloader) {
+				BootloaderPipeline pipeline;
+				for(const auto& version : chipVersions) {
+					pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip);
+				}
+				pipeline.add<ReconnectPhase>();
+				pipeline.add<WaitPhase>(std::chrono::milliseconds(3000));
+				return pipeline;
 			}
 		}
 		// If we've reached this point, then we use the legacy flashing

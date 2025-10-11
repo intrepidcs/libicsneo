@@ -12,8 +12,11 @@
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/third-party/concurrentqueue/blockingconcurrentqueue.h"
 #include "icsneo/communication/ringbuffer.h"
+#include "icsneo/device/founddevice.h"
 
 namespace icsneo {
+
+typedef std::function<void(std::vector<FoundDevice>&)> driver_finder_t;
 
 #define ICSNEO_DRIVER_RINGBUFFER_SIZE (512 * 1024)
 class Driver {
@@ -25,6 +28,7 @@ public:
 	virtual void modeChangeIncoming() {}
 	virtual void awaitModeChangeComplete() {}
 	virtual bool close() = 0;
+	virtual driver_finder_t getFinder() = 0;
 
 	inline bool isDisconnected() const { return disconnected; };
 	inline bool isClosing() const { return closing; }
@@ -36,6 +40,7 @@ public:
 	virtual bool isEthernet() const { return false; }
 	bool readAvailable() { return readBuffer.size() > 0; }
 	RingBuffer& getReadBuffer() { return readBuffer; }
+
 
 	virtual bool enableCommunication(bool /* enable */, bool& sendMsg) { sendMsg = true; return true; }
 

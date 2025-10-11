@@ -21,6 +21,7 @@ public:
 	bool isOpen() override;
 
 	bool close() override;
+	driver_finder_t getFinder() override { return DXX::Find; }
 
 private:
 	void read();

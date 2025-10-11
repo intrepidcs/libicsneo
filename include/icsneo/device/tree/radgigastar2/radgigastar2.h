@@ -15,9 +15,9 @@ namespace icsneo
 class RADGigastar2 : public Device {
 public:
 	enum class FirmwareVariant {
-		T1Sx6_CANx1_LINx16,
-		T1Sx8_CANx4_LINx6,
-		Invalid
+		T1Sx6_CANx1_LINx16 = 0,
+		T1Sx8_CANx4_LINx6 = 1,
+		Invalid = 2
 	};
 
 	// Serial numbers start with GT
@@ -100,6 +100,8 @@ public:
 
 	FirmwareVariant getCurrentVariant() {
 		if(supportsComponentVersions()) {
+			refreshComponentVersions();
+
 			const auto& components = getComponentVersions();
 			for(const auto& component : components) {
 				if(!component.valid) {
@@ -107,7 +109,10 @@ public:
 				}
 
 				if(component.identifier == static_cast<uint32_t>(ChipID::RADGigastar2_ZYNQ)) {
-					auto res = static_cast<FirmwareVariant>(std::clamp<uint8_t>(component.componentInfo, 0, 2));
+					if(component.componentInfo > 2) {
+						return FirmwareVariant::Invalid;
+					}
+					auto res = static_cast<FirmwareVariant>(component.componentInfo);
 					if(variantToFlash == FirmwareVariant::Invalid) {
 						variantToFlash = res; // Set the variantToFlash if it hasn't been set yet, we always flash the same firmware variant as the current if it is unspecified
 					}
@@ -140,41 +145,21 @@ public:
 	}
 
 	BootloaderPipeline getBootloader() override {
-		if(supportsComponentVersions()) {
-			auto chipVersions = getChipVersions();
-			auto mainVersion = std::find_if(chipVersions.begin(), chipVersions.end(), [](const auto& ver) { return ver.name == "ZCHIP"; });
-			if(mainVersion != chipVersions.end()) {
-				static constexpr uint8_t NewBootloaderMajor = 0;
-				static constexpr uint8_t NewBootloaderMinor = 0;
-
-				if(
-					mainVersion->major > NewBootloaderMajor || 
-					(mainVersion->major == NewBootloaderMajor && mainVersion->minor > NewBootloaderMinor)
-				) {
-					BootloaderPipeline pipeline;
-					for(const auto& version : chipVersions) {
-						pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip);
-					}
-					pipeline.add<ReconnectPhase>();
-					pipeline.add<WaitPhase>(std::chrono::milliseconds(3000));
-					return pipeline;
-				}
-			}
+		auto chipVersions = getChipVersions();
+		BootloaderPipeline pipeline;
+		for(const auto& version : chipVersions) {
+			pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip);
 		}
-		// If we've reached this point, then we use the legacy flashing
-		if(com->driver->isEthernet()) {
-			return BootloaderPipeline()
-				.add<FlashPhase>(ChipID::RADGigastar2_ZYNQ, BootloaderCommunication::RAD)
-				.add<ReconnectPhase>()
-				.add<WaitPhase>(std::chrono::milliseconds(3000));
-		}
-		return BootloaderPipeline()
-			.add<FlashPhase>(ChipID::RADGigastar_USBZ_ZYNQ, BootloaderCommunication::RAD)
-			.add<ReconnectPhase>()
-			.add<WaitPhase>(std::chrono::milliseconds(3000));
+		pipeline.add<ReconnectPhase>();
+		pipeline.add<WaitPhase>(std::chrono::milliseconds(3000));
+		return pipeline;
 	}
 
 	std::vector<VersionReport> getChipVersions(bool refreshComponents = true) override {
+		if(variantToFlash == FirmwareVariant::Invalid) {
+			getCurrentVariant();
+		}
+		
 		if(refreshComponents) {
 			refreshComponentVersions();
 		}

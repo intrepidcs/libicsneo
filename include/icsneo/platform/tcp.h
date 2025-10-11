@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "icsneo/communication/driver.h"
-#include "icsneo/device/founddevice.h"
 
 namespace icsneo {
 
@@ -25,6 +24,8 @@ public:
 	bool isOpen() override;
 	bool close() override;
 	bool isEthernet() const override { return true; }
+	driver_finder_t getFinder() override { return TCP::Find; }
+
 private:
 	#ifdef _WIN32
 		typedef size_t SocketFileDescriptor;

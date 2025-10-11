@@ -28,6 +28,7 @@ public:
 	bool supportsComponentVersions() const override { return true; }
 
 	bool getEthPhyRegControlSupported() const override { return true; }
+
 	ProductID getProductID() const override {
 		return ProductID::RADEpsilon;
 	}

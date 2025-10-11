@@ -32,6 +32,7 @@ public:
 	bool open() override;
 	bool isOpen() override;
 	bool close() override;
+	driver_finder_t getFinder() override { return CDCACM::Find; }
 
 	void modeChangeIncoming() override;
 	void awaitModeChangeComplete() override;

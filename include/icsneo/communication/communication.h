@@ -42,6 +42,7 @@ public:
 	bool close();
 	bool isOpen();
 	bool isDisconnected();
+
 	virtual void spawnThreads();
 	virtual void joinThreads();
 	void modeChangeIncoming() { driver->modeChangeIncoming(); }

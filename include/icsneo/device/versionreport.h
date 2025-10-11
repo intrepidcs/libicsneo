@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 
 #include "icsneo/device/chipid.h"
+#include "icsneo/device/deviceversion.h"
 
 #include <vector>
 #include <string>
@@ -17,6 +18,10 @@ struct VersionReport {
 	uint8_t minor;
 	uint8_t maintenance;
 	uint8_t build;
+
+	icsneo::DeviceAppVersion makeAppVersion() const {
+		return {major, minor};
+	}
 };
 
 }

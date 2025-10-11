@@ -25,6 +25,8 @@ public:
 	bool close() override;
 	bool faa(const std::string& key, int32_t inc, int32_t& orig);
 	bool enableCommunication(bool enable, bool& sendMsg) override;
+	driver_finder_t getFinder() override { return Servd::Find; }
+
 private:
 	void alive();
 	void read(Address&& address);

@@ -229,8 +229,12 @@ std::vector<VersionReport> Device::getChipVersions(bool refreshComponents) {
 			result[i] = (uint8_t)((dotVersion & 0x000000FFul) >> 0);
 			return result;
 		};
+
 		for(const auto& chipInfo : getChipInfo()) {
 			for(const auto& component : compVersions) {
+				if(!component.valid) {
+					continue;
+				}
 				if(component.identifier == (uint32_t)chipInfo.id) {
 					chipVersions.emplace_back();
 					auto& version = chipVersions.back();
@@ -406,6 +410,38 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 
 	return true;
 }
+
+bool Device::reconnect(std::chrono::milliseconds timeout, std::chrono::milliseconds interval) {
+	if(isOnline()) {
+		goOffline();
+	}
+	bool readsArePaused = com->readsArePaused();
+	if(!com->close()) {
+		return false;
+	}
+
+	std::vector<FoundDevice> foundDevices;
+	auto findAll = com->driver->getFinder();
+	auto start = std::chrono::system_clock::now();
+	while((std::chrono::system_clock::now() - start) < timeout) {
+		foundDevices.clear();
+		findAll(foundDevices);
+		for(auto& fd : foundDevices) {
+			if(!memcmp(fd.serial, data.serial, 6)) {
+				com->driver = fd.makeDriver(report, getWritableNeoDevice());
+				if(readsArePaused) {
+					// Pause reads again
+					com->pauseReads();
+				}
+				return com->open();
+			}
+		}
+		std::this_thread::sleep_for(interval);
+	}
+
+	return false;
+}
+
 
 APIEvent::Type Device::attemptToBeginCommunication() {
 	versions.clear();

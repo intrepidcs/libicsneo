@@ -1,11 +1,12 @@
 #ifndef __FOUNDDEVICE_H_
 #define __FOUNDDEVICE_H_
 
-#include "icsneo/communication/driver.h"
 #include "icsneo/device/neodevice.h"
+#include "icsneo/api/eventmanager.h"
 
 namespace icsneo {
 
+class Driver;
 typedef std::function< std::unique_ptr<Driver>(device_eventhandler_t err, neodevice_t& forDevice) > driver_factory_t;
 
 class FoundDevice {

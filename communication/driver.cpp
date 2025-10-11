@@ -71,8 +71,12 @@ bool Driver::write(const std::vector<uint8_t>& bytes) {
 
 	if(writeBlocks) {
 		if(writeQueueFull()) {
-			while(writeQueueAlmostFull()) // Wait until we have some decent amount of space
+			while(writeQueueAlmostFull() && !isDisconnected() && !isClosing()) // Wait until we have some decent amount of space
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			
+			if(isDisconnected() || isClosing()) {
+				return false;
+			}
 		}
 	} else {
 		if(writeQueueFull()) {

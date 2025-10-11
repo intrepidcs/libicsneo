@@ -24,6 +24,8 @@ public:
 	bool open() override;
 	bool isOpen() override;
 	bool close() override;
+	driver_finder_t getFinder() override { return FirmIO::Find; }
+
 private:
 	std::thread readThread, writeThread;
 
