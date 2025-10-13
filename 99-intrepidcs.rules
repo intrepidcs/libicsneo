@@ -2,3 +2,6 @@
 SUBSYSTEM=="usb", ATTRS{idVendor}=="093c", GROUP="users", MODE="0666"
 KERNEL=="ttyUSB?", ATTRS{idVendor}=="093c", GROUP="users", MODE="0666"
 KERNEL=="ttyACM?", ATTRS{idVendor}=="093c", GROUP="users", MODE="0666"
+
+ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="093c", KERNEL=="ttyUSB*", \
+RUN+="/bin/sh -c 'echo $id:1.0>/sys/bus/usb/drivers/ftdi_sio/unbind'"
