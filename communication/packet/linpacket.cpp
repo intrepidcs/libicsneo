@@ -9,7 +9,7 @@ std::shared_ptr<Message> HardwareLINPacket::DecodeToMessage(const std::vector<ui
 	size_t numDataBytes = packet->CoreMiniBitsLIN.len;
 	size_t numHeaderBytes = sizeof(HardwareLINPacket::CoreMiniBitsLIN);
 
-	if( (sizeof(HardwareLINPacket) != bytestream.size()) ||
+	if( (sizeof(HardwareLINPacket) > bytestream.size()) ||
 		((numDataBytes + numHeaderBytes) > bytestream.size()) )
 		return nullptr;
 
@@ -17,7 +17,6 @@ std::shared_ptr<Message> HardwareLINPacket::DecodeToMessage(const std::vector<ui
 		--numDataBytes; //If data is present, there will be a checksum included
 
 	auto msg = std::make_shared<LINMessage>(static_cast<uint8_t>(packet->CoreMiniBitsLIN.ID));
-	msg->network = Network::GetNetIDFromCoreMiniNetwork(static_cast<Network::CoreMini>(packet->networkID));
 	msg->isEnhancedChecksum = static_cast<bool>(packet->CoreMiniBitsLIN.TxChkSumEnhanced);
 
 	/* Minimum one responder byte and one checksum byte. */

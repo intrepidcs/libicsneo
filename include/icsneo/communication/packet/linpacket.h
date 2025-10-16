@@ -54,9 +54,6 @@ struct HardwareLINPacket {
 
 	uint16_t stats; //CxTRB0STAT
 	uint64_t timestamp; //Large timestamp
-	//CoreMiniMsgExtendedHdr
-	uint16_t networkID;
-	uint16_t length;
 };
 
 #pragma pack(pop)
