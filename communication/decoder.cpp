@@ -273,7 +273,7 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						result = can;
 					}
 
-					result->timestamp *= timestampResolution;
+					result->timestamp = can->timestamp * timestampResolution;
 					return true;
 				}
 				case Network::NetID::DeviceStatus: {

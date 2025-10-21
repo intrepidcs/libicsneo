@@ -17,7 +17,7 @@ def main():
    print(f"info: monitoring Ethernet status on {device}")
 
    def on_message(message):
-      print(f"info: network: {message.network}, state: {message.state}, speed: {message.speed}, duplex: {message.duplex}, mode: {message.mode}")
+      print(f"info: timestamp: {message.timestamp}, network: {message.network}, state: {message.state}, speed: {message.speed}, duplex: {message.duplex}, mode: {message.mode}")
 
    filter = icsneopy.MessageFilter(icsneopy.Message.Type.EthernetStatus)
    callback = icsneopy.MessageCallback(on_message, filter)
