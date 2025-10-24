@@ -1,6 +1,5 @@
 #!/bin/sh
-export CFLAGS="-Wall -Werror"
-export CXXFLAGS="-Wall -Werror"
+
 cmake -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DLIBICSNEO_BUILD_EXAMPLES=ON \
 	-DLIBICSNEO_BUILD_UNIT_TESTS=ON -DLIBICSNEO_ENABLE_TCP=OFF || exit 1
 

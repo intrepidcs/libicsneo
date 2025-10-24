@@ -1,5 +1,6 @@
 variables:
   DEBIAN_FRONTEND: noninteractive
+  LIBICSNEO_ICSPB_REPO: https://gitlab-ci-token:${CI_JOB_TOKEN}@${LIBICSNEO_ICSPB_GIT}
 
 stages:
   - build
@@ -13,7 +14,7 @@ stages:
 build windows/x64:
   stage: build
   script:
-    - CMD.EXE /C ci\build-windows64.bat
+    - cmd /C ci\build-windows64.bat
   artifacts:
     when: always
     paths:
@@ -37,7 +38,7 @@ unit_test windows/x64:
 build windows/x86:
   stage: build
   script:
-    - CMD.EXE /C ci\build-windows32.bat
+    - cmd /C ci\build-windows32.bat
   artifacts:
     when: always
     paths:
@@ -67,7 +68,9 @@ unit_test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y g++ ninja-build cmake libpcap-dev git
+    - apt install -y g++ ninja-build cmake libpcap-dev git ca-certificates
+    - echo "$ICS_IPA_CA_CRT" >/usr/local/share/ca-certificates/ica-ipa-ca.crt
+    - update-ca-certificates --fresh
     - sh ci/build-posix.sh
   artifacts:
     when: always
@@ -93,7 +96,9 @@ unit_test windows/x86:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y clang lld ninja-build cmake libpcap-dev git
+    - apt install -y clang lld ninja-build cmake libpcap-dev git ca-certificates
+    - echo "$ICS_IPA_CA_CRT" >/usr/local/share/ca-certificates/ica-ipa-ca.crt
+    - update-ca-certificates --fresh
     - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
   artifacts:
     when: always
@@ -175,7 +180,9 @@ unit_test linux/ubuntu/2404/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y g++ libpcap-devel cmake ninja-build git
+    - dnf install -y g++ libpcap-devel cmake ninja-build git ca-certificates
+    - echo "$ICS_IPA_CA_CRT" >/etc/pki/ca-trust/source/anchors/ica-ipa-ca.crt
+    - update-ca-trust
     - sh ci/build-posix.sh
   artifacts:
     when: always
@@ -209,7 +216,9 @@ unit_test linux/ubuntu/2404/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y clang lld libpcap-devel cmake ninja-build git
+    - dnf install -y clang lld libpcap-devel cmake ninja-build git ca-certificates
+    - echo "$ICS_IPA_CA_CRT" >/etc/pki/ca-trust/source/anchors/ica-ipa-ca.crt
+    - update-ca-trust
     - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
   artifacts:
     when: always
@@ -289,22 +298,13 @@ unit_test linux/fedora/42/amd64/clang:
 build python/linux/amd64:
   stage: build
   tags:
-    - linux-build
-  image: python:3.13
-  services:
-    - name: docker:dind
-      entrypoint: ["env", "-u", "DOCKER_HOST"]
-      command: ["dockerd-entrypoint.sh"]
+    - linux-native-amd64
   variables:
-    CIBW_BEFORE_ALL: yum install -y flex && sh ci/bootstrap-libpcap.sh
+    CIBW_BEFORE_ALL: sh ci/bootstrap-cibuildwheel.sh && sh ci/bootstrap-libpcap.sh
     CIBW_BUILD: "*manylinux*" # no musl
     CIBW_ARCHS: x86_64
-    DOCKER_HOST: unix:///var/run/docker.sock
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
     CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install
   script:
-    - curl -sSL https://get.docker.com/ | sh
     - sh ci/build-wheel-posix.sh
   artifacts:
     paths:
@@ -315,7 +315,7 @@ build python/linux/arm64:
   tags:
     - arm64-linux-build
   variables:
-    CIBW_BEFORE_ALL: yum install -y flex && sh ci/bootstrap-libpcap.sh
+    CIBW_BEFORE_ALL: sh ci/bootstrap-cibuildwheel.sh && sh ci/bootstrap-libpcap.sh
     CIBW_BUILD: "*manylinux*" # no musl
     CIBW_ARCHS: aarch64
     CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install

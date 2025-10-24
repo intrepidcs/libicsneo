@@ -145,6 +145,8 @@ protected:
 
 		return ret;
 	}
+
+	bool supportsNetworkMutex() const override { return true; }
 };
 
 }

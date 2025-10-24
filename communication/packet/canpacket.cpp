@@ -114,7 +114,7 @@ std::shared_ptr<Message> HardwareCANPacket::DecodeToMessage(const std::vector<ui
 			msg->data.insert(msg->data.end(), data->data, data->data + (length > 8 ? 8 : length));
 			if(length > 8) { // If there are more than 8 bytes, they come at the end of the message
 				// Messages with extra data are formatted as message, then uint16_t netid, then uint16_t length, then extra data
-				const auto extraDataStart = bytestream.begin() + sizeof(HardwareCANPacket) + 2 + 2;
+				const auto extraDataStart = bytestream.begin() + sizeof(HardwareCANPacket);
 				msg->data.insert(msg->data.end(), extraDataStart, extraDataStart + (length - 8));
 			}
 		}

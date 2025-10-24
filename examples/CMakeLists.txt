@@ -12,6 +12,9 @@ option(LIBICSNEO_BUILD_CPP_VSA_EXAMPLE "Build the VSA example." ON)
 option(LIBICSNEO_BUILD_CPP_APP_ERROR_EXAMPLE "Build the app error example." ON)
 option(LIBICSNEO_BUILD_CPP_FLEXRAY_EXAMPLE "Build the FlexRay example." ON)
 option(LIBICSNEO_BUILD_CPP_SPI_EXAMPLE "Build the SPI example." ON)
+option(LIBICSNEO_BUILD_CPP_MUTEX_EXAMPLE "Build the NetworkMutex example." ON)
+
+add_compile_options(${LIBICSNEO_COMPILER_WARNINGS})
 
 if(LIBICSNEO_BUILD_C_INTERACTIVE_EXAMPLE)
 	add_subdirectory(c/interactive)
@@ -67,4 +70,8 @@ endif()
 
 if(LIBICSNEO_BUILD_CPP_SPI_EXAMPLE)
     add_subdirectory(cpp/spi)
+endif()
+
+if(LIBICSNEO_BUILD_CPP_MUTEX_EXAMPLE)
+	add_subdirectory(cpp/mutex)
 endif()

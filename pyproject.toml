@@ -50,3 +50,4 @@ CMAKE_MSVC_RUNTIME_LIBRARY = "MultiThreaded"
 
 [tool.cibuildwheel]
 skip = "pp*"
+environment-pass = ["ICS_IPA_CA_CRT", "LIBICSNEO_ICSPB_REPO"]

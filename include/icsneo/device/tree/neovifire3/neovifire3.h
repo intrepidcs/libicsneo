@@ -123,6 +123,7 @@ protected:
 		return 2;
 	}
 
+	bool supportsNetworkMutex() const override { return true; }
 };
 
 }

@@ -50,6 +50,9 @@ struct HardwareCANPacket {
 		uint64_t : 3; // Reserved for future status bits
 		uint64_t IsExtended : 1;
 	} timestamp;
+	
+	uint16_t NetworkID;
+	uint16_t Length;
 };
 struct HardwareCANErrorPacket {
 	uint8_t error_code;

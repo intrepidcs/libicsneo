@@ -39,7 +39,7 @@ public:
 		return readAmount;
 	}
 
-	std::optional<uint64_t> writeLogicalDiskAligned(Communication&, device_eventhandler_t report, uint64_t pos,
+	std::optional<uint64_t> writeLogicalDiskAligned(Communication&, device_eventhandler_t /* report */, uint64_t pos,
 		const uint8_t* from, uint64_t amount, std::chrono::milliseconds, Disk::MemoryType) override {
 		writeCalls++;
 

@@ -57,7 +57,7 @@
 #include "icsneo/disk/vsa/vsaparser.h"
 #include "icsneo/communication/message/versionmessage.h"
 #include "icsneo/communication/message/gptpstatusmessage.h"
-
+#include "icsneo/communication/message/networkmutexmessage.h"
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
 	static constexpr DeviceType::Enum DEVICE_TYPE = type; \
@@ -856,6 +856,14 @@ public:
 	virtual bool writeMACsecConfig(const MACsecMessage& message, uint16_t binaryIndex);
 
 	std::shared_ptr<DeviceExtension> getExtension(const std::string& name) const;
+	
+	[[nodiscard]] std::optional<int> lockNetworks(const std::set<Network::NetID>& networks, uint32_t priority, uint32_t ttlMs, NetworkMutexType type, std::function<void(std::shared_ptr<Message>)>&& on_event);
+	[[nodiscard]] std::optional<int> lockAllNetworks(uint32_t priority, uint32_t ttlMs, NetworkMutexType type, std::function<void(std::shared_ptr<Message>)>&& on_event);
+	bool unlockNetworks(const std::set<Network::NetID>& networks);
+	bool unlockAllNetworks();
+	std::shared_ptr<NetworkMutexMessage> getNetworkMutexStatus(Network::NetID network);
+	
+	virtual bool supportsNetworkMutex() const { return false; }
 
 protected:
 	bool online = false;
@@ -969,6 +977,8 @@ protected:
 	};
 	LEDState ledState;
 	void updateLEDState();
+
+
 private:
 	neodevice_t data;
 	std::shared_ptr<ResetStatusMessage> latestResetStatus;
@@ -1127,6 +1137,11 @@ private:
 
 	// Keeponline (keepalive for online)
 	std::unique_ptr<Periodic> keeponline;
+
+	std::optional<uint32_t> assignedClientId;
+	std::set<icsneo::Network::NetID> lockedNetworks;
+	std::optional<int> networkMutexCallbackHandle;
+
 };
 
 }

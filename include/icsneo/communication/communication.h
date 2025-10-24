@@ -64,6 +64,8 @@ public:
 	std::optional< std::vector< std::optional<DeviceAppVersion> > > getVersionsSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	std::shared_ptr<LogicalDiskInfoMessage> getLogicalDiskInfoSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 	std::optional< std::vector<ComponentVersion> > getComponentVersionsSync(std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
+	std::optional<uint32_t> getClientIDSync();
+	
 
 	int addMessageCallback(const std::shared_ptr<MessageCallback>& cb);
 	bool removeMessageCallback(int id);

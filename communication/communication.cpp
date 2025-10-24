@@ -14,6 +14,12 @@
 #include "icsneo/communication/message/readsettingsmessage.h"
 #include "icsneo/communication/message/versionmessage.h"
 #include "icsneo/communication/message/componentversionsmessage.h"
+#include "icsneo/communication/message/filter/extendedresponsefilter.h"
+#include "icsneo/communication/message/clientidmessage.h"
+#include "icsneo/communication/icspb.h"
+
+#include <commands/generic/v1/client_id.pb.h>
+#include <commands/network/v1/mutex.pb.h>
 
 using namespace icsneo;
 
@@ -312,4 +318,33 @@ std::optional< std::vector<ComponentVersion> > Communication::getComponentVersio
 		return std::nullopt;
 
 	return std::make_optional< std::vector<ComponentVersion> >(std::move(ver->versions));
+}
+
+std::optional<uint32_t> Communication::getClientIDSync() {	
+	constexpr auto timeout = std::chrono::milliseconds(250);
+	commands::generic::v1::ClientId msg;
+	msg.Clear();
+
+	std::vector<uint8_t> payload = protoapi::getPayload(protoapi::Command::GET, msg);
+
+	std::shared_ptr<Message> response = waitForMessageSync(
+		[this, payload](){
+			return sendCommand(ExtendedCommand::ProtobufAPI, payload);
+		},
+		std::make_shared<MessageFilter>(Message::Type::ClientId),
+		timeout
+	);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	auto clientIdMessage = std::dynamic_pointer_cast<ClientIdMessage>(response);
+	if(!clientIdMessage) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	return clientIdMessage->clientId;
 }

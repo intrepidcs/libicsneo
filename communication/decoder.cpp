@@ -23,6 +23,8 @@
 #include "icsneo/communication/message/gptpstatusmessage.h"
 #include "icsneo/communication/message/apperrormessage.h"
 #include "icsneo/communication/message/ethernetstatusmessage.h"
+#include "icsneo/communication/message/networkmutexmessage.h"
+#include "icsneo/communication/message/clientidmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -44,6 +46,8 @@
 #include "icsneo/communication/packet/livedatapacket.h"
 #include "icsneo/communication/packet/hardwareinfopacket.h"
 #include "icsneo/communication/packet/spipacket.h"
+#include "icsneo/communication/icspb.h"
+
 
 #include <iostream>
 
@@ -337,6 +341,25 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						case ExtendedCommand::GetGPTPStatus: {
 							result = GPTPStatus::DecodeToMessage(packet->data, report);
 							return true;
+						}
+						case ExtendedCommand::ProtobufAPI: {
+							// get the proto id
+							std::vector<uint8_t> responseBody(
+								packet->data.begin() + sizeof(ExtendedResponseMessage::ResponseHeader),
+								packet->data.end()
+							);
+							protoapi::Id protoId = protoapi::getProtoId(responseBody.data(), responseBody.size());
+							switch(protoId) {
+								case protoapi::Id::NetworkMutex:
+									result = NetworkMutexMessage::DecodeToMessage(responseBody);
+									return true;
+								case protoapi::Id::ClientId:
+									result = ClientIdMessage::DecodeToMessage(responseBody);
+									return true;
+								default:
+									report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+									return false;
+							}
 						}
 						case ExtendedCommand::GetDiskDetails:
 						case ExtendedCommand::DiskFormatProgress: {

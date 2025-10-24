@@ -6,6 +6,8 @@
 #include "icsneo/device/extensions/deviceextension.h"
 #include "icsneo/disk/fat.h"
 #include "icsneo/communication/message/filter/extendedresponsefilter.h"
+#include "icsneo/communication/message/networkmutexmessage.h"
+#include "icsneo/communication/message/transmitmessage.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996) // STL time functions
@@ -457,6 +459,29 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		return getCommunicationNotEstablishedError();
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
+	assignedClientId = com->getClientIDSync();
+	networkMutexCallbackHandle = addMessageCallback(
+		std::make_shared<MessageCallback>(
+			[this](std::shared_ptr<Message> message) {
+				auto netMutexMsg = std::static_pointer_cast<NetworkMutexMessage>(message);
+				if(netMutexMsg->networks.size() && netMutexMsg->event.has_value()) {
+					switch(*netMutexMsg->event) {
+						case NetworkMutexEvent::Acquired:
+							lockedNetworks.emplace(*netMutexMsg->networks.begin());
+							break;
+						case NetworkMutexEvent::Released: {
+							auto it = lockedNetworks.find(*netMutexMsg->networks.begin());
+							if (it != lockedNetworks.end())
+								lockedNetworks.erase(it);
+							break;
+						}
+					}
+				}
+			},
+			std::make_shared<MessageFilter>(Message::Type::NetworkMutex)
+		)
+	);
+
 	auto serial = com->getSerialNumberSync();
 	int i = 0;
 	while(!serial) {
@@ -895,9 +920,12 @@ bool Device::transmit(std::shared_ptr<Frame> frame) {
 		return transmitStatusFromExtension;
 
 	std::vector<uint8_t> packet;
+	if(assignedClientId.has_value()) {
+		packet = TransmitMessage::EncodeFromMessage(frame, *assignedClientId, report);
+		return packet.size() && com->sendCommand(ExtendedCommand::TransmitMessage, packet);
+	}
 	if(!com->encoder->encode(*com->packetizer, packet, frame))
 		return false;
-
 	return com->sendPacket(packet);
 }
 
@@ -3857,3 +3885,209 @@ std::shared_ptr<DiskDetails> Device::getDiskDetails(std::chrono::milliseconds ti
 	return DiskDetails::Decode(extResponse->data, getDiskCount(), report);
 }
 
+[[nodiscard]] std::optional<int> Device::lockNetworks(const std::set<Network::NetID>& networks, uint32_t priority, uint32_t ttlMs, NetworkMutexType type, std::function<void(std::shared_ptr<Message>)>&& on_event)
+{
+	if(!supportsNetworkMutex()) {
+		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	if(!isOnline()) {
+		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	if(!assignedClientId.has_value()) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	constexpr auto timeout = std::chrono::milliseconds(250);
+
+	std::vector<uint8_t> payload = NetworkMutexMessage::EncodeArgumentsForLock(*assignedClientId, type, priority, ttlMs, networks, report);
+	
+	std::optional<int> handle = std::nullopt;
+	if(on_event) {
+		handle.emplace(addMessageCallback(
+			std::make_shared<MessageCallback>(
+				on_event,
+				std::make_shared<MessageFilter>(Message::Type::NetworkMutex)
+			)
+		));
+	}
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, payload](){
+			return com->sendCommand(ExtendedCommand::ProtobufAPI, payload);
+		},
+		std::make_shared<ExtendedResponseFilter>(ExtendedCommand::ProtobufAPI),
+		timeout
+	);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	auto extResponse = std::dynamic_pointer_cast<ExtendedResponseMessage>(response);
+	if(!extResponse) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(extResponse->response != ExtendedResponse::OK && extResponse->response != ExtendedResponse::OperationPending) {
+		return std::nullopt;
+	}
+
+	return handle;
+}
+
+bool Device::unlockNetworks(const std::set<Network::NetID>& networks)
+{
+	if(!supportsNetworkMutex()) {
+		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	if(!assignedClientId.has_value()) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return false;
+	}
+	constexpr auto timeout = std::chrono::milliseconds(250);
+
+	std::vector<uint8_t> payload = NetworkMutexMessage::EncodeArgumentsForUnlock(*assignedClientId, networks, report);
+
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, payload](){
+			return com->sendCommand(ExtendedCommand::ProtobufAPI, payload);
+		},
+		std::make_shared<ExtendedResponseFilter>(ExtendedCommand::ProtobufAPI),
+		timeout
+	);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto extResponse = std::dynamic_pointer_cast<ExtendedResponseMessage>(response);
+	if(!extResponse) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(extResponse->response != ExtendedResponse::OK) {
+		return false;
+	}
+
+	return true;
+}
+
+std::shared_ptr<NetworkMutexMessage> Device::getNetworkMutexStatus(Network::NetID network)
+{
+	if(!supportsNetworkMutex()) {
+		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	constexpr auto timeout = std::chrono::milliseconds(1000);
+
+	std::vector<uint8_t> payload = NetworkMutexMessage::EncodeArgumentsForStatus(network, report);
+	
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, payload](){
+			return com->sendCommand(ExtendedCommand::ProtobufAPI, payload);
+		},
+		std::make_shared<MessageFilter>(Message::Type::NetworkMutex),
+		timeout
+	);
+
+	return std::dynamic_pointer_cast<NetworkMutexMessage>(response);
+}
+
+[[nodiscard]] std::optional<int> Device::lockAllNetworks(uint32_t priority, uint32_t ttlMs, NetworkMutexType type, std::function<void(std::shared_ptr<Message>)>&& on_event)
+{
+	if(!supportsNetworkMutex()) {
+		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	if(!isOnline()) {
+		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	if(!assignedClientId.has_value()) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	constexpr auto timeout = std::chrono::milliseconds(1000);
+
+	std::vector<uint8_t> payload = NetworkMutexMessage::EncodeArgumentsForLockAll(*assignedClientId, type, priority, ttlMs, report);
+	
+	int handle = addMessageCallback(
+		std::make_shared<MessageCallback>(
+			on_event,
+			std::make_shared<MessageFilter>(Message::Type::NetworkMutex)
+		)
+	);
+	
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, payload](){
+			return com->sendCommand(ExtendedCommand::ProtobufAPI, payload);
+		},
+		std::make_shared<ExtendedResponseFilter>(ExtendedCommand::ProtobufAPI),
+		timeout
+	);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	auto extResponse = std::dynamic_pointer_cast<ExtendedResponseMessage>(response);
+	if(!extResponse) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+
+	if(extResponse->response != ExtendedResponse::OK && extResponse->response != ExtendedResponse::OperationPending) {
+		return std::nullopt;
+	}
+
+	return std::make_optional(handle);
+}
+
+bool Device::unlockAllNetworks() 
+{
+	if(!supportsNetworkMutex()) {
+		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	if(!assignedClientId.has_value()) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return false;
+	}
+	constexpr auto timeout = std::chrono::milliseconds(1000);
+
+	std::vector<uint8_t> payload = NetworkMutexMessage::EncodeArgumentsForUnlockAll(*assignedClientId, report);
+
+	std::shared_ptr<Message> response = com->waitForMessageSync(
+		[this, payload](){
+			return com->sendCommand(ExtendedCommand::ProtobufAPI, payload);
+		},
+		std::make_shared<ExtendedResponseFilter>(ExtendedCommand::ProtobufAPI),
+		timeout
+	);
+
+	if(!response) {
+		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	auto extResponse = std::dynamic_pointer_cast<ExtendedResponseMessage>(response);
+	if(!extResponse) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return false;
+	}
+
+	if(extResponse->response != ExtendedResponse::OK) {
+		return false;
+	}
+
+	return true;
+}

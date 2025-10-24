@@ -45,6 +45,8 @@ public:
 		GPTPStatus = 0x8013,
 		EthernetStatus = 0x8014,
 		LogData = 0x8015,
+		NetworkMutex = 0x8016,
+		ClientId = 0x8017,
 	};
 
 	Message(Type t) : type(t) {}

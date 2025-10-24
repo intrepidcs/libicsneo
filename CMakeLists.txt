@@ -27,9 +27,8 @@ option(LIBICSNEO_ENABLE_DXX "Enable devices which communicate over D2XX/D3XX via
 
 option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" OFF)
 
-if(NOT CMAKE_CXX_STANDARD)
-	set(CMAKE_CXX_STANDARD 17)
-endif()
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 
 include(GNUInstallDirs)
 
@@ -37,17 +36,13 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Enable Warnings
 if(MSVC)
-	# Force to always compile with W4
-	if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-		string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-	else()
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-	endif()
+	set(LIBICSNEO_COMPILER_WARNINGS /W4)
 	# http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0618r0.html
 	# Still supported until a suitable replacement is standardized
 	add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
+	add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
 else() #if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-switch -Wno-unknown-pragmas")
+	set(LIBICSNEO_COMPILER_WARNINGS -Wall -Wno-switch -Wno-unknown-pragmas)
 endif()
 
 find_package(Threads REQUIRED)
@@ -201,6 +196,9 @@ set(SRC_FILES
 	communication/message/gptpstatusmessage.cpp
 	communication/message/ethernetstatusmessage.cpp
 	communication/message/macsecmessage.cpp
+	communication/message/networkmutexmessage.cpp
+	communication/message/clientidmessage.cpp
+	communication/message/transmitmessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/a2bpacket.cpp
@@ -324,6 +322,7 @@ target_include_directories(icsneocpp
 target_link_libraries(icsneocpp PUBLIC Threads::Threads $<$<BOOL:${WIN32}>:ws2_32 iphlpapi>)
 set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+target_compile_options(icsneocpp PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
 message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
 target_link_libraries(icsneocpp PUBLIC ${LIBICSNEO_EXTENSION_TARGETS})
 if(LIBICSNEO_ENABLE_FIRMIO)
@@ -383,6 +382,21 @@ if(LIBICSNEO_ENABLE_RAW_ETHERNET)
 	endif(WIN32)
 endif(LIBICSNEO_ENABLE_RAW_ETHERNET)
 
+# protobuf
+if(DEFINED ENV{LIBICSNEO_ICSPB_REPO})
+	set(LIBICSNEO_ICSPB_REPO "$ENV{LIBICSNEO_ICSPB_REPO}")
+endif()
+if(NOT LIBICSNEO_ICSPB_REPO)
+	set(LIBICSNEO_ICSPB_REPO https://github.com/intrepidcs/icspb.git)
+endif()
+include(FetchContent)
+FetchContent_Declare(icspb
+	GIT_REPOSITORY ${LIBICSNEO_ICSPB_REPO}
+	GIT_TAG 2881dc4239319214dbf72fd3aa0427a4aefddd42
+)
+FetchContent_MakeAvailable(icspb)
+target_link_libraries(icsneocpp PRIVATE icspb::icspb)
+
 if(LIBICSNEO_BUILD_ICSNEOC)
 	add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
 	target_include_directories(icsneoc
@@ -394,6 +408,7 @@ if(LIBICSNEO_BUILD_ICSNEOC)
 	)
 	target_link_libraries(icsneoc PRIVATE icsneocpp)
 	target_compile_features(icsneoc PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	target_compile_options(icsneoc PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
 endif()
 
 if(LIBICSNEO_BUILD_ICSNEOC_STATIC)
@@ -408,6 +423,7 @@ if(LIBICSNEO_BUILD_ICSNEOC_STATIC)
 	target_link_libraries(icsneoc-static PUBLIC icsneocpp)
 	target_compile_features(icsneoc-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 	target_compile_definitions(icsneoc-static PUBLIC ICSNEOC_BUILD_STATIC)
+	target_compile_options(icsneoc-static PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
 endif()
 
 if(LIBICSNEO_BUILD_ICSNEOLEGACY)
@@ -426,6 +442,7 @@ if(LIBICSNEO_BUILD_ICSNEOLEGACY)
 	)
 	target_link_libraries(icsneolegacy PRIVATE icsneocpp)
 	target_compile_features(icsneolegacy PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	target_compile_options(icsneolegacy PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
 endif()
 
 if(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC)
@@ -445,6 +462,7 @@ if(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC)
 	target_link_libraries(icsneolegacy-static PUBLIC icsneocpp)
 	target_compile_features(icsneolegacy-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 	target_compile_definitions(icsneolegacy-static PUBLIC ICSNEOC_BUILD_STATIC)
+	target_compile_options(icsneolegacy-static PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
 endif()
 
 add_subdirectory(bindings)
@@ -474,6 +492,8 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/windowsstrings.cpp
 		test/unit/periodictest.cpp
 	)
+
+	target_compile_options(libicsneo-unit-tests PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
 
 	target_link_libraries(libicsneo-unit-tests gtest gtest_main)
 	target_link_libraries(libicsneo-unit-tests icsneocpp)

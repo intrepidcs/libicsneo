@@ -103,6 +103,8 @@ protected:
 	size_t getDiskCount() const override {
 		return 2;
 	}
+
+	bool supportsNetworkMutex() const override { return true; }
 };
 
 }
