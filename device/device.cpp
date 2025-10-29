@@ -459,29 +459,6 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 		return getCommunicationNotEstablishedError();
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-	assignedClientId = com->getClientIDSync();
-	networkMutexCallbackHandle = addMessageCallback(
-		std::make_shared<MessageCallback>(
-			[this](std::shared_ptr<Message> message) {
-				auto netMutexMsg = std::static_pointer_cast<NetworkMutexMessage>(message);
-				if(netMutexMsg->networks.size() && netMutexMsg->event.has_value()) {
-					switch(*netMutexMsg->event) {
-						case NetworkMutexEvent::Acquired:
-							lockedNetworks.emplace(*netMutexMsg->networks.begin());
-							break;
-						case NetworkMutexEvent::Released: {
-							auto it = lockedNetworks.find(*netMutexMsg->networks.begin());
-							if (it != lockedNetworks.end())
-								lockedNetworks.erase(it);
-							break;
-						}
-					}
-				}
-			},
-			std::make_shared<MessageFilter>(Message::Type::NetworkMutex)
-		)
-	);
-
 	auto serial = com->getSerialNumberSync();
 	int i = 0;
 	while(!serial) {
@@ -577,6 +554,28 @@ bool Device::goOnline() {
 			return false;
 	}
 
+	assignedClientId = com->getClientIDSync();
+	if(assignedClientId) {
+		// firmware supports clientid/mutex
+		networkMutexCallbackHandle = lockAllNetworks(std::numeric_limits<uint32_t>::max(), std::numeric_limits<uint32_t>::max(), NetworkMutexType::Shared, [this](std::shared_ptr<Message> message) {
+				auto netMutexMsg = std::static_pointer_cast<NetworkMutexMessage>(message);
+				if(netMutexMsg->networks.size() && netMutexMsg->event.has_value()) {
+					switch(*netMutexMsg->event) {
+						case NetworkMutexEvent::Acquired:
+							lockedNetworks.emplace(*netMutexMsg->networks.begin());
+							break;
+						case NetworkMutexEvent::Released: {
+							auto it = lockedNetworks.find(*netMutexMsg->networks.begin());
+							if (it != lockedNetworks.end())
+								lockedNetworks.erase(it);
+							break;
+						}
+					}
+				}
+			}
+		);
+	}
+
 	// (re)start the keeponline
 	keeponline = std::make_unique<Periodic>([this] { return enableNetworkCommunication(true, onlineTimeoutMs); }, std::chrono::milliseconds(onlineTimeoutMs / 4));
 
@@ -589,6 +588,9 @@ bool Device::goOnline() {
 
 bool Device::goOffline() {
 	keeponline.reset();
+
+	if(networkMutexCallbackHandle)
+		removeMessageCallback(*networkMutexCallbackHandle);
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOffline(); return true; });
 
@@ -3890,10 +3892,6 @@ std::shared_ptr<DiskDetails> Device::getDiskDetails(std::chrono::milliseconds ti
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
-	if(!isOnline()) {
-		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
-		return std::nullopt;
-	}
 	if(!assignedClientId.has_value()) {
 		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
 		return std::nullopt;
@@ -4004,10 +4002,6 @@ std::shared_ptr<NetworkMutexMessage> Device::getNetworkMutexStatus(Network::NetI
 {
 	if(!supportsNetworkMutex()) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
-		return std::nullopt;
-	}
-	if(!isOnline()) {
-		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
 	if(!assignedClientId.has_value()) {

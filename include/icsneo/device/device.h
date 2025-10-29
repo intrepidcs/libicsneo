@@ -13,6 +13,7 @@
 #include <optional>
 #include <unordered_map>
 #include <set>
+#include <unordered_set>
 #include <chrono>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/api/lifetime.h"
@@ -1139,9 +1140,8 @@ private:
 	std::unique_ptr<Periodic> keeponline;
 
 	std::optional<uint32_t> assignedClientId;
-	std::set<icsneo::Network::NetID> lockedNetworks;
+	std::unordered_set<icsneo::Network::NetID> lockedNetworks;
 	std::optional<int> networkMutexCallbackHandle;
-
 };
 
 }
