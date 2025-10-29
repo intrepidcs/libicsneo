@@ -3049,7 +3049,6 @@ std::optional<bool> Device::isVSAOverlapped(std::optional<VSAMetadata> optMetada
 			   lastSectorRecord->getTimestamp() > metadata.coreMiniTimestamp;
 	} else if(lastSectorStatus == VSAParser::RecordParseStatus::NotARecordStart) {
 		// The vsa record buffer is not full
-		report(APIEvent::Type::VSAOtherError, APIEvent::Severity::Error);
 		return false;
 	}
 	report(APIEvent::Type::VSABufferFormatError, APIEvent::Severity::Error);
