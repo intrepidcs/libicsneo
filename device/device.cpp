@@ -2001,6 +2001,15 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 		case Message::Type::RawMessage: {
 			auto rawMessage = std::static_pointer_cast<RawMessage>(message);
 			switch(rawMessage->network.getNetID()) {
+				case Network::NetID::Device: {
+					// Device is not guaranteed to be a CANMessage, it might be a RawMessage
+					// if it couldn't be decoded to a CANMessage. We only care about the
+					// CANMessage decoding right now.
+					auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
+					if(canmsg)
+						handleNeoVIMessage(std::move(canmsg));
+					break;
+				}
 				case Network::NetID::DeviceStatus:
 					// Device Status format is unique per device, so the devices need to decode it themselves
 					handleDeviceStatus(rawMessage);
@@ -2008,15 +2017,6 @@ void Device::handleInternalMessage(std::shared_ptr<Message> message) {
 				default:
 					break; //std::cout << "HandleInternalMessage got a message from " << message->network << " and it was unhandled!" << std::endl;
 			}
-			break;
-		}
-		case Message::Type::Frame: {
-			// Device is not guaranteed to be a CANMessage, it might be a RawMessage
-			// if it couldn't be decoded to a CANMessage. We only care about the
-			// CANMessage decoding right now.
-			auto canmsg = std::dynamic_pointer_cast<CANMessage>(message);
-			if(canmsg)
-				handleNeoVIMessage(std::move(canmsg));
 			break;
 		}
 		default: break;
