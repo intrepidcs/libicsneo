@@ -28,7 +28,8 @@ struct BootloaderPhase {
 		Finalize,
 		Reconnect,
 		EnterBootloader,
-		Wait
+		Wait,
+		EnterApplication
 	};
 
 	virtual Type getType() const = 0;
@@ -68,6 +69,16 @@ struct EnterBootloaderPhase : public BootloaderPhase {
 	Type getType() const override {
 		return Type::EnterBootloader;
 	}
+};
+
+struct EnterApplicationPhase : public BootloaderPhase {
+	Type getType() const override {
+		return Type::EnterApplication;
+	}
+
+	ChipID chip;
+
+	EnterApplicationPhase(ChipID chip) : chip(chip) {}
 };
 
 struct FlashPhase : public BootloaderPhase {

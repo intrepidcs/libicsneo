@@ -146,10 +146,23 @@ public:
 
 	BootloaderPipeline getBootloader() override {
 		auto chipVersions = getChipVersions();
+		auto mainChip = std::find_if(chipVersions.begin(), chipVersions.end(), [](const auto& chip) { return chip.name == "ZCHIP"; });
+		auto usbChip = std::find_if(chipVersions.begin(), chipVersions.end(), [](const auto& chip) { return chip.name == "USB ZCHIP"; });
+
+		ChipID mainChipID;
+		if(mainChip != chipVersions.end()) {
+			mainChipID = mainChip->id;
+		} else if(usbChip != chipVersions.end()) {
+			mainChipID = usbChip->id;
+		} else {
+			return {};
+		}
+
 		BootloaderPipeline pipeline;
 		for(const auto& version : chipVersions) {
 			pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip);
 		}
+		pipeline.add<EnterApplicationPhase>(mainChipID);
 		pipeline.add<ReconnectPhase>();
 		pipeline.add<WaitPhase>(std::chrono::milliseconds(3000));
 		return pipeline;
