@@ -554,26 +554,28 @@ bool Device::goOnline() {
 			return false;
 	}
 
-	assignedClientId = com->getClientIDSync();
-	if(assignedClientId) {
-		// firmware supports clientid/mutex
-		networkMutexCallbackHandle = lockAllNetworks(std::numeric_limits<uint32_t>::max(), std::numeric_limits<uint32_t>::max(), NetworkMutexType::Shared, [this](std::shared_ptr<Message> message) {
-				auto netMutexMsg = std::static_pointer_cast<NetworkMutexMessage>(message);
-				if(netMutexMsg->networks.size() && netMutexMsg->event.has_value()) {
-					switch(*netMutexMsg->event) {
-						case NetworkMutexEvent::Acquired:
-							lockedNetworks.emplace(*netMutexMsg->networks.begin());
-							break;
-						case NetworkMutexEvent::Released: {
-							auto it = lockedNetworks.find(*netMutexMsg->networks.begin());
-							if (it != lockedNetworks.end())
-								lockedNetworks.erase(it);
-							break;
+	if(supportsNetworkMutex()) {
+		assignedClientId = com->getClientIDSync();
+		if(assignedClientId) {
+			// firmware supports clientid/mutex
+			networkMutexCallbackHandle = lockAllNetworks(std::numeric_limits<uint32_t>::max(), std::numeric_limits<uint32_t>::max(), NetworkMutexType::Shared, [this](std::shared_ptr<Message> message) {
+					auto netMutexMsg = std::static_pointer_cast<NetworkMutexMessage>(message);
+					if(netMutexMsg->networks.size() && netMutexMsg->event.has_value()) {
+						switch(*netMutexMsg->event) {
+							case NetworkMutexEvent::Acquired:
+								lockedNetworks.emplace(*netMutexMsg->networks.begin());
+								break;
+							case NetworkMutexEvent::Released: {
+								auto it = lockedNetworks.find(*netMutexMsg->networks.begin());
+								if (it != lockedNetworks.end())
+									lockedNetworks.erase(it);
+								break;
+							}
 						}
 					}
 				}
-			}
-		);
+			);
+		}
 	}
 
 	// (re)start the keeponline
