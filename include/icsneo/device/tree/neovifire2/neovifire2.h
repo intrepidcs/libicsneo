@@ -11,6 +11,12 @@ namespace icsneo {
 
 class NeoVIFIRE2 : public Device {
 public:
+	enum class CoreChipVariant {
+		Core = 0,
+		Core_SG4 = 1,
+		Invalid = 2
+	};
+
 	// Serial numbers start with CY
 	// USB PID is 0x1000, standard driver is DXX
 	// Ethernet MAC allocation is 0x04, standard driver is Raw
@@ -91,22 +97,65 @@ public:
 		return ProductID::neoVIFIRE2;
 	}
 
+	CoreChipVariant getCoreChipVariant() {
+		const auto& hardwareInfo = getHardwareInfo(std::chrono::milliseconds(1000));
+		if(!hardwareInfo) {
+			chipVariant = CoreChipVariant::Invalid;
+			return chipVariant;
+		}
+		const auto& bootloaderVersion = hardwareInfo->bootloaderVersion;
+		if(bootloaderVersion.major >= CORE_SG4_BL_MAJOR_VERSION_CUTOFF) {
+			chipVariant = CoreChipVariant::Core_SG4;
+		} else {
+			chipVariant = CoreChipVariant::Core;
+		}
+		return chipVariant;
+	}
+
 	const std::vector<ChipInfo>& getChipInfo() const override {
 		static std::vector<ChipInfo> chips = {
 			{ChipID::neoVIFIRE2_MCHIP, true, "MCHIP", "fire2_mchip_ief", 0, FirmwareType::IEF},
 			{ChipID::neoVIFIRE2_ZYNQ, true, "ZCHIP", "fire2_zchip_ief", 1, FirmwareType::IEF},
 			{ChipID::neoVIFIRE2_Core, true, "Core", "fire2_core", 2, FirmwareType::IEF},
 		};
-		return chips;
+
+		static std::vector<ChipInfo> chipsSG4 = {
+			{ChipID::neoVIFIRE2_MCHIP, true, "MCHIP", "fire2_mchip_ief", 0, FirmwareType::IEF},
+			{ChipID::neoVIFIRE2_ZYNQ, true, "ZCHIP", "fire2_zchip_ief", 1, FirmwareType::IEF},
+			{ChipID::neoVIFIRE2_CORE_SG4, true, "Core", "fire2_core_sg4", 2, FirmwareType::IEF}
+		};
+		
+		if(chipVariant == CoreChipVariant::Core_SG4) {
+			return chipsSG4;
+		}
+
+		return chips; // Return the base chips even if the mode is invalid
 	}
 
 	BootloaderPipeline getBootloader() override {
-		return BootloaderPipeline()
-			.add<EnterBootloaderPhase>()
-			.add<FlashPhase>(ChipID::neoVIFIRE2_MCHIP, BootloaderCommunication::RED)
-			.add<FlashPhase>(ChipID::neoVIFIRE2_ZYNQ, BootloaderCommunication::RED, false, true)
-			.add<FlashPhase>(ChipID::neoVIFIRE2_Core, BootloaderCommunication::REDCore, false, false)
-			.add<ReconnectPhase>();
+		BootloaderPipeline pipeline;
+		pipeline.add<EnterBootloaderPhase>()
+				.add<FlashPhase>(ChipID::neoVIFIRE2_MCHIP, BootloaderCommunication::RED);
+		if(chipVariant == CoreChipVariant::Core_SG4) {
+			pipeline.add<FlashPhase>(ChipID::neoVIFIRE2_CORE_SG4, BootloaderCommunication::REDCore, false, false);
+		} else {
+			pipeline.add<FlashPhase>(ChipID::neoVIFIRE2_Core, BootloaderCommunication::REDCore, false, false);
+		}
+		pipeline.add<FlashPhase>(ChipID::neoVIFIRE2_ZYNQ, BootloaderCommunication::RED, false, false)
+				.add<EnterApplicationPhase>(ChipID::neoVIFIRE2_MCHIP)
+				.add<ReconnectPhase>();
+		return pipeline;
+	}
+
+	std::vector<VersionReport> getChipVersions(bool refreshComponents = true) override {
+		if(chipVariant == CoreChipVariant::Invalid) {
+			getCoreChipVariant();
+		}
+		
+		if(refreshComponents) {
+			refreshComponentVersions();
+		}
+		return Device::getChipVersions();
 	}
 	
 protected:
@@ -167,6 +216,10 @@ protected:
 	size_t getDiskCount() const override {
 		return 1;
 	}
+
+private:
+	CoreChipVariant chipVariant = CoreChipVariant::Invalid;
+	constexpr static uint8_t CORE_SG4_BL_MAJOR_VERSION_CUTOFF = 5;
 };
 
 }
