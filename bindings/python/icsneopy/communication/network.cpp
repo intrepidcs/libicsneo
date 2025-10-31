@@ -179,10 +179,11 @@ void init_network(pybind11::module_& m) {
 		.value("LSFTCAN", Network::Type::LSFTCAN)
 		.value("SWCAN", Network::Type::SWCAN)
 		.value("ISO9141", Network::Type::ISO9141)
-		.value("I2C_01", Network::Type::I2C)
+		.value("I2C", Network::Type::I2C)
 		.value("A2B", Network::Type::A2B)
 		.value("SPI", Network::Type::SPI)
 		.value("MDIO", Network::Type::MDIO)
+		.value("AutomotiveEthernet", Network::Type::AutomotiveEthernet)
 		.value("Any", Network::Type::Any)
 		.value("Other", Network::Type::Other);
 
