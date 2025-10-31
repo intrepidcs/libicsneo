@@ -243,30 +243,6 @@ unit_test linux/ubuntu/2404/amd64/clang:
     - linux-build
   timeout: 5m
 
-build linux/fedora/41/amd64/gcc:
-  <<: *build_linux_fedora_gcc
-  image: fedora:41
-
-unit_test linux/fedora/41/amd64/gcc:
-  <<: *test_linux_fedora_gcc
-  image: fedora:41
-  dependencies:
-    - build linux/fedora/41/amd64/gcc
-  needs:
-    - build linux/fedora/41/amd64/gcc
-
-build linux/fedora/41/amd64/clang:
-  <<: *build_linux_fedora_clang
-  image: fedora:41
-
-unit_test linux/fedora/41/amd64/clang:
-  <<: *test_linux_fedora_clang
-  image: fedora:41
-  dependencies:
-    - build linux/fedora/41/amd64/clang
-  needs:
-    - build linux/fedora/41/amd64/clang
-
 build linux/fedora/42/amd64/gcc:
   <<: *build_linux_fedora_gcc
   image: fedora:42
@@ -290,6 +266,30 @@ unit_test linux/fedora/42/amd64/clang:
     - build linux/fedora/42/amd64/clang
   needs:
     - build linux/fedora/42/amd64/clang
+
+build linux/fedora/43/amd64/gcc:
+  <<: *build_linux_fedora_gcc
+  image: fedora:43
+
+unit_test linux/fedora/43/amd64/gcc:
+  <<: *test_linux_fedora_gcc
+  image: fedora:43
+  dependencies:
+    - build linux/fedora/43/amd64/gcc
+  needs:
+    - build linux/fedora/43/amd64/gcc
+
+build linux/fedora/43/amd64/clang:
+  <<: *build_linux_fedora_clang
+  image: fedora:43
+
+unit_test linux/fedora/43/amd64/clang:
+  <<: *test_linux_fedora_clang
+  image: fedora:43
+  dependencies:
+    - build linux/fedora/43/amd64/clang
+  needs:
+    - build linux/fedora/43/amd64/clang
 
 #-------------------------------------------------------------------------------
 # Python Module
