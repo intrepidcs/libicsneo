@@ -13,7 +13,14 @@ enum LinkSpeed {
 	ethSpeed10000,
 };
 
-enum LinkMode {
+enum TLinkMode {
+	T_LINK_NONE,
+	T_LINK_MASTER,
+	T_LINK_SLAVE,
+	T_LINK_AUTO,
+};
+
+enum AELinkMode {
 	AE_LINK_AUTO,
 	AE_LINK_MASTER,
 	AE_LINK_SLAVE,
@@ -46,11 +53,25 @@ std::shared_ptr<Message> EthernetStatusMessage::DecodeToMessage(const std::vecto
 		default: return nullptr;
 	}
 	LinkMode mode;
-	switch(packet->mode) {
-		case AE_LINK_INVALID: mode = EthernetStatusMessage::LinkMode::LinkModeInvalid; break;
-		case AE_LINK_AUTO: mode = EthernetStatusMessage::LinkMode::LinkModeAuto; break;
-		case AE_LINK_MASTER: mode = EthernetStatusMessage::LinkMode::LinkModeMaster; break;
-		case AE_LINK_SLAVE: mode = EthernetStatusMessage::LinkMode::LinkModeSlave; break;
+	switch(Network(packet->network).getType()) {
+		case Network::Type::Ethernet:
+			switch(packet->mode) {
+				case T_LINK_NONE: mode = EthernetStatusMessage::LinkMode::LinkModeNone; break;
+				case T_LINK_MASTER: mode = EthernetStatusMessage::LinkMode::LinkModeMaster; break;
+				case T_LINK_SLAVE: mode = EthernetStatusMessage::LinkMode::LinkModeSlave; break;
+				case T_LINK_AUTO: mode = EthernetStatusMessage::LinkMode::LinkModeAuto; break;
+				default: return nullptr;
+			}
+			break;
+		case Network::Type::AutomotiveEthernet:
+			switch(packet->mode) {
+				case AE_LINK_AUTO: mode = EthernetStatusMessage::LinkMode::LinkModeAuto; break;
+				case AE_LINK_MASTER: mode = EthernetStatusMessage::LinkMode::LinkModeMaster; break;
+				case AE_LINK_SLAVE: mode = EthernetStatusMessage::LinkMode::LinkModeSlave; break;
+				case AE_LINK_INVALID: mode = EthernetStatusMessage::LinkMode::LinkModeInvalid; break;
+				default: return nullptr;
+			}
+			break;
 		default: return nullptr;
 	}
 	return std::make_shared<EthernetStatusMessage>(packet->network, packet->state, speed, packet->duplex, mode);

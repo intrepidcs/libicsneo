@@ -25,6 +25,7 @@ public:
 		LinkModeMaster,
 		LinkModeSlave,
 		LinkModeInvalid,
+		LinkModeNone,
 	};
 	EthernetStatusMessage(Network net, bool state, LinkSpeed speed, bool duplex, LinkMode mode) : Message(Type::EthernetStatus),
 		network(net), state(state), speed(speed), duplex(duplex), mode(mode) {}

@@ -22,7 +22,8 @@ void init_ethernetstatusmessage(pybind11::module_& m) {
 		.value("LinkModeAuto", EthernetStatusMessage::LinkMode::LinkModeAuto)
 		.value("LinkModeMaster", EthernetStatusMessage::LinkMode::LinkModeMaster)
 		.value("LinkModeSlave", EthernetStatusMessage::LinkMode::LinkModeSlave)
-		.value("LinkModeInvalid", EthernetStatusMessage::LinkMode::LinkModeInvalid);
+		.value("LinkModeInvalid", EthernetStatusMessage::LinkMode::LinkModeInvalid)
+		.value("LinkModeNone", EthernetStatusMessage::LinkMode::LinkModeNone);
 
 	ethernetStatusMessage
 		.def_readonly("network", &EthernetStatusMessage::network)
