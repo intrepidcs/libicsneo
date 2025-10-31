@@ -18,6 +18,7 @@ enum TLinkMode {
 	T_LINK_MASTER,
 	T_LINK_SLAVE,
 	T_LINK_AUTO,
+	T_LINK_INVALID = 255,
 };
 
 enum AELinkMode {
@@ -60,6 +61,7 @@ std::shared_ptr<Message> EthernetStatusMessage::DecodeToMessage(const std::vecto
 				case T_LINK_MASTER: mode = EthernetStatusMessage::LinkMode::LinkModeMaster; break;
 				case T_LINK_SLAVE: mode = EthernetStatusMessage::LinkMode::LinkModeSlave; break;
 				case T_LINK_AUTO: mode = EthernetStatusMessage::LinkMode::LinkModeAuto; break;
+				case T_LINK_INVALID: mode = EthernetStatusMessage::LinkMode::LinkModeInvalid; break;
 				default: return nullptr;
 			}
 			break;
