@@ -62,7 +62,8 @@ uint64_t Decoder::GetUInt64FromLEBytes(const uint8_t* bytes) {
 
 bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Packet>& packet) {
 	switch(packet->network.getType()) {
-		case Network::Type::Ethernet: {
+		case Network::Type::Ethernet:
+		case Network::Type::AutomotiveEthernet: {
 			result = HardwareEthernetPacket::DecodeToMessage(packet->data);
 			if(!result) {
 				report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);

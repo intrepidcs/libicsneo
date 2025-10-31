@@ -90,6 +90,7 @@ static bool NeoMessageToSpyMessage(const neodevice_t* device, const neomessage_t
 		copyFrameData();
 		break;
 	case Network::Type::Ethernet:
+	case Network::Type::AutomotiveEthernet:
 		oldmsg.Protocol = SPY_PROTOCOL_ETHERNET;
 		oldmsg.NumberBytesData = static_cast<uint8_t>(frame.length & 0xFF);
 		oldmsg.NumberBytesHeader = static_cast<uint8_t>(frame.length >> 8);

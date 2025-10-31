@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
 		const auto frame = std::static_pointer_cast<icsneo::Frame>(msg);
 		if(frame->network.getType() == icsneo::Network::Type::CAN) {
 			++canFrameCount;
-		} else if(frame->network.getType() == icsneo::Network::Type::Ethernet) {
+		} else if(frame->network.getType() == icsneo::Network::Type::AutomotiveEthernet || frame->network.getType() == icsneo::Network::Type::Ethernet) {
 			++ethFrameCount;
 		}
 	}));

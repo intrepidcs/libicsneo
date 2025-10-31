@@ -32,7 +32,8 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			netid = uint16_t(frame->network.getNetID());
 
 			switch(frame->network.getType()) {
-				case Network::Type::Ethernet: {
+				case Network::Type::Ethernet:
+				case Network::Type::AutomotiveEthernet: {
 					auto ethmsg = std::dynamic_pointer_cast<EthernetMessage>(message);
 					if(!ethmsg) {
 						report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);

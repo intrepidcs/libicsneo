@@ -53,7 +53,7 @@ std::shared_ptr<Message> EthernetStatusMessage::DecodeToMessage(const std::vecto
 		default: return nullptr;
 	}
 	LinkMode mode;
-	switch(Network(packet->network).getType()) {
+	switch(Network::GetTypeOfNetID((Network::NetID)packet->network, false)) {
 		case Network::Type::Ethernet:
 			switch(packet->mode) {
 				case T_LINK_NONE: mode = EthernetStatusMessage::LinkMode::LinkModeNone; break;

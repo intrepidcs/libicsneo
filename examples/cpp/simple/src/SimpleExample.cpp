@@ -199,7 +199,8 @@ int main() {
 							std::cout << std::dec << '(' << canMessage->timestamp << " ns since 1/1/2007)\n";
 							break;
 						}
-						case icsneo::Network::Type::Ethernet: {
+						case icsneo::Network::Type::Ethernet:
+						case icsneo::Network::Type::AutomotiveEthernet: {
 							auto ethMessage = std::static_pointer_cast<icsneo::EthernetMessage>(message);
 
 							std::cout << "\t\t" << ethMessage->network << " Frame - " << std::dec

@@ -44,7 +44,8 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 				can.status.canfdESI = canmsg->errorStateIndicator;
 				break;
 			}
-			case Network::Type::Ethernet: {
+			case Network::Type::Ethernet:
+			case Network::Type::AutomotiveEthernet: {
 				neomessage_eth_t& eth = *(neomessage_eth_t*)&neomsg;
 				auto ethmsg = std::static_pointer_cast<EthernetMessage>(message);
 				eth.preemptionFlags = ethmsg->preemptionFlags;
@@ -142,7 +143,8 @@ std::shared_ptr<Message> icsneo::CreateMessageFromNeoMessage(const neomessage_t*
 					canmsg->errorStateIndicator = can.status.canfdESI;
 					return canmsg;
 				}
-				case Network::Type::Ethernet: {
+				case Network::Type::Ethernet:
+				case Network::Type::AutomotiveEthernet: {
 					neomessage_eth_t& eth = *(neomessage_eth_t*)neomessage;
 					auto ethmsg = std::make_shared<EthernetMessage>();
 					ethmsg->network = network;

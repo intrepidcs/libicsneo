@@ -136,6 +136,7 @@ std::vector<uint8_t> TransmitMessage::EncodeFromMessage(std::shared_ptr<Frame> f
 	std::vector<uint8_t> result;
 	switch(frame->network.getType()) {
 		case Network::Type::Ethernet:
+		case Network::Type::AutomotiveEthernet:
 			result = EncodeFromMessageEthernet(frame, report);
 			break;
 		case Network::Type::CAN:
