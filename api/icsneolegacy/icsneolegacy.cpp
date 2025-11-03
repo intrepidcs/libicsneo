@@ -1076,6 +1076,9 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void* hObject, EPlasmaIonVnetCha
 	case NEODEVICE_RADMOON3:
 		*pDeviceSettingsType = DeviceRADMoon3SettingsType;
 		break;
+	case NEODEVICE_RADGEMINI:
+		*pDeviceSettingsType = DeviceRADGeminiSettingsType;
+		break;
 	case NEODEVICE_RED2:
 		*pDeviceSettingsType = DeviceRed2SettingsType;
 		break;

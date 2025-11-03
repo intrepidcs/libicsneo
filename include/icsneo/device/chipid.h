@@ -129,6 +129,7 @@ enum class ChipID : uint8_t {
 	RADCOMET3_ZCHIP = 125,
 	Connect_LINUX = 126,
 	RADGigastar2_ZYNQ = 131,
+	RADGemini_MCHIP = 135,
 	Invalid = 255
 };
 

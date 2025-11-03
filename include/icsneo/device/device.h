@@ -137,7 +137,8 @@ public:
 		Connect = 51,
 		RADComet3 = 54,
 		RADMoonT1S = 56,
-		RADGigastar2 = 57
+		RADGigastar2 = 57,
+		RADGemini = 60,
 	};
 
 	virtual ProductID getProductID() const = 0;

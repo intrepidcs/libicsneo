@@ -231,6 +231,7 @@ typedef unsigned __int64 uint64_t;
 #define NEODEVICE_GIGASTAR2 (0x00000029)
 #define NEODEVICE_FIRE3_T1S_LIN (0x0000002A)
 #define NEODEVICE_FIRE3_T1S_SENT (0x0000002B)
+#define NEODEVICE_RADGEMINI (0x0000002C)
 #define NEODEVICE_RED (0x00000040)
 #define NEODEVICE_ECU (0x00000080)
 #define NEODEVICE_IEVB (0x00000100)
@@ -1031,6 +1032,11 @@ typedef union _stChipVersions
 		uint8_t mchip_major;
 		uint8_t mchip_minor;
 	} radmoon3_versions;
+	struct
+	{
+		uint8_t mchip_major;
+		uint8_t mchip_minor;
+	} radgemini_versions;
 	struct
 	{
 		uint8_t mchip_major;
@@ -2842,6 +2848,31 @@ typedef struct _SRADMoon3Settings
 
 #define SRADMoon3Settings_SIZE 68
 
+typedef struct _SRADGeminiSettings
+{
+	uint16_t perf_en; // 2
+
+	ETHERNET_SETTINGS2 ethernet1; // 16
+	ETHERNET_SETTINGS2 ethernet2; // 16
+	ETHERNET_SETTINGS2 autoEthernet1; // 16
+	ETHERNET_SETTINGS2 autoEthernet2; // 16
+
+	uint16_t network_enabled_on_boot; // 2
+	uint16_t network_enables; // 2
+	uint16_t network_enables_2; // 2
+	uint16_t network_enables_3; // 2
+	uint16_t network_enables_4; // 2
+	uint64_t network_enables_5; // 8
+
+	struct
+	{
+		uint16_t enableLatencyTest : 1;
+		uint16_t reserved : 15;
+	} flags; // 2
+} SRADGeminiSettings;
+
+#define SRADGeminiSettings_SIZE 86
+
 typedef struct _SRADGigalogSettings
 {
 	uint32_t ecu_id;
@@ -4626,6 +4657,7 @@ typedef struct _GLOBAL_SETTINGS
 		SRADEpsilonSettings epsilon;
 		SRADBMSSettings rad_bms;
 		SRADMoon3Settings radmoon3;
+		SRADGeminiSettings radgemini;
 		SRADCometSettings radcomet;
 		// Make sure SDeviceSettings matches this
 	};
@@ -4676,6 +4708,11 @@ typedef enum _EDeviceSettingsType
 	DeviceFire3FlexraySettingsType,
 	DeviceRADCometSettingsType,
 	DeviceRed2OemSettingsType,
+	DeviceRADComet3SettingsType,
+	DeviceRADGalaxy2SettingsType,
+	DeviceRADGigastar2SettingsType,
+	DeviceRADMoonT1SSettingsType,
+	DeviceRADGeminiSettingsType,
 	// add new settings type here
 	DeviceSettingsTypeMax,
 	DeviceSettingsNone = 0xFFFFFFFF // just wanted to reserve this
@@ -4726,6 +4763,7 @@ typedef struct _SDeviceSettings
 		SRADEpsilonSettings epsilon;
 		SRADBMSSettings rad_bms;
 		SRADMoon3Settings radmoon3;
+		SRADGeminiSettings radgemini;
 		SFire3FlexraySettings fire3Flexray;
 		SRADCometSettings radcomet;
 		// Make sure GLOBAL_SETTINGS matches this
@@ -5558,6 +5596,7 @@ CHECK_STRUCT_SIZE(SRADEpsilonSettings);
 CHECK_STRUCT_SIZE(RAD_GPTP_SETTINGS);
 CHECK_STRUCT_SIZE(SRADBMSSettings);
 CHECK_STRUCT_SIZE(SRADMoon3Settings);
+CHECK_STRUCT_SIZE(SRADGeminiSettings);
 CHECK_STRUCT_SIZE(SFire3FlexraySettings);
 CHECK_STRUCT_SIZE(CANHubSettings);
 CHECK_STRUCT_SIZE(SRADCometSettings);

@@ -129,6 +129,7 @@ void init_chipid(pybind11::module_& m) {
 		.value("RADCOMET3_ZCHIP", ChipID::RADCOMET3_ZCHIP)
 		.value("Connect_LINUX", ChipID::Connect_LINUX)
 		.value("RADGigastar2_ZYNQ", ChipID::RADGigastar2_ZYNQ)
+		.value("RADGemini_MCHIP", ChipID::RADGemini_MCHIP)
 		.value("Invalid", ChipID::Invalid);
 }
 

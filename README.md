@@ -27,6 +27,7 @@ each of the respective APIs.
 - RAD-EpsilonXL
 - RAD-Galaxy
 - RAD-Galaxy 2
+- RAD-Gemini
 - RAD-Gigastar
 - RAD-Gigastar 2
 - RAD-Moon 2

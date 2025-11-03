@@ -225,6 +225,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<RADMoon3>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __RADGEMINI_H_
+		makeIfSerialMatches<RADGemini>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __RADMOONDUO_H_
 		makeIfSerialMatches<RADMoonDuo>(dev, newFoundDevices);
 		#endif
@@ -382,6 +386,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 
 		#ifdef __RADMOON3_H_
 		RADMoon3::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADGEMINI_H_
+		RADGemini::DEVICE_TYPE,
 		#endif
 
 		#ifdef __RADMOONDUO_H_
