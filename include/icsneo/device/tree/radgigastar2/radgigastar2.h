@@ -163,8 +163,8 @@ public:
 			pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip);
 		}
 		pipeline.add<EnterApplicationPhase>(mainChipID);
-		pipeline.add<ReconnectPhase>();
 		pipeline.add<WaitPhase>(std::chrono::milliseconds(3000));
+		pipeline.add<ReconnectPhase>();
 		return pipeline;
 	}
 

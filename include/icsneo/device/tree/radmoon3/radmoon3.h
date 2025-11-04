@@ -45,8 +45,9 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::RADMoon3_MCHIP, BootloaderCommunication::RED)
-			.add<ReconnectPhase>()
-			.add<WaitPhase>(std::chrono::milliseconds(3000));
+			.add<EnterApplicationPhase>(ChipID::RADMoon3_MCHIP)
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
+			.add<ReconnectPhase>();
 	}
 protected:
 	RADMoon3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {

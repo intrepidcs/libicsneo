@@ -31,11 +31,13 @@ public:
 		};
 		return chips;
 	}
-	
+
 	BootloaderPipeline getBootloader() override {
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::ValueCAN4_1_MCHIP, BootloaderCommunication::RED)
+			.add<EnterApplicationPhase>(ChipID::ValueCAN4_1_MCHIP)
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
 			.add<ReconnectPhase>();
 	}
 

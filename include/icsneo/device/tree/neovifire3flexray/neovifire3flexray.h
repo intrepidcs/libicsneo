@@ -80,6 +80,7 @@ public:
 			.add<FinalizePhase>(ChipID::neoVIFIRE3_LINUX, BootloaderCommunication::Application)
 			.add<FinalizePhase>(ChipID::VEM_02_FR_FCHIP, BootloaderCommunication::Application)
 			.add<FinalizePhase>(ChipID::VEM_02_FR_ZCHIP, BootloaderCommunication::Application)
+			.add<EnterApplicationPhase>(ChipID::neoVIFIRE3_ZCHIP)
 			.add<ReconnectPhase>()
 			.addSetting(BootloaderSetting::UpdateAll, true);
 	}

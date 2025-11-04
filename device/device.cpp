@@ -435,7 +435,13 @@ bool Device::reconnect(std::chrono::milliseconds timeout, std::chrono::milliseco
 					// Pause reads again
 					com->pauseReads();
 				}
-				return com->open();
+				if(com->open()) {
+					return true;
+				} else {
+					if(readsArePaused) {
+						com->resumeReads();
+					}
+				} 
 			}
 		}
 		std::this_thread::sleep_for(interval);

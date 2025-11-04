@@ -58,7 +58,7 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::RADA2B_ZCHIP, BootloaderCommunication::RAD)
-			.add<ReconnectPhase>()
+			// .add<ReconnectPhase>()
 			.add<WaitPhase>(std::chrono::milliseconds(3000));
 	}
 protected:

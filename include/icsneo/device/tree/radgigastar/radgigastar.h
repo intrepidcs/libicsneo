@@ -84,8 +84,8 @@ public:
 					pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip);
 				}
 				pipeline.add<EnterApplicationPhase>(mainChipID);
-				pipeline.add<ReconnectPhase>();
 				pipeline.add<WaitPhase>(std::chrono::milliseconds(3000));
+				pipeline.add<ReconnectPhase>();
 				return pipeline;
 			}
 		}
@@ -93,13 +93,13 @@ public:
 		if(com->driver->isEthernet()) {
 			return BootloaderPipeline()
 				.add<FlashPhase>(ChipID::RADGigastar_ZYNQ, BootloaderCommunication::RAD)
-				.add<ReconnectPhase>()
-				.add<WaitPhase>(std::chrono::milliseconds(3000));
+				.add<WaitPhase>(std::chrono::milliseconds(3000))
+				.add<ReconnectPhase>();
 		}
 		return BootloaderPipeline()
 			.add<FlashPhase>(ChipID::RADGigastar_USBZ_ZYNQ, BootloaderCommunication::RAD)
-			.add<ReconnectPhase>()
-			.add<WaitPhase>(std::chrono::milliseconds(3000));
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
+			.add<ReconnectPhase>();
 	}
 
 	std::vector<VersionReport> getChipVersions(bool refreshComponents = true) override {

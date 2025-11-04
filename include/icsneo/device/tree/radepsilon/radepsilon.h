@@ -40,6 +40,7 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::RADEpsilon_MCHIP, BootloaderCommunication::RED)
+			.add<EnterApplicationPhase>(ChipID::RADEpsilon_MCHIP)
 			.add<ReconnectPhase>();
 	}
 	bool supportsComponentVersions() const override { return true; }

@@ -61,8 +61,9 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::ValueCAN4_2_MCHIP, BootloaderCommunication::RED)
-			.add<ReconnectPhase>()
-			.add<WaitPhase>(std::chrono::milliseconds(3000));
+			.add<EnterApplicationPhase>(ChipID::ValueCAN4_2_MCHIP)
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
+			.add<ReconnectPhase>();
 	}
 
 protected:

@@ -52,6 +52,7 @@ public:
 			.add<FlashPhase>(ChipID::Connect_LINUX, BootloaderCommunication::Application, false, false, false)
 			.add<FinalizePhase>(ChipID::Connect_ZCHIP, BootloaderCommunication::Application)
 			.add<FinalizePhase>(ChipID::Connect_LINUX, BootloaderCommunication::Application)
+			.add<EnterApplicationPhase>(ChipID::Connect_ZCHIP)
 			.add<ReconnectPhase>()
 			.addSetting(BootloaderSetting::UpdateAll, true);
 	}

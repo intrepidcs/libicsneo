@@ -66,7 +66,7 @@ public:
 
 	const std::vector<ChipInfo>& getChipInfo() const override {
 		static std::vector<ChipInfo> chips = {
-			{ChipID::ValueCAN4_2EL_MCHIP, true, "MCHIP", "vcan44_mchip_ief", 0, FirmwareType::IEF}
+			{ChipID::ValueCAN4_2EL_MCHIP, true, "MCHIP", "vcan44_mchip_ief", 0, FirmwareType::IEF},
 		};
 		return chips;
 	}
@@ -75,6 +75,8 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::ValueCAN4_2EL_MCHIP, BootloaderCommunication::RED)
+			.add<EnterApplicationPhase>(ChipID::ValueCAN4_2EL_MCHIP)
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
 			.add<ReconnectPhase>();
 	}
 

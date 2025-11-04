@@ -33,8 +33,9 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::RADMoon2_ZYNQ, BootloaderCommunication::RAD)
-			.add<ReconnectPhase>()
-			.add<WaitPhase>(std::chrono::milliseconds(3000));
+			.add<EnterApplicationPhase>(ChipID::RADMoon2_ZYNQ)
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
+			.add<ReconnectPhase>();
 	}
 protected:
 	RADMoon2(neodevice_t neodevice, const driver_factory_t& makeDriver) : RADMoon2Base(neodevice) {

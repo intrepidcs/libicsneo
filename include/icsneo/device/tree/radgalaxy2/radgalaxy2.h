@@ -85,6 +85,7 @@ public:
 			.add<FlashPhase>(ChipID::RAD_GALAXY_2_ZMPCHIP_ID, BootloaderCommunication::RAD)
 			.add<ReconnectPhase>()
 			.add<FlashPhase>(ChipID::RADGALAXY2_SYSMON_CHIP, BootloaderCommunication::RADGalaxy2Peripheral)
+			.add<EnterApplicationPhase>(ChipID::RAD_GALAXY_2_ZMPCHIP_ID)
 			.add<ReconnectPhase>()
 			.add<WaitPhase>(std::chrono::milliseconds(3000));
 	}

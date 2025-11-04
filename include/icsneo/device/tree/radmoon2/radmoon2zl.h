@@ -33,6 +33,8 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::RADMoon2_ZL_MCHIP, BootloaderCommunication::RED)
+			.add<EnterApplicationPhase>(ChipID::RADMoon2_ZL_MCHIP)
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
 			.add<ReconnectPhase>();
 	}
 protected:
