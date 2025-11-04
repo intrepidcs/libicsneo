@@ -8,6 +8,7 @@ namespace icsneo {
 enum class Command : uint8_t {
 	EnableNetworkCommunication = 0x07,
 	EnableNetworkCommunicationEx = 0x08,
+	KeepAlive = 0x09,
 	NeoReadMemory = 0x40,
 	NeoWriteMemory = 0x41,
 	ClearCoreMini = 0x42,

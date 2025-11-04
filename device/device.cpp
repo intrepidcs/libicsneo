@@ -585,7 +585,10 @@ bool Device::goOnline() {
 	}
 
 	// (re)start the keeponline
-	keeponline = std::make_unique<Periodic>([this] { return enableNetworkCommunication(true, onlineTimeoutMs); }, std::chrono::milliseconds(onlineTimeoutMs / 4));
+	keeponline = std::make_unique<Periodic>([this] {
+		static std::vector<uint8_t> timeoutBytes = std::vector<uint8_t>((uint8_t*)&onlineTimeoutMs, (uint8_t*)&onlineTimeoutMs + sizeof(onlineTimeoutMs));
+		return com->sendCommand(Command::KeepAlive, timeoutBytes);
+	}, std::chrono::milliseconds(onlineTimeoutMs / 4));
 
 	online = true;
 

@@ -284,6 +284,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			case Command::RequestSerialNumber:
 			case Command::EnableNetworkCommunication:
 			case Command::EnableNetworkCommunicationEx:
+			case Command::KeepAlive:
 			case Command::GetMainVersion:
 			case Command::GetSecondaryVersions:
 			case Command::NeoReadMemory:
