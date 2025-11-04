@@ -2090,10 +2090,6 @@ std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message,
 		report(APIEvent::Type::EthPhyRegisterControlNotAvailable, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
-	if(!isOnline()) {
-		report(APIEvent::Type::DeviceCurrentlyOffline, APIEvent::Severity::Error);
-		return std::nullopt;
-	}
 
 	std::vector<uint8_t> bytes;
 	HardwareEthernetPhyRegisterPacket::EncodeFromMessage(message, bytes, report);
