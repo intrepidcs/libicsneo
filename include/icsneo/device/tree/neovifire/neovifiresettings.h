@@ -95,6 +95,8 @@ typedef struct {
 
 #ifdef __cplusplus
 
+static_assert(sizeof(neovifire_settings_t) == 744, "NeoVIFire settings size mismatch");
+
 #include <iostream>
 
 class NeoVIFIRESettings : public IDeviceSettings {

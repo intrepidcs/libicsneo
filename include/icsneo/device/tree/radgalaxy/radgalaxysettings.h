@@ -92,6 +92,7 @@ typedef struct {
 	uint16_t network_enables_4;
 	
 	RAD_GPTP_SETTINGS gPTP;
+	uint64_t network_enables_5;
 } radgalaxy_settings_t;
 
 typedef struct {
@@ -101,6 +102,8 @@ typedef struct {
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+static_assert(sizeof(radgalaxy_settings_t) == 776, "RADGalaxy settings size mismatch");
 
 #include <iostream>
 

@@ -56,10 +56,14 @@ typedef struct {
 		uint32_t enablePcEthernetComm : 1;
 		uint32_t reserved : 29;
 	} flags;//4
+
+	ETHERNET_SETTINGS2 ethernet2; //16
 } etherbadge_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+static_assert(sizeof(etherbadge_settings_t) == 316, "EtherBadge settings size mismatch");
 
 #include <iostream>
 

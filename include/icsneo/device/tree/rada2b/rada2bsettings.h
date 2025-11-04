@@ -59,12 +59,14 @@ typedef struct {
 	ETHERNET_SETTINGS2 ethernet;
 	RAD_GPTP_SETTINGS gPTP;
 	uint64_t network_enables_5;
+	CMP_GLOBAL_DATA cmp_global_data;
+	CMP_NETWORK_DATA cmp_stream_data[CMP_STREAMS_A2B];
 } rada2b_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-static_assert(sizeof(rada2b_settings_t) == 340, "RAD-A2B settings size mismatch");
+static_assert(sizeof(rada2b_settings_t) == 416, "RAD-A2B settings size mismatch");
 
 #include <iostream>
 

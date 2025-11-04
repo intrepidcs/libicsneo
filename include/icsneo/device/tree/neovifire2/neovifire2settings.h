@@ -105,6 +105,7 @@ typedef struct {
 	uint16_t digitalIoThresholdEnable;
 	TIMESYNC_ICSHARDWARE_SETTINGS timeSync;
 	DISK_SETTINGS disk;
+	ETHERNET_SETTINGS2 ethernet2; // supercedes ethernet settings
 } neovifire2_settings_t;
 
 typedef struct {
@@ -117,6 +118,8 @@ typedef struct {
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+static_assert(sizeof(neovifire2_settings_t) == 936, "NeoVIFire2 settings size mismatch");
 
 #include <iostream>
 

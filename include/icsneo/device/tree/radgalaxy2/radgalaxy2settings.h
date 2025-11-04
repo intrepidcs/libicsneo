@@ -103,6 +103,11 @@ typedef struct {
 	uint64_t network_enables_5;
 
 	LIN_SETTINGS lin2;
+
+	uint16_t iso_9141_kwp_enable_reserved_2;
+	ISO9141_KEYWORD2000_SETTINGS iso9141_kwp_settings_2;
+	uint16_t iso_parity_2;
+	uint16_t iso_msg_termination_2;
 } radgalaxy2_settings_t;
 
 typedef struct {
@@ -113,6 +118,8 @@ typedef struct {
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+static_assert(sizeof(radgalaxy2_settings_t) == 960, "RADGalaxy2 settings size mismatch");
 
 #include <iostream>
 

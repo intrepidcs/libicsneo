@@ -127,18 +127,29 @@ namespace icsneo
 		ETHERNET_SETTINGS2 ethT1s8;
 		ETHERNET10T1S_SETTINGS t1s8;
 		ETHERNET10T1S_SETTINGS_EXT t1s8Ext;
+
+		// SFP T1S
+		ETHERNET10T1S_SETTINGS sfp_t1s_1;
+		ETHERNET10T1S_SETTINGS_EXT sfp_t1s_ext_1;
+		ETHERNET10T1S_SETTINGS sfp_t1s_2;
+		ETHERNET10T1S_SETTINGS_EXT sfp_t1s_ext_2;
+
 		LIN_SETTINGS lin11;
 		LIN_SETTINGS lin12;
 		LIN_SETTINGS lin13;
 		LIN_SETTINGS lin14;
 		LIN_SETTINGS lin15;
 		LIN_SETTINGS lin16;
+
+		// SFP T1L
+		ETHERNET10T1L_SETTINGS sfp_t1l_1;
+		ETHERNET10T1L_SETTINGS sfp_t1l_2;
 	} radgigastar2_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-	static_assert(sizeof(radgigastar2_settings_t) == 2084, "RADGigastar2 settings size mismatch");
+	static_assert(sizeof(radgigastar2_settings_t) == 2156, "RADGigastar2 settings size mismatch");
 
 #include <iostream>
 

@@ -60,10 +60,16 @@ typedef struct {
 	TIMESYNC_ICSHARDWARE_SETTINGS timeSyncSettings;
 	uint16_t hwComLatencyTestEn;
 	RAD_REPORTING_SETTINGS reporting;
+	ETHERNET_SETTINGS2 ethernet;
+
+	RAD_GPTP_SETTINGS gPTP;
+	uint64_t network_enables_5;
 } radstar2_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+static_assert(sizeof(radstar2_settings_t) == 422, "RADStar2 settings size mismatch");
 
 #include <iostream>
 

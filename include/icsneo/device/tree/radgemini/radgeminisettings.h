@@ -36,6 +36,8 @@ typedef struct {
 
 #ifdef __cplusplus
 
+static_assert(sizeof(radgemini_settings_t) == 86, "RADGemini settings size mismatch");
+
 #include <iostream>
 
 class RADGeminiSettings : public IDeviceSettings {

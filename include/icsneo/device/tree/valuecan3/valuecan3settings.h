@@ -31,6 +31,8 @@ typedef struct {
 
 #ifdef __cplusplus
 
+static_assert(sizeof(valuecan3_settings_t) == 40, "ValueCAN3 settings size mismatch");
+
 #include <iostream>
 
 class ValueCAN3Settings : public IDeviceSettings {

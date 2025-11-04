@@ -51,8 +51,6 @@ typedef struct {
 	uint16_t iso_msg_termination_2;
 	ETHERNET_SETTINGS ethernet_1;
 	ETHERNET_SETTINGS2 ethernet2_1;
-	ETHERNET_SETTINGS ethernet_2;
-	ETHERNET_SETTINGS2 ethernet2_2;
 	STextAPISettings text_api;
 	DISK_SETTINGS disk;
 	uint16_t misc_io_report_period;
@@ -83,6 +81,8 @@ typedef struct {
 #endif
 
 #ifdef __cplusplus
+
+static_assert(sizeof(neoviconnect_settings_t) == 628, "NeoVIConnect settings size mismatch");
 
 #include <iostream>
 

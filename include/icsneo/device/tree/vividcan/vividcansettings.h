@@ -42,6 +42,8 @@ typedef struct {
 
 #ifdef __cplusplus
 
+static_assert(sizeof(vividcan_settings_t) == 64, "VividCAN settings size mismatch");
+
 #include <iostream>
 
 class VividCANSettings : public IDeviceSettings {

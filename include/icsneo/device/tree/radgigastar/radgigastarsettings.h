@@ -84,12 +84,24 @@ typedef struct {
 
 	RAD_GPTP_SETTINGS gPTP;
 	uint64_t network_enables_5;
+
+	// SFP T1S
+	ETHERNET10T1S_SETTINGS sfp_t1s_1;
+	ETHERNET10T1S_SETTINGS_EXT sfp_t1s_ext_1;
+	ETHERNET10T1S_SETTINGS sfp_t1s_2;
+	ETHERNET10T1S_SETTINGS_EXT sfp_t1s_ext_2;
+
+	CMP_GLOBAL_DATA cmp_global_data;
+	CMP_NETWORK_DATA cmp_stream_data[CMP_STREAMS_GIGASTAR];
+	// SFP T1L
+	ETHERNET10T1L_SETTINGS sfp_t1l_1;
+	ETHERNET10T1L_SETTINGS sfp_t1l_2;
 } radgigastar_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-static_assert(sizeof(radgigastar_settings_t) == 710, "RADGigastar settings size mismatch");
+static_assert(sizeof(radgigastar_settings_t) == 1026, "RADGigastar settings size mismatch");
 
 #include <iostream>
 

@@ -80,6 +80,8 @@ typedef struct {
 
 #ifdef __cplusplus
 
+static_assert(sizeof(radepsilon_settings_t) == 400, "RADEpsilon settings size mismatch");
+
 #include <iostream>
 
 class RADEpsilonSettings : public IDeviceSettings {

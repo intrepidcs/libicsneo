@@ -32,10 +32,15 @@ typedef struct {
 	// 10T1S
 	ETHERNET_SETTINGS2 ethT1s;
 	ETHERNET10T1S_SETTINGS t1s;
+	// 10T1S Extended Settings
+	ETHERNET10T1S_SETTINGS_EXT t1sExt;
+	RAD_GPTP_SETTINGS gPTP;
 } radmoont1s_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
+
+static_assert(sizeof(radmoont1s_settings_t) == 160, "RADMoonT1S settings size mismatch");
 
 #include <iostream>
 

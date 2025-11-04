@@ -33,6 +33,8 @@ typedef struct {
 
 #ifdef __cplusplus
 
+static_assert(sizeof(radmoon3_settings_t) == 68, "RADMoon3 settings size mismatch");
+
 #include <iostream>
 
 class RADMoon3Settings : public IDeviceSettings {
