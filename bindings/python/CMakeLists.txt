@@ -32,11 +32,11 @@ pybind11_add_module(icsneopy
     icsneopy/communication/message/gptpstatusmessage.cpp
     icsneopy/communication/message/ethernetstatusmessage.cpp
     icsneopy/communication/message/spimessage.cpp
-    icsneopy/communication/message/macsecmessage.cpp
     icsneopy/communication/message/scriptstatusmessage.cpp
     icsneopy/communication/message/ethphymessage.cpp
     icsneopy/communication/message/callback/messagecallback.cpp
     icsneopy/communication/message/filter/messagefilter.cpp
+    icsneopy/core/macseccfg.cpp
     icsneopy/flexray/flexray.cpp
     icsneopy/disk/diskdriver.cpp
     icsneopy/device/chipid.cpp

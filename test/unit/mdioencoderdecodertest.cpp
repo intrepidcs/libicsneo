@@ -3,7 +3,7 @@
 #include "icsneo/communication/packet/mdiopacket.h"
 #include "icsneo/communication/message/mdiomessage.h"
 #include "icsneo/communication/packetizer.h"
-#include "icsneo/communication/ringbuffer.h"
+#include "icsneo/core/ringbuffer.h"
 #include "icsneo/api/eventmanager.h"
 #include "gtest/gtest.h"
 #include <vector>

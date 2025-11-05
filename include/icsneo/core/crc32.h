@@ -5,13 +5,12 @@
  *      Author: BJones
  */
 
-#pragma once
-
-#ifndef CRC32_H_
-#define CRC32_H_
+#ifndef __CRC32_H_
+#define __CRC32_H_
 
 #include <stdint.h>
 
+namespace icsneo {
 /*
  * When any data/buffer is run through calCRC(), then the resulting CRC value
  *  is appended to the end of the data/buffer and the data/buffer is rerun
@@ -23,5 +22,7 @@
 
 uint32_t crc32(uint32_t crc, const unsigned char* buf, uint32_t len);
 uint32_t revcrc32(uint32_t crc, const unsigned char* buf, uint32_t len);
+
+}
 
 #endif // CRC32_H_

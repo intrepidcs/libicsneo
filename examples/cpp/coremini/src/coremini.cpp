@@ -44,12 +44,6 @@ int main(int argc, char** argv) {
 		return EXIT_FAILURE;
 	}
 
-	if(!device->goOnline()) {
-		std::cout << "Failed to go online." << std::endl;
-		std::cout << icsneo::GetLastError() << std::endl;
-		return EXIT_FAILURE;
-	}
-
 	std::string memTypeString = arguments[3];
 
 	icsneo::Disk::MemoryType type;
@@ -75,7 +69,6 @@ int main(int argc, char** argv) {
 		std::cout << icsneo::GetLastError() << std::endl;
 	}
 
-	device->goOffline();
 	device->close();
 	return 0;
 }

@@ -195,7 +195,6 @@ set(SRC_FILES
 	communication/message/tc10statusmessage.cpp
 	communication/message/gptpstatusmessage.cpp
 	communication/message/ethernetstatusmessage.cpp
-	communication/message/macsecmessage.cpp
 	communication/message/networkmutexmessage.cpp
 	communication/message/clientidmessage.cpp
 	communication/message/transmitmessage.cpp
@@ -226,8 +225,9 @@ set(SRC_FILES
 	communication/communication.cpp
 	communication/driver.cpp
 	communication/livedata.cpp
-	communication/ringbuffer.cpp
-	communication/crc32.cpp
+	core/ringbuffer.cpp
+	core/crc32.cpp
+	core/macseccfg.cpp
 	device/extensions/flexray/extension.cpp
 	device/extensions/flexray/controller.cpp
 	device/idevicesettings.cpp

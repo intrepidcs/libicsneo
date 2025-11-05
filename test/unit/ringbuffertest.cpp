@@ -1,4 +1,4 @@
-#include "icsneo/communication/ringbuffer.h"
+#include "icsneo/core/ringbuffer.h"
 #include "gtest/gtest.h"
 
 using namespace icsneo;

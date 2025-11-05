@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 
 #include "icsneo/communication/packet.h"
-#include "icsneo/communication/ringbuffer.h"
+#include "icsneo/core/ringbuffer.h"
 #include "icsneo/api/eventmanager.h"
 #include <queue>
 #include <vector>

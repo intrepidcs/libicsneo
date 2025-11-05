@@ -3745,13 +3745,19 @@ std::optional<GPTPStatus> Device::getGPTPStatus(std::chrono::milliseconds timeou
 	return *retMsg;
 }
 
-bool Device::writeMACsecConfig(const MACsecMessage& message, uint16_t binaryIndex)
-{
-	std::vector<uint8_t> raw;
+bool Device::writeMACsecConfig(const MACsecConfig& cfg) {
+	if(!cfg) {
+		report(APIEvent::Type::MACsecNotSupported, APIEvent::Severity::Error);
+		return false;
+	}
 
-	message.EncodeFromMessage(raw, report);
+	if(getType() != cfg.getType()) {
+		report(APIEvent::Type::MACsecConfigMismatch, APIEvent::Severity::Error);
+		return false;
+	}
 
-	return writeBinaryFile(raw, binaryIndex);
+	std::vector<uint8_t> raw = cfg.serialize();
+	return writeBinaryFile(raw, cfg.getBinIndex());
 }
 
 bool Device::enableNetworkCommunication(bool enable, uint32_t timeout) {

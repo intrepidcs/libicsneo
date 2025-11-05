@@ -10,7 +10,7 @@
 #include "icsneo/communication/ethernetpacketizer.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/decoder.h"
-#include "icsneo/communication/ringbuffer.h"
+#include "icsneo/core/ringbuffer.h"
 #include <pcap.h>
 #include <iphlpapi.h>
 #pragma comment(lib, "IPHLPAPI.lib")

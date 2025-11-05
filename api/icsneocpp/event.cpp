@@ -156,6 +156,16 @@ static constexpr const char* VSA_BYTE_PARSE_FAILURE = "Failure to parse record b
 static constexpr const char* VSA_EXTENDED_MESSAGE_ERROR = "Failure to parse extended message record sequence";
 static constexpr const char* VSA_OTHER_ERROR = "Unknown error in VSA read API.";
 
+// MACSEC
+static constexpr const char* MACSEC_SECY_LIMIT = "Attempted to exceed the limit of SecY additions to this port";
+static constexpr const char* MACSEC_RULE_LIMIT = "Attempted to exceed the limit of rule additions to this port";
+static constexpr const char* MACSEC_SA_LIMIT = "Attempted to exceed the limit of SA additions to this port";
+static constexpr const char* MACSEC_INVALID_SECY_INDEX = "Attempted to access an invalid SecY index";
+static constexpr const char* MACSEC_INVALID_SA_INDEX = "Attempted to access an invalid SA index";
+static constexpr const char* MACSEC_INVALID_RULE_INDEX = "Attempted to access an invalid rule index";
+static constexpr const char* MACSEC_REKEY_NOT_ENABLED = "Attempted to set rekey SA when rekey was not enabled";
+static constexpr const char* MACSEC_NOT_SUPPORTED = "MACsec is not supported on this device";
+static constexpr const char* MACSEC_CONFIG_MISMATCH = "Attempted to configure device with a macsec configuration for a different device";
 // Servd
 static constexpr const char* SERVD_BIND_ERROR = "Error binding socket for Servd communication";
 static constexpr const char* SERVD_NONBLOCK_ERROR = "Error setting non-blocking mode for Servd socket";
@@ -371,6 +381,25 @@ const char* APIEvent::DescriptionForType(Type type) {
 		case Type::VSAOtherError:
 			return VSA_OTHER_ERROR;
 
+		// MACSEC
+		case Type::MACsecSecYLimit:
+			return MACSEC_SECY_LIMIT;
+		case Type::MACsecSaLimit:
+			return MACSEC_SA_LIMIT;
+		case Type::MACsecRuleLimit:
+			return MACSEC_RULE_LIMIT;
+		case Type::MACsecInvalidSecYIndex:
+			return MACSEC_INVALID_SECY_INDEX;
+		case Type::MACsecInvalidSaIndex:
+			return MACSEC_INVALID_SA_INDEX;
+		case Type::MACsecInvalidRuleIndex:
+			return MACSEC_INVALID_RULE_INDEX;
+		case Type::MACsecRekeyNotEnabled:
+			return MACSEC_REKEY_NOT_ENABLED;
+		case Type::MACsecNotSupported:
+			return MACSEC_NOT_SUPPORTED;
+		case Type::MACsecConfigMismatch:
+			return MACSEC_CONFIG_MISMATCH;
 		// Servd
 		case Type::ServdBindError:
 			return SERVD_BIND_ERROR;

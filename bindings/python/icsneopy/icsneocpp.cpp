@@ -22,7 +22,7 @@ void init_gptpstatusmessage(pybind11::module_&);
 void init_mdiomessage(pybind11::module_&);
 void init_spimessage(pybind11::module_&);
 void init_ethernetstatusmessage(pybind11::module_&);
-void init_macsecmessage(pybind11::module_&);
+void init_macsecconfig(pybind11::module_&);
 void init_scriptstatusmessage(pybind11::module_&);
 void init_diskdriver(pybind11::module_&);
 void init_deviceextension(pybind11::module_&);
@@ -57,7 +57,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_gptpstatusmessage(m);
 	init_mdiomessage(m);
 	init_ethernetstatusmessage(m);
-	init_macsecmessage(m);
+	init_macsecconfig(m);
 	init_scriptstatusmessage(m);
 	init_spimessage(m);
 	init_messagefilter(m);

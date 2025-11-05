@@ -11,7 +11,7 @@
 #include <condition_variable>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/third-party/concurrentqueue/blockingconcurrentqueue.h"
-#include "icsneo/communication/ringbuffer.h"
+#include "icsneo/core/ringbuffer.h"
 #include "icsneo/device/founddevice.h"
 
 namespace icsneo {

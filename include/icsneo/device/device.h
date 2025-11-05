@@ -46,7 +46,7 @@
 #include "icsneo/communication/message/extendeddatamessage.h"
 #include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/message/tc10statusmessage.h"
-#include "icsneo/communication/message/macsecmessage.h"
+#include "icsneo/core/macseccfg.h"
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
 #include "icsneo/communication/packet/livedatapacket.h"
 #include "icsneo/device/extensions/flexray/controller.h"
@@ -855,7 +855,7 @@ public:
 	std::optional<GPTPStatus> getGPTPStatus(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
 
 	/* MACsec support */
-	virtual bool writeMACsecConfig(const MACsecMessage& message, uint16_t binaryIndex);
+	virtual bool writeMACsecConfig(const MACsecConfig& cfg);
 
 	std::shared_ptr<DeviceExtension> getExtension(const std::string& name) const;
 	

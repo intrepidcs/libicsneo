@@ -3,7 +3,7 @@
 #include "icsneo/communication/packet/a2bpacket.h"
 #include "icsneo/communication/message/a2bmessage.h"
 #include "icsneo/communication/packetizer.h"
-#include "icsneo/communication/ringbuffer.h"
+#include "icsneo/core/ringbuffer.h"
 #include "icsneo/api/eventmanager.h"
 #include "gtest/gtest.h"
 #include <vector>

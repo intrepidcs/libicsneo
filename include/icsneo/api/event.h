@@ -54,7 +54,16 @@ public:
 		FixedPointOverflow = 0x1018,
 		FixedPointPrecision = 0x1019,
 		SyscallError = 0x1020, // check errno/GetLastError() for details
-
+		MACsecSecYLimit = 0x1021,
+		MACsecSaLimit = 0x1022,
+		MACsecRuleLimit = 0x1023,
+		MACsecInvalidSecYIndex = 0x1024,
+		MACsecInvalidSaIndex = 0x1025,
+		MACsecInvalidRuleIndex = 0x1026,
+		MACsecRekeyNotEnabled = 0x1027,
+		MACsecNotSupported = 0x1028,
+		MACsecConfigMismatch = 0x1029,
+		
 		// Device Events
 		PollingMessageOverflow = 0x2000,
 		NoSerialNumber = 0x2001, // api
