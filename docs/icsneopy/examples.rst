@@ -74,3 +74,11 @@ Device Firmware/Chip Versions
 
 .. literalinclude:: ../../examples/python/device/chip_versions.py
    :language: python
+
+SPI Example for 10BASE-T1S
+=============================
+
+:download:`Download example <../../examples/python/spi/spi_example.py>`
+
+.. literalinclude:: ../../examples/python/spi/spi_example.py
+   :language: python
