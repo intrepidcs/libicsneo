@@ -1,13 +1,14 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
+#include <pybind11/native_enum.h>
 
 #include "icsneo/device/chipid.h"
 
 namespace icsneo {
 
 void init_chipid(pybind11::module_& m) {
-	pybind11::enum_<ChipID>(m, "ChipID")
+	pybind11::native_enum<ChipID>(m, "ChipID", "enum.IntEnum")
 		.value("neoVIFIRE_MCHIP", ChipID::neoVIFIRE_MCHIP)
 		.value("neoVIFIRE_LCHIP", ChipID::neoVIFIRE_LCHIP)
 		.value("neoVIFIRE_UCHIP", ChipID::neoVIFIRE_UCHIP)
@@ -130,7 +131,8 @@ void init_chipid(pybind11::module_& m) {
 		.value("Connect_LINUX", ChipID::Connect_LINUX)
 		.value("RADGigastar2_ZYNQ", ChipID::RADGigastar2_ZYNQ)
 		.value("RADGemini_MCHIP", ChipID::RADGemini_MCHIP)
-		.value("Invalid", ChipID::Invalid);
+		.value("Invalid", ChipID::Invalid)
+		.finalize();
 }
 
 } // namespace icsneo

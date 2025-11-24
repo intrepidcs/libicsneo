@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
+#include <pybind11/native_enum.h>
 
 #include "icsneo/device/devicetype.h"
 
@@ -8,7 +9,7 @@ namespace icsneo {
 
 void init_devicetype(pybind11::module_& m) {
 	pybind11::class_<DeviceType> deviceType(m, "DeviceType");
-	pybind11::enum_<DeviceType::Enum>(deviceType, "Enum")
+	pybind11::native_enum<DeviceType::Enum>(deviceType, "Enum", "enum.IntEnum")
 		.value("Unknown", DeviceType::Enum::Unknown)
 		.value("BLUE", DeviceType::Enum::BLUE)
 		.value("ECU_AVB", DeviceType::Enum::ECU_AVB)
@@ -70,7 +71,8 @@ void init_devicetype(pybind11::module_& m) {
 		.value("RADGalaxy", DeviceType::Enum::RADGalaxy)
 		.value("RADStar2", DeviceType::Enum::RADStar2)
 		.value("VividCAN", DeviceType::Enum::VividCAN)
-		.value("OBD2_SIM", DeviceType::Enum::OBD2_SIM);
+		.value("OBD2_SIM", DeviceType::Enum::OBD2_SIM)
+		.finalize();
 	deviceType.def(pybind11::init<DeviceType::Enum>());
 	deviceType.def("get_device_type", &DeviceType::getDeviceType);
 	deviceType.def("get_generic_product_name", &DeviceType::getGenericProductName);

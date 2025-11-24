@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
+#include <pybind11/native_enum.h>
 
 #include "icsneo/communication/network.h"
 
@@ -9,7 +10,7 @@ namespace icsneo {
 void init_network(pybind11::module_& m) {
 	pybind11::class_<Network> network(m, "Network");
 
-	pybind11::enum_<Network::NetID>(network, "NetID")
+	pybind11::native_enum<Network::NetID>(network, "NetID", "enum.IntEnum")
 		.value("Device", Network::NetID::Device)
 		.value("DWCAN_01", Network::NetID::DWCAN_01)
 		.value("DWCAN_08", Network::NetID::DWCAN_08)
@@ -166,9 +167,10 @@ void init_network(pybind11::module_& m) {
 		.value("LIN_15", Network::NetID::LIN_15)
 		.value("LIN_16", Network::NetID::LIN_16)
 		.value("Any", Network::NetID::Any)
-		.value("Invalid", Network::NetID::Invalid);
+		.value("Invalid", Network::NetID::Invalid)
+		.finalize();
 	
-	pybind11::enum_<Network::Type>(network, "Type")
+	pybind11::native_enum<Network::Type>(network, "Type", "enum.Enum")
 		.value("Invalid", Network::Type::Invalid)
 		.value("Internal", Network::Type::Internal)
 		.value("CAN", Network::Type::CAN)
@@ -185,7 +187,8 @@ void init_network(pybind11::module_& m) {
 		.value("MDIO", Network::Type::MDIO)
 		.value("AutomotiveEthernet", Network::Type::AutomotiveEthernet)
 		.value("Any", Network::Type::Any)
-		.value("Other", Network::Type::Other);
+		.value("Other", Network::Type::Other)
+		.finalize();
 
     network
 		.def(pybind11::init<Network::NetID>())

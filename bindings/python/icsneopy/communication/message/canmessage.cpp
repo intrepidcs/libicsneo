@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_canmessage(pybind11::module_& m) {
-	pybind11::class_<CANMessage, std::shared_ptr<CANMessage>, Frame>(m, "CANMessage")
+	pybind11::classh<CANMessage, Frame>(m, "CANMessage")
 		.def(pybind11::init())
 		.def_readwrite("arbid", &CANMessage::arbid)
 		.def_readwrite("dlcOnWire", &CANMessage::dlcOnWire)

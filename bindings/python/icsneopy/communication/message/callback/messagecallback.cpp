@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_messagecallback(pybind11::module_& m) {
-	pybind11::class_<MessageCallback, std::shared_ptr<MessageCallback>>(m, "MessageCallback")
+	pybind11::classh<MessageCallback>(m, "MessageCallback")
 		.def(pybind11::init<MessageCallback::fn_messageCallback, std::shared_ptr<MessageFilter>>());
 }
 

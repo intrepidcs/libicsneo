@@ -31,7 +31,7 @@ void init_idevicesettings(pybind11::module_& m) {
         .value("Speed5G", DeviceSettingsNamespace::LinkSpeed::ETH_SPEED_5000)
         .value("Speed10G", DeviceSettingsNamespace::LinkSpeed::ETH_SPEED_10000);
 
-    pybind11::class_<IDeviceSettings, std::shared_ptr<IDeviceSettings>>(m, "IDeviceSettings")
+    pybind11::classh<IDeviceSettings>(m, "IDeviceSettings")
         .def("apply", &IDeviceSettings::apply, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("apply_defaults", &IDeviceSettings::applyDefaults, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("get_phy_enable", &IDeviceSettings::getPhyEnable, pybind11::call_guard<pybind11::gil_scoped_release>())

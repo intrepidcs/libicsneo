@@ -35,17 +35,17 @@ void init_macsecconfig(pybind11::module_ & m)
 		.value("GCM_AES_128_XPN", MACsecCipherSuite::GcmAes128Xpn)
 		.value("GCM_AES_256_XPN", MACsecCipherSuite::GcmAes256Xpn);
 
-	pybind11::class_<MACsecVLANTag, std::shared_ptr<MACsecVLANTag>>(m, "MACsecVLANTag")
+	pybind11::classh<MACsecVLANTag>(m, "MACsecVLANTag")
 		.def(pybind11::init())
 		.def_readwrite("vid", &MACsecVLANTag::vid)
 		.def_readwrite("pri_cfi", &MACsecVLANTag::priCfi);
 
-	pybind11::class_<MACsecMPLSOuter, std::shared_ptr<MACsecMPLSOuter>>(m, "MACsecMPLSOuter")
+	pybind11::classh<MACsecMPLSOuter>(m, "MACsecMPLSOuter")
 		.def(pybind11::init())
 		.def_readwrite("mpls_label", &MACsecMPLSOuter::mplsLabel)
 		.def_readwrite("exp", &MACsecMPLSOuter::exp);
 
-	pybind11::class_<MACsecTci, std::shared_ptr<MACsecTci>>(m, "MACsecTci")
+	pybind11::classh<MACsecTci>(m, "MACsecTci")
 		.def(pybind11::init())
 		.def_readwrite("es", &MACsecTci::es)
 		.def_readwrite("sc", &MACsecTci::sc)
@@ -53,7 +53,7 @@ void init_macsecconfig(pybind11::module_ & m)
 		.def_readwrite("e", &MACsecTci::e)
 		.def_readwrite("c", &MACsecTci::c);
 
-	pybind11::class_<MACsecRxRule, std::shared_ptr<MACsecRxRule>>(m, "MACsecRxRule")
+	pybind11::classh<MACsecRxRule>(m, "MACsecRxRule")
 		.def(pybind11::init())
 		.def_readwrite("key_mac_da", &MACsecRxRule::keyMacDa)
 		.def_readwrite("mask_mac_da", &MACsecRxRule::maskMacDa)
@@ -85,7 +85,7 @@ void init_macsecconfig(pybind11::module_ & m)
 		.def_readwrite("mask_express", &MACsecRxRule::maskExpress)
 		.def_readwrite("is_mpls", &MACsecRxRule::isMpls);
 
-	pybind11::class_<MACsecTxSecY, std::shared_ptr<MACsecTxSecY>>(m, "MACsecTxSecY")
+	pybind11::classh<MACsecTxSecY>(m, "MACsecTxSecY")
 		.def(pybind11::init())
 		.def_readwrite("enable_control_port", &MACsecTxSecY::enableControlPort)
 		.def_readwrite("cipher", &MACsecTxSecY::cipher)
@@ -99,7 +99,7 @@ void init_macsecconfig(pybind11::module_ & m)
 		.def_readwrite("auxiliary_policy", &MACsecTxSecY::auxiliaryPolicy)
 		.def_readwrite("sci", &MACsecTxSecY::sci);
 		
-	pybind11::class_<MACsecRxSecY, std::shared_ptr<MACsecRxSecY>>(m, "MACsecRxSecY")
+	pybind11::classh<MACsecRxSecY>(m, "MACsecRxSecY")
 		.def(pybind11::init())
 		.def_readwrite("enable_control_port", &MACsecRxSecY::enableControlPort)
 		.def_readwrite("frame_validation", &MACsecRxSecY::frameValidation)
@@ -112,7 +112,7 @@ void init_macsecconfig(pybind11::module_ & m)
 		.def_readwrite("is_control_packet", &MACsecRxSecY::isControlPacket)
 		.def_readwrite("sci", &MACsecRxSecY::sci);
 
-	pybind11::class_<MACsecTxSa, std::shared_ptr<MACsecTxSa>>(m, "MACsecTxSa")
+	pybind11::classh<MACsecTxSa>(m, "MACsecTxSa")
 		.def(pybind11::init())
 		.def_readwrite("sak", &MACsecTxSa::sak)
 		.def_readwrite("hash_key", &MACsecTxSa::hashKey)
@@ -121,7 +121,7 @@ void init_macsecconfig(pybind11::module_ & m)
 		.def_readwrite("next_pn", &MACsecTxSa::nextPn)
 		.def_readwrite("an", &MACsecTxSa::an);
 
-	pybind11::class_<MACsecRxSa, std::shared_ptr<MACsecRxSa>>(m, "MACsecRxSa")
+	pybind11::classh<MACsecRxSa>(m, "MACsecRxSa")
 		.def(pybind11::init())
 		.def_readwrite("sak", &MACsecRxSa::sak)
 		.def_readwrite("hash_key", &MACsecRxSa::hashKey)
@@ -129,7 +129,7 @@ void init_macsecconfig(pybind11::module_ & m)
 		.def_readwrite("ssci", &MACsecRxSa::ssci)
 		.def_readwrite("next_pn", &MACsecRxSa::nextPn);
 
-	pybind11::class_<MACsecConfig, std::shared_ptr<MACsecConfig>>(m, "MACsecConfig")
+	pybind11::classh<MACsecConfig>(m, "MACsecConfig")
 		.def(pybind11::init<icsneo::DeviceType>())
 		.def("add_rx_secy", &MACsecConfig::addRxSecY, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("add_tx_secY", &MACsecConfig::addTxSecY, pybind11::call_guard<pybind11::gil_scoped_release>())

@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_spimessage(pybind11::module_& m) {
-	pybind11::class_<SPIMessage, std::shared_ptr<SPIMessage>, Frame> spiMessage(m, "SPIMessage");
+	pybind11::classh<SPIMessage, Frame> spiMessage(m, "SPIMessage");
 	pybind11::enum_<SPIMessage::Direction>(spiMessage, "Direction")
 		.value("Write", SPIMessage::Direction::Write)
 		.value("Read", SPIMessage::Direction::Read);

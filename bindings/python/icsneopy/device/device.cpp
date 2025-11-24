@@ -11,7 +11,7 @@
 namespace icsneo {
 
 void init_device(pybind11::module_& m) {
-	pybind11::class_<Device, std::shared_ptr<Device>>(m, "Device")
+	pybind11::classh<Device>(m, "Device")
 		.def("__repr__", &Device::describe)
 		.def("add_message_callback", &Device::addMessageCallback, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("clear_script", &Device::clearScript, pybind11::call_guard<pybind11::gil_scoped_release>())

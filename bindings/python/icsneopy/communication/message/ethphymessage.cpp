@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_ethphymessage(pybind11::module_& m) {
-	pybind11::class_<PhyMessage, std::shared_ptr<PhyMessage>>(m, "PhyMessage")
+	pybind11::classh<PhyMessage>(m, "PhyMessage")
 		.def(pybind11::init())
 		.def_readwrite("Enabled", &PhyMessage::Enabled)
 		.def_readwrite("WriteEnable", &PhyMessage::WriteEnable)
@@ -28,7 +28,7 @@ void init_ethphymessage(pybind11::module_& m) {
 		.def_readwrite("device", &Clause45Message::device)
 		.def_readwrite("regAddr", &Clause45Message::regAddr)
 		.def_readwrite("regVal", &Clause45Message::regVal);
-	pybind11::class_<EthPhyMessage, std::shared_ptr<EthPhyMessage>, Message>(m, "EthPhyMessage")
+	pybind11::classh<EthPhyMessage, Message>(m, "EthPhyMessage")
 		.def(pybind11::init())
 		.def_readwrite("messages", &EthPhyMessage::messages);
 }

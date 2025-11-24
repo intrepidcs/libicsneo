@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_gptpstatusmessage(pybind11::module_& m) {
-	pybind11::class_<GPTPStatus, std::shared_ptr<GPTPStatus>, Message> gptpStatus(m, "GPTPStatus");
+	pybind11::classh<GPTPStatus, Message> gptpStatus(m, "GPTPStatus");
 	
 	pybind11::class_<GPTPStatus::Timestamp>(gptpStatus, "Timestamp")
 		.def_readonly("seconds", &GPTPStatus::Timestamp::seconds)

@@ -24,7 +24,7 @@ struct ClusterNamespace {
 };
 
 void init_extension(pybind11::class_<FlexRayNamespace>& c) {
-    pybind11::class_<MessageBuffer, std::shared_ptr<MessageBuffer>>(c, "MessageBuffer")
+    pybind11::classh<MessageBuffer>(c, "MessageBuffer")
         .def(pybind11::init())
         .def_readwrite("is_dynamic", &MessageBuffer::isDynamic)
         .def_readwrite("is_sync", &MessageBuffer::isSync)
@@ -39,7 +39,7 @@ void init_extension(pybind11::class_<FlexRayNamespace>& c) {
         .def_readwrite("cycle_repetition", &MessageBuffer::cycleRepetition)
         .def_readwrite("continuous_mode", &MessageBuffer::continuousMode);
 
-    auto controller = pybind11::class_<Controller, std::shared_ptr<Controller>>(c, "Controller")
+    auto controller = pybind11::classh<Controller>(c, "Controller")
         .def("get_network", &Controller::getNetwork)
         .def("get_configuration", &Controller::getConfiguration)
         .def("set_configuration", &Controller::setConfiguration)
@@ -143,7 +143,7 @@ void init_extension(pybind11::class_<FlexRayNamespace>& c) {
 } // namespace FlexRay
 
 void init_flexraymessage(pybind11::module_& m) {
-	pybind11::class_<FlexRayMessage, std::shared_ptr<FlexRayMessage>, Frame>(m, "FlexRayMessage")
+	pybind11::classh<FlexRayMessage, Frame>(m, "FlexRayMessage")
 		.def(pybind11::init())
 		.def_readwrite("slotid", &FlexRayMessage::slotid)
 		.def_readwrite("tsslen", &FlexRayMessage::tsslen)

@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_scriptstatusmessage(pybind11::module_& m) {
-	pybind11::class_<ScriptStatusMessage, std::shared_ptr<ScriptStatusMessage>, Message>(m, "ScriptStatusMessage")
+	pybind11::classh<ScriptStatusMessage, Message>(m, "ScriptStatusMessage")
         .def_readonly("isEncrypted", &ScriptStatusMessage::isEncrypted)
         .def_readonly("isCoreminiRunning", &ScriptStatusMessage::isCoreminiRunning)
         .def_readonly("sectorOverflows", &ScriptStatusMessage::sectorOverflows)

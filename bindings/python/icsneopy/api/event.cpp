@@ -1,14 +1,15 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
+#include <pybind11/native_enum.h>
 
 #include "icsneo/api/event.h"
 
 namespace icsneo {
 
 void init_event(pybind11::module_& m) {
-	pybind11::class_<APIEvent, std::shared_ptr<APIEvent>> apiEvent(m, "APIEvent");
-	pybind11::enum_<APIEvent::Type>(apiEvent, "Type")
+	pybind11::classh<APIEvent> apiEvent(m, "APIEvent");
+	pybind11::native_enum<APIEvent::Type>(apiEvent, "Type", "enum.IntEnum")
 		.value("Any", APIEvent::Type::Any)
 		.value("InvalidNeoDevice", APIEvent::Type::InvalidNeoDevice)
 		.value("RequiredParameterNull", APIEvent::Type::RequiredParameterNull)
@@ -132,13 +133,15 @@ void init_event(pybind11::module_& m) {
 		.value("DXXErrorArg", APIEvent::Type::DXXErrorArg)
 		.value("NoErrorFound", APIEvent::Type::NoErrorFound)
 		.value("TooManyEvents", APIEvent::Type::TooManyEvents)
-		.value("Unknown", APIEvent::Type::Unknown);
+		.value("Unknown", APIEvent::Type::Unknown)
+		.finalize();
 
-		pybind11::enum_<APIEvent::Severity>(apiEvent, "Severity")
+		pybind11::native_enum<APIEvent::Severity>(apiEvent, "Severity", "enum.IntEnum")
 		.value("Any", APIEvent::Severity::Any)
 		.value("EventInfo", APIEvent::Severity::EventInfo)
 		.value("EventWarning", APIEvent::Severity::EventWarning)
-		.value("Error", APIEvent::Severity::Error);
+		.value("Error", APIEvent::Severity::Error)
+		.finalize();
 
 	apiEvent
 		.def("get_type", &APIEvent::getType)
@@ -147,7 +150,7 @@ void init_event(pybind11::module_& m) {
 		.def("describe", &APIEvent::describe)
 		.def("__repr__", &APIEvent::describe);
 
-	pybind11::class_<EventFilter, std::shared_ptr<EventFilter>>(m, "EventFilter")
+	pybind11::classh<EventFilter>(m, "EventFilter")
 		.def(pybind11::init())
 		.def(pybind11::init<APIEvent::Type>())
 		.def(pybind11::init<APIEvent::Severity>())

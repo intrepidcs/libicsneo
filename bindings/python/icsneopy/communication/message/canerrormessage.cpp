@@ -1,13 +1,14 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
+#include <pybind11/native_enum.h>
 
 #include "icsneo/communication/message/canerrormessage.h"
 
 namespace icsneo {
 
 void init_errorcodes(pybind11::module_& m) {
-	pybind11::enum_<CANErrorCode>(m, "CANErrorCode")
+	pybind11::native_enum<CANErrorCode>(m, "CANErrorCode", "enum.IntEnum")
 		.value("NoError", CANErrorCode::NoError)
 		.value("StuffError", CANErrorCode::StuffError)
 		.value("FormError", CANErrorCode::FormError)
@@ -15,12 +16,13 @@ void init_errorcodes(pybind11::module_& m) {
 		.value("Bit1Error", CANErrorCode::Bit1Error)
 		.value("Bit0Error", CANErrorCode::Bit0Error)
 		.value("CRCError", CANErrorCode::CRCError)
-		.value("NoChange", CANErrorCode::NoChange);
+		.value("NoChange", CANErrorCode::NoChange)
+		.finalize();
 }
 
 void init_canerrormessage(pybind11::module_& m) {
 	init_errorcodes(m);
-	pybind11::class_<CANErrorMessage, std::shared_ptr<CANErrorMessage>, Message>(m, "CANErrorMessage")
+	pybind11::classh<CANErrorMessage, Message>(m, "CANErrorMessage")
 		.def_readonly("network", &CANErrorMessage::network)
 		.def_readonly("transmitErrorCount", &CANErrorMessage::transmitErrorCount)
 		.def_readonly("receiveErrorCount", &CANErrorMessage::receiveErrorCount)

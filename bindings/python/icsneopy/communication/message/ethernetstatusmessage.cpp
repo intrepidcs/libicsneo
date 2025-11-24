@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_ethernetstatusmessage(pybind11::module_& m) {
-	pybind11::class_<EthernetStatusMessage, std::shared_ptr<EthernetStatusMessage>, Message> ethernetStatusMessage(m, "EthernetStatusMessage");
+	pybind11::classh<EthernetStatusMessage, Message> ethernetStatusMessage(m, "EthernetStatusMessage");
 
 	pybind11::enum_<EthernetStatusMessage::LinkSpeed>(ethernetStatusMessage, "LinkSpeed")
 		.value("LinkSpeedAuto", EthernetStatusMessage::LinkSpeed::LinkSpeedAuto)

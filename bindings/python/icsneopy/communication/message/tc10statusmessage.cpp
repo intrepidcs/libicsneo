@@ -17,7 +17,7 @@ void init_tc10statusmessage(pybind11::module_& m) {
 		.value("SleepFailed", TC10SleepStatus::SleepFailed)
 		.value("SleepAborted", TC10SleepStatus::SleepAborted);
 
-	pybind11::class_<TC10StatusMessage, std::shared_ptr<TC10StatusMessage>, Message>(m, "TC10StatusMessage")
+	pybind11::classh<TC10StatusMessage, Message>(m, "TC10StatusMessage")
 		.def_readonly("wakeStatus", &TC10StatusMessage::wakeStatus)
 		.def_readonly("sleepStatus", &TC10StatusMessage::sleepStatus);
 }
