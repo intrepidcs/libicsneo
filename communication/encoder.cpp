@@ -56,6 +56,7 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 
 					break;
 				}
+				case Network::Type::Internal:
 				case Network::Type::CAN:
 				case Network::Type::SWCAN:
 				case Network::Type::LSFTCAN: {

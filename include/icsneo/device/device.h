@@ -910,6 +910,8 @@ protected:
 		diskWriteDriver = std::unique_ptr<DiskWrite>(new DiskWrite());
 		setupSupportedRXNetworks(supportedRXNetworks);
 		setupSupportedTXNetworks(supportedTXNetworks);
+		supportedRXNetworks.emplace_back(Network::NetID::Device);
+		supportedTXNetworks.emplace_back(Network::NetID::Device);
 		setupExtensions();
 	}
 
