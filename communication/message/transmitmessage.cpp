@@ -104,6 +104,7 @@ static std::vector<uint8_t> EncodeFromMessageCAN(std::shared_ptr<Frame> frame, c
 		canpacket->header.BRS = canmsg->baudrateSwitch ? 1 : 0;
 		canpacket->header.ESI = canmsg->errorStateIndicator ? 1 : 0;
 		canpacket->dlc.RTR = 0;
+		canpacket->timestamp.IsExtended = 1;
 
 	} else {
 		canpacket->header.EDL = 0;
