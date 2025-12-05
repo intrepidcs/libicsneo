@@ -139,6 +139,7 @@ std::vector<uint8_t> TransmitMessage::EncodeFromMessage(std::shared_ptr<Frame> f
 		case Network::Type::AutomotiveEthernet:
 			result = EncodeFromMessageEthernet(frame, report);
 			break;
+		case Network::Type::Internal:
 		case Network::Type::CAN:
 			result = EncodeFromMessageCAN(frame, report);
 			break;
