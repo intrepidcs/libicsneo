@@ -35,7 +35,11 @@ public:
 
 	const std::vector<ChipInfo>& getChipInfo() const override {
 		static std::vector<ChipInfo> chips = {
+			// We add both chips here because there is a mismatch between the id of the chip on the device
+			// and the chip that the bootloader extension expects. The device reports a RADProxima chip,
+			// but we use RADEpsilon firmware.
 			{ChipID::RADProxima_MCHIP, true, "MCHIP", "epsilon_mchip_ief", 0, FirmwareType::IEF},
+			{ChipID::RADEpsilon_MCHIP, true, "MCHIP", "epsilon_mchip_ief", 0, FirmwareType::IEF}
 		};
 		return chips;
 	}
@@ -43,7 +47,8 @@ public:
 	BootloaderPipeline getBootloader() override {
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
-			.add<FlashPhase>(ChipID::RADProxima_MCHIP, BootloaderCommunication::RED)
+			.add<FlashPhase>(ChipID::RADEpsilon_MCHIP, BootloaderCommunication::RED)
+			.add<EnterApplicationPhase>(ChipID::RADEpsilon_MCHIP)
 			.add<ReconnectPhase>();
 	}
 
