@@ -16,7 +16,7 @@ struct DeviceSettingsNamespace {
 };
 
 void init_idevicesettings(pybind11::module_& m) {
-    pybind11::class_<DeviceSettingsNamespace> settings(m, "Settings");
+    pybind11::classh<DeviceSettingsNamespace> settings(m, "Settings");
 
     pybind11::enum_<DeviceSettingsNamespace::EthLinkMode>(settings, "EthernetLinkMode")
         .value("Auto", DeviceSettingsNamespace::EthLinkMode::AE_LINK_AUTO)

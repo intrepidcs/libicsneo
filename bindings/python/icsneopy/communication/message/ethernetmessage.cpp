@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_ethernetmessage(pybind11::module_& m) {
-	pybind11::class_<MACAddress>(m, "MACAddress")
+	pybind11::classh<MACAddress>(m, "MACAddress")
 		.def("to_string", &MACAddress::toString)
 		.def("__repr__", &MACAddress::toString);
 	

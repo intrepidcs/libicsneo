@@ -9,38 +9,38 @@ namespace icsneo {
 void init_gptpstatusmessage(pybind11::module_& m) {
 	pybind11::classh<GPTPStatus, Message> gptpStatus(m, "GPTPStatus");
 	
-	pybind11::class_<GPTPStatus::Timestamp>(gptpStatus, "Timestamp")
+	pybind11::classh<GPTPStatus::Timestamp>(gptpStatus, "Timestamp")
 		.def_readonly("seconds", &GPTPStatus::Timestamp::seconds)
 		.def_readonly("nanoseconds", &GPTPStatus::Timestamp::nanoseconds)
 		.def("to_seconds", &GPTPStatus::Timestamp::toSeconds, pybind11::call_guard<pybind11::gil_scoped_release>());
 	
-	pybind11::class_<GPTPStatus::ScaledNanoSeconds>(gptpStatus, "ScaledNanoSeconds")
+	pybind11::classh<GPTPStatus::ScaledNanoSeconds>(gptpStatus, "ScaledNanoSeconds")
 		.def_readonly("nanoseconds_msb", &GPTPStatus::ScaledNanoSeconds::nanosecondsMSB)
 		.def_readonly("nanoseconds_lsb", &GPTPStatus::ScaledNanoSeconds::nanosecondsLSB)
 		.def_readonly("fractional_nanoseconds", &GPTPStatus::ScaledNanoSeconds::fractionalNanoseconds);
 	
-	pybind11::class_<GPTPStatus::PortID>(gptpStatus, "PortID")
+	pybind11::classh<GPTPStatus::PortID>(gptpStatus, "PortID")
 		.def_readonly("clock_identity", &GPTPStatus::PortID::clockIdentity)
 		.def_readonly("port_number", &GPTPStatus::PortID::portNumber);
 	
-	pybind11::class_<GPTPStatus::ClockQuality>(gptpStatus, "ClockQuality")
+	pybind11::classh<GPTPStatus::ClockQuality>(gptpStatus, "ClockQuality")
 		.def_readonly("clock_class", &GPTPStatus::ClockQuality::clockClass)
 		.def_readonly("clock_accuracy", &GPTPStatus::ClockQuality::clockAccuracy)
 		.def_readonly("offset_scaled_log_variance", &GPTPStatus::ClockQuality::offsetScaledLogVariance);
 	
-	pybind11::class_<GPTPStatus::SystemID>(gptpStatus, "SystemID")
+	pybind11::classh<GPTPStatus::SystemID>(gptpStatus, "SystemID")
 		.def_readonly("priority1", &GPTPStatus::SystemID::priority1)
 		.def_readonly("clock_quality", &GPTPStatus::SystemID::clockQuality)
 		.def_readonly("priority2", &GPTPStatus::SystemID::priority2)
 		.def_readonly("clock_id", &GPTPStatus::SystemID::clockID);
 	
-	pybind11::class_<GPTPStatus::PriorityVector>(gptpStatus, "PriorityVector")
+	pybind11::classh<GPTPStatus::PriorityVector>(gptpStatus, "PriorityVector")
 		.def_readonly("sys_id", &GPTPStatus::PriorityVector::sysID)
 		.def_readonly("steps_removed", &GPTPStatus::PriorityVector::stepsRemoved)
 		.def_readonly("port_id", &GPTPStatus::PriorityVector::portID)
 		.def_readonly("port_number", &GPTPStatus::PriorityVector::portNumber);
 	
-	pybind11::class_<GPTPStatus::ParentDS>(gptpStatus, "ParentDS")
+	pybind11::classh<GPTPStatus::ParentDS>(gptpStatus, "ParentDS")
 		.def_readonly("parent_port_identity", &GPTPStatus::ParentDS::parentPortIdentity)
 		.def_readonly("cumulative_rate_ratio", &GPTPStatus::ParentDS::cumulativeRateRatio)
 		.def_readonly("grandmaster_identity", &GPTPStatus::ParentDS::grandmasterIdentity)
@@ -50,7 +50,7 @@ void init_gptpstatusmessage(pybind11::module_& m) {
 		.def_readonly("gm_priority1", &GPTPStatus::ParentDS::gmPriority1)
 		.def_readonly("gm_priority2", &GPTPStatus::ParentDS::gmPriority2);
 
-	pybind11::class_<GPTPStatus::CurrentDS>(gptpStatus, "CurrentDS")
+	pybind11::classh<GPTPStatus::CurrentDS>(gptpStatus, "CurrentDS")
 		.def_readonly("steps_removed", &GPTPStatus::CurrentDS::stepsRemoved)
 		.def_readonly("offset_from_master", &GPTPStatus::CurrentDS::offsetFromMaster)
 		.def_readonly("lastgm_phase_change", &GPTPStatus::CurrentDS::lastgmPhaseChange)

@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_versionreport(pybind11::module_& m) {
-	pybind11::class_<VersionReport>(m, "VersionReport")
+	pybind11::classh<VersionReport>(m, "VersionReport")
 		.def_readonly("id", &VersionReport::id)
 		.def_readonly("name", &VersionReport::name)
 		.def_readonly("major", &VersionReport::major)

@@ -8,7 +8,7 @@
 namespace icsneo {
 
 void init_devicetype(pybind11::module_& m) {
-	pybind11::class_<DeviceType> deviceType(m, "DeviceType");
+	pybind11::classh<DeviceType> deviceType(m, "DeviceType");
 	pybind11::native_enum<DeviceType::Enum>(deviceType, "Enum", "enum.IntEnum")
 		.value("Unknown", DeviceType::Enum::Unknown)
 		.value("BLUE", DeviceType::Enum::BLUE)

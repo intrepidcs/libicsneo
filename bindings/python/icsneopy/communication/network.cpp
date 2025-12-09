@@ -8,7 +8,7 @@
 namespace icsneo {
 
 void init_network(pybind11::module_& m) {
-	pybind11::class_<Network> network(m, "Network");
+	pybind11::classh<Network> network(m, "Network");
 
 	pybind11::native_enum<Network::NetID>(network, "NetID", "enum.IntEnum")
 		.value("Device", Network::NetID::Device)

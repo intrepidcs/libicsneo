@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_linmessage(pybind11::module_& m) {
-	pybind11::class_<LINErrorFlags>(m, "LINErrorFlags")
+	pybind11::classh<LINErrorFlags>(m, "LINErrorFlags")
 		.def_readwrite("ErrRxBreakOnly", &LINErrorFlags::ErrRxBreakOnly)
 		.def_readwrite("ErrRxBreakSyncOnly", &LINErrorFlags::ErrRxBreakSyncOnly)
 		.def_readwrite("ErrTxRxMismatch", &LINErrorFlags::ErrTxRxMismatch)
@@ -20,7 +20,7 @@ void init_linmessage(pybind11::module_& m) {
 		.def_readwrite("ErrFrameResponderData", &LINErrorFlags::ErrFrameResponderData)
 		.def_readwrite("ErrChecksumMatch", &LINErrorFlags::ErrChecksumMatch);
 
-	pybind11::class_<LINStatusFlags>(m, "LINStatusFlags")
+	pybind11::classh<LINStatusFlags>(m, "LINStatusFlags")
 		.def_readwrite("TxChecksumEnhanced", &LINStatusFlags::TxChecksumEnhanced)
 		.def_readwrite("TxCommander", &LINStatusFlags::TxCommander)
 		.def_readwrite("TxResponder", &LINStatusFlags::TxResponder)

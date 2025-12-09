@@ -9,7 +9,7 @@
 namespace icsneo {
 
 void init_version(pybind11::module_& m) {
-	pybind11::class_<neoversion_t>(m, "NeoVersion")
+	pybind11::classh<neoversion_t>(m, "NeoVersion")
 		.def_readonly("major", &neoversion_t::major)
 		.def_readonly("minor", &neoversion_t::minor)
 		.def_readonly("patch", &neoversion_t::patch)

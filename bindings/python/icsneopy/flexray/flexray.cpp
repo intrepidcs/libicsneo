@@ -23,7 +23,7 @@ struct ClusterNamespace {
     using SPPType = icsneo::FlexRay::Cluster::SPPType;
 };
 
-void init_extension(pybind11::class_<FlexRayNamespace>& c) {
+void init_extension(pybind11::classh<FlexRayNamespace>& c) {
     pybind11::classh<MessageBuffer>(c, "MessageBuffer")
         .def(pybind11::init())
         .def_readwrite("is_dynamic", &MessageBuffer::isDynamic)
@@ -59,7 +59,7 @@ void init_extension(pybind11::class_<FlexRayNamespace>& c) {
         .def("freeze", &Controller::freeze)
         .def("trigger_mts", &Controller::triggerMTS);
 
-    pybind11::class_<Controller::Configuration>(controller, "Configuration")
+    pybind11::classh<Controller::Configuration>(controller, "Configuration")
         .def(pybind11::init())
         .def_readwrite("accept_startup_range_microticks", &Controller::Configuration::AcceptStartupRangeMicroticks)
         .def_readwrite("allow_passive_to_active_cycle_pairs", &Controller::Configuration::AllowPassiveToActiveCyclePairs)
@@ -93,7 +93,7 @@ void init_extension(pybind11::class_<FlexRayNamespace>& c) {
         .def_readwrite("wakeup_on_channel_b", &Controller::Configuration::WakeupOnChannelB);
 
     // Dummy class for cluster namespace
-    pybind11::class_<ClusterNamespace> cluster(c, "Cluster");
+    pybind11::classh<ClusterNamespace> cluster(c, "Cluster");
 
     pybind11::enum_<Cluster::SpeedType>(cluster, "SpeedType")
         .value("FLEXRAY_BAUDRATE_10M", Cluster::SpeedType::FLEXRAY_BAUDRATE_10M)
@@ -107,7 +107,7 @@ void init_extension(pybind11::class_<FlexRayNamespace>& c) {
         .value("FLEXRAY_SPP_6", Cluster::SPPType::FLEXRAY_SPP_6)
         .value("FLEXRAY_SPP_5_ALT", Cluster::SPPType::FLEXRAY_SPP_5_ALT);
 
-    pybind11::class_<Cluster::Configuration>(cluster, "Configuration")
+    pybind11::classh<Cluster::Configuration>(cluster, "Configuration")
         .def(pybind11::init())
         .def_readwrite("speed", &Cluster::Configuration::Speed)
         .def_readwrite("strobe_point_position", &Cluster::Configuration::StrobePointPosition)
@@ -166,7 +166,7 @@ void init_flexraymessage(pybind11::module_& m) {
 
 void init_flexray(pybind11::module_& m) {
     // Dummy class to act as FlexRay namespace
-    pybind11::class_<FlexRayNamespace> flexray(m, "FlexRay");
+    pybind11::classh<FlexRayNamespace> flexray(m, "FlexRay");
     
     pybind11::enum_<FlexRayNamespace::Symbol>(flexray, "Symbol")
         .value("None", FlexRayNamespace::Symbol::None)

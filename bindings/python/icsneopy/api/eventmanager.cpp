@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_eventmanager(pybind11::module_& m) {
-	pybind11::class_<EventManager>(m, "EventManager")
+	pybind11::classh<EventManager>(m, "EventManager")
 		.def_static("get_instance", &EventManager::GetInstance, pybind11::return_value_policy::reference)
 		.def("add_event_callback", &EventManager::addEventCallback)
 		.def("remove_event_callback", &EventManager::removeEventCallback)

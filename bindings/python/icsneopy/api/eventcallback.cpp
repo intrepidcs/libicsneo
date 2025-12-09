@@ -7,7 +7,7 @@
 namespace icsneo {
 
 void init_eventcallback(pybind11::module_& m) {
-	pybind11::class_<EventCallback>(m, "EventCallback")
+	pybind11::classh<EventCallback>(m, "EventCallback")
 		.def(pybind11::init<EventCallback::fn_eventCallback, EventFilter>())
 		.def(pybind11::init<EventCallback::fn_eventCallback>());
 }
