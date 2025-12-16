@@ -156,7 +156,7 @@ void DXX::read() {
 
 	while(!isDisconnected() && !isClosing()) {
 		size_t received = buffer.size();
-		const auto status = libredxx_read(device, buffer.data(), &received);
+		const auto status = libredxx_read(device, buffer.data(), &received, LIBREDXX_ENDPOINT_A);
 		if(isDisconnected() || isClosing()) {
 			return;
 		}
@@ -186,7 +186,7 @@ void DXX::write() {
 
 		for(size_t totalWritten = 0; totalWritten < writeOp.bytes.size();) {
 			size_t size = writeOp.bytes.size() - totalWritten;
-			const auto status = libredxx_write(device, &writeOp.bytes[totalWritten], &size);
+			const auto status = libredxx_write(device, &writeOp.bytes[totalWritten], &size, LIBREDXX_ENDPOINT_A);
 			if(isDisconnected() || isClosing()) {
 				return;
 			}
