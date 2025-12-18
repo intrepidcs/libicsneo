@@ -49,6 +49,10 @@ public:
 			Network::NetID::AE_10,
 			Network::NetID::AE_11,
 			Network::NetID::AE_12,
+			Network::NetID::AE_13,
+			Network::NetID::AE_14,
+			Network::NetID::AE_15,
+			Network::NetID::AE_16,
 
 			Network::NetID::ISO9141_01,
 			Network::NetID::ISO9141_02,
