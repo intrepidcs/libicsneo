@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
+#include <optional>
 #include "icsneo/communication/command.h"
 #include "icsneo/api/eventmanager.h"
 
@@ -157,7 +158,7 @@ namespace LiveDataUtil
 
 LiveDataHandle getNewHandle();
 double liveDataValueToDouble(const LiveDataValue& val);
-bool liveDataDoubleToValue(const double& dFloat, LiveDataValue& value);
+std::optional<LiveDataValue> liveDataDoubleToValue(const double& dFloat);
 static constexpr uint32_t LiveDataVersion = 1;
 
 } // namespace LiveDataUtil

@@ -29,7 +29,7 @@ int main() {
 		}
 		std::cout << "OK" << std::endl;
 
-		// Create a subscription message for the GPS signals
+		// Create a subscription message for the GPS signals and TIME_SINCE_MSG
 		std::cout << "\tSending a live data subscribe command... ";
 		auto msg = std::make_shared<icsneo::LiveDataCommandMessage>();
 		msg->appendSignalArg(icsneo::LiveDataValueType::GPS_LATITUDE);
@@ -37,6 +37,7 @@ int main() {
 		msg->appendSignalArg(icsneo::LiveDataValueType::GPS_ACCURACY);
 		msg->appendSignalArg(icsneo::LiveDataValueType::DAQ_ENABLE);
 		msg->appendSignalArg(icsneo::LiveDataValueType::MANUAL_TRIGGER);
+		msg->appendSignalArg(icsneo::LiveDataValueType::TIME_SINCE_MSG);
 		msg->cmd = icsneo::LiveDataCommand::SUBSCRIBE;
 		msg->handle = icsneo::LiveDataUtil::getNewHandle();
 		msg->updatePeriod = std::chrono::milliseconds(100);
@@ -44,6 +45,9 @@ int main() {
 		// Transmit the subscription message
 		ret = device->subscribeLiveData(msg);
 		std::cout << (ret ? "OK" : "FAIL") << std::endl;
+		if (!ret) {
+			std::cout << "\t\tError: " << icsneo::GetLastError() << std::endl;
+		}
 
 		// Register a handler that uses the data after it arrives every ~100ms
 		std::cout << "\tStreaming messages for 3 seconds... " << std::endl << std::endl;
@@ -53,19 +57,21 @@ int main() {
 			switch(ldMsg->cmd) {
 				case icsneo::LiveDataCommand::STATUS: {
 					auto msg2 = std::dynamic_pointer_cast<icsneo::LiveDataStatusMessage>(message);
-					std::cout << "[Handle] " << ldMsg->handle << std::endl;
-					std::cout << "[Requested Command] " << msg2->requestedCommand << std::endl;
-					std::cout << "[Status] " << msg2->status << std::endl << std::endl;
+					std::cout << "[STATUS Message]" << std::endl;
+					std::cout << "  Handle: " << ldMsg->handle << std::endl;
+					std::cout << "  Requested Command: " << msg2->requestedCommand << std::endl;
+					std::cout << "  Status: " << msg2->status << std::endl << std::endl;
 					break;
 				}
 				case icsneo::LiveDataCommand::RESPONSE: {
 					auto valueMsg = std::dynamic_pointer_cast<icsneo::LiveDataValueMessage>(message);
 					if((valueMsg->handle == msg->handle) && (valueMsg->values.size() == msg->args.size()))
 					{
-						std::cout << "[Handle] " << msg->handle << std::endl;
-						std::cout << "[Values] " << valueMsg->numArgs << std::endl;
+						std::cout << "[Response Message]" << std::endl;
+						std::cout << "  Handle: " << msg->handle << std::endl;
+						std::cout << "  Number of Values: " << valueMsg->numArgs << std::endl;
 						for(uint32_t i = 0; i < valueMsg->numArgs; ++i) {
-							std::cout << "[" << msg->args[i]->valueType << "] ";
+							std::cout << "  [" << msg->args[i]->valueType << "] ";
 							auto scaledValue = icsneo::LiveDataUtil::liveDataValueToDouble(*valueMsg->values[i]);
 							std::cout << scaledValue << std::endl;
 						}
@@ -86,22 +92,33 @@ int main() {
 			setValMsg->cmd = icsneo::LiveDataCommand::SET_VALUE;
 			setValMsg->handle = msg->handle;
 			// Convert the value format
-			icsneo::LiveDataValue ldValueDAQEnable;
-			icsneo::LiveDataValue ldValueManTrig;
-			if (!icsneo::LiveDataUtil::liveDataDoubleToValue(val / 3, ldValueDAQEnable) ||
-				!icsneo::LiveDataUtil::liveDataDoubleToValue(val, ldValueManTrig)) {
+			auto ldValueDAQEnable = icsneo::LiveDataUtil::liveDataDoubleToValue(val / 3);
+			auto ldValueManTrig = icsneo::LiveDataUtil::liveDataDoubleToValue(val);
+			auto ldValueTimeSinceMsg = icsneo::LiveDataUtil::liveDataDoubleToValue(val);
+			if (!ldValueDAQEnable || !ldValueManTrig || !ldValueTimeSinceMsg) {
+				std::cout << "\tError: Failed to convert values" << std::endl;
 				break;
 			}
-			setValMsg->appendSetValue(icsneo::LiveDataValueType::DAQ_ENABLE, ldValueDAQEnable);
-			setValMsg->appendSetValue(icsneo::LiveDataValueType::MANUAL_TRIGGER, ldValueManTrig);
-			device->setValueLiveData(setValMsg);
+			setValMsg->appendSetValue(icsneo::LiveDataValueType::DAQ_ENABLE, *ldValueDAQEnable);
+			setValMsg->appendSetValue(icsneo::LiveDataValueType::MANUAL_TRIGGER, *ldValueManTrig);
+			setValMsg->appendSetValue(icsneo::LiveDataValueType::TIME_SINCE_MSG, *ldValueTimeSinceMsg);
+			
+			std::cout << "\tSetting values: DAQ_ENABLE=" << (val / 3) 
+			          << ", MANUAL_TRIGGER=" << val 
+			          << ", TIME_SINCE_MSG=" << val << std::endl;
+			          
+			if (!device->setValueLiveData(setValMsg)) {
+				std::cout << "\tError setting values: " << icsneo::GetLastError() << std::endl;
+			}
 			++val;
 			// Run handler for three seconds to observe the signal data
 			std::this_thread::sleep_for(std::chrono::seconds(3));
 		}
 		// Unsubscribe from the GPS signals and run handler for one more second
 		// Unsubscription only requires a valid in-use handle, in this case from our previous subscription
+		std::cout << "\tUnsubscribing... ";
 		ret = device->unsubscribeLiveData(msg->handle);
+		std::cout << (ret ? "OK" : "FAIL") << std::endl;
 		// The handler should no longer print values
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		device->removeMessageCallback(handler);

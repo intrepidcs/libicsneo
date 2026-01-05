@@ -22,6 +22,7 @@ pybind11_add_module(icsneopy
     icsneopy/device/devicetype.cpp
     icsneopy/communication/network.cpp
     icsneopy/communication/io.cpp
+    icsneopy/communication/livedata.cpp
     icsneopy/communication/message/message.cpp
     icsneopy/communication/message/canmessage.cpp
     icsneopy/communication/message/canerrormessage.cpp
@@ -34,6 +35,7 @@ pybind11_add_module(icsneopy
     icsneopy/communication/message/spimessage.cpp
     icsneopy/communication/message/scriptstatusmessage.cpp
     icsneopy/communication/message/ethphymessage.cpp
+    icsneopy/communication/message/livedatamessage.cpp
     icsneopy/communication/message/callback/messagecallback.cpp
     icsneopy/communication/message/filter/messagefilter.cpp
     icsneopy/core/macseccfg.cpp

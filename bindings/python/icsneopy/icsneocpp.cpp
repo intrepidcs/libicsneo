@@ -35,6 +35,8 @@ void init_version(pybind11::module_&);
 void init_flexray(pybind11::module_& m);
 void init_idevicesettings(pybind11::module_&);
 void init_ethphymessage(pybind11::module_&);
+void init_livedata(pybind11::module_&);
+void init_livedatamessage(pybind11::module_&);
 
 PYBIND11_MODULE(icsneopy, m) {
 	pybind11::options options;
@@ -48,6 +50,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_devicetype(m);
 	init_network(m);
 	init_io(m);
+	init_livedata(m);
 	init_message(m);
 	init_canmessage(m);
 	init_canerrormessage(m);
@@ -60,6 +63,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_macsecconfig(m);
 	init_scriptstatusmessage(m);
 	init_spimessage(m);
+	init_livedatamessage(m);
 	init_messagefilter(m);
 	init_messagecallback(m);
 	init_diskdriver(m);

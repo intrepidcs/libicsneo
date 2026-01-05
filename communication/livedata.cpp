@@ -19,7 +19,8 @@ double liveDataValueToDouble(const LiveDataValue& val) {
 	return val.value * liveDataFixedPointToDouble; 
 } 
 
-bool liveDataDoubleToValue(const double& dFloat, LiveDataValue& value) {
+std::optional<LiveDataValue> liveDataDoubleToValue(const double& dFloat) {
+	LiveDataValue value;
 	union {
 		struct
 		{
@@ -56,23 +57,23 @@ bool liveDataDoubleToValue(const double& dFloat, LiveDataValue& value) {
 	value.value = CminiFixedPt.ValueLarge;
 
 	if(dFloat == (double)0.0)
-		return true;
+		return value;
 
 	//check if double can be stored as 32.32
 	// 0x1 0000 0000 0000 0000 * CM_FIXED_POINT_TO_DOUBLEVALUE = 0x1 0000 0000
 	if(dFloat > INT32_MAX_DOUBLE || dFloat < INT32_MIN_DOUBLE) {
 		EventManager::GetInstance().add(APIEvent::Type::FixedPointOverflow, APIEvent::Severity::Error);
-		return false;
+		return std::nullopt;
 	}
 
 	// Use absolute value for minimum fixed point check
 	double absFloat = (dFloat < 0.0) ? -dFloat : dFloat;
 	if(absFloat < MIN_FIXED_POINT_DOUBLE) {
 		EventManager::GetInstance().add(APIEvent::Type::FixedPointPrecision, APIEvent::Severity::Error);
-		return false;
+		return std::nullopt;
 	}
 
-	return true;
+	return value;
 }
 
 } // namespace LiveDataUtil

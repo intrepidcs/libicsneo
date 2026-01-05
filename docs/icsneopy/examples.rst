@@ -27,6 +27,15 @@ Complete CAN Example
    :language: python
 
 
+LiveData Subscription and Monitoring
+=====================================
+
+:download:`Download example <../../examples/python/livedata/livedata_example.py>`
+
+.. literalinclude:: ../../examples/python/livedata/livedata_example.py
+   :language: python
+
+
 Transmit Ethernet frames on Ethernet 01
 ========================================
 
