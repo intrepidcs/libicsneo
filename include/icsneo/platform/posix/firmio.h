@@ -19,6 +19,9 @@ class FirmIO : public Driver {
 public:
 	static void Find(std::vector<FoundDevice>& foundDevices);
 
+	FirmIO(const device_eventhandler_t& report) : Driver(report) {
+		writeQueueSize = 256;
+	}
 	using Driver::Driver; // Inherit constructor
 	~FirmIO();
 	bool open() override;
@@ -26,15 +29,15 @@ public:
 	bool close() override;
 	driver_finder_t getFinder() override { return FirmIO::Find; }
 
+	// bool writeQueueFull() override;
+	// bool writeQueueAlmostFull() override;
+	bool writeInternal(const std::vector<uint8_t>& b) override;
+
 private:
 	std::thread readThread, writeThread;
 
 	void readTask();
 	void writeTask();
-
-	bool writeQueueFull() override;
-	bool writeQueueAlmostFull() override;
-	bool writeInternal(const std::vector<uint8_t>& bytes) override;
 
 	struct DataInfo {
 		uint32_t type;
@@ -111,7 +114,11 @@ private:
 		bool free(uint8_t* addr);
 		PhysicalAddress translate(uint8_t* addr) const;
 
-	private:
+		uint32_t getUsedBlocks() const { return usedBlocks; }
+		size_t getTotalBlocks() const { return blocks.size(); }
+		bool isFull() const { return usedBlocks == blocks.size(); }
+
+
 		struct BlockInfo {
 			enum class Status : uint32_t {
 				Free = 0,
@@ -121,6 +128,7 @@ private:
 			uint8_t* addr;
 		};
 
+	private:
 		std::vector<BlockInfo> blocks;
 		std::atomic<uint32_t> usedBlocks;
 
@@ -137,6 +145,10 @@ private:
 	std::mutex outMutex;
 	std::optional<MsgQueue> out;
 	std::optional<Mempool> outMemory;
+
+	std::atomic<size_t> num_read = 0;
+	std::atomic<size_t> num_written = 0;
+	std::atomic<size_t> num_freed = 0;
 };
 
 }
