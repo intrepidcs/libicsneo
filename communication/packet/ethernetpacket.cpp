@@ -1,5 +1,5 @@
 #include "icsneo/communication/packet/ethernetpacket.h"
-#include <algorithm> // for std::copy
+#include <algorithm>
 #include <iostream>
 
 using namespace icsneo;
@@ -10,16 +10,17 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	// Make sure we have enough to read the packet length first
 	if(bytestream.size() < sizeof(HardwareEthernetPacket))
 		return nullptr;
-	// packet->Length will also encompass the two uint16_t's at the end of the struct, make sure that at least they are here
-	if(packet->Length < 4)
-		return nullptr;
 	const size_t fcsSize = packet->header.FCS_AVAIL ? 4 : 0;
+	// Ensure Length is sufficient for FCS extraction to avoid invalid iterator arithmetic
+	if(packet->Length < fcsSize)
+		return nullptr;
 	const size_t bytestreamExpectedSize = sizeof(HardwareEthernetPacket) + packet->Length;
 	const size_t bytestreamActualSize = bytestream.size();
 	if(bytestreamActualSize < bytestreamExpectedSize)
 		return nullptr;
 	auto messagePtr = std::make_shared<EthernetMessage>();
 	EthernetMessage& message = *messagePtr;
+	// Standard Ethernet fields
 	message.transmitted = packet->eid.TXMSG;
 	if(message.transmitted)
 		message.description = packet->stats;
@@ -27,11 +28,27 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	if(message.preemptionEnabled)
 		message.preemptionFlags = (uint8_t)((rawWords[0] & 0x03F8) >> 4);
 	message.frameTooShort = packet->header.RUNT_FRAME;
+	message.noPadding = !packet->header.ENABLE_PADDING;
+	message.fcsVerified = packet->header.FCS_VERIFIED;
+	message.txAborted = packet->eid.TXAborted;
+	message.crcError = packet->header.CRC_ERROR;
+
 	if(message.frameTooShort)
 		message.error = true;
 	// This timestamp is raw off the device (in timestampResolution increments)
 	// Decoder will fix as it has information about the timestampResolution increments
 	message.timestamp = packet->timestamp.TS;
+
+	// Check if this is a T1S packet and populate T1S-specific fields
+	message.isT1S = packet->header.T1S_ETHERNET;
+	if(message.isT1S) {
+		message.isT1SSymbol = packet->eid.T1S_SYMBOL;
+		message.isT1SBurst = packet->eid.T1S_BURST;
+		message.txCollision = packet->t1s_status.TXCollision;
+		message.isT1SWake = packet->t1s_status.T1SWake;
+		message.t1sNodeId = packet->t1s_node.T1S_NODE_ID;
+		message.t1sBurstCount = packet->t1s_node.T1S_BURST_COUNT;
+	}
 
 	const std::vector<uint8_t>::const_iterator databegin = bytestream.begin() + sizeof(HardwareEthernetPacket);
 	const std::vector<uint8_t>::const_iterator dataend = databegin + packet->Length - fcsSize;

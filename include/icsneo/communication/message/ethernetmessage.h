@@ -4,17 +4,17 @@
 #ifdef __cplusplus
 
 #include "icsneo/communication/message/message.h"
-
-// Used for MACAddress.toString() only
+#include <string>
+#include <vector>
 #include <sstream>
 #include <iomanip>
+#include <cstring>
 
 namespace icsneo {
 
 struct MACAddress {
 	uint8_t data[6];
 
-	// Helpers
 	std::string toString() const {
 		std::stringstream ss;
 		for(size_t i = 0; i < 6; i++) {
@@ -33,11 +33,25 @@ struct MACAddress {
 
 class EthernetMessage : public Frame {
 public:
+	// Standard Ethernet fields
 	bool preemptionEnabled = false;
 	uint8_t preemptionFlags = 0;
 	std::optional<uint32_t> fcs;
 	bool frameTooShort = false;
 	bool noPadding = false;
+	bool fcsVerified = false;
+	bool txAborted = false;
+	bool crcError = false;
+	bool isT1S = false;
+
+	
+	bool isT1SSymbol = false;
+	bool isT1SBurst = false;
+	bool txCollision = false;
+	bool isT1SWake = false;
+	uint8_t t1sNodeId = 0;
+	uint8_t t1sBurstCount = 0;
+	uint8_t t1sSymbolType = 0;
 
 	// Accessors
 	const MACAddress& getDestinationMAC() const { return *(const MACAddress*)(data.data() + 0); }
