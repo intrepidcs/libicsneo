@@ -940,6 +940,74 @@ public:
 		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
 		return std::nullopt;
 	}
+
+	virtual std::optional<bool> isT1SPLCAEnabledFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SPLCAFor(Network net, bool enable) {
+		(void)net; (void)enable;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+
+	virtual std::optional<uint8_t> getT1SLocalIDFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SLocalIDFor(Network net, uint8_t id) {
+		(void)net; (void)id;
+		return false;
+	}
+
+	virtual std::optional<uint8_t> getT1SMaxNodesFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SMaxNodesFor(Network net, uint8_t nodes) {
+		(void)net; (void)nodes;
+		return false;
+	}
+
+	virtual std::optional<uint8_t> getT1STxOppTimerFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1STxOppTimerFor(Network net, uint8_t timer) {
+		(void)net; (void)timer;
+		return false;
+	}
+
+	virtual std::optional<uint8_t> getT1SMaxBurstFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SMaxBurstFor(Network net, uint8_t burst) {
+		(void)net; (void)burst;
+		return false;
+	}
+
+	virtual std::optional<uint8_t> getT1SBurstTimerFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SBurstTimerFor(Network net, uint8_t timer) {
+		(void)net; (void)timer;
+		return false;
+	}
+
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }
 	template<typename T> const T* getStructurePointer() const { return reinterpret_cast<const T*>(getRawStructurePointer()); }

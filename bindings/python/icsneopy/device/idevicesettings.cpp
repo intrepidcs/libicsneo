@@ -41,20 +41,20 @@ void init_idevicesettings(pybind11::module_& m) {
         .def("apply", &IDeviceSettings::apply, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("apply_defaults", &IDeviceSettings::applyDefaults, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("refresh", &IDeviceSettings::refresh, pybind11::call_guard<pybind11::gil_scoped_release>())
-        
+
         // Baudrate methods
         .def("get_baudrate", &IDeviceSettings::getBaudrateFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_baudrate", &IDeviceSettings::setBaudrateFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("get_fd_baudrate", &IDeviceSettings::getFDBaudrateFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_fd_baudrate", &IDeviceSettings::setFDBaudrateFor, pybind11::call_guard<pybind11::gil_scoped_release>())
-        
+
         // Termination methods
         .def("is_termination_supported", &IDeviceSettings::isTerminationSupportedFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("can_termination_be_enabled", &IDeviceSettings::canTerminationBeEnabledFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("is_termination_enabled", &IDeviceSettings::isTerminationEnabledFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_termination", &IDeviceSettings::setTerminationFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("get_termination_groups", &IDeviceSettings::getTerminationGroups, pybind11::call_guard<pybind11::gil_scoped_release>())
-        
+
         // LIN methods
         .def("is_commander_resistor_enabled", &IDeviceSettings::isCommanderResistorEnabledFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_commander_resistor", &IDeviceSettings::setCommanderResistorFor, pybind11::call_guard<pybind11::gil_scoped_release>())
@@ -62,7 +62,7 @@ void init_idevicesettings(pybind11::module_& m) {
         .def("set_lin_mode", &IDeviceSettings::setLINModeFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("get_lin_commander_response_time", &IDeviceSettings::getLINCommanderResponseTimeFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_lin_commander_response_time", &IDeviceSettings::setLINCommanderResponseTimeFor, pybind11::call_guard<pybind11::gil_scoped_release>())
-        
+
         // Ethernet PHY methods
         .def("get_phy_enable", &IDeviceSettings::getPhyEnable, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("get_phy_mode", &IDeviceSettings::getPhyMode, pybind11::call_guard<pybind11::gil_scoped_release>())
@@ -70,6 +70,20 @@ void init_idevicesettings(pybind11::module_& m) {
         .def("set_phy_enable", &IDeviceSettings::setPhyEnable, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_phy_mode", &IDeviceSettings::setPhyMode, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_phy_speed", &IDeviceSettings::setPhySpeed, pybind11::call_guard<pybind11::gil_scoped_release>())
+
+        // 10BASE-T1S methods
+        .def("is_t1s_plca_enabled", &IDeviceSettings::isT1SPLCAEnabledFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_t1s_plca", &IDeviceSettings::setT1SPLCAFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_t1s_local_id", &IDeviceSettings::getT1SLocalIDFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_t1s_local_id", &IDeviceSettings::setT1SLocalIDFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_t1s_max_nodes", &IDeviceSettings::getT1SMaxNodesFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_t1s_max_nodes", &IDeviceSettings::setT1SMaxNodesFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_t1s_tx_opp_timer", &IDeviceSettings::getT1STxOppTimerFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_t1s_tx_opp_timer", &IDeviceSettings::setT1STxOppTimerFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_t1s_max_burst", &IDeviceSettings::getT1SMaxBurstFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_t1s_max_burst", &IDeviceSettings::setT1SMaxBurstFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_t1s_burst_timer", &IDeviceSettings::getT1SBurstTimerFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_t1s_burst_timer", &IDeviceSettings::setT1SBurstTimerFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         
         // Status properties
         .def_readonly("disabled", &IDeviceSettings::disabled)

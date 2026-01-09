@@ -47,6 +47,169 @@ static_assert(sizeof(radmoont1s_settings_t) == 160, "RADMoonT1S settings size mi
 class RADMoonT1SSettings : public IDeviceSettings {
 public:
 	RADMoonT1SSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radmoont1s_settings_t)) {}
+
+	std::optional<bool> isT1SPLCAEnabledFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+
+		return std::make_optional<bool>((t1s->flags & ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA) != 0);
+	}
+
+	bool setT1SPLCAFor(Network net, bool enable) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+
+		if(enable)
+			t1s->flags |= ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA;
+		else
+			t1s->flags &= ~ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA;
+
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SLocalIDFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+
+		return std::make_optional(t1s->local_id);
+	}
+
+	bool setT1SLocalIDFor(Network net, uint8_t id) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+
+		t1s->local_id = id;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SMaxNodesFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+
+		return std::make_optional(t1s->max_num_nodes);
+	}
+
+	bool setT1SMaxNodesFor(Network net, uint8_t nodes) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+
+		t1s->max_num_nodes = nodes;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1STxOppTimerFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+
+		return std::make_optional(t1s->to_timer);
+	}
+
+	bool setT1STxOppTimerFor(Network net, uint8_t timer) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+
+		t1s->to_timer = timer;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SMaxBurstFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+
+		return std::make_optional(t1s->max_burst_count);
+	}
+
+	bool setT1SMaxBurstFor(Network net, uint8_t burst) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+
+		t1s->max_burst_count = burst;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SBurstTimerFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+
+		return std::make_optional(t1s->burst_timer);
+	}
+
+	bool setT1SBurstTimerFor(Network net, uint8_t timer) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+
+		t1s->burst_timer = timer;
+		return true;
+	}
+
+private:
+	const ETHERNET10T1S_SETTINGS* getT1SSettingsFor(Network net) const {
+		auto cfg = getStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+
+		switch(net.getNetID()) {
+			case Network::NetID::AE_01:
+				return &(cfg->t1s);
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return nullptr;
+		}
+	}
+
+	ETHERNET10T1S_SETTINGS* getMutableT1SSettingsFor(Network net) {
+		auto cfg = getMutableStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+
+		switch(net.getNetID()) {
+			case Network::NetID::AE_01:
+				return &(cfg->t1s);
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return nullptr;
+		}
+	}
+
+	const ETHERNET10T1S_SETTINGS_EXT* getT1SSettingsExtFor(Network net) const {
+		auto cfg = getStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+
+		switch(net.getNetID()) {
+			case Network::NetID::AE_01:
+				return &(cfg->t1sExt);
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return nullptr;
+		}
+	}
+
+	ETHERNET10T1S_SETTINGS_EXT* getMutableT1SSettingsExtFor(Network net) {
+		auto cfg = getMutableStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+
+		switch(net.getNetID()) {
+			case Network::NetID::AE_01:
+				return &(cfg->t1sExt);
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return nullptr;
+		}
+	}
 };
 
 }
