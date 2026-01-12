@@ -111,7 +111,7 @@ void init_chipid(pybind11::module_& m) {
 		.value("RAD_GALAXY_2_ZMPCHIP_ID", ChipID::RAD_GALAXY_2_ZMPCHIP_ID)
 		.value("NewDevice59_MCHIP", ChipID::NewDevice59_MCHIP)
 		.value("RADMoon2_Z7010_ZYNQ", ChipID::RADMoon2_Z7010_ZYNQ)
-		.value("neoVIFIRE2_CORE_SG4", ChipID::neoVIFIRE2_CORE_SG4)
+		.value("neoVIFIRE2_Core_SG4", ChipID::neoVIFIRE2_Core_SG4)
 		.value("RADBMS_MCHIP", ChipID::RADBMS_MCHIP)
 		.value("RADMoon2_ZL_MCHIP", ChipID::RADMoon2_ZL_MCHIP)
 		.value("RADGigastar_USBZ_Z7010_ZYNQ", ChipID::RADGigastar_USBZ_Z7010_ZYNQ)

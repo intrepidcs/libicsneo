@@ -162,6 +162,14 @@ public:
 
 	bool hasBootloader() { return !!getBootloader(); }
 
+	virtual bool supportsSwVersionValidate() const {
+		return true;
+	}
+
+	void setBootloaderVersion(const HardwareInfo::Version& version) {
+		bootloaderVersion = version;
+	}
+
 	static std::string SerialNumToString(uint32_t serial);
 	static uint32_t SerialStringToNum(const std::string& serial);
 	static bool SerialStringIsNumeric(const std::string& serial);
@@ -982,6 +990,7 @@ protected:
 	LEDState ledState;
 	void updateLEDState();
 
+	std::optional<HardwareInfo::Version> bootloaderVersion = std::nullopt;
 
 private:
 	neodevice_t data;

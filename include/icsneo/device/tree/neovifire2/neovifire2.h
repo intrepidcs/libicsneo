@@ -98,13 +98,15 @@ public:
 	}
 
 	CoreChipVariant getCoreChipVariant() {
-		const auto& hardwareInfo = getHardwareInfo(std::chrono::milliseconds(1000));
-		if(!hardwareInfo) {
-			chipVariant = CoreChipVariant::Invalid;
-			return chipVariant;
+		if(!bootloaderVersion.has_value()) {
+			const auto& hardwareInfo = getHardwareInfo(std::chrono::milliseconds(1000));
+			if(!hardwareInfo) {
+				chipVariant = CoreChipVariant::Invalid;
+				return chipVariant;
+			}
+			setBootloaderVersion(hardwareInfo->bootloaderVersion);
 		}
-		const auto& bootloaderVersion = hardwareInfo->bootloaderVersion;
-		if(bootloaderVersion.major >= CORE_SG4_BL_MAJOR_VERSION_CUTOFF) {
+		if(bootloaderVersion->major >= CORE_SG4_BL_MAJOR_VERSION_CUTOFF) {
 			chipVariant = CoreChipVariant::Core_SG4;
 		} else {
 			chipVariant = CoreChipVariant::Core;
@@ -122,7 +124,7 @@ public:
 		static std::vector<ChipInfo> chipsSG4 = {
 			{ChipID::neoVIFIRE2_MCHIP, true, "MCHIP", "fire2_mchip_ief", 0, FirmwareType::IEF},
 			{ChipID::neoVIFIRE2_ZYNQ, true, "ZCHIP", "fire2_zchip_ief", 1, FirmwareType::IEF},
-			{ChipID::neoVIFIRE2_CORE_SG4, true, "Core", "fire2_core_sg4", 2, FirmwareType::IEF}
+			{ChipID::neoVIFIRE2_Core_SG4, true, "Core", "fire2_core_sg4", 2, FirmwareType::IEF}
 		};
 		
 		if(chipVariant == CoreChipVariant::Core_SG4) {
@@ -137,7 +139,7 @@ public:
 		pipeline.add<EnterBootloaderPhase>()
 				.add<FlashPhase>(ChipID::neoVIFIRE2_MCHIP, BootloaderCommunication::RED);
 		if(chipVariant == CoreChipVariant::Core_SG4) {
-			pipeline.add<FlashPhase>(ChipID::neoVIFIRE2_CORE_SG4, BootloaderCommunication::REDCore, false, false);
+			pipeline.add<FlashPhase>(ChipID::neoVIFIRE2_Core_SG4, BootloaderCommunication::REDCore, false, false);
 		} else {
 			pipeline.add<FlashPhase>(ChipID::neoVIFIRE2_Core, BootloaderCommunication::REDCore, false, false);
 		}
@@ -145,6 +147,10 @@ public:
 				.add<EnterApplicationPhase>(ChipID::neoVIFIRE2_MCHIP)
 				.add<ReconnectPhase>();
 		return pipeline;
+	}
+
+	bool supportsSwVersionValidate() const override {
+		return bootloaderVersion.has_value() && (bootloaderVersion->major > 4 || (bootloaderVersion->major == 4 && bootloaderVersion->minor >= 3));
 	}
 
 	std::vector<VersionReport> getChipVersions(bool refreshComponents = true) override {
