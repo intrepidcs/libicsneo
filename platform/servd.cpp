@@ -6,7 +6,7 @@
 
 using namespace icsneo;
 
-#define SERVD_VERSION 1
+#define SERVD_VERSION 2
 
 static const Address SERVD_ADDRESS = Address("127.0.0.1", 26741);
 static const std::string SERVD_VERSION_STR = std::to_string(SERVD_VERSION);
@@ -41,20 +41,17 @@ std::vector<std::string> split(const std::string_view& str, char delim = ' ') {
 }
 
 void Servd::Find(std::vector<FoundDevice>& found) {
-	Socket socket;
+	Socket socket(AF_INET, SOCK_DGRAM, 0);
+	socket.connect(SERVD_ADDRESS);
 	if(!socket.set_nonblocking()) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdNonblockError, APIEvent::Severity::Error);
-		return;
-	}
-	if(!socket.bind(Address("127.0.0.1", 0))) {
-		EventManager::GetInstance().add(APIEvent::Type::ServdBindError, APIEvent::Severity::Error);
 		return;
 	}
 	std::string response;
 
 	response.resize(512);
 	const std::string version_request = SERVD_VERSION_STR + " version";
-	if(!socket.transceive(SERVD_ADDRESS, version_request, response, std::chrono::milliseconds(5000))) {
+	if(!socket.transceive(version_request, response, std::chrono::milliseconds(5000))) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
 		return;
 	}
@@ -66,46 +63,39 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 
 	response.resize(512);
 	const std::string find_request = SERVD_VERSION_STR + " find";
-	if(!socket.transceive(SERVD_ADDRESS, find_request, response, std::chrono::milliseconds(5000))) {
+	if(!socket.transceive(find_request, response, std::chrono::milliseconds(5000))) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
 		return;
 	}
 	const auto lines = split(response, '\n');
 	for(auto&& line : lines) {
 		const auto cols = split(line, ' ');
-		if(cols.size() < 2) {
+		if(cols.size() < 3) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
 			continue;
 		}
 		const auto& serial = cols[0];
-		std::unordered_set<std::string> drivers;
-		for (size_t i = 1; i < cols.size(); ++i) {
-			drivers.emplace(cols[i]);
+		const auto& ip = cols[1];
+		uint16_t port = 0;
+		try {
+			port = static_cast<uint16_t>(std::stoi(cols[2]));
+		} catch (const std::exception&) {
+			EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
+			continue;
 		}
+		Address address(ip.c_str(), port);
 		auto& newFound = found.emplace_back();
 		std::copy(serial.begin(), serial.end(), newFound.serial);
 		newFound.makeDriver = [=](device_eventhandler_t err, neodevice_t& forDevice) {
-			return std::make_unique<Servd>(err, forDevice, drivers);
+			return std::make_unique<Servd>(err, forDevice, address);
 		};
 	}
 }
 
-Servd::Servd(const device_eventhandler_t& err, neodevice_t& forDevice, const std::unordered_set<std::string>& availableDrivers) :
-	Driver(err), device(forDevice) {
+Servd::Servd(const device_eventhandler_t& err, neodevice_t& forDevice, const Address& address) :
+	Driver(err), device(forDevice), messageSocket(AF_INET, SOCK_DGRAM, 0) {
+	messageSocket.connect(address);
 	messageSocket.set_nonblocking();
-	messageSocket.bind(Address("127.0.0.1", 0));
-	if(availableDrivers.count("dxx")) {
-		driver = "dxx"; // prefer USB over Ethernet
-	} else if(availableDrivers.count("cab")) {
-		driver = "cab"; // prefer CAB over TCP
-	} else if(availableDrivers.count("tcp")) {
-		driver = "tcp";
-	} else if(availableDrivers.count("vcp")) {
-		driver = "vcp";
-	} else {
-		// just take the first driver
-		driver = *availableDrivers.begin();
-	}
 }
 
 Servd::~Servd() {
@@ -113,21 +103,31 @@ Servd::~Servd() {
 }
 
 bool Servd::open() {
-	const std::string request = SERVD_VERSION_STR + " open " + std::string(device.serial) + " " + driver;
+	const std::string request = SERVD_VERSION_STR + " open";
 	std::string response;
 	response.resize(512);
-	if(!messageSocket.transceive(SERVD_ADDRESS, request, response, std::chrono::milliseconds(5000))) {
+	if(!messageSocket.transceive(request, response, std::chrono::milliseconds(5000))) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
 		return false;
 	}
 	const auto tokens = split(response);
-	if(tokens.size() != 4) {
+	if(tokens.size() != 2) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
 		return false;
 	}
-	aliveThread = std::thread(&Servd::alive, this);
-	readThread = std::thread(&Servd::read, this, Address{tokens[2].c_str(), (uint16_t)std::stol(tokens[3].c_str())});
-	writeThread = std::thread(&Servd::write, this, Address{tokens[0].c_str(), (uint16_t)std::stol(tokens[1].c_str())});
+	dataSocket = std::make_unique<Socket>(AF_INET, SOCK_STREAM, 0);
+	const auto& ip = tokens[0];
+	uint16_t port = 0;
+	try {
+		port = static_cast<uint16_t>(std::stoi(tokens[1]));
+	} catch (const std::exception&) {
+		EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
+		return false;
+	}
+	Address address(ip.c_str(), port);
+	dataSocket->connect(address);
+	readThread = std::thread(&Servd::read, this);
+	writeThread = std::thread(&Servd::write, this);
 	opened = true;
 	return true;
 }
@@ -138,9 +138,6 @@ bool Servd::isOpen() {
 
 bool Servd::close() {
 	setIsClosing(true);
-	if(aliveThread.joinable()) {
-		aliveThread.join();
-	}
 	if(readThread.joinable()) {
 		readThread.join();
 	}
@@ -148,8 +145,16 @@ bool Servd::close() {
 		writeThread.join();
 	}
 	if(isOpen()) {
-		const std::string request = SERVD_VERSION_STR + " close " + std::string(device.serial);
-		messageSocket.sendto(request.data(), request.size(), SERVD_ADDRESS);
+		Address localAddress;
+		dataSocket->address(localAddress);
+		const std::string request = SERVD_VERSION_STR + " close " + localAddress.ip() + " " + std::to_string(localAddress.port());
+		std::string response;
+		response.resize(1);
+		if(!messageSocket.transceive(request, response, std::chrono::milliseconds(5000))) {
+			EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
+			return false;
+		}
+		dataSocket.reset();
 	}
 	opened = false;
 	setIsClosing(false);
@@ -159,13 +164,13 @@ bool Servd::close() {
 bool Servd::enableCommunication(bool enable, bool& sendMsg) {
 	const std::string serialString(device.serial);
 	{
-		const std::string request = SERVD_VERSION_STR + " lock " + serialString + " com 1000";
+		const std::string request = SERVD_VERSION_STR + " lock com 1000";
 		std::string response;
 		response.resize(1);
 		bool locked = false;
 		const auto timeout = std::chrono::steady_clock::now() + std::chrono::seconds(1);
 		do {
-			if(!messageSocket.transceive(SERVD_ADDRESS, request, response, std::chrono::milliseconds(5000))) {
+			if(!messageSocket.transceive(request, response, std::chrono::milliseconds(5000))) {
 				return false;
 			}
 			locked = response == "1" ? true : false;
@@ -181,10 +186,10 @@ bool Servd::enableCommunication(bool enable, bool& sendMsg) {
 	}
 	uint64_t com = 0;
 	{
-		const std::string request = SERVD_VERSION_STR + " load " + serialString + " com";
+		const std::string request = SERVD_VERSION_STR + " load com";
 		std::string response;
 		response.resize(20);
-		if(!messageSocket.transceive(SERVD_ADDRESS, request, response, std::chrono::milliseconds(5000))) {
+		if(!messageSocket.transceive(request, response, std::chrono::milliseconds(5000))) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
 			return false;
 		}
@@ -202,16 +207,20 @@ bool Servd::enableCommunication(bool enable, bool& sendMsg) {
 	}
 	if(comEnabled != enable) {
 		com += enable ? 1 : -1;
-		const std::string request = SERVD_VERSION_STR + " store " + serialString  + " com " + std::to_string(com);
-		if(!messageSocket.sendto(request.data(), request.size(), SERVD_ADDRESS)) {
+		const std::string request = SERVD_VERSION_STR + " store com " + std::to_string(com);
+		std::string response;
+		response.resize(1);
+		if(!messageSocket.transceive(request, response, std::chrono::milliseconds(5000))) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdSendError, APIEvent::Severity::Error);
 			return false;
 		}
 	}
 	comEnabled = enable;
 	{
-		const std::string request = SERVD_VERSION_STR + " unlock " + serialString + " com";
-		if(!messageSocket.sendto(request.data(), request.size(), SERVD_ADDRESS)) {
+		const std::string request = SERVD_VERSION_STR + " unlock com";
+		std::string response;
+		response.resize(1);
+		if(!messageSocket.transceive(request, response, std::chrono::milliseconds(5000))) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdSendError, APIEvent::Severity::Error);
 			return false;
 		}
@@ -219,78 +228,11 @@ bool Servd::enableCommunication(bool enable, bool& sendMsg) {
 	return true;
 }
 
-void Servd::alive() {
-	Socket socket;
-	socket.set_nonblocking();
-	socket.bind(Address("127.0.0.1", 0));
-	const std::string statusRequest = SERVD_VERSION_STR + " status " + std::string(device.serial);
-	std::string statusResponse;
-	statusResponse.resize(8);
-	while(!isDisconnected() && !isClosing()) {
-		if(!socket.sendto(statusRequest.data(), statusRequest.size(), {"127.0.0.1", 26741})) {
-			EventManager::GetInstance().add(APIEvent::Type::ServdSendError, APIEvent::Severity::Error);
-			setIsDisconnected(true);
-			return;
-		}
-		bool hasData;
-		if(!socket.poll(std::chrono::milliseconds(2000), hasData)) {
-			EventManager::GetInstance().add(APIEvent::Type::ServdPollError, APIEvent::Severity::Error);
-			setIsDisconnected(true);
-			return;
-		}
-		if(!hasData) {
-			EventManager::GetInstance().add(APIEvent::Type::ServdNoDataError, APIEvent::Severity::Error);
-			setIsDisconnected(true);
-			return;
-		}
-		size_t statusResponseSize = statusResponse.size();
-		if(!socket.recv(statusResponse.data(), statusResponseSize)) {
-			EventManager::GetInstance().add(APIEvent::Type::ServdRecvError, APIEvent::Severity::Error);
-			setIsDisconnected(true);
-			return;
-		}
-		statusResponse.resize(statusResponseSize);
-		if(statusRequest == "closed") {
-			EventManager::GetInstance().add(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
-			setIsDisconnected(true);
-			return;
-		}
-		if(statusResponse != "open") {
-			EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
-			setIsDisconnected(true);
-			return;
-		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-	}
-}
-
-void Servd::read(Address&& address) {
-	Socket socket;
-	socket.set_nonblocking();
-	socket.set_reuse(true);
-	#ifdef _WIN32
-	if(!socket.bind(Address("127.0.0.1", address.port()))) {
-		EventManager::GetInstance().add(APIEvent::Type::ServdBindError, APIEvent::Severity::Error);
-		setIsDisconnected(true);
-		return;
-	}
-	#else
-	if(!socket.bind(Address(address.ip().c_str(), address.port()))) {
-		EventManager::GetInstance().add(APIEvent::Type::ServdBindError, APIEvent::Severity::Error);
-		setIsDisconnected(true);
-		return;
-	}
-	#endif
-	if(!socket.join_multicast("127.0.0.1", address.ip())) {
-		EventManager::GetInstance().add(APIEvent::Type::ServdJoinMulticastError, APIEvent::Severity::Error);
-		setIsDisconnected(true);
-		return;
-	}
-
-	std::vector<uint8_t> buf(65535);
+void Servd::read() {
+	std::vector<uint8_t> buf(2 * 1024 * 1024);
 	while(!isDisconnected() && !isClosing()) {
 		bool hasData;
-		if(!socket.poll(std::chrono::milliseconds(100), hasData)) {
+		if(!dataSocket->poll(std::chrono::milliseconds(100), hasData)) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdPollError, APIEvent::Severity::Error);
 			setIsDisconnected(true);
 			return;
@@ -299,7 +241,7 @@ void Servd::read(Address&& address) {
 			continue;
 		}
 		size_t bufSize = buf.size();
-		if(!socket.recv(buf.data(), bufSize)) {
+		if(!dataSocket->recv(buf.data(), bufSize)) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdRecvError, APIEvent::Severity::Error);
 			setIsDisconnected(true);
 			return;
@@ -308,16 +250,14 @@ void Servd::read(Address&& address) {
 	}
 }
 
-void Servd::write(Address&& address) {
-	Socket socket;
-	socket.bind(Address("127.0.0.1", 0));
+void Servd::write() {
 	WriteOperation writeOp;
 	while(!isDisconnected() && !isClosing()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100))) {
 			continue;
 		}
 		if(!isClosing()) {
-			if(!socket.sendto(writeOp.bytes.data(), writeOp.bytes.size(), address)) {
+			if(!dataSocket->send(writeOp.bytes.data(), writeOp.bytes.size())) {
 				EventManager::GetInstance().add(APIEvent::Type::ServdSendError, APIEvent::Severity::Error);
 				setIsDisconnected(true);
 				return;

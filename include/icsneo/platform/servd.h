@@ -18,27 +18,24 @@ class Servd : public Driver {
 public:
 	static void Find(std::vector<FoundDevice>& foundDevices);
 	static bool Enabled();
-	Servd(const device_eventhandler_t& err, neodevice_t& forDevice, const std::unordered_set<std::string>& availableDrivers);
+	Servd(const device_eventhandler_t& err, neodevice_t& forDevice, const Address& address);
 	~Servd() override;
 	bool open() override;
 	bool isOpen() override;
 	bool close() override;
-	bool faa(const std::string& key, int32_t inc, int32_t& orig);
 	bool enableCommunication(bool enable, bool& sendMsg) override;
 	driver_finder_t getFinder() override { return Servd::Find; }
 
 private:
-	void alive();
-	void read(Address&& address);
-	void write(Address&& address);
+	void read();
+	void write();
 	neodevice_t& device;
-	std::thread aliveThread; // makes sure the client and server are healthy
 	std::thread writeThread;
 	std::thread readThread;
 	Socket messageSocket;
 	bool opened = false;
 	bool comEnabled = false;
-	std::string driver;
+	std::unique_ptr<Socket> dataSocket;
 };
 
 }

@@ -73,11 +73,12 @@ public:
 	using SocketHandleType = int;
 	#endif
 	
-	Socket() {
+	template<class... Args>
+	Socket(Args&&... args) {
 		#ifdef _WIN32
 		static WSA wsa;
 		#endif
-		mFD = socket(AF_INET, SOCK_DGRAM, 0);
+		mFD = socket(std::forward<Args>(args)...);
 	}
 	
 	~Socket() {
@@ -100,6 +101,10 @@ public:
 		#else
 		return fcntl(mFD, F_SETFL, fcntl(mFD, F_GETFL, 0) | O_NONBLOCK) != -1;
 		#endif
+	}
+
+	bool connect(const Address& to) {
+		return ::connect(mFD, (sockaddr*)&to.sockaddr(), sizeof(sockaddr_in)) != -1;
 	}
 	
 	bool bind(const Address& at) {
@@ -141,6 +146,14 @@ public:
 		return true;
 	}
 	
+	bool send(const void* buffer, size_t size) {
+		auto sent = ::send(mFD, (const char*)buffer, (int)size, 0);
+		if(sent == -1) {
+			return false;
+		}
+		return (size_t)sent == size;
+	}
+	
 	bool recvfrom(void* buffer, size_t& size, Address& from) {
 		sockaddr_in addr;
 		socklen_t addLen = sizeof(addr);
@@ -163,8 +176,8 @@ public:
 	}
 
 	template<typename REQ, typename RES>
-	bool transceive(const Address& to, REQ&& request, RES&& response, const std::chrono::milliseconds& timeout) {
-		if(!sendto(request.data(), request.size(), to)) {
+	bool transceive(REQ&& request, RES&& response, const std::chrono::milliseconds& timeout) {
+		if(!send(request.data(), request.size())) {
 			return false;
 		}
 		bool hasData;
