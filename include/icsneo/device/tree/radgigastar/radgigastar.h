@@ -93,11 +93,13 @@ public:
 		if(com->driver->isEthernet()) {
 			return BootloaderPipeline()
 				.add<FlashPhase>(ChipID::RADGigastar_ZYNQ, BootloaderCommunication::RAD)
+				.add<EnterApplicationPhase>(ChipID::RADGigastar_ZYNQ)
 				.add<WaitPhase>(std::chrono::milliseconds(3000))
 				.add<ReconnectPhase>();
 		}
 		return BootloaderPipeline()
 			.add<FlashPhase>(ChipID::RADGigastar_USBZ_ZYNQ, BootloaderCommunication::RAD)
+			.add<EnterApplicationPhase>(ChipID::RADGigastar_USBZ_ZYNQ)
 			.add<WaitPhase>(std::chrono::milliseconds(3000))
 			.add<ReconnectPhase>();
 	}

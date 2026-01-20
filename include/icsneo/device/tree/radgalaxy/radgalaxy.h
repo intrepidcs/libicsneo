@@ -80,6 +80,7 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::RADGalaxy_ZYNQ, BootloaderCommunication::RAD)
+			.add<EnterApplicationPhase>(ChipID::RADGalaxy_ZYNQ)
 			.add<ReconnectPhase>()
 			.add<WaitPhase>(std::chrono::milliseconds(3000));
 	}

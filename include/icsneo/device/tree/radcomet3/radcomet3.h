@@ -69,6 +69,7 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::RADCOMET3_ZCHIP, BootloaderCommunication::RAD)
+			.add<EnterApplicationPhase>(ChipID::RADCOMET3_ZCHIP)
 			.add<WaitPhase>(std::chrono::milliseconds(5000))
 			.add<ReconnectPhase>();
 	}

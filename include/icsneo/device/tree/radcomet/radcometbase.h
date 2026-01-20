@@ -45,6 +45,7 @@ public:
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::RADComet_ZYNQ, BootloaderCommunication::RAD)
+			.add<EnterApplicationPhase>(ChipID::RADComet_ZYNQ)
 			.add<WaitPhase>(std::chrono::milliseconds(3000))
 			.add<ReconnectPhase>();
 	}
