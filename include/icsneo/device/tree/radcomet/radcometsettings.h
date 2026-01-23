@@ -116,6 +116,141 @@ public:
 				return nullptr;
 		}
 	}
+
+	std::optional<bool> isT1SPLCAEnabledFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional((t1s->flags & ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA) != 0);
+	}
+
+	bool setT1SPLCAFor(Network net, bool enable) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		if(enable)
+			t1s->flags |= ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA;
+		else
+			t1s->flags &= ~ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA;
+		
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SLocalIDFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional(t1s->local_id);
+	}
+
+	bool setT1SLocalIDFor(Network net, uint8_t id) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		t1s->local_id = id;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SMaxNodesFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional(t1s->max_num_nodes);
+	}
+
+	bool setT1SMaxNodesFor(Network net, uint8_t nodes) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		t1s->max_num_nodes = nodes;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1STxOppTimerFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional(t1s->to_timer);
+	}
+
+	bool setT1STxOppTimerFor(Network net, uint8_t timer) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		t1s->to_timer = timer;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SMaxBurstFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional(t1s->max_burst_count);
+	}
+
+	bool setT1SMaxBurstFor(Network net, uint8_t burst) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		t1s->max_burst_count = burst;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SBurstTimerFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional(t1s->burst_timer);
+	}
+
+	bool setT1SBurstTimerFor(Network net, uint8_t timer) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		t1s->burst_timer = timer;
+		return true;
+	}
+
+private:
+	const ETHERNET10T1S_SETTINGS* getT1SSettingsFor(Network net) const {
+		auto cfg = getStructurePointer<radcomet_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		
+		switch(net.getNetID()) {
+			case Network::NetID::AE_02: return &(cfg->t1s1);
+			case Network::NetID::AE_03: return &(cfg->t1s2);
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return nullptr;
+		}
+	}
+
+	ETHERNET10T1S_SETTINGS* getMutableT1SSettingsFor(Network net) {
+		auto cfg = getMutableStructurePointer<radcomet_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		
+		switch(net.getNetID()) {
+			case Network::NetID::AE_02: return &(cfg->t1s1);
+			case Network::NetID::AE_03: return &(cfg->t1s2);
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return nullptr;
+		}
+	}
 };
 
 }

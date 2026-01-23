@@ -53,7 +53,7 @@ public:
 		if(t1s == nullptr)
 			return std::nullopt;
 
-		return std::make_optional<bool>((t1s->flags & ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA) != 0);
+		return std::make_optional((t1s->flags & ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA) != 0);
 	}
 
 	bool setT1SPLCAFor(Network net, bool enable) override {
