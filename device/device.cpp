@@ -613,6 +613,11 @@ bool Device::goOffline() {
 		return true;
 	}
 
+	if(assignedClientId.has_value()) {
+		unlockAllNetworks();
+		assignedClientId.reset();
+	}
+	
 	if(!enableNetworkCommunication(false))
 		return false;
 
