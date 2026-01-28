@@ -12,7 +12,6 @@ namespace icsneo {
 
 struct DeviceSettingsNamespace {
     using EthLinkMode = AELinkMode;
-    using LinkSpeed = EthLinkSpeed;
 };
 
 void init_idevicesettings(pybind11::module_& m) {
@@ -23,13 +22,17 @@ void init_idevicesettings(pybind11::module_& m) {
         .value("Slave", DeviceSettingsNamespace::EthLinkMode::AE_LINK_SLAVE)
         .value("Master", DeviceSettingsNamespace::EthLinkMode::AE_LINK_MASTER);
 
-    pybind11::enum_<DeviceSettingsNamespace::LinkSpeed>(settings, "EthernetLinkSpeed")
-        .value("Speed10M", DeviceSettingsNamespace::LinkSpeed::ETH_SPEED_10)
-        .value("Speed100M", DeviceSettingsNamespace::LinkSpeed::ETH_SPEED_100)
-        .value("Speed1G", DeviceSettingsNamespace::LinkSpeed::ETH_SPEED_1000)
-        .value("Speed2_5G", DeviceSettingsNamespace::LinkSpeed::ETH_SPEED_2500)
-        .value("Speed5G", DeviceSettingsNamespace::LinkSpeed::ETH_SPEED_5000)
-        .value("Speed10G", DeviceSettingsNamespace::LinkSpeed::ETH_SPEED_10000);
+    pybind11::enum_<EthPhyLinkMode>(settings, "PhyLinkMode")
+        .value("ETH_LINK_MODE_AUTO_NEGOTIATION", ETH_LINK_MODE_AUTO_NEGOTIATION)
+        .value("ETH_LINK_MODE_10MBPS_HALFDUPLEX", ETH_LINK_MODE_10MBPS_HALFDUPLEX)
+        .value("ETH_LINK_MODE_10MBPS_FULLDUPLEX", ETH_LINK_MODE_10MBPS_FULLDUPLEX)
+        .value("ETH_LINK_MODE_100MBPS_HALFDUPLEX", ETH_LINK_MODE_100MBPS_HALFDUPLEX)
+        .value("ETH_LINK_MODE_100MBPS_FULLDUPLEX", ETH_LINK_MODE_100MBPS_FULLDUPLEX)
+        .value("ETH_LINK_MODE_1GBPS_HALFDUPLEX", ETH_LINK_MODE_1GBPS_HALFDUPLEX)
+        .value("ETH_LINK_MODE_1GBPS_FULLDUPLEX", ETH_LINK_MODE_1GBPS_FULLDUPLEX)
+        .value("ETH_LINK_MODE_2_5GBPS_FULLDUPLEX", ETH_LINK_MODE_2_5GBPS_FULLDUPLEX)
+        .value("ETH_LINK_MODE_5GBPS_FULLDUPLEX", ETH_LINK_MODE_5GBPS_FULLDUPLEX)
+        .value("ETH_LINK_MODE_10GBPS_FULLDUPLEX", ETH_LINK_MODE_10GBPS_FULLDUPLEX);
 
     pybind11::enum_<LINMode>(settings, "LINMode")
         .value("Sleep", LINMode::SLEEP_MODE)
@@ -63,13 +66,22 @@ void init_idevicesettings(pybind11::module_& m) {
         .def("get_lin_commander_response_time", &IDeviceSettings::getLINCommanderResponseTimeFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_lin_commander_response_time", &IDeviceSettings::setLINCommanderResponseTimeFor, pybind11::call_guard<pybind11::gil_scoped_release>())
 
-        // Ethernet PHY methods
+        // Ethernet PHY methods (index-based for switch devices)
         .def("get_phy_enable", &IDeviceSettings::getPhyEnable, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("get_phy_mode", &IDeviceSettings::getPhyMode, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("get_phy_speed", &IDeviceSettings::getPhySpeed, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_phy_enable", &IDeviceSettings::setPhyEnable, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_phy_mode", &IDeviceSettings::setPhyMode, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_phy_speed", &IDeviceSettings::setPhySpeed, pybind11::call_guard<pybind11::gil_scoped_release>())
+
+        // Ethernet PHY methods (network-based for multi-interface devices)
+        .def("get_phy_enable_for", &IDeviceSettings::getPhyEnableFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_phy_role_for", &IDeviceSettings::getPhyRoleFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_phy_link_mode_for", &IDeviceSettings::getPhyLinkModeFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_phy_enable_for", &IDeviceSettings::setPhyEnableFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_phy_role_for", &IDeviceSettings::setPhyRoleFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_phy_link_mode_for", &IDeviceSettings::setPhyLinkModeFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_supported_phy_link_modes_for", &IDeviceSettings::getSupportedPhyLinkModesFor, pybind11::call_guard<pybind11::gil_scoped_release>())
 
         // 10BASE-T1S methods
         .def("is_t1s_plca_enabled", &IDeviceSettings::isT1SPLCAEnabledFor, pybind11::call_guard<pybind11::gil_scoped_release>())

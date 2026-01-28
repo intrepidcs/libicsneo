@@ -168,7 +168,7 @@ public:
 		return true;
 	}
 
-	bool setPhySpeed(uint8_t index, EthLinkSpeed speed) override {
+	bool setPhySpeed(uint8_t index, EthPhyLinkMode mode) override {
 		if (index > RADEPSILON_MAX_PHY) {
 			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 			return false;
@@ -178,19 +178,30 @@ public:
 			return false;
 		}
 		EpsilonPhySpeed epsilonSpeed;
-		switch (speed) {
+		switch (mode) {
+			case ETH_LINK_MODE_AUTO_NEGOTIATION:
+				// Auto-negotiate - default to 1G base speed
+				epsilonSpeed = EpsilonPhySpeed::Speed1000;
+				break;
+			case ETH_LINK_MODE_100MBPS_FULLDUPLEX:
+				epsilonSpeed = EpsilonPhySpeed::Speed100;
+				break;
+			case ETH_LINK_MODE_1GBPS_FULLDUPLEX:
+				epsilonSpeed = EpsilonPhySpeed::Speed1000;
+				break;
+			case ETH_LINK_MODE_10GBPS_FULLDUPLEX:
+				epsilonSpeed = EpsilonPhySpeed::Speed10000;
+				break;
+			// Reject half-duplex modes - automotive T1 is full-duplex only
+			case ETH_LINK_MODE_10MBPS_HALFDUPLEX:
+			case ETH_LINK_MODE_10MBPS_FULLDUPLEX:
+			case ETH_LINK_MODE_100MBPS_HALFDUPLEX:
+			case ETH_LINK_MODE_1GBPS_HALFDUPLEX:
+			case ETH_LINK_MODE_2_5GBPS_FULLDUPLEX:
+			case ETH_LINK_MODE_5GBPS_FULLDUPLEX:
 			default:
 				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 				return false;
-			case ETH_SPEED_100:
-				epsilonSpeed = EpsilonPhySpeed::Speed100;
-				break;
-			case ETH_SPEED_1000:
-				epsilonSpeed = EpsilonPhySpeed::Speed1000;
-				break;
-			case ETH_SPEED_10000:
-				epsilonSpeed = EpsilonPhySpeed::Speed10000;
-				break;
 		}
 		cfg->switchSettings.speed[index] = static_cast<uint8_t>(epsilonSpeed);
 		return true;
@@ -235,7 +246,7 @@ public:
 		return std::make_optional(static_cast<bool>(cfg->switchSettings.enablePhy[index]));
 	}
 
-	std::optional<EthLinkSpeed> getPhySpeed(uint8_t index) override {
+	std::optional<EthPhyLinkMode> getPhySpeed(uint8_t index) override {
 		if (index > RADEPSILON_MAX_PHY) {
 			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 			return std::nullopt;
@@ -244,22 +255,18 @@ public:
 		if (cfg == nullptr) {
 			return std::nullopt;
 		}
-		EthLinkSpeed speed;
+		// Automotive Ethernet T1 is always full-duplex
 		switch (static_cast<EpsilonPhySpeed>(cfg->switchSettings.speed[index])) {
+			case EpsilonPhySpeed::Speed100:
+				return ETH_LINK_MODE_100MBPS_FULLDUPLEX;
+			case EpsilonPhySpeed::Speed1000:
+				return ETH_LINK_MODE_1GBPS_FULLDUPLEX;
+			case EpsilonPhySpeed::Speed10000:
+				return ETH_LINK_MODE_10GBPS_FULLDUPLEX;
 			default:
 				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 				return std::nullopt;
-			case EpsilonPhySpeed::Speed100:
-				speed = ETH_SPEED_100;
-				break;
-			case EpsilonPhySpeed::Speed1000:
-				speed = ETH_SPEED_1000;
-				break;
-			case EpsilonPhySpeed::Speed10000:
-				speed = ETH_SPEED_10000;
-				break;
 		}
-		return std::make_optional(speed);
 	}
 
 private:

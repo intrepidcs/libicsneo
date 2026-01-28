@@ -54,14 +54,18 @@ enum AELinkMode
 	AE_LINK_SLAVE
 };
 
-enum EthLinkSpeed
+enum EthPhyLinkMode
 {
-	ETH_SPEED_10 = 0,
-	ETH_SPEED_100,
-	ETH_SPEED_1000,
-	ETH_SPEED_2500,
-	ETH_SPEED_5000,
-	ETH_SPEED_10000,
+	ETH_LINK_MODE_AUTO_NEGOTIATION = 0,
+	ETH_LINK_MODE_10MBPS_HALFDUPLEX,
+	ETH_LINK_MODE_10MBPS_FULLDUPLEX,
+	ETH_LINK_MODE_100MBPS_HALFDUPLEX,
+	ETH_LINK_MODE_100MBPS_FULLDUPLEX,
+	ETH_LINK_MODE_1GBPS_HALFDUPLEX,
+	ETH_LINK_MODE_1GBPS_FULLDUPLEX,
+	ETH_LINK_MODE_2_5GBPS_FULLDUPLEX,
+	ETH_LINK_MODE_5GBPS_FULLDUPLEX,
+	ETH_LINK_MODE_10GBPS_FULLDUPLEX
 };
 
 typedef struct
@@ -69,7 +73,7 @@ typedef struct
 	uint16_t networkId;
 	uint8_t linkStatus;
 	uint8_t linkFullDuplex;
-	uint8_t linkSpeed; // see EthLinkSpeed
+	uint8_t linkSpeed; // 0=10Mbps, 1=100Mbps, 2=1Gbps, 3=2.5Gbps, 4=5Gbps, 5=10Gbps
 	int8_t linkMode; // for automotive networks - see AELinkMode
 } EthernetNetworkStatus;
 
@@ -366,6 +370,11 @@ typedef struct SERDESGEN_SETTINGS_t
 #define ETHERNET_SETTINGS2_FLAG_DEVICE_HOSTING_ENABLE  0x10
 #define ETHERNET_SETTINGS2_FLAG_COMM_IN_USE  0x80
 
+// ETHERNET_SETTINGS2 flags2 bit definitions
+#define ETHERNET_SETTINGS2_FLAGS2_LINK_MODE_SLAVE  0x01  // bit0: 0=master, 1=slave
+#define ETHERNET_SETTINGS2_FLAGS2_PHY_MODE_LEGACY  0x02  // bit1: 0=IEEE, 1=legacy
+#define ETHERNET_SETTINGS2_FLAGS2_LINK_MODE_AUTO   0x04  // bit2: auto master/slave negotiation
+
 typedef struct ETHERNET_SETTINGS2_t
 {
 	/* bit0: 0=half duplex, 1=full duplex
@@ -379,7 +388,13 @@ typedef struct ETHERNET_SETTINGS2_t
 	uint32_t ip_addr;
 	uint32_t netmask;
 	uint32_t gateway;
-	uint8_t rsvd[2];
+	/* FLAGS2
+	 * bit0: link mode - 0=master, 1=slave
+	 * bit1: PHY mode - 0=IEEE, 1=legacy
+	 * bit2: auto master/slave
+	 */
+	uint8_t flags2;
+	uint8_t rsvd;
 } ETHERNET_SETTINGS2;
 #define ETHERNET_SETTINGS2_SIZE 16
 
@@ -808,6 +823,26 @@ public:
 		return reinterpret_cast<LIN_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
 	}
 
+	virtual const ETHERNET_SETTINGS2* getEthernetSettingsFor(Network net) const { (void)net; return nullptr; }
+	ETHERNET_SETTINGS2* getMutableEthernetSettingsFor(Network net) {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = (const uint8_t*)getEthernetSettingsFor(net);
+		if(offset == nullptr)
+			return nullptr;
+		return reinterpret_cast<ETHERNET_SETTINGS2*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+	}
+
+	virtual const AE_SETTINGS* getAESettingsFor(Network net) const { (void)net; return nullptr; }
+	AE_SETTINGS* getMutableAESettingsFor(Network net) {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = (const uint8_t*)getAESettingsFor(net);
+		if(offset == nullptr)
+			return nullptr;
+		return reinterpret_cast<AE_SETTINGS*>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+	}
+
 	/**
 	 * Some devices have groupings of networks, where software
 	 * switchable termination can only be applied to one network
@@ -908,35 +943,172 @@ public:
 	 */
 	bool setLINCommanderResponseTimeFor(Network net, uint8_t bits);
 
+	/**
+	 * Set PHY role (Master/Slave/Auto) for switch devices (Epsilon/XL, Jupiter, etc) using port index.
+	 * For all other devices, use setPhyRoleFor() instead.
+	 * 
+	 * @param index Port index (0-based)
+	 * @param mode Master/Slave/Auto role
+	 * @return true if successful
+	 */
 	virtual bool setPhyMode(uint8_t index, AELinkMode mode) {
 		(void)index, (void)mode;
 		return false;
 	}
 
+	/**
+	 * Enable/disable PHY for switch devices (Epsilon/XL, Jupiter, etc) using port index.
+	 * For all other devices, use setPhyEnableFor() instead.
+	 * 
+	 * @param index Port index (0-based)
+	 * @param enable True to enable, false to disable
+	 * @return true if successful
+	 */
 	virtual bool setPhyEnable(uint8_t index, bool enable) {
 		(void)index, (void)enable;
 		return false;
 	}
 
-	virtual bool setPhySpeed(uint8_t index, EthLinkSpeed speed) {
-		(void)index, (void)speed;
+	/**
+	 * Set PHY link mode (speed and duplex) for switch devices (Epsilon/XL, Jupiter, etc) using port index.
+	 * For all other devices, use setPhyLinkModeFor() instead.
+	 * 
+	 * @param index Port index (0-based)
+	 * @param mode Link mode (speed + duplex combination)
+	 * @return true if successful
+	 */
+	virtual bool setPhySpeed(uint8_t index, EthPhyLinkMode mode) {
+		(void)index, (void)mode;
 		return false;
 	}
 
+	/**
+	 * Get PHY role (Master/Slave/Auto) for switch devices (Epsilon/XL, Jupiter, etc) using port index.
+	 * For all other devices, use getPhyRoleFor() instead.
+	 * 
+	 * @param index Port index (0-based)
+	 * @return Current role, or nullopt if not available
+	 */
 	virtual std::optional<AELinkMode> getPhyMode(uint8_t index) {
 		(void)index;
 		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
 		return std::nullopt;
 	}
 
+	/**
+	 * Get PHY enable state for switch devices (Epsilon/XL, Jupiter, etc) using port index.
+	 * For all other devices, use getPhyEnableFor() instead.
+	 * 
+	 * @param index Port index (0-based)
+	 * @return True if enabled, false if disabled, nullopt if not available
+	 */
 	virtual std::optional<bool> getPhyEnable(uint8_t index) {
 		(void)index;
 		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
 		return std::nullopt;
 	}
 
-	virtual std::optional<EthLinkSpeed> getPhySpeed(uint8_t index) {
+	/**
+	 * Get PHY link mode (speed and duplex) for switch devices (Epsilon/XL, Jupiter, etc) using port index.
+	 * For all other devices, use getPhyLinkModeFor() instead.
+	 * 
+	 * @param index Port index (0-based)
+	 * @return Current link mode, or nullopt if not available
+	 */
+	virtual std::optional<EthPhyLinkMode> getPhySpeed(uint8_t index) {
 		(void)index;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	/**
+	 * Set PHY role (Master/Slave/Auto) for network-based devices.
+	 * For switch devices, use setPhyMode() with port index instead.
+	 * 
+	 * @param net Network ID
+	 * @param mode Master/Slave/Auto role
+	 * @return true if successful
+	 */
+	virtual bool setPhyRoleFor(Network net, AELinkMode mode) {
+		(void)net, (void)mode;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+
+	/**
+	 * Enable/disable PHY for network-based devices.
+	 * For switch devices, use setPhyEnable() with port index instead.
+	 * 
+	 * @param net Network ID
+	 * @param enable True to enable, false to disable
+	 * @return true if successful
+	 */
+	virtual bool setPhyEnableFor(Network net, bool enable) {
+		(void)net, (void)enable;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+
+	/**
+	 * Get PHY role (Master/Slave/Auto) for network-based devices.
+	 * For switch devices, use getPhyMode() with port index instead.
+	 * 
+	 * @param net Network ID
+	 * @return Current role, or nullopt if not available
+	 */
+	virtual std::optional<AELinkMode> getPhyRoleFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	/**
+	 * Get PHY enable state for network-based devices.
+
+	 * For switch devices, use getPhyEnable() with port index instead.
+	 * 
+	 * @param net Network ID
+	 * @return True if enabled, false if disabled, nullopt if not available
+	 */
+	virtual std::optional<bool> getPhyEnableFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	/**
+	 * Get supported PHY link modes (combined speed+duplex) for a network.
+	 * Each mode represents a valid hardware configuration.
+	 * 
+	 * @param net The network to query
+	 * @return Vector of supported modes, empty if network doesn't support PHY settings
+	 */
+	virtual std::vector<EthPhyLinkMode> getSupportedPhyLinkModesFor(Network net) const {
+		(void)net;
+		return {}; // Default: no PHY support
+	}
+
+	/**
+	 * Set PHY link mode (speed and duplex together).
+	 * 
+	 * @param net The network to configure
+	 * @param mode The link mode to set
+	 * @return true if successful, false if mode not supported or error occurred
+	 */
+	virtual bool setPhyLinkModeFor(Network net, EthPhyLinkMode mode) {
+		(void)net; (void)mode;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+
+	/**
+	 * Get current PHY link mode.
+	 * 
+	 * @param net The network to query
+	 * @return Current link mode, or nullopt if not available or not configured
+	 */
+	virtual std::optional<EthPhyLinkMode> getPhyLinkModeFor(Network net) const {
+		(void)net;
 		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
 		return std::nullopt;
 	}
@@ -1048,6 +1220,32 @@ protected:
 		if(offset == nullptr)
 			return nullptr;
 		return reinterpret_cast<ICSNEO_UNALIGNED(uint64_t*)>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+	}
+
+	static bool SetNetworkEnabled(uint64_t* bitfields, size_t count, uint64_t networkID) {
+		const size_t index = networkID / 64;
+		const size_t offset = networkID & 0x3F;
+		if (index >= count)
+			return false;
+		bitfields[index] |= (1ULL << offset);
+		return true;
+	}
+
+	static bool ClearNetworkEnabled(uint64_t* bitfields, size_t count, uint64_t networkID) {
+		const size_t index = networkID / 64;
+		const size_t offset = networkID & 0x3F;
+		if (index >= count)
+			return false;
+		bitfields[index] &= ~(1ULL << offset);
+		return true;
+	}
+
+	static bool GetNetworkEnabled(const uint64_t* bitfields, size_t count, uint64_t networkID) {
+		const size_t index = networkID / 64;
+		const size_t offset = networkID & 0x3F;
+		if (index >= count)
+			return false;
+		return (bitfields[index] & (1ULL << offset)) != 0;
 	}
 };
 
