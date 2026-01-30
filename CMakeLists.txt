@@ -360,7 +360,7 @@ if(LIBICSNEO_ENABLE_DXX)
 	include(FetchContent)
 	FetchContent_Declare(libredxx
 		GIT_REPOSITORY https://github.com/Zeranoe/libredxx.git
-		GIT_TAG c28c3f4e1c46f0e0fc119843eb73edd81d5bbb3d
+		GIT_TAG 267abf26a99fa69ed80a4180b155245a36fad101
 	)
 	set(LIBREDXX_DISABLE_INSTALL ON)
 	FetchContent_MakeAvailable(libredxx)
@@ -392,7 +392,7 @@ endif()
 include(FetchContent)
 FetchContent_Declare(icspb
 	GIT_REPOSITORY ${LIBICSNEO_ICSPB_REPO}
-	GIT_TAG 48df5dd7fd0c38034f82a2f94e0eada404d5e2b9
+	GIT_TAG 3339fa6b83a6b3e7704d41f5c2f2175cfc761a1f
 )
 FetchContent_MakeAvailable(icspb)
 target_link_libraries(icsneocpp PRIVATE icspb::icspb)
