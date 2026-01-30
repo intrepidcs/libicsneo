@@ -64,6 +64,7 @@ void init_extension(pybind11::classh<FlexRayNamespace>& c) {
         .def_readwrite("accept_startup_range_microticks", &Controller::Configuration::AcceptStartupRangeMicroticks)
         .def_readwrite("allow_passive_to_active_cycle_pairs", &Controller::Configuration::AllowPassiveToActiveCyclePairs)
         .def_readwrite("cluster_drift_damping", &Controller::Configuration::ClusterDriftDamping)
+        .def_readwrite("allow_halt_due_to_clock", &Controller::Configuration::AllowHaltDueToClock)
         .def_readwrite("channel_a", &Controller::Configuration::ChannelA)
         .def_readwrite("channel_b", &Controller::Configuration::ChannelB)
         .def_readwrite("decoding_correction_microticks", &Controller::Configuration::DecodingCorrectionMicroticks)
@@ -74,6 +75,7 @@ void init_extension(pybind11::classh<FlexRayNamespace>& c) {
         .def_readwrite("extern_offset_correction_microticks", &Controller::Configuration::ExternOffsetCorrectionMicroticks)
         .def_readwrite("extern_rate_correction_microticks", &Controller::Configuration::ExternRateCorrectionMicroticks)
         .def_readwrite("key_slot_id", &Controller::Configuration::KeySlotID)
+        .def_readwrite("key_slot_only_enabled", &Controller::Configuration::KeySlotOnlyEnabled)
         .def_readwrite("key_slot_used_for_startup", &Controller::Configuration::KeySlotUsedForStartup)
         .def_readwrite("key_slot_used_for_sync", &Controller::Configuration::KeySlotUsedForSync)
         .def_readwrite("latest_tx_minislot", &Controller::Configuration::LatestTxMinislot)
@@ -114,6 +116,7 @@ void init_extension(pybind11::classh<FlexRayNamespace>& c) {
         .def_readwrite("action_point_offset", &Cluster::Configuration::ActionPointOffset)
         .def_readwrite("casr_x_low_max", &Cluster::Configuration::CASRxLowMax)
         .def_readwrite("cold_start_attempts", &Cluster::Configuration::ColdStartAttempts)
+        .def_readwrite("cycle_duration_micro_sec", &Cluster::Configuration::CycleDurationMicroSec)
         .def_readwrite("dynamic_slot_idle_phase_minislots", &Cluster::Configuration::DynamicSlotIdlePhaseMinislots)
         .def_readwrite("listen_noise_macroticks", &Cluster::Configuration::ListenNoiseMacroticks)
         .def_readwrite("macroticks_per_cycle", &Cluster::Configuration::MacroticksPerCycle)
@@ -159,7 +162,8 @@ void init_flexraymessage(pybind11::module_& m) {
         .def_readwrite("sync_frame", &FlexRayMessage::sync)
         .def_readwrite("startup_frame", &FlexRayMessage::startup)
         .def_readwrite("dynamic_frame", &FlexRayMessage::dynamic)
-        .def_readwrite("cycle", &FlexRayMessage::cycle);
+        .def_readwrite("cycle", &FlexRayMessage::cycle)
+        .def_readwrite("cycle_repetition", &FlexRayMessage::cycleRepetition);
 
     //// TODO: Eliminate FlexRayControlMessage class references in controller class and eliminate getStatus function in bindings
 }
