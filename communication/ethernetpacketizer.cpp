@@ -133,6 +133,10 @@ EthernetPacketizer::EthernetPacket::EthernetPacket(const uint8_t* data, size_t s
 
 int EthernetPacketizer::EthernetPacket::loadBytestream(const std::vector<uint8_t>& bytestream) {
 	errorWhileDecodingFromBytestream = 0;
+	if (bytestream.size() < 24) {
+		errorWhileDecodingFromBytestream = 1;
+		return errorWhileDecodingFromBytestream;
+	}
 	for(size_t i = 0; i < 6; i++)
 		destMAC[i] = bytestream[i];
 	for(size_t i = 0; i < 6; i++)
