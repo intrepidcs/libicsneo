@@ -747,6 +747,16 @@ typedef struct
 
 namespace icsneo {
 
+enum class MiscIOAnalogVoltage : uint8_t
+{
+	V0 = 0,
+	V1 = 1,
+	V2 = 2,
+	V3 = 3,
+	V4 = 4,
+	V5 = 5
+};
+
 class IDeviceSettings {
 public:
 	using TerminationGroup = std::vector<Network>;
@@ -1179,6 +1189,9 @@ public:
 		(void)net; (void)timer;
 		return false;
 	}
+
+	virtual bool setMiscIOAnalogOutputEnabled(uint8_t pin, bool enabled);
+	virtual bool setMiscIOAnalogOutput(uint8_t pin, MiscIOAnalogVoltage voltage);
 
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }

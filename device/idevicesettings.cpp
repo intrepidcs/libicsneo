@@ -946,3 +946,17 @@ template<typename T> bool IDeviceSettings::applyStructure(const T& newStructure)
 	memcpy(settings.data(), &newStructure, structSize);
 	return apply();
 }
+
+bool IDeviceSettings::setMiscIOAnalogOutputEnabled(uint8_t pin, bool enabled) {
+	(void)pin;
+	(void)enabled;
+	report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::Error);
+	return false;
+}
+
+bool IDeviceSettings::setMiscIOAnalogOutput(uint8_t pin, MiscIOAnalogVoltage voltage) {
+	(void)pin;
+	(void)voltage;
+	report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::Error);
+	return false;
+}

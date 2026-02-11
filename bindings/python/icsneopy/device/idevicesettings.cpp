@@ -40,6 +40,14 @@ void init_idevicesettings(pybind11::module_& m) {
         .value("Normal", LINMode::NORMAL_MODE)
         .value("Fast", LINMode::FAST_MODE);
 
+    pybind11::enum_<MiscIOAnalogVoltage>(settings, "MiscIOAnalogVoltage")
+        .value("V0", MiscIOAnalogVoltage::V0)
+        .value("V1", MiscIOAnalogVoltage::V1)
+        .value("V2", MiscIOAnalogVoltage::V2)
+        .value("V3", MiscIOAnalogVoltage::V3)
+        .value("V4", MiscIOAnalogVoltage::V4)
+        .value("V5", MiscIOAnalogVoltage::V5);
+
     pybind11::classh<IDeviceSettings>(m, "IDeviceSettings")
         .def("apply", &IDeviceSettings::apply, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("apply_defaults", &IDeviceSettings::applyDefaults, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
@@ -96,6 +104,9 @@ void init_idevicesettings(pybind11::module_& m) {
         .def("set_t1s_max_burst", &IDeviceSettings::setT1SMaxBurstFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("get_t1s_burst_timer", &IDeviceSettings::getT1SBurstTimerFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_t1s_burst_timer", &IDeviceSettings::setT1SBurstTimerFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        
+        .def("set_misc_io_analog_output_enabled", &IDeviceSettings::setMiscIOAnalogOutputEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_misc_io_analog_output", &IDeviceSettings::setMiscIOAnalogOutput, pybind11::call_guard<pybind11::gil_scoped_release>())
         
         // Status properties
         .def_readonly("disabled", &IDeviceSettings::disabled)

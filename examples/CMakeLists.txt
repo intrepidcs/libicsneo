@@ -14,6 +14,7 @@ option(LIBICSNEO_BUILD_CPP_APP_ERROR_EXAMPLE "Build the macsec example" ON)
 option(LIBICSNEO_BUILD_CPP_FLEXRAY_EXAMPLE "Build the FlexRay example." ON)
 option(LIBICSNEO_BUILD_CPP_SPI_EXAMPLE "Build the SPI example." ON)
 option(LIBICSNEO_BUILD_CPP_MUTEX_EXAMPLE "Build the NetworkMutex example." ON)
+option(LIBICSNEO_BUILD_CPP_ANALOG_OUT_EXAMPLE "Build the analog output example." ON)
 
 add_compile_options(${LIBICSNEO_COMPILER_WARNINGS})
 
@@ -79,4 +80,8 @@ endif()
 
 if(LIBICSNEO_BUILD_CPP_MUTEX_EXAMPLE)
 	add_subdirectory(cpp/mutex)
+endif()
+
+if(LIBICSNEO_BUILD_CPP_ANALOG_OUT_EXAMPLE)
+	add_subdirectory(cpp/analog_out)
 endif()

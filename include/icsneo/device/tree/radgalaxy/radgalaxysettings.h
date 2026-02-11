@@ -185,6 +185,92 @@ public:
 				return nullptr;
 		}
 	}
+
+	bool setMiscIOAnalogOutputEnabled(uint8_t pin, bool enabled) override {
+		if(!settingsLoaded) {
+			report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+			return false;
+		}
+
+		if(disabled) {
+			report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+			return false;
+		}
+
+		if(readonly) {
+			report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+			return false;
+		}
+
+		if(pin < 1 || pin > 2) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+
+		auto cfg = getMutableStructurePointer<radgalaxy_settings_t>();
+		if(cfg == nullptr) {
+			report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::Error);
+			return false;
+		}
+
+		const uint16_t bitMask = 1 << (pin - 1);
+
+		if(enabled) {
+			// Set pin as output and enable analog mode
+			cfg->misc_io_initial_ddr |= bitMask;
+			cfg->misc_io_analog_enable |= bitMask;
+		} else {
+			// Disable analog mode (leave DDR as-is)
+			cfg->misc_io_analog_enable &= ~bitMask;
+		}
+
+		return true;
+	}
+
+	bool setMiscIOAnalogOutput(uint8_t pin, MiscIOAnalogVoltage voltage) override {
+		if(!settingsLoaded) {
+			report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+			return false;
+		}
+
+		if(disabled) {
+			report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+			return false;
+		}
+
+		if(readonly) {
+			report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+			return false;
+		}
+
+		if(pin < 1 || pin > 2) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+
+		auto cfg = getMutableStructurePointer<radgalaxy_settings_t>();
+		if(cfg == nullptr) {
+			report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::Error);
+			return false;
+		}
+
+		const uint8_t dacValue = static_cast<uint8_t>(voltage);
+		
+		if(dacValue > 5) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+
+		if(pin == 1) {
+			// Update low nibble of high byte (bits 8-11), preserve pin 2 value
+			cfg->misc_io_initial_latch = (cfg->misc_io_initial_latch & 0xF0FF) | (static_cast<uint16_t>(dacValue) << 8);
+		} else { // pin == 2
+			// Update high nibble of high byte (bits 12-15), preserve pin 1 value
+			cfg->misc_io_initial_latch = (cfg->misc_io_initial_latch & 0x0FFF) | (static_cast<uint16_t>(dacValue) << 12);
+		}
+
+		return true;
+	}
 };
 
 }

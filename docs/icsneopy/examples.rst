@@ -91,3 +91,11 @@ SPI Example for 10BASE-T1S
 
 .. literalinclude:: ../../examples/python/spi/spi_example.py
    :language: python
+
+Analog Output Control
+=====================
+
+:download:`Download example <../../examples/python/analog_out/analog_out_basic.py>`
+
+.. literalinclude:: ../../examples/python/analog_out/analog_out_basic.py
+   :language: python
