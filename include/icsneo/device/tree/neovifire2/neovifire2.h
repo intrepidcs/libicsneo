@@ -140,7 +140,7 @@ public:
 				.add<FlashPhase>(ChipID::neoVIFIRE2_MCHIP, BootloaderCommunication::RED);
 		if(chipVariant == CoreChipVariant::Core_SG4) {
 			pipeline.add<FlashPhase>(ChipID::neoVIFIRE2_Core_SG4, BootloaderCommunication::REDCore, false, false);
-		} else {
+		} else if(chipVariant == CoreChipVariant::Core) {
 			pipeline.add<FlashPhase>(ChipID::neoVIFIRE2_Core, BootloaderCommunication::REDCore, false, false);
 		}
 		pipeline.add<FlashPhase>(ChipID::neoVIFIRE2_ZYNQ, BootloaderCommunication::RED, false, false)
