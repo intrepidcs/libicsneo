@@ -89,7 +89,10 @@ typedef struct
 	uint8_t TqSync;
 	uint16_t BRP;
 	uint8_t auto_baud;
-	uint8_t innerFrameDelay25us;
+	uint8_t innerFrameDelay25us : 4;
+	uint8_t rsvd : 1;
+	uint8_t disableRetransmission : 1;
+	uint8_t canClk : 2;
 } CAN_SETTINGS;
 #define CAN_SETTINGS_SIZE 12
 static_assert(sizeof(CAN_SETTINGS) == CAN_SETTINGS_SIZE, "CAN_SETTINGS is the wrong size!");
