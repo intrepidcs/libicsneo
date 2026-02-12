@@ -27,6 +27,21 @@ public:
 		return supportedNetworks;
 	}
 
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADJupiter_MCHIP, true, "MCHIP", "jupiter_mchip_ief", 1, FirmwareType::IEF}
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADJupiter_MCHIP, BootloaderCommunication::RED)
+			.add<EnterApplicationPhase>(ChipID::RADJupiter_MCHIP)
+			.add<ReconnectPhase>();
+	}
+
 	bool getEthPhyRegControlSupported() const override { return true; }
 
 	ProductID getProductID() const override {
