@@ -37,6 +37,22 @@ public:
 	ProductID getProductID() const override {
 		return ProductID::RADMoonT1S;
 	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADMOONT1S_ZCHIP, true, "ZCHIP", "RADMoonT1S_SW_bin", 1, FirmwareType::Zip}
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADMOONT1S_ZCHIP, BootloaderCommunication::RAD)
+			.add<EnterApplicationPhase>(ChipID::RADMOONT1S_ZCHIP)
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
+			.add<ReconnectPhase>();
+	}
 protected:
 	RADMoonT1S(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADMoonT1SSettings>(makeDriver);

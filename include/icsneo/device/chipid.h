@@ -128,6 +128,7 @@ enum class ChipID : uint8_t {
 	RADGALAXY2_SYSMON_CHIP = 123,
 	RADCOMET3_ZCHIP = 125,
 	Connect_LINUX = 126,
+	RADMOONT1S_ZCHIP = 130,
 	RADGigastar2_ZYNQ = 131,
 	RADGemini_MCHIP = 135,
 	Invalid = 255
