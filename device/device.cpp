@@ -3817,7 +3817,7 @@ bool Device::formatDisk(const DiskDetails& config, const DiskFormatProgress& han
 				return com->sendCommand(ExtendedCommand::DiskFormatProgress, {}); 
 			},
 			std::make_shared<ExtendedResponseFilter>(ExtendedCommand::DiskFormatProgress),
-			std::chrono::milliseconds(200)
+			std::chrono::milliseconds(1000)
 		);
 
 		if(!response) {
