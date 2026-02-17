@@ -30,6 +30,22 @@ public:
 	ProductID getProductID() const override {
 		return ProductID::ValueCAN4Industrial;
 	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::ValueCAN4Industrial_MCHIP, true, "MCHIP", "vcan4_ind_mchip_ief", 0, FirmwareType::IEF}
+		};
+		return chips;
+	}
+	
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::ValueCAN4Industrial_MCHIP, BootloaderCommunication::RED)
+			.add<EnterApplicationPhase>(ChipID::ValueCAN4Industrial_MCHIP)
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
+			.add<ReconnectPhase>();
+	}
 protected:
 	ValueCAN4Industrial(neodevice_t neodevice, const driver_factory_t& makeDriver) : ValueCAN4(neodevice) {
 		initialize<ValueCAN4IndustrialSettings>(makeDriver);
