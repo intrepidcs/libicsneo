@@ -1,0 +1,2 @@
+add_executable(libicsneocpp-diskformat-example src/DiskFormatExample.cpp)
+target_link_libraries(libicsneocpp-diskformat-example icsneocpp)

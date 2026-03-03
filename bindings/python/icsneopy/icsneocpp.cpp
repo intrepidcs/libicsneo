@@ -25,6 +25,7 @@ void init_ethernetstatusmessage(pybind11::module_&);
 void init_macsecconfig(pybind11::module_&);
 void init_scriptstatusmessage(pybind11::module_&);
 void init_diskdriver(pybind11::module_&);
+void init_diskdetails(pybind11::module_&);
 void init_deviceextension(pybind11::module_&);
 void init_chipid(pybind11::module_&);
 void init_versionreport(pybind11::module_&);
@@ -67,6 +68,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_messagefilter(m);
 	init_messagecallback(m);
 	init_diskdriver(m);
+	init_diskdetails(m);
     init_flexray(m);
 	init_ethphymessage(m);
 	init_chipid(m);

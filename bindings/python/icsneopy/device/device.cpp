@@ -5,6 +5,7 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/extensions/deviceextension.h"
+#include "icsneo/disk/diskdetails.h"
 
 #include <fstream>
 
@@ -62,6 +63,11 @@ void init_device(pybind11::module_& m) {
 		.def("write_macsec_config", &Device::writeMACsecConfig, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("send_eth_phy_msg", &Device::sendEthPhyMsg, pybind11::arg("message"), pybind11::arg("timeout") = std::chrono::milliseconds(50), pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("get_chip_versions", &Device::getChipVersions, pybind11::arg("refreshComponents") = true, pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def("supports_disk_formatting", &Device::supportsDiskFormatting, pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def("get_disk_count", &Device::getDiskCount, pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def("get_disk_details", &Device::getDiskDetails, pybind11::arg("timeout") = std::chrono::milliseconds(100), pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def("force_disk_config_update", &Device::forceDiskConfigUpdate, pybind11::arg("config"), pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def("format_disk", [](Device& device, const DiskDetails& config) -> bool { return device.formatDisk(config); }, pybind11::arg("config"), pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def_readonly("settings", &Device::settings);
 }
 

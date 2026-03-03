@@ -41,6 +41,7 @@ pybind11_add_module(icsneopy
     icsneopy/core/macseccfg.cpp
     icsneopy/flexray/flexray.cpp
     icsneopy/disk/diskdriver.cpp
+    icsneopy/disk/diskdetails.cpp
     icsneopy/device/chipid.cpp
     icsneopy/device/versionreport.cpp
     icsneopy/device/device.cpp
