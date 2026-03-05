@@ -291,6 +291,9 @@ public:
 				flags2 &= ~ETHERNET_SETTINGS2_FLAGS2_LINK_MODE_AUTO;
 				flags2 |= ETHERNET_SETTINGS2_FLAGS2_LINK_MODE_SLAVE;
 				break;
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return false;
 		}
 
 		return true;
