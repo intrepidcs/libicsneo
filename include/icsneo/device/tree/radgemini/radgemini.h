@@ -30,14 +30,21 @@ public:
 
 	ProductID getProductID() const override { return ProductID::RADGemini; }
 
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADGemini_MCHIP, true, "MCHIP", "radgemini_mchip_ief", 0, FirmwareType::IEF},
+		};
+		return chips;
+	}
+
 	BootloaderPipeline getBootloader() override {
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::RADGemini_MCHIP, BootloaderCommunication::RED)
+			.add<EnterApplicationPhase>(ChipID::RADGemini_MCHIP)
 			.add<ReconnectPhase>()
 			.add<WaitPhase>(std::chrono::milliseconds(3000));
 	}
-
 
 protected:
 	RADGemini(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
