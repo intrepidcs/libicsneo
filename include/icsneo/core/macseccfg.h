@@ -122,7 +122,7 @@ struct MACsecTxSecY {
 
 struct MACsecTxSa {
 	std::array<uint8_t, 32> sak = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 
-		0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< 256b SAK: Define the encryption key to be used to encrypte this packet. The lower 128 bits are used for 128-bit ciphers. */
+		0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< SAK: For AES-256 fill all 32 bytes. For AES-128 fill only bytes [0..15]; serialize() will mirror them into [16..31] as required by the firmware. */
 	std::array<uint8_t, 16> hashKey = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< 128b Hash Key: Key used for authentication. */
 	std::array<uint8_t, 12> salt = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< 96b Salt value: Salt value used in XPN ciphers. */
 	uint32_t ssci = 0x01u; /*!< 32b SSCI value: Short Secure Channel Identifier, used in XPN ciphers. */
@@ -132,7 +132,7 @@ struct MACsecTxSa {
 
 struct MACsecRxSa {
 	std::array<uint8_t, 32> sak = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 
-		0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< 256b SAK: Define the encryption key to be used to encrypte this packet. The lower 128 bits are used for 128-bit ciphers. */
+		0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< SAK: For AES-256 fill all 32 bytes. For AES-128 fill only bytes [0..15]; serialize() will mirror them into [16..31] as required by the firmware. */
 	std::array<uint8_t, 16> hashKey = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< 128b Hash Key: Key used for authentication. */
 	std::array<uint8_t, 12> salt = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< 96b Salt value: Salt value used in XPN ciphers. */
 	uint32_t ssci = 0x01u; /*!< 32b SSCI value: Short Secure Channel Identifier, used in XPN ciphers. */

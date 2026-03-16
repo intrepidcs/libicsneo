@@ -144,7 +144,7 @@ typedef union _MACSecSa
 	{
 		uint8_t index; /*!< SA index */
 		uint8_t
-			sak[32]; /*!< 256b SAK: Define the encryption key to be used to encrypte this packet. The lower 128 bits are used for 128-bit ciphers. */
+			sak[32]; /*!< SAK: All 32 bytes are written to the firmware. For AES-128 the firmware requires bytes [0..15] == bytes [16..31] (mirrored); serialize() handles this automatically. */
 		uint8_t hashKey[16]; /*!< 128b Hash Key: Key used for authentication. */
 		uint8_t salt[12]; /*!< 96b Salt value: Salt value used in XPN ciphers. */
 		uint32_t ssci; /*!< 32b SSCI value: Short Secure Channel Identifier, used in XPN ciphers. */
@@ -737,6 +737,34 @@ std::vector<uint8_t> MACsecConfig::serialize() const {
 			SetHardwareTxSa(hwSettings, txSa[i], i);
 		} else {
 			hwSettings->macsec.tx.sa[i].enable = false;
+		}
+	}
+
+	// AES-128 SAK normalization: the firmware expects the 16-byte SAK mirrored
+	// into both halves of the 32-byte hardware SAK field.  Callers only populate
+	// bytes [0..15]; copy them into [16..31] here, transparent to all callers.
+	for(uint8_t i = 0; i < static_cast<uint8_t>(rxSecY.size()); i++) {
+		if(rxSecY[i].cipher == MACsecCipherSuite::GcmAes128 || rxSecY[i].cipher == MACsecCipherSuite::GcmAes128Xpn) {
+			uint8_t primaryIdx = rxSecYSaIndices[i].first;
+			if(primaryIdx < maxSa)
+				memcpy(hwSettings->macsec.rx.sa[primaryIdx].sak + 16, hwSettings->macsec.rx.sa[primaryIdx].sak, 16);
+			if(rxSecYRekey[i]) {
+				uint8_t rekeyIdx = rxSecYSaIndices[i].second;
+				if(rekeyIdx < maxSa)
+					memcpy(hwSettings->macsec.rx.sa[rekeyIdx].sak + 16, hwSettings->macsec.rx.sa[rekeyIdx].sak, 16);
+			}
+		}
+	}
+	for(uint8_t i = 0; i < static_cast<uint8_t>(txSecY.size()); i++) {
+		if(txSecY[i].cipher == MACsecCipherSuite::GcmAes128 || txSecY[i].cipher == MACsecCipherSuite::GcmAes128Xpn) {
+			uint8_t primaryIdx = txSecYSaIndices[i].first;
+			if(primaryIdx < maxSa)
+				memcpy(hwSettings->macsec.tx.sa[primaryIdx].sak + 16, hwSettings->macsec.tx.sa[primaryIdx].sak, 16);
+			if(txSecYRekey[i]) {
+				uint8_t rekeyIdx = txSecYSaIndices[i].second;
+				if(rekeyIdx < maxSa)
+					memcpy(hwSettings->macsec.tx.sa[rekeyIdx].sak + 16, hwSettings->macsec.tx.sa[rekeyIdx].sak, 16);
+			}
 		}
 	}
 
