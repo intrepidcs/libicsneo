@@ -116,6 +116,14 @@ bool Servd::open() {
 		return false;
 	}
 	dataSocket = std::make_unique<Socket>(AF_INET, SOCK_STREAM, 0);
+	if(!dataSocket->set_rcvbuf(4 * 1024 * 1024)) {
+		EventManager::GetInstance().add(APIEvent::Type::SyscallError, APIEvent::Severity::Error);
+		return false;
+	}
+	if(!dataSocket->set_sndbuf(4 * 1024 * 1024)) {
+		EventManager::GetInstance().add(APIEvent::Type::SyscallError, APIEvent::Severity::Error);
+		return false;
+	}
 	const auto& ip = tokens[0];
 	uint16_t port = 0;
 	try {

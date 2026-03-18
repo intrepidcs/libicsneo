@@ -103,6 +103,14 @@ public:
 		#endif
 	}
 
+	bool set_rcvbuf(uint32_t size) {
+		return ::setsockopt(mFD, SOL_SOCKET, SO_RCVBUF, (char*)&size, sizeof(size)) == 0;
+	}
+
+	bool set_sndbuf(uint32_t size) {
+		return ::setsockopt(mFD, SOL_SOCKET, SO_SNDBUF, (char*)&size, sizeof(size)) == 0;
+	}
+
 	bool connect(const Address& to) {
 		return ::connect(mFD, (sockaddr*)&to.sockaddr(), sizeof(sockaddr_in)) != -1;
 	}
@@ -201,13 +209,6 @@ public:
 		getsockname(mFD, (sockaddr*)&sin, &len);
 		address = Address(sin);
 		return true;
-	}
-	
-	bool join_multicast(const std::string& interfaceIP, const std::string& multicastIP) {
-		ip_mreq mreq;
-		inet_pton(AF_INET, interfaceIP.c_str(), &mreq.imr_interface);
-		inet_pton(AF_INET, multicastIP.c_str(), &mreq.imr_multiaddr);
-		return setsockopt(mFD, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const char*)&mreq, sizeof(mreq)) == 0;
 	}
 	
 	operator bool() const { return mFD != -1; }
