@@ -62,6 +62,31 @@ public:
 	ProductID getProductID() const override {
 		return ProductID::neoVIFIRE3;
 	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::neoVIFIRE3_ZCHIP, true, "ZCHIP", "fire3_zchip_ief", 0, FirmwareType::IEF},
+			{ChipID::neoVIFIRE3_SCHIP, true, "SCHIP", "fire3_schip_ief", 1, FirmwareType::IEF},
+			{ChipID::neoVIFIRE3_LINUX, true, "Linux Flash", "fire3_lnx_flash_ief", 2, FirmwareType::IEF},
+			{ChipID::VEM_04_T1S_LIN_ZCHIP, true, "VEM-04-Z", "vem_04_t1s_lin_zchip_ief", 3, FirmwareType::IEF},
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<FlashPhase>(ChipID::neoVIFIRE3_ZCHIP, BootloaderCommunication::Application, true, false)
+			.add<FlashPhase>(ChipID::neoVIFIRE3_SCHIP, BootloaderCommunication::Application, false, true)
+			.add<FlashPhase>(ChipID::neoVIFIRE3_LINUX, BootloaderCommunication::Application, false, false, false)
+			.add<FlashPhase>(ChipID::VEM_04_T1S_LIN_ZCHIP, BootloaderCommunication::Application, false, false)
+			.add<FinalizePhase>(ChipID::neoVIFIRE3_ZCHIP, BootloaderCommunication::Application)
+			.add<FinalizePhase>(ChipID::neoVIFIRE3_SCHIP, BootloaderCommunication::Application)
+			.add<FinalizePhase>(ChipID::neoVIFIRE3_LINUX, BootloaderCommunication::Application)
+			.add<FinalizePhase>(ChipID::VEM_04_T1S_LIN_ZCHIP, BootloaderCommunication::Application)
+			.add<EnterApplicationPhase>(ChipID::neoVIFIRE3_ZCHIP)
+			.add<ReconnectPhase>()
+			.addSetting(BootloaderSetting::UpdateAll, true);
+	}
 protected:
 	NeoVIFIRE3T1SLIN(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRE3T1SLINSettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
