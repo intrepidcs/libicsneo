@@ -6,11 +6,11 @@ extern "C" {
 
 #include <stdint.h>
 
-#define ICSNEOC2_OPEN_OPTIONS_NONE               UINT32_C(0x0) // No options
-#define ICSNEOC2_OPEN_OPTIONS_GO_ONLINE          UINT32_C(0x1) // After opening, go online
-#define ICSNEOC2_OPEN_OPTIONS_SYNC_RTC           UINT32_C(0x2) // After opening, sync RTC
-#define ICSNEOC2_OPEN_OPTIONS_ENABLE_AUTO_UPDATE UINT32_C(0x4) // After opening, enable auto update
-#define ICSNEOC2_OPEN_OPTIONS_FORCE_UPDATE       UINT32_C(0x8) // After opening, force update
+#define ICSNEOC2_OPEN_OPTIONS_NONE               0x0 // No options
+#define ICSNEOC2_OPEN_OPTIONS_GO_ONLINE          0x1 // After opening, go online
+#define ICSNEOC2_OPEN_OPTIONS_SYNC_RTC           0x2 // After opening, sync RTC
+#define ICSNEOC2_OPEN_OPTIONS_ENABLE_AUTO_UPDATE 0x4 // After opening, enable auto update
+#define ICSNEOC2_OPEN_OPTIONS_FORCE_UPDATE       0x8 // After opening, force update
 
 typedef uint32_t icsneoc2_open_options_t;
 
@@ -366,9 +366,9 @@ typedef enum _icsneoc2_disk_layout_t {
 
 typedef uint8_t icsneoc2_disk_layout_t;
 
-#define ICSNEOC2_DISK_FORMAT_FLAGS_PRESENT     UINT32_C(0x1) // Indicates that the disk is present
-#define ICSNEOC2_DISK_FORMAT_FLAGS_INITIALIZED UINT32_C(0x2) // Indicates that the disk is initialized
-#define ICSNEOC2_DISK_FORMAT_FLAGS_FORMATTED   UINT32_C(0x4) // Indicates that the disk is already formatted
+#define ICSNEOC2_DISK_FORMAT_FLAGS_PRESENT     0x1 // Indicates that the disk is present
+#define ICSNEOC2_DISK_FORMAT_FLAGS_INITIALIZED 0x2 // Indicates that the disk is initialized
+#define ICSNEOC2_DISK_FORMAT_FLAGS_FORMATTED   0x4 // Indicates that the disk is already formatted
 
 typedef uint32_t icsneoc2_disk_format_flags_t;
 

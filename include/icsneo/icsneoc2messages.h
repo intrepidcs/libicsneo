@@ -97,11 +97,11 @@ icsneoc2_error_t icsneoc2_message_data_set(icsneoc2_message_t* message, uint8_t*
  */
 icsneoc2_error_t icsneoc2_message_data_get(icsneoc2_message_t* message, uint8_t* data, size_t* data_length);
 
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_RTR UINT64_C(0x01) // Remote Transmission Request
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_IDE UINT64_C(0x02) // Identifier Extension
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_FDF UINT64_C(0x04) // FD Format Indicator
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_BRS UINT64_C(0x08) // Bit Rate Switch (FD only)
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_ESI UINT64_C(0x10) // Error State Indicator (FD only)
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_RTR 0x01 // Remote Transmission Request
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_IDE 0x02 // Identifier Extension
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_FDF 0x04 // FD Format Indicator
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_BRS 0x08 // Bit Rate Switch (FD only)
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_ESI 0x10 // Error State Indicator (FD only)
 
 typedef uint64_t icsneoc2_message_can_flags_t;
 
