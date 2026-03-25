@@ -7,31 +7,6 @@
 
 using namespace icsneo;
 
-// copied.. TODO
-static std::optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd) {
-	if(dataLength <= 8)
-		return uint8_t(dataLength);
-
-	if(fd) {
-		if(dataLength <= 12)
-			return uint8_t(0x9);
-		if(dataLength <= 16)
-			return uint8_t(0xA);
-		if(dataLength <= 20)
-			return uint8_t(0xB);
-		if(dataLength <= 24)
-			return uint8_t(0xC);
-		if(dataLength <= 32)
-			return uint8_t(0xD);
-		if(dataLength <= 48)
-			return uint8_t(0xE);
-		if(dataLength <= 64)
-			return uint8_t(0xF);
-	}
-
-	return std::nullopt;
-}
-
 static std::vector<uint8_t> EncodeFromMessageEthernet(std::shared_ptr<Frame> frame, const device_eventhandler_t& report) {
 	auto ethmsg = std::dynamic_pointer_cast<EthernetMessage>(frame);
 	if(!ethmsg) {

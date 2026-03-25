@@ -8,7 +8,8 @@ each of the respective APIs.
 
 - [C++](https://libicsneo.readthedocs.io/en/latest/icsneocpp/)
 - [Python](https://libicsneo.readthedocs.io/en/latest/icsneopy/)
-- [C](https://libicsneo.readthedocs.io/en/latest/icsneoc/)
+- [C](https://libicsneo.readthedocs.io/en/latest/icsneoc/) (deprecated, use C2)
+- [C2](https://libicsneo.readthedocs.io/en/latest/icsneoc2/)
 
 ## Hardware Support
 

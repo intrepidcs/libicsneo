@@ -6,12 +6,13 @@
 #include <cstdint>
 #include <vector>
 #include <icsneo/api/eventmanager.h>
+#include <icsneo/icsneoc2types.h>
 
 namespace icsneo {
 
 enum class DiskLayout : uint8_t {
-	Spanned = 0,
-	RAID0 = 1
+	Spanned = icsneoc2_disk_layout_spanned,
+	RAID0 = icsneoc2_disk_layout_raid0
 };
 
 struct DiskInfo {

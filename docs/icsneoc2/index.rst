@@ -1,5 +1,5 @@
-icsneoc (deprecated, use icsneoc2)
-============================
+icsneoc2
+========
 
 .. toctree::
    :maxdepth: 2

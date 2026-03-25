@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "icsneo/platform/unaligned.h"
+#include "icsneo/icsneoc2types.h"
 
 #pragma pack(push, 2)
 
@@ -48,24 +49,24 @@ enum
 
 enum AELinkMode
 {
-	AE_LINK_INVALID = -1,
-	AE_LINK_AUTO = 0,
-	AE_LINK_MASTER,
-	AE_LINK_SLAVE
+	AE_LINK_INVALID = icsneoc2_ae_link_mode_invalid,
+	AE_LINK_AUTO = icsneoc2_ae_link_mode_auto,
+	AE_LINK_MASTER = icsneoc2_ae_link_mode_master,
+	AE_LINK_SLAVE = icsneoc2_ae_link_mode_slave
 };
 
 enum EthPhyLinkMode
 {
-	ETH_LINK_MODE_AUTO_NEGOTIATION = 0,
-	ETH_LINK_MODE_10MBPS_HALFDUPLEX,
-	ETH_LINK_MODE_10MBPS_FULLDUPLEX,
-	ETH_LINK_MODE_100MBPS_HALFDUPLEX,
-	ETH_LINK_MODE_100MBPS_FULLDUPLEX,
-	ETH_LINK_MODE_1GBPS_HALFDUPLEX,
-	ETH_LINK_MODE_1GBPS_FULLDUPLEX,
-	ETH_LINK_MODE_2_5GBPS_FULLDUPLEX,
-	ETH_LINK_MODE_5GBPS_FULLDUPLEX,
-	ETH_LINK_MODE_10GBPS_FULLDUPLEX
+	ETH_LINK_MODE_AUTO_NEGOTIATION = icsneoc2_eth_phy_link_mode_auto_negotiation,
+	ETH_LINK_MODE_10MBPS_HALFDUPLEX = icsneoc2_eth_phy_link_mode_10mbps_halfduplex,
+	ETH_LINK_MODE_10MBPS_FULLDUPLEX = icsneoc2_eth_phy_link_mode_10mbps_full_duplex,
+	ETH_LINK_MODE_100MBPS_HALFDUPLEX = icsneoc2_eth_phy_link_mode_100mbps_half_duplex,
+	ETH_LINK_MODE_100MBPS_FULLDUPLEX = icsneoc2_eth_phy_link_mode_100mbps_full_duplex,
+	ETH_LINK_MODE_1GBPS_HALFDUPLEX = icsneoc2_eth_phy_link_mode_1gbps_half_duplex,
+	ETH_LINK_MODE_1GBPS_FULLDUPLEX = icsneoc2_eth_phy_link_mode_1gbps_full_duplex,
+	ETH_LINK_MODE_2_5GBPS_FULLDUPLEX = icsneoc2_eth_phy_link_mode_2_5gbps_full_duplex,
+	ETH_LINK_MODE_5GBPS_FULLDUPLEX = icsneoc2_eth_phy_link_mode_5gbps_full_duplex,
+	ETH_LINK_MODE_10GBPS_FULLDUPLEX = icsneoc2_eth_phy_link_mode_10gbps_full_duplex
 };
 
 typedef struct
@@ -615,10 +616,10 @@ enum : uint8_t
 /* Mode in LIN_SETTINGS */
 enum LINMode
 {
-	SLEEP_MODE,
-	SLOW_MODE,
-	NORMAL_MODE,
-	FAST_MODE
+	SLEEP_MODE = icsneoc2_lin_mode_sleep,
+	SLOW_MODE = icsneoc2_lin_mode_slow,
+	NORMAL_MODE = icsneoc2_lin_mode_normal,
+	FAST_MODE = icsneoc2_lin_mode_fast
 };
 
 typedef struct _LIN_SETTINGS
@@ -752,12 +753,12 @@ namespace icsneo {
 
 enum class MiscIOAnalogVoltage : uint8_t
 {
-	V0 = 0,
-	V1 = 1,
-	V2 = 2,
-	V3 = 3,
-	V4 = 4,
-	V5 = 5
+	V0 = icsneoc2_misc_io_analog_voltage_v0,
+	V1 = icsneoc2_misc_io_analog_voltage_v1,
+	V2 = icsneoc2_misc_io_analog_voltage_v2,
+	V3 = icsneoc2_misc_io_analog_voltage_v3,
+	V4 = icsneoc2_misc_io_analog_voltage_v4,
+	V5 = icsneoc2_misc_io_analog_voltage_v5
 };
 
 class IDeviceSettings {

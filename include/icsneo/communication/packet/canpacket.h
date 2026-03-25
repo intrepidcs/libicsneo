@@ -5,11 +5,14 @@
 
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/api/eventmanager.h"
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
 
 namespace icsneo {
+
+std::optional<uint8_t> CAN_LengthToDLC(size_t dataLength, bool fd);
 
 typedef uint16_t icscm_bitfield;
 

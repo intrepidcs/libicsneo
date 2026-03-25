@@ -11,6 +11,8 @@ option(LIBICSNEO_BUILD_DOCS "Build documentation. Don't use in Visual Studio." O
 option(LIBICSNEO_BUILD_EXAMPLES "Build examples." ON)
 option(LIBICSNEO_BUILD_ICSNEOC "Build dynamic C library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC_STATIC "Build static C library" ON)
+option(LIBICSNEO_BUILD_ICSNEOC2 "Build dynamic C2 library" ON)
+option(LIBICSNEO_BUILD_ICSNEOC2_STATIC "Build static C2 library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC "Build static icsnVC40 compatibility library" ON)
 set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
@@ -170,10 +172,6 @@ if(LIBICSNEO_ENABLE_TCP)
 	)
 endif()
 
-if(LIBICSNEO_BUILD_EXAMPLES)
-	add_subdirectory(examples)
-endif()
-
 # Extensions
 set(LIBICSNEO_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 foreach(EXT_PATH ${LIBICSNEO_EXTENSION_DIRS})
@@ -289,6 +287,7 @@ endif()
 
 configure_file(api/icsneocpp/buildinfo.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated/buildinfo.h)
 configure_file(api/icsneoc/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
+configure_file(api/icsneoc2/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc2/version.rc)
 
 foreach(EXTINC ${LIBICSNEO_EXTENSION_INCLUDES})
 	message("Including " ${EXTINC})
@@ -426,6 +425,38 @@ if(LIBICSNEO_BUILD_ICSNEOC_STATIC)
 	target_compile_options(icsneoc-static PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
 endif()
 
+if(LIBICSNEO_BUILD_ICSNEOC2)
+	add_library(icsneoc2 SHARED api/icsneoc2/icsneoc2.cpp api/icsneoc2/icsneoc2settings.cpp api/icsneoc2/icsneoc2messages.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc2/version.rc)
+	target_include_directories(icsneoc2
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneoc2 PRIVATE icsneocpp)
+	target_compile_features(icsneoc2 PRIVATE cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	target_compile_options(icsneoc2 PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
+	if(WIN32)
+		set_target_properties(icsneoc2 PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+	endif()
+endif()
+
+if(LIBICSNEO_BUILD_ICSNEOC2_STATIC)
+	add_library(icsneoc2-static STATIC api/icsneoc2/icsneoc2.cpp api/icsneoc2/icsneoc2settings.cpp api/icsneoc2/icsneoc2messages.cpp)
+	target_include_directories(icsneoc2-static
+		PUBLIC
+			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+			$<INSTALL_INTERFACE:>
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/include
+	)
+	target_link_libraries(icsneoc2-static PUBLIC icsneocpp)
+	target_compile_features(icsneoc2-static PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
+	target_compile_definitions(icsneoc2-static PUBLIC ICSNEOC2_BUILD_STATIC)
+	target_compile_options(icsneoc2-static PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
+endif()
+
 if(LIBICSNEO_BUILD_ICSNEOLEGACY)
 	add_library(icsneolegacy SHARED
 		api/icsneolegacy/icsneolegacy.cpp
@@ -467,6 +498,10 @@ endif()
 
 add_subdirectory(bindings)
 
+if(LIBICSNEO_BUILD_EXAMPLES)
+	add_subdirectory(examples)
+endif()
+
 # googletest
 if(LIBICSNEO_BUILD_UNIT_TESTS)
 	include(FetchContent)
@@ -475,6 +510,7 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		GIT_TAG 6986c2b575f77135401a4e1c65a7a42f20e18fef
 	)
 	FetchContent_MakeAvailable(googletest)
+	include(GoogleTest)
 
 	add_executable(libicsneo-unit-tests
 		test/unit/main.cpp
@@ -489,6 +525,7 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/livedataencoderdecodertest.cpp
 		test/unit/ringbuffertest.cpp
 		test/unit/apperrordecodertest.cpp
+		test/unit/icsneoc2.cpp
 		test/unit/windowsstrings.cpp
 		test/unit/periodictest.cpp
 	)
@@ -497,12 +534,13 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 
 	target_link_libraries(libicsneo-unit-tests gtest gtest_main)
 	target_link_libraries(libicsneo-unit-tests icsneocpp)
+	target_link_libraries(libicsneo-unit-tests icsneoc2-static)
 
 	target_include_directories(libicsneo-unit-tests PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 	enable_testing()
 
-	add_test(NAME libicsneo-unit-test-suite COMMAND libicsneo-unit-tests)
+	gtest_discover_tests(libicsneo-unit-tests TEST_PREFIX "unit/" PROPERTIES LABELS "unit")
 endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

@@ -1,10 +1,13 @@
 #ifndef __DEVICETYPE_H_
 #define __DEVICETYPE_H_
 
+#include "icsneo/icsneoc2types.h"
+
 // Hold the length of the longest name, so that C applications can allocate memory accordingly
 // Currently the longest is "Intrepid Ethernet Evaluation Board"
 #define ICSNEO_DEVICETYPE_LONGEST_NAME (35 + 1) // Add 1 so that if someone forgets, they still have space for null terminator
 #define ICSNEO_DEVICETYPE_LONGEST_DESCRIPTION (ICSNEO_DEVICETYPE_LONGEST_NAME + 7) // 6 character serial, plus space
+
 
 #ifndef __cplusplus
 #include <stdint.h>
@@ -23,68 +26,68 @@ public:
 	// This enum used to be a bitfield, but has since become an enum as we have more than 32 devices
 	// Adding something? Make sure you update the type string and C-compatible defines below!
 	enum Enum : devicetype_t {
-		Unknown = (0x00000000),
-		BLUE = (0x00000001),
-		ECU_AVB = (0x00000002),
-		RADSupermoon = (0x00000003),
-		DW_VCAN = (0x00000004),
-		RADMoon2 = (0x00000005),
-		RADMars = (0x00000006),
-		VCAN4_1 = (0x00000007),
-		FIRE = (0x00000008),
-		RADPluto = (0x00000009),
-		VCAN4_2EL = (0x0000000a),
-		RADIO_CANHUB = (0x0000000b),
-		NEOECU12 = (0x0000000c),
-		OBD2_LCBADGE = (0x0000000d),
-		RADMoonDuo = (0x0000000e),
-		FIRE3 = (0x0000000f),
-		VCAN3 = (0x00000010),
-		RADJupiter = (0x00000011),
-		VCAN4_IND = (0x00000012),
-		RADGigastar = (0x00000013),
-		RED2 = (0x00000014),
-		EtherBADGE = (0x00000016),
-		RAD_A2B = (0x00000017),
-		RADEpsilon = (0x00000018),
-		RADEpsilonXL = (0x0000001e),
-		RADGalaxy2 = (0x00000021),
-		RADMoon3 = (0x00000023),
-		RADComet = (0x00000024),
-		FIRE3_FlexRay = (0x00000025),
-		Connect = (0x00000026),
-		RADComet3 = (0x00000027),
-		RADMoonT1S = (0x00000028),
-		RADGigastar2 = (0x00000029),
-		FIRE3_T1S_LIN = (0x0000002A),
-		FIRE3_T1S_SENT = (0x0000002B),
-		RADGemini = (0x0000002C),
-		RED = (0x00000040),
-		ECU = (0x00000080),
-		IEVB = (0x00000100),
-		Pendant = (0x00000200),
-		OBD2_PRO = (0x00000400),
-		ECUChip_UART = (0x00000800),
-		PLASMA = (0x00001000),
-		DONT_REUSE0 = (0x00002000), // Previously FIRE_VNET
-		NEOAnalog = (0x00004000),
-		CT_OBD = (0x00008000),
-		DONT_REUSE1 = (0x00010000), // Previously PLASMA_1_12
-		DONT_REUSE2 = (0x00020000), // Previously PLASMA_1_13
-		ION = (0x00040000),
-		RADStar = (0x00080000),
-		DONT_REUSE3 = (0x00100000), // Previously ION3
-		VCAN4_4 = (0x00200000),
-		VCAN4_2 = (0x00400000),
-		CMProbe = (0x00800000),
-		EEVB = (0x01000000),
-		VCANrf = (0x02000000),
-		FIRE2 = (0x04000000),
-		Flex = (0x08000000),
-		RADGalaxy = (0x10000000),
-		RADStar2 = (0x20000000),
-		VividCAN = (0x40000000),
-		OBD2_SIM = (0x80000000)
+		Unknown = icsneoc2_devicetype_unknown,
+		BLUE = icsneoc2_devicetype_blue,
+		ECU_AVB = icsneoc2_devicetype_ecu_avb,
+		RADSupermoon = icsneoc2_devicetype_rad_supermoon,
+		DW_VCAN = icsneoc2_devicetype_dw_vcan,
+		RADMoon2 = icsneoc2_devicetype_rad_moon2,
+		RADMars = icsneoc2_devicetype_rad_mars,
+		VCAN4_1 = icsneoc2_devicetype_vcan41,
+		FIRE = icsneoc2_devicetype_fire,
+		RADPluto = icsneoc2_devicetype_rad_pluto,
+		VCAN4_2EL = icsneoc2_devicetype_vcan42_el,
+		RADIO_CANHUB = icsneoc2_devicetype_radio_canhub,
+		NEOECU12 = icsneoc2_devicetype_neo_ecu12,
+		OBD2_LCBADGE = icsneoc2_devicetype_obd2_lc_badge,
+		RADMoonDuo = icsneoc2_devicetype_rad_moon_duo,
+		FIRE3 = icsneoc2_devicetype_fire3,
+		VCAN3 = icsneoc2_devicetype_vcan3,
+		RADJupiter = icsneoc2_devicetype_rad_jupiter,
+		VCAN4_IND = icsneoc2_devicetype_vcan4_industrial,
+		RADGigastar = icsneoc2_devicetype_rad_gigastar,
+		RED2 = icsneoc2_devicetype_red2,
+		EtherBADGE = icsneoc2_devicetype_etherbadge,
+		RAD_A2B = icsneoc2_devicetype_rad_a2b,
+		RADEpsilon = icsneoc2_devicetype_rad_epsilon,
+		RADEpsilonXL = icsneoc2_devicetype_rad_epsilon_xl,
+		RADGalaxy2 = icsneoc2_devicetype_rad_galaxy2,
+		RADMoon3 = icsneoc2_devicetype_rad_moon3,
+		RADComet = icsneoc2_devicetype_rad_comet,
+		FIRE3_FlexRay = icsneoc2_devicetype_fire3_flexray,
+		Connect = icsneoc2_devicetype_connect,
+		RADComet3 = icsneoc2_devicetype_rad_comet3,
+		RADMoonT1S = icsneoc2_devicetype_rad_moon_t1s,
+		RADGigastar2 = icsneoc2_devicetype_rad_gigastar2,
+		FIRE3_T1S_LIN = icsneoc2_devicetype_fire3_t1s_lin,
+		FIRE3_T1S_SENT = icsneoc2_devicetype_fire3_t1s_sent,
+		RADGemini = icsneoc2_devicetype_rad_gemini,
+		RED = icsneoc2_devicetype_red,
+		ECU = icsneoc2_devicetype_ecu,
+		IEVB = icsneoc2_devicetype_ievb,
+		Pendant = icsneoc2_devicetype_pendant,
+		OBD2_PRO = icsneoc2_devicetype_obd2_pro,
+		ECUChip_UART = icsneoc2_devicetype_ecuchip_uart,
+		PLASMA = icsneoc2_devicetype_plasma,
+		DONT_REUSE0 = 0x00002000, // Previously FIRE_VNET
+		NEOAnalog = icsneoc2_devicetype_neo_analog,
+		CT_OBD = icsneoc2_devicetype_ct_obd,
+		DONT_REUSE1 = 0x00010000, // Previously PLASMA_1_12
+		DONT_REUSE2 = 0x00020000, // Previously PLASMA_1_13
+		ION = icsneoc2_devicetype_ion,
+		RADStar = icsneoc2_devicetype_rad_star,
+		DONT_REUSE3 = 0x00100000, // Previously ION3
+		VCAN4_4 = icsneoc2_devicetype_vcan44,
+		VCAN4_2 = icsneoc2_devicetype_vcan42,
+		CMProbe = icsneoc2_devicetype_cm_probe,
+		EEVB = icsneoc2_devicetype_eevb,
+		VCANrf = icsneoc2_devicetype_vcan_rf,
+		FIRE2 = icsneoc2_devicetype_fire2,
+		Flex = icsneoc2_devicetype_flex,
+		RADGalaxy = icsneoc2_devicetype_rad_galaxy,
+		RADStar2 = icsneoc2_devicetype_rad_star2,
+		VividCAN = icsneoc2_devicetype_vividcan,
+		OBD2_SIM = devicetype_t(icsneoc2_devicetype_obd2_sim)
 	};
 
 	/**
@@ -239,68 +242,68 @@ private:
 #endif // __cplusplus
 
 #ifdef __ICSNEOC_H_ // We are using the C API, so we want C-compatible defines
-#define ICSNEO_DEVICETYPE_UNKNOWN ((devicetype_t)0x00000000)
-#define ICSNEO_DEVICETYPE_BLUE ((devicetype_t)0x00000001)
-#define ICSNEO_DEVICETYPE_ECU_AVB ((devicetype_t)0x00000002)
-#define ICSNEO_DEVICETYPE_RADSUPERMOON ((devicetype_t)0x00000003)
-#define ICSNEO_DEVICETYPE_DW_VCAN ((devicetype_t)0x00000004)
-#define ICSNEO_DEVICETYPE_RADMOON2 ((devicetype_t)0x00000005)
-#define ICSNEO_DEVICETYPE_RADMARS ((devicetype_t)0x00000006)
-#define ICSNEO_DEVICETYPE_VCAN4_1 ((devicetype_t)0x00000007)
-#define ICSNEO_DEVICETYPE_FIRE ((devicetype_t)0x00000008)
-#define ICSNEO_DEVICETYPE_RADPLUTO ((devicetype_t)0x00000009)
-#define ICSNEO_DEVICETYPE_VCAN4_2EL ((devicetype_t)0x0000000a)
-#define ICSNEO_DEVICETYPE_RADIO_CANHUB ((devicetype_t)0x0000000b)
-#define ICSNEO_DEVICETYPE_NEOECU12 ((devicetype_t)0x0000000c)
-#define ICSNEO_DEVICETYPE_OBD2_LCBADGE ((devicetype_t)0x0000000d)
-#define ICSNEO_DEVICETYPE_RADMOONDUO ((devicetype_t)0x0000000e)
-#define ICSNEO_DEVICETYPE_FIRE3 ((devicetype_t)0x0000000f)
-#define ICSNEO_DEVICETYPE_VCAN3 ((devicetype_t)0x00000010)
-#define ICSNEO_DEVICETYPE_RADJUPITER ((devicetype_t)0x00000011)
-#define ICSNEO_DEVICETYPE_VCAN4_IND ((devicetype_t)0x00000012)
-#define ICSNEO_DEVICETYPE_RADGIGASTAR ((devicetype_t)0x00000013)
-#define ICSNEO_DEVICETYPE_RED2 ((devicetype_t)0x00000014)
-#define ICSNEO_DEVICETYPE_ETHERBADGE ((devicetype_t)0x00000016)
-#define ICSNEO_DEVICETYPE_RAD_A2B ((devicetype_t)0x00000017)
-#define ICSNEO_DEVICETYPE_RADEPSILON ((devicetype_t)0x00000018)
-#define ICSNEO_DEVICETYPE_RADEPSILONXL ((devicetype_t)0x0000001e)
-#define ICSNEO_DEVICETYPE_RADGALAXY2 ((devicetype_t)0x00000021)
-#define ICSNEO_DEVICETYPE_RADMoon3 ((devicetype_t)0x00000023)
-#define ICSNEO_DEVICETYPE_RADCOMET ((devicetype_t)0x00000024)
-#define ICSNEO_DEVICETYPE_FIRE3FLEXRAY ((devicetype_t)0x00000025)
-#define ICSNEO_DEVICETYPE_CONNECT ((devicetype_t)0x00000026)
-#define ICSNEO_DEVICETYPE_RADCOMET3 ((devicetype_t)0x00000027)
-#define ICSNEO_DEVICETYPE_RADMOONT1S ((devicetype_t)0x00000028)
-#define ICSNEO_DEVICETYPE_RADGIGASTAR2 ((devicetype_t)0x00000029)
-#define ICSNEO_DEVICETYPE_FIRE3_T1S_LIN ((devicetype_t)0x0000002A)
-#define ICSNEO_DEVICETYPE_FIRE3_T1S_SENT ((devicetype_t)0x0000002B)
-#define ICSNEO_DEVICETYPE_RADGEMINI ((devicetype_t)0x0000002C)
-#define ICSNEO_DEVICETYPE_RED ((devicetype_t)0x00000040)
-#define ICSNEO_DEVICETYPE_ECU ((devicetype_t)0x00000080)
-#define ICSNEO_DEVICETYPE_IEVB ((devicetype_t)0x00000100)
-#define ICSNEO_DEVICETYPE_PENDANT ((devicetype_t)0x00000200)
-#define ICSNEO_DEVICETYPE_OBD2_PRO ((devicetype_t)0x00000400)
-#define ICSNEO_DEVICETYPE_ECUCHIP_UART ((devicetype_t)0x00000800)
-#define ICSNEO_DEVICETYPE_PLASMA ((devicetype_t)0x00001000)
+#define ICSNEO_DEVICETYPE_UNKNOWN ((devicetype_t)icsneoc2_devicetype_unknown)
+#define ICSNEO_DEVICETYPE_BLUE ((devicetype_t)icsneoc2_devicetype_blue)
+#define ICSNEO_DEVICETYPE_ECU_AVB ((devicetype_t)icsneoc2_devicetype_ecu_avb)
+#define ICSNEO_DEVICETYPE_RADSUPERMOON ((devicetype_t)icsneoc2_devicetype_rad_supermoon)
+#define ICSNEO_DEVICETYPE_DW_VCAN ((devicetype_t)icsneoc2_devicetype_dw_vcan)
+#define ICSNEO_DEVICETYPE_RADMOON2 ((devicetype_t)icsneoc2_devicetype_rad_moon2)
+#define ICSNEO_DEVICETYPE_RADMARS ((devicetype_t)icsneoc2_devicetype_rad_mars)
+#define ICSNEO_DEVICETYPE_VCAN4_1 ((devicetype_t)icsneoc2_devicetype_vcan41)
+#define ICSNEO_DEVICETYPE_FIRE ((devicetype_t)icsneoc2_devicetype_fire)
+#define ICSNEO_DEVICETYPE_RADPLUTO ((devicetype_t)icsneoc2_devicetype_rad_pluto)
+#define ICSNEO_DEVICETYPE_VCAN4_2EL ((devicetype_t)icsneoc2_devicetype_vcan42_el)
+#define ICSNEO_DEVICETYPE_RADIO_CANHUB ((devicetype_t)icsneoc2_devicetype_radio_canhub)
+#define ICSNEO_DEVICETYPE_NEOECU12 ((devicetype_t)icsneoc2_devicetype_neo_ecu12)
+#define ICSNEO_DEVICETYPE_OBD2_LCBADGE ((devicetype_t)icsneoc2_devicetype_obd2_lc_badge)
+#define ICSNEO_DEVICETYPE_RADMOONDUO ((devicetype_t)icsneoc2_devicetype_rad_moon_duo)
+#define ICSNEO_DEVICETYPE_FIRE3 ((devicetype_t)icsneoc2_devicetype_fire3)
+#define ICSNEO_DEVICETYPE_VCAN3 ((devicetype_t)icsneoc2_devicetype_vcan3)
+#define ICSNEO_DEVICETYPE_RADJUPITER ((devicetype_t)icsneoc2_devicetype_rad_jupiter)
+#define ICSNEO_DEVICETYPE_VCAN4_IND ((devicetype_t)icsneoc2_devicetype_vcan4_industrial)
+#define ICSNEO_DEVICETYPE_RADGIGASTAR ((devicetype_t)icsneoc2_devicetype_rad_gigastar)
+#define ICSNEO_DEVICETYPE_RED2 ((devicetype_t)icsneoc2_devicetype_red2)
+#define ICSNEO_DEVICETYPE_ETHERBADGE ((devicetype_t)icsneoc2_devicetype_etherbadge)
+#define ICSNEO_DEVICETYPE_RAD_A2B ((devicetype_t)icsneoc2_devicetype_rad_a2b)
+#define ICSNEO_DEVICETYPE_RADEPSILON ((devicetype_t)icsneoc2_devicetype_rad_epsilon)
+#define ICSNEO_DEVICETYPE_RADEPSILONXL ((devicetype_t)icsneoc2_devicetype_rad_epsilon_xl)
+#define ICSNEO_DEVICETYPE_RADGALAXY2 ((devicetype_t)icsneoc2_devicetype_rad_galaxy2)
+#define ICSNEO_DEVICETYPE_RADMoon3 ((devicetype_t)icsneoc2_devicetype_rad_moon3)
+#define ICSNEO_DEVICETYPE_RADCOMET ((devicetype_t)icsneoc2_devicetype_rad_comet)
+#define ICSNEO_DEVICETYPE_FIRE3FLEXRAY ((devicetype_t)icsneoc2_devicetype_fire3_flexray)
+#define ICSNEO_DEVICETYPE_CONNECT ((devicetype_t)icsneoc2_devicetype_connect)
+#define ICSNEO_DEVICETYPE_RADCOMET3 ((devicetype_t)icsneoc2_devicetype_rad_comet3)
+#define ICSNEO_DEVICETYPE_RADMOONT1S ((devicetype_t)icsneoc2_devicetype_rad_moon_t1s)
+#define ICSNEO_DEVICETYPE_RADGIGASTAR2 ((devicetype_t)icsneoc2_devicetype_rad_gigastar2)
+#define ICSNEO_DEVICETYPE_FIRE3_T1S_LIN ((devicetype_t)icsneoc2_devicetype_fire3_t1s_lin)
+#define ICSNEO_DEVICETYPE_FIRE3_T1S_SENT ((devicetype_t)icsneoc2_devicetype_fire3_t1s_sent)
+#define ICSNEO_DEVICETYPE_RADGEMINI ((devicetype_t)icsneoc2_devicetype_rad_gemini)
+#define ICSNEO_DEVICETYPE_RED ((devicetype_t)icsneoc2_devicetype_red)
+#define ICSNEO_DEVICETYPE_ECU ((devicetype_t)icsneoc2_devicetype_ecu)
+#define ICSNEO_DEVICETYPE_IEVB ((devicetype_t)icsneoc2_devicetype_ievb)
+#define ICSNEO_DEVICETYPE_PENDANT ((devicetype_t)icsneoc2_devicetype_pendant)
+#define ICSNEO_DEVICETYPE_OBD2_PRO ((devicetype_t)icsneoc2_devicetype_obd2_pro)
+#define ICSNEO_DEVICETYPE_ECUCHIP_UART ((devicetype_t)icsneoc2_devicetype_ecuchip_uart)
+#define ICSNEO_DEVICETYPE_PLASMA ((devicetype_t)icsneoc2_devicetype_plasma)
 #define ICSNEO_DEVICETYPE_DONT_REUSE0 ((devicetype_t)0x00002000) // Previously FIRE_VNET
-#define ICSNEO_DEVICETYPE_NEOANALOG ((devicetype_t)0x00004000)
-#define ICSNEO_DEVICETYPE_CT_OBD ((devicetype_t)0x00008000)
+#define ICSNEO_DEVICETYPE_NEOANALOG ((devicetype_t)icsneoc2_devicetype_neo_analog)
+#define ICSNEO_DEVICETYPE_CT_OBD ((devicetype_t)icsneoc2_devicetype_ct_obd)
 #define ICSNEO_DEVICETYPE_DONT_REUSE1 ((devicetype_t)0x00010000) // Previously PLASMA_1_12
 #define ICSNEO_DEVICETYPE_DONT_REUSE2 ((devicetype_t)0x00020000) // Previously PLASMA_1_13
-#define ICSNEO_DEVICETYPE_ION ((devicetype_t)0x00040000)
-#define ICSNEO_DEVICETYPE_RADSTAR ((devicetype_t)0x00080000)
+#define ICSNEO_DEVICETYPE_ION ((devicetype_t)icsneoc2_devicetype_ion)
+#define ICSNEO_DEVICETYPE_RADSTAR ((devicetype_t)icsneoc2_devicetype_rad_star)
 #define ICSNEO_DEVICETYPE_DONT_REUSE3 ((devicetype_t)0x00100000) // Previously ION3
-#define ICSNEO_DEVICETYPE_VCAN4_4 ((devicetype_t)0x00200000)
-#define ICSNEO_DEVICETYPE_VCAN4_2 ((devicetype_t)0x00400000)
-#define ICSNEO_DEVICETYPE_CMPROBE ((devicetype_t)0x00800000)
-#define ICSNEO_DEVICETYPE_EEVB ((devicetype_t)0x01000000)
-#define ICSNEO_DEVICETYPE_VCANRF ((devicetype_t)0x02000000)
-#define ICSNEO_DEVICETYPE_FIRE2 ((devicetype_t)0x04000000)
-#define ICSNEO_DEVICETYPE_FLEX ((devicetype_t)0x08000000)
-#define ICSNEO_DEVICETYPE_RADGALAXY ((devicetype_t)0x10000000)
-#define ICSNEO_DEVICETYPE_RADSTAR2 ((devicetype_t)0x20000000)
-#define ICSNEO_DEVICETYPE_VIVIDCAN ((devicetype_t)0x40000000)
-#define ICSNEO_DEVICETYPE_OBD2_SIM ((devicetype_t)0x80000000)
+#define ICSNEO_DEVICETYPE_VCAN4_4 ((devicetype_t)icsneoc2_devicetype_vcan44)
+#define ICSNEO_DEVICETYPE_VCAN4_2 ((devicetype_t)icsneoc2_devicetype_vcan42)
+#define ICSNEO_DEVICETYPE_CMPROBE ((devicetype_t)icsneoc2_devicetype_cm_probe)
+#define ICSNEO_DEVICETYPE_EEVB ((devicetype_t)icsneoc2_devicetype_eevb)
+#define ICSNEO_DEVICETYPE_VCANRF ((devicetype_t)icsneoc2_devicetype_vcan_rf)
+#define ICSNEO_DEVICETYPE_FIRE2 ((devicetype_t)icsneoc2_devicetype_fire2)
+#define ICSNEO_DEVICETYPE_FLEX ((devicetype_t)icsneoc2_devicetype_flex)
+#define ICSNEO_DEVICETYPE_RADGALAXY ((devicetype_t)icsneoc2_devicetype_rad_galaxy)
+#define ICSNEO_DEVICETYPE_RADSTAR2 ((devicetype_t)icsneoc2_devicetype_rad_star2)
+#define ICSNEO_DEVICETYPE_VIVIDCAN ((devicetype_t)icsneoc2_devicetype_vividcan)
+#define ICSNEO_DEVICETYPE_OBD2_SIM ((devicetype_t)icsneoc2_devicetype_obd2_sim)
 #endif
 
 #endif

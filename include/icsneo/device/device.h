@@ -735,8 +735,8 @@ public:
 	bool setValueLiveData(std::shared_ptr<LiveDataSetValueMessage> message);
 	
 	enum class DiskFormatDirective : uint8_t {
-		Continue,
-		Stop
+		Continue = icsneoc2_disk_format_directive_continue,
+		Stop = icsneoc2_disk_format_directive_stop,
 	};
 
 	using DiskFormatProgress = std::function<DiskFormatDirective(uint64_t sectorsFormatted, uint64_t sectorsTotal)>;

@@ -1,6 +1,8 @@
 #ifndef __ICSNEO_IO_H_
 #define __ICSNEO_IO_H_
 
+#include <icsneo/icsneoc2types.h>
+
 typedef struct _neomiscio_t {
 	size_t number;
 	bool supportsDigitalIn;
@@ -19,12 +21,12 @@ namespace icsneo {
 using MiscIO = neomiscio_t;
 
 enum class IO {
-	EthernetActivation = 0, // The DoIP activation line, 0 is HiZ and 1 is pulled up to VBAT
-	USBHostPower = 1,
-	BackupPowerEnabled = 2, // The FIRE 2's backup super capacitor
-	BackupPowerGood = 3, // Whether or not the FIRE 2's backup super capacitor is charged (read only)
-	Misc = 4, // General purpose IO on the device
-	EMisc = 5, // Extended general purpose IO on the device
+	EthernetActivation = icsneoc2_io_type_eth_activation, // The DoIP activation line, 0 is HiZ and 1 is pulled up to VBAT
+	USBHostPower = icsneoc2_io_type_usb_host_power,
+	BackupPowerEnabled = icsneoc2_io_type_backup_power_en, // The FIRE 2's backup super capacitor
+	BackupPowerGood = icsneoc2_io_type_backup_power_good, // Whether or not the FIRE 2's backup super capacitor is charged (read only)
+	Misc = icsneoc2_io_type_misc, // General purpose IO on the device
+	EMisc = icsneoc2_io_type_emisc, // Extended general purpose IO on the device
 };
 
 // Note that the C API does a static cast between this and neoio_t so keep them in sync!

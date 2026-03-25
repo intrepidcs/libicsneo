@@ -181,12 +181,11 @@ bool Device::getMessages(std::vector<std::shared_ptr<Message>>& container, size_
 	if(container.size() < limit)
 		container.resize(limit);
 
-	size_t actuallyRead;
-	if(timeout != std::chrono::milliseconds(0))
-		actuallyRead = pollingContainer.wait_dequeue_bulk_timed(container.data(), limit, timeout);
-	else
-		actuallyRead = pollingContainer.try_dequeue_bulk(container.data(), limit);
-
+	size_t actuallyRead = 0;
+	if(pollingContainer.wait_dequeue_timed(container.front(), timeout)) {
+		actuallyRead = 1; // Account for the first message we already dequeued
+		actuallyRead += pollingContainer.try_dequeue_bulk(container.data() + 1, limit - 1);
+	}
 	if(container.size() > actuallyRead)
 		container.resize(actuallyRead);
 
