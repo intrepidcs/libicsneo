@@ -293,6 +293,110 @@ public:
 		}
 	}
 
+	const ETHERNET_SETTINGS2* getEthernetSettingsFor(Network net) const override {
+		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		switch(net.getNetID()) {
+			case Network::NetID::ETHERNET_01:
+				return &(cfg->ethernet2_1);
+			case Network::NetID::ETHERNET_02:
+				return &(cfg->ethernet2_2);
+			case Network::NetID::ETHERNET_03:
+				return &(cfg->ethernet2_3);
+			default:
+				return nullptr;
+		}
+	}
+
+	std::vector<EthPhyLinkMode> getSupportedPhyLinkModesFor(Network net) const override {
+		switch(net.getNetID()) {
+			case Network::NetID::ETHERNET_01:
+			case Network::NetID::ETHERNET_02:
+			case Network::NetID::ETHERNET_03:
+				return {
+					ETH_LINK_MODE_AUTO_NEGOTIATION,
+					ETH_LINK_MODE_10MBPS_FULLDUPLEX,
+					ETH_LINK_MODE_10MBPS_HALFDUPLEX,
+					ETH_LINK_MODE_100MBPS_FULLDUPLEX,
+					ETH_LINK_MODE_100MBPS_HALFDUPLEX,
+					ETH_LINK_MODE_1GBPS_FULLDUPLEX
+				};
+			default:
+				return {};
+		}
+	}
+
+	bool setPhyLinkModeFor(Network net, EthPhyLinkMode mode) override {
+		auto supported = getSupportedPhyLinkModesFor(net);
+		if(std::find(supported.begin(), supported.end(), mode) == supported.end()) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+
+		ETHERNET_SETTINGS2* eth = getMutableEthernetSettingsFor(net);
+		if(eth == nullptr)
+			return false;
+
+		switch(mode) {
+			case ETH_LINK_MODE_AUTO_NEGOTIATION:
+				eth->flags |= ETHERNET_SETTINGS2_FLAG_AUTO_NEG;
+				eth->link_speed = 2;
+				eth->flags |= ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX;
+				break;
+			case ETH_LINK_MODE_10MBPS_FULLDUPLEX:
+				eth->link_speed = 0;
+				eth->flags &= ~ETHERNET_SETTINGS2_FLAG_AUTO_NEG;
+				eth->flags |= ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX;
+				break;
+			case ETH_LINK_MODE_10MBPS_HALFDUPLEX:
+				eth->link_speed = 0;
+				eth->flags &= ~ETHERNET_SETTINGS2_FLAG_AUTO_NEG;
+				eth->flags &= ~ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX;
+				break;
+			case ETH_LINK_MODE_100MBPS_FULLDUPLEX:
+				eth->link_speed = 1;
+				eth->flags &= ~ETHERNET_SETTINGS2_FLAG_AUTO_NEG;
+				eth->flags |= ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX;
+				break;
+			case ETH_LINK_MODE_100MBPS_HALFDUPLEX:
+				eth->link_speed = 1;
+				eth->flags &= ~ETHERNET_SETTINGS2_FLAG_AUTO_NEG;
+				eth->flags &= ~ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX;
+				break;
+			case ETH_LINK_MODE_1GBPS_FULLDUPLEX:
+				eth->link_speed = 2;
+				eth->flags &= ~ETHERNET_SETTINGS2_FLAG_AUTO_NEG;
+				eth->flags |= ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX;
+				break;
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return false;
+		}
+		return true;
+	}
+
+	std::optional<EthPhyLinkMode> getPhyLinkModeFor(Network net) const override {
+		const ETHERNET_SETTINGS2* eth = getEthernetSettingsFor(net);
+		if(eth == nullptr) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+
+		if(eth->flags & ETHERNET_SETTINGS2_FLAG_AUTO_NEG)
+			return ETH_LINK_MODE_AUTO_NEGOTIATION;
+
+		const bool fullDuplex = (eth->flags & ETHERNET_SETTINGS2_FLAG_FULL_DUPLEX) != 0;
+		switch(eth->link_speed) {
+			case 0: return fullDuplex ? ETH_LINK_MODE_10MBPS_FULLDUPLEX : ETH_LINK_MODE_10MBPS_HALFDUPLEX;
+			case 1: return fullDuplex ? ETH_LINK_MODE_100MBPS_FULLDUPLEX : ETH_LINK_MODE_100MBPS_HALFDUPLEX;
+			case 2: return fullDuplex ? ETH_LINK_MODE_1GBPS_FULLDUPLEX : ETH_LINK_MODE_1GBPS_HALFDUPLEX;
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return std::nullopt;
+		}
+	}
+
 protected:
 	ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const override {
 		auto cfg = getStructurePointer<neovifire3_settings_t>();
