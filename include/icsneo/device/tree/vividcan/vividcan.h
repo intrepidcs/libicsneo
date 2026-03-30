@@ -32,6 +32,24 @@ public:
 	ProductID getProductID() const override {
 		return ProductID::VividCAN;
 	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::VividCAN_MCHIP, false, "MCHIP", "vividcan_mchip_ief", 0, FirmwareType::IEF},
+			{ChipID::VividCAN_EXT_FLASH, false, "Ext. Flash", "vividcan_ext_flash_ief", 0, FirmwareType::IEF}
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override { 
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::VividCAN_EXT_FLASH, BootloaderCommunication::RED, false)
+			.add<FlashPhase>(ChipID::VividCAN_MCHIP, BootloaderCommunication::RED, false)
+			.add<EnterApplicationPhase>(ChipID::VividCAN_MCHIP)
+			.add<WaitPhase>(std::chrono::milliseconds(3000))
+			.add<ReconnectPhase>();
+	}
 protected:
 	VividCAN(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<VividCANSettings>(makeDriver);
