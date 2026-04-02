@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iomanip>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/communication/message/filter/main51messagefilter.h"
 #include "icsneo/communication/message/extendedresponsemessage.h"
@@ -2251,6 +2252,24 @@ bool Device::setRTC(const std::chrono::time_point<std::chrono::system_clock>& ti
 	}
 
 	return m51msg->data.front();
+}
+
+std::optional<std::vector<uint8_t>> Device::getPCBSerial() {
+	auto serialMsg = com->getSerialNumberSync();
+	if(!serialMsg || !serialMsg->hasPCBSerial) {
+		return std::nullopt;
+	}
+
+	return std::vector<uint8_t>(serialMsg->pcbSerial, serialMsg->pcbSerial + sizeof(serialMsg->pcbSerial));
+}
+
+std::optional<std::vector<uint8_t>> Device::getMACAddress() {
+	auto serialMsg = com->getSerialNumberSync();
+	if(!serialMsg || !serialMsg->hasMacAddress) {
+		return std::nullopt;
+	}
+
+	return std::vector<uint8_t>(serialMsg->macAddress, serialMsg->macAddress + sizeof(serialMsg->macAddress));
 }
 
 std::optional<std::set<SupportedFeature>> Device::getSupportedFeatures() {

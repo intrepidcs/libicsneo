@@ -178,6 +178,8 @@ public:
 	DeviceType getType() const { return DeviceType(data.type); }
 	std::string getSerial() const { return data.serial; }
 	uint32_t getSerialNumber() const { return Device::SerialStringToNum(getSerial()); }
+	std::optional<std::vector<uint8_t>> getPCBSerial();
+	std::optional<std::vector<uint8_t>> getMACAddress();
 	const neodevice_t& getNeoDevice() const { return data; }
 	virtual std::string getProductName() const { return getType().getGenericProductName(); }
 	std::string describe() const;
