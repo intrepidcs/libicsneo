@@ -223,6 +223,27 @@ public:
 		return true;
 	}
 
+	std::optional<bool> isT1STerminationEnabledFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional<bool>((t1s->flags & ETHERNET10T1S_SETTINGS_FLAG_TERMINATION) != 0);
+	}
+
+	bool setT1STerminationFor(Network net, bool enable) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		if(enable)
+			t1s->flags |= ETHERNET10T1S_SETTINGS_FLAG_TERMINATION;
+		else
+			t1s->flags &= ~ETHERNET10T1S_SETTINGS_FLAG_TERMINATION;
+		
+		return true;
+	}
+
 private:
 	const ETHERNET10T1S_SETTINGS* getT1SSettingsFor(Network net) const {
 		auto cfg = getStructurePointer<radcomet_settings_t>();

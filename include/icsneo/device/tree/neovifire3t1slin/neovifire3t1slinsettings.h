@@ -363,6 +363,109 @@ public:
 		return true;
 	}
 
+	std::optional<uint8_t> getT1SLocalIDAlternateFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional(t1s->local_id_alternate);
+	}
+
+	bool setT1SLocalIDAlternateFor(Network net, uint8_t id) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		t1s->local_id_alternate = id;
+		return true;
+	}
+
+	std::optional<bool> isT1SBusDecodingBeaconsEnabledFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional<bool>((t1s->flags & ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_BEACONS) != 0);
+	}
+
+	bool setT1SBusDecodingBeaconsFor(Network net, bool enable) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		if(enable)
+			t1s->flags |= ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_BEACONS;
+		else
+			t1s->flags &= ~ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_BEACONS;
+		
+		return true;
+	}
+
+	std::optional<bool> isT1SBusDecodingAllEnabledFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional<bool>((t1s->flags & ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_ALL) != 0);
+	}
+
+	bool setT1SBusDecodingAllFor(Network net, bool enable) override {
+		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
+		if(t1s == nullptr)
+			return false;
+		
+		if(enable)
+			t1s->flags |= ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_ALL;
+		else
+			t1s->flags &= ~ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_ALL;
+		
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SMultiIDEnableMaskFor(Network net) const override {
+		const ETHERNET10T1S_SETTINGS_EXT* t1sExt = getT1SSettingsExtFor(net);
+		if(t1sExt == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional(t1sExt->enable_multi_id);
+	}
+
+	bool setT1SMultiIDEnableMaskFor(Network net, uint8_t mask) override {
+		ETHERNET10T1S_SETTINGS_EXT* t1sExt = getMutableT1SSettingsExtFor(net);
+		if(t1sExt == nullptr)
+			return false;
+		
+		t1sExt->enable_multi_id = mask;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SMultiIDFor(Network net, uint8_t index) const override {
+		const ETHERNET10T1S_SETTINGS_EXT* t1sExt = getT1SSettingsExtFor(net);
+		if(t1sExt == nullptr)
+			return std::nullopt;
+		
+		if(index >= 7) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		
+		return std::make_optional(t1sExt->multi_id[index]);
+	}
+
+	bool setT1SMultiIDFor(Network net, uint8_t index, uint8_t id) override {
+		ETHERNET10T1S_SETTINGS_EXT* t1sExt = getMutableT1SSettingsExtFor(net);
+		if(t1sExt == nullptr)
+			return false;
+		
+		if(index >= 7) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		
+		t1sExt->multi_id[index] = id;
+		return true;
+	}
+
 private:
 	const ETHERNET10T1S_SETTINGS* getT1SSettingsFor(Network net) const {
 		auto cfg = getStructurePointer<neovifire3t1slin_settings_t>();
@@ -398,6 +501,46 @@ private:
 			case Network::NetID::AE_06: return &(cfg->t1s6);
 			case Network::NetID::AE_07: return &(cfg->t1s7);
 			case Network::NetID::AE_08: return &(cfg->t1s8);
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return nullptr;
+		}
+	}
+
+	const ETHERNET10T1S_SETTINGS_EXT* getT1SSettingsExtFor(Network net) const {
+		auto cfg = getStructurePointer<neovifire3t1slin_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		
+		switch(net.getNetID()) {
+			case Network::NetID::AE_03: return &(cfg->t1s1Ext);
+			case Network::NetID::AE_04: return &(cfg->t1s2Ext);
+			case Network::NetID::AE_05: return &(cfg->t1s3Ext);
+			case Network::NetID::AE_06: return &(cfg->t1s4Ext);
+			case Network::NetID::AE_07: return &(cfg->t1s5Ext);
+			case Network::NetID::AE_08: return &(cfg->t1s6Ext);
+			case Network::NetID::AE_09: return &(cfg->t1s7Ext);
+			case Network::NetID::AE_10: return &(cfg->t1s8Ext);
+			default:
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return nullptr;
+		}
+	}
+
+	ETHERNET10T1S_SETTINGS_EXT* getMutableT1SSettingsExtFor(Network net) {
+		auto cfg = getMutableStructurePointer<neovifire3t1slin_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		
+		switch(net.getNetID()) {
+			case Network::NetID::AE_03: return &(cfg->t1s1Ext);
+			case Network::NetID::AE_04: return &(cfg->t1s2Ext);
+			case Network::NetID::AE_05: return &(cfg->t1s3Ext);
+			case Network::NetID::AE_06: return &(cfg->t1s4Ext);
+			case Network::NetID::AE_07: return &(cfg->t1s5Ext);
+			case Network::NetID::AE_08: return &(cfg->t1s6Ext);
+			case Network::NetID::AE_09: return &(cfg->t1s7Ext);
+			case Network::NetID::AE_10: return &(cfg->t1s8Ext);
 			default:
 				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
 				return nullptr;

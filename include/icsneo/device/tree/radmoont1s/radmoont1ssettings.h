@@ -210,6 +210,159 @@ private:
 				return nullptr;
 		}
 	}
+
+	std::optional<uint8_t> getT1SLocalIDAlternateFor(Network net) const override {
+		auto cfg = getStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		
+		return std::make_optional(cfg->t1s.local_id_alternate);
+	}
+
+	bool setT1SLocalIDAlternateFor(Network net, uint8_t id) override {
+		auto cfg = getMutableStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return false;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		
+		cfg->t1s.local_id_alternate = id;
+		return true;
+	}
+
+	std::optional<bool> isT1SBusDecodingBeaconsEnabledFor(Network net) const override {
+		auto cfg = getStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		
+		return std::make_optional<bool>((cfg->t1s.flags & ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_BEACONS) != 0);
+	}
+
+	bool setT1SBusDecodingBeaconsFor(Network net, bool enable) override {
+		auto cfg = getMutableStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return false;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		
+		if(enable)
+			cfg->t1s.flags |= ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_BEACONS;
+		else
+			cfg->t1s.flags &= ~ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_BEACONS;
+		
+		return true;
+	}
+
+	std::optional<bool> isT1SBusDecodingAllEnabledFor(Network net) const override {
+		auto cfg = getStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		
+		return std::make_optional<bool>((cfg->t1s.flags & ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_ALL) != 0);
+	}
+
+	bool setT1SBusDecodingAllFor(Network net, bool enable) override {
+		auto cfg = getMutableStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return false;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		
+		if(enable)
+			cfg->t1s.flags |= ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_ALL;
+		else
+			cfg->t1s.flags &= ~ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_ALL;
+		
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SMultiIDEnableMaskFor(Network net) const override {
+		auto cfg = getStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		
+		return std::make_optional(cfg->t1sExt.enable_multi_id);
+	}
+
+	bool setT1SMultiIDEnableMaskFor(Network net, uint8_t mask) override {
+		auto cfg = getMutableStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return false;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		
+		cfg->t1sExt.enable_multi_id = mask;
+		return true;
+	}
+
+	std::optional<uint8_t> getT1SMultiIDFor(Network net, uint8_t index) const override {
+		auto cfg = getStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		
+		if(index >= 7) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+		
+		return std::make_optional(cfg->t1sExt.multi_id[index]);
+	}
+
+	bool setT1SMultiIDFor(Network net, uint8_t index, uint8_t id) override {
+		auto cfg = getMutableStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return false;
+		
+		if(net.getNetID() != Network::NetID::AE_01) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		
+		if(index >= 7) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+		
+		cfg->t1sExt.multi_id[index] = id;
+		return true;
+	}
 };
 
 }

@@ -1194,6 +1194,77 @@ public:
 		return false;
 	}
 
+	virtual std::optional<uint8_t> getT1SLocalIDAlternateFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SLocalIDAlternateFor(Network net, uint8_t id) {
+		(void)net; (void)id;
+		return false;
+	}
+
+	virtual std::optional<bool> isT1STerminationEnabledFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1STerminationFor(Network net, bool enable) {
+		(void)net; (void)enable;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+
+	virtual std::optional<bool> isT1SBusDecodingBeaconsEnabledFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SBusDecodingBeaconsFor(Network net, bool enable) {
+		(void)net; (void)enable;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+
+	virtual std::optional<bool> isT1SBusDecodingAllEnabledFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SBusDecodingAllFor(Network net, bool enable) {
+		(void)net; (void)enable;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+
+	virtual std::optional<uint8_t> getT1SMultiIDEnableMaskFor(Network net) const {
+		(void)net;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SMultiIDEnableMaskFor(Network net, uint8_t mask) {
+		(void)net; (void)mask;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+
+	virtual std::optional<uint8_t> getT1SMultiIDFor(Network net, uint8_t index) const {
+		(void)net; (void)index;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setT1SMultiIDFor(Network net, uint8_t index, uint8_t id) {
+		(void)net; (void)index; (void)id;
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+
 	virtual bool setMiscIOAnalogOutputEnabled(uint8_t pin, bool enabled);
 	virtual bool setMiscIOAnalogOutput(uint8_t pin, MiscIOAnalogVoltage voltage);
 
