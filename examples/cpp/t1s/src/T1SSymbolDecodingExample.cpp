@@ -98,7 +98,7 @@ bool getUserConfirmation(const std::string& prompt) {
 	std::cout << prompt << " (y/n): " << std::flush;
 	std::getline(std::cin, input);
 	if (!input.empty()) {
-		char c = std::tolower(input[0]);
+		char c = static_cast<char>(std::tolower(input[0]));
 		return (c == 'y');
 	}
 	return false;

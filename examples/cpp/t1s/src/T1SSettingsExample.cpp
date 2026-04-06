@@ -24,7 +24,7 @@ bool getUserConfirmation(const std::string& prompt) {
 	std::cout << prompt << " (y/n): " << std::flush;
 	std::getline(std::cin, input);
 	if (!input.empty()) {
-		char c = std::tolower(input[0]);
+		char c = static_cast<char>(std::tolower(input[0]));
 		return (c == 'y');
 	}
 	return false;
@@ -48,7 +48,8 @@ std::vector<icsneo::Network::NetID> selectNetworks(const std::vector<icsneo::Net
 	if (input.empty())
 		return selectedNetworks;
 	
-	std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+	std::transform(input.begin(), input.end(), input.begin(),
+		[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 	
 	if (input == "all") {
 		return availableNetworks;
@@ -166,10 +167,10 @@ void configureT1SNetwork(std::shared_ptr<icsneo::Device>& device, icsneo::Networ
 	uint8_t txOppTimer = getUint8Input("TX Opportunity Timer (0-255)", 20);
 	device->settings->setT1STxOppTimerFor(netId, txOppTimer);
 	
-	uint16_t maxBurst = getUint16Input("Max Burst (0-65535)", 128);
+	uint8_t maxBurst = getUint8Input("Max Burst (0-255)", 128);
 	device->settings->setT1SMaxBurstFor(netId, maxBurst);
 	
-	uint16_t burstTimer = getUint16Input("Burst Timer (0-65535)", 64);
+	uint8_t burstTimer = getUint8Input("Burst Timer (0-255)", 64);
 	device->settings->setT1SBurstTimerFor(netId, burstTimer);
 	
 	if (device->settings->isT1STerminationEnabledFor(netId).has_value()) {
