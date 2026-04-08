@@ -42,6 +42,8 @@ typedef enum _icsneoc2_error_t {
 	icsneoc2_error_script_clear_failed, // Failed to clear script
 	icsneoc2_error_script_upload_failed, // Failed to upload coremini script
 	icsneoc2_error_script_load_prepare_failed, // Failed to prepare script load
+	icsneoc2_error_close_failed, // Failed to close device
+	icsneoc2_error_reconnect_failed, // Failed to reconnect to device
 	// NOTE: Any new values added here should be updated in icsneoc2_error_code_get
 	icsneoc2_error_maxsize
 } _icsneoc2_error_t;
@@ -166,29 +168,31 @@ icsneoc2_error_t icsneoc2_device_is_valid(const icsneoc2_device_t* device);
 icsneoc2_error_t icsneoc2_device_is_open(const icsneoc2_device_t* device, bool* is_open);
 
 /**
- * Check if a device is disconnected.
- *
- * @param[in] device The device to check.
- * @param[out] is_disconnected true if the device is disconnected, false otherwise
- *
- * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ * Create a device handle from an enumeration node without opening it. Need to call icsneoc2_device_free() to free the handle when finished.
+ * The device can then be opened with icsneoc2_device_open().
+ * 
+ * @param[in] device_info The device info node to create from.
+ * @param[out] device Pointer to receive the created device handle.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_device otherwise.
+ * 
+ * @see icsneoc2_device_open icsneoc2_device_free
  */
-icsneoc2_error_t icsneoc2_device_is_disconnected(const icsneoc2_device_t* device, bool* is_disconnected);
+icsneoc2_error_t icsneoc2_device_create(const icsneoc2_device_info_t* device_info, icsneoc2_device_t** device);
 
 /**
  * Open a device from an enumeration node.
  *
  * After a successful call, icsneoc2_device_close() must be called to close the device.
  *
- * @param[in] device_info The device info node to open.
+ * @param[in] device Pointer to the device to open.
  * @param[in] options Open options (e.g. icsneoc2_open_options_default).
- * @param[out] device Pointer to receive the opened device handle.
  *
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_open_failed otherwise.
  *
- * @see icsneoc2_device_close
+ * @see icsneoc2_device_close icsneoc2_device_free
  */
-icsneoc2_error_t icsneoc2_device_open(const icsneoc2_device_info_t* device_info, icsneoc2_open_options_t options, icsneoc2_device_t** device);
+icsneoc2_error_t icsneoc2_device_open(const icsneoc2_device_t* device, icsneoc2_open_options_t options);
 
 /**
  * Convenience: enumerate, find by serial, open, and free enumeration.
@@ -199,13 +203,14 @@ icsneoc2_error_t icsneoc2_device_open(const icsneoc2_device_info_t* device_info,
  *
  * @return icsneoc2_error_t icsneoc2_error_success if successful.
  *
- * @see icsneoc2_device_close
+ * @see icsneoc2_device_close icsneoc2_device_free
  */
 icsneoc2_error_t icsneoc2_device_open_serial(const char* serial, icsneoc2_open_options_t options, icsneoc2_device_t** device);
 
 /**
  * Convenience: enumerate, find first available device (optionally filtered by type), open, and free enumeration.
  * Pass 0 for device_type to match any device.
+ * 
  *
  * @param[in] device_type The device type to match, or 0 for any.
  * @param[in] options Open options (e.g. icsneoc2_open_options_default).
@@ -213,23 +218,45 @@ icsneoc2_error_t icsneoc2_device_open_serial(const char* serial, icsneoc2_open_o
  *
  * @return icsneoc2_error_t icsneoc2_error_success if successful.
  *
- * @see icsneoc2_device_close
+ * @see icsneoc2_device_close icsneoc2_device_free
  */
 icsneoc2_error_t icsneoc2_device_open_first(icsneoc2_devicetype_t device_type, icsneoc2_open_options_t options, icsneoc2_device_t** device);
+
+/**
+ * Reconnect to a device. This is useful if the device was disconnected and reconnected, or if the connection was lost for some reason.
+ * 
+ * @param[in] device The device to reconnect.
+ * @param[in] options Open options (e.g. icsneoc2_open_options_default).
+ * @param[in] timeout_ms The timeout in milliseconds to keep trying to reconnect before giving up.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_reconnect_failed if the timeout was reached without reconnecting, or icsneoc2_device_is_valid() errors otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_reconnect(icsneoc2_device_t* device, icsneoc2_open_options_t options, uint32_t timeout_ms);
 
 /**
  * Close a connection to a previously opened device.
  *
  * After a successful call to icsneoc2_device_open(), this function must be called to close the device.
- * An already closed device will still succeed. All messages and events related to the device will be freed.
+ * An already closed device will still succeed. The device handle must be freed with icsneoc2_device_free() when finished.
  *
  * @param[in,out] device Pointer to the device to close.
  *
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_device_is_valid() errors otherwise.
  *
- * @see icsneoc2_device_open icsneoc2_device_is_valid
+ * @see icsneoc2_device_open icsneoc2_device_is_valid icsneoc2_device_free
  */
 icsneoc2_error_t icsneoc2_device_close(icsneoc2_device_t* device);
+
+/**
+ * Free a device handle created by icsneoc2_device_create(). Device should be closed before freeing.
+ * 
+ * @param[in] device The device handle to free.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_device_is_valid() errors otherwise.
+ * 
+ * @see icsneoc2_device_create icsneoc2_device_close
+ */
+icsneoc2_error_t icsneoc2_device_free(icsneoc2_device_t* device);
 
 /**
  * Get the description of a device

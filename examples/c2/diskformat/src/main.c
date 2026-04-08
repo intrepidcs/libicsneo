@@ -48,6 +48,7 @@ int main() {
 	size_t description_length = sizeof(description);
 	res = icsneoc2_device_description_get(device, description, &description_length);
 	if(res != icsneoc2_error_success) {
+		icsneoc2_device_free(device);
 		return print_error_code("\tFailed to get device description", res);
 	}
 	printf("\tOpened device: %s\n", description);
@@ -58,11 +59,13 @@ int main() {
 	if(res != icsneoc2_error_success) {
 		print_error_code("\tFailed to check disk formatting support", res);
 		icsneoc2_device_close(device);
+		icsneoc2_device_free(device);
 		return -1;
 	}
 	if(!supported) {
 		printf("\terror: %s does not support disk formatting\n", description);
 		icsneoc2_device_close(device);
+		icsneoc2_device_free(device);
 		return -1;
 	}
 
@@ -79,6 +82,7 @@ int main() {
 		printf("FAIL\n");
 		print_error_code("\tFailed to get disk details", res);
 		icsneoc2_device_close(device);
+		icsneoc2_device_free(device);
 		return -1;
 	}
 	printf("OK\n");
@@ -122,6 +126,7 @@ int main() {
 		printf("\n\terror: no disks are present in the device\n");
 		icsneoc2_disk_details_free(details);
 		icsneoc2_device_close(device);
+		icsneoc2_device_free(device);
 		return -1;
 	}
 
@@ -133,6 +138,7 @@ int main() {
 		printf("\tAborted.\n");
 		icsneoc2_disk_details_free(details);
 		icsneoc2_device_close(device);
+		icsneoc2_device_free(device);
 		return 0;
 	}
 
@@ -145,6 +151,7 @@ int main() {
 		print_error_code("\tFormat failed", res);
 		icsneoc2_disk_details_free(details);
 		icsneoc2_device_close(device);
+		icsneoc2_device_free(device);
 		return -1;
 	}
 	printf("\tFormat complete!\n");
@@ -171,5 +178,6 @@ int main() {
 
 	printf("\tClosing device: %s...\n", description);
 	icsneoc2_device_close(device);
+	icsneoc2_device_free(device);
 	return 0;
 }

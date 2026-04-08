@@ -143,7 +143,10 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_info_description_get(NULL, placeholderStr, &placeholderSizeT));
 
 	// Test open/close with NULL parameters
-	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_open(NULL, 0, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_create(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_free(NULL));
+	
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_open(NULL, 0));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_open_serial(NULL, 0, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_open_first(0, 0, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_close(NULL));
@@ -154,7 +157,6 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_is_online_supported(NULL, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_is_valid(NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_is_open(NULL, &placeholderBool));
-	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_is_disconnected(NULL, &placeholderBool));
 
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_rtc_get(NULL, (int64_t *)&placeholderUnsignedInteger64));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_rtc_set(NULL, 0));

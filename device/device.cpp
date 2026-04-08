@@ -395,7 +395,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 				if(heartbeatCV.wait_for(recvLk, std::chrono::milliseconds(3500), [&](){ return receivedMessage; })) {
 					receivedMessage = false;
 				} else {
-					if(!stopHeartbeatThread && !isDisconnected()) {
+					if(!stopHeartbeatThread) {
 						close();
 						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
 					}

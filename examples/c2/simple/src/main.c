@@ -116,6 +116,7 @@ int main() {
 		size_t description_length = 255;
 		res = icsneoc2_device_info_description_get(cur, description, &description_length);
 		if(res != icsneoc2_error_success) {
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to get device description", res);
 		};
 		printf("%.*s\n", (int)description_length, description);
@@ -126,8 +127,15 @@ int main() {
 		printf("\tDevice open options: 0x%x\n", options);
 		printf("\tOpening device: %s...\n", description);
 		icsneoc2_device_t* open_device = NULL;
-		res = icsneoc2_device_open(cur, options, &open_device);
+		res = icsneoc2_device_create(cur, &open_device);
 		if(res != icsneoc2_error_success) {
+			icsneoc2_enumeration_free(found_devices);
+			return print_error_code("\tFailed to create device", res);
+		}
+		res = icsneoc2_device_open(open_device, options);
+		if(res != icsneoc2_error_success) {
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to open device", res);
 		};
 
@@ -137,6 +145,8 @@ int main() {
 		res = icsneoc2_device_timestamp_resolution_get(open_device, &timestamp_resolution);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to get timestamp resolution", res);
 		}
 		printf("%uns\n", timestamp_resolution);
@@ -146,6 +156,8 @@ int main() {
 		res = icsneoc2_settings_baudrate_get(open_device, icsneoc2_netid_dwcan_01, &baudrate);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to get baudrate", res);
 		};
 		printf("%" PRIu64 "mbit/s\n", baudrate);
@@ -155,6 +167,8 @@ int main() {
 		res = icsneoc2_settings_canfd_baudrate_get(open_device, icsneoc2_netid_dwcan_01, &fd_baudrate);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to get FD baudrate", res);
 		};
 		printf("%" PRIu64 "mbit/s\n", fd_baudrate);
@@ -165,6 +179,8 @@ int main() {
 		res = icsneoc2_settings_baudrate_set(open_device, icsneoc2_netid_dwcan_01, baudrate);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to set baudrate", res);
 		};
 		printf("Ok\n");
@@ -173,6 +189,8 @@ int main() {
 		res = icsneoc2_settings_canfd_baudrate_set(open_device, icsneoc2_netid_dwcan_01, fd_baudrate);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to set FD baudrate", res);
 		};
 		printf("Ok\n");
@@ -181,6 +199,8 @@ int main() {
 		res = get_and_print_rtc(open_device);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to get RTC", res);
 		}
 		// Set RTC
@@ -189,6 +209,8 @@ int main() {
 		res = icsneoc2_device_rtc_set(open_device, current_time);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to set RTC", res);
 		}
 		printf("Ok\n");
@@ -197,6 +219,8 @@ int main() {
 		res = get_and_print_rtc(open_device);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to get RTC", res);
 		}
 		// Go online, start acking traffic
@@ -204,6 +228,8 @@ int main() {
 		res = icsneoc2_device_go_online(open_device, true);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to go online", res);
 		}
 		// Redundant check to show how to check if the device is online, if the previous
@@ -212,6 +238,8 @@ int main() {
 		res = icsneoc2_device_is_online(open_device, &is_online);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to check if online", res);
 		}
 		printf("%s\n", is_online ? "Online" : "Offline");
@@ -219,6 +247,8 @@ int main() {
 		res = transmit_can_messages(open_device);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to transmit CAN messages", res);
 		}
 		// Wait for the bus to collect some messages, requires an active bus to get messages
@@ -231,7 +261,12 @@ int main() {
 		for(size_t i = 0; i < message_count; ++i) {
 			res = icsneoc2_device_message_get(open_device, &messages[i], 0);
 			if(res != icsneoc2_error_success) {
+				for(size_t j = 0; j < i; ++j) {
+					icsneoc2_message_free(messages[j]);
+				}
 				print_events(description);
+				icsneoc2_device_free(open_device);
+				icsneoc2_enumeration_free(found_devices);
 				return print_error_code("\tFailed to get messages from device", res);
 			};
 			if(messages[i] == NULL) {
@@ -243,7 +278,12 @@ int main() {
 		// Process the messages
 		res = process_messages(messages, message_count);
 		if(res != icsneoc2_error_success) {
+			for(size_t i = 0; i < message_count; ++i) {
+				icsneoc2_message_free(messages[i]);
+			}
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to process messages", res);
 		}
 		for(size_t i = 0; i < message_count; ++i) {
@@ -254,11 +294,13 @@ int main() {
 		res = icsneoc2_device_close(open_device);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
+			icsneoc2_enumeration_free(found_devices);
 			return print_error_code("\tFailed to close device", res);
 		};
 		// Print device events
 		print_events(description);
-
+		icsneoc2_device_free(open_device);
 	}
 	icsneoc2_enumeration_free(found_devices);
 	printf("\n");
@@ -285,6 +327,9 @@ void print_events(const char* device_description) {
 		// no device filter, get all events
 		icsneoc2_error_t res = icsneoc2_event_get(&events[i], NULL);
 		if(res != icsneoc2_error_success) {
+			for(size_t j = 0; j < i; ++j) {
+				icsneoc2_event_free(events[j]);
+			}
 			(void)print_error_code("\tFailed to get device events", res);
 			return;
 		}
@@ -397,6 +442,7 @@ int transmit_can_messages(icsneoc2_device_t* device) {
 		res += icsneoc2_message_can_props_set(message, &arb_id, &flags);
 		res += icsneoc2_message_data_set(message, (uint8_t*)&counter, sizeof(counter));
 		if(res != icsneoc2_error_success) {
+			icsneoc2_message_free(message);
 			return print_error_code("\tFailed to modify message", res);
 		}
 		res = icsneoc2_device_message_transmit(device, message);

@@ -83,6 +83,7 @@ int main() {
 	size_t description_length = 255;
 	res = icsneoc2_device_description_get(open_device, description, &description_length);
 	if(res != icsneoc2_error_success) {
+		icsneoc2_device_free(open_device);
 		return print_error_code("\tFailed to get device description", res);
 	};
 	printf("\tOpened device: %s\n", description);
@@ -96,6 +97,7 @@ int main() {
 		res = icsneoc2_device_message_get(open_device, &messages[i], 0);
 		if(res != icsneoc2_error_success) {
 			print_events(description);
+			icsneoc2_device_free(open_device);
 			return print_error_code("\tFailed to get messages from device", res);
 		};
 		if(messages[i] == NULL) {
@@ -106,6 +108,7 @@ int main() {
 	}
 	if(res != icsneoc2_error_success) {
 		print_events(description);
+		icsneoc2_device_free(open_device);
 		return print_error_code("\tFailed to get messages from device", res);
 	}
 	time_t end_time = time(NULL);
@@ -114,6 +117,7 @@ int main() {
 	res = process_message(messages, message_count);
 	if(res != icsneoc2_error_success) {
 		print_events(description);
+		icsneoc2_device_free(open_device);
 		return print_error_code("\tFailed to process messages", res);
 	}
 	// Finally, close the device.
@@ -121,8 +125,10 @@ int main() {
 	res = icsneoc2_device_close(open_device);
 	if(res != icsneoc2_error_success) {
 		print_events(description);
+		icsneoc2_device_free(open_device);
 		return print_error_code("\tFailed to close device", res);
 	};
+	icsneoc2_device_free(open_device);
 
 	printf("\n");
 	return 0;

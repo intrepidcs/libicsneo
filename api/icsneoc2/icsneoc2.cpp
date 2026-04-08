@@ -43,7 +43,7 @@ bool safe_str_copy(char* dest, size_t* dest_size, std::string_view src) {
 }
 
 icsneoc2_error_t icsneoc2_error_code_get(icsneoc2_error_t error_code, char* value, size_t* value_length) {
-	static const char* error_strings[icsneoc2_error_maxsize] = {
+	static const char* error_strings[] = {
 		"Success",                          // icsneoc2_error_success
 		"Invalid function parameters",      // icsneoc2_error_invalid_parameters
 		"Open failed",                      // icsneoc2_error_open_failed
@@ -66,6 +66,8 @@ icsneoc2_error_t icsneoc2_error_code_get(icsneoc2_error_t error_code, char* valu
 		"Script clear failed",              // icsneoc2_error_script_clear_failed
 		"Script upload failed",             // icsneoc2_error_script_upload_failed
 		"Script load prepare failed",       // icsneoc2_error_script_load_prepare_failed
+		"Close failed",                     // icsneoc2_error_close_failed
+		"Reconnect failed",                 // icsneoc2_error_reconnect_failed
 	};
 	static_assert(std::size(error_strings) == icsneoc2_error_maxsize,
 		"error_strings is out of sync with _icsneoc2_error_t enum - update both together");
@@ -194,37 +196,27 @@ icsneoc2_error_t icsneoc2_device_is_open(const icsneoc2_device_t* device, bool* 
 	return icsneoc2_error_success;
 }
 
-icsneoc2_error_t icsneoc2_device_is_disconnected(const icsneoc2_device_t* device, bool* is_disconnected) {
-	auto res = icsneoc2_device_is_valid(device);
-	if(res != icsneoc2_error_success) {
-		return res;
-	}
-	if(!is_disconnected) {
+icsneoc2_error_t icsneoc2_device_create(const icsneoc2_device_info_t* device_info, icsneoc2_device_t** device) {
+	if(!device_info || !device_info->device || !device) {
 		return icsneoc2_error_invalid_parameters;
 	}
-	auto dev = device->device;
-	*is_disconnected = dev->isDisconnected();
-
+	auto* new_device = new (std::nothrow) icsneoc2_device_t;
+	if(!new_device) {
+		return icsneoc2_error_out_of_memory;
+	}
+	new_device->device = device_info->device;
+	*device = new_device;
 	return icsneoc2_error_success;
 }
 
-static icsneoc2_error_t open_device_with_options(std::shared_ptr<Device> dev, icsneoc2_open_options_t options, icsneoc2_device_t** device) {
+static icsneoc2_error_t open_device_with_options(std::shared_ptr<Device> dev, icsneoc2_open_options_t options) {
 	if(!dev) {
 		return icsneoc2_error_invalid_device;
-	}
-	// Nothing to do if already open
-	if(dev->isOpen()) {
-		*device = new (std::nothrow) icsneoc2_device_t;
-		if(!*device) {
-			return icsneoc2_error_out_of_memory;
-		}
-		(*device)->device = dev;
-		return icsneoc2_error_success;
 	}
 	if(!dev->enableMessagePolling(std::make_optional<MessageFilter>())) {
 		return icsneoc2_error_enable_message_polling_failed;
 	}
-	if(!dev->open()) {
+	if(!dev->isOpen() && !dev->open()) {
 		return icsneoc2_error_open_failed;
 	}
 	if((options & ICSNEOC2_OPEN_OPTIONS_SYNC_RTC) && !dev->setRTC(std::chrono::system_clock::now())) {
@@ -235,23 +227,15 @@ static icsneoc2_error_t open_device_with_options(std::shared_ptr<Device> dev, ic
 		dev->close();
 		return icsneoc2_error_go_online_failed;
 	}
-	*device = new (std::nothrow) icsneoc2_device_t;
-	if(!*device) {
-		dev->close();
-		return icsneoc2_error_out_of_memory;
-	}
-	(*device)->device = dev;
 	return icsneoc2_error_success;
 }
 
-icsneoc2_error_t icsneoc2_device_open(const icsneoc2_device_info_t* device_info, icsneoc2_open_options_t options, icsneoc2_device_t** device) {
-	if(!device_info || !device) {
-		return icsneoc2_error_invalid_parameters;
+icsneoc2_error_t icsneoc2_device_open(const icsneoc2_device_t* device, icsneoc2_open_options_t options) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
 	}
-	if(!device_info->device) {
-		return icsneoc2_error_invalid_device;
-	}
-	return open_device_with_options(device_info->device, options, device);
+	return open_device_with_options(device->device, options);
 }
 
 icsneoc2_error_t icsneoc2_device_open_serial(const char* serial, icsneoc2_open_options_t options, icsneoc2_device_t** device) {
@@ -266,7 +250,15 @@ icsneoc2_error_t icsneoc2_device_open_serial(const char* serial, icsneoc2_open_o
 	std::string_view target(serial);
 	for(auto* cur = devs; cur; cur = cur->next) {
 		if(cur->device && cur->device->getSerial() == target) {
-			res = open_device_with_options(cur->device, options, device);
+			if (res = icsneoc2_device_create(cur, device); res != icsneoc2_error_success) {
+				icsneoc2_enumeration_free(devs);
+				return res;
+			}
+			res = open_device_with_options((*device)->device, options);
+			if (res != icsneoc2_error_success) {
+				icsneoc2_device_free(*device);
+				*device = nullptr;
+			}
 			icsneoc2_enumeration_free(devs);
 			return res;
 		}
@@ -286,13 +278,49 @@ icsneoc2_error_t icsneoc2_device_open_first(icsneoc2_devicetype_t device_type, i
 	}
 	for(auto* cur = devs; cur; cur = cur->next) {
 		if(cur->device && !cur->device->isOpen()) {
-			res = open_device_with_options(cur->device, options, device);
+			if (res = icsneoc2_device_create(cur, device); res != icsneoc2_error_success) {
+				icsneoc2_enumeration_free(devs);
+				return res;
+			}
+			res = open_device_with_options((*device)->device, options);
+			if (res != icsneoc2_error_success) {
+				icsneoc2_device_free(*device);
+				*device = nullptr;
+			}
 			icsneoc2_enumeration_free(devs);
 			return res;
 		}
 	}
 	icsneoc2_enumeration_free(devs);
 	return icsneoc2_error_invalid_device;
+}
+
+icsneoc2_error_t icsneoc2_device_reconnect(icsneoc2_device_t* device, icsneoc2_open_options_t options, uint32_t timeout_ms) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	// If the device is currently open, close it first before trying to reconnect
+	if (device->device->isOpen()) {
+		res = icsneoc2_device_close(device);
+		if(res != icsneoc2_error_success) {
+			return res;
+		}
+	}
+	
+	const auto timeout = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+	while(std::chrono::steady_clock::now() < timeout) {
+		icsneoc2_device_t* new_device = nullptr;
+		res = icsneoc2_device_open_serial(device->device->getSerial().c_str(), options, &new_device);
+		if(res == icsneoc2_error_success) {
+			device->device = new_device->device;
+			delete new_device;
+			return icsneoc2_error_success;
+		}
+		// Avoid busy looping
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+	return icsneoc2_error_reconnect_failed;
 }
 
 icsneoc2_error_t icsneoc2_device_close(icsneoc2_device_t* device) {
@@ -304,7 +332,21 @@ icsneoc2_error_t icsneoc2_device_close(icsneoc2_device_t* device) {
 	if(!dev->isOpen()) {
 		return icsneoc2_error_success;
 	}
-	dev->close();
+	
+	return dev->close() ? icsneoc2_error_success : icsneoc2_error_close_failed;
+}
+
+icsneoc2_error_t icsneoc2_device_free(icsneoc2_device_t* device) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if (device->device->isOpen()) {
+		res = icsneoc2_device_close(device);
+		if(res != icsneoc2_error_success) {
+			return res;
+		}
+	}
 	delete device;
 	return icsneoc2_error_success;
 }
