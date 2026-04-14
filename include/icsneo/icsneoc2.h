@@ -291,6 +291,28 @@ icsneoc2_error_t icsneoc2_device_type_get(const icsneoc2_device_t* device, icsne
 icsneoc2_error_t icsneoc2_device_serial_get(const icsneoc2_device_t* device, char* value, size_t* value_length);
 
 /**
+ * Get the PCB serial of a device.
+ *
+ * @param[in] device The device to get the PCB serial of.
+ * @param[out] value Pointer to a buffer to copy the PCB serial into. If NULL, only value_length is written.
+ * @param[in,out] value_length Size of the value buffer in bytes. Modified with the length of the PCB serial.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if the device does not have a PCB serial.
+ */
+icsneoc2_error_t icsneoc2_device_pcb_serial_get(const icsneoc2_device_t* device, uint8_t* value, size_t* value_length);
+
+/**
+ * Get the MAC address of a device.
+ *
+ * @param[in] device The device to get the MAC address of.
+ * @param[out] value Pointer to a buffer to copy the MAC address into. If NULL, only value_length is written.
+ * @param[in,out] value_length Size of the value buffer in bytes. Modified with the length of the MAC address.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if the device does not have a MAC address.
+ */
+icsneoc2_error_t icsneoc2_device_mac_address_get(const icsneoc2_device_t* device, uint8_t* value, size_t* value_length);
+
+/**
  * Set the online state of a device.
  *
  * @param[in] device The device to set the online state of.

@@ -381,6 +381,48 @@ icsneoc2_error_t icsneoc2_device_serial_get(const icsneoc2_device_t* device, cha
 	return safe_str_copy(value, value_length, dev->getSerial()) ? icsneoc2_error_success : icsneoc2_error_string_copy_failed;
 }
 
+icsneoc2_error_t icsneoc2_device_pcb_serial_get(const icsneoc2_device_t* device, uint8_t* value, size_t* value_length) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!value_length) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto pcbSerial = device->device->getPCBSerial();
+	if(!pcbSerial.has_value()) {
+		return icsneoc2_error_invalid_type;
+	}
+	const auto& data = *pcbSerial;
+	if(value) {
+		size_t copyLen = std::min(*value_length, data.size());
+		std::copy(data.begin(), data.begin() + copyLen, value);
+	}
+	*value_length = data.size();
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_device_mac_address_get(const icsneoc2_device_t* device, uint8_t* value, size_t* value_length) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!value_length) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto macAddress = device->device->getMACAddress();
+	if(!macAddress.has_value()) {
+		return icsneoc2_error_invalid_type;
+	}
+	const auto& data = *macAddress;
+	if(value) {
+		size_t copyLen = std::min(*value_length, data.size());
+		std::copy(data.begin(), data.begin() + copyLen, value);
+	}
+	*value_length = data.size();
+	return icsneoc2_error_success;
+}
+
 
 icsneoc2_error_t icsneoc2_device_go_online(const icsneoc2_device_t* device, bool go_online) {
 	auto res = icsneoc2_device_is_valid(device);

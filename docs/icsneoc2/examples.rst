@@ -25,3 +25,11 @@ Read Messages
 
 .. literalinclude:: ../../examples/c2/read_messages/src/main.c
    :language: c
+
+Device Info
+===========
+
+:download:`Download example <../../examples/c2/device_info/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/device_info/src/main.c
+   :language: c
