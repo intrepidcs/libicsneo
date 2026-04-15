@@ -102,10 +102,71 @@ static std::vector<uint8_t> EncodeFromMessageCAN(std::shared_ptr<Frame> frame, c
 	return encoded;
 }
 
-static std::vector<uint8_t> EncodeFromMessageLIN(std::shared_ptr<Frame> /* frame */, const device_eventhandler_t& report) {
-	// TODO
-	report(APIEvent::Type::UnsupportedTXNetwork, APIEvent::Severity::Error);
-	return {};
+static std::vector<uint8_t> EncodeFromMessageLIN(std::shared_ptr<Frame> frame, const device_eventhandler_t& report) {
+	auto linmsg = std::dynamic_pointer_cast<LINMessage>(frame);
+	if(!linmsg) {
+		report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+		return {};
+	}
+	if(linmsg->linMsgType == LINMessage::Type::NOT_SET) {
+		report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+		return {};
+	}
+
+	size_t dataLen = std::min<size_t>(8, linmsg->data.size());
+	std::vector<uint8_t> encoded;
+	encoded.resize(sizeof(TransmitMessage));
+
+	TransmitMessage* const msg = (TransmitMessage*)encoded.data();
+	HardwareLINPacket* const linpacket = (HardwareLINPacket*)(msg->commonHeader);
+	memset(linpacket, 0, sizeof(HardwareLINPacket));
+
+	// Protected ID and ID
+	linmsg->protectedID = linmsg->calcProtectedID(linmsg->ID);
+	linpacket->CoreMiniBitsLIN.ID = linmsg->protectedID & 0x3F;
+
+	// LIN message type flags
+	switch(linmsg->linMsgType) {
+		case LINMessage::Type::LIN_COMMANDER_MSG:
+			linpacket->CoreMiniBitsLIN.TXCommander = 1;
+			break;
+		case LINMessage::Type::LIN_HEADER_ONLY:
+			linpacket->CoreMiniBitsLIN.TXCommander = 1;
+			break;
+		case LINMessage::Type::LIN_UPDATE_RESPONDER:
+			linpacket->CoreMiniBitsLIN.TXResponder = 1;
+			break;
+		case LINMessage::Type::LIN_BREAK_ONLY:
+			linpacket->CoreMiniBitsLIN.BreakOnly = 1;
+			break;
+		default:
+			break;
+	}
+
+	// Enhanced checksum
+	linpacket->CoreMiniBitsLIN.TxChkSumEnhanced = linmsg->isEnhancedChecksum ? 1 : 0;
+
+	// Data and checksum
+	bool hasData = (linmsg->linMsgType == LINMessage::Type::LIN_COMMANDER_MSG ||
+	                linmsg->linMsgType == LINMessage::Type::LIN_UPDATE_RESPONDER) && dataLen > 0;
+
+	if(hasData) {
+		// len includes data bytes + 1 checksum byte
+		linpacket->CoreMiniBitsLIN.len = static_cast<uint16_t>(dataLen + 1);
+		std::copy(linmsg->data.begin(), linmsg->data.begin() + dataLen, linpacket->data);
+		// Checksum goes after data: in data[dataLen] if < 8, otherwise in LINByte9
+		if(dataLen < 8)
+			linpacket->data[dataLen] = linmsg->checksum;
+		else
+			linpacket->CoreMiniBitsLIN.LINByte9 = linmsg->checksum;
+	} else {
+		linpacket->CoreMiniBitsLIN.len = 0;
+	}
+
+	// Description/stats and network
+	linpacket->stats = linmsg->description;
+
+	return encoded;
 }
 
 std::vector<uint8_t> TransmitMessage::EncodeFromMessage(std::shared_ptr<Frame> frame, uint32_t client_id, const device_eventhandler_t& report) {
@@ -127,6 +188,8 @@ std::vector<uint8_t> TransmitMessage::EncodeFromMessage(std::shared_ptr<Frame> f
 			return result;
 	}
 	// common fields
+	if(result.empty())
+		return result;
 	TransmitMessage* const msg = (TransmitMessage*)result.data();
 	msg->options.clientId = client_id;
 	msg->options.networkId = static_cast<uint32_t>(frame->network.getNetID());

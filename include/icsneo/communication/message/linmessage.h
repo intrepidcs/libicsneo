@@ -1,6 +1,8 @@
 #ifndef __LINMESSAGE_H_
 #define __LINMESSAGE_H_
 
+#include "icsneo/icsneoc2messages.h"
+
 #ifdef __cplusplus
 
 #include "icsneo/communication/message/message.h"
@@ -36,14 +38,14 @@ struct LINStatusFlags {
 
 class LINMessage : public Frame {
 public:
-	enum class Type : uint8_t {
-		NOT_SET = 0,
-		LIN_COMMANDER_MSG,
-		LIN_HEADER_ONLY,
-		LIN_BREAK_ONLY,
-		LIN_SYNC_ONLY,
-		LIN_UPDATE_RESPONDER,
-		LIN_ERROR
+	enum class Type : icsneoc2_lin_msg_type_t {
+		NOT_SET = icsneoc2_lin_msg_type_not_set,
+		LIN_COMMANDER_MSG = icsneoc2_lin_msg_type_commander_msg,
+		LIN_HEADER_ONLY = icsneoc2_lin_msg_type_header_only,
+		LIN_BREAK_ONLY = icsneoc2_lin_msg_type_break_only,
+		LIN_SYNC_ONLY = icsneoc2_lin_msg_type_sync_only,
+		LIN_UPDATE_RESPONDER = icsneoc2_lin_msg_type_update_responder,
+		LIN_ERROR = icsneoc2_lin_msg_type_error
 	};
 
 	static void calcChecksum(LINMessage& message);

@@ -172,6 +172,139 @@ icsneoc2_error_t icsneoc2_message_is_frame(icsneoc2_message_t* message, bool* is
 icsneoc2_error_t icsneoc2_message_is_can(icsneoc2_message_t* message, bool* is_can);
 
 /**
+ * Check if a message is a LIN message
+ *
+ * @param[in] message The message to check.
+ * @param[out] is_lin Pointer to a bool to copy the LIN status of the message into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_is_lin(icsneoc2_message_t* message, bool* is_lin);
+
+// ---- LIN Message Types ----
+
+typedef enum _icsneoc2_lin_msg_type_t {
+	icsneoc2_lin_msg_type_not_set = 0,
+	icsneoc2_lin_msg_type_commander_msg = 1,
+	icsneoc2_lin_msg_type_header_only = 2,
+	icsneoc2_lin_msg_type_break_only = 3,
+	icsneoc2_lin_msg_type_sync_only = 4,
+	icsneoc2_lin_msg_type_update_responder = 5,
+	icsneoc2_lin_msg_type_error = 6,
+} _icsneoc2_lin_msg_type_t;
+
+typedef uint8_t icsneoc2_lin_msg_type_t;
+
+// LIN error flags bitmask
+#define ICSNEOC2_LIN_ERR_RX_BREAK_ONLY          0x0001
+#define ICSNEOC2_LIN_ERR_RX_BREAK_SYNC_ONLY     0x0002
+#define ICSNEOC2_LIN_ERR_TX_RX_MISMATCH         0x0004
+#define ICSNEOC2_LIN_ERR_RX_BREAK_NOT_ZERO      0x0008
+#define ICSNEOC2_LIN_ERR_RX_BREAK_TOO_SHORT     0x0010
+#define ICSNEOC2_LIN_ERR_RX_SYNC_NOT_55         0x0020
+#define ICSNEOC2_LIN_ERR_RX_DATA_LEN_OVER_8     0x0040
+#define ICSNEOC2_LIN_ERR_FRAME_SYNC             0x0080
+#define ICSNEOC2_LIN_ERR_FRAME_MESSAGE_ID       0x0100
+#define ICSNEOC2_LIN_ERR_FRAME_RESPONDER_DATA   0x0200
+#define ICSNEOC2_LIN_ERR_CHECKSUM_MATCH         0x0400
+
+typedef uint32_t icsneoc2_lin_err_flags_t;
+
+// LIN status flags bitmask
+#define ICSNEOC2_LIN_STATUS_TX_CHECKSUM_ENHANCED      0x01
+#define ICSNEOC2_LIN_STATUS_TX_COMMANDER              0x02
+#define ICSNEOC2_LIN_STATUS_TX_RESPONDER              0x04
+#define ICSNEOC2_LIN_STATUS_TX_ABORTED                0x08
+#define ICSNEOC2_LIN_STATUS_UPDATE_RESPONDER_ONCE     0x10
+#define ICSNEOC2_LIN_STATUS_HAS_UPDATED_RESPONDER_ONCE 0x20
+#define ICSNEOC2_LIN_STATUS_BUS_RECOVERED             0x40
+#define ICSNEOC2_LIN_STATUS_BREAK_ONLY                0x80
+
+typedef uint32_t icsneoc2_lin_status_flags_t;
+
+/**
+ * Create a LIN message.
+ *
+ * @param[out] message Pointer to receive the new LIN message handle.
+ * @param[in] id The LIN frame ID (0-63). Bits above 0x3F are masked off.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful.
+ *
+ * @see icsneoc2_message_free
+ */
+icsneoc2_error_t icsneoc2_message_lin_create(icsneoc2_message_t** message, uint8_t id);
+
+/**
+ * Get the LIN-specific properties of a message.
+ *
+ * Any output pointer may be NULL to skip that field.
+ *
+ * @param[in] message The message to query (must be a LIN message).
+ * @param[out] id Pointer to receive the LIN frame ID.
+ * @param[out] protected_id Pointer to receive the protected ID (ID with parity bits).
+ * @param[out] checksum Pointer to receive the checksum byte.
+ * @param[out] msg_type Pointer to receive the LIN message type.
+ * @param[out] is_enhanced_checksum Pointer to receive whether enhanced checksum is used.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if not a LIN message.
+ */
+icsneoc2_error_t icsneoc2_message_lin_props_get(const icsneoc2_message_t* message,
+	uint8_t* id, uint8_t* protected_id, uint8_t* checksum,
+	icsneoc2_lin_msg_type_t* msg_type, bool* is_enhanced_checksum);
+
+/**
+ * Set the LIN-specific properties of a message.
+ *
+ * Any input pointer may be NULL to skip that field. Setting the ID also recalculates the protected ID.
+ *
+ * @param[in] message The message to modify (must be a LIN message).
+ * @param[in] id Pointer to the LIN frame ID to set (0-63). NULL to skip.
+ * @param[in] checksum Pointer to the checksum byte to set. NULL to skip.
+ * @param[in] msg_type Pointer to the LIN message type to set. NULL to skip.
+ * @param[in] is_enhanced_checksum Pointer to set enhanced checksum mode. NULL to skip.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if not a LIN message.
+ */
+icsneoc2_error_t icsneoc2_message_lin_props_set(icsneoc2_message_t* message,
+	const uint8_t* id, const uint8_t* checksum,
+	const icsneoc2_lin_msg_type_t* msg_type, const bool* is_enhanced_checksum);
+
+/**
+ * Get the LIN error flags of a message.
+ *
+ * @param[in] message The message to query (must be a LIN message).
+ * @param[out] err_flags Pointer to receive the error flags bitmask.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if not a LIN message.
+ *
+ * @see ICSNEOC2_LIN_ERR_*
+ */
+icsneoc2_error_t icsneoc2_message_lin_err_flags_get(const icsneoc2_message_t* message, icsneoc2_lin_err_flags_t* err_flags);
+
+/**
+ * Get the LIN status flags of a message.
+ *
+ * @param[in] message The message to query (must be a LIN message).
+ * @param[out] status_flags Pointer to receive the status flags bitmask.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if not a LIN message.
+ *
+ * @see ICSNEOC2_LIN_STATUS_*
+ */
+icsneoc2_error_t icsneoc2_message_lin_status_flags_get(const icsneoc2_message_t* message, icsneoc2_lin_status_flags_t* status_flags);
+
+/**
+ * Calculate and set the checksum on a LIN message.
+ *
+ * Uses enhanced or classic checksum based on the isEnhancedChecksum property.
+ *
+ * @param[in] message The LIN message to calculate the checksum for.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if not a LIN message.
+ */
+icsneoc2_error_t icsneoc2_message_lin_calc_checksum(icsneoc2_message_t* message);
+
+/**
  * Get the network type of a message
  *
  * @param[in] message The message to check.

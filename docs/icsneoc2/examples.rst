@@ -33,3 +33,19 @@ Device Info
 
 .. literalinclude:: ../../examples/c2/device_info/src/main.c
    :language: c
+
+LIN
+===
+
+:download:`Download example <../../examples/c2/lin/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/lin/src/main.c
+   :language: c
+
+LIN Transmit
+============
+
+:download:`Download example <../../examples/c2/lin_transmit/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/lin_transmit/src/main.c
+   :language: c

@@ -3,6 +3,7 @@
 #include <icsneo/icsneoc2settings.h>
 #include <icsneo/icsneoc2messages.h>
 #include <icsneo/device/devicetype.h>
+#include <icsneo/communication/message/linmessage.h>
 
 
 #include <vector>
@@ -130,6 +131,15 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_network_type_get(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_transmit(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_valid(NULL, NULL));
+
+	// LIN message NULL parameter checks
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_lin(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_create(NULL, 0));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_props_get(NULL, NULL, NULL, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_props_set(NULL, NULL, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_err_flags_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_status_flags_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_calc_checksum(NULL));
 
 	// Test utility functions with NULL parameters
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_version_get(NULL, NULL));
@@ -688,4 +698,228 @@ TEST(icsneoc2, test_icsneoc2_script_error_codes)
 	ASSERT_GT(len, 0u);
 }
 
+TEST(icsneoc2, test_lin_message_create_and_props)
+{
+	// Create a LIN message with ID 0x15
+	icsneoc2_message_t* msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_create(&msg, 0x15));
+	ASSERT_NE(msg, nullptr);
+
+	// Verify it reports as LIN
+	bool is_lin = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_lin(msg, &is_lin));
+	ASSERT_TRUE(is_lin);
+
+	// Verify it does NOT report as CAN
+	bool is_can = true;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_can(msg, &is_can));
+	ASSERT_FALSE(is_can);
+
+	// CAN props should fail on a LIN message
+	uint64_t arb_id = 0;
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_can_props_get(msg, &arb_id, NULL));
+
+	// Read back default props
+	uint8_t id = 0xFF, protected_id = 0, checksum = 0xFF;
+	icsneoc2_lin_msg_type_t msg_type = 0xFF;
+	bool enhanced = true;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_get(msg, &id, &protected_id, &checksum, &msg_type, &enhanced));
+	ASSERT_EQ(id, 0x15);
+	ASSERT_NE(protected_id, 0); // Should have parity bits
+	ASSERT_EQ(checksum, 0);
+	ASSERT_EQ(msg_type, icsneoc2_lin_msg_type_not_set);
+	ASSERT_FALSE(enhanced);
+
+	// ID should be masked to 6 bits
+	icsneoc2_message_t* msg_masked = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_create(&msg_masked, 0xFF));
+	uint8_t masked_id = 0xFF;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_get(msg_masked, &masked_id, NULL, NULL, NULL, NULL));
+	ASSERT_EQ(masked_id, 0x3F); // 0xFF & 0x3F
+	icsneoc2_message_free(msg_masked);
+
+	icsneoc2_message_free(msg);
+}
+
+TEST(icsneoc2, test_lin_message_props_set)
+{
+	icsneoc2_message_t* msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_create(&msg, 0x00));
+
+	// Set individual properties using NULL to skip others
+	uint8_t new_id = 0x2A;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_set(msg, &new_id, NULL, NULL, NULL));
+
+	uint8_t read_id = 0, read_pid = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_get(msg, &read_id, &read_pid, NULL, NULL, NULL));
+	ASSERT_EQ(read_id, 0x2A);
+	ASSERT_NE(read_pid, 0x2A); // Protected ID should differ (has parity bits)
+
+	// Set checksum
+	uint8_t new_checksum = 0xAB;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_set(msg, NULL, &new_checksum, NULL, NULL));
+	uint8_t read_checksum = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_get(msg, NULL, NULL, &read_checksum, NULL, NULL));
+	ASSERT_EQ(read_checksum, 0xAB);
+
+	// Set msg type
+	icsneoc2_lin_msg_type_t new_type = icsneoc2_lin_msg_type_commander_msg;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_set(msg, NULL, NULL, &new_type, NULL));
+	icsneoc2_lin_msg_type_t read_type = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_get(msg, NULL, NULL, NULL, &read_type, NULL));
+	ASSERT_EQ(read_type, icsneoc2_lin_msg_type_commander_msg);
+
+	// Set enhanced checksum
+	bool new_enhanced = true;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_set(msg, NULL, NULL, NULL, &new_enhanced));
+	bool read_enhanced = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_get(msg, NULL, NULL, NULL, NULL, &read_enhanced));
+	ASSERT_TRUE(read_enhanced);
+
+	// LIN props set on a CAN message should fail
+	icsneoc2_message_t* can_msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_can_create(&can_msg));
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_lin_props_set(can_msg, &new_id, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_lin_props_get(can_msg, &read_id, NULL, NULL, NULL, NULL));
+	icsneoc2_message_free(can_msg);
+
+	icsneoc2_message_free(msg);
+}
+
+TEST(icsneoc2, test_lin_message_data_and_netid)
+{
+	icsneoc2_message_t* msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_create(&msg, 0x10));
+
+	// Set data
+	uint8_t data[] = {0x01, 0x02, 0x03, 0x04};
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_data_set(msg, data, sizeof(data)));
+
+	// Read data back
+	uint8_t read_data[8] = {0};
+	size_t read_len = sizeof(read_data);
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_data_get(msg, read_data, &read_len));
+	ASSERT_EQ(read_len, sizeof(data));
+	ASSERT_EQ(memcmp(data, read_data, sizeof(data)), 0);
+
+	// Set and verify netid
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_netid_set(msg, icsneoc2_netid_lin_01));
+	icsneoc2_netid_t netid = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_netid_get(msg, &netid));
+	ASSERT_EQ(netid, icsneoc2_netid_lin_01);
+
+	// Verify is_frame and is_raw
+	bool is_frame = false, is_raw = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_frame(msg, &is_frame));
+	ASSERT_TRUE(is_frame);
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_raw(msg, &is_raw));
+	ASSERT_TRUE(is_raw);
+
+	icsneoc2_message_free(msg);
+}
+
+TEST(icsneoc2, test_lin_message_flags)
+{
+	// Create a LIN message and verify default flags are clear
+	icsneoc2_message_t* msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_create(&msg, 0x01));
+
+	icsneoc2_lin_err_flags_t err_flags = 0xFFFFFFFF;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_err_flags_get(msg, &err_flags));
+	ASSERT_EQ(err_flags, 0u);
+
+	icsneoc2_lin_status_flags_t status_flags = 0xFFFFFFFF;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_status_flags_get(msg, &status_flags));
+	ASSERT_EQ(status_flags, 0u);
+
+	// Error/status flags on CAN message should fail
+	icsneoc2_message_t* can_msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_can_create(&can_msg));
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_lin_err_flags_get(can_msg, &err_flags));
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_lin_status_flags_get(can_msg, &status_flags));
+	icsneoc2_message_free(can_msg);
+
+	icsneoc2_message_free(msg);
+}
+
+TEST(icsneoc2, test_lin_message_calc_checksum)
+{
+	icsneoc2_message_t* msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_create(&msg, 0x01));
+
+	// Set some data and calculate checksum (classic)
+	uint8_t data[] = {0x01, 0x02, 0x03};
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_data_set(msg, data, sizeof(data)));
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_calc_checksum(msg));
+
+	uint8_t checksum = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_get(msg, NULL, NULL, &checksum, NULL, NULL));
+	ASSERT_NE(checksum, 0); // Checksum should be non-zero for this data
+
+	// Now set enhanced checksum and recalculate — should give a different value
+	uint8_t classic_checksum = checksum;
+	bool enhanced = true;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_set(msg, NULL, NULL, NULL, &enhanced));
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_calc_checksum(msg));
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_props_get(msg, NULL, NULL, &checksum, NULL, NULL));
+	ASSERT_NE(checksum, classic_checksum); // Enhanced and classic should differ
+
+	// calc_checksum on a CAN message should fail
+	icsneoc2_message_t* can_msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_can_create(&can_msg));
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_lin_calc_checksum(can_msg));
+	icsneoc2_message_free(can_msg);
+
+	icsneoc2_message_free(msg);
+}
+
+TEST(icsneoc2, test_lin_msg_type_enum_values)
+{
+	ASSERT_EQ(icsneoc2_lin_msg_type_not_set, 0);
+	ASSERT_EQ(icsneoc2_lin_msg_type_commander_msg, 1);
+	ASSERT_EQ(icsneoc2_lin_msg_type_header_only, 2);
+	ASSERT_EQ(icsneoc2_lin_msg_type_break_only, 3);
+	ASSERT_EQ(icsneoc2_lin_msg_type_sync_only, 4);
+	ASSERT_EQ(icsneoc2_lin_msg_type_update_responder, 5);
+	ASSERT_EQ(icsneoc2_lin_msg_type_error, 6);
+	ASSERT_EQ(sizeof(icsneoc2_lin_msg_type_t), sizeof(uint8_t));
+}
+
+TEST(icsneoc2, test_lin_msg_type_cpp_enum_sync)
+{
+	using T = icsneo::LINMessage::Type;
+	ASSERT_EQ(static_cast<uint8_t>(T::NOT_SET), icsneoc2_lin_msg_type_not_set);
+	ASSERT_EQ(static_cast<uint8_t>(T::LIN_COMMANDER_MSG), icsneoc2_lin_msg_type_commander_msg);
+	ASSERT_EQ(static_cast<uint8_t>(T::LIN_HEADER_ONLY), icsneoc2_lin_msg_type_header_only);
+	ASSERT_EQ(static_cast<uint8_t>(T::LIN_BREAK_ONLY), icsneoc2_lin_msg_type_break_only);
+	ASSERT_EQ(static_cast<uint8_t>(T::LIN_SYNC_ONLY), icsneoc2_lin_msg_type_sync_only);
+	ASSERT_EQ(static_cast<uint8_t>(T::LIN_UPDATE_RESPONDER), icsneoc2_lin_msg_type_update_responder);
+	ASSERT_EQ(static_cast<uint8_t>(T::LIN_ERROR), icsneoc2_lin_msg_type_error);
+}
+
+TEST(icsneoc2, test_lin_flag_bitmask_values)
+{
+	// Error flags should be distinct bits
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_RX_BREAK_ONLY, 0x0001);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_RX_BREAK_SYNC_ONLY, 0x0002);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_TX_RX_MISMATCH, 0x0004);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_RX_BREAK_NOT_ZERO, 0x0008);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_RX_BREAK_TOO_SHORT, 0x0010);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_RX_SYNC_NOT_55, 0x0020);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_RX_DATA_LEN_OVER_8, 0x0040);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_FRAME_SYNC, 0x0080);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_FRAME_MESSAGE_ID, 0x0100);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_FRAME_RESPONDER_DATA, 0x0200);
+	ASSERT_EQ(ICSNEOC2_LIN_ERR_CHECKSUM_MATCH, 0x0400);
+
+	// Status flags should be distinct bits
+	ASSERT_EQ(ICSNEOC2_LIN_STATUS_TX_CHECKSUM_ENHANCED, 0x01);
+	ASSERT_EQ(ICSNEOC2_LIN_STATUS_TX_COMMANDER, 0x02);
+	ASSERT_EQ(ICSNEOC2_LIN_STATUS_TX_RESPONDER, 0x04);
+	ASSERT_EQ(ICSNEOC2_LIN_STATUS_TX_ABORTED, 0x08);
+	ASSERT_EQ(ICSNEOC2_LIN_STATUS_UPDATE_RESPONDER_ONCE, 0x10);
+	ASSERT_EQ(ICSNEOC2_LIN_STATUS_HAS_UPDATED_RESPONDER_ONCE, 0x20);
+	ASSERT_EQ(ICSNEOC2_LIN_STATUS_BUS_RECOVERED, 0x40);
+	ASSERT_EQ(ICSNEOC2_LIN_STATUS_BREAK_ONLY, 0x80);
+}
 
