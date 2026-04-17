@@ -400,6 +400,28 @@ typedef enum _icsneoc2_memory_type_t {
 
 typedef uint8_t icsneoc2_memory_type_t;
 
+typedef enum _icsneoc2_can_error_code_t {
+	icsneoc2_can_error_code_no_error = 0, // No error
+	icsneoc2_can_error_code_stuff_error,  // Stuff error
+	icsneoc2_can_error_code_form_error,   // Form error
+	icsneoc2_can_error_code_ack_error,    // Ack error
+	icsneoc2_can_error_code_bit1_error,   // Bit1 error
+	icsneoc2_can_error_code_bit0_error,   // Bit0 error
+	icsneoc2_can_error_code_crc_error,    // CRC error
+	icsneoc2_can_error_code_no_change,    // No change
+
+	// Must be last entry. Don't use as a CAN error code.
+	icsneoc2_can_error_code_maxsize
+} _icsneoc2_can_error_code_t;
+
+typedef uint8_t icsneoc2_can_error_code_t;
+
+#define ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_BUS_OFF       0x01 // Bus off state
+#define ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_PASSIVE 0x02 // Error passive state
+#define ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_WARN    0x04 // Error warning state
+
+typedef uint64_t icsneoc2_message_can_error_flags_t;
+
 #ifdef __cplusplus
 }
 #endif

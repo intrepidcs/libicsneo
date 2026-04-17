@@ -16,6 +16,9 @@ public:
 	bool isCANFD = false;
 	bool baudrateSwitch = false; // CAN FD only
 	bool errorStateIndicator = false; // CAN FD only
+	bool txAborted = false;
+	bool txLostArb = false;
+	bool txError = false;
 };
 
 }

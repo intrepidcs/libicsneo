@@ -15,7 +15,10 @@ void init_canmessage(pybind11::module_& m) {
 		.def_readwrite("isExtended", &CANMessage::isExtended)
 		.def_readwrite("isCANFD", &CANMessage::isCANFD)
 		.def_readwrite("baudrateSwitch", &CANMessage::baudrateSwitch)
-		.def_readwrite("errorStateIndicator", &CANMessage::errorStateIndicator);
+		.def_readwrite("errorStateIndicator", &CANMessage::errorStateIndicator)
+		.def_readwrite("txAborted", &CANMessage::txAborted)
+		.def_readwrite("txLostArb", &CANMessage::txLostArb)
+		.def_readwrite("txError", &CANMessage::txError);
 }
 
 } // namespace icsneo 

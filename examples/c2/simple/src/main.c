@@ -358,10 +358,42 @@ void print_events(const char* device_description) {
 int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 	// Print the type and bus type of each message
 	size_t tx_count = 0;
+	size_t can_error_count = 0;
 	for(size_t i = 0; i < messages_count; i++) {
 		icsneoc2_message_t* message = messages[i];
+
+		// Check for CAN error messages
+		bool is_can_error = false;
+		icsneoc2_error_t res = icsneoc2_message_is_can_error(message, &is_can_error);
+		if(res != icsneoc2_error_success) {
+			return print_error_code("\tFailed to check if message is a CAN error", res);
+		}
+		if(is_can_error) {
+			uint8_t tec = 0;
+			uint8_t rec = 0;
+			icsneoc2_can_error_code_t error_code = 0;
+			icsneoc2_can_error_code_t data_error_code = 0;
+			icsneoc2_message_can_error_flags_t error_flags = 0;
+			icsneoc2_netid_t netid = 0;
+			res = icsneoc2_message_netid_get(message, &netid);
+			res += icsneoc2_message_can_error_props_get(message, &tec, &rec, &error_code, &data_error_code, &error_flags);
+			if(res != icsneoc2_error_success) {
+				return print_error_code("\tFailed to get CAN error properties", res);
+			}
+			char netid_name[128] = {0};
+			size_t netid_name_length = 128;
+			icsneoc2_netid_name_get(netid, netid_name, &netid_name_length);
+			printf("\t%zd) CAN Error on %s (0x%x): TEC=%u REC=%u ErrorCode=%u DataErrorCode=%u%s%s%s\n",
+				i, netid_name, netid, tec, rec, error_code, data_error_code,
+				(error_flags & ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_BUS_OFF) ? " [BusOff]" : "",
+				(error_flags & ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_PASSIVE) ? " [ErrorPassive]" : "",
+				(error_flags & ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_WARN) ? " [ErrorWarn]" : "");
+			can_error_count++;
+			continue;
+		}
+
 		bool is_frame = false;
-		icsneoc2_error_t res = icsneoc2_message_is_frame(message, &is_frame);
+		res = icsneoc2_message_is_frame(message, &is_frame);
 		if(res != icsneoc2_error_success) {
 			return print_error_code("\tFailed to check if message is a frame", res);
 		}
@@ -394,24 +426,42 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 		printf("\t%zd) network type: %s (%u)\n", i, network_type_name, network_type);
 
 		if(network_type == icsneoc2_network_type_can) {
-			uint32_t arbid = 0;
+			uint64_t arbid = 0;
 			int32_t dlc = 0;
 			icsneoc2_netid_t netid = 0;
-			bool is_remote = false;
-			bool is_canfd = false;
-			bool is_extended = false;
+			icsneoc2_message_can_flags_t can_flags = 0;
 			uint8_t data[64] = {0};
 			size_t data_length = 64;
 			char netid_name[128] = {0};
 			size_t netid_name_length = 128;
 			icsneoc2_error_t result = icsneoc2_message_netid_get(message, &netid);
 			result += icsneoc2_netid_name_get(netid, netid_name, &netid_name_length);
+			result += icsneoc2_message_can_props_get(message, &arbid, &can_flags);
 			result += icsneoc2_message_data_get(message, data, &data_length);
 			if(result != icsneoc2_error_success) {
 				printf("\tFailed get get CAN parameters (error: %u) for index %zu\n", result, i);
 				continue;
 			}
-			printf("\t  NetID: %s (0x%x)\tArbID: 0x%x\t DLC: %u\t Remote: %d\t CANFD: %d\t Extended: %d\t Data length: %zu\n", netid_name, netid, arbid, dlc, is_remote, is_canfd, is_extended, data_length);
+			bool is_remote = (can_flags & ICSNEOC2_MESSAGE_CAN_FLAGS_RTR) != 0;
+			bool is_extended = (can_flags & ICSNEOC2_MESSAGE_CAN_FLAGS_IDE) != 0;
+			bool is_canfd = (can_flags & ICSNEOC2_MESSAGE_CAN_FLAGS_FDF) != 0;
+			bool is_brs = (can_flags & ICSNEOC2_MESSAGE_CAN_FLAGS_BRS) != 0;
+			bool is_esi = (can_flags & ICSNEOC2_MESSAGE_CAN_FLAGS_ESI) != 0;
+			bool tx_aborted = (can_flags & ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ABORTED) != 0;
+			bool tx_lost_arb = (can_flags & ICSNEOC2_MESSAGE_CAN_FLAGS_TX_LOST_ARB) != 0;
+			bool tx_error = (can_flags & ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ERROR) != 0;
+			dlc = (int32_t)data_length;
+
+			printf("\t  NetID: %s (0x%x)\tArbID: 0x%llx\tDLC: %u\tLen: %zu\n", netid_name, netid, (unsigned long long)arbid, dlc, data_length);
+			printf("\t  Flags:%s%s%s%s%s%s%s%s\n",
+				is_remote ? " RTR" : "",
+				is_extended ? " IDE" : "",
+				is_canfd ? " FDF" : "",
+				is_brs ? " BRS" : "",
+				is_esi ? " ESI" : "",
+				tx_aborted ? " TX_ABORTED" : "",
+				tx_lost_arb ? " TX_LOST_ARB" : "",
+				tx_error ? " TX_ERROR" : "");
 			printf("\t  Data: [");
 			for(size_t x = 0; x < data_length; x++) {
 				printf(" 0x%x", data[x]);
@@ -419,7 +469,7 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 			printf(" ]\n");
 		}
 	}
-	printf("\tReceived %zu messages total, %zu were TX messages\n", messages_count, tx_count);
+	printf("\tReceived %zu messages total, %zu were TX messages, %zu were CAN errors\n", messages_count, tx_count, can_error_count);
 
 	return icsneoc2_error_success;
 }

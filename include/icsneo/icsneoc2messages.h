@@ -42,6 +42,17 @@ icsneoc2_error_t icsneoc2_message_free(icsneoc2_message_t* message);
 icsneoc2_error_t icsneoc2_message_is_transmit(icsneoc2_message_t* message, bool* value);
 
 /**
+ * Get the frame error status of a message.
+ *
+ * @param[in] message The message to check.
+ * @param[out] value Pointer to a bool to copy the frame error status into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or
+ * icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_is_error(icsneoc2_message_t* message, bool* value);
+
+/**
  * Get the Network ID (netid) of a bus message
  *
  * @param[in] message The message to check.
@@ -97,11 +108,14 @@ icsneoc2_error_t icsneoc2_message_data_set(icsneoc2_message_t* message, uint8_t*
  */
 icsneoc2_error_t icsneoc2_message_data_get(icsneoc2_message_t* message, uint8_t* data, size_t* data_length);
 
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_RTR 0x01 // Remote Transmission Request
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_IDE 0x02 // Identifier Extension
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_FDF 0x04 // FD Format Indicator
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_BRS 0x08 // Bit Rate Switch (FD only)
-#define ICSNEOC2_MESSAGE_CAN_FLAGS_ESI 0x10 // Error State Indicator (FD only)
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_RTR 0x01         // Remote Transmission Request
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_IDE 0x02         // Identifier Extension
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_FDF 0x04         // FD Format Indicator
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_BRS 0x08         // Bit Rate Switch (FD only)
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_ESI 0x10         // Error State Indicator (FD only)
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ABORTED  0x20 // CAN transmit was aborted
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_TX_LOST_ARB 0x40 // CAN transmit lost arbitration
+#define ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ERROR    0x80 // CAN transmit reported an error
 
 typedef uint64_t icsneoc2_message_can_flags_t;
 
@@ -122,6 +136,7 @@ icsneoc2_error_t icsneoc2_message_can_props_set(icsneoc2_message_t* message, con
  * @param[in] message The message to check.
  * @param[out] arb_id Pointer to a uint64_t to copy the arbitration ID into. If NULL, it's ignored.
  * @param[out] flags Pointer to a series of flags. If NULL, it's ignored. See icsneoc2_message_can_flags_t for details.
+ *   TX status flags are read-only and are only reported for CAN frames received back from the device.
  *
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
  */
@@ -315,6 +330,35 @@ icsneoc2_error_t icsneoc2_message_lin_calc_checksum(icsneoc2_message_t* message)
  * @see icsneoc2_network_type_t, icsneoc2_network_type_name_get
  */
 icsneoc2_error_t icsneoc2_message_network_type_get(icsneoc2_message_t* message, icsneoc2_network_type_t* network_type);
+
+/**
+ * Check if a message is a CAN error message
+ *
+ * @param[in] message The message to check.
+ * @param[out] is_can_error Pointer to a bool to copy the CAN error status of the message into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_is_can_error(icsneoc2_message_t* message, bool* is_can_error);
+
+/**
+ * Get the CAN error specific properties of a message
+ *
+ * @param[in] message The message to check.
+ * @param[out] tx_err_count Pointer to a uint8_t to copy the transmit error count into. If NULL, it's ignored.
+ * @param[out] rx_err_count Pointer to a uint8_t to copy the receive error count into. If NULL, it's ignored.
+ * @param[out] error_code Pointer to a icsneoc2_can_error_code_t to copy the error code into. If NULL, it's ignored.
+ * @param[out] data_error_code Pointer to a icsneoc2_can_error_code_t to copy the data phase error code into. If NULL, it's ignored.
+ * @param[out] flags Pointer to a icsneoc2_message_can_error_flags_t to copy the error flags into. If NULL, it's ignored.
+ *   See ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_* for controller-error bits.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_can_error_props_get(
+    icsneoc2_message_t *message, uint8_t *tx_err_count, uint8_t *rx_err_count,
+    icsneoc2_can_error_code_t *error_code,
+    icsneoc2_can_error_code_t *data_error_code,
+    icsneoc2_message_can_error_flags_t *flags);
 
 #ifdef __cplusplus
 }

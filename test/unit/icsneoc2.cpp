@@ -2,8 +2,11 @@
 #include <icsneo/icsneoc2.h>
 #include <icsneo/icsneoc2settings.h>
 #include <icsneo/icsneoc2messages.h>
+#include "../../api/icsneoc2/icsneoc2_internal.h"
 #include <icsneo/device/devicetype.h>
 #include <icsneo/communication/message/linmessage.h>
+#include <icsneo/communication/message/canmessage.h>
+#include <icsneo/communication/message/canerrormessage.h>
 
 
 #include <vector>
@@ -130,7 +133,10 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_network_type_get(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_transmit(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_error(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_valid(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_can_error(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_can_error_props_get(NULL, NULL, NULL, NULL, NULL, NULL));
 
 	// LIN message NULL parameter checks
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_lin(NULL, NULL));
@@ -626,6 +632,66 @@ TEST(icsneoc2, test_icsneoc2_open_options_default)
 	ASSERT_EQ(icsneoc2_open_options_default, expected);
 }
 
+TEST(icsneoc2, test_icsneoc2_message_is_error)
+{
+	icsneoc2_message_t message;
+	message.message = std::make_shared<CANMessage>();
+
+	bool value = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_error(&message, &value));
+	ASSERT_FALSE(value);
+
+	auto frame = std::dynamic_pointer_cast<Frame>(message.message);
+	ASSERT_NE(frame, nullptr);
+	frame->error = true;
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_error(&message, &value));
+	ASSERT_TRUE(value);
+
+	icsneoc2_message_t raw_message;
+	raw_message.message = std::make_shared<CANErrorMessage>();
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_is_error(&raw_message, &value));
+}
+
+TEST(icsneoc2, test_icsneoc2_message_can_props_get_can_tx_flags)
+{
+	icsneoc2_message_t message;
+	auto can_message = std::make_shared<CANMessage>();
+	message.message = can_message;
+
+	uint64_t arb_id = 0;
+	icsneoc2_message_can_flags_t flags = 0;
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_can_props_get(&message, &arb_id, &flags));
+	ASSERT_EQ(arb_id, 0u);
+	ASSERT_EQ(flags, 0u);
+
+	can_message->txAborted = true;
+	can_message->txLostArb = true;
+	can_message->txError = true;
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_can_props_get(&message, &arb_id, &flags));
+	ASSERT_EQ(flags,
+		ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ABORTED |
+		ICSNEOC2_MESSAGE_CAN_FLAGS_TX_LOST_ARB |
+		ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ERROR);
+}
+
+TEST(icsneoc2, test_icsneoc2_message_can_error_props_get_invalid_type_for_can_message)
+{
+	icsneoc2_message_t message;
+	message.message = std::make_shared<CANMessage>();
+
+	uint8_t tx_err_count = 0;
+	uint8_t rx_err_count = 0;
+	icsneoc2_can_error_code_t error_code = icsneoc2_can_error_code_no_error;
+	icsneoc2_can_error_code_t data_error_code = icsneoc2_can_error_code_no_error;
+	icsneoc2_message_can_error_flags_t flags = 0;
+
+	ASSERT_EQ(icsneoc2_error_invalid_type,
+		icsneoc2_message_can_error_props_get(&message, &tx_err_count, &rx_err_count, &error_code, &data_error_code, &flags));
+}
+
 TEST(icsneoc2, test_icsneoc2_disk_format_enums)
 {
 	// Disk layout enum values
@@ -669,6 +735,53 @@ TEST(icsneoc2, test_icsneoc2_memory_type_enums)
 	// Memory type enum values should match Disk::MemoryType
 	ASSERT_EQ(0, icsneoc2_memory_type_flash);
 	ASSERT_EQ(1, icsneoc2_memory_type_sd);
+}
+
+TEST(icsneoc2, test_icsneoc2_can_error_code_t)
+{
+	// CAN error code enum values
+	ASSERT_EQ(icsneoc2_can_error_code_no_error, 0);
+	ASSERT_EQ(icsneoc2_can_error_code_stuff_error, 1);
+	ASSERT_EQ(icsneoc2_can_error_code_form_error, 2);
+	ASSERT_EQ(icsneoc2_can_error_code_ack_error, 3);
+	ASSERT_EQ(icsneoc2_can_error_code_bit1_error, 4);
+	ASSERT_EQ(icsneoc2_can_error_code_bit0_error, 5);
+	ASSERT_EQ(icsneoc2_can_error_code_crc_error, 6);
+	ASSERT_EQ(icsneoc2_can_error_code_no_change, 7);
+	ASSERT_EQ(icsneoc2_can_error_code_maxsize, 8);
+
+	using _T = icsneo::CANErrorCode;
+	ASSERT_EQ(static_cast<icsneoc2_can_error_code_t>(_T::NoError), icsneoc2_can_error_code_no_error);
+	ASSERT_EQ(static_cast<icsneoc2_can_error_code_t>(_T::StuffError), icsneoc2_can_error_code_stuff_error);
+	ASSERT_EQ(static_cast<icsneoc2_can_error_code_t>(_T::FormError), icsneoc2_can_error_code_form_error);
+	ASSERT_EQ(static_cast<icsneoc2_can_error_code_t>(_T::AckError), icsneoc2_can_error_code_ack_error);
+	ASSERT_EQ(static_cast<icsneoc2_can_error_code_t>(_T::Bit1Error), icsneoc2_can_error_code_bit1_error);
+	ASSERT_EQ(static_cast<icsneoc2_can_error_code_t>(_T::Bit0Error), icsneoc2_can_error_code_bit0_error);
+	ASSERT_EQ(static_cast<icsneoc2_can_error_code_t>(_T::CRCError), icsneoc2_can_error_code_crc_error);
+	ASSERT_EQ(static_cast<icsneoc2_can_error_code_t>(_T::NoChange), icsneoc2_can_error_code_no_change);
+
+	ASSERT_EQ(sizeof(icsneoc2_can_error_code_t), sizeof(uint8_t));
+
+	// CAN error flag bitmask values
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_BUS_OFF, 0x01);
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_PASSIVE, 0x02);
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_WARN, 0x04);
+
+	ASSERT_EQ(sizeof(icsneoc2_message_can_error_flags_t), sizeof(uint64_t));
+}
+
+TEST(icsneoc2, test_icsneoc2_message_can_flags_t)
+{
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_FLAGS_RTR, 0x01);
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_FLAGS_IDE, 0x02);
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_FLAGS_FDF, 0x04);
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_FLAGS_BRS, 0x08);
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_FLAGS_ESI, 0x10);
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ABORTED, 0x20);
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_FLAGS_TX_LOST_ARB, 0x40);
+	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ERROR, 0x80);
+
+	ASSERT_EQ(sizeof(icsneoc2_message_can_flags_t), sizeof(uint64_t));
 }
 
 TEST(icsneoc2, test_icsneoc2_script_error_codes)

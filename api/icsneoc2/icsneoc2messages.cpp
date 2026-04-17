@@ -6,6 +6,7 @@
 #include "icsneo/icsneocpp.h"
 #include "icsneo/communication/message/message.h"
 #include "icsneo/communication/message/canmessage.h"
+#include "icsneo/communication/message/canerrormessage.h"
 #include "icsneo/communication/message/linmessage.h"
 #include "icsneo/communication/message/ethernetmessage.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -30,6 +31,19 @@ icsneoc2_error_t icsneoc2_message_is_transmit(icsneoc2_message_t* message, bool*
 		return icsneoc2_error_invalid_type;
 	}
 	*value = frame->transmitted;
+
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_is_error(icsneoc2_message_t* message, bool* value) {
+	if(!message || !value) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto frame = std::dynamic_pointer_cast<Frame>(message->message);
+	if(!frame) {
+		return icsneoc2_error_invalid_type;
+	}
+	*value = frame->error;
 
 	return icsneoc2_error_success;
 }
@@ -176,6 +190,15 @@ icsneoc2_error_t icsneoc2_message_can_props_get(icsneoc2_message_t* message, uin
 		if(can_msg->errorStateIndicator) {
 			*flags |= ICSNEOC2_MESSAGE_CAN_FLAGS_ESI;
 		}
+		if(can_msg->txAborted) {
+			*flags |= ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ABORTED;
+		}
+		if(can_msg->txLostArb) {
+			*flags |= ICSNEOC2_MESSAGE_CAN_FLAGS_TX_LOST_ARB;
+		}
+		if(can_msg->txError) {
+			*flags |= ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ERROR;
+		}
 	}
 	return icsneoc2_error_success;
 }
@@ -214,7 +237,53 @@ icsneoc2_error_t icsneoc2_message_is_can(icsneoc2_message_t* message, bool* is_c
 	}
 	*is_can = std::dynamic_pointer_cast<CANMessage>(message->message) != nullptr;
 	return icsneoc2_error_success;
+}
 
+icsneoc2_error_t icsneoc2_message_is_can_error(icsneoc2_message_t* message, bool* is_can_error) {
+	if(!message || !is_can_error) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	*is_can_error = std::dynamic_pointer_cast<CANErrorMessage>(message->message) != nullptr;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_can_error_props_get(
+    icsneoc2_message_t *message, uint8_t *tx_err_count, uint8_t *rx_err_count,
+    icsneoc2_can_error_code_t *error_code,
+    icsneoc2_can_error_code_t *data_error_code,
+    icsneoc2_message_can_error_flags_t *flags) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto can_err = std::dynamic_pointer_cast<CANErrorMessage>(message->message);
+	if(!can_err) {
+		return icsneoc2_error_invalid_type;
+	}
+	if(tx_err_count) {
+		*tx_err_count = can_err->transmitErrorCount;
+	}
+	if(rx_err_count) {
+		*rx_err_count = can_err->receiveErrorCount;
+	}
+	if(error_code) {
+		*error_code = static_cast<icsneoc2_can_error_code_t>(can_err->errorCode);
+	}
+	if(data_error_code) {
+		*data_error_code = static_cast<icsneoc2_can_error_code_t>(can_err->dataErrorCode);
+	}
+	if(flags) {
+		*flags = 0;
+		if(can_err->busOff) {
+			*flags |= ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_BUS_OFF;
+		}
+		if(can_err->errorPassive) {
+			*flags |= ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_PASSIVE;
+		}
+		if(can_err->errorWarn) {
+			*flags |= ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_WARN;
+		}
+	}
+	return icsneoc2_error_success;
 }
 
 icsneoc2_error_t icsneoc2_message_is_lin(icsneoc2_message_t* message, bool* is_lin) {

@@ -119,7 +119,12 @@ std::shared_ptr<Message> HardwareCANPacket::DecodeToMessage(const std::vector<ui
 		}
 
 		msg->transmitted = data->eid.TXMSG;
+		// Set the generic frame error state
 		msg->error = data->eid.TXAborted || data->eid.TXError || data->eid.TXLostArb;
+		// Set specific error states for CANError
+		msg->txAborted = data->eid.TXAborted;
+		msg->txLostArb = data->eid.TXLostArb;
+		msg->txError = data->eid.TXError;
 		msg->description = data->stats;
 
 		return msg;
