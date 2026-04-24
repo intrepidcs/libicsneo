@@ -326,11 +326,15 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						case ExtendedCommand::GenericBinaryInfo:
 							result = GenericBinaryStatusPacket::DecodeToMessage(packet->data);
 							return true;
+						case ExtendedCommand::SoftwareUpdate: {
+							result = std::make_shared<ExtendedResponseMessage>(ExtendedCommand::SoftwareUpdate, ExtendedResponse::OperationPending, packet->data);
+							return true;
+						}
 						case ExtendedCommand::GenericReturn: {
 							if(packet->data.size() < sizeof(ExtendedResponseMessage::PackedGenericResponse))
 								break;
 							const auto& packedResp = *reinterpret_cast<ExtendedResponseMessage::PackedGenericResponse*>(packet->data.data());
-							result = std::make_shared<ExtendedResponseMessage>(packedResp.command, packedResp.returnCode);
+							result = std::make_shared<ExtendedResponseMessage>(packedResp.command, packedResp.returnCode, packet->data);
 							return true;
 						}
 						case ExtendedCommand::LiveData:

@@ -10,8 +10,8 @@ namespace icsneo {
 
 class ExtendedResponseMessage : public Message {
 public:
-	ExtendedResponseMessage(ExtendedCommand cmd, ExtendedResponse resp = ExtendedResponse::OK)
-		: Message(Message::Type::ExtendedResponse), command(cmd), response(resp) {}
+	ExtendedResponseMessage(ExtendedCommand cmd, ExtendedResponse resp = ExtendedResponse::OK, const std::vector<uint8_t>& buf = {})
+		: Message(Message::Type::ExtendedResponse), command(cmd), response(resp), data(buf) {}
 
 	const ExtendedCommand command;
 	const ExtendedResponse response;

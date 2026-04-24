@@ -55,6 +55,7 @@ enum class ExtendedCommand : uint16_t {
 	GetSupportedFeatures = 0x0018,
 	GetGPTPStatus = 0x0019,
 	GetComponentVersions = 0x001A,
+	SoftwareUpdate = 0x001B,
 	Reboot = 0x001C,
 	SetRootFSEntryFlags = 0x0027,
 	TransmitCoreminiMessage = 0x0028,

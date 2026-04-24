@@ -129,6 +129,11 @@ public:
 			{ChipID::RADGigastar_USBZ_ZYNQ, true, "USB ZCHIP", "RADGigastar_USBz_SW_bin", 2, FirmwareType::Zip},
 			{ChipID::RADGigastar_USBZ_Z7010_ZYNQ, false, "USB ZCHIP", "RADGigastar_USBz_Z7010_SW_bin", 2, FirmwareType::Zip},
 			{ChipID::RADGigastar_USBZ_Z7007S_ZYNQ, false, "USB ZCHIP", "RADGigastar_USBz_Z7007s_SW_bin", 2, FirmwareType::Zip},
+			{ChipID::SFPModule_88q2112_MCHIP, true, "SFP-MV2112", "sfp_mv2112_a2_mchip_ief", 3, FirmwareType::IEF},
+			{ChipID::SFPModule_88q2221_MCHIP, true, "SFP-MV2221M", "sfp_mv2221m_b2_mchip_ief", 3, FirmwareType::IEF},
+			{ChipID::SFPModule_lan8670_MCHIP, true, "SFP-MC8670", "sfp_module_lan8670_ief", 3, FirmwareType::IEF},
+			{ChipID::SFPModule_88q3244_MCHIP, true, "SFP-MV3244", "sfp_module_88q3244_ief", 3, FirmwareType::IEF},
+			{ChipID::SFPModule_ent11100_MCHIP, true, "SFP-EN11100", "sfp_module_ent11100_ief", 3, FirmwareType::IEF}
 		};
 
 		static std::vector<ChipInfo> t1sChips = {
@@ -136,6 +141,11 @@ public:
 			{ChipID::RADGigastar_USBZ_ZYNQ, true, "USB ZCHIP", "RADGigastar_USBz_SW_bin", 2, FirmwareType::Zip},
 			{ChipID::RADGigastar_USBZ_Z7010_ZYNQ, false, "USB ZCHIP", "RADGigastar_USBz_Z7010_SW_bin", 2, FirmwareType::Zip},
 			{ChipID::RADGigastar_USBZ_Z7007S_ZYNQ, false, "USB ZCHIP", "RADGigastar_USBz_Z7007s_SW_bin", 2, FirmwareType::Zip},
+			{ChipID::SFPModule_88q2112_MCHIP, true, "SFP-MV2112", "sfp_mv2112_a2_mchip_ief", 3, FirmwareType::IEF},
+			{ChipID::SFPModule_88q2221_MCHIP, true, "SFP-MV2221M", "sfp_mv2221m_b2_mchip_ief", 3, FirmwareType::IEF},
+			{ChipID::SFPModule_lan8670_MCHIP, true, "SFP-MC8670", "sfp_module_lan8670_ief", 3, FirmwareType::IEF},
+			{ChipID::SFPModule_88q3244_MCHIP, true, "SFP-MV3244", "sfp_module_88q3244_ief", 3, FirmwareType::IEF},
+			{ChipID::SFPModule_ent11100_MCHIP, true, "SFP-EN11100", "sfp_module_ent11100_ief", 3, FirmwareType::IEF}
 		};
 		
 		if(variantToFlash == FirmwareVariant::T1Sx8_CANx4_LINx6) {
@@ -159,8 +169,9 @@ public:
 		}
 
 		BootloaderPipeline pipeline;
-		for(const auto& version : chipVersions) {
-			pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip);
+		for(size_t i = 0; i < chipVersions.size(); i++) {
+			const auto& version = chipVersions[i];
+			pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip, i == 0);
 		}
 		pipeline.add<EnterApplicationPhase>(mainChipID);
 		pipeline.add<WaitPhase>(std::chrono::milliseconds(3000));
