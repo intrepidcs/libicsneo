@@ -8,7 +8,7 @@ Prerequisites
 =============
 
 - Python 3.8 or higher
-- icsneopy library installed
+- icsneopy installed (see :doc:`installation`)
 - Intrepid Control Systems Device
 
 :download:`Download complete example <../../examples/python/ethernet/ethernet_complete_example.py>`

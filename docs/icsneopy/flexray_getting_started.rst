@@ -5,7 +5,7 @@ FlexRay Getting Started
 Prerequisites
 =============
 
-- icsneopy library installed
+- icsneopy installed (see :doc:`installation`)
 - FlexRay hardware device connected (e.g., Fire3 Flexray)
 - Proper FlexRay bus termination (100Ω on each channel end)
 

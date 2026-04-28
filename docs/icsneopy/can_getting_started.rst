@@ -6,7 +6,7 @@ Prerequisites
 =============
 
 - Python 3.8 or higher
-- icsneopy library installed
+- icsneopy installed (see :doc:`installation`)
 - CAN hardware device connected
 
 :download:`Download complete example <../../examples/python/can/can_complete_example.py>`
