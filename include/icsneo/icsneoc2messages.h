@@ -143,6 +143,126 @@ icsneoc2_error_t icsneoc2_message_can_props_set(icsneoc2_message_t* message, con
 icsneoc2_error_t icsneoc2_message_can_props_get(icsneoc2_message_t* message, uint64_t* arb_id, icsneoc2_message_can_flags_t* flags);
 
 /**
+ * Create Ethernet message
+ *
+ * @param[out] message Pointer to icsneoc2_message_t to copy the message into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_eth_create(icsneoc2_message_t** message);
+
+// Standard Ethernet frame flags
+#define ICSNEOC2_MESSAGE_ETH_FLAGS_FRAME_TOO_SHORT     0x001
+#define ICSNEOC2_MESSAGE_ETH_FLAGS_NO_PADDING          0x002
+#define ICSNEOC2_MESSAGE_ETH_FLAGS_FCS_VERIFIED        0x004
+#define ICSNEOC2_MESSAGE_ETH_FLAGS_TX_ABORTED          0x008
+#define ICSNEOC2_MESSAGE_ETH_FLAGS_CRC_ERROR           0x010
+#define ICSNEOC2_MESSAGE_ETH_FLAGS_IS_T1S              0x020
+#define ICSNEOC2_MESSAGE_ETH_FLAGS_PREEMPTION_ENABLED  0x040
+
+typedef uint64_t icsneoc2_message_eth_flags_t;
+
+// T1S-specific Ethernet frame flags
+#define ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_SYMBOL       0x002
+#define ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_BURST        0x004
+#define ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_TX_COLLISION        0x008
+#define ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_WAKE         0x010
+
+typedef uint64_t icsneoc2_message_eth_t1s_flags_t;
+
+/**
+ * Set the Ethernet specific properties of a message
+ *
+ * @param[in] message The message to modify.
+ * @param[in] flags Pointer to a icsneoc2_message_eth_flags_t containing the flags to set. If NULL, flags are not modified.
+ * @param[in] has_fcs Pointer to a bool indicating whether the FCS is present. If NULL, it's ignored.
+ * @param[in] fcs Pointer to a uint32_t containing the FCS value. If NULL, the FCS is not modified.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_eth_props_set(icsneoc2_message_t* message, const icsneoc2_message_eth_flags_t* flags, const bool* has_fcs, const uint32_t* fcs);
+
+/**
+ * Get the Ethernet specific properties of a message
+ *
+ * @param[in] message The message to check.
+ * @param[out] flags Pointer to a icsneoc2_message_eth_flags_t to copy the flags into. If NULL, it's ignored.
+ * @param[out] has_fcs Pointer to a bool indicating whether the FCS is present. If NULL, it's ignored.
+ * @param[out] fcs Pointer to a uint32_t to copy the FCS value into. Only valid if has_fcs is true, set to 0 if FCS is not present. If NULL, it's ignored.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_eth_props_get(icsneoc2_message_t* message, icsneoc2_message_eth_flags_t* flags, bool* has_fcs, uint32_t* fcs);
+
+/**
+ * Get the destination and/or source MAC address from an Ethernet message.
+ * The MAC addresses are extracted from the message data bytes.
+ *
+ * @param[in] message The message to check.
+ * @param[out] dst_mac Pointer to a 6-byte buffer to copy the destination MAC into. If NULL, it's ignored.
+ * @param[out] src_mac Pointer to a 6-byte buffer to copy the source MAC into. If NULL, it's ignored.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_eth_mac_get(icsneoc2_message_t* message, uint8_t* dst_mac, uint8_t* src_mac);
+
+/**
+ * Helper function to get the EtherType field from an Ethernet message payload.
+ * 
+ * EtherType is a two-octet field in an Ethernet frame (big-endian).
+ * It is used to indicate which protocol is encapsulated in the payload of the frame 
+ * and is used at the receiving end by the data link layer to determine how the payload is processed.
+ * For example, an EtherType of 0x0800 indicates that the payload is an IPv4 packet, while 0x86DD indicates an IPv6 packet.
+ *
+ * @param[in] message The message to check.
+ * @param[out] ether_type Pointer to a uint16_t to copy the EtherType into.
+ * 
+ * @note The EtherType is extracted from the message data bytes, so the message must have the data field and it must be 
+ * large enough to contain the EtherType (at least 14 bytes). Returned value is host byte order.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters, icsneoc2_error_invalid_type, icsneoc2_error_invalid_data otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_eth_ether_type_get(icsneoc2_message_t* message, uint16_t* ether_type);
+
+/**
+ * Set the T1S specific properties of an Ethernet message
+ *
+ * @param[in] message The message to modify.
+ * @param[in] flags Pointer to a icsneoc2_message_eth_t1s_flags_t containing the T1S flags to set. If NULL, flags are not modified.
+ * @param[in] node_id Pointer to a uint8_t containing the T1S node ID. If NULL, it's ignored.
+ * @param[in] burst_count Pointer to a uint8_t containing the T1S burst count. If NULL, it's ignored.
+ * @param[in] symbol_type Pointer to a uint8_t containing the T1S symbol type. If NULL, it's ignored.
+ * 
+ * @note If all four optional parameters are NULL, the T1S-specific state is cleared.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_eth_t1s_props_set(icsneoc2_message_t* message, const icsneoc2_message_eth_t1s_flags_t* flags, const uint8_t* node_id, const uint8_t* burst_count, const uint8_t* symbol_type);
+
+/**
+ * Get the T1S specific properties of an Ethernet message
+ *
+ * @param[in] message The message to check.
+ * @param[out] flags Pointer to a icsneoc2_message_eth_t1s_flags_t to copy the T1S flags into. If NULL, it's ignored.
+ * @param[out] node_id Pointer to a uint8_t to copy the T1S node ID into. If NULL, it's ignored.
+ * @param[out] burst_count Pointer to a uint8_t to copy the T1S burst count into. If NULL, it's ignored.
+ * @param[out] symbol_type Pointer to a uint8_t to copy the T1S symbol type into. If NULL, it's ignored.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_eth_t1s_props_get(icsneoc2_message_t* message, icsneoc2_message_eth_t1s_flags_t* flags, uint8_t* node_id, uint8_t* burst_count, uint8_t* symbol_type);
+
+/**
+ * Check if a message is an Ethernet message
+ *
+ * @param[in] message The message to check.
+ * @param[out] is_ethernet Pointer to a bool to copy the Ethernet status of the message into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_is_ethernet(icsneoc2_message_t* message, bool* is_ethernet);
+
+/**
  * Check if a message is valid
  *
  * @param[in] device The device to check against.

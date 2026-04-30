@@ -232,6 +232,20 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_tx_opp_timer_set(NULL, 0, placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_max_burst_timer_for_get(NULL, 0, &placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_max_burst_timer_for_set(NULL, 0, placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_burst_timer_get(NULL, 0, &placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_burst_timer_set(NULL, 0, placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_local_id_alternate_get(NULL, 0, &placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_local_id_alternate_set(NULL, 0, placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_is_termination_enabled_for(NULL, 0, &placeholderBool));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_termination_for_set(NULL, 0, false));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_is_bus_decoding_beacons_enabled_for(NULL, 0, &placeholderBool));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_bus_decoding_beacons_for_set(NULL, 0, false));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_is_bus_decoding_all_enabled_for(NULL, 0, &placeholderBool));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_bus_decoding_all_for_set(NULL, 0, false));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_multi_id_enable_mask_get(NULL, 0, &placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_multi_id_enable_mask_set(NULL, 0, placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_multi_id_get(NULL, 0, 0, &placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_multi_id_set(NULL, 0, 0, placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_misc_io_analog_output_enabled_set(NULL, 0, placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_misc_io_analog_output_set(NULL, 0, placeholderMiscIoAnalogVoltage));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_disabled_get(NULL, &placeholderBool));
@@ -303,6 +317,16 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_script_status_diagnostic_error_code_get(NULL, &placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_script_status_diagnostic_error_code_count_get(NULL, &placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_script_status_max_coremini_size_kb_get(NULL, &placeholderInteger16));
+
+	// Ethernet message functions
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_create(NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_props_set(NULL, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_props_get(NULL, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_mac_get(NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_ether_type_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_t1s_props_set(NULL, NULL, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_t1s_props_get(NULL, NULL, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_ethernet(NULL, NULL));
 }
 
 TEST(icsneoc2, test_icsneoc2_devicetype_t)
@@ -1035,4 +1059,229 @@ TEST(icsneoc2, test_lin_flag_bitmask_values)
 	ASSERT_EQ(ICSNEOC2_LIN_STATUS_BUS_RECOVERED, 0x40);
 	ASSERT_EQ(ICSNEOC2_LIN_STATUS_BREAK_ONLY, 0x80);
 }
+
+TEST(icsneoc2, test_icsneoc2_eth_create)
+{
+	// NULL parameter should fail
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_create(NULL));
+
+	// Create an Ethernet message
+	icsneoc2_message_t* message = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_create(&message));
+	ASSERT_NE(message, nullptr);
+
+	// Verify it is an Ethernet message
+	bool is_ethernet = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_ethernet(message, &is_ethernet));
+	ASSERT_TRUE(is_ethernet);
+
+	// Verify it is NOT a CAN message
+	bool is_can = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_can(message, &is_can));
+	ASSERT_FALSE(is_can);
+
+	// Verify it is a frame and raw message
+	bool is_frame = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_frame(message, &is_frame));
+	ASSERT_TRUE(is_frame);
+
+	bool is_raw = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_raw(message, &is_raw));
+	ASSERT_TRUE(is_raw);
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_free(message));
+}
+
+TEST(icsneoc2, test_icsneoc2_eth_props_roundtrip)
+{
+	icsneoc2_message_t* message = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_create(&message));
+
+	// Set several flags
+	icsneoc2_message_eth_flags_t flags_in =
+		ICSNEOC2_MESSAGE_ETH_FLAGS_NO_PADDING |
+		ICSNEOC2_MESSAGE_ETH_FLAGS_FCS_VERIFIED |
+		ICSNEOC2_MESSAGE_ETH_FLAGS_TX_ABORTED;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_props_set(message, &flags_in, NULL, NULL));
+
+	// Get them back
+	icsneoc2_message_eth_flags_t flags_out = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_props_get(message, &flags_out, NULL, NULL));
+	ASSERT_EQ(flags_in, flags_out);
+
+	// Clear all flags
+	icsneoc2_message_eth_flags_t flags_zero = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_props_set(message, &flags_zero, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_props_get(message, &flags_out, NULL, NULL));
+	ASSERT_EQ(0u, flags_out);
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_free(message));
+}
+
+TEST(icsneoc2, test_icsneoc2_eth_mac_and_ethertype)
+{
+	icsneoc2_message_t* message = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_create(&message));
+
+	// Set frame data: dst MAC + src MAC + EtherType
+	uint8_t frame_data[] = {
+		0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, /* Destination MAC */
+		0x11, 0x22, 0x33, 0x44, 0x55, 0x66, /* Source MAC */
+		0x08, 0x00,                           /* EtherType (IPv4) */
+		0x01, 0x02, 0x03, 0x04               /* Payload */
+	};
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_data_set(message, frame_data, sizeof(frame_data)));
+
+	// Get MAC addresses
+	uint8_t dst_mac[6] = {0};
+	uint8_t src_mac[6] = {0};
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_mac_get(message, dst_mac, src_mac));
+	ASSERT_EQ(0, memcmp(dst_mac, frame_data, 6));
+	ASSERT_EQ(0, memcmp(src_mac, frame_data + 6, 6));
+
+	// Get just one MAC at a time (NULL-safe)
+	uint8_t dst_only[6] = {0};
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_mac_get(message, dst_only, NULL));
+	ASSERT_EQ(0, memcmp(dst_only, frame_data, 6));
+
+	uint8_t src_only[6] = {0};
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_mac_get(message, NULL, src_only));
+	ASSERT_EQ(0, memcmp(src_only, frame_data + 6, 6));
+
+	// Get EtherType
+	uint16_t ether_type = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_ether_type_get(message, &ether_type));
+	ASSERT_EQ(0x0800, ether_type);
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_free(message));
+}
+
+TEST(icsneoc2, test_icsneoc2_eth_mac_too_short)
+{
+	icsneoc2_message_t* message = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_create(&message));
+
+	// Set data too short for MAC extraction (< 14 bytes)
+	uint8_t short_data[] = {0x01, 0x02, 0x03};
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_data_set(message, short_data, sizeof(short_data)));
+
+	uint8_t dst_mac[6] = {0};
+	ASSERT_EQ(icsneoc2_error_invalid_data, icsneoc2_message_eth_mac_get(message, dst_mac, NULL));
+
+	uint8_t src_mac[6] = {0};
+	ASSERT_EQ(icsneoc2_error_invalid_data, icsneoc2_message_eth_mac_get(message, NULL, src_mac));
+
+	uint16_t ether_type = 0;
+	ASSERT_EQ(icsneoc2_error_invalid_data, icsneoc2_message_eth_ether_type_get(message, &ether_type));
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_free(message));
+}
+
+TEST(icsneoc2, test_icsneoc2_eth_t1s_props_roundtrip)
+{
+	icsneoc2_message_t* message = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_create(&message));
+
+	// Set T1S properties
+	icsneoc2_message_eth_t1s_flags_t flags_in =
+		ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_SYMBOL |
+		ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_TX_COLLISION;
+	uint8_t node_id = 42;
+	uint8_t burst_count = 7;
+	uint8_t symbol_type = 3;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_t1s_props_set(message, &flags_in, &node_id, &burst_count, &symbol_type));
+
+	// Get them back
+	icsneoc2_message_eth_t1s_flags_t flags_out = 0;
+	uint8_t node_id_out = 0, burst_count_out = 0, symbol_type_out = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_t1s_props_get(message, &flags_out, &node_id_out, &burst_count_out, &symbol_type_out));
+	ASSERT_EQ(flags_in, flags_out);
+	ASSERT_EQ(42, node_id_out);
+	ASSERT_EQ(7, burst_count_out);
+	ASSERT_EQ(3, symbol_type_out);
+
+	// Set just one at a time (NULL-safe)
+	uint8_t new_node_id = 99;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_t1s_props_set(message, NULL, &new_node_id, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_t1s_props_get(message, &flags_out, &node_id_out, &burst_count_out, &symbol_type_out));
+	ASSERT_EQ(flags_in, flags_out);
+	ASSERT_EQ(99, node_id_out);
+	ASSERT_EQ(7, burst_count_out); // Unchanged
+	ASSERT_EQ(3, symbol_type_out); // Unchanged
+
+	// Passing all NULL parameters clears the optional T1S state.
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_t1s_props_set(message, NULL, NULL, NULL, NULL));
+	flags_out = 0xFF;
+	node_id_out = 0xFF;
+	burst_count_out = 0xFF;
+	symbol_type_out = 0xFF;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_t1s_props_get(message, &flags_out, &node_id_out, &burst_count_out, &symbol_type_out));
+	ASSERT_EQ(0, flags_out);
+	ASSERT_EQ(0, node_id_out);
+	ASSERT_EQ(0, burst_count_out);
+	ASSERT_EQ(0, symbol_type_out);
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_free(message));
+}
+
+TEST(icsneoc2, test_icsneoc2_eth_fcs_roundtrip)
+{
+	icsneoc2_message_t* message = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_create(&message));
+
+	// Initially, FCS should not be set
+	bool has_fcs = true;
+	uint32_t fcs = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_props_get(message, NULL, &has_fcs, &fcs));
+	ASSERT_FALSE(has_fcs);
+
+	// Set an FCS value via eth_props_set
+	uint32_t fcs_value = 0xDEADBEEF;
+	has_fcs = true;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_props_set(message, NULL, &has_fcs, &fcs_value));
+
+	// Get it back
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_props_get(message, NULL, &has_fcs, &fcs));
+	ASSERT_TRUE(has_fcs);
+	ASSERT_EQ(0xDEADBEEF, fcs);
+
+	// Clear FCS
+	has_fcs = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_props_set(message, NULL, &has_fcs, NULL));
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_props_get(message, NULL, &has_fcs, &fcs));
+	ASSERT_FALSE(has_fcs);
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_free(message));
+}
+
+TEST(icsneoc2, test_icsneoc2_eth_invalid_type)
+{
+	// Create a CAN message and try to use Ethernet functions on it
+	icsneoc2_message_t* can_msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_can_create(&can_msg));
+
+	bool is_ethernet = true;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_ethernet(can_msg, &is_ethernet));
+	ASSERT_FALSE(is_ethernet);
+
+	icsneoc2_message_eth_flags_t flags = 0;
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_eth_props_get(can_msg, &flags, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_eth_props_set(can_msg, &flags, NULL, NULL));
+
+	uint8_t mac[6] = {0};
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_eth_mac_get(can_msg, mac, NULL));
+
+	uint16_t ether_type = 0;
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_eth_ether_type_get(can_msg, &ether_type));
+
+	uint8_t val = 0;
+	icsneoc2_message_eth_t1s_flags_t t1s_flags = 0;
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_eth_t1s_props_get(can_msg, &t1s_flags, &val, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_eth_t1s_props_set(can_msg, &t1s_flags, &val, NULL, NULL));
+
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_eth_props_set(can_msg, NULL, NULL, NULL));
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_free(can_msg));
+}
+
 

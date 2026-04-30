@@ -38,7 +38,7 @@ def get_user_confirmation(prompt):
 
 def configure_t1s_decoding(device, network, enable_symbols, enable_beacons):
     """Configure T1S bus decoding settings."""
-    settings = device.get_settings()
+    settings = device.settings
     if not settings:
         raise RuntimeError("Failed to get device settings")
     
@@ -46,21 +46,15 @@ def configure_t1s_decoding(device, network, enable_symbols, enable_beacons):
     
     if not settings.set_t1s_bus_decoding_all(network, enable_symbols):
         raise RuntimeError("Failed to set T1S symbol decoding")
-    if enable_symbols:
-        print("  ✓ Enabled decoding of all T1S symbols")
-    else:
-        print("  • T1S symbol decoding disabled")
+    print(f"  [{'X' if enable_symbols else ' '}] Decoding of all T1S symbols")
     
     if not settings.set_t1s_bus_decoding_beacons(network, enable_beacons):
         raise RuntimeError("Failed to set T1S beacon decoding")
-    if enable_beacons:
-        print("  ✓ Enabled T1S beacon decoding")
-    else:
-        print("  • T1S beacon decoding disabled")
+    print(f"  [{'X' if enable_beacons else ' '}] T1S beacon decoding")
     
-    if not device.set_settings(settings):
+    if not settings.apply(True):
         raise RuntimeError("Failed to apply settings to device")
-    print("  ✓ Settings applied successfully")
+    print("  [OK] Settings applied successfully")
 
 
 def setup_symbol_monitoring(device, network):
@@ -79,18 +73,18 @@ def setup_symbol_monitoring(device, network):
         if not isinstance(msg, icsneopy.EthernetMessage):
             return
         
-        if not msg.isT1S:
+        if not msg.t1s:
             return
         
         timestamp_ms = msg.timestamp / 1000000.0
         
-        if msg.isT1SSymbol:
+        if msg.t1s.isSymbol:
             num_symbols = len(msg.data)
             
             print(f"[{timestamp_ms:12.3f} ms] T1S Symbols", end="")
             if num_symbols > 0:
                 print(f" ({num_symbols} symbol{'s' if num_symbols > 1 else ''})", end="")
-            print(f" | Node ID: {msg.t1sNodeId}")
+            print(f" | Node ID: {msg.t1s.nodeId}")
             
             for i, symbol_value in enumerate(msg.data):
                 symbol_name = T1SSymbol.get_name(symbol_value)
@@ -105,8 +99,8 @@ def setup_symbol_monitoring(device, network):
                 
                 print(f"  [{i}] {symbol_name:10s} = 0x{symbol_value:02X}")
             
-            if num_symbols == 0 and msg.t1sSymbolType != 0:
-                symbol_value = msg.t1sSymbolType
+            if num_symbols == 0 and msg.t1s.symbolType != 0:
+                symbol_value = msg.t1s.symbolType
                 symbol_name = T1SSymbol.get_name(symbol_value)
                 
                 state['symbol_count'] += 1
@@ -119,22 +113,22 @@ def setup_symbol_monitoring(device, network):
                 
                 print(f"  {symbol_name:10s} = 0x{symbol_value:02X} (from t1sSymbolType field)")
         
-        elif msg.isT1SBurst:
+        elif msg.t1s.isBurst:
             state['burst_count'] += 1
             print(f"[{timestamp_ms:12.3f} ms] BURST | "
-                  f"Node ID: {msg.t1sNodeId} | "
-                  f"Burst Count: {msg.t1sBurstCount}")
+                  f"Node ID: {msg.t1s.nodeId} | "
+                  f"Burst Count: {msg.t1s.burstCount}")
         
-        elif msg.isT1SWake:
+        elif msg.t1s.isWake:
             state['wake_count'] += 1
             print(f"[{timestamp_ms:12.3f} ms] WAKE signal detected | "
-                  f"Node ID: {msg.t1sNodeId}")
+                  f"Node ID: {msg.t1s.nodeId}")
         
         else:
             state['data_frame_count'] += 1
             print(f"[{timestamp_ms:12.3f} ms] T1S Data Frame | "
                   f"Length: {len(msg.data)} bytes | "
-                  f"Node ID: {msg.t1sNodeId}")
+                  f"Node ID: {msg.t1s.nodeId}")
             
             if msg.data and len(msg.data) > 0:
                 preview = ' '.join([f"{b:02X}" for b in msg.data[:16]])
@@ -142,7 +136,7 @@ def setup_symbol_monitoring(device, network):
                     preview += " ..."
                 print(f"                    Data: {preview}")
     
-    frame_filter = icsneopy.MessageFilter(network)
+    frame_filter = icsneopy.MessageFilter(network.get_net_id())
     callback = icsneopy.MessageCallback(symbol_handler, frame_filter)
     device.add_message_callback(callback)
     
@@ -175,7 +169,6 @@ def main():
     device = None
     
     try:
-        MONITOR_NETWORK = icsneopy.Network.NetID.AE_02
         MONITOR_DURATION = 30
         
         print("\n" + "=" * 70)
@@ -197,7 +190,7 @@ def main():
         
         device = None
         for d in devices:
-            if d.get_type() == icsneopy.DeviceType.RADComet3:
+            if d.get_type().get_device_type() == icsneopy.DeviceType.Enum.RADComet3:
                 device = d
                 break
         
@@ -220,28 +213,44 @@ def main():
         
         print("\nOpening device... ", end="", flush=True)
         if not device.open():
-            print("✗ Failed")
+            print("FAIL")
             return 1
-        print("✓")
+        print("OK")
         
         print("Enabling message polling... ", end="", flush=True)
         if not device.enable_message_polling():
-            print("✗ Failed")
+            print("FAIL")
             device.close()
             return 1
         device.set_polling_message_limit(100000)
-        print("✓")
+        print("OK")
         
-        configure_t1s_decoding(device, MONITOR_NETWORK, enable_symbols, enable_beacons)
+        monitor_network = None
+        settings = device.settings
+        for net in device.get_supported_rx_networks():
+            if net.get_type() != icsneopy.Network.Type.AutomotiveEthernet:
+                continue
+            if settings.get_t1s_local_id(net) is not None:
+                monitor_network = net
+                break
+        
+        if monitor_network is None:
+            print("No T1S network found on this device")
+            device.close()
+            return 1
+        
+        print(f"Monitoring network: {monitor_network}")
+        
+        configure_t1s_decoding(device, monitor_network, enable_symbols, enable_beacons)
         
         print("Going online... ", end="", flush=True)
         if not device.go_online():
-            print("✗ Failed")
+            print("FAIL")
             device.close()
             return 1
-        print("✓")
+        print("OK")
         
-        state = setup_symbol_monitoring(device, MONITOR_NETWORK)
+        state = setup_symbol_monitoring(device, monitor_network)
         
         print("\n" + "-" * 70)
         print(f"Monitoring T1S traffic for {MONITOR_DURATION} seconds...")
@@ -256,7 +265,7 @@ def main():
         print("Closing device... ", end="", flush=True)
         device.close()
         time.sleep(0.1)
-        print("✓")
+        print("OK")
         
         print_statistics(state)
         

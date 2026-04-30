@@ -48,7 +48,7 @@ neomessage_t icsneo::CreateNeoMessage(const std::shared_ptr<Message> message) {
 			case Network::Type::AutomotiveEthernet: {
 				neomessage_eth_t& eth = *(neomessage_eth_t*)&neomsg;
 				auto ethmsg = std::static_pointer_cast<EthernetMessage>(message);
-				eth.preemptionFlags = ethmsg->preemptionFlags;
+				eth.preemptionFlags = ethmsg->preemptionFlags.value_or(0);
 				eth.status.incompleteFrame = ethmsg->frameTooShort;
 				// TODO Fill in extra status bits
 				//eth.status.xyz = ethmsg->preemptionEnabled;

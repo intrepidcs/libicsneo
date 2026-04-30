@@ -92,6 +92,14 @@ SPI Example for 10BASE-T1S
 .. literalinclude:: ../../examples/python/spi/spi_example.py
    :language: python
 
+10BASE-T1S Settings Configuration
+=================================
+
+:download:`Download example <../../examples/python/t1s/t1s_settings.py>`
+
+.. literalinclude:: ../../examples/python/t1s/t1s_settings.py
+   :language: python
+
 Analog Output Control
 =====================
 

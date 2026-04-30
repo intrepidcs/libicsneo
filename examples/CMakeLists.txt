@@ -8,6 +8,9 @@ option(LIBICSNEO_BUILD_C2_RECONNECT_EXAMPLE "Build the C2 reconnect example." ON
 option(LIBICSNEO_BUILD_C2_DEVICE_INFO_EXAMPLE "Build the C2 device info example." ON)
 option(LIBICSNEO_BUILD_C2_LIN_EXAMPLE "Build the C2 LIN example." ON)
 option(LIBICSNEO_BUILD_C2_LIN_TRANSMIT_EXAMPLE "Build the C2 LIN transmit example." ON)
+option(LIBICSNEO_BUILD_C2_ETHERNET_TRANSMIT_EXAMPLE "Build the C2 ethernet transmit example." ON)
+option(LIBICSNEO_BUILD_C2_ETHERNET_RECEIVE_EXAMPLE "Build the C2 ethernet receive example." ON)
+option(LIBICSNEO_BUILD_C2_T1S_LOOPBACK_EXAMPLE "Build the C2 RAD-Comet3 T1S loopback example." ON)
 option(LIBICSNEO_BUILD_CPP_SIMPLE_EXAMPLE "Build the simple C++ example." ON)
 option(LIBICSNEO_BUILD_CPP_INTERACTIVE_EXAMPLE "Build the command-line interactive C++ example." ON)
 option(LIBICSNEO_BUILD_CPP_A2B_EXAMPLE "Build the A2B example." ON)
@@ -65,6 +68,18 @@ endif()
 
 if(LIBICSNEO_BUILD_C2_LIN_TRANSMIT_EXAMPLE)
 	add_subdirectory(c2/lin_transmit)
+endif()
+
+if(LIBICSNEO_BUILD_C2_ETHERNET_TRANSMIT_EXAMPLE)
+	add_subdirectory(c2/ethernet_transmit)
+endif()
+
+if(LIBICSNEO_BUILD_C2_ETHERNET_RECEIVE_EXAMPLE)
+	add_subdirectory(c2/ethernet_receive)
+endif()
+
+if(LIBICSNEO_BUILD_C2_T1S_LOOPBACK_EXAMPLE)
+	add_subdirectory(c2/t1s_loopback)
 endif()
 
 if(LIBICSNEO_BUILD_CPP_SIMPLE_EXAMPLE)

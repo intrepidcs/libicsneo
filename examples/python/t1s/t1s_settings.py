@@ -97,27 +97,27 @@ def display_t1s_settings(device, network):
     """Display T1S settings for a network."""
     print(f"\t{network} T1S Settings:")
     
-    settings = device.get_settings()
+    settings = device.settings
     if not settings:
         print("\t  Unable to read settings")
         return
     
-    print(f"\t  PLCA Enabled:       {opt_to_string(settings.get_t1s_plca_enabled(network))}")
+    print(f"\t  PLCA Enabled:       {opt_to_string(settings.is_t1s_plca_enabled(network))}")
     print(f"\t  Local ID:           {opt_to_string(settings.get_t1s_local_id(network))}")
     print(f"\t  Max Nodes:          {opt_to_string(settings.get_t1s_max_nodes(network))}")
     print(f"\t  TX Opp Timer:       {opt_to_string(settings.get_t1s_tx_opp_timer(network))}")
     print(f"\t  Max Burst:          {opt_to_string(settings.get_t1s_max_burst(network))}")
     print(f"\t  Burst Timer:        {opt_to_string(settings.get_t1s_burst_timer(network))}")
     
-    term_enabled = settings.get_t1s_termination_enabled(network)
+    term_enabled = settings.is_t1s_termination_enabled(network)
     if term_enabled is not None:
         print(f"\t  Termination:        {opt_to_string(term_enabled)}")
     
     local_id_alt = settings.get_t1s_local_id_alternate(network)
     if local_id_alt is not None:
         print(f"\t  Local ID Alternate: {opt_to_string(local_id_alt)}")
-        print(f"\t  Bus Dec Beacons:    {opt_to_string(settings.get_t1s_bus_decoding_beacons_enabled(network))}")
-        print(f"\t  Bus Dec All:        {opt_to_string(settings.get_t1s_bus_decoding_all_enabled(network))}")
+        print(f"\t  Bus Dec Beacons:    {opt_to_string(settings.is_t1s_bus_decoding_beacons_enabled(network))}")
+        print(f"\t  Bus Dec All:        {opt_to_string(settings.is_t1s_bus_decoding_all_enabled(network))}")
         
         multi_id_mask = settings.get_t1s_multi_id_enable_mask(network)
         if multi_id_mask is not None:
@@ -138,7 +138,7 @@ def configure_t1s_network(device, network):
     print(f"Configuring T1S Network: {network}")
     print("=" * 70)
     
-    settings = device.get_settings()
+    settings = device.settings
     if not settings:
         print("Unable to read settings")
         return
@@ -162,7 +162,7 @@ def configure_t1s_network(device, network):
     burst_timer = get_uint16_input("Burst Timer (0-65535)", 64)
     settings.set_t1s_burst_timer(network, burst_timer)
     
-    if settings.get_t1s_termination_enabled(network) is not None:
+    if settings.is_t1s_termination_enabled(network) is not None:
         print("\n--- Termination Settings ---")
         term_enabled = get_user_confirmation("Enable Termination")
         settings.set_t1s_termination(network, term_enabled)
@@ -187,10 +187,7 @@ def configure_t1s_network(device, network):
                 multi_id = get_uint8_input(f"  Multi-ID [{i}]", 0)
                 settings.set_t1s_multi_id(network, i, multi_id)
     
-    if not device.set_settings(settings):
-        print("✗ Failed to update device settings")
-    else:
-        print(f"\n✓ Configuration complete for {network}")
+    print(f"\n[OK] Configuration staged for {network}")
 
 
 def main():
@@ -217,7 +214,7 @@ def main():
         
         device = None
         for d in devices:
-            if d.get_type() == icsneopy.DeviceType.RADComet3:
+            if d.get_type().get_device_type() == icsneopy.DeviceType.Enum.RADComet3:
                 device = d
                 break
         
@@ -233,24 +230,17 @@ def main():
         
         print("\nOpening device... ", end="", flush=True)
         if not device.open():
-            print("✗ Failed")
+            print("FAIL")
             return 1
-        print("✓")
+        print("OK")
         
-        candidate_networks = [
-            icsneopy.Network.NetID.AE_01, icsneopy.Network.NetID.AE_02,
-            icsneopy.Network.NetID.AE_03, icsneopy.Network.NetID.AE_04,
-            icsneopy.Network.NetID.AE_05, icsneopy.Network.NetID.AE_06,
-            icsneopy.Network.NetID.AE_07, icsneopy.Network.NetID.AE_08,
-            icsneopy.Network.NetID.AE_09, icsneopy.Network.NetID.AE_10
-        ]
-        
-        settings = device.get_settings()
+        settings = device.settings
         t1s_networks = []
-        for net_id in candidate_networks:
-            local_id = settings.get_t1s_local_id(net_id)
-            if local_id is not None:
-                t1s_networks.append(net_id)
+        for net in device.get_supported_tx_networks():
+            if net.get_type() != icsneopy.Network.Type.AutomotiveEthernet:
+                continue
+            if settings.get_t1s_local_id(net) is not None:
+                t1s_networks.append(net)
         
         if not t1s_networks:
             print("No T1S networks found on this device")
@@ -273,7 +263,7 @@ def main():
             print("\nNo networks selected for configuration.")
             print("Closing device... ", end="", flush=True)
             device.close()
-            print("✓")
+            print("OK")
             return 0
         
         print(f"\nConfiguring {len(networks_to_config)} network{'s' if len(networks_to_config) != 1 else ''}...")
@@ -285,14 +275,14 @@ def main():
         save_to_eeprom = get_user_confirmation("Save settings to EEPROM (permanent)?")
         print("=" * 70)
         
-        settings = device.get_settings()
+        settings = device.settings
         print(f"\nApplying settings{' to EEPROM' if save_to_eeprom else ' temporarily'}... ", end="", flush=True)
         success = settings.apply(not save_to_eeprom)
         if not success:
-            print("✗ Failed")
+            print("FAIL")
             device.close()
             return 1
-        print("✓")
+        print("OK")
         
         print("\n" + "-" * 70)
         print("Updated T1S Settings:")
@@ -302,7 +292,7 @@ def main():
         
         print("Closing device... ", end="", flush=True)
         device.close()
-        print("✓")
+        print("OK")
         
     except KeyboardInterrupt:
         print("\n\nInterrupted by user")

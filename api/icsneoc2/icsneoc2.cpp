@@ -68,6 +68,7 @@ icsneoc2_error_t icsneoc2_error_code_get(icsneoc2_error_t error_code, char* valu
 		"Script load prepare failed",       // icsneoc2_error_script_load_prepare_failed
 		"Close failed",                     // icsneoc2_error_close_failed
 		"Reconnect failed",                 // icsneoc2_error_reconnect_failed
+		"Invalid data",                     // icsneoc2_error_invalid_data
 	};
 	static_assert(std::size(error_strings) == icsneoc2_error_maxsize,
 		"error_strings is out of sync with _icsneoc2_error_t enum - update both together");

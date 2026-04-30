@@ -1,6 +1,7 @@
 #include "icsneo/communication/packet/ethernetpacket.h"
 #include <algorithm>
 #include <iostream>
+#include <optional>
 
 using namespace icsneo;
 
@@ -24,9 +25,6 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	message.transmitted = packet->eid.TXMSG;
 	if(message.transmitted)
 		message.description = packet->stats;
-	message.preemptionEnabled = packet->header.PREEMPTION_ENABLED;
-	if(message.preemptionEnabled)
-		message.preemptionFlags = (uint8_t)((rawWords[0] & 0x03F8) >> 4);
 	message.frameTooShort = packet->header.RUNT_FRAME;
 	message.noPadding = !packet->header.ENABLE_PADDING;
 	message.fcsVerified = packet->header.FCS_VERIFIED;
@@ -39,15 +37,21 @@ std::shared_ptr<EthernetMessage> HardwareEthernetPacket::DecodeToMessage(const s
 	// Decoder will fix as it has information about the timestampResolution increments
 	message.timestamp = packet->timestamp.TS;
 
+	// Ethernet Frame Preemption for TSN
+	if(packet->header.PREEMPTION_ENABLED) {
+		message.preemptionFlags = static_cast<uint8_t>((rawWords[0] & 0x03F8) >> 4);
+	}
+
 	// Check if this is a T1S packet and populate T1S-specific fields
-	message.isT1S = packet->header.T1S_ETHERNET;
-	if(message.isT1S) {
-		message.isT1SSymbol = packet->eid.T1S_SYMBOL;
-		message.isT1SBurst = packet->eid.T1S_BURST;
-		message.txCollision = packet->t1s_status.TXCollision;
-		message.isT1SWake = packet->t1s_status.T1SWake;
-		message.t1sNodeId = packet->t1s_node.T1S_NODE_ID;
-		message.t1sBurstCount = packet->t1s_node.T1S_BURST_COUNT;
+	if(packet->header.T1S_ETHERNET) {
+		auto& t1s = message.t1s.emplace();
+
+		t1s.isSymbol = packet->eid.T1S_SYMBOL;
+		t1s.isBurst = packet->eid.T1S_BURST;
+		t1s.txCollision = packet->t1s_status.TXCollision;
+		t1s.isWake = packet->t1s_status.T1SWake;
+		t1s.nodeId = packet->t1s_node.T1S_NODE_ID;
+		t1s.burstCount = packet->t1s_node.T1S_BURST_COUNT;
 	}
 
 	const std::vector<uint8_t>::const_iterator databegin = bytestream.begin() + sizeof(HardwareEthernetPacket);
@@ -72,7 +76,7 @@ bool HardwareEthernetPacket::EncodeFromMessage(const EthernetMessage& message, s
 	if(description & 0x8000)
 		return false;
 
-	const bool preempt = message.preemptionEnabled;
+	const bool preempt = message.preemptionFlags.has_value();
 	// full header including parent
 	const size_t headerByteCount = preempt ? 15 : 14;
 	// local header for netID, description, and flags
@@ -121,12 +125,15 @@ bool HardwareEthernetPacket::EncodeFromMessage(const EthernetMessage& message, s
 	uint8_t flags = 0x00;
 	if(!message.noPadding) flags |= FLAG_PADDING;
 	if(message.fcs) flags |= FLAG_FCS;
-	if(message.preemptionEnabled) flags |= FLAG_PREEMPTION;
+	if(message.preemptionFlags.has_value()) {
+		flags |= FLAG_PREEMPTION;
+	}
 
 	bytestream.push_back(flags);
 
-	if(preempt)
-		bytestream.push_back(static_cast<uint8_t>(message.preemptionFlags));
+	if(preempt) {
+		bytestream.push_back(message.preemptionFlags.value());
+	}
 
 	bytestream.insert(bytestream.end(), message.data.begin(), message.data.end());
 

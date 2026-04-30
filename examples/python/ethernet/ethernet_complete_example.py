@@ -47,14 +47,23 @@ def setup_ethernet_reception(device):
 	def frame_handler(frame):
 		nonlocal frame_count
 		frame_count += 1
+		dst = frame.get_destination_mac()
+		src = frame.get_source_mac()
+		et = frame.get_ether_type()
+
+		dst_str = ":".join(f"{b:02x}" for b in dst) if dst is not None else "N/A"
+		src_str = ":".join(f"{b:02x}" for b in src) if src is not None else "N/A"
+		et_str = f"0x{et:04x}" if et is not None else "N/A"
+
 		print(f"[RX {frame_count}], "
-			  f"Data: {[hex(b) for b in frame.data]}, "
-			  f"Length: {len(frame.data)}")
-	frame_filter = icsneopy.MessageFilter(icsneopy.Network.NetID.ETHERNET_01)
+			f"dst={dst_str}, src={src_str}, ethertype={et_str}, "
+			f"Data: {[hex(b) for b in frame.data]}, "
+			f"Length: {len(frame.data)}")
+	frame_filter = icsneopy.MessageFilter(icsneopy.Network.NetID.ETHERNET_02)
 	callback = icsneopy.MessageCallback(frame_handler, frame_filter)
 	device.add_message_callback(callback)
 
-	print("CAN frame reception configured")
+	print("Ethernet frame reception configured")
 	return 0
 
 

@@ -208,8 +208,26 @@ int main() {
 							std::cout << "\t\t  Timestamped:\t"<< ethMessage->timestamp << " ns since 1/1/2007\n";
 
 							// The MACAddress may be printed directly or accessed with the `data` member
-							std::cout << "\t\t  Source:\t" << ethMessage->getSourceMAC() << "\n";
-							std::cout << "\t\t  Destination:\t" << ethMessage->getDestinationMAC();
+							// The MACAddress may be printed directly or accessed with the `data` member
+							auto printMAC = [](const icsneo::MACAddress& mac) {
+								std::ostringstream oss;
+								for(size_t i = 0; i < mac.size(); i++) {
+									oss << std::hex << std::setw(2) << std::setfill('0') << (uint32_t)mac[i];
+									if(i != mac.size() - 1)
+										oss << ':';
+								}
+								return oss.str();
+							};
+							if (auto destMAC = ethMessage->getDestinationMAC(); destMAC.has_value()) {
+								std::cout << "\t\t  Destination:\t" << printMAC(*destMAC) << "\n";
+							} else {
+								std::cout << "\t\t  Destination:\t N/A\n";
+							}
+							if (auto srcMAC = ethMessage->getSourceMAC(); srcMAC.has_value()) {
+								std::cout << "\t\t  Source:\t" << printMAC(*srcMAC) << "\n";
+							} else {
+								std::cout << "\t\t  Source:\t N/A\n";
+							}
 
 							// Print the data
 							for(size_t i = 0; i < ethMessage->data.size(); i++) {

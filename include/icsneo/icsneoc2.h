@@ -44,6 +44,7 @@ typedef enum _icsneoc2_error_t {
 	icsneoc2_error_script_load_prepare_failed, // Failed to prepare script load
 	icsneoc2_error_close_failed, // Failed to close device
 	icsneoc2_error_reconnect_failed, // Failed to reconnect to device
+	icsneoc2_error_invalid_data, // Failed to get/set data due to invalid data pointer or size
 	// NOTE: Any new values added here should be updated in icsneoc2_error_code_get
 	icsneoc2_error_maxsize
 } _icsneoc2_error_t;

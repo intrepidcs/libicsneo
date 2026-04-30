@@ -600,6 +600,36 @@ icsneoc2_error_t icsneoc2_settings_t1s_tx_opp_timer_set(icsneoc2_device_t* devic
     return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_settings_t1s_burst_timer_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(auto result = device->device->settings->getT1SBurstTimerFor(network); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    } else {
+        *value = 0;
+        return icsneoc2_error_get_settings_failure;
+    }
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_burst_timer_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(!device->device->settings->setT1SBurstTimerFor(network, value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_settings_t1s_max_burst_timer_for_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value) {
     // Make sure the device is valid
     auto res = icsneoc2_device_is_valid(device);
@@ -627,6 +657,186 @@ icsneoc2_error_t icsneoc2_settings_t1s_max_burst_timer_for_set(icsneoc2_device_t
     }
     auto network = Network(static_cast<Network::NetID>(netid));
     if(!device->device->settings->setT1SMaxBurstFor(network, value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_local_id_alternate_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(auto result = device->device->settings->getT1SLocalIDAlternateFor(network); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    } else {
+        *value = 0;
+        return icsneoc2_error_get_settings_failure;
+    }
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_local_id_alternate_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(!device->device->settings->setT1SLocalIDAlternateFor(network, value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_is_termination_enabled_for(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(auto result = device->device->settings->isT1STerminationEnabledFor(network); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    } else {
+        *value = false;
+        return icsneoc2_error_get_settings_failure;
+    }
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_termination_for_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(!device->device->settings->setT1STerminationFor(network, value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_is_bus_decoding_beacons_enabled_for(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(auto result = device->device->settings->isT1SBusDecodingBeaconsEnabledFor(network); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    } else {
+        *value = false;
+        return icsneoc2_error_get_settings_failure;
+    }
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_bus_decoding_beacons_for_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(!device->device->settings->setT1SBusDecodingBeaconsFor(network, value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_is_bus_decoding_all_enabled_for(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(auto result = device->device->settings->isT1SBusDecodingAllEnabledFor(network); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    } else {
+        *value = false;
+        return icsneoc2_error_get_settings_failure;
+    }
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_bus_decoding_all_for_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(!device->device->settings->setT1SBusDecodingAllFor(network, value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_multi_id_enable_mask_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(auto result = device->device->settings->getT1SMultiIDEnableMaskFor(network); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    } else {
+        *value = 0;
+        return icsneoc2_error_get_settings_failure;
+    }
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_multi_id_enable_mask_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(!device->device->settings->setT1SMultiIDEnableMaskFor(network, value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_multi_id_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t index, uint8_t* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(auto result = device->device->settings->getT1SMultiIDFor(network, index); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    } else {
+        *value = 0;
+        return icsneoc2_error_get_settings_failure;
+    }
+}
+
+icsneoc2_error_t icsneoc2_settings_t1s_multi_id_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t index, uint8_t value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    auto network = Network(static_cast<Network::NetID>(netid));
+    if(!device->device->settings->setT1SMultiIDFor(network, index, value)) {
         return icsneoc2_error_set_settings_failure;
     }
     return icsneoc2_error_success;

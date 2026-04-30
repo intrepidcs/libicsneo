@@ -154,12 +154,12 @@ void setupSymbolMonitoring(std::shared_ptr<icsneo::Device>& device,
 			
 			auto ethMsg = std::static_pointer_cast<icsneo::EthernetMessage>(frame);
 			
-			if (!ethMsg->isT1S)
+			if (!ethMsg->t1s)
 				return;
 			
 			double timestamp_ms = ethMsg->timestamp / 1000000.0;
 			
-			if (ethMsg->isT1SSymbol) {
+			if (ethMsg->t1s->isSymbol) {
 				size_t numSymbols = ethMsg->data.size();
 				
 				std::cout << std::fixed << std::setprecision(3)
@@ -169,7 +169,7 @@ void setupSymbolMonitoring(std::shared_ptr<icsneo::Device>& device,
 				if (numSymbols > 0) {
 					std::cout << " (" << numSymbols << " symbol" << (numSymbols > 1 ? "s" : "") << ")";
 				}
-				std::cout << " | Node ID: " << (int)ethMsg->t1sNodeId << std::endl;
+				std::cout << " | Node ID: " << (int)ethMsg->t1s->nodeId << std::endl;
 				
 				for (size_t i = 0; i < numSymbols; i++) {
 					uint8_t symbolValue = ethMsg->data[i];
@@ -188,8 +188,8 @@ void setupSymbolMonitoring(std::shared_ptr<icsneo::Device>& device,
 					          << std::dec << std::endl;
 				}
 				
-				if (numSymbols == 0 && ethMsg->t1sSymbolType != 0) {
-					uint8_t symbolValue = ethMsg->t1sSymbolType;
+				if (numSymbols == 0 && ethMsg->t1s->symbolType != 0) {
+					uint8_t symbolValue = ethMsg->t1s->symbolType;
 					std::string symbolName = getSymbolName(symbolValue);
 					
 					stats.symbolCount++;
@@ -205,20 +205,20 @@ void setupSymbolMonitoring(std::shared_ptr<icsneo::Device>& device,
 					          << std::dec << " (from t1sSymbolType field)" << std::endl;
 				}
 			}
-			else if (ethMsg->isT1SBurst) {
+			else if (ethMsg->t1s->isBurst) {
 				stats.burstCount++;
 				std::cout << std::fixed << std::setprecision(3)
 				          << "[" << std::setw(12) << timestamp_ms << " ms] "
 				          << "BURST | "
-				          << "Node ID: " << (int)ethMsg->t1sNodeId << " | "
-				          << "Burst Count: " << (int)ethMsg->t1sBurstCount << std::endl;
+				          << "Node ID: " << (int)ethMsg->t1s->nodeId << " | "
+				          << "Burst Count: " << (int)ethMsg->t1s->burstCount << std::endl;
 			}
-			else if (ethMsg->isT1SWake) {
+			else if (ethMsg->t1s->isWake) {
 				stats.wakeCount++;
 				std::cout << std::fixed << std::setprecision(3)
 				          << "[" << std::setw(12) << timestamp_ms << " ms] "
 				          << "WAKE signal detected | "
-				          << "Node ID: " << (int)ethMsg->t1sNodeId << std::endl;
+				          << "Node ID: " << (int)ethMsg->t1s->nodeId << std::endl;
 			}
 			else {
 				stats.dataFrameCount++;
@@ -226,7 +226,7 @@ void setupSymbolMonitoring(std::shared_ptr<icsneo::Device>& device,
 				          << "[" << std::setw(12) << timestamp_ms << " ms] "
 				          << "T1S Data Frame | "
 				          << "Length: " << ethMsg->data.size() << " bytes | "
-				          << "Node ID: " << (int)ethMsg->t1sNodeId << std::endl;
+				          << "Node ID: " << (int)ethMsg->t1s->nodeId << std::endl;
 				
 				if (!ethMsg->data.empty()) {
 					std::cout << "                    Data: ";

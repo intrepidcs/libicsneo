@@ -457,6 +457,28 @@ icsneoc2_error_t icsneoc2_settings_t1s_tx_opp_timer_get(icsneoc2_device_t* devic
 icsneoc2_error_t icsneoc2_settings_t1s_tx_opp_timer_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value);
 
 /**
+ * Get the burst timer for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to check.
+ * @param[in] netid The network ID to check.
+ * @param[out] value Pointer to store the burst timer value.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_burst_timer_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value);
+
+/**
+ * Set the burst timer for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] netid The network ID to configure.
+ * @param[in] value The burst timer value to set.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_burst_timer_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value);
+
+/**
  * Get the Max burst timer for a network that supports 10BASE-T1S.
  *
  * @param[in] device The device to check.
@@ -477,6 +499,140 @@ icsneoc2_error_t icsneoc2_settings_t1s_max_burst_timer_for_get(icsneoc2_device_t
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
  */
 icsneoc2_error_t icsneoc2_settings_t1s_max_burst_timer_for_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value);
+
+/**
+ * Get the alternate local ID for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to check.
+ * @param[in] netid The network ID to check.
+ * @param[out] value Pointer to store the alternate local ID.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_local_id_alternate_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value);
+
+/**
+ * Set the alternate local ID for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] netid The network ID to configure.
+ * @param[in] value The alternate local ID to set.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_local_id_alternate_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value);
+
+/**
+ * Check if T1S termination is enabled for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to check.
+ * @param[in] netid The network ID to check.
+ * @param[out] value Pointer to store the termination enable state.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_is_termination_enabled_for(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool* value);
+
+/**
+ * Enable or disable T1S termination for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] netid The network ID to configure.
+ * @param[in] value True to enable termination, false to disable.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_termination_for_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool value);
+
+/**
+ * Check if T1S bus decoding beacons are enabled for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to check.
+ * @param[in] netid The network ID to check.
+ * @param[out] value Pointer to store the bus decoding beacons enable state.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_is_bus_decoding_beacons_enabled_for(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool* value);
+
+/**
+ * Enable or disable T1S bus decoding beacons for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] netid The network ID to configure.
+ * @param[in] value True to enable bus decoding beacons, false to disable.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_bus_decoding_beacons_for_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool value);
+
+/**
+ * Check if T1S bus decoding all is enabled for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to check.
+ * @param[in] netid The network ID to check.
+ * @param[out] value Pointer to store the bus decoding all enable state.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_is_bus_decoding_all_enabled_for(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool* value);
+
+/**
+ * Enable or disable T1S bus decoding all for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] netid The network ID to configure.
+ * @param[in] value True to enable bus decoding all, false to disable.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_bus_decoding_all_for_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool value);
+
+/**
+ * Get the multi-ID enable mask for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to check.
+ * @param[in] netid The network ID to check.
+ * @param[out] value Pointer to store the multi-ID enable mask.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_multi_id_enable_mask_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value);
+
+/**
+ * Set the multi-ID enable mask for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] netid The network ID to configure.
+ * @param[in] value The multi-ID enable mask to set.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_multi_id_enable_mask_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value);
+
+/**
+ * Get a multi-ID entry for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to check.
+ * @param[in] netid The network ID to check.
+ * @param[in] index The multi-ID index to get (0-6).
+ * @param[out] value Pointer to store the multi-ID value.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_multi_id_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t index, uint8_t* value);
+
+/**
+ * Set a multi-ID entry for a network that supports 10BASE-T1S.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] netid The network ID to configure.
+ * @param[in] index The multi-ID index to set (0-6).
+ * @param[in] value The multi-ID value to set.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_t1s_multi_id_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t index, uint8_t value);
 
 /**
  * Set the analog output enabled.

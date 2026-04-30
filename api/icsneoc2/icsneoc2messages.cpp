@@ -415,3 +415,195 @@ icsneoc2_error_t icsneoc2_message_lin_calc_checksum(icsneoc2_message_t* message)
 	LINMessage::calcChecksum(*lin_msg);
 	return icsneoc2_error_success;
 }
+
+icsneoc2_error_t icsneoc2_message_eth_create(icsneoc2_message_t** message) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	try {
+		*message = new icsneoc2_message_t;
+		(*message)->message = std::make_shared<EthernetMessage>();
+	} catch(const std::bad_alloc&) {
+		return icsneoc2_error_out_of_memory;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_eth_props_set(icsneoc2_message_t* message, const icsneoc2_message_eth_flags_t* flags, const bool* has_fcs, const uint32_t* fcs) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto eth_msg = std::dynamic_pointer_cast<EthernetMessage>(message->message);
+	if(!eth_msg) {
+		return icsneoc2_error_invalid_type;
+	}
+	if(flags) {
+		eth_msg->frameTooShort = (*flags & ICSNEOC2_MESSAGE_ETH_FLAGS_FRAME_TOO_SHORT);
+		eth_msg->noPadding = (*flags & ICSNEOC2_MESSAGE_ETH_FLAGS_NO_PADDING);
+		eth_msg->fcsVerified = (*flags & ICSNEOC2_MESSAGE_ETH_FLAGS_FCS_VERIFIED);
+		eth_msg->txAborted = (*flags & ICSNEOC2_MESSAGE_ETH_FLAGS_TX_ABORTED);
+		eth_msg->crcError = (*flags & ICSNEOC2_MESSAGE_ETH_FLAGS_CRC_ERROR);
+	}
+	if(has_fcs && !*has_fcs) {
+		eth_msg->fcs = std::nullopt;
+	} else if(has_fcs && *has_fcs) {
+		// I'm pretty sure we can leave this alone, setting fcs below will take care of the behavior,
+		// otherwise we get into a weird state where we have to set fcs to zero if fcs is null but has_fcs is true.
+	}
+	if (fcs) {
+		eth_msg->fcs = *fcs;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_eth_props_get(icsneoc2_message_t* message, icsneoc2_message_eth_flags_t* flags, bool* has_fcs, uint32_t* fcs) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto eth_msg = std::dynamic_pointer_cast<EthernetMessage>(message->message);
+	if(!eth_msg) {
+		return icsneoc2_error_invalid_type;
+	}
+	if(flags) {
+		*flags = 0;
+		if(eth_msg->noPadding)
+			*flags |= ICSNEOC2_MESSAGE_ETH_FLAGS_NO_PADDING;
+		if(eth_msg->fcsVerified)
+			*flags |= ICSNEOC2_MESSAGE_ETH_FLAGS_FCS_VERIFIED;
+		if(eth_msg->txAborted)
+			*flags |= ICSNEOC2_MESSAGE_ETH_FLAGS_TX_ABORTED;
+		if(eth_msg->crcError)
+			*flags |= ICSNEOC2_MESSAGE_ETH_FLAGS_CRC_ERROR;
+		if(eth_msg->frameTooShort)
+			*flags |= ICSNEOC2_MESSAGE_ETH_FLAGS_FRAME_TOO_SHORT;
+	}
+	if(has_fcs) {
+		*has_fcs = eth_msg->fcs.has_value();
+	}
+	if(fcs) {
+		if(eth_msg->fcs) {
+			*fcs = eth_msg->fcs.value();
+		} else {
+			*fcs = 0;
+		}
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_eth_mac_get(icsneoc2_message_t* message, uint8_t* dst_mac, uint8_t* src_mac) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto eth_msg = std::dynamic_pointer_cast<EthernetMessage>(message->message);
+	if(!eth_msg) {
+		return icsneoc2_error_invalid_type;
+	}
+	if(dst_mac) {
+		if(auto mac = eth_msg->getDestinationMAC(); mac.has_value()) {
+			const auto& mac_value = mac.value();
+			std::memcpy(dst_mac, mac_value.data(), mac_value.size());
+		} else {
+			return icsneoc2_error_invalid_data;
+		}
+	}
+	if(src_mac) {
+		if(auto mac = eth_msg->getSourceMAC(); mac.has_value()) {
+			const auto& mac_value = mac.value();
+			std::memcpy(src_mac, mac_value.data(), mac_value.size());
+		} else {
+			return icsneoc2_error_invalid_data;
+		}
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_eth_ether_type_get(icsneoc2_message_t* message, uint16_t* ether_type) {
+	if(!message || !ether_type) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto eth_msg = std::dynamic_pointer_cast<EthernetMessage>(message->message);
+	if(!eth_msg) {
+		return icsneoc2_error_invalid_type;
+	}
+	if (auto et = eth_msg->getEtherType(); et.has_value()) {
+		*ether_type = et.value();
+	} else {
+		return icsneoc2_error_invalid_data;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_eth_t1s_props_set(icsneoc2_message_t* message, const icsneoc2_message_eth_t1s_flags_t* flags, const uint8_t* node_id, const uint8_t* burst_count, const uint8_t* symbol_type) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto eth_msg = std::dynamic_pointer_cast<EthernetMessage>(message->message);
+	if(!eth_msg) {
+		return icsneoc2_error_invalid_type;
+	}
+	// If all parameters are null/zero, clear the T1S state. Otherwise, if any parameters are set and we don't have a T1S state, create it.
+	if(!flags && !node_id && !burst_count && !symbol_type) {
+		eth_msg->t1s = std::nullopt;
+		return icsneoc2_error_success;
+	}
+	if((flags || node_id || burst_count || symbol_type) && !eth_msg->t1s.has_value()) {
+		eth_msg->t1s.emplace();
+	}
+	if(flags) {
+		eth_msg->t1s->isSymbol = (*flags & ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_SYMBOL);
+		eth_msg->t1s->isBurst = (*flags & ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_BURST);
+		eth_msg->t1s->txCollision = (*flags & ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_TX_COLLISION);
+		eth_msg->t1s->isWake = (*flags & ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_WAKE);
+	}
+	if(node_id) {
+		eth_msg->t1s->nodeId = *node_id;
+	}
+	if(burst_count) {
+		eth_msg->t1s->burstCount = *burst_count;
+	}
+	if(symbol_type) {
+		eth_msg->t1s->symbolType = *symbol_type;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_eth_t1s_props_get(icsneoc2_message_t* message, icsneoc2_message_eth_t1s_flags_t* flags, uint8_t* node_id, uint8_t* burst_count, uint8_t* symbol_type) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto eth_msg = std::dynamic_pointer_cast<EthernetMessage>(message->message);
+	if(!eth_msg) {
+		return icsneoc2_error_invalid_type;
+	}
+	if(flags) {
+		*flags = 0;
+		if(eth_msg->t1s.has_value()) {
+			if(eth_msg->t1s->isSymbol)
+				*flags |= ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_SYMBOL;
+			if(eth_msg->t1s->isBurst)
+				*flags |= ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_BURST;
+			if(eth_msg->t1s->txCollision)
+				*flags |= ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_TX_COLLISION;
+			if(eth_msg->t1s->isWake)
+				*flags |= ICSNEOC2_MESSAGE_ETH_T1S_FLAGS_IS_T1S_WAKE;
+		}
+	}
+	if(node_id) {
+		*node_id = eth_msg->t1s.has_value() ? eth_msg->t1s->nodeId : 0;
+	}
+	if(burst_count) {
+		*burst_count = eth_msg->t1s.has_value() ? eth_msg->t1s->burstCount : 0;
+	}
+	if(symbol_type) {
+		*symbol_type = eth_msg->t1s.has_value() ? eth_msg->t1s->symbolType : 0;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_is_ethernet(icsneoc2_message_t* message, bool* is_ethernet) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	*is_ethernet = std::dynamic_pointer_cast<EthernetMessage>(message->message) != nullptr;
+	return icsneoc2_error_success;
+}

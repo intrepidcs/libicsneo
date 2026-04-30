@@ -49,3 +49,27 @@ LIN Transmit
 
 .. literalinclude:: ../../examples/c2/lin_transmit/src/main.c
    :language: c
+
+Ethernet Transmit
+=================
+
+:download:`Download example <../../examples/c2/ethernet_transmit/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/ethernet_transmit/src/main.c
+   :language: c
+
+Ethernet Receive
+================
+
+:download:`Download example <../../examples/c2/ethernet_receive/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/ethernet_receive/src/main.c
+   :language: c
+
+T1S Loopback
+============
+
+:download:`Download example <../../examples/c2/t1s_loopback/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/t1s_loopback/src/main.c
+   :language: c
