@@ -22,29 +22,6 @@ void APIEvent::init(Type event, APIEvent::Severity severity) {
 	eventStruct.timestamp = EventClock::to_time_t(timepoint);
 }
 
-std::string APIEvent::describe() const noexcept {
-	std::stringstream ss;
-	if(device)
-		ss << *device; // Makes use of device.describe()
-	else
-		ss << "API";
-
-	Severity severity = getSeverity();
-	if(severity == Severity::EventInfo) {
-		ss << " Info: ";
-	} else if(severity == Severity::EventWarning) {
-		ss << " Warning: ";
-	} else if(severity == Severity::Error) {
-		ss << " Error: ";
-	} else {
-		// Should never get here, since Severity::Any should only be used for filtering
-		ss << " Any: ";
-	}
-
-	ss << getDescription();
-	return ss.str();
-}
-
 void APIEvent::downgradeFromError() noexcept {
 	eventStruct.severity = (uint8_t) APIEvent::Severity::EventWarning;
 }
@@ -118,17 +95,27 @@ static constexpr const char* ATOMIC_OPERATION_COMPLETED_NONATOMICALLY = "An idea
 static constexpr const char* WIVI_STACK_REFRESH_FAILED = "The Wireless neoVI stack encountered a communication error.";
 static constexpr const char* WIVI_UPLOAD_STACK_OVERFLOW = "The Wireless neoVI upload stack has encountered an overflow condition.";
 static constexpr const char* A2B_MESSAGE_INCOMPLETE_FRAME = "At least one of the frames of the A2B message does not contain samples for each channel and stream.";
+static constexpr const char* I2C_MESSAGE_EXCEED_MAX_LENGTH = "The I2C message was too long.";
 static constexpr const char* COREMINI_UPLOAD_VERSION_MISMATCH = "The version of the coremini engine on the device and the script uploaded are not the same.";
 static constexpr const char* DISK_NOT_CONNECTED = "The program tried to access a disk that is not connected.";
 static constexpr const char* UNEXPECTED_RESPONSE = "Received an unexpected or invalid response from the device.";
+static constexpr const char* LIVE_DATA_INVALID_HANDLE = "The live data handle was invalid.";
+static constexpr const char* LIVE_DATA_INVALID_COMMAND = "The live data command was invalid.";
+static constexpr const char* LIVE_DATA_INVALID_ARGUMENT = "The live data argument was invalid.";
+static constexpr const char* LIVE_DATA_VERSION_MISMATCH = "The live data version between libicsneo and firmware are not the same.";
+static constexpr const char* LIVE_DATA_NO_DEVICE_RESPONSE = "Expected a response from the device for live data but none were found.";
+static constexpr const char* LIVE_DATA_MAX_SIGNALS_REACHED = "The max amound of signals to subscribe to for live data has been reached.";
+static constexpr const char* LIVE_DATA_COMMAND_FAILED = "The live data command failed.";
+static constexpr const char* LIVE_DATA_ENCODER_ERROR = "Failure to encode live data message.";
+static constexpr const char* LIVE_DATA_DECODER_ERROR = "Failure to decode live data message.";
+static constexpr const char* LIVE_DATA_NOT_SUPPORTED = "Live data is not supported on this device.";
 static constexpr const char* LIN_SETTINGS_NOT_AVAILABLE = "LIN settings are not available for this device.";
 static constexpr const char* MODE_NOT_FOUND = "The mode was not found.";
+static constexpr const char* APP_ERROR_PARSING_FAILED = "Failure to decode app error message.";
 static constexpr const char* GPTP_NOT_SUPPORTED = "GPTP clock synchronization is not supported on this device.";
 static constexpr const char* SETTING_NOT_AVAILABLE = "Requested a setting that is not available on this device";
 static constexpr const char* DISK_FORMAT_NOT_SUPPORTED = "Disk formatting is not supported on this device.";
 static constexpr const char* DISK_FORMAT_INVALID_COUNT = "Disk format config disk count is mismatched with device disk count.";
-
-
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -146,6 +133,7 @@ static constexpr const char* FAILED_TO_BIND = "Unable to bind socket.";
 static constexpr const char* ERROR_SETTING_SOCKET_OPTION = "A call to setsockopt() failed.";
 static constexpr const char* GETIFADDRS_ERROR = "A call to getifaddrs() failed.";
 static constexpr const char* SEND_TO_ERROR = "A call to sendto() failed.";
+static constexpr const char* MDIO_MESSAGE_EXCEED_MAX_LENGTH = "The MDIO message was too long.";
 
 // VSA
 static constexpr const char* VSA_BUFFER_CORRUPTED = "VSA data in record buffer is corrupted.";
@@ -186,6 +174,7 @@ static constexpr const char* DXX_ERROR_OVERFLOW = "Overflow in DXX";
 static constexpr const char* DXX_ERROR_IO = "I/O failure in DXX";
 static constexpr const char* DXX_ERROR_ARG = "Invalid arg passed to DXX";
 
+static constexpr const char* NO_ERROR_FOUND = "No errors were found.";
 static constexpr const char* TOO_MANY_EVENTS = "Too many events have occurred. The list has been truncated.";
 static constexpr const char* UNKNOWN = "An unknown internal error occurred.";
 static constexpr const char* INVALID = "An invalid internal error occurred.";
@@ -313,6 +302,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return WIVI_STACK_REFRESH_FAILED;
 		case Type::WiVIUploadStackOverflow:
 			return WIVI_UPLOAD_STACK_OVERFLOW;
+		case Type::I2CMessageExceedsMaxLength:
+			return I2C_MESSAGE_EXCEED_MAX_LENGTH;
 		case Type::A2BMessageIncompleteFrame:
 			return A2B_MESSAGE_INCOMPLETE_FRAME;
 		case Type::CoreminiUploadVersionMismatch:
@@ -321,10 +312,32 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return DISK_NOT_CONNECTED;
 		case Type::UnexpectedResponse:
 			return UNEXPECTED_RESPONSE;
+		case Type::LiveDataInvalidHandle:
+			return LIVE_DATA_INVALID_HANDLE;
+		case Type::LiveDataInvalidCommand:
+			return LIVE_DATA_INVALID_COMMAND;
+		case Type::LiveDataInvalidArgument:
+			return LIVE_DATA_INVALID_ARGUMENT;
+		case Type::LiveDataVersionMismatch:
+			return LIVE_DATA_VERSION_MISMATCH;
+		case Type::LiveDataNoDeviceResponse:
+			return LIVE_DATA_NO_DEVICE_RESPONSE;
+		case Type::LiveDataMaxSignalsReached:
+			return LIVE_DATA_MAX_SIGNALS_REACHED;
+		case Type::LiveDataCommandFailed:
+			return LIVE_DATA_COMMAND_FAILED;
+		case Type::LiveDataEncoderError:
+			return LIVE_DATA_ENCODER_ERROR;
+		case Type::LiveDataDecoderError:
+			return LIVE_DATA_DECODER_ERROR;
+		case Type::LiveDataNotSupported:
+			return LIVE_DATA_NOT_SUPPORTED;
 		case Type::LINSettingsNotAvailable:
 			return LIN_SETTINGS_NOT_AVAILABLE;
 		case Type::ModeNotFound:
 			return MODE_NOT_FOUND;
+		case Type::AppErrorParsingFailed:
+			return APP_ERROR_PARSING_FAILED;
 		case Type::SettingNotAvaiableDevice:
 			return SETTING_NOT_AVAILABLE;
 		// Transport Errors
@@ -358,6 +371,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return GETIFADDRS_ERROR;
 		case Type::SendToError:
 			return SEND_TO_ERROR;
+		case Type::MDIOMessageExceedsMaxLength:
+			return MDIO_MESSAGE_EXCEED_MAX_LENGTH;
 		case Type::GPTPNotSupported:
 			return GPTP_NOT_SUPPORTED;
 		case Type::DiskFormatNotSupported:
@@ -437,13 +452,41 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return DXX_ERROR_ARG;
 
 		// Other Errors
+		case Type::NoErrorFound:
+			return NO_ERROR_FOUND;
 		case Type::TooManyEvents:
 			return TOO_MANY_EVENTS;
 		case Type::Unknown:
 			return UNKNOWN;
-		default:
-			return INVALID;
 	}
+	return INVALID;
+}
+
+std::string APIEvent::describe() const noexcept {
+	std::stringstream ss;
+	if(device)
+		ss << *device; // Makes use of device.describe()
+	else
+		ss << "API";
+
+	Severity severity = getSeverity();
+	if(severity == Severity::EventInfo) {
+		ss << " Info: ";
+	} else if(severity == Severity::EventWarning) {
+		ss << " Warning: ";
+	} else if(severity == Severity::Error) {
+		ss << " Error: ";
+	} else {
+		// Should never get here, since Severity::Any should only be used for filtering
+		ss << " Any: ";
+	}
+
+	const char* description = DescriptionForType(getType());
+	if(description == INVALID)
+		ss << description << " (0x" << std::hex << eventStruct.eventNumber << ")";
+	else
+		ss << description;
+	return ss.str();
 }
 
 bool EventFilter::match(const APIEvent& event) const noexcept {
