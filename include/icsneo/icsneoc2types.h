@@ -422,6 +422,28 @@ typedef uint8_t icsneoc2_can_error_code_t;
 
 typedef uint64_t icsneoc2_message_can_error_flags_t;
 
+typedef enum _icsneoc2_tc10_wake_status_t {
+	icsneoc2_tc10_wake_status_no_wake_received = 0, // No wake signal received
+	icsneoc2_tc10_wake_status_wake_received = 1,    // Wake signal received
+
+	// Must be last entry. Don't use as a TC10 wake status.
+	icsneoc2_tc10_wake_status_maxsize
+} _icsneoc2_tc10_wake_status_t;
+
+typedef uint8_t icsneoc2_tc10_wake_status_t;
+
+typedef enum _icsneoc2_tc10_sleep_status_t {
+	icsneoc2_tc10_sleep_status_no_sleep_received = 0, // No sleep signal received
+	icsneoc2_tc10_sleep_status_sleep_received = 1,    // Sleep signal received
+	icsneoc2_tc10_sleep_status_sleep_failed = 2,      // Sleep attempt failed
+	icsneoc2_tc10_sleep_status_sleep_aborted = 3,     // Sleep attempt aborted
+
+	// Must be last entry. Don't use as a TC10 sleep status.
+	icsneoc2_tc10_sleep_status_maxsize
+} _icsneoc2_tc10_sleep_status_t;
+
+typedef uint8_t icsneoc2_tc10_sleep_status_t;
+
 #ifdef __cplusplus
 }
 #endif

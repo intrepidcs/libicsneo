@@ -73,3 +73,12 @@ T1S Loopback
 
 .. literalinclude:: ../../examples/c2/t1s_loopback/src/main.c
    :language: c
+
+TC10
+====
+
+:download:`Download example <../../examples/c2/tc10/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/tc10/src/main.c
+   :language: c
+

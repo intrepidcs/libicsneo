@@ -640,6 +640,46 @@ icsneoc2_error_t icsneoc2_device_supports_tc10(const icsneoc2_device_t* device, 
 	return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_device_tc10_wake_request(const icsneoc2_device_t* device, icsneoc2_netid_t netid) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!device->device->requestTC10Wake(static_cast<Network::NetID>(netid))) {
+		return icsneoc2_error_transmit_message_failed;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_device_tc10_sleep_request(const icsneoc2_device_t* device, icsneoc2_netid_t netid) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!device->device->requestTC10Sleep(static_cast<Network::NetID>(netid))) {
+		return icsneoc2_error_transmit_message_failed;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_device_tc10_status_get(const icsneoc2_device_t* device, icsneoc2_netid_t netid, icsneoc2_tc10_sleep_status_t* sleep_status, icsneoc2_tc10_wake_status_t* wake_status) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	auto cpp_status = device->device->getTC10Status(static_cast<Network::NetID>(netid));
+	if(!cpp_status.has_value()) {
+		return icsneoc2_error_invalid_type;
+	}
+	if (sleep_status) {
+		*sleep_status = static_cast<icsneoc2_tc10_sleep_status_t>(cpp_status->sleepStatus);
+	}
+	if (wake_status) {
+		*wake_status = static_cast<icsneoc2_tc10_wake_status_t>(cpp_status->wakeStatus);
+	}
+	return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_device_digital_io_get(const icsneoc2_device_t* device, icsneoc2_io_type_t type, uint32_t number, bool* value) {
 	auto res = icsneoc2_device_is_valid(device);
 	if(res != icsneoc2_error_success) {

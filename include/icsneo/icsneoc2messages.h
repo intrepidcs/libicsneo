@@ -76,6 +76,18 @@ icsneoc2_error_t icsneoc2_message_netid_get(icsneoc2_message_t* message, icsneoc
 icsneoc2_error_t icsneoc2_netid_name_get(icsneoc2_netid_t netid, char* value, size_t* value_length);
 
 /**
+ * Get the network type for a icsneoc2_netid_t.
+ *
+ * @param[in] netid The network id to get the type of.
+ * @param[out] network_type Pointer to a icsneoc2_network_type_t to copy the network type into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ *
+ * @see icsneoc2_network_type_t, icsneoc2_network_type_name_get
+ */
+icsneoc2_error_t icsneoc2_netid_network_type_get(icsneoc2_netid_t netid, icsneoc2_network_type_t* network_type);
+
+/**
  * Set the Network ID (netid) of a bus message
  *
  * @param[in] device The device to check against.

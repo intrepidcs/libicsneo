@@ -474,6 +474,37 @@ icsneoc2_error_t icsneoc2_device_rtc_set(const icsneoc2_device_t* device, int64_
 icsneoc2_error_t icsneoc2_device_supports_tc10(const icsneoc2_device_t* device, bool* supported);
 
 /**
+ * Send a TC10 wake request to the device on a specific network. This is used to wake up ECUs that support TC10 wake on the specified network.
+ * 
+ * @param[in] device The device to send the wake request from.
+ * @param[in] netid The network to send the wake request on.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_transmit_message_failed otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_tc10_wake_request(const icsneoc2_device_t* device, icsneoc2_netid_t netid);
+
+/**
+ * Send a TC10 sleep request to the device on a specific network. This is used to put ECUs that support TC10 sleep on the specified network to sleep.
+ *
+ * @param[in] device The device to send the sleep request from.
+ * @param[in] netid The network to send the sleep request on.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_transmit_message_failed otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_tc10_sleep_request(const icsneoc2_device_t* device, icsneoc2_netid_t netid);
+
+/**
+ * Get the current TC10 sleep/wake status of a specific network.
+ * 
+ * @param[in] device The device to query.
+ * @param[in] netid The network to query the TC10 status of.
+ * @param[out] sleep_status Pointer to a icsneoc2_tc10_sleep_status_t to copy the sleep status into. May be NULL if sleep status is not needed.
+ * @param[out] wake_status Pointer to a icsneoc2_tc10_wake_status_t to copy the wake status into. May be NULL if wake status is not needed.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_tc10_status_get(const icsneoc2_device_t* device, icsneoc2_netid_t netid, icsneoc2_tc10_sleep_status_t* sleep_status, icsneoc2_tc10_wake_status_t* wake_status);
+/**
  * Get the current state of a digital I/O pin.
  *
  * @param[in] device The device to query.

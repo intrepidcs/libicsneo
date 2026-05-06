@@ -180,6 +180,15 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_pcb_serial_get(NULL, &placeholderInteger8, &placeholderSizeT));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_mac_address_get(NULL, &placeholderInteger8, &placeholderSizeT));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_supports_tc10(NULL, &placeholderBool));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_tc10_wake_request(NULL, icsneoc2_netid_dwcan_01));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_tc10_sleep_request(NULL, icsneoc2_netid_dwcan_01));
+	{
+		icsneoc2_tc10_sleep_status_t sleep_s = icsneoc2_tc10_sleep_status_no_sleep_received;
+		icsneoc2_tc10_wake_status_t wake_s = icsneoc2_tc10_wake_status_no_wake_received;
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_tc10_status_get(NULL, icsneoc2_netid_dwcan_01, &sleep_s, &wake_s));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_tc10_status_get(NULL, icsneoc2_netid_dwcan_01, NULL, NULL));
+	}
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_netid_network_type_get(icsneoc2_netid_dwcan_01, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_timestamp_resolution_get(NULL, &placeholderInteger32));
 
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_digital_io_get(NULL, 0, 0, &placeholderBool));
@@ -475,6 +484,60 @@ TEST(icsneoc2, icsneoc2_network_type_t)
 	ASSERT_EQ(icsneoc2_network_type_maxsize, 15);
 
 	ASSERT_EQ(sizeof(icsneoc2_network_type_t), sizeof(uint8_t));
+}
+
+TEST(icsneoc2, test_icsneoc2_netid_network_type_get)
+{
+	icsneoc2_network_type_t type = icsneoc2_network_type_invalid;
+
+	// CAN
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_netid_network_type_get(icsneoc2_netid_dwcan_01, &type));
+	ASSERT_EQ(icsneoc2_network_type_can, type);
+
+	// LIN
+	type = icsneoc2_network_type_invalid;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_netid_network_type_get(icsneoc2_netid_lin_01, &type));
+	ASSERT_EQ(icsneoc2_network_type_lin, type);
+
+	// Ethernet
+	type = icsneoc2_network_type_invalid;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_netid_network_type_get(icsneoc2_netid_ethernet_01, &type));
+	ASSERT_EQ(icsneoc2_network_type_ethernet, type);
+
+	// Automotive Ethernet
+	type = icsneoc2_network_type_invalid;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_netid_network_type_get(icsneoc2_netid_ae_01, &type));
+	ASSERT_EQ(icsneoc2_network_type_automotive_ethernet, type);
+
+	// SWCAN
+	type = icsneoc2_network_type_invalid;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_netid_network_type_get(icsneoc2_netid_swcan_01, &type));
+	ASSERT_EQ(icsneoc2_network_type_swcan, type);
+
+	// LSFTCAN
+	type = icsneoc2_network_type_invalid;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_netid_network_type_get(icsneoc2_netid_lsftcan_01, &type));
+	ASSERT_EQ(icsneoc2_network_type_lsftcan, type);
+}
+
+TEST(icsneoc2, test_icsneoc2_tc10_wake_status_t)
+{
+	ASSERT_EQ(icsneoc2_tc10_wake_status_no_wake_received, 0);
+	ASSERT_EQ(icsneoc2_tc10_wake_status_wake_received, 1);
+	ASSERT_EQ(icsneoc2_tc10_wake_status_maxsize, 2);
+
+	ASSERT_EQ(sizeof(icsneoc2_tc10_wake_status_t), sizeof(uint8_t));
+}
+
+TEST(icsneoc2, test_icsneoc2_tc10_sleep_status_t)
+{
+	ASSERT_EQ(icsneoc2_tc10_sleep_status_no_sleep_received, 0);
+	ASSERT_EQ(icsneoc2_tc10_sleep_status_sleep_received, 1);
+	ASSERT_EQ(icsneoc2_tc10_sleep_status_sleep_failed, 2);
+	ASSERT_EQ(icsneoc2_tc10_sleep_status_sleep_aborted, 3);
+	ASSERT_EQ(icsneoc2_tc10_sleep_status_maxsize, 4);
+
+	ASSERT_EQ(sizeof(icsneoc2_tc10_sleep_status_t), sizeof(uint8_t));
 }
 
 TEST(icsneoc2, test_icsneoc2_io_type_t)

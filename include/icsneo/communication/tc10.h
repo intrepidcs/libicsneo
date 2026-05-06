@@ -4,19 +4,20 @@
 #ifdef __cplusplus
 
 #include <cstdint>
+#include "icsneo/icsneoc2types.h"
 
 namespace icsneo {
 
-enum class TC10WakeStatus : uint8_t {
-	NoWakeReceived,
-	WakeReceived,
+enum class TC10WakeStatus : icsneoc2_tc10_wake_status_t {
+	NoWakeReceived = icsneoc2_tc10_wake_status_no_wake_received,
+	WakeReceived = icsneoc2_tc10_wake_status_wake_received,
 };
 
-enum class TC10SleepStatus : uint8_t {
-	NoSleepReceived,
-	SleepReceived,
-	SleepFailed,
-	SleepAborted,
+enum class TC10SleepStatus : icsneoc2_tc10_sleep_status_t {
+	NoSleepReceived = icsneoc2_tc10_sleep_status_no_sleep_received,
+	SleepReceived = icsneoc2_tc10_sleep_status_sleep_received,
+	SleepFailed = icsneoc2_tc10_sleep_status_sleep_failed,
+	SleepAborted = icsneoc2_tc10_sleep_status_sleep_aborted,
 };
 
 }

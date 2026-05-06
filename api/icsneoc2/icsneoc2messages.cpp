@@ -69,6 +69,14 @@ icsneoc2_error_t icsneoc2_netid_name_get(icsneoc2_netid_t netid, char* value, si
 	return safe_str_copy(value, value_length, netid_str) ? icsneoc2_error_success : icsneoc2_error_string_copy_failed;
 }
 
+icsneoc2_error_t icsneoc2_netid_network_type_get(icsneoc2_netid_t netid, icsneoc2_network_type_t* network_type) {
+	if(!network_type) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	*network_type = static_cast<icsneoc2_network_type_t>(Network::GetTypeOfNetID(static_cast<Network::NetID>(netid), true));
+	return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_message_netid_set(icsneoc2_message_t* message, icsneoc2_netid_t netid) {
 	if(!message) {
 		return icsneoc2_error_invalid_parameters;
