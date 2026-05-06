@@ -136,7 +136,9 @@ struct MACsecRxSa {
 	std::array<uint8_t, 16> hashKey = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< 128b Hash Key: Key used for authentication. */
 	std::array<uint8_t, 12> salt = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u}; /*!< 96b Salt value: Salt value used in XPN ciphers. */
 	uint32_t ssci = 0x01u; /*!< 32b SSCI value: Short Secure Channel Identifier, used in XPN ciphers. */
+	uint8_t an = 0x00u; /*!< 2b SecTag Association Number (AN). SA will be placed at this index (0-3). */
 	uint64_t nextPn = 0x01u; /*!< 64b next_pn value: Next packet number to insert into outgoing packet on a particular SA. */
+	bool enabled = false; /*!< Set by addRxSa(); slots created by internal padding during sparse placement are left disabled. Do not set this directly. */
 };
 
 class MACsecConfig {

@@ -285,14 +285,29 @@ int MACsecConfig::addTxSecY(const MACsecTxSecY& secY, uint8_t saIndex) {
 }
 
 int MACsecConfig::addRxSa(const MACsecRxSa& sa) {
+	// Validate AN is in valid range
+	if(sa.an > 3) {
+		ReportEvent(APIEvent::Type::MACsecSaLimit, APIEvent::Severity::Error);
+		return -1;
+	}
+
+	// Check if we've exceeded the maximum SA count
 	if(rxSa.size() >= maxSa) {
 		ReportEvent(APIEvent::Type::MACsecSaLimit, APIEvent::Severity::Error);
 		return -1;
 	}
 
-	int ret = static_cast<int>(rxSa.size());
-	rxSa.emplace_back(sa);
-	return ret;
+	// Ensure vector is large enough to hold index sa.an (sparse array)
+	// This allows SA index to match the AN value from the MACsec SecTAG
+	if(rxSa.size() <= sa.an) {
+		rxSa.resize(sa.an + 1);
+	}
+
+	// Mark it enabled; padding slots created by resize() above default to enabled=false.
+	rxSa[sa.an] = sa;
+	rxSa[sa.an].enabled = true;
+	
+	return sa.an;
 }
 
 int MACsecConfig::addTxSa(const MACsecTxSa& sa) {
@@ -603,12 +618,22 @@ static void SetHardwareRxSecY(
 	hwSc->enable = 0x1u;
 	hwSc->secYIndex = index;
 	hwSc->enable_auto_rekey = rekeyEnabled ? 0x1u : 0x0u;
-	hwSc->sa_index0 = saIndices.first;
-	hwSc->sa_index1 = saIndices.second;
-	hwSc->sa_index0_in_use = 0x1u;
-	hwSc->sa_index1_in_use = rekeyEnabled ? 0x1u : 0x0u;
-	hwSc->isActiveSA1 = rekeyEnabled ? 0x1u : 0x0u;
 	hwSc->sci = secY.sci;
+
+
+	if(saIndices.first & 0x1u) {
+		hwSc->sa_index0 = rekeyEnabled ? saIndices.second : saIndices.first;
+		hwSc->sa_index1 = saIndices.first;
+		hwSc->sa_index0_in_use = rekeyEnabled ? 0x1u : 0x0u;
+		hwSc->sa_index1_in_use = 0x1u;
+		hwSc->isActiveSA1 = rekeyEnabled ? 0x0u : 0x1u;
+	} else {
+		hwSc->sa_index0 = saIndices.first;
+		hwSc->sa_index1 = saIndices.second;
+		hwSc->sa_index0_in_use = 0x1u;
+		hwSc->sa_index1_in_use = rekeyEnabled ? 0x1u : 0x0u;
+		hwSc->isActiveSA1 = rekeyEnabled ? 0x1u : 0x0u;
+	}
 
 	hwMap->index = index;
 	hwMap->enable = 0x1u;
@@ -638,7 +663,9 @@ static void SetHardwareRxSa(MACSEC_SETTINGS_W_HDR* hwSettings, const MACsecRxSa&
 	MACSecSa_t* hwSa = &hwSettings->macsec.rx.sa[index];
 
 	hwSa->index = index;
-	hwSa->enable = 0x1u;
+	hwSa->enable = sa.enabled ? 0x1u : 0x0u;
+	if(!sa.enabled)
+		return;
 	memcpy(hwSa->sak, sa.sak.data(), 32);
 	memcpy(hwSa->hashKey, sa.hashKey.data(), 16);
 	memcpy(hwSa->salt, sa.salt.data(), 12);
