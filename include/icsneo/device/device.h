@@ -878,8 +878,6 @@ public:
 	bool unlockNetworks(const std::set<Network::NetID>& networks);
 	bool unlockAllNetworks();
 	std::shared_ptr<NetworkMutexMessage> getNetworkMutexStatus(Network::NetID network);
-	
-	virtual bool supportsNetworkMutex() const { return false; }
 
 protected:
 	bool online = false;
@@ -997,6 +995,8 @@ protected:
 	void updateLEDState();
 
 	std::optional<HardwareInfo::Version> bootloaderVersion = std::nullopt;
+
+	bool supportsNetworkMutex = false;
 
 private:
 	neodevice_t data;

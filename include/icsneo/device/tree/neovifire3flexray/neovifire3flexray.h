@@ -86,6 +86,7 @@ public:
 	}
 protected:
 	NeoVIFIRE3FlexRay(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		supportsNetworkMutex = true;
 		initialize<NeoVIFIRE3FlexRaySettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
@@ -150,8 +151,6 @@ protected:
 	size_t getDiskCount() const override { 
 		return 2; 
 	}
-
-	bool supportsNetworkMutex() const override { return true; }
 };
 
 }

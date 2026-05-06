@@ -89,6 +89,7 @@ public:
 	}
 protected:
 	NeoVIFIRE3T1SLIN(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		supportsNetworkMutex = true;
 		initialize<NeoVIFIRE3T1SLINSettings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
@@ -130,10 +131,6 @@ protected:
 
 	size_t getDiskCount() const override { 
 		return 2;
-	}
-
-	bool supportsNetworkMutex() const override { 
-		return true; 
 	}
 
 };

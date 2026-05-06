@@ -560,7 +560,7 @@ bool Device::goOnline() {
 			return false;
 	}
 
-	if(supportsNetworkMutex()) {
+	if(supportsNetworkMutex) {
 		assignedClientId = com->getClientIDSync();
 		if(assignedClientId) {
 			std::set<Network::NetID> nets;
@@ -3927,7 +3927,7 @@ std::shared_ptr<DiskDetails> Device::getDiskDetails(std::chrono::milliseconds ti
 
 [[nodiscard]] std::optional<int> Device::lockNetworks(const std::set<Network::NetID>& networks, uint32_t priority, uint32_t ttlMs, NetworkMutexType type, std::function<void(std::shared_ptr<Message>)>&& on_event)
 {
-	if(!supportsNetworkMutex()) {
+	if(!supportsNetworkMutex) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
@@ -3977,7 +3977,7 @@ std::shared_ptr<DiskDetails> Device::getDiskDetails(std::chrono::milliseconds ti
 
 bool Device::unlockNetworks(const std::set<Network::NetID>& networks)
 {
-	if(!supportsNetworkMutex()) {
+	if(!supportsNetworkMutex) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
 		return false;
 	}
@@ -4017,7 +4017,7 @@ bool Device::unlockNetworks(const std::set<Network::NetID>& networks)
 
 std::shared_ptr<NetworkMutexMessage> Device::getNetworkMutexStatus(Network::NetID network)
 {
-	if(!supportsNetworkMutex()) {
+	if(!supportsNetworkMutex) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
 		return nullptr;
 	}
@@ -4039,7 +4039,7 @@ std::shared_ptr<NetworkMutexMessage> Device::getNetworkMutexStatus(Network::NetI
 
 [[nodiscard]] std::optional<int> Device::lockAllNetworks(uint32_t priority, uint32_t ttlMs, NetworkMutexType type, std::function<void(std::shared_ptr<Message>)>&& on_event)
 {
-	if(!supportsNetworkMutex()) {
+	if(!supportsNetworkMutex) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
 		return std::nullopt;
 	}
@@ -4086,7 +4086,7 @@ std::shared_ptr<NetworkMutexMessage> Device::getNetworkMutexStatus(Network::NetI
 
 bool Device::unlockAllNetworks() 
 {
-	if(!supportsNetworkMutex()) {
+	if(!supportsNetworkMutex) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
 		return false;
 	}
