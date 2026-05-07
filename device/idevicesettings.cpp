@@ -235,7 +235,7 @@ bool IDeviceSettings::apply(bool temporary) {
 
 	std::shared_ptr<Main51Message> msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
-	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(2000)));
+	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(5000)));
 
 	if(!msg || msg->data[0] != 1) { // We did not receive a response
 		// Attempt to get the settings from the device so we're up to date if possible
@@ -261,7 +261,7 @@ bool IDeviceSettings::apply(bool temporary) {
 
 	msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
-	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(2000)));
+	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(5000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) {
@@ -303,7 +303,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 
 	std::shared_ptr<Main51Message> msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this]() {
 		return com->sendCommand(Command::SetDefaultSettings);
-	}, std::make_shared<Main51MessageFilter>(Command::SetDefaultSettings), std::chrono::milliseconds(1000)));
+	}, std::make_shared<Main51MessageFilter>(Command::SetDefaultSettings), std::chrono::milliseconds(5000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) {
@@ -338,7 +338,7 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 
 	msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
 		return com->sendCommand(Command::SetSettings, bytestream);
-	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(2000)));
+	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(5000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
 		if(refresh()) {
