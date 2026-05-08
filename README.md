@@ -4,6 +4,14 @@ libicsneo is the [Intrepid Control Systems](https://intrepidcs.com/) device
 communication library. Installation and usage documentation can be found within
 each of the respective APIs.
 
+## Installation
+
+libicsneo relies on Servd, IntrepidCS's device communication server.
+
+Servd can be installed for all platforms from https://cdn.intrepidcs.net/servd/.
+
+Instructions for installing each API can be found in its respective documentation.
+
 ## Documentation
 
 - [C++](https://libicsneo.readthedocs.io/en/latest/icsneocpp/)

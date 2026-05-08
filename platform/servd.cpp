@@ -20,7 +20,7 @@ bool Servd::Enabled() {
 	#ifdef _MSC_VER
 	#pragma warning(pop)
 	#endif
-	return enabled ? enabled[0] == '1' : false;
+	return enabled ? enabled[0] == '1' : true;
 }
 
 std::vector<std::string> split(const std::string_view& str, char delim = ' ') {
@@ -52,7 +52,7 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 	response.resize(512);
 	const std::string version_request = SERVD_VERSION_STR + " version";
 	if(!socket.transceive(version_request, response, std::chrono::milliseconds(5000))) {
-		EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
+		EventManager::GetInstance().add(APIEvent::Type::ServdNotReachable, APIEvent::Severity::Error);
 		return;
 	}
 
@@ -67,11 +67,16 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
 		return;
 	}
+	const size_t preCount = found.size();
+	bool parseError = false;
 	const auto lines = split(response, '\n');
 	for(auto&& line : lines) {
 		const auto cols = split(line, ' ');
 		if(cols.size() < 3) {
-			EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
+			if(!line.empty()) {
+				EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
+				parseError = true;
+			}
 			continue;
 		}
 		const auto& serial = cols[0];
@@ -81,6 +86,7 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 			port = static_cast<uint16_t>(std::stoi(cols[2]));
 		} catch (const std::exception&) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
+			parseError = true;
 			continue;
 		}
 		Address address(ip.c_str(), port);
@@ -89,6 +95,9 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 		newFound.makeDriver = [=](device_eventhandler_t err, neodevice_t& forDevice) {
 			return std::make_unique<Servd>(err, forDevice, address);
 		};
+	}
+	if(!parseError && found.size() == preCount) {
+		EventManager::GetInstance().add(APIEvent::Type::ServdNoDevicesFound, APIEvent::Severity::EventInfo);
 	}
 }
 

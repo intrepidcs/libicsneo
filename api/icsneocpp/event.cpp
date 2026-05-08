@@ -166,6 +166,8 @@ static constexpr const char* SERVD_RECV_ERROR = "Error receiving from Servd";
 static constexpr const char* SERVD_POLL_ERROR = "Error polling on Servd socket";
 static constexpr const char* SERVD_NODATA_ERROR = "No data received from Servd";
 static constexpr const char* SERVD_JOIN_MULTICAST_ERROR = "Error joining Servd multicast group";
+static constexpr const char* SERVD_NOT_REACHABLE = "Could not reach Servd; ensure it is installed and running";
+static constexpr const char* SERVD_NO_DEVICES_FOUND = "Servd is running but no devices found";
 
 // DXX
 static constexpr const char* DXX_ERROR_SYS = "System error, check errno/GetLastError()";
@@ -438,6 +440,10 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return SERVD_NODATA_ERROR;
 		case Type::ServdJoinMulticastError:
 			return SERVD_JOIN_MULTICAST_ERROR;
+		case Type::ServdNotReachable:
+			return SERVD_NOT_REACHABLE;
+		case Type::ServdNoDevicesFound:
+			return SERVD_NO_DEVICES_FOUND;
 
 		// DXX
 		case Type::DXXErrorSys:
