@@ -67,7 +67,6 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
 		return;
 	}
-	const size_t preCount = found.size();
 	bool parseError = false;
 	const auto lines = split(response, '\n');
 	for(auto&& line : lines) {
@@ -95,9 +94,6 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 		newFound.makeDriver = [=](device_eventhandler_t err, neodevice_t& forDevice) {
 			return std::make_unique<Servd>(err, forDevice, address);
 		};
-	}
-	if(!parseError && found.size() == preCount) {
-		EventManager::GetInstance().add(APIEvent::Type::ServdNoDevicesFound, APIEvent::Severity::EventInfo);
 	}
 }
 

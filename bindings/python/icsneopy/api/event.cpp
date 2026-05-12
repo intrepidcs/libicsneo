@@ -127,7 +127,6 @@ void init_event(pybind11::module_& m) {
 		.value("ServdNoDataError", APIEvent::Type::ServdNoDataError)
 		.value("ServdJoinMulticastError", APIEvent::Type::ServdJoinMulticastError)
 		.value("ServdNotReachable", APIEvent::Type::ServdNotReachable)
-		.value("ServdNoDevicesFound", APIEvent::Type::ServdNoDevicesFound)
 		.value("DXXErrorSys", APIEvent::Type::DXXErrorSys)
 		.value("DXXErrorInt", APIEvent::Type::DXXErrorInt)
 		.value("DXXErrorOverflow", APIEvent::Type::DXXErrorOverflow)
