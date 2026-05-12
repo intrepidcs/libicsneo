@@ -465,6 +465,64 @@ namespace icsneo
 			return std::make_optional(t1sExt->multi_id[index]);
 		}
 
+		bool setPhyEnableFor(Network net, bool enable) override {
+			auto cfg = getMutableStructurePointer<radgigastar2_settings_t>();
+			if(cfg == nullptr)
+				return false;
+
+			if(net.getType() != Network::Type::Ethernet && net.getType() != Network::Type::AutomotiveEthernet) {
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return false;
+			}
+
+			auto coreMini = net.getCoreMini();
+			if(!coreMini.has_value()) {
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return false;
+			}
+
+			const uint64_t networkID = static_cast<uint64_t>(coreMini.value());
+			uint64_t bitfields[2] = { cfg->network_enables, cfg->network_enables_2 };
+
+			const bool success = enable ?
+				SetNetworkEnabled(bitfields, 2, networkID) :
+				ClearNetworkEnabled(bitfields, 2, networkID);
+
+			if(!success) {
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return false;
+			}
+
+			cfg->network_enables = bitfields[0];
+			cfg->network_enables_2 = bitfields[1];
+
+			return true;
+		}
+
+		std::optional<bool> getPhyEnableFor(Network net) const override {
+			auto cfg = getStructurePointer<radgigastar2_settings_t>();
+			if(cfg == nullptr) {
+				report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+				return std::nullopt;
+			}
+
+			if(net.getType() != Network::Type::Ethernet && net.getType() != Network::Type::AutomotiveEthernet) {
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return std::nullopt;
+			}
+
+			auto coreMini = net.getCoreMini();
+			if(!coreMini.has_value()) {
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return std::nullopt;
+			}
+
+			const uint64_t networkID = static_cast<uint64_t>(coreMini.value());
+			const uint64_t bitfields[2] = { cfg->network_enables, cfg->network_enables_2 };
+
+			return GetNetworkEnabled(bitfields, 2, networkID);
+		}
+
 		bool setT1SMultiIDFor(Network net, uint8_t index, uint8_t id) override {
 			ETHERNET10T1S_SETTINGS_EXT* t1sExt = getMutableT1SSettingsExtFor(net);
 			if(t1sExt == nullptr)

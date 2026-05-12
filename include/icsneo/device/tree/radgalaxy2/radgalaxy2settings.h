@@ -190,6 +190,75 @@ public:
 				return nullptr;
 		}
 	}
+
+	bool setPhyEnableFor(Network net, bool enable) override {
+		auto cfg = getMutableStructurePointer<radgalaxy2_settings_t>();
+		if(cfg == nullptr)
+			return false;
+
+		if(net.getType() != Network::Type::Ethernet && net.getType() != Network::Type::AutomotiveEthernet) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+
+		auto coreMini = net.getCoreMini();
+		if(!coreMini.has_value()) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+
+		const uint64_t networkID = static_cast<uint64_t>(coreMini.value());
+		uint64_t bitfields[2] = {
+			(uint64_t)cfg->network_enables | ((uint64_t)cfg->network_enables_2 << 16) |
+			((uint64_t)cfg->network_enables_3 << 32) | ((uint64_t)cfg->network_enables_4 << 48),
+			cfg->network_enables_5
+		};
+
+		const bool success = enable ?
+			SetNetworkEnabled(bitfields, 2, networkID) :
+			ClearNetworkEnabled(bitfields, 2, networkID);
+
+		if(!success) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+
+		cfg->network_enables   = static_cast<uint16_t>(bitfields[0]);
+		cfg->network_enables_2 = static_cast<uint16_t>(bitfields[0] >> 16);
+		cfg->network_enables_3 = static_cast<uint16_t>(bitfields[0] >> 32);
+		cfg->network_enables_4 = static_cast<uint16_t>(bitfields[0] >> 48);
+		cfg->network_enables_5 = bitfields[1];
+
+		return true;
+	}
+
+	std::optional<bool> getPhyEnableFor(Network net) const override {
+		auto cfg = getStructurePointer<radgalaxy2_settings_t>();
+		if(cfg == nullptr) {
+			report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+
+		if(net.getType() != Network::Type::Ethernet && net.getType() != Network::Type::AutomotiveEthernet) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+
+		auto coreMini = net.getCoreMini();
+		if(!coreMini.has_value()) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return std::nullopt;
+		}
+
+		const uint64_t networkID = static_cast<uint64_t>(coreMini.value());
+		const uint64_t bitfields[2] = {
+			(uint64_t)cfg->network_enables | ((uint64_t)cfg->network_enables_2 << 16) |
+			((uint64_t)cfg->network_enables_3 << 32) | ((uint64_t)cfg->network_enables_4 << 48),
+			cfg->network_enables_5
+		};
+
+		return GetNetworkEnabled(bitfields, 2, networkID);
+	}
 };
 
 }
