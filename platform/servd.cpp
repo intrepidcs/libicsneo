@@ -67,14 +67,12 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
 		return;
 	}
-	bool parseError = false;
 	const auto lines = split(response, '\n');
 	for(auto&& line : lines) {
 		const auto cols = split(line, ' ');
 		if(cols.size() < 3) {
 			if(!line.empty()) {
 				EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
-				parseError = true;
 			}
 			continue;
 		}
@@ -85,7 +83,6 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 			port = static_cast<uint16_t>(std::stoi(cols[2]));
 		} catch (const std::exception&) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
-			parseError = true;
 			continue;
 		}
 		Address address(ip.c_str(), port);
