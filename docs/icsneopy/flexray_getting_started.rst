@@ -127,7 +127,7 @@ FlexRay Coldstart Configuration
 
 To use the Coldstart example, ensure the following:
 
-Set the Flexray network in neoVI Explorer to Coldstart.
+Set the Flexray network in ICS Device Manager to Coldstart.
 
 No other nodes should be present on the network during testing.
 

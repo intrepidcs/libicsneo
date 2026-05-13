@@ -339,7 +339,7 @@ int main() {
 				if(val.has_value())
 					std::cout << " - OK (" << val.value() << "V)" << std::endl;
 				else
-					std::cout << " - FAIL, it may need to be enabled in neoVI Explorer (" << icsneo::GetLastError() << ")" << std::endl;
+					std::cout << " - FAIL, it may need to be enabled in ICS Device Manager (" << icsneo::GetLastError() << ")" << std::endl;
 			}
 		}
 

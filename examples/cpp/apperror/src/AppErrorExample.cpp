@@ -9,7 +9,7 @@
 /*
  * App errors are responses from the device indicating internal runtime errors
  * NOTE: To trigger the app error in this example, disable the DW CAN 01 network on the device 
- * (e.g. with neoVI Explorer)
+ * (e.g. with ICS Device Manager)
  */
 int main() {
 	std::cout << "Running libicsneo " << icsneo::GetVersion() << std::endl;
