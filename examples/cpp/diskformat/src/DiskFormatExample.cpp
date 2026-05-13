@@ -12,7 +12,9 @@ int main() {
 	std::cout << "OK, " << devices.size() << " device" << (devices.size() == 1 ? "" : "s") << " found" << std::endl;
 
 	if(devices.empty()) {
-		std::cout << "error: no devices found" << std::endl;
+		auto lastError = icsneo::GetLastError();
+		if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+			std::cout << lastError << std::endl;
 		return -1;
 	}
 

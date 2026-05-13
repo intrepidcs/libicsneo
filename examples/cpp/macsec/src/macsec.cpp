@@ -9,8 +9,10 @@ int main(int, char**) {
 
 	auto devices = icsneo::FindAllDevices();
 
-	if(devices.size() == 0) {
-		std::cout << "No device found" << std::endl;
+	if(devices.empty()) {
+		auto lastError = icsneo::GetLastError();
+		if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+			std::cout << lastError << std::endl;
 		return -1;
 	}
 

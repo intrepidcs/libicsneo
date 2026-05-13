@@ -86,6 +86,9 @@ int main(int argc, const char** argv) {
 	}
 	if(!device) {
 		std::cerr << "Failed to find device" << std::endl;
+		auto lastError = icsneo::GetLastError();
+		if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+			std::cerr << lastError << std::endl;
 		std::cerr << usage;
 		return -1;
 	}

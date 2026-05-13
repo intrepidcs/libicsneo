@@ -92,6 +92,9 @@ int main(int argc, const char** argv) {
 		
 		if(!device) {
 			std::cerr << "Device with serial " << serial << " not found" << std::endl;
+			auto lastError = icsneo::GetLastError();
+			if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+				std::cerr << lastError << std::endl;
 			return -1;
 		}
 	} else {
@@ -99,6 +102,9 @@ int main(int argc, const char** argv) {
 		auto devices = icsneo::FindAllDevices();
 		if(devices.empty()) {
 			std::cerr << "No devices found" << std::endl;
+			auto lastError = icsneo::GetLastError();
+			if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+				std::cerr << lastError << std::endl;
 			return -1;
 		}
 		device = devices[0];

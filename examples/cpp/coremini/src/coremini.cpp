@@ -33,6 +33,9 @@ int main(int argc, char** argv) {
 
 	if(it == devices.end()) {
 		std::cout << "Failed to find device." << std::endl;
+		auto lastError = icsneo::GetLastError();
+		if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+			std::cout << lastError << std::endl;
 		return EXIT_FAILURE;
 	}
 

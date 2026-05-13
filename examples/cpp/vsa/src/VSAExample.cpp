@@ -106,7 +106,9 @@ int main(int argc, char* argv[]) {
 
 	auto devices = icsneo::FindAllDevices();
 	if(devices.empty()) {
-		std::cout << "error: no devices found" << std::endl;
+		auto lastError = icsneo::GetLastError();
+		if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+			std::cout << lastError << std::endl;
 		return -1;
 	}
 

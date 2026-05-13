@@ -22,6 +22,13 @@ int main() {
 	// You now hold the shared_ptrs for these devices, you are considered to "own" these devices from a memory perspective
 	std::cout << "OK, " << devices.size() << " device" << (devices.size() == 1 ? "" : "s") << " found" << std::endl;
 
+	if(devices.empty()) {
+		auto lastError = icsneo::GetLastError();
+		if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+			std::cout << lastError << std::endl;
+		return 0;
+	}
+
 	// List off the devices
 	for(auto& device : devices)
 		std::cout << '\t' << device->describe() << " @ Handle " << device->getNeoDevice().handle << std::endl;

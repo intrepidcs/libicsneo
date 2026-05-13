@@ -216,8 +216,10 @@ int main() {
 	auto devices = icsneo::FindAllDevices();
 	std::cout << "OK, " << devices.size() << " device" << (devices.size() == 1 ? "" : "s") << " found" << std::endl;
 	
-	if (devices.empty()) {
-		std::cout << "No devices found!" << std::endl;
+	if(devices.empty()) {
+		auto lastError = icsneo::GetLastError();
+		if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+			std::cout << lastError << std::endl;
 		return 1;
 	}
 	

@@ -406,6 +406,9 @@ int main(int argc, char** argv) {
 
 	if(it == devices.end()) {
 		std::cerr << "Could not find RAD-A2B." << std::endl;
+		auto lastError = icsneo::GetLastError();
+		if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+			std::cerr << lastError << std::endl;
 		return EXIT_FAILURE;
 	}
 

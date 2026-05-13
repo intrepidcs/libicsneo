@@ -138,6 +138,12 @@ std::vector<std::shared_ptr<icsneo::FlexRayMessage>> makeDummyFlexRayMessages(si
 
 int main() {
     auto devices = icsneo::FindAllDevices();
+    if(devices.empty()) {
+        auto lastError = icsneo::GetLastError();
+        if(lastError.getType() != icsneo::APIEvent::Type::NoErrorFound)
+            std::cerr << lastError << std::endl;
+        return -1;
+    }
     std::shared_ptr<icsneo::Device> flexrayDevice = nullptr;
     for (auto&& device : devices) {
         if (device->getExtension("FlexRay")) {
