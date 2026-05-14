@@ -84,6 +84,61 @@ icsneoc2_error_t icsneoc2_error_code_get(icsneoc2_error_t error_code, char* valu
 	return safe_str_copy(value, value_length, error_strings[error_code]) ? icsneoc2_error_success : icsneoc2_error_string_copy_failed;
 }
 
+icsneoc2_error_t icsneoc2_supported_devices_enumerate(icsneoc2_supported_device_t** supported_devices) {
+	if(!supported_devices) {
+		return icsneoc2_error_invalid_parameters;
+	}
+
+	auto device_types = DeviceFinder::GetSupportedDevices();
+	icsneoc2_supported_device_t* head = nullptr;
+	icsneoc2_supported_device_t* tail = nullptr;
+	for(auto& device_type : device_types) {
+		auto* node = new (std::nothrow) icsneoc2_supported_device_t;
+		if(!node) {
+			return icsneoc2_error_out_of_memory;
+		}
+		node->device_type = device_type;
+		node->next = nullptr;
+		if(!head) {
+			head = node;
+		} else {
+			tail->next = node;
+		}
+		tail = node;
+	}
+
+	*supported_devices = head;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_supported_devices_free(icsneoc2_supported_device_t* supported_devices) {
+	if(!supported_devices) {
+		return icsneoc2_error_invalid_parameters;
+	}
+
+	while(supported_devices) {
+		auto* next = supported_devices->next;
+		delete supported_devices;
+		supported_devices = next;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_supported_device_t* icsneoc2_supported_devices_next(const icsneoc2_supported_device_t* supported_device) {
+	if(!supported_device) {
+		return nullptr;
+	}
+	return supported_device->next;
+}
+
+icsneoc2_error_t icsneoc2_supported_device_get(const icsneoc2_supported_device_t* supported_device, icsneoc2_devicetype_t* device_type) {
+	if(!supported_device || !device_type) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	*device_type = static_cast<icsneoc2_devicetype_t>(supported_device->device_type);
+	return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_device_type_name_get(icsneoc2_devicetype_t device_type, char* value, size_t* value_length) {
 	if(!value || !value_length) {
 		return icsneoc2_error_invalid_parameters;

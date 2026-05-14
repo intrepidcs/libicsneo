@@ -10,6 +10,14 @@ Simple
 .. literalinclude:: ../../examples/c2/simple/src/main.c
    :language: c
 
+Supported Devices
+=================
+
+:download:`Download example <../../examples/c2/supported_devices/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/supported_devices/src/main.c
+   :language: c
+
 Disk Format
 ===========
 

@@ -19,6 +19,8 @@ typedef struct icsneoc2_message_t icsneoc2_message_t;
 
 typedef struct icsneoc2_event_t icsneoc2_event_t;
 
+typedef struct icsneoc2_supported_device_t icsneoc2_supported_device_t;
+
 typedef enum _icsneoc2_error_t {
 	icsneoc2_error_success, // Function was successful
 	icsneoc2_error_invalid_parameters, // Invalid parameters, typically because of a NULL reference.
@@ -64,6 +66,44 @@ static const icsneoc2_open_options_t icsneoc2_open_options_default =
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
  */
 icsneoc2_error_t icsneoc2_error_code_get(icsneoc2_error_t error_code, char* value, size_t* value_length);
+
+/**
+ * Enumerate supported device types.
+ * 
+ * @param[out] supported_devices Pointer to receive the head of the supported device types linked list. Must be freed with icsneoc2_supported_devices_free().
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_supported_devices_enumerate(icsneoc2_supported_device_t** supported_devices);
+
+/**
+ * Free a supported device types list returned by icsneoc2_supported_devices_enumerate().
+ *
+ * @param[in] supported_devices The head of the supported device types linked list to free.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_supported_devices_free(icsneoc2_supported_device_t* supported_devices);
+
+/**
+ * Advance to the next supported device type in a list.
+ *
+ * @param[in] supported_device The current supported device type node.
+ *
+ * @return The next supported device type node, or NULL at the end of the list.
+ */
+
+icsneoc2_supported_device_t* icsneoc2_supported_devices_next(const icsneoc2_supported_device_t* supported_device);
+
+/**
+ * Get the device type from a supported device node.
+ * 
+ * @param[in] supported_device The supported device node.
+ * @param[out] device_type Pointer to receive the device type.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_supported_device_get(const icsneoc2_supported_device_t* supported_device, icsneoc2_devicetype_t* device_type);
 
 /**
  * Get the device type string for a icsneoc2_devicetype_t.

@@ -2,6 +2,7 @@ option(LIBICSNEO_BUILD_C_INTERACTIVE_EXAMPLE "Build the command-line interactive
 option(LIBICSNEO_BUILD_C_SIMPLE_EXAMPLE "Build the command-line simple C example." ON)
 option(LIBICSNEO_BUILD_C_LEGACY_EXAMPLE "Build the command-line simple C example." ON)
 option(LIBICSNEO_BUILD_C2_SIMPLE_EXAMPLE "Build the simple C2 example." ON)
+option(LIBICSNEO_BUILD_C2_SUPPORTED_DEVICES_EXAMPLE "Build the C2 supported devices example." ON)
 option(LIBICSNEO_BUILD_C2_READ_MESSAGES_EXAMPLE "Build the C2 read messages example." ON)
 option(LIBICSNEO_BUILD_C2_DISKFORMAT_EXAMPLE "Build the C2 disk format example." ON)
 option(LIBICSNEO_BUILD_C2_RECONNECT_EXAMPLE "Build the C2 reconnect example." ON)
@@ -46,6 +47,10 @@ endif()
 
 if(LIBICSNEO_BUILD_C2_SIMPLE_EXAMPLE)
 	add_subdirectory(c2/simple)
+endif()
+
+if(LIBICSNEO_BUILD_C2_SUPPORTED_DEVICES_EXAMPLE)
+	add_subdirectory(c2/supported_devices)
 endif()
 
 if(LIBICSNEO_BUILD_C2_READ_MESSAGES_EXAMPLE)

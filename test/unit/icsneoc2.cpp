@@ -3,6 +3,7 @@
 #include <icsneo/icsneoc2settings.h>
 #include <icsneo/icsneoc2messages.h>
 #include "../../api/icsneoc2/icsneoc2_internal.h"
+#include <icsneo/device/devicefinder.h>
 #include <icsneo/device/devicetype.h>
 #include <icsneo/device/chipid.h>
 #include <icsneo/communication/message/linmessage.h>
@@ -90,6 +91,34 @@ TEST(icsneoc2, test_icsneoc2_device_enumerate)
 	icsneoc2_enumeration_free(devices);
 }
 
+TEST(icsneoc2, test_icsneoc2_supported_devices_enumerate)
+{
+	icsneoc2_supported_device_t* supported_devices = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_supported_devices_enumerate(&supported_devices));
+	ASSERT_NE(nullptr, supported_devices);
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_supported_device_get(supported_devices, nullptr));
+
+	const auto& expected_devices = icsneo::DeviceFinder::GetSupportedDevices();
+	size_t count = 0;
+	for(icsneoc2_supported_device_t* cur = supported_devices; cur != nullptr; cur = icsneoc2_supported_devices_next(cur)) {
+		ASSERT_LT(count, expected_devices.size());
+
+		icsneoc2_devicetype_t device_type = 0;
+		ASSERT_EQ(icsneoc2_error_success, icsneoc2_supported_device_get(cur, &device_type));
+		ASSERT_EQ(static_cast<icsneoc2_devicetype_t>(expected_devices[count].getDeviceType()), device_type);
+
+		char name[ICSNEO_DEVICETYPE_LONGEST_NAME] = {0};
+		size_t name_len = sizeof(name);
+		ASSERT_EQ(icsneoc2_error_success, icsneoc2_device_type_name_get(device_type, name, &name_len));
+		ASSERT_STREQ(icsneo::DeviceType::GetGenericProductName(expected_devices[count].getDeviceType()), name);
+
+		count++;
+	}
+
+	ASSERT_EQ(expected_devices.size(), count);
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_supported_devices_free(supported_devices));
+}
+
 TEST(icsneoc2, test_icsneoc2_device_is_valid)
 {
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_is_valid(NULL));
@@ -113,6 +142,10 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 
 	// All of these don't have a device parameter
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_enumerate(0, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_supported_devices_enumerate(NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_supported_devices_free(NULL));
+	ASSERT_EQ(nullptr, icsneoc2_supported_devices_next(NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_supported_device_get(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_network_type_name_get(0, NULL, NULL));
 
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_event_description_get(eventPlaceHolder, placeholderStr, &placeholderSizeT));

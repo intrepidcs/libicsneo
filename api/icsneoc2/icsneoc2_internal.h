@@ -13,6 +13,11 @@
 
 using namespace icsneo;
 
+typedef struct icsneoc2_supported_device_t {
+	DeviceType device_type;
+	icsneoc2_supported_device_t* next;
+} icsneoc2_supported_device_t;
+
 typedef struct icsneoc2_message_t {
 	std::shared_ptr<Message> message;
 } icsneoc2_message_t;
