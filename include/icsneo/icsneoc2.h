@@ -993,6 +993,50 @@ icsneoc2_error_t icsneoc2_script_status_diagnostic_error_code_count_get(const ic
  */
 icsneoc2_error_t icsneoc2_script_status_max_coremini_size_kb_get(const icsneoc2_script_status_t* script_status, uint16_t* value);
 
+/**
+ * Get the list of chip versions on the device.
+ * 
+ * @param[in] device The device to query.
+ * @param[out] chip_versions Receives a newly allocated chip versions handle. The caller owns this handle and must free it with icsneoc2_chip_versions_free() when done.
+ * @param[in] refresh Whether to refresh the chip versions from the device.
+ * @param[out] count Receives the number of chip versions. May be NULL if not needed.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_chip_versions_enumerate(const icsneoc2_device_t* device, icsneoc2_chip_versions_t** chip_versions, bool refresh, size_t* count);
+
+/**
+ * Free a chip versions handle returned by icsneoc2_device_chip_versions_enumerate().
+ *
+ * @param[in] chip_versions The chip versions handle to free. May be NULL.
+ */
+icsneoc2_error_t icsneoc2_chip_versions_free(icsneoc2_chip_versions_t* chip_versions);
+
+/**
+ * Advance to the next chip version in an enumeration list.
+ *
+ * @param[in] chip_versions The current chip versions handle.
+ *
+ * @return The next chip version handle, or NULL at the end of the list.
+ */
+icsneoc2_chip_versions_t* icsneoc2_chip_versions_next(const icsneoc2_chip_versions_t* chip_versions);
+
+/**
+ * Get the properties of a chip version.
+ *
+ * @param[in] chip_versions The chip versions handle to query.
+ * @param[out] name Pointer to a buffer to copy the null-terminated chip name into. May be NULL if the name is not needed.
+ * @param[in,out] name_length On input, the size of the name buffer. On output, the length of the chip name. May be NULL if the name is not needed.
+ * @param[out] major Pointer to receive the major version number. May be NULL.
+ * @param[out] minor Pointer to receive the minor version number. May be NULL.
+ * @param[out] maintenance Pointer to receive the maintenance version number. May be NULL.
+ * @param[out] build Pointer to receive the build version number. May be NULL.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_string_copy_failed otherwise.
+ */
+icsneoc2_error_t icsneoc2_chip_versions_props_get(const icsneoc2_chip_versions_t* chip_versions, char* name, size_t* name_length, uint8_t* major, uint8_t* minor, uint8_t* maintenance, uint8_t* build);
+
+
 #ifdef __cplusplus
 }
 #endif

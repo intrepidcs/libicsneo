@@ -38,6 +38,11 @@ typedef struct icsneoc2_script_status_t {
 	std::shared_ptr<ScriptStatusMessage> status;
 } icsneoc2_script_status_t;
 
+typedef struct icsneoc2_chip_versions_t {
+	VersionReport version_report;
+	icsneoc2_chip_versions_t* next;
+} icsneoc2_chip_versions_t;
+
 /**
  * Safely copies a std::string to a char array.
  *

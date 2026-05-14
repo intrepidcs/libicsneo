@@ -6,6 +6,7 @@ option(LIBICSNEO_BUILD_C2_READ_MESSAGES_EXAMPLE "Build the C2 read messages exam
 option(LIBICSNEO_BUILD_C2_DISKFORMAT_EXAMPLE "Build the C2 disk format example." ON)
 option(LIBICSNEO_BUILD_C2_RECONNECT_EXAMPLE "Build the C2 reconnect example." ON)
 option(LIBICSNEO_BUILD_C2_DEVICE_INFO_EXAMPLE "Build the C2 device info example." ON)
+option(LIBICSNEO_BUILD_C2_CHIP_VERSIONS_EXAMPLE "Build the C2 chip versions example." ON)
 option(LIBICSNEO_BUILD_C2_LIN_EXAMPLE "Build the C2 LIN example." ON)
 option(LIBICSNEO_BUILD_C2_LIN_TRANSMIT_EXAMPLE "Build the C2 LIN transmit example." ON)
 option(LIBICSNEO_BUILD_C2_ETHERNET_TRANSMIT_EXAMPLE "Build the C2 ethernet transmit example." ON)
@@ -61,6 +62,10 @@ endif()
 
 if(LIBICSNEO_BUILD_C2_DEVICE_INFO_EXAMPLE)
 	add_subdirectory(c2/device_info)
+endif()
+
+if(LIBICSNEO_BUILD_C2_CHIP_VERSIONS_EXAMPLE)
+	add_subdirectory(c2/chip_versions)
 endif()
 
 if(LIBICSNEO_BUILD_C2_LIN_EXAMPLE)

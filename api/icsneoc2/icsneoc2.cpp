@@ -251,12 +251,12 @@ icsneoc2_error_t icsneoc2_device_open_serial(const char* serial, icsneoc2_open_o
 	std::string_view target(serial);
 	for(auto* cur = devs; cur; cur = cur->next) {
 		if(cur->device && cur->device->getSerial() == target) {
-			if (res = icsneoc2_device_create(cur, device); res != icsneoc2_error_success) {
+			if(res = icsneoc2_device_create(cur, device); res != icsneoc2_error_success) {
 				icsneoc2_enumeration_free(devs);
 				return res;
 			}
 			res = open_device_with_options((*device)->device, options);
-			if (res != icsneoc2_error_success) {
+			if(res != icsneoc2_error_success) {
 				icsneoc2_device_free(*device);
 				*device = nullptr;
 			}
@@ -279,12 +279,12 @@ icsneoc2_error_t icsneoc2_device_open_first(icsneoc2_devicetype_t device_type, i
 	}
 	for(auto* cur = devs; cur; cur = cur->next) {
 		if(cur->device && !cur->device->isOpen()) {
-			if (res = icsneoc2_device_create(cur, device); res != icsneoc2_error_success) {
+			if(res = icsneoc2_device_create(cur, device); res != icsneoc2_error_success) {
 				icsneoc2_enumeration_free(devs);
 				return res;
 			}
 			res = open_device_with_options((*device)->device, options);
-			if (res != icsneoc2_error_success) {
+			if(res != icsneoc2_error_success) {
 				icsneoc2_device_free(*device);
 				*device = nullptr;
 			}
@@ -302,7 +302,7 @@ icsneoc2_error_t icsneoc2_device_reconnect(icsneoc2_device_t* device, icsneoc2_o
 		return res;
 	}
 	// If the device is currently open, close it first before trying to reconnect
-	if (device->device->isOpen()) {
+	if(device->device->isOpen()) {
 		res = icsneoc2_device_close(device);
 		if(res != icsneoc2_error_success) {
 			return res;
@@ -342,7 +342,7 @@ icsneoc2_error_t icsneoc2_device_free(icsneoc2_device_t* device) {
 	if(res != icsneoc2_error_success) {
 		return res;
 	}
-	if (device->device->isOpen()) {
+	if(device->device->isOpen()) {
 		res = icsneoc2_device_close(device);
 		if(res != icsneoc2_error_success) {
 			return res;
@@ -671,10 +671,10 @@ icsneoc2_error_t icsneoc2_device_tc10_status_get(const icsneoc2_device_t* device
 	if(!cpp_status.has_value()) {
 		return icsneoc2_error_invalid_type;
 	}
-	if (sleep_status) {
+	if(sleep_status) {
 		*sleep_status = static_cast<icsneoc2_tc10_sleep_status_t>(cpp_status->sleepStatus);
 	}
-	if (wake_status) {
+	if(wake_status) {
 		*wake_status = static_cast<icsneoc2_tc10_wake_status_t>(cpp_status->wakeStatus);
 	}
 	return icsneoc2_error_success;
@@ -1206,5 +1206,86 @@ icsneoc2_error_t icsneoc2_script_status_max_coremini_size_kb_get(const icsneoc2_
 		return icsneoc2_error_invalid_parameters;
 	}
 	*value = script_status->status->maxCoreminiSizeKB;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_device_chip_versions_enumerate(const icsneoc2_device_t* device, icsneoc2_chip_versions_t** chip_versions, bool refresh, size_t* count) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!chip_versions) {
+		return icsneoc2_error_invalid_parameters;
+	}
+
+	auto version_reports = device->device->getChipVersions(refresh);
+	if(count) {
+		*count = version_reports.size();
+	}
+
+	icsneoc2_chip_versions_t* head = nullptr;
+	icsneoc2_chip_versions_t* tail = nullptr;
+	for(auto& version_report : version_reports) {
+		auto* node = new (std::nothrow) icsneoc2_chip_versions_t;
+		if(!node) {
+			icsneoc2_chip_versions_free(head);
+			return icsneoc2_error_out_of_memory;
+		}
+		node->version_report = version_report;
+		node->next = nullptr;
+		if(!head) {
+			head = node;
+		} else {
+			tail->next = node;
+		}
+		tail = node;
+	}
+
+	*chip_versions = head;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_chip_versions_free(icsneoc2_chip_versions_t* chip_versions) {
+	if(!chip_versions) {
+		return icsneoc2_error_invalid_parameters;
+	}
+
+	while(chip_versions) {
+		auto* next = chip_versions->next;
+		delete chip_versions;
+		chip_versions = next;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_chip_versions_t* icsneoc2_chip_versions_next(const icsneoc2_chip_versions_t* chip_versions) {
+	if(!chip_versions) {
+		return nullptr;
+	}
+	return chip_versions->next;
+}
+
+icsneoc2_error_t icsneoc2_chip_versions_props_get(const icsneoc2_chip_versions_t* chip_versions, char* name, size_t* name_length, uint8_t* major, uint8_t* minor, uint8_t* maintenance, uint8_t* build) {
+	if(!chip_versions) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto& report = chip_versions->version_report;
+	if(name && name_length) {
+		if(!safe_str_copy(name,name_length, report.name)) {
+			return icsneoc2_error_string_copy_failed;
+		}
+	}
+	if(major) {
+		*major = report.major;
+	}
+	if(minor) {
+		*minor = report.minor;
+	}
+	if(maintenance) {
+		*maintenance = report.maintenance;
+	}
+	if(build) {
+		*build = report.build;
+	}
 	return icsneoc2_error_success;
 }

@@ -4,6 +4,7 @@
 #include <icsneo/icsneoc2messages.h>
 #include "../../api/icsneoc2/icsneoc2_internal.h"
 #include <icsneo/device/devicetype.h>
+#include <icsneo/device/chipid.h>
 #include <icsneo/communication/message/linmessage.h>
 #include <icsneo/communication/message/canmessage.h>
 #include <icsneo/communication/message/canerrormessage.h>
@@ -711,6 +712,360 @@ TEST(icsneoc2, test_icsneoc2_netid_t)
 	ASSERT_EQ(icsneoc2_netid_lin_15, 569);
 	ASSERT_EQ(icsneoc2_netid_lin_16, 570);
 	ASSERT_EQ(icsneoc2_netid_maxsize, 571);
+}
+
+TEST(icsneoc2, test_icsneoc2_chip_id_t)
+{
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_mchip, 0);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_lchip, 1);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_uchip, 2);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_jchip, 3);
+	ASSERT_EQ(icsneoc2_chip_id_valuecan3_mchip, 4);
+	ASSERT_EQ(icsneoc2_chip_id_neoviecu_mpic, 6);
+	ASSERT_EQ(icsneoc2_chip_id_neoviievb_mpic, 7);
+	ASSERT_EQ(icsneoc2_chip_id_neovipendant_mpic, 8);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_vnet_mchip, 9);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_vnet_lchip, 10);
+	ASSERT_EQ(icsneoc2_chip_id_neoviplasma_core, 11);
+	ASSERT_EQ(icsneoc2_chip_id_neoviplasma_hid, 12);
+	ASSERT_EQ(icsneoc2_chip_id_neovianalog_mpic, 13);
+	ASSERT_EQ(icsneoc2_chip_id_neoviplasma_analog_core, 14);
+	ASSERT_EQ(icsneoc2_chip_id_neoviplasma_flexray_core, 15);
+	ASSERT_EQ(icsneoc2_chip_id_neoviplasma_core_1_12, 16);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_slave_vnet_mchip, 17);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_slave_vnet_lchip, 18);
+	ASSERT_EQ(icsneoc2_chip_id_neoviion_core, 19);
+	ASSERT_EQ(icsneoc2_chip_id_neoviion_hid, 20);
+	ASSERT_EQ(icsneoc2_chip_id_neoviion_core_loader, 21);
+	ASSERT_EQ(icsneoc2_chip_id_neoviion_hid_loader, 22);
+	ASSERT_EQ(icsneoc2_chip_id_neoviion_fpga_bit, 23);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_vnet_ep_mchip, 24);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_vnet_ep_lchip, 25);
+	ASSERT_EQ(icsneoc2_chip_id_neovianalogout_mchip, 26);
+	ASSERT_EQ(icsneoc2_chip_id_neovimost25_mchip, 27);
+	ASSERT_EQ(icsneoc2_chip_id_neovimost50_mchip, 28);
+	ASSERT_EQ(icsneoc2_chip_id_neovimost150_mchip, 29);
+	ASSERT_EQ(icsneoc2_chip_id_valuecan4_4_mchip, 30);
+	ASSERT_EQ(icsneoc2_chip_id_valuecan4_4_schip, 31);
+	ASSERT_EQ(icsneoc2_chip_id_cmprobe_zynq, 33);
+	ASSERT_EQ(icsneoc2_chip_id_eevb_stm32, 34);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_slave_vnet_ep_mchip, 35);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire_slave_vnet_ep_lchip, 36);
+	ASSERT_EQ(icsneoc2_chip_id_radstar_mchip, 37);
+	ASSERT_EQ(icsneoc2_chip_id_valuecanrf_mchip, 38);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_mchip, 39);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_cchip, 40);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_core, 41);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_blechip, 42);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_zynq, 43);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_securitychip, 44);
+	ASSERT_EQ(icsneoc2_chip_id_radgalaxy_zynq, 45);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_vnet_mchip, 46);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_slave_vnet_a_mchip, 47);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_slave_vnet_a_cchip, 48);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_vnet_cchip, 49);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_vnet_core, 50);
+	ASSERT_EQ(icsneoc2_chip_id_radstar2_zynq, 51);
+	ASSERT_EQ(icsneoc2_chip_id_vividcan_mchip, 52);
+	ASSERT_EQ(icsneoc2_chip_id_neoobd2sim_mchip, 53);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_vnetz_mchip, 54);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_vnetz_zynq, 55);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_slave_vnetz_a_mchip, 56);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_slave_vnetz_a_zynq, 57);
+	ASSERT_EQ(icsneoc2_chip_id_vividcan_ext_flash, 58);
+	ASSERT_EQ(icsneoc2_chip_id_vividcan_nrf52, 59);
+	ASSERT_EQ(icsneoc2_chip_id_cmprobe_zynq_unused, 60);
+	ASSERT_EQ(icsneoc2_chip_id_neoobd2pro_mchip, 61);
+	ASSERT_EQ(icsneoc2_chip_id_valuecan4_1_mchip, 62);
+	ASSERT_EQ(icsneoc2_chip_id_valuecan4_2_mchip, 63);
+	ASSERT_EQ(icsneoc2_chip_id_valuecan4_4_2el_core, 64);
+	ASSERT_EQ(icsneoc2_chip_id_neoobd2pro_schip, 65);
+	ASSERT_EQ(icsneoc2_chip_id_valuecan4_2el_mchip, 67);
+	ASSERT_EQ(icsneoc2_chip_id_neoecuavbtsn_mchip, 68);
+	ASSERT_EQ(icsneoc2_chip_id_neoobd2pro_core, 69);
+	ASSERT_EQ(icsneoc2_chip_id_radsupermoon_zynq, 70);
+	ASSERT_EQ(icsneoc2_chip_id_radmoon2_zynq, 71);
+	ASSERT_EQ(icsneoc2_chip_id_vividcanpro_mchip, 72);
+	ASSERT_EQ(icsneoc2_chip_id_vividcanpro_ext_flash, 73);
+	ASSERT_EQ(icsneoc2_chip_id_radpluto_mchip, 74);
+	ASSERT_EQ(icsneoc2_chip_id_radmars_zynq, 75);
+	ASSERT_EQ(icsneoc2_chip_id_neoecu12_mchip, 76);
+	ASSERT_EQ(icsneoc2_chip_id_radiocanhub_mchip, 77);
+	ASSERT_EQ(icsneoc2_chip_id_flexray_vnetz_zchip, 78);
+	ASSERT_EQ(icsneoc2_chip_id_neoobd2_lcbadge_mchip, 79);
+	ASSERT_EQ(icsneoc2_chip_id_neoobd2_lcbadge_schip, 80);
+	ASSERT_EQ(icsneoc2_chip_id_radmoonduo_mchip, 81);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire3_zchip, 82);
+	ASSERT_EQ(icsneoc2_chip_id_flexray_vnetz_fchip, 83);
+	ASSERT_EQ(icsneoc2_chip_id_radjupiter_mchip, 84);
+	ASSERT_EQ(icsneoc2_chip_id_valuecan4industrial_mchip, 85);
+	ASSERT_EQ(icsneoc2_chip_id_etherbadge_mchip, 86);
+	ASSERT_EQ(icsneoc2_chip_id_radmars_3_zynq, 87);
+	ASSERT_EQ(icsneoc2_chip_id_radgigastar_usbz_zynq, 88);
+	ASSERT_EQ(icsneoc2_chip_id_radgigastar_zynq, 89);
+	ASSERT_EQ(icsneoc2_chip_id_rad4g_mchip, 90);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire3_schip, 91);
+	ASSERT_EQ(icsneoc2_chip_id_radepsilon_mchip, 92);
+	ASSERT_EQ(icsneoc2_chip_id_rada2b_zchip, 93);
+	ASSERT_EQ(icsneoc2_chip_id_neoobd2dev_mchip, 94);
+	ASSERT_EQ(icsneoc2_chip_id_neoobd2dev_schip, 95);
+	ASSERT_EQ(icsneoc2_chip_id_neoobd2simdoip_mchip, 96);
+	ASSERT_EQ(icsneoc2_chip_id_sfpmodule_88q2112_mchip, 97);
+	ASSERT_EQ(icsneoc2_chip_id_radepsilont_mchip, 98);
+	ASSERT_EQ(icsneoc2_chip_id_radepsilonexpress_mchip, 99);
+	ASSERT_EQ(icsneoc2_chip_id_radproxima_mchip, 100);
+	ASSERT_EQ(icsneoc2_chip_id_newdevice57_zchip, 101);
+	ASSERT_EQ(icsneoc2_chip_id_rad_galaxy_2_zmpchip_id, 102);
+	ASSERT_EQ(icsneoc2_chip_id_newdevice59_mchip, 103);
+	ASSERT_EQ(icsneoc2_chip_id_radmoon2_z7010_zynq, 104);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire2_core_sg4, 105);
+	ASSERT_EQ(icsneoc2_chip_id_radbms_mchip, 106);
+	ASSERT_EQ(icsneoc2_chip_id_radmoon2_zl_mchip, 107);
+	ASSERT_EQ(icsneoc2_chip_id_radgigastar_usbz_z7010_zynq, 108);
+	ASSERT_EQ(icsneoc2_chip_id_neovifire3_linux, 109);
+	ASSERT_EQ(icsneoc2_chip_id_radgigastar_usbz_z7007s_zynq, 110);
+	ASSERT_EQ(icsneoc2_chip_id_vem_01_8dw_zchip, 111);
+	ASSERT_EQ(icsneoc2_chip_id_radgalaxy_ffg_zynq, 112);
+	ASSERT_EQ(icsneoc2_chip_id_radmoon3_mchip, 113);
+	ASSERT_EQ(icsneoc2_chip_id_radcomet_zynq, 114);
+	ASSERT_EQ(icsneoc2_chip_id_vem_02_fr_zchip, 115);
+	ASSERT_EQ(icsneoc2_chip_id_rada2b_revb_zchip, 116);
+	ASSERT_EQ(icsneoc2_chip_id_radgigastar_ffg_zynq, 117);
+	ASSERT_EQ(icsneoc2_chip_id_vem_02_fr_fchip, 118);
+	ASSERT_EQ(icsneoc2_chip_id_connect_zchip, 121);
+	ASSERT_EQ(icsneoc2_chip_id_sfpmodule_88q2221_mchip, 122);
+	ASSERT_EQ(icsneoc2_chip_id_radgalaxy2_sysmon_chip, 123);
+	ASSERT_EQ(icsneoc2_chip_id_sfpmodule_88q3244_mchip, 124);
+	ASSERT_EQ(icsneoc2_chip_id_radcomet3_zchip, 125);
+	ASSERT_EQ(icsneoc2_chip_id_connect_linux, 126);
+	ASSERT_EQ(icsneoc2_chip_id_sfpmodule_lan8670_mchip, 127);
+	ASSERT_EQ(icsneoc2_chip_id_vem_04_t1s_lin_zchip, 129);
+	ASSERT_EQ(icsneoc2_chip_id_radmoont1s_zchip, 130);
+	ASSERT_EQ(icsneoc2_chip_id_radgigastar2_zynq, 131);
+	ASSERT_EQ(icsneoc2_chip_id_sfpmodule_ent11100_mchip, 132);
+	ASSERT_EQ(icsneoc2_chip_id_radgemini_mchip, 135);
+	ASSERT_EQ(icsneoc2_chip_id_maxsize, 136);
+	
+	ASSERT_EQ(icsneoc2_chip_id_invalid, 255);
+
+	ASSERT_EQ(sizeof(icsneoc2_chip_id_t), sizeof(uint8_t));
+}
+
+TEST(icsneoc2, test_chip_id_enum_alignment)
+{
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_MCHIP), icsneoc2_chip_id_neovifire_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_LCHIP), icsneoc2_chip_id_neovifire_lchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_UCHIP), icsneoc2_chip_id_neovifire_uchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_JCHIP), icsneoc2_chip_id_neovifire_jchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::ValueCAN3_MCHIP), icsneoc2_chip_id_valuecan3_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIECU_MPIC), icsneoc2_chip_id_neoviecu_mpic);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIIEVB_MPIC), icsneoc2_chip_id_neoviievb_mpic);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIPENDANT_MPIC), icsneoc2_chip_id_neovipendant_mpic);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_VNET_MCHIP), icsneoc2_chip_id_neovifire_vnet_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_VNET_LCHIP), icsneoc2_chip_id_neovifire_vnet_lchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIPLASMA_Core), icsneoc2_chip_id_neoviplasma_core);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIPLASMA_HID), icsneoc2_chip_id_neoviplasma_hid);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIANALOG_MPIC), icsneoc2_chip_id_neovianalog_mpic);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIPLASMA_ANALOG_Core), icsneoc2_chip_id_neoviplasma_analog_core);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIPLASMA_FlexRay_Core), icsneoc2_chip_id_neoviplasma_flexray_core);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIPLASMA_Core_1_12), icsneoc2_chip_id_neoviplasma_core_1_12);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_Slave_VNET_MCHIP), icsneoc2_chip_id_neovifire_slave_vnet_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_Slave_VNET_LCHIP), icsneoc2_chip_id_neovifire_slave_vnet_lchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIION_Core), icsneoc2_chip_id_neoviion_core);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIION_HID), icsneoc2_chip_id_neoviion_hid);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIION_Core_Loader), icsneoc2_chip_id_neoviion_core_loader);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIION_HID_Loader), icsneoc2_chip_id_neoviion_hid_loader);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIION_FPGA_BIT), icsneoc2_chip_id_neoviion_fpga_bit);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_VNET_EP_MCHIP), icsneoc2_chip_id_neovifire_vnet_ep_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_VNET_EP_LCHIP), icsneoc2_chip_id_neovifire_vnet_ep_lchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIAnalogOut_MCHIP), icsneoc2_chip_id_neovianalogout_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIMOST25_MCHIP), icsneoc2_chip_id_neovimost25_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIMOST50_MCHIP), icsneoc2_chip_id_neovimost50_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIMOST150_MCHIP), icsneoc2_chip_id_neovimost150_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::ValueCAN4_4_MCHIP), icsneoc2_chip_id_valuecan4_4_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::ValueCAN4_4_SCHIP), icsneoc2_chip_id_valuecan4_4_schip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::cmProbe_ZYNQ), icsneoc2_chip_id_cmprobe_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::EEVB_STM32), icsneoc2_chip_id_eevb_stm32);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_Slave_VNET_EP_MCHIP), icsneoc2_chip_id_neovifire_slave_vnet_ep_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE_Slave_VNET_EP_LCHIP), icsneoc2_chip_id_neovifire_slave_vnet_ep_lchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADStar_MCHIP), icsneoc2_chip_id_radstar_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::ValueCANrf_MCHIP), icsneoc2_chip_id_valuecanrf_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_MCHIP), icsneoc2_chip_id_neovifire2_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_CCHIP), icsneoc2_chip_id_neovifire2_cchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_Core), icsneoc2_chip_id_neovifire2_core);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_BLECHIP), icsneoc2_chip_id_neovifire2_blechip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_ZYNQ), icsneoc2_chip_id_neovifire2_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_SECURITYCHIP), icsneoc2_chip_id_neovifire2_securitychip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGalaxy_ZYNQ), icsneoc2_chip_id_radgalaxy_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_VNET_MCHIP), icsneoc2_chip_id_neovifire2_vnet_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_Slave_VNET_A_MCHIP), icsneoc2_chip_id_neovifire2_slave_vnet_a_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_Slave_VNET_A_CCHIP), icsneoc2_chip_id_neovifire2_slave_vnet_a_cchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_VNET_CCHIP), icsneoc2_chip_id_neovifire2_vnet_cchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_VNET_Core), icsneoc2_chip_id_neovifire2_vnet_core);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADStar2_ZYNQ), icsneoc2_chip_id_radstar2_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::VividCAN_MCHIP), icsneoc2_chip_id_vividcan_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoOBD2SIM_MCHIP), icsneoc2_chip_id_neoobd2sim_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_VNETZ_MCHIP), icsneoc2_chip_id_neovifire2_vnetz_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_VNETZ_ZYNQ), icsneoc2_chip_id_neovifire2_vnetz_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_Slave_VNETZ_A_MCHIP), icsneoc2_chip_id_neovifire2_slave_vnetz_a_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_Slave_VNETZ_A_ZYNQ), icsneoc2_chip_id_neovifire2_slave_vnetz_a_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::VividCAN_EXT_FLASH), icsneoc2_chip_id_vividcan_ext_flash);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::VividCAN_NRF52), icsneoc2_chip_id_vividcan_nrf52);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::cmProbe_ZYNQ_Unused), icsneoc2_chip_id_cmprobe_zynq_unused);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoOBD2PRO_MCHIP), icsneoc2_chip_id_neoobd2pro_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::ValueCAN4_1_MCHIP), icsneoc2_chip_id_valuecan4_1_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::ValueCAN4_2_MCHIP), icsneoc2_chip_id_valuecan4_2_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::ValueCAN4_4_2EL_Core), icsneoc2_chip_id_valuecan4_4_2el_core);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoOBD2PRO_SCHIP), icsneoc2_chip_id_neoobd2pro_schip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::ValueCAN4_2EL_MCHIP), icsneoc2_chip_id_valuecan4_2el_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoECUAVBTSN_MCHIP), icsneoc2_chip_id_neoecuavbtsn_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoOBD2PRO_Core), icsneoc2_chip_id_neoobd2pro_core);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADSupermoon_ZYNQ), icsneoc2_chip_id_radsupermoon_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADMoon2_ZYNQ), icsneoc2_chip_id_radmoon2_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::VividCANPRO_MCHIP), icsneoc2_chip_id_vividcanpro_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::VividCANPRO_EXT_FLASH), icsneoc2_chip_id_vividcanpro_ext_flash);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADPluto_MCHIP), icsneoc2_chip_id_radpluto_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADMars_ZYNQ), icsneoc2_chip_id_radmars_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoECU12_MCHIP), icsneoc2_chip_id_neoecu12_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADIOCANHUB_MCHIP), icsneoc2_chip_id_radiocanhub_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::FlexRay_VNETZ_ZCHIP), icsneoc2_chip_id_flexray_vnetz_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoOBD2_LCBADGE_MCHIP), icsneoc2_chip_id_neoobd2_lcbadge_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoOBD2_LCBADGE_SCHIP), icsneoc2_chip_id_neoobd2_lcbadge_schip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADMoonDuo_MCHIP), icsneoc2_chip_id_radmoonduo_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE3_ZCHIP), icsneoc2_chip_id_neovifire3_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::FlexRay_VNETZ_FCHIP), icsneoc2_chip_id_flexray_vnetz_fchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADJupiter_MCHIP), icsneoc2_chip_id_radjupiter_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::ValueCAN4Industrial_MCHIP), icsneoc2_chip_id_valuecan4industrial_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::EtherBADGE_MCHIP), icsneoc2_chip_id_etherbadge_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADMars_3_ZYNQ), icsneoc2_chip_id_radmars_3_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGigastar_USBZ_ZYNQ), icsneoc2_chip_id_radgigastar_usbz_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGigastar_ZYNQ), icsneoc2_chip_id_radgigastar_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RAD4G_MCHIP), icsneoc2_chip_id_rad4g_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE3_SCHIP), icsneoc2_chip_id_neovifire3_schip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADEpsilon_MCHIP), icsneoc2_chip_id_radepsilon_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADA2B_ZCHIP), icsneoc2_chip_id_rada2b_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoOBD2Dev_MCHIP), icsneoc2_chip_id_neoobd2dev_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoOBD2Dev_SCHIP), icsneoc2_chip_id_neoobd2dev_schip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoOBD2SIMDoIP_MCHIP), icsneoc2_chip_id_neoobd2simdoip_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::SFPModule_88q2112_MCHIP), icsneoc2_chip_id_sfpmodule_88q2112_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADEpsilonT_MCHIP), icsneoc2_chip_id_radepsilont_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADEpsilonExpress_MCHIP), icsneoc2_chip_id_radepsilonexpress_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADProxima_MCHIP), icsneoc2_chip_id_radproxima_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::NewDevice57_ZCHIP), icsneoc2_chip_id_newdevice57_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RAD_GALAXY_2_ZMPCHIP_ID), icsneoc2_chip_id_rad_galaxy_2_zmpchip_id);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::NewDevice59_MCHIP), icsneoc2_chip_id_newdevice59_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADMoon2_Z7010_ZYNQ), icsneoc2_chip_id_radmoon2_z7010_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE2_Core_SG4), icsneoc2_chip_id_neovifire2_core_sg4);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADBMS_MCHIP), icsneoc2_chip_id_radbms_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADMoon2_ZL_MCHIP), icsneoc2_chip_id_radmoon2_zl_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGigastar_USBZ_Z7010_ZYNQ), icsneoc2_chip_id_radgigastar_usbz_z7010_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::neoVIFIRE3_LINUX), icsneoc2_chip_id_neovifire3_linux);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGigastar_USBZ_Z7007S_ZYNQ), icsneoc2_chip_id_radgigastar_usbz_z7007s_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::VEM_01_8DW_ZCHIP), icsneoc2_chip_id_vem_01_8dw_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGalaxy_FFG_Zynq), icsneoc2_chip_id_radgalaxy_ffg_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADMoon3_MCHIP), icsneoc2_chip_id_radmoon3_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADComet_ZYNQ), icsneoc2_chip_id_radcomet_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::VEM_02_FR_ZCHIP), icsneoc2_chip_id_vem_02_fr_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADA2B_REVB_ZCHIP), icsneoc2_chip_id_rada2b_revb_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGigastar_FFG_ZYNQ), icsneoc2_chip_id_radgigastar_ffg_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::VEM_02_FR_FCHIP), icsneoc2_chip_id_vem_02_fr_fchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::Connect_ZCHIP), icsneoc2_chip_id_connect_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::SFPModule_88q2221_MCHIP), icsneoc2_chip_id_sfpmodule_88q2221_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGALAXY2_SYSMON_CHIP), icsneoc2_chip_id_radgalaxy2_sysmon_chip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::SFPModule_88q3244_MCHIP), icsneoc2_chip_id_sfpmodule_88q3244_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADCOMET3_ZCHIP), icsneoc2_chip_id_radcomet3_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::Connect_LINUX), icsneoc2_chip_id_connect_linux);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::SFPModule_lan8670_MCHIP), icsneoc2_chip_id_sfpmodule_lan8670_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::VEM_04_T1S_LIN_ZCHIP), icsneoc2_chip_id_vem_04_t1s_lin_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADMOONT1S_ZCHIP), icsneoc2_chip_id_radmoont1s_zchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGigastar2_ZYNQ), icsneoc2_chip_id_radgigastar2_zynq);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::SFPModule_ent11100_MCHIP), icsneoc2_chip_id_sfpmodule_ent11100_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGemini_MCHIP), icsneoc2_chip_id_radgemini_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::Invalid), icsneoc2_chip_id_invalid);
+}
+
+TEST(icsneoc2, test_icsneoc2_chip_versions_invalid_parameters)
+{
+	size_t count = 0;
+	icsneoc2_chip_versions_t* chip_versions = nullptr;
+
+	// enumerate: NULL device
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_chip_versions_enumerate(NULL, &chip_versions, false, &count));
+
+	// props_get: NULL handle
+	uint8_t major = 0, minor = 0, maintenance = 0, build = 0;
+	char name[32] = {0};
+	size_t name_length = sizeof(name);
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_chip_versions_props_get(NULL, name, &name_length, &major, &minor, &maintenance, &build));
+
+	// free: NULL handle
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_chip_versions_free(NULL));
+
+	// next: NULL handle returns NULL
+	ASSERT_EQ(nullptr, icsneoc2_chip_versions_next(NULL));
+}
+
+TEST(icsneoc2, test_icsneoc2_chip_versions_props_get)
+{
+	// Build an in-memory list of two chip_versions nodes
+	icsneoc2_chip_versions_t second{};
+	second.version_report.id = icsneo::ChipID::RADGemini_MCHIP;
+	second.version_report.name = "second";
+	second.version_report.major = 9;
+	second.version_report.minor = 8;
+	second.version_report.maintenance = 7;
+	second.version_report.build = 6;
+	second.next = nullptr;
+
+	icsneoc2_chip_versions_t first{};
+	first.version_report.id = icsneo::ChipID::neoVIFIRE_MCHIP;
+	first.version_report.name = "first";
+	first.version_report.major = 1;
+	first.version_report.minor = 2;
+	first.version_report.maintenance = 3;
+	first.version_report.build = 4;
+	first.next = &second;
+
+	// next() walks the list
+	ASSERT_EQ(&second, icsneoc2_chip_versions_next(&first));
+	ASSERT_EQ(nullptr, icsneoc2_chip_versions_next(&second));
+
+	// props_get: full extraction
+	char name[32] = {0};
+	size_t name_length = sizeof(name);
+	uint8_t major = 0, minor = 0, maintenance = 0, build = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_chip_versions_props_get(&first, name, &name_length, &major, &minor, &maintenance, &build));
+	ASSERT_STREQ(name, "first");
+	ASSERT_EQ(name_length, 5u);
+	ASSERT_EQ(major, 1);
+	ASSERT_EQ(minor, 2);
+	ASSERT_EQ(maintenance, 3);
+	ASSERT_EQ(build, 4);
+
+	// props_get: all output pointers optional (NULL allowed)
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_chip_versions_props_get(&second, NULL, NULL, NULL, NULL, NULL, NULL));
+
+	// props_get: only some output pointers
+	major = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_chip_versions_props_get(&second, NULL, NULL, &major, NULL, NULL, NULL));
+	ASSERT_EQ(major, 9);
+
+	// props_get: name buffer too small returns string_copy_failed
+	char tiny[2] = {0};
+	size_t tiny_length = sizeof(tiny);
+	ASSERT_EQ(icsneoc2_error_string_copy_failed, icsneoc2_chip_versions_props_get(&first, tiny, &tiny_length, NULL, NULL, NULL, NULL));
+}
+
+TEST(icsneoc2, test_icsneoc2_chip_versions_free_list)
+{
+	// Allocate a two-node list the same way the API does, so free() walks and deletes it.
+	auto* head = new icsneoc2_chip_versions_t{};
+	head->version_report.name = "a";
+	head->next = new icsneoc2_chip_versions_t{};
+	head->next->version_report.name = "b";
+	head->next->next = nullptr;
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_chip_versions_free(head));
 }
 
 TEST(icsneoc2, test_icsneoc2_open_options_default)
