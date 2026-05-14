@@ -230,6 +230,7 @@ MACsecConfig::MACsecConfig(const DeviceType& deviceType) : type(deviceType) {
 		case icsneo::DeviceType::Enum::RADMoon2:
 		case icsneo::DeviceType::Enum::RADMoon3:
 		case icsneo::DeviceType::Enum::RADEpsilon:
+		case icsneo::DeviceType::Enum::RADGigastar2:
 			maxSecY = 2;
 			maxRule = 2;
 			maxSa = 4;
