@@ -126,6 +126,28 @@ icsneoc2_error_t icsneoc2_message_data_get(icsneoc2_message_t* message, uint8_t*
 	return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_message_timestamp_set(icsneoc2_message_t* message, uint64_t timestamp) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	if(!message->message) {
+		return icsneoc2_error_invalid_message;
+	}
+	message->message->timestamp = timestamp;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_timestamp_get(icsneoc2_message_t* message, uint64_t* timestamp) {
+	if(!message || !timestamp) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	if(!message->message) {
+		return icsneoc2_error_invalid_message;
+	}
+	*timestamp = message->message->timestamp;
+	return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_message_can_create(icsneoc2_message_t** message) {
 	if(!message) {
 		return icsneoc2_error_invalid_parameters;

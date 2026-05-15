@@ -468,6 +468,7 @@ static int message_matches_loopback_frame(icsneoc2_message_t* message, const uin
 
 static int print_ethernet_message(icsneoc2_message_t* message, const char* direction_label) {
 	icsneoc2_netid_t netid = 0;
+	uint64_t timestamp = 0;
 	char netid_name[64] = {0};
 	uint8_t dst_mac[6] = {0};
 	uint8_t src_mac[6] = {0};
@@ -483,11 +484,14 @@ static int print_ethernet_message(icsneoc2_message_t* message, const char* direc
 	res = icsneoc2_message_netid_get(message, &netid);
 	if(res != icsneoc2_error_success) return print_error_code("Failed to get message netid", res);
 	if(get_netid_name(netid, netid_name, sizeof(netid_name)) != 0) return 1;
+	res = icsneoc2_message_timestamp_get(message, &timestamp);
+	if(res != icsneoc2_error_success) return print_error_code("Failed to get message timestamp", res);
 
 	res = icsneoc2_message_data_get(message, data, &data_length);
 	if(res != icsneoc2_error_success) return print_error_code("Failed to get Ethernet data", res);
 
 	printf("%s on %s: %zu bytes\n", direction_label, netid_name, data_length);
+	printf("  Timestamp: %" PRIu64 " ns since 2007-01-01 UTC\n", timestamp);
 
 	res = icsneoc2_message_eth_mac_get(message, dst_mac, src_mac);
 	if(res == icsneoc2_error_success) {

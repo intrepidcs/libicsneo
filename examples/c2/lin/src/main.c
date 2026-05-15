@@ -86,6 +86,8 @@ void process_lin_messages(icsneoc2_message_t** messages, size_t count) {
 
 		icsneoc2_netid_t netid = 0;
 		icsneoc2_message_netid_get(messages[i], &netid);
+		uint64_t timestamp = 0;
+		icsneoc2_message_timestamp_get(messages[i], &timestamp);
 		char netid_name[128] = {0};
 		size_t netid_name_length = 128;
 		icsneoc2_netid_name_get(netid, netid_name, &netid_name_length);
@@ -98,6 +100,7 @@ void process_lin_messages(icsneoc2_message_t** messages, size_t count) {
 		icsneoc2_message_lin_err_flags_get(messages[i], &err_flags);
 
 		printf("\t%s RX | ID: 0x%02x | Protected ID: 0x%02x\n", netid_name, id, protected_id);
+		printf("\tTimestamp: %" PRIu64 " ns since 2007-01-01 UTC\n", timestamp);
 		printf("\tData: [");
 		for(size_t x = 0; x < data_length; x++) {
 			printf(" 0x%02x", data[x]);

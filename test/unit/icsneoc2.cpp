@@ -161,6 +161,8 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_data_get(NULL, NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_data_set(NULL, NULL, 0));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_timestamp_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_timestamp_set(NULL, 0));
 
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_netid_get(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_netid_set(NULL, 0));
@@ -1150,6 +1152,29 @@ TEST(icsneoc2, test_icsneoc2_message_can_props_get_can_tx_flags)
 		ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ABORTED |
 		ICSNEOC2_MESSAGE_CAN_FLAGS_TX_LOST_ARB |
 		ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ERROR);
+}
+
+TEST(icsneoc2, test_icsneoc2_message_timestamp_accessors)
+{
+	icsneoc2_message_t* message = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_can_create(&message));
+
+	uint64_t timestamp = 1;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_timestamp_get(message, &timestamp));
+	ASSERT_EQ(0u, timestamp);
+
+	const uint64_t expected_timestamp = 1234567890123ULL;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_timestamp_set(message, expected_timestamp));
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_timestamp_get(message, &timestamp));
+	ASSERT_EQ(expected_timestamp, timestamp);
+
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_timestamp_get(message, nullptr));
+
+	icsneoc2_message_free(message);
+
+	icsneoc2_message_t invalid_message;
+	ASSERT_EQ(icsneoc2_error_invalid_message, icsneoc2_message_timestamp_set(&invalid_message, expected_timestamp));
+	ASSERT_EQ(icsneoc2_error_invalid_message, icsneoc2_message_timestamp_get(&invalid_message, &timestamp));
 }
 
 TEST(icsneoc2, test_icsneoc2_message_can_error_props_get_invalid_type_for_can_message)

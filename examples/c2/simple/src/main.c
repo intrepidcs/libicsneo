@@ -426,6 +426,7 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 		printf("\t%zd) network type: %s (%u)\n", i, network_type_name, network_type);
 
 		if(network_type == icsneoc2_network_type_can) {
+			uint64_t timestamp = 0;
 			uint64_t arbid = 0;
 			int32_t dlc = 0;
 			icsneoc2_netid_t netid = 0;
@@ -436,6 +437,7 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 			size_t netid_name_length = 128;
 			icsneoc2_error_t result = icsneoc2_message_netid_get(message, &netid);
 			result += icsneoc2_netid_name_get(netid, netid_name, &netid_name_length);
+			result += icsneoc2_message_timestamp_get(message, &timestamp);
 			result += icsneoc2_message_can_props_get(message, &arbid, &can_flags);
 			result += icsneoc2_message_data_get(message, data, &data_length);
 			if(result != icsneoc2_error_success) {
@@ -452,6 +454,7 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 			bool tx_error = (can_flags & ICSNEOC2_MESSAGE_CAN_FLAGS_TX_ERROR) != 0;
 			dlc = (int32_t)data_length;
 
+			printf("\t  Timestamp: %" PRIu64 " ns since 2007-01-01 UTC\n", timestamp);
 			printf("\t  NetID: %s (0x%x)\tArbID: 0x%llx\tDLC: %u\tLen: %zu\n", netid_name, netid, (unsigned long long)arbid, dlc, data_length);
 			printf("\t  Flags:%s%s%s%s%s%s%s%s\n",
 				is_remote ? " RTR" : "",

@@ -120,6 +120,30 @@ icsneoc2_error_t icsneoc2_message_data_set(icsneoc2_message_t* message, uint8_t*
  */
 icsneoc2_error_t icsneoc2_message_data_get(icsneoc2_message_t* message, uint8_t* data, size_t* data_length);
 
+/**
+ * Set the timestamp of a message.
+ *
+ * Timestamps are in nanoseconds since 2007-01-01 UTC.
+ *
+ * @param[in] message The message to modify.
+ * @param[in] timestamp The timestamp value to set.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_message otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_timestamp_set(icsneoc2_message_t* message, uint64_t timestamp);
+
+/**
+ * Get the timestamp of a message.
+ *
+ * Timestamps are in nanoseconds since 2007-01-01 UTC.
+ *
+ * @param[in] message The message to check.
+ * @param[out] timestamp Pointer to a uint64_t to copy the timestamp into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_message otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_timestamp_get(icsneoc2_message_t* message, uint64_t* timestamp);
+
 #define ICSNEOC2_MESSAGE_CAN_FLAGS_RTR 0x01         // Remote Transmission Request
 #define ICSNEOC2_MESSAGE_CAN_FLAGS_IDE 0x02         // Identifier Extension
 #define ICSNEOC2_MESSAGE_CAN_FLAGS_FDF 0x04         // FD Format Indicator

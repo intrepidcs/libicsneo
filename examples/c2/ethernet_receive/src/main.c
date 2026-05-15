@@ -68,6 +68,7 @@ void print_mac(const char* label, const uint8_t* mac) {
 
 int process_ethernet_message(icsneoc2_message_t* message, size_t index) {
 	icsneoc2_netid_t netid = 0;
+	uint64_t timestamp = 0;
 	char netid_name[128] = {0};
 	size_t netid_name_length = 128;
 
@@ -79,6 +80,10 @@ int process_ethernet_message(icsneoc2_message_t* message, size_t index) {
 	if(res != icsneoc2_error_success) {
 		return print_error_code("\tFailed to get netid name", res);
 	}
+	res = icsneoc2_message_timestamp_get(message, &timestamp);
+	if(res != icsneoc2_error_success) {
+		return print_error_code("\tFailed to get timestamp", res);
+	}
 
 	/* Get data length first */
 	size_t data_length = 0;
@@ -88,6 +93,7 @@ int process_ethernet_message(icsneoc2_message_t* message, size_t index) {
 	}
 
 	printf("\t%zu) Ethernet Frame on %s (0x%x) - %zu bytes\n", index, netid_name, netid, data_length);
+	printf("\t  Timestamp: %" PRIu64 " ns since 2007-01-01 UTC\n", timestamp);
 
 	/* Get MAC addresses and EtherType if we have enough data */
 	uint8_t dst_mac[6] = {0};
