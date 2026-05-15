@@ -303,7 +303,8 @@ build python/linux/amd64:
     CIBW_BEFORE_ALL: sh ci/bootstrap-cibuildwheel.sh && sh ci/bootstrap-libpcap.sh
     CIBW_BUILD: "*manylinux*" # no musl
     CIBW_ARCHS: x86_64
-    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install
+    CIBW_ENVIRONMENT: PCAP_ROOT=/project/libpcap/install
+    SKBUILD_CMAKE_DEFINE: ICSPB_BOOTSTRAP_DIR=/project/icspb
   script:
     - sh ci/build-wheel-posix.sh
   artifacts:
@@ -318,7 +319,8 @@ build python/linux/arm64:
     CIBW_BEFORE_ALL: sh ci/bootstrap-cibuildwheel.sh && sh ci/bootstrap-libpcap.sh
     CIBW_BUILD: "*manylinux*" # no musl
     CIBW_ARCHS: aarch64
-    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=/project/libpcap/install
+    CIBW_ENVIRONMENT: PCAP_ROOT=/project/libpcap/install
+    SKBUILD_CMAKE_DEFINE: ICSPB_BOOTSTRAP_DIR=/project/icspb
   script:
     - sh ci/build-wheel-posix.sh
   artifacts:
@@ -332,7 +334,8 @@ build python/macos:
   variables:
     CIBW_BEFORE_ALL: sh ci/bootstrap-libpcap.sh
     CIBW_ARCHS: arm64
-    CIBW_ENVIRONMENT: CMAKE_PREFIX_PATH=$CI_PROJECT_DIR/libpcap/install
+    CIBW_ENVIRONMENT: PCAP_ROOT=$CI_PROJECT_DIR/libpcap/install
+    SKBUILD_CMAKE_DEFINE: ICSPB_BOOTSTRAP_DIR=$CI_PROJECT_DIR/icspb
     MACOSX_DEPLOYMENT_TARGET: 10.14
   script:
     - sh ci/build-wheel-posix.sh
@@ -347,6 +350,7 @@ build python/windows:
   variables:
     CIBW_ARCHS: AMD64
     CIBW_ENVIRONMENT: CMAKE_GENERATOR=Ninja
+    SKBUILD_CMAKE_DEFINE: ICSPB_BOOTSTRAP_DIR=$CI_PROJECT_DIR/icspb
   script:
     - cmd /c ci\build-wheel-windows.bat
   artifacts:
