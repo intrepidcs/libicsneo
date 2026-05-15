@@ -1,5 +1,41 @@
 cmake_minimum_required(VERSION 3.16)
-project(libicsneo VERSION 1.0.0)
+
+function(git_tag_version VERSION_RESULT)
+	set(${VERSION_RESULT} "0.0.0.0" PARENT_SCOPE)
+	find_package(Git)
+	if(NOT Git_FOUND)
+		return()
+	endif()
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
+		OUTPUT_VARIABLE LAST_TAG
+		RESULT_VARIABLE RESULT
+		ERROR_QUIET
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	if(NOT RESULT EQUAL 0)
+		return()
+	endif()
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} rev-list ${LAST_TAG}..HEAD --count
+		OUTPUT_VARIABLE COMMIT_COUNT_SINCE_TAG
+		RESULT_VARIABLE RESULT
+		ERROR_QUIET
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	if(NOT RESULT EQUAL 0)
+		return()
+	endif()
+	set(${VERSION_RESULT} "${LAST_TAG}.${COMMIT_COUNT_SINCE_TAG}" PARENT_SCOPE)
+endfunction()
+
+git_tag_version(LIBICSNEO_VERSION)
+
+if(LIBICSNEO_VERSION STREQUAL "0.0.0.0")
+	message(WARNING "Unable to parse version from git history")
+endif()
+
+project(libicsneo VERSION ${LIBICSNEO_VERSION})
 
 cmake_policy(SET CMP0074 NEW)
 if(POLICY CMP0135)
