@@ -133,7 +133,7 @@ public:
 		SFPModule_88q2112 = 41,
 		RADGalaxy2 = 47,
 		RADMoon3 = 49,
-		RADComet = 50,
+		RADComet2 = 50,
 		Connect = 51,
 		SFPModule_88q2221m = 52,
 		SFPModule_88q4364 = 53,

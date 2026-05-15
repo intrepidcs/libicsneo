@@ -53,7 +53,7 @@ public:
 		RADEpsilonXL = icsneoc2_devicetype_rad_epsilon_xl,
 		RADGalaxy2 = icsneoc2_devicetype_rad_galaxy2,
 		RADMoon3 = icsneoc2_devicetype_rad_moon3,
-		RADComet = icsneoc2_devicetype_rad_comet,
+		RADComet2 = icsneoc2_devicetype_rad_comet2,
 		FIRE3_FlexRay = icsneoc2_devicetype_fire3_flexray,
 		Connect = icsneoc2_devicetype_connect,
 		RADComet3 = icsneoc2_devicetype_rad_comet3,
@@ -154,8 +154,8 @@ public:
 				return "RAD-Moon 3";
 			case RADGemini:
 				return "RAD-Gemini";
-			case RADComet:
-				return "RAD-Comet";
+			case RADComet2:
+				return "RAD-Comet 2";
 			case RED:
 				return "neoVI RED";
 			case ECU:
@@ -269,7 +269,7 @@ private:
 #define ICSNEO_DEVICETYPE_RADEPSILONXL ((devicetype_t)icsneoc2_devicetype_rad_epsilon_xl)
 #define ICSNEO_DEVICETYPE_RADGALAXY2 ((devicetype_t)icsneoc2_devicetype_rad_galaxy2)
 #define ICSNEO_DEVICETYPE_RADMoon3 ((devicetype_t)icsneoc2_devicetype_rad_moon3)
-#define ICSNEO_DEVICETYPE_RADCOMET ((devicetype_t)icsneoc2_devicetype_rad_comet)
+#define ICSNEO_DEVICETYPE_RADCOMET2 ((devicetype_t)icsneoc2_devicetype_rad_comet2)
 #define ICSNEO_DEVICETYPE_FIRE3FLEXRAY ((devicetype_t)icsneoc2_devicetype_fire3_flexray)
 #define ICSNEO_DEVICETYPE_CONNECT ((devicetype_t)icsneoc2_devicetype_connect)
 #define ICSNEO_DEVICETYPE_RADCOMET3 ((devicetype_t)icsneoc2_devicetype_rad_comet3)

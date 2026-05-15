@@ -43,7 +43,7 @@ typedef enum _icsneoc2_devicetype_t {
 	icsneoc2_devicetype_rad_epsilon_xl = 0x0000001e,
 	icsneoc2_devicetype_rad_galaxy2 = 0x00000021,
 	icsneoc2_devicetype_rad_moon3 = 0x00000023,
-	icsneoc2_devicetype_rad_comet = 0x00000024,
+	icsneoc2_devicetype_rad_comet2 = 0x00000024,
 	icsneoc2_devicetype_fire3_flexray = 0x00000025,
 	icsneoc2_devicetype_connect = 0x00000026,
 	icsneoc2_devicetype_rad_comet3 = 0x00000027,

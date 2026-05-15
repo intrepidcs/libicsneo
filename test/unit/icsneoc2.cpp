@@ -401,7 +401,7 @@ TEST(icsneoc2, test_icsneoc2_devicetype_t)
 	ASSERT_EQ(icsneoc2_devicetype_rad_epsilon_xl, 0x0000001e);
 	ASSERT_EQ(icsneoc2_devicetype_rad_galaxy2, 0x00000021);
 	ASSERT_EQ(icsneoc2_devicetype_rad_moon3, 0x00000023);
-	ASSERT_EQ(icsneoc2_devicetype_rad_comet, 0x00000024);
+	ASSERT_EQ(icsneoc2_devicetype_rad_comet2, 0x00000024);
 	ASSERT_EQ(icsneoc2_devicetype_fire3_flexray, 0x00000025);
 	ASSERT_EQ(icsneoc2_devicetype_connect, 0x00000026);
 	ASSERT_EQ(icsneoc2_devicetype_rad_comet3, 0x00000027);
@@ -464,7 +464,7 @@ TEST(icsneoc2, test_devicetype_enum_alignment)
 	ASSERT_EQ(icsneo::DeviceType::RADEpsilon, icsneoc2_devicetype_rad_epsilon);
 	ASSERT_EQ(icsneo::DeviceType::RADEpsilonXL, icsneoc2_devicetype_rad_epsilon_xl);
 	ASSERT_EQ(icsneo::DeviceType::RADMoon3, icsneoc2_devicetype_rad_moon3);
-	ASSERT_EQ(icsneo::DeviceType::RADComet, icsneoc2_devicetype_rad_comet);
+	ASSERT_EQ(icsneo::DeviceType::RADComet2, icsneoc2_devicetype_rad_comet2);
 	ASSERT_EQ(icsneo::DeviceType::FIRE3_FlexRay, icsneoc2_devicetype_fire3_flexray);
 	ASSERT_EQ(icsneo::DeviceType::Connect, icsneoc2_devicetype_connect);
 	ASSERT_EQ(icsneo::DeviceType::RADComet3, icsneoc2_devicetype_rad_comet3);
