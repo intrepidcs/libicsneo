@@ -121,7 +121,7 @@ enum class ChipID : icsneoc2_chip_id_t {
 	VEM_01_8DW_ZCHIP = icsneoc2_chip_id_vem_01_8dw_zchip,
 	RADGalaxy_FFG_Zynq = icsneoc2_chip_id_radgalaxy_ffg_zynq,
 	RADMoon3_MCHIP = icsneoc2_chip_id_radmoon3_mchip,
-	RADComet_ZYNQ = icsneoc2_chip_id_radcomet_zynq,
+	RADComet2_ZYNQ = icsneoc2_chip_id_radcomet2_zynq,
 	VEM_02_FR_ZCHIP = icsneoc2_chip_id_vem_02_fr_zchip,
 	RADA2B_REVB_ZCHIP = icsneoc2_chip_id_rada2b_revb_zchip,
 	RADGigastar_FFG_ZYNQ = icsneoc2_chip_id_radgigastar_ffg_zynq,

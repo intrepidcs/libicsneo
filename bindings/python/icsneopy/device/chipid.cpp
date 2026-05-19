@@ -120,7 +120,7 @@ void init_chipid(pybind11::module_& m) {
 		.value("VEM_01_8DW_ZCHIP", ChipID::VEM_01_8DW_ZCHIP)
 		.value("RADGalaxy_FFG_Zynq", ChipID::RADGalaxy_FFG_Zynq)
 		.value("RADMoon3_MCHIP", ChipID::RADMoon3_MCHIP)
-		.value("RADComet_ZYNQ", ChipID::RADComet_ZYNQ)
+		.value("RADComet2_ZYNQ", ChipID::RADComet2_ZYNQ)
 		.value("VEM_02_FR_ZCHIP", ChipID::VEM_02_FR_ZCHIP)
 		.value("RADA2B_REVB_ZCHIP", ChipID::RADA2B_REVB_ZCHIP)
 		.value("RADGigastar_FFG_ZYNQ", ChipID::RADGigastar_FFG_ZYNQ)

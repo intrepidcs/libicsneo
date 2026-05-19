@@ -1,5 +1,5 @@
-#ifndef __RADCOMETSETTINGS_H_
-#define __RADCOMETSETTINGS_H_
+#ifndef __RADCOMET2SETTINGS_H_
+#define __RADCOMET2SETTINGS_H_
 
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
@@ -74,7 +74,7 @@ typedef struct {
 	// 10T1S Extended settings
 	ETHERNET10T1S_SETTINGS_EXT t1s1Ext;
 	ETHERNET10T1S_SETTINGS_EXT t1s2Ext;
-} radcomet_settings_t;
+} radcomet2_settings_t;
 #pragma pack(pop)
 
 #ifdef _MSC_VER
@@ -83,15 +83,15 @@ typedef struct {
 
 #ifdef __cplusplus
 
-static_assert(sizeof(radcomet_settings_t) == 498, "RADComet settings size mismatch");
+static_assert(sizeof(radcomet2_settings_t) == 498, "RADComet2 settings size mismatch");
 
 #include <iostream>
 
-class RADCometSettings : public IDeviceSettings {
+class RADComet2Settings : public IDeviceSettings {
 public:
-	RADCometSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radcomet_settings_t)) {}
+	RADComet2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radcomet2_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<radcomet_settings_t>();
+		auto cfg = getStructurePointer<radcomet2_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -104,7 +104,7 @@ public:
 		}
 	}
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
-		auto cfg = getStructurePointer<radcomet_settings_t>();
+		auto cfg = getStructurePointer<radcomet2_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		switch(net.getNetID()) {
@@ -246,7 +246,7 @@ public:
 
 private:
 	const ETHERNET10T1S_SETTINGS* getT1SSettingsFor(Network net) const {
-		auto cfg = getStructurePointer<radcomet_settings_t>();
+		auto cfg = getStructurePointer<radcomet2_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		
@@ -260,7 +260,7 @@ private:
 	}
 
 	ETHERNET10T1S_SETTINGS* getMutableT1SSettingsFor(Network net) {
-		auto cfg = getMutableStructurePointer<radcomet_settings_t>();
+		auto cfg = getMutableStructurePointer<radcomet2_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
 		

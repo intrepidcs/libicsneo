@@ -45,7 +45,6 @@ Instructions for installing each API can be found in its respective documentatio
 - RAD-Pluto
 - RAD-Star 2
 - RAD-SuperMoon
-- RADComet
 - ValueCAN 3
 - ValueCAN 4
 

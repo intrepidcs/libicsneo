@@ -558,7 +558,7 @@ typedef enum _icsneoc2_chip_id_t {
 	icsneoc2_chip_id_vem_01_8dw_zchip = 111,
 	icsneoc2_chip_id_radgalaxy_ffg_zynq = 112,
 	icsneoc2_chip_id_radmoon3_mchip = 113,
-	icsneoc2_chip_id_radcomet_zynq = 114,
+	icsneoc2_chip_id_radcomet2_zynq = 114,
 	icsneoc2_chip_id_vem_02_fr_zchip = 115,
 	icsneoc2_chip_id_rada2b_revb_zchip = 116,
 	icsneoc2_chip_id_radgigastar_ffg_zynq = 117,

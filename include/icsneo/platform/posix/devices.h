@@ -14,7 +14,7 @@
 #include "icsneo/device/tree/plasion/neoviion.h"
 #include "icsneo/device/tree/plasion/neoviplasma.h"
 #include "icsneo/device/tree/rada2b/rada2b.h"
-#include "icsneo/device/tree/radcomet/radcomet2.h"
+#include "icsneo/device/tree/radcomet2/radcomet2.h"
 #include "icsneo/device/tree/radcomet3/radcomet3.h"
 #include "icsneo/device/tree/radmoont1s/radmoont1s.h"
 #include "icsneo/device/tree/radepsilon/radepsilon.h"

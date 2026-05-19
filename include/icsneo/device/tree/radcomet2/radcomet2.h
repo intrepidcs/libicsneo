@@ -5,7 +5,7 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/device/tree/radcomet/radcometsettings.h"
+#include "icsneo/device/tree/radcomet2/radcomet2settings.h"
 
 namespace icsneo {
 
@@ -53,7 +53,7 @@ public:
 
 	const std::vector<ChipInfo>& getChipInfo() const override {
 		static std::vector<ChipInfo> chips = {
-			{ChipID::RADComet_ZYNQ, true, "ZCHIP", "RADComet_SW_bin", 0, FirmwareType::Zip},
+			{ChipID::RADComet2_ZYNQ, true, "ZCHIP", "RADComet_SW_bin", 0, FirmwareType::Zip},
 		};
 		return chips;
 	}
@@ -61,15 +61,15 @@ public:
 	BootloaderPipeline getBootloader() override {
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
-			.add<FlashPhase>(ChipID::RADComet_ZYNQ, BootloaderCommunication::RAD)
-			.add<EnterApplicationPhase>(ChipID::RADComet_ZYNQ)
+			.add<FlashPhase>(ChipID::RADComet2_ZYNQ, BootloaderCommunication::RAD)
+			.add<EnterApplicationPhase>(ChipID::RADComet2_ZYNQ)
 			.add<WaitPhase>(std::chrono::milliseconds(3000))
 			.add<ReconnectPhase>();
 	}
 
 protected:
 	RADComet2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<RADCometSettings>(makeDriver);
+		initialize<RADComet2Settings>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {
