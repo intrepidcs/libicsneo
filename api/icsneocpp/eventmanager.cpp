@@ -7,8 +7,8 @@
 using namespace icsneo;
 
 EventManager& EventManager::GetInstance() {
-	static EventManager inst;
-	return inst;
+	static EventManager* inst = new EventManager();
+	return *inst;
 }
 
 void EventManager::downgradeErrorsOnCurrentThread() {
