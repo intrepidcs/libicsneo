@@ -20,7 +20,7 @@ bool Servd::Enabled() {
 	#ifdef _MSC_VER
 	#pragma warning(pop)
 	#endif
-	return enabled ? enabled[0] == '1' : true;
+	return enabled ? enabled[0] == '1' : false;
 }
 
 std::vector<std::string> split(const std::string_view& str, char delim = ' ') {
