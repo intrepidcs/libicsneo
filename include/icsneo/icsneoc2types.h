@@ -583,6 +583,8 @@ typedef enum _icsneoc2_chip_id_t {
 
 typedef uint8_t icsneoc2_chip_id_t;
 
+typedef struct icsneoc2_mac_addr_entry_t icsneoc2_mac_addr_entry_t;
+
 #ifdef __cplusplus
 }
 #endif

@@ -21,6 +21,7 @@
 #include "icsneo/communication/message/hardwareinfo.h"
 #include "icsneo/communication/message/tc10statusmessage.h"
 #include "icsneo/communication/message/gptpstatusmessage.h"
+#include "icsneo/communication/message/allmacaddressesmessage.h"
 #include "icsneo/communication/message/apperrormessage.h"
 #include "icsneo/communication/message/ethernetstatusmessage.h"
 #include "icsneo/communication/message/networkmutexmessage.h"
@@ -342,6 +343,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							return true;
 						case ExtendedCommand::GetTC10Status:
 							result = TC10StatusMessage::DecodeToMessage(packet->data);
+							return true;
+						case ExtendedCommand::GetAllMACAddresses:
+							result = AllMACAddressesMessage::DecodeToMessage(packet->data);
 							return true;
 						case ExtendedCommand::GetGPTPStatus: {
 							result = GPTPStatus::DecodeToMessage(packet->data, report);

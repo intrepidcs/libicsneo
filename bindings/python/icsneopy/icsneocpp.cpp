@@ -19,6 +19,7 @@ void init_ethernetmessage(pybind11::module_&);
 void init_linmessage(pybind11::module_&);
 void init_tc10statusmessage(pybind11::module_&);
 void init_gptpstatusmessage(pybind11::module_&);
+void init_allmacaddressesmessage(pybind11::module_&);
 void init_mdiomessage(pybind11::module_&);
 void init_spimessage(pybind11::module_&);
 void init_ethernetstatusmessage(pybind11::module_&);
@@ -59,6 +60,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_linmessage(m);
 	init_tc10statusmessage(m);
 	init_gptpstatusmessage(m);
+	init_allmacaddressesmessage(m);
 	init_mdiomessage(m);
 	init_ethernetstatusmessage(m);
 	init_macsecconfig(m);

@@ -31,6 +31,7 @@ pybind11_add_module(icsneopy
     icsneopy/communication/message/tc10statusmessage.cpp
     icsneopy/communication/message/mdiomessage.cpp
     icsneopy/communication/message/gptpstatusmessage.cpp
+    icsneopy/communication/message/allmacaddressesmessage.cpp
     icsneopy/communication/message/ethernetstatusmessage.cpp
     icsneopy/communication/message/spimessage.cpp
     icsneopy/communication/message/scriptstatusmessage.cpp

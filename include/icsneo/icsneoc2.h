@@ -343,15 +343,52 @@ icsneoc2_error_t icsneoc2_device_serial_get(const icsneoc2_device_t* device, cha
 icsneoc2_error_t icsneoc2_device_pcb_serial_get(const icsneoc2_device_t* device, uint8_t* value, size_t* value_length);
 
 /**
- * Get the MAC address of a device.
+ * Enumerate MAC addresses from a device.
  *
- * @param[in] device The device to get the MAC address of.
- * @param[out] value Pointer to a buffer to copy the MAC address into. If NULL, only value_length is written.
- * @param[in,out] value_length Size of the value buffer in bytes. Modified with the length of the MAC address.
+ * @param[in] device The device to query.
+ * @param[out] mac_entries Pointer to receive the head of the MAC addresses linked list.
  *
- * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if the device does not have a MAC address.
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters on failure.
  */
-icsneoc2_error_t icsneoc2_device_mac_address_get(const icsneoc2_device_t* device, uint8_t* value, size_t* value_length);
+icsneoc2_error_t icsneoc2_device_mac_addresses_enumerate(const icsneoc2_device_t* device, icsneoc2_mac_addr_entry_t** mac_entries);
+
+/**
+ * Get the network ID of a MAC address.
+ * 
+ * @param[in] mac_address The MAC address object to get the network ID of.
+ * @param[out] network_id Pointer to an icsneoc2_netid_t to copy the network ID into.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error success if successful, icsneoc2_error_invalid_parameters on failure.
+ */
+icsneoc2_error_t icsneoc2_mac_network_id_get(const icsneoc2_mac_addr_entry_t* mac_address, _icsneoc2_netid_t* network_id);
+
+/**
+ * Get the MAC Address bytes of a MAC address.
+ * 
+ * @param[in] mac_address The MAC address object to get the MAC address bytes of.
+ * @param[out] value Pointer to a buffer to copy the MAC address into. If NULL, only value_length is written.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters on failure.
+ */
+icsneoc2_error_t icsneoc2_mac_address_get(const icsneoc2_mac_addr_entry_t* mac_address, uint8_t* value, size_t* value_length);
+
+/**
+ * Advance to the next MAC address in an enumeration list.
+ * 
+ * @param[in] mac_address The current MAC address node.
+ * 
+ * @return icsneoc2_mac_addr_entry_t The next MAC address node.
+ */
+icsneoc2_mac_addr_entry_t* icsneoc2_mac_addresses_next(const icsneoc2_mac_addr_entry_t* mac_address);
+
+/**
+ * Free all MAC addresses in enumeration handle returned by icsneoc2_device_mac_addresses_enumerate().
+ *
+ * @param[in] mac_address The head of the MAC address enumeration to free. May be NULL.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_mac_addresses_free(icsneoc2_mac_addr_entry_t* mac_address);
 
 /**
  * Set the online state of a device.

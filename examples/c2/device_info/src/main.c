@@ -102,19 +102,31 @@ int main() {
 		print_error_code("Failed to get PCB serial (device may not support it)", res);
 	}
 
-	/* ===== MAC Address ===== */
-	uint8_t mac[6] = {0};
-	size_t mac_len = sizeof(mac);
-	res = icsneoc2_device_mac_address_get(device, mac, &mac_len);
+	/* ===== MAC Addresses ===== */
+	icsneoc2_mac_addr_entry_t* macs = NULL;
+	res = icsneoc2_device_mac_addresses_enumerate(device, &macs);
 	if(res == icsneoc2_error_success) {
-		printf("MAC:        ");
-		for(size_t i = 0; i < mac_len; i++) {
-			if(i > 0) printf(":");
-			printf("%02X", mac[i]);
+		uint16_t mac_count = 0;
+		for(icsneoc2_mac_addr_entry_t* cur = macs; cur; cur = icsneoc2_mac_addresses_next(cur)) {
+			mac_count++;
 		}
-		printf("\n");
+		printf("MACs:       %u entr%s\n", mac_count, mac_count == 1 ? "y" : "ies");
+		for(icsneoc2_mac_addr_entry_t* cur = macs; cur; cur = icsneoc2_mac_addresses_next(cur)) {
+			_icsneoc2_netid_t network_id;
+			icsneoc2_mac_network_id_get(cur, &network_id);
+			printf("  Network %-5u  ", (unsigned)network_id);
+			uint8_t address[6];
+			size_t address_size = 6;
+			icsneoc2_mac_address_get(cur, address, &address_size);
+			for(int j = 0; j < 6; j++) {
+				if(j > 0) printf(":");
+				printf("%02X", (unsigned)address[j]);
+			}
+			printf("\n");
+		}
+		icsneoc2_mac_addresses_free(macs);
 	} else {
-		print_error_code("Failed to get MAC address (device may not support it)", res);
+		print_error_code("Failed to get MAC addresses (device may not support it)", res);
 	}
 
 	/* Cleanup */

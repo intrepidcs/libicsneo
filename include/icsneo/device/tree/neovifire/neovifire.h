@@ -60,6 +60,12 @@ public:
 	ProductID getProductID() const override {
 		return ProductID::neoVIFIRE;
 	}
+
+protected:
+	bool supportsGetAllMACAddresses() const override {
+		return false;
+	}
+	
 private:
 	NeoVIFIRE(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<NeoVIFIRESettings>(makeDriver);

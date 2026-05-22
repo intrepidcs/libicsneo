@@ -214,7 +214,10 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_rtc_set(NULL, 0));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_serial_get(NULL, placeholderStr, &placeholderSizeT));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_pcb_serial_get(NULL, &placeholderInteger8, &placeholderSizeT));
-	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_mac_address_get(NULL, &placeholderInteger8, &placeholderSizeT));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_mac_addresses_enumerate(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_mac_network_id_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_mac_address_get(NULL, &placeholderInteger8, &placeholderSizeT));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_mac_addresses_free(NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_supports_tc10(NULL, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_tc10_wake_request(NULL, icsneoc2_netid_dwcan_01));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_tc10_sleep_request(NULL, icsneoc2_netid_dwcan_01));

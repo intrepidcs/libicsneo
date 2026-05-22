@@ -230,6 +230,7 @@ set(SRC_FILES
 	communication/message/logdatamessage.cpp
 	communication/message/tc10statusmessage.cpp
 	communication/message/gptpstatusmessage.cpp
+	communication/message/allmacaddressesmessage.cpp
 	communication/message/ethernetstatusmessage.cpp
 	communication/message/networkmutexmessage.cpp
 	communication/message/clientidmessage.cpp

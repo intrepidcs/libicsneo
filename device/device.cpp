@@ -2263,13 +2263,34 @@ std::optional<std::vector<uint8_t>> Device::getPCBSerial() {
 	return std::vector<uint8_t>(serialMsg->pcbSerial, serialMsg->pcbSerial + sizeof(serialMsg->pcbSerial));
 }
 
-std::optional<std::vector<uint8_t>> Device::getMACAddress() {
-	auto serialMsg = com->getSerialNumberSync();
-	if(!serialMsg || !serialMsg->hasMacAddress) {
-		return std::nullopt;
+std::unordered_map<Network::NetID, MACAddress> Device::getMACAddresses() {
+	if(supportsGetAllMACAddresses()) {
+		if(!isOpen()) {
+			report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+			return {};
+		}
+		auto msg = com->waitForMessageSync(
+			[this](){ return com->sendCommand(ExtendedCommand::GetAllMACAddresses, {}); },
+			std::make_shared<MessageFilter>(Message::Type::AllMACAddresses),
+			std::chrono::milliseconds(100)
+		);
+		if(msg) {
+			const auto typed = std::dynamic_pointer_cast<AllMACAddressesMessage>(msg);
+			if(typed)
+				return typed->addresses;
+		}
 	}
 
-	return std::vector<uint8_t>(serialMsg->macAddress, serialMsg->macAddress + sizeof(serialMsg->macAddress));
+	auto serialMsg = com->getSerialNumberSync();
+	if(!serialMsg || !serialMsg->hasMacAddress)
+		return {};
+
+	std::unordered_map<Network::NetID, MACAddress> addresses;
+	auto addr = serialMsg->macAddress;
+	MACAddress arrAddr;
+	std::copy(addr, addr + MACAddressLength, arrAddr.begin());
+	addresses.emplace(std::make_pair(Network::NetID::ETHERNET_01, arrAddr));
+	return addresses;
 }
 
 std::optional<std::set<SupportedFeature>> Device::getSupportedFeatures() {

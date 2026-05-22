@@ -25,6 +25,12 @@ public:
 	ProductID getProductID() const override {
 		return ProductID::neoOBD2Sim;
 	}
+
+protected:
+	bool supportsGetAllMACAddresses() const override {
+		return false;
+	}
+	
 private:
 	NeoOBD2SIM(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize(makeDriver);

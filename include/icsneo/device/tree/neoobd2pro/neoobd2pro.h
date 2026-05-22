@@ -26,6 +26,11 @@ public:
 		return ProductID::neoOBD2Pro;
 	}
 
+protected:
+	bool supportsGetAllMACAddresses() const override {
+		return false;
+	}
+
 private:
 	NeoOBD2PRO(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize(makeDriver);

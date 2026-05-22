@@ -80,6 +80,10 @@ protected:
 	bool supportsEraseMemory() const override {
 		return true;
 	}
+
+	bool supportsGetAllMACAddresses() const override {
+		return false;
+	}
 };
 
 }

@@ -14,6 +14,7 @@
 #include <optional>
 #include <sstream>
 #include <fstream>
+#include <cstring>
 
 using namespace icsneo;
 
@@ -458,27 +459,78 @@ icsneoc2_error_t icsneoc2_device_pcb_serial_get(const icsneoc2_device_t* device,
 	return icsneoc2_error_success;
 }
 
-icsneoc2_error_t icsneoc2_device_mac_address_get(const icsneoc2_device_t* device, uint8_t* value, size_t* value_length) {
+icsneoc2_error_t icsneoc2_device_mac_addresses_enumerate(const icsneoc2_device_t* device, icsneoc2_mac_addr_entry_t** mac_entries) {
 	auto res = icsneoc2_device_is_valid(device);
 	if(res != icsneoc2_error_success) {
 		return res;
 	}
-	if(!value_length) {
+	if(!mac_entries) {
 		return icsneoc2_error_invalid_parameters;
 	}
-	auto macAddress = device->device->getMACAddress();
-	if(!macAddress.has_value()) {
+	const auto result = device->device->getMACAddresses();
+	if(result.empty()) {
 		return icsneoc2_error_invalid_type;
 	}
-	const auto& data = *macAddress;
-	if(value) {
-		size_t copyLen = std::min(*value_length, data.size());
-		std::copy(data.begin(), data.begin() + copyLen, value);
+	icsneoc2_mac_addr_entry_t* head = nullptr;
+	icsneoc2_mac_addr_entry_t* tail = nullptr;
+	for(auto addr_pair : result) {
+		auto* node = new (std::nothrow) icsneoc2_mac_addr_entry_t;
+		if(!node) {
+			icsneoc2_mac_addresses_free(head);
+			return icsneoc2_error_out_of_memory;
+		}
+		node->network_id = static_cast<uint16_t>(addr_pair.first);
+		std::copy(addr_pair.second.begin(), addr_pair.second.end(), node->address);
+		node->next = nullptr;
+		if(!head) {
+			head = node;
+		} else {
+			tail->next = node;
+		}
+		tail = node;
 	}
-	*value_length = data.size();
 	return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_mac_network_id_get(const icsneoc2_mac_addr_entry_t* mac_address, _icsneoc2_netid_t* network_id) {
+	if(!mac_address || !network_id) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	*network_id = static_cast<_icsneoc2_netid_t>(mac_address->network_id);
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_mac_address_get(const icsneoc2_mac_addr_entry_t* mac_address, uint8_t* value, size_t* value_length) {
+	if(!mac_address || !value || !value_length) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	if(value) {
+		size_t copyLen = std::min(*value_length, static_cast<size_t>(ICSNEO_MAC_ADDRESS_LEN));
+		std::copy(mac_address->address, mac_address->address + copyLen, value);
+	}
+	*value_length = static_cast<size_t>(ICSNEO_MAC_ADDRESS_LEN);
+	return icsneoc2_error_success;
+}
+
+icsneoc2_mac_addr_entry_t* icsneoc2_mac_addresses_next(const icsneoc2_mac_addr_entry_t* mac_address) {
+	if(!mac_address) {
+		return nullptr;
+	}
+	return mac_address->next;
+}
+
+icsneoc2_error_t icsneoc2_mac_addresses_free(icsneoc2_mac_addr_entry_t* mac_address) {
+	if(!mac_address) {
+		return icsneoc2_error_invalid_parameters;
+	}
+
+	while(mac_address) {
+		auto* next = mac_address->next;
+		delete mac_address;
+		mac_address = next;
+	}
+	return icsneoc2_error_success;
+}
 
 icsneoc2_error_t icsneoc2_device_go_online(const icsneoc2_device_t* device, bool go_online) {
 	auto res = icsneoc2_device_is_valid(device);

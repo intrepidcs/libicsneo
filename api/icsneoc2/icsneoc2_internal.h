@@ -48,6 +48,12 @@ typedef struct icsneoc2_chip_versions_t {
 	icsneoc2_chip_versions_t* next;
 } icsneoc2_chip_versions_t;
 
+typedef struct icsneoc2_mac_addr_entry_t {
+	uint16_t network_id;
+	uint8_t address[ICSNEO_MAC_ADDRESS_LEN];
+	icsneoc2_mac_addr_entry_t* next;
+} icsneoc2_mac_addr_entry_t;
+
 /**
  * Safely copies a std::string to a char array.
  *

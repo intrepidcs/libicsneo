@@ -64,6 +64,7 @@ enum class ExtendedCommand : uint16_t {
 	RequestTC10Wake = 0x003D,
 	RequestTC10Sleep = 0x003E,
 	GetTC10Status = 0x003F,
+	GetAllMACAddresses = 0x0040,
 	ProtobufAPI = 0x0041,
 	TransmitMessage = 0x0042,
 };

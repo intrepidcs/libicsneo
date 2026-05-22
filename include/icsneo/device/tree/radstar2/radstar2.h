@@ -71,6 +71,10 @@ protected:
 	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
 		return 0;
 	}
+
+	bool supportsGetAllMACAddresses() const override {
+		return false;
+	}
 };
 
 }

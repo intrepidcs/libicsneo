@@ -33,7 +33,7 @@ void init_device(pybind11::module_& m) {
 		.def("get_serial_number", &Device::getSerialNumber)
 		.def("get_serial", &Device::getSerial)
 		.def("get_pcb_serial", &Device::getPCBSerial, pybind11::call_guard<pybind11::gil_scoped_release>())
-		.def("get_mac_address", &Device::getMACAddress, pybind11::call_guard<pybind11::gil_scoped_release>())
+		.def("get_mac_addresses", &Device::getMACAddresses, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("get_supported_rx_networks", &Device::getSupportedRXNetworks, pybind11::return_value_policy::reference)
 		.def("get_supported_tx_networks", &Device::getSupportedTXNetworks, pybind11::return_value_policy::reference)
 		.def("get_tc10_status", &Device::getTC10Status, pybind11::call_guard<pybind11::gil_scoped_release>())

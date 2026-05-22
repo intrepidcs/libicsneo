@@ -93,7 +93,6 @@ protected:
 	}
 
 	bool supportsGPTP() const override { return true; }
-	
 	size_t getDiskCount() const override {
 		return 2;
 	}

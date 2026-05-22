@@ -47,6 +47,7 @@ public:
 		LogData = 0x8015,
 		NetworkMutex = 0x8016,
 		ClientId = 0x8017,
+		AllMACAddresses = 0x8018,
 	};
 
 	Message(Type t) : type(t) {}

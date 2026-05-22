@@ -85,6 +85,10 @@ protected:
 	size_t getDiskCount() const override {
 		return 1;
 	}
+
+	bool supportsGetAllMACAddresses() const override {
+		return false;
+	}
 };
 
 }; // namespace icsneo

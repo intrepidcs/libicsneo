@@ -59,6 +59,7 @@
 #include "icsneo/communication/message/versionmessage.h"
 #include "icsneo/communication/message/gptpstatusmessage.h"
 #include "icsneo/communication/message/networkmutexmessage.h"
+#include "icsneo/communication/message/allmacaddressesmessage.h"
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
 	static constexpr DeviceType::Enum DEVICE_TYPE = type; \
@@ -183,7 +184,7 @@ public:
 	std::string getSerial() const { return data.serial; }
 	uint32_t getSerialNumber() const { return Device::SerialStringToNum(getSerial()); }
 	std::optional<std::vector<uint8_t>> getPCBSerial();
-	std::optional<std::vector<uint8_t>> getMACAddress();
+	std::unordered_map<Network::NetID, MACAddress> getMACAddresses();
 	const neodevice_t& getNeoDevice() const { return data; }
 	virtual std::string getProductName() const { return getType().getGenericProductName(); }
 	std::string describe() const;
@@ -858,7 +859,7 @@ public:
 	}
 
 	virtual bool supportsTC10() const { return false; }
-	
+
 	virtual bool supportsGPTP() const { return false; }
 
 	bool requestTC10Wake(Network::NetID network);
@@ -997,6 +998,8 @@ protected:
 	std::optional<HardwareInfo::Version> bootloaderVersion = std::nullopt;
 
 	bool supportsNetworkMutex = false;
+
+	virtual bool supportsGetAllMACAddresses() const { return true; }
 
 private:
 	neodevice_t data;

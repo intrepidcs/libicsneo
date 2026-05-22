@@ -109,7 +109,7 @@ protected:
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	bool supportsWiVI() const override { return true; }
-	
+
 	bool supportsLiveData() const override { return true; }
 
 	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {

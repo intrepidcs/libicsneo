@@ -62,6 +62,9 @@ protected:
 		return true;
 	}
 
+	bool supportsGetAllMACAddresses() const override {
+		return false;
+	}
 };
 
 }
