@@ -53,6 +53,8 @@ public:
 			Network::NetID::AE_06,
 			Network::NetID::AE_07,
 			Network::NetID::AE_08,
+
+			Network::NetID::MDIO_01,
 		};
 		return supportedNetworks;
 	}

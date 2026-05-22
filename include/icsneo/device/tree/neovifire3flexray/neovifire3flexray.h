@@ -49,6 +49,8 @@ public:
 			Network::NetID::FLEXRAY_02,
 			Network::NetID::FLEXRAY_02A,
 			Network::NetID::FLEXRAY_02B,
+
+			Network::NetID::MDIO_01,
 		};
 		return supportedNetworks;
 	}

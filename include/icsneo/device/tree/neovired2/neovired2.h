@@ -30,7 +30,9 @@ public:
 			Network::NetID::ETHERNET_02,
 
 			Network::NetID::LIN_01,
-			Network::NetID::LIN_02
+			Network::NetID::LIN_02,
+
+			Network::NetID::MDIO_01,
 		};
 		return supportedNetworks;
 	}

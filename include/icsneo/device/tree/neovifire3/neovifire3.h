@@ -46,6 +46,8 @@ public:
 			Network::NetID::LIN_06,
 			Network::NetID::LIN_07,
 			Network::NetID::LIN_08,
+
+			Network::NetID::MDIO_01,
 		};
 		return supportedNetworks;
 	}
