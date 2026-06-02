@@ -80,7 +80,7 @@ bool Packetizer::input(RingBuffer& bytes) {
 				* end of the payload. The short packet length, for reference, only encompasses the length of the actual
 				* payload, and not the header or checksum.
 				*/
-				if(packetLength < 6 || packetLength > 4000) {
+				if(packetLength < 6 || packetLength > std::numeric_limits<uint16_t>::max()) {
 					bytes.pop_front();
 					EventManager::GetInstance().add(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
 					state = ReadState::SearchForHeader;
