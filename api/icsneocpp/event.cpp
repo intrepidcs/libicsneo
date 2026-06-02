@@ -4,10 +4,10 @@
 
 using namespace icsneo;
 
-APIEvent::APIEvent(Type type, APIEvent::Severity severity, const Device* device) : eventStruct({}) {
-	this->device = device;
-	if(device) {
-		serial = device->getSerial();
+APIEvent::APIEvent(Type type, APIEvent::Severity severity, std::weak_ptr<Device> device) : eventStruct({}), device(device) {
+	auto shared = device.lock();
+	if(shared) {
+		serial = shared->getSerial();
 		eventStruct.serial[serial.copy(eventStruct.serial, sizeof(eventStruct.serial))] = '\0';
 	}
 
@@ -27,9 +27,10 @@ void APIEvent::downgradeFromError() noexcept {
 }
 
 bool APIEvent::isForDevice(std::string filterSerial) const noexcept {
-	if(!device || filterSerial.length() == 0)
+	auto shared = device.lock();
+	if(!shared || filterSerial.length() == 0)
 		return false;
-	return device->getSerial() == filterSerial;
+	return shared->getSerial() == filterSerial;
 }
 
 // API Errors
@@ -467,8 +468,9 @@ const char* APIEvent::DescriptionForType(Type type) {
 
 std::string APIEvent::describe() const noexcept {
 	std::stringstream ss;
-	if(device)
-		ss << *device; // Makes use of device.describe()
+	auto shared = device.lock();
+	if(shared)
+		ss << *shared; // Makes use of device.describe()
 	else
 		ss << "API";
 

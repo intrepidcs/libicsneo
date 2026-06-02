@@ -87,7 +87,7 @@ class DeviceExtension;
 
 typedef uint64_t MemoryAddress;
 
-class Device {
+class Device : public std::enable_shared_from_this<Device> {
 public:
 	virtual ~Device();
 
@@ -930,7 +930,7 @@ protected:
 
 	virtual device_eventhandler_t makeEventHandler() {
 		return [this](APIEvent::Type type, APIEvent::Severity severity) {
-			EventManager::GetInstance().add(type, severity, this);
+			EventManager::GetInstance().add(type, severity, weak_from_this());
 		};
 	}
 

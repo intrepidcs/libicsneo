@@ -19,6 +19,7 @@ typedef struct {
 #include <chrono>
 #include <string>
 #include <ostream>
+#include <memory>
 
 namespace icsneo {
 
@@ -185,19 +186,25 @@ public:
 		Error = 0x30
 	};
 
-	APIEvent() : eventStruct({}), serial(), timepoint(), device(nullptr) {}
-	APIEvent(APIEvent::Type event, APIEvent::Severity severity, const Device* device = nullptr);
+	APIEvent() : eventStruct({}), serial(), timepoint() {}
+	APIEvent(APIEvent::Type event, APIEvent::Severity severity, std::weak_ptr<Device> device = {});
 
 	const neoevent_t* getNeoEvent() const noexcept { return &eventStruct; }
 	Type getType() const noexcept { return Type(eventStruct.eventNumber); }
 	Severity getSeverity() const noexcept { return Severity(eventStruct.severity); }
 	std::string getDescription() const noexcept { return std::string(eventStruct.description); }
-	const Device* getDevice() const noexcept { return device; } // Will return nullptr if this is an API-wide event
+	const Device* getDevice() const noexcept { // Will return nullptr if this is an API-wide event
+		auto shared = device.lock();
+		return (shared) ? shared.get() : nullptr;
+	} 
 	EventTimePoint getTimestamp() const noexcept { return timepoint; }
 
 	void downgradeFromError() noexcept;
 
-	bool isForDevice(const Device* forDevice) const noexcept { return forDevice == device; }
+	bool isForDevice(const Device* forDevice) const noexcept {
+		auto shared = device.lock();
+		return shared && (shared.get() == forDevice);
+	}
 	bool isForDevice(std::string serial) const noexcept;
 
 	// As opposed to getDescription, this will also add text such as "neoVI FIRE 2 CY2468 Error: " to fully describe the problem
@@ -213,7 +220,7 @@ private:
 	neoevent_t eventStruct;
 	std::string serial;
 	EventTimePoint timepoint;
-	const Device* device;
+	std::weak_ptr<Device> device;
 
 	void init(APIEvent::Type event, APIEvent::Severity);
 };

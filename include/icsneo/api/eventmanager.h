@@ -56,7 +56,7 @@ public:
 	APIEvent getLastError();
 
 	void add(APIEvent event);
-	void add(APIEvent::Type type, APIEvent::Severity severity, const Device* forDevice = nullptr) {
+	void add(APIEvent::Type type, APIEvent::Severity severity, std::weak_ptr<Device> forDevice = {}) {
 		add(APIEvent(type, severity, forDevice));
 	}
 
