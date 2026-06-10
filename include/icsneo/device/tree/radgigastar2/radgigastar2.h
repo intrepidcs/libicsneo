@@ -217,7 +217,7 @@ public:
 protected:
 	RADGigastar2(neodevice_t neodevice, const driver_factory_t &makeDriver) : Device(neodevice)
 	{
-		initialize<RADGigastar2Settings>(makeDriver);
+		initialize<RADGigastar2Settings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer &packetizer) override
