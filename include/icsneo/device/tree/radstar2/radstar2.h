@@ -35,6 +35,21 @@ public:
 	ProductID getProductID() const override {
 		return ProductID::RADStar2;
 	}
+
+	const std::vector<ChipInfo>& getChipInfo() const override {
+		static std::vector<ChipInfo> chips = {
+			{ChipID::RADStar2_ZYNQ, true, "ZCHIP", "RADStar2_SW_bin", 0, FirmwareType::Zip}
+		};
+		return chips;
+	}
+
+	BootloaderPipeline getBootloader() override {
+		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
+			.add<FlashPhase>(ChipID::RADStar2_ZYNQ, BootloaderCommunication::RAD, false)
+			.add<EnterApplicationPhase>(ChipID::RADStar2_ZYNQ)
+			.add<WaitPhase>(std::chrono::milliseconds(3000));
+	}
 protected:
 	RADStar2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADStar2Settings>(makeDriver);
