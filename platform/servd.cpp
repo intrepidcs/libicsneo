@@ -113,6 +113,10 @@ bool Servd::open() {
 		return false;
 	}
 	const auto tokens = split(response);
+	if(tokens.size() == 1 && tokens[0] == "0") {
+		EventManager::GetInstance().add(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
+		return false;
+	}
 	if(tokens.size() != 2) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
 		return false;

@@ -137,6 +137,9 @@ public:
 		if (::poll(&pfd, 1, static_cast<int>(timeout.count())) == -1) {
 			return false;
 		}
+		if (pfd.revents & (POLLHUP | POLLERR)) {
+			return false;
+		}
 		in = pfd.revents & POLLIN;
 		return true;
 		#endif
@@ -155,7 +158,12 @@ public:
 	}
 	
 	bool send(const void* buffer, size_t size) {
-		auto sent = ::send(mFD, (const char*)buffer, (int)size, 0);
+		#ifdef _WIN32
+		int flags = 0;
+		#else
+		int flags = MSG_NOSIGNAL;
+		#endif
+		auto sent = ::send(mFD, (const char*)buffer, (int)size, flags);
 		if(sent == -1) {
 			return false;
 		}
