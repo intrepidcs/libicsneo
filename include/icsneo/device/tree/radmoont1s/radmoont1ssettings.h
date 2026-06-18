@@ -154,6 +154,23 @@ public:
 		return true;
 	}
 
+	std::optional<bool> isPerfTestEnabled() const override {
+		auto cfg = getStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional<bool>(cfg->perf_en != 0);
+	}
+
+	bool setPerfTestEnable(bool enable) override {
+		auto cfg = getMutableStructurePointer<radmoont1s_settings_t>();
+		if(cfg == nullptr)
+			return false;
+
+		cfg->perf_en = !!enable;
+		return true;
+	}
+
 private:
 	const ETHERNET10T1S_SETTINGS* getT1SSettingsFor(Network net) const {
 		auto cfg = getStructurePointer<radmoont1s_settings_t>();

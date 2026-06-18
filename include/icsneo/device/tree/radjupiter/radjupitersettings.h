@@ -105,6 +105,7 @@ public:
 				return nullptr;
 		}
 	}
+
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radjupiter_settings_t>();
 		if(cfg == nullptr)
@@ -118,6 +119,7 @@ public:
 				return nullptr;
 		}
 	}
+
 	const LIN_SETTINGS* getLINSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radjupiter_settings_t>();
 		if(cfg == nullptr)
@@ -128,6 +130,23 @@ public:
 			default:
 				return nullptr;
 		}
+	}
+
+	std::optional<bool> isPerfTestEnabled() const override {
+		auto cfg = getStructurePointer<radjupiter_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional<bool>(cfg->perf_en != 0);
+	}
+
+	bool setPerfTestEnable(bool enable) override {
+		auto cfg = getMutableStructurePointer<radjupiter_settings_t>();
+		if(cfg == nullptr)
+			return false;
+
+		cfg->perf_en = !!enable;
+		return true;
 	}
 };
 

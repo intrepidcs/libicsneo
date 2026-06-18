@@ -135,6 +135,7 @@ public:
 				return nullptr;
 		}
 	}
+
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radgalaxy_settings_t>();
 		if(cfg == nullptr)
@@ -160,6 +161,7 @@ public:
 				return nullptr;
 		}
 	}
+	
 	const SWCAN_SETTINGS* getSWCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radgalaxy_settings_t>();
 		if(cfg == nullptr)
@@ -269,6 +271,23 @@ public:
 			cfg->misc_io_initial_latch = (cfg->misc_io_initial_latch & 0x0FFF) | (static_cast<uint16_t>(dacValue) << 12);
 		}
 
+		return true;
+	}
+
+	std::optional<bool> isPerfTestEnabled() const override {
+		auto cfg = getStructurePointer<radgalaxy_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional<bool>(cfg->perf_en != 0);
+	}
+
+	bool setPerfTestEnable(bool enable) override {
+		auto cfg = getMutableStructurePointer<radgalaxy_settings_t>();
+		if(cfg == nullptr)
+			return false;
+
+		cfg->perf_en = !!enable;
 		return true;
 	}
 };

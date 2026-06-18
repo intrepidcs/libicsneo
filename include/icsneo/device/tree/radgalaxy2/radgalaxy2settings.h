@@ -151,6 +151,7 @@ public:
 				return nullptr;
 		}
 	}
+	
 	const CANFD_SETTINGS* getCANFDSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radgalaxy2_settings_t>();
 		if(cfg == nullptr)
@@ -258,6 +259,23 @@ public:
 		};
 
 		return GetNetworkEnabled(bitfields, 2, networkID);
+	}
+
+	std::optional<bool> isPerfTestEnabled() const override {
+		auto cfg = getStructurePointer<radgalaxy2_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional<bool>(cfg->perf_en != 0);
+	}
+
+	bool setPerfTestEnable(bool enable) override {
+		auto cfg = getMutableStructurePointer<radgalaxy2_settings_t>();
+		if(cfg == nullptr)
+			return false;
+
+		cfg->perf_en = !!enable;
+		return true;
 	}
 };
 

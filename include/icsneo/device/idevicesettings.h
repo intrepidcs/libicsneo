@@ -1265,6 +1265,16 @@ public:
 		return false;
 	}
 
+	virtual std::optional<bool> isPerfTestEnabled() const {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+
+	virtual bool setPerfTestEnable(bool enable) {
+		(void)enable;
+		return false;
+	}
+
 	virtual bool setMiscIOAnalogOutputEnabled(uint8_t pin, bool enabled);
 	virtual bool setMiscIOAnalogOutput(uint8_t pin, MiscIOAnalogVoltage voltage);
 

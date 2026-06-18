@@ -176,6 +176,7 @@ namespace icsneo
 				return nullptr;
 			}
 		}
+		
 		const CANFD_SETTINGS *getCANFDSettingsFor(Network net) const override
 		{
 			auto cfg = getStructurePointer<radgigastar2_settings_t>();
@@ -534,6 +535,23 @@ namespace icsneo
 			}
 			
 			t1sExt->multi_id[index] = id;
+			return true;
+		}
+
+		std::optional<bool> isPerfTestEnabled() const override {
+			auto cfg = getStructurePointer<radgigastar2_settings_t>();
+			if(cfg == nullptr)
+				return std::nullopt;
+			
+			return std::make_optional<bool>(cfg->perf_en != 0);
+		}
+
+		bool setPerfTestEnable(bool enable) override {
+			auto cfg = getMutableStructurePointer<radgigastar2_settings_t>();
+			if(cfg == nullptr)
+				return false;
+
+			cfg->perf_en = !!enable;
 			return true;
 		}
 

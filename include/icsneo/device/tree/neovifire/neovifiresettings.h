@@ -121,6 +121,7 @@ public:
 				return nullptr;
 		}
 	}
+
 	const CAN_SETTINGS* getLSFTCANSettingsFor(Network net) const override { return getCANSettingsFor(net); }
 	const SWCAN_SETTINGS* getSWCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<neovifire_settings_t>();
@@ -133,6 +134,7 @@ public:
 				return nullptr;
 		}
 	}
+
 	const LIN_SETTINGS* getLINSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<neovifire_settings_t>();
 		if(cfg == nullptr)
@@ -149,6 +151,23 @@ public:
 			default:
 				return nullptr;
 		}
+	}
+
+	std::optional<bool> isPerfTestEnabled() const override {
+		auto cfg = getStructurePointer<neovifire_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional<bool>(cfg->perf_en != 0);
+	}
+	
+	bool setPerfTestEnable(bool enable) override {
+		auto cfg = getMutableStructurePointer<neovifire_settings_t>();
+		if(cfg == nullptr)
+			return false;
+
+		cfg->perf_en = !!enable;
+		return true;
 	}
 };
 

@@ -51,6 +51,23 @@ public:
 				return nullptr;
 		}
 	}
+
+	std::optional<bool> isPerfTestEnabled() const override {
+		auto cfg = getStructurePointer<valuecan3_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		
+		return std::make_optional<bool>(cfg->perf_en != 0);
+	}
+
+	bool setPerfTestEnable(bool enable) override {
+		auto cfg = getMutableStructurePointer<valuecan3_settings_t>();
+		if(cfg == nullptr)
+			return false;
+
+		cfg->perf_en = !!enable;
+		return true;
+	}
 };
 
 }

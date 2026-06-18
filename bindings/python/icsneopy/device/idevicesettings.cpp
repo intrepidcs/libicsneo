@@ -119,6 +119,10 @@ void init_idevicesettings(pybind11::module_& m) {
         
         .def("set_misc_io_analog_output_enabled", &IDeviceSettings::setMiscIOAnalogOutputEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_misc_io_analog_output", &IDeviceSettings::setMiscIOAnalogOutput, pybind11::call_guard<pybind11::gil_scoped_release>())
+
+        // Performance blast
+        .def("is_perf_test_enabled", &IDeviceSettings::isPerfTestEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_perf_test_enable", &IDeviceSettings::setPerfTestEnable, pybind11::call_guard<pybind11::gil_scoped_release>())
         
         // Status properties
         .def_readonly("disabled", &IDeviceSettings::disabled)
