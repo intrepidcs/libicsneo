@@ -387,6 +387,16 @@ typedef struct icsneoc2_gptp_status_t {
 	uint8_t  short_format;              // Non-zero if firmware returned a partial response
 } icsneoc2_gptp_status_t;
 
+typedef enum _icsneoc2_linux_configuration_port_t {
+	icsneoc2_linux_configuration_port_usb = 0,    // Linux configuration interface accessed over USB (default)
+	icsneoc2_linux_configuration_port_eth01 = 1,  // ETH 01 reserved for the Linux configuration interface
+
+	// Must be last entry. Don't use as a configuration port.
+	icsneoc2_linux_configuration_port_maxsize
+} _icsneoc2_linux_configuration_port_t;
+
+typedef uint32_t icsneoc2_linux_configuration_port_t;
+
 typedef struct icsneoc2_disk_details_t icsneoc2_disk_details_t;
 
 typedef enum _icsneoc2_disk_layout_t {

@@ -112,6 +112,16 @@ static_assert(sizeof(neovired2_settings_t) == 918, "NeoVIRED2 settings size mism
 class NeoVIRED2Settings : public IDeviceSettings {
 public:
 	NeoVIRED2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovired2_settings_t)) {}
+	const Fire3LinuxSettings* getLinuxSettings() const override {
+		auto cfg = getStructurePointer<neovired2_settings_t>();
+		return cfg ? &cfg->os_settings : nullptr;
+	}
+	std::optional<Fire3LinuxSettings*> getMutableLinuxSettings() override {
+		auto cfg = getMutableStructurePointer<neovired2_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		return &cfg->os_settings;
+	}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<neovired2_settings_t>();
 		if(cfg == nullptr)

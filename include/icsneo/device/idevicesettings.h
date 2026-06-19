@@ -773,6 +773,13 @@ enum class MiscIOAnalogVoltage : uint8_t
 	V5 = icsneoc2_misc_io_analog_voltage_v5
 };
 
+// Selects which Ethernet port(s) are reserved for the Linux configuration interface.
+enum class LinuxConfigurationPort : icsneoc2_linux_configuration_port_t
+{
+	USB = icsneoc2_linux_configuration_port_usb,    // Linux configuration interface accessed over USB (default)
+	ETH01 = icsneoc2_linux_configuration_port_eth01 // ETH 01 reserved for Linux configuration
+};
+
 class IDeviceSettings {
 public:
 	using TerminationGroup = std::vector<Network>;
@@ -1302,6 +1309,20 @@ public:
 	virtual const RAD_GPTP_SETTINGS* getGPTPSettings() const { return nullptr; }
 	virtual RAD_GPTP_SETTINGS* getMutableGPTPSettings() { return nullptr; }
 
+	/* Linux operating-system settings (Fire3 family devices) */
+
+	// Whether the device is allowed to boot its Linux operating system.
+	std::optional<bool> getLinuxBootEnabled();
+	bool setLinuxBootEnabled(bool enabled);
+
+	// Whether the external WiFi antenna is used (true) instead of the internal antenna (false).
+	std::optional<bool> getExternalWifiAntennaEnabled();
+	bool setExternalWifiAntennaEnabled(bool enabled);
+
+	// Which Ethernet port(s) are reserved for the Linux configuration interface.
+	std::optional<LinuxConfigurationPort> getLinuxConfigurationPort();
+	bool setLinuxConfigurationPort(LinuxConfigurationPort port);
+
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }
 	template<typename T> const T* getStructurePointer() const { return reinterpret_cast<const T*>(getRawStructurePointer()); }
@@ -1333,6 +1354,12 @@ protected:
 	typedef void* warn_t;
 	IDeviceSettings(warn_t createInoperableSettings, std::shared_ptr<Communication> com)
 		: disabled(true), readonly(true), report(com->report), structSize(0) { (void)createInoperableSettings; }
+
+	// Devices that embed a Fire3LinuxSettings block in their settings structure override these to
+	// expose it; all other devices report not-available (nullptr / nullopt) and the Linux accessors
+	// report not-available in turn.
+	virtual const Fire3LinuxSettings* getLinuxSettings() const { return nullptr; }
+	virtual std::optional<Fire3LinuxSettings*> getMutableLinuxSettings() { return std::nullopt; }
 
 	virtual ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const { return nullptr; }
 	virtual ICSNEO_UNALIGNED(uint64_t*) getMutableTerminationEnables() {

@@ -58,6 +58,10 @@ void init_idevicesettings(pybind11::module_& m) {
         .value("V4", MiscIOAnalogVoltage::V4)
         .value("V5", MiscIOAnalogVoltage::V5);
 
+    pybind11::enum_<LinuxConfigurationPort>(settings, "LinuxConfigurationPort")
+        .value("USB", LinuxConfigurationPort::USB)
+        .value("ETH01", LinuxConfigurationPort::ETH01);
+
     pybind11::classh<IDeviceSettings>(m, "IDeviceSettings")
         .def("apply", &IDeviceSettings::apply, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("apply_defaults", &IDeviceSettings::applyDefaults, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
@@ -142,7 +146,15 @@ void init_idevicesettings(pybind11::module_& m) {
         .def("set_gptp_enabled_port", &IDeviceSettings::setGPTPEnabledPort, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("is_gptp_clock_syntonization_enabled", &IDeviceSettings::isGPTPClockSyntonizationEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_gptp_clock_syntonization_enabled", &IDeviceSettings::setGPTPClockSyntonizationEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
-        
+
+        // Linux operating-system settings (Fire3 family devices)
+        .def("get_linux_boot_enabled", &IDeviceSettings::getLinuxBootEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_linux_boot_enabled", &IDeviceSettings::setLinuxBootEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_external_wifi_antenna_enabled", &IDeviceSettings::getExternalWifiAntennaEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_external_wifi_antenna_enabled", &IDeviceSettings::setExternalWifiAntennaEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_linux_configuration_port", &IDeviceSettings::getLinuxConfigurationPort, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_linux_configuration_port", &IDeviceSettings::setLinuxConfigurationPort, pybind11::call_guard<pybind11::gil_scoped_release>())
+
         // Status properties
         .def_readonly("disabled", &IDeviceSettings::disabled)
         .def_readonly("readonly", &IDeviceSettings::readonly);

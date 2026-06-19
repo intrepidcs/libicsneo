@@ -167,6 +167,16 @@ static_assert(sizeof(neovifire3_settings_t) == 1722, "NeoVIFire3 settings size m
 class NeoVIFIRE3Settings : public IDeviceSettings {
 public:
 	NeoVIFIRE3Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire3_settings_t)) {}
+	const Fire3LinuxSettings* getLinuxSettings() const override {
+		auto cfg = getStructurePointer<neovifire3_settings_t>();
+		return cfg ? &cfg->os_settings : nullptr;
+	}
+	std::optional<Fire3LinuxSettings*> getMutableLinuxSettings() override {
+		auto cfg = getMutableStructurePointer<neovifire3_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		return &cfg->os_settings;
+	}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<neovifire3_settings_t>();
 		if(cfg == nullptr)

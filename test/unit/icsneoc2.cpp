@@ -139,6 +139,7 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	icsneoc2_eth_phy_link_mode_t placeholderEthPhyLinkMode = 0;
 	icsneoc2_eth_phy_link_mode_t* placeholderEthPhyLinkModePtr = nullptr;
 	icsneoc2_misc_io_analog_voltage_t placeholderMiscIoAnalogVoltage = 0;
+	icsneoc2_linux_configuration_port_t placeholderLinuxConfigPort = 0;
 
 	// All of these don't have a device parameter
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_enumerate(0, NULL));
@@ -296,6 +297,12 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_multi_id_set(NULL, 0, 0, placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_misc_io_analog_output_enabled_set(NULL, 0, placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_misc_io_analog_output_set(NULL, 0, placeholderMiscIoAnalogVoltage));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_linux_boot_enabled_get(NULL, &placeholderBool));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_linux_boot_enabled_set(NULL, false));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_external_wifi_antenna_enabled_get(NULL, &placeholderBool));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_external_wifi_antenna_enabled_set(NULL, false));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_linux_configuration_port_get(NULL, &placeholderLinuxConfigPort));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_linux_configuration_port_set(NULL, placeholderLinuxConfigPort));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_disabled_get(NULL, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_readonly_get(NULL, &placeholderBool));
 

@@ -1035,3 +1035,74 @@ bool IDeviceSettings::setGPTPClockSyntonizationEnabled(bool enable) {
 	gptp->enableClockSyntonization = enable ? 1 : 0;
 	return true;
 }
+
+std::optional<bool> IDeviceSettings::getLinuxBootEnabled() {
+	const auto* os = getLinuxSettings();
+	if(os == nullptr) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+	return os->allowBoot != 0;
+}
+
+bool IDeviceSettings::setLinuxBootEnabled(bool enabled) {
+	auto os = getMutableLinuxSettings();
+	if(!os) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::Error);
+		return false;
+	}
+	(*os)->allowBoot = enabled ? 1 : 0;
+	return true;
+}
+
+std::optional<bool> IDeviceSettings::getExternalWifiAntennaEnabled() {
+	const auto* os = getLinuxSettings();
+	if(os == nullptr) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+	return os->useExternalWifiAntenna != 0;
+}
+
+bool IDeviceSettings::setExternalWifiAntennaEnabled(bool enabled) {
+	auto os = getMutableLinuxSettings();
+	if(!os) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::Error);
+		return false;
+	}
+	(*os)->useExternalWifiAntenna = enabled ? 1 : 0;
+	return true;
+}
+
+std::optional<LinuxConfigurationPort> IDeviceSettings::getLinuxConfigurationPort() {
+	const auto* os = getLinuxSettings();
+	if(os == nullptr) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+	switch(static_cast<LinuxConfigurationPort>(os->ethConfigurationPort)) {
+		case LinuxConfigurationPort::ETH01:
+			return LinuxConfigurationPort::ETH01;
+		case LinuxConfigurationPort::USB:
+		default: // Any other value means the configuration interface is over USB
+			return LinuxConfigurationPort::USB;
+	}
+}
+
+bool IDeviceSettings::setLinuxConfigurationPort(LinuxConfigurationPort port) {
+	switch(port) {
+		case LinuxConfigurationPort::USB:
+		case LinuxConfigurationPort::ETH01:
+			break;
+		default:
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+	}
+	auto os = getMutableLinuxSettings();
+	if(!os) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::Error);
+		return false;
+	}
+	(*os)->ethConfigurationPort = static_cast<uint8_t>(port);
+	return true;
+}

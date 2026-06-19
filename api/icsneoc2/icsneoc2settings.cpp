@@ -867,6 +867,90 @@ icsneoc2_error_t icsneoc2_settings_misc_io_analog_output_set(icsneoc2_device_t* 
     return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_settings_linux_boot_enabled_get(icsneoc2_device_t* device, bool* value) {
+    // Make sure the device is valid
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(auto result = device->device->settings->getLinuxBootEnabled(); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    }
+    return icsneoc2_error_get_settings_failure;
+}
+
+icsneoc2_error_t icsneoc2_settings_linux_boot_enabled_set(icsneoc2_device_t* device, bool value) {
+    // Make sure the device is valid
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!device->device->settings->setLinuxBootEnabled(value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_external_wifi_antenna_enabled_get(icsneoc2_device_t* device, bool* value) {
+    // Make sure the device is valid
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(auto result = device->device->settings->getExternalWifiAntennaEnabled(); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    }
+    return icsneoc2_error_get_settings_failure;
+}
+
+icsneoc2_error_t icsneoc2_settings_external_wifi_antenna_enabled_set(icsneoc2_device_t* device, bool value) {
+    // Make sure the device is valid
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!device->device->settings->setExternalWifiAntennaEnabled(value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_linux_configuration_port_get(icsneoc2_device_t* device, icsneoc2_linux_configuration_port_t* value) {
+    // Make sure the device is valid
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(auto result = device->device->settings->getLinuxConfigurationPort(); result.has_value()) {
+        *value = static_cast<icsneoc2_linux_configuration_port_t>(result.value());
+        return icsneoc2_error_success;
+    }
+    return icsneoc2_error_get_settings_failure;
+}
+
+icsneoc2_error_t icsneoc2_settings_linux_configuration_port_set(icsneoc2_device_t* device, icsneoc2_linux_configuration_port_t value) {
+    // Make sure the device is valid
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!device->device->settings->setLinuxConfigurationPort(static_cast<LinuxConfigurationPort>(value))) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_settings_disabled_get(icsneoc2_device_t* device, bool* value) {
     if(!value) {
         return icsneoc2_error_invalid_parameters;

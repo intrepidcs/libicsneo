@@ -150,6 +150,16 @@ static_assert(sizeof(neovifire3flexray_settings_t) == 1372, "NeoVIFire3Flexray s
 class NeoVIFIRE3FlexRaySettings : public IDeviceSettings {
 public:
 	NeoVIFIRE3FlexRaySettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire3flexray_settings_t)) {}
+	const Fire3LinuxSettings* getLinuxSettings() const override {
+		auto cfg = getStructurePointer<neovifire3flexray_settings_t>();
+		return cfg ? &cfg->os_settings : nullptr;
+	}
+	std::optional<Fire3LinuxSettings*> getMutableLinuxSettings() override {
+		auto cfg = getMutableStructurePointer<neovifire3flexray_settings_t>();
+		if(cfg == nullptr)
+			return std::nullopt;
+		return &cfg->os_settings;
+	}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<neovifire3flexray_settings_t>();
 		if(cfg == nullptr)

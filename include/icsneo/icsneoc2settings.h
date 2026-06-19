@@ -657,6 +657,66 @@ icsneoc2_error_t icsneoc2_settings_misc_io_analog_output_enabled_set(icsneoc2_de
 icsneoc2_error_t icsneoc2_settings_misc_io_analog_output_set(icsneoc2_device_t* device, uint8_t pin, icsneoc2_misc_io_analog_voltage_t value);
 
 /**
+ * Get whether the device is allowed to boot its Linux operating system (Fire3 family devices).
+ *
+ * @param[in] device The device to query.
+ * @param[out] value Pointer to a bool to copy the value into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_get_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_linux_boot_enabled_get(icsneoc2_device_t* device, bool* value);
+
+/**
+ * Set whether the device is allowed to boot its Linux operating system (Fire3 family devices).
+ *
+ * @param[in] device The device to configure.
+ * @param[in] value true to allow Linux to boot, false to prevent it.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_linux_boot_enabled_set(icsneoc2_device_t* device, bool value);
+
+/**
+ * Get whether the external WiFi antenna is used instead of the internal antenna (Fire3 family devices).
+ *
+ * @param[in] device The device to query.
+ * @param[out] value Pointer to a bool to copy the value into (true for external, false for internal).
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_get_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_external_wifi_antenna_enabled_get(icsneoc2_device_t* device, bool* value);
+
+/**
+ * Set whether the external WiFi antenna is used instead of the internal antenna (Fire3 family devices).
+ *
+ * @param[in] device The device to configure.
+ * @param[in] value true to use the external antenna, false to use the internal antenna.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_external_wifi_antenna_enabled_set(icsneoc2_device_t* device, bool value);
+
+/**
+ * Get which Ethernet port(s) are reserved for the Linux configuration interface (Fire3 family devices).
+ *
+ * @param[in] device The device to query.
+ * @param[out] value Pointer to a icsneoc2_linux_configuration_port_t to copy the value into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_get_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_linux_configuration_port_get(icsneoc2_device_t* device, icsneoc2_linux_configuration_port_t* value);
+
+/**
+ * Set which Ethernet port(s) are reserved for the Linux configuration interface (Fire3 family devices).
+ *
+ * @param[in] device The device to configure.
+ * @param[in] value The configuration port selection to set.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_linux_configuration_port_set(icsneoc2_device_t* device, icsneoc2_linux_configuration_port_t value);
+
+/**
  * Check if settings are disabled.
  *
  * @param[in] device The device to check.
