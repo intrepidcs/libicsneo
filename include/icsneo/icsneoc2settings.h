@@ -676,6 +676,86 @@ icsneoc2_error_t icsneoc2_settings_disabled_get(icsneoc2_device_t* device, bool*
  */
 icsneoc2_error_t icsneoc2_settings_readonly_get(icsneoc2_device_t* device, bool* value);
 
+/**
+ * Get the gPTP profile.
+ *
+ * @param[in] device The device to check.
+ * @param[out] value Pointer to store the gPTP profile.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_gptp_profile_get(icsneoc2_device_t* device, icsneoc2_gptp_profile_t* value);
+
+/**
+ * Set the gPTP profile.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] value The gPTP profile to set.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_gptp_profile_set(icsneoc2_device_t* device, icsneoc2_gptp_profile_t value);
+
+/**
+ * Get the gPTP port role.
+ *
+ * @param[in] device The device to check.
+ * @param[out] value Pointer to store the gPTP port role.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_gptp_role_get(icsneoc2_device_t* device, icsneoc2_gptp_role_t* value);
+
+/**
+ * Set the gPTP port role.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] value The gPTP port role to set.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_gptp_role_set(icsneoc2_device_t* device, icsneoc2_gptp_role_t value);
+
+/**
+ * Get the gPTP enabled port index. A value of 0 indicates gPTP is disabled.
+ *
+ * @param[in] device The device to check.
+ * @param[out] value Pointer to store the enabled port index.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_gptp_enabled_port_get(icsneoc2_device_t* device, uint8_t* value);
+
+/**
+ * Set the gPTP enabled port index. Set to 0 to disable gPTP.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] value The port index to enable gPTP on, or 0 to disable.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_gptp_enabled_port_set(icsneoc2_device_t* device, uint8_t value);
+
+/**
+ * Check if gPTP clock syntonization is enabled.
+ *
+ * @param[in] device The device to check.
+ * @param[out] value Pointer to store the clock syntonization enable state.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_gptp_clock_syntonization_enabled_get(icsneoc2_device_t* device, bool* value);
+
+/**
+ * Enable or disable gPTP clock syntonization.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] value The clock syntonization enable state to set.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_gptp_clock_syntonization_enabled_set(icsneoc2_device_t* device, bool value);
+
 #ifdef __cplusplus
 }
 #endif

@@ -645,6 +645,14 @@ namespace icsneo
 				return nullptr;
 			return &cfg->termination_enables;
 		}
+	const RAD_GPTP_SETTINGS* getGPTPSettings() const override {
+		auto cfg = getStructurePointer<radgigastar2_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
+	RAD_GPTP_SETTINGS* getMutableGPTPSettings() override {
+		auto cfg = getMutableStructurePointer<radgigastar2_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
 	};
 
 	typedef struct

@@ -320,6 +320,15 @@ protected:
 			return nullptr;
 		return &cfg->termination_enables;
 	}
+
+	const RAD_GPTP_SETTINGS* getGPTPSettings() const override {
+		auto cfg = getStructurePointer<neovired2_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
+	RAD_GPTP_SETTINGS* getMutableGPTPSettings() override {
+		auto cfg = getMutableStructurePointer<neovired2_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
 };
 
 }

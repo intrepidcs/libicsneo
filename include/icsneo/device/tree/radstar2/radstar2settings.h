@@ -134,6 +134,15 @@ public:
 		cfg->perf_en = !!enable;
 		return true;
 	}
+
+	const RAD_GPTP_SETTINGS* getGPTPSettings() const override {
+		auto cfg = getStructurePointer<radstar2_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
+	RAD_GPTP_SETTINGS* getMutableGPTPSettings() override {
+		auto cfg = getMutableStructurePointer<radstar2_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
 };
 
 }

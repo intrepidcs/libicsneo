@@ -40,6 +40,16 @@ void init_idevicesettings(pybind11::module_& m) {
         .value("Normal", LINMode::NORMAL_MODE)
         .value("Fast", LINMode::FAST_MODE);
 
+    pybind11::enum_<RADGPTPProfile>(settings, "GPTPProfile")
+        .value("Standard", RADGPTPProfile::RAD_GPTP_PROFILE_STANDARD)
+        .value("Automotive", RADGPTPProfile::RAD_GPTP_PROFILE_AUTOMOTIVE);
+
+    pybind11::enum_<RADGPTPRole>(settings, "GPTPRole")
+        .value("Disabled", RADGPTPRole::RAD_GPTP_ROLE_DISABLED)
+        .value("Passive", RADGPTPRole::RAD_GPTP_ROLE_PASSIVE)
+        .value("Master", RADGPTPRole::RAD_GPTP_ROLE_MASTER)
+        .value("Slave", RADGPTPRole::RAD_GPTP_ROLE_SLAVE);
+
     pybind11::enum_<MiscIOAnalogVoltage>(settings, "MiscIOAnalogVoltage")
         .value("V0", MiscIOAnalogVoltage::V0)
         .value("V1", MiscIOAnalogVoltage::V1)
@@ -123,6 +133,15 @@ void init_idevicesettings(pybind11::module_& m) {
         // Performance blast
         .def("is_perf_test_enabled", &IDeviceSettings::isPerfTestEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_perf_test_enable", &IDeviceSettings::setPerfTestEnable, pybind11::call_guard<pybind11::gil_scoped_release>())
+        // gPTP methods
+        .def("get_gptp_profile", &IDeviceSettings::getGPTPProfile, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_gptp_profile", &IDeviceSettings::setGPTPProfile, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_gptp_role", &IDeviceSettings::getGPTPRole, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_gptp_role", &IDeviceSettings::setGPTPRole, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_gptp_enabled_port", &IDeviceSettings::getGPTPEnabledPort, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_gptp_enabled_port", &IDeviceSettings::setGPTPEnabledPort, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("is_gptp_clock_syntonization_enabled", &IDeviceSettings::isGPTPClockSyntonizationEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_gptp_clock_syntonization_enabled", &IDeviceSettings::setGPTPClockSyntonizationEnabled, pybind11::call_guard<pybind11::gil_scoped_release>())
         
         // Status properties
         .def_readonly("disabled", &IDeviceSettings::disabled)

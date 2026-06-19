@@ -613,6 +613,18 @@ enum : uint8_t
 	RESISTOR_OFF
 };
 
+enum RADGPTPProfile : icsneoc2_gptp_profile_t {
+	RAD_GPTP_PROFILE_STANDARD   = icsneoc2_gptp_profile_standard,
+	RAD_GPTP_PROFILE_AUTOMOTIVE = icsneoc2_gptp_profile_automotive,
+};
+
+enum RADGPTPRole : icsneoc2_gptp_role_t {
+	RAD_GPTP_ROLE_DISABLED = icsneoc2_gptp_role_disabled,
+	RAD_GPTP_ROLE_PASSIVE  = icsneoc2_gptp_role_passive,
+	RAD_GPTP_ROLE_MASTER   = icsneoc2_gptp_role_master,
+	RAD_GPTP_ROLE_SLAVE    = icsneoc2_gptp_role_slave,
+};
+
 /* Mode in LIN_SETTINGS */
 enum LINMode
 {
@@ -1277,6 +1289,18 @@ public:
 
 	virtual bool setMiscIOAnalogOutputEnabled(uint8_t pin, bool enabled);
 	virtual bool setMiscIOAnalogOutput(uint8_t pin, MiscIOAnalogVoltage voltage);
+
+	// gPTP methods
+	std::optional<RADGPTPProfile> getGPTPProfile() const;
+	bool setGPTPProfile(RADGPTPProfile profile);
+	std::optional<RADGPTPRole> getGPTPRole() const;
+	bool setGPTPRole(RADGPTPRole role);
+	std::optional<uint8_t> getGPTPEnabledPort() const;
+	bool setGPTPEnabledPort(uint8_t port);
+	std::optional<bool> isGPTPClockSyntonizationEnabled() const;
+	bool setGPTPClockSyntonizationEnabled(bool enable);
+	virtual const RAD_GPTP_SETTINGS* getGPTPSettings() const { return nullptr; }
+	virtual RAD_GPTP_SETTINGS* getMutableGPTPSettings() { return nullptr; }
 
 	const void* getRawStructurePointer() const { return settingsInDeviceRAM.data(); }
 	void* getMutableRawStructurePointer() { return settings.data(); }

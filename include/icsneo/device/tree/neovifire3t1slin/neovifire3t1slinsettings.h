@@ -572,6 +572,15 @@ protected:
 			return nullptr;
 		return &cfg->termination_enables;
 	}
+
+	const RAD_GPTP_SETTINGS* getGPTPSettings() const override {
+		auto cfg = getStructurePointer<neovifire3t1slin_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
+	RAD_GPTP_SETTINGS* getMutableGPTPSettings() override {
+		auto cfg = getMutableStructurePointer<neovifire3t1slin_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
 };
 
 }

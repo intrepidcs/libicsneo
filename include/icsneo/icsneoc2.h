@@ -581,6 +581,27 @@ icsneoc2_error_t icsneoc2_device_tc10_sleep_request(const icsneoc2_device_t* dev
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
  */
 icsneoc2_error_t icsneoc2_device_tc10_status_get(const icsneoc2_device_t* device, icsneoc2_netid_t netid, icsneoc2_tc10_sleep_status_t* sleep_status, icsneoc2_tc10_wake_status_t* wake_status);
+
+/**
+ * Check if the device supports gPTP.
+ *
+ * @param[in] device The device to check against.
+ * @param[out] supported Pointer to a bool to copy the value into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_supports_gptp(const icsneoc2_device_t* device, bool* supported);
+
+/**
+ * Get the current gPTP status from the device.
+ *
+ * @param[in] device The device to query.
+ * @param[in] timeout_ms Timeout in milliseconds to wait for the device response.
+ * @param[out] status Pointer to an icsneoc2_gptp_status_t to copy the status into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_gptp_status_get(const icsneoc2_device_t* device, uint32_t timeout_ms, icsneoc2_gptp_status_t* status);
 /**
  * Get the current state of a digital I/O pin.
  *

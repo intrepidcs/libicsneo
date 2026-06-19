@@ -14,6 +14,7 @@ option(LIBICSNEO_BUILD_C2_ETHERNET_TRANSMIT_EXAMPLE "Build the C2 ethernet trans
 option(LIBICSNEO_BUILD_C2_ETHERNET_RECEIVE_EXAMPLE "Build the C2 ethernet receive example." ON)
 option(LIBICSNEO_BUILD_C2_T1S_LOOPBACK_EXAMPLE "Build the C2 RAD-Comet3 T1S loopback example." ON)
 option(LIBICSNEO_BUILD_C2_TC10_EXAMPLE "Build the C2 TC10 example." ON)
+option(LIBICSNEO_BUILD_C2_GPTP_EXAMPLE "Build the C2 gPTP settings example." ON)
 option(LIBICSNEO_BUILD_CPP_SIMPLE_EXAMPLE "Build the simple C++ example." ON)
 option(LIBICSNEO_BUILD_CPP_DEVICE_INFO_EXAMPLE "Build the C++ device info example." ON)
 option(LIBICSNEO_BUILD_CPP_INTERACTIVE_EXAMPLE "Build the command-line interactive C++ example." ON)
@@ -31,6 +32,7 @@ option(LIBICSNEO_BUILD_CPP_MUTEX_EXAMPLE "Build the NetworkMutex example." ON)
 option(LIBICSNEO_BUILD_CPP_ANALOG_OUT_EXAMPLE "Build the analog output example." ON)
 option(LIBICSNEO_BUILD_CPP_DISKFORMAT_EXAMPLE "Build the disk format example." ON)
 option(LIBICSNEO_BUILD_CPP_T1S_EXAMPLE "Build the T1S example." ON)
+option(LIBICSNEO_BUILD_CPP_GPTP_EXAMPLE "Build the C++ gPTP settings example." ON)
 
 add_compile_options(${LIBICSNEO_COMPILER_WARNINGS})
 
@@ -96,6 +98,10 @@ endif()
 
 if(LIBICSNEO_BUILD_C2_TC10_EXAMPLE)
 	add_subdirectory(c2/tc10)
+endif()
+
+if(LIBICSNEO_BUILD_C2_GPTP_EXAMPLE)
+	add_subdirectory(c2/gptp)
 endif()
 
 if(LIBICSNEO_BUILD_CPP_SIMPLE_EXAMPLE)
@@ -164,4 +170,8 @@ endif()
 
 if(LIBICSNEO_BUILD_CPP_T1S_EXAMPLE)
 	add_subdirectory(cpp/t1s)
+endif()
+
+if(LIBICSNEO_BUILD_CPP_GPTP_EXAMPLE)
+	add_subdirectory(cpp/gptp)
 endif()

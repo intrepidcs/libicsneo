@@ -960,3 +960,78 @@ bool IDeviceSettings::setMiscIOAnalogOutput(uint8_t pin, MiscIOAnalogVoltage vol
 	report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::Error);
 	return false;
 }
+std::optional<RADGPTPProfile> IDeviceSettings::getGPTPProfile() const {
+	const auto* gptp = getGPTPSettings();
+	if(!gptp) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+	return static_cast<RADGPTPProfile>(gptp->profile);
+}
+
+bool IDeviceSettings::setGPTPProfile(RADGPTPProfile profile) {
+	auto* gptp = getMutableGPTPSettings();
+	if(!gptp) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+	gptp->profile = static_cast<uint8_t>(profile);
+	return true;
+}
+
+std::optional<RADGPTPRole> IDeviceSettings::getGPTPRole() const {
+	const auto* gptp = getGPTPSettings();
+	if(!gptp) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+	return static_cast<RADGPTPRole>(gptp->gptpPortRole);
+}
+
+bool IDeviceSettings::setGPTPRole(RADGPTPRole role) {
+	auto* gptp = getMutableGPTPSettings();
+	if(!gptp) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+	gptp->gptpPortRole = static_cast<uint8_t>(role);
+	return true;
+}
+
+std::optional<uint8_t> IDeviceSettings::getGPTPEnabledPort() const {
+	const auto* gptp = getGPTPSettings();
+	if(!gptp) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+	return gptp->gptpEnabledPort;
+}
+
+bool IDeviceSettings::setGPTPEnabledPort(uint8_t port) {
+	auto* gptp = getMutableGPTPSettings();
+	if(!gptp) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+	gptp->gptpEnabledPort = port;
+	return true;
+}
+
+std::optional<bool> IDeviceSettings::isGPTPClockSyntonizationEnabled() const {
+	const auto* gptp = getGPTPSettings();
+	if(!gptp) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return std::nullopt;
+	}
+	return gptp->enableClockSyntonization != 0;
+}
+
+bool IDeviceSettings::setGPTPClockSyntonizationEnabled(bool enable) {
+	auto* gptp = getMutableGPTPSettings();
+	if(!gptp) {
+		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+		return false;
+	}
+	gptp->enableClockSyntonization = enable ? 1 : 0;
+	return true;
+}

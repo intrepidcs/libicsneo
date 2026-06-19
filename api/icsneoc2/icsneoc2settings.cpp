@@ -892,3 +892,113 @@ icsneoc2_error_t icsneoc2_settings_readonly_get(icsneoc2_device_t* device, bool*
     *value = device->device->settings->readonly;
     return icsneoc2_error_success;
 }
+
+icsneoc2_error_t icsneoc2_settings_gptp_profile_get(icsneoc2_device_t* device, icsneoc2_gptp_profile_t* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(auto result = device->device->settings->getGPTPProfile(); result.has_value()) {
+        *value = static_cast<icsneoc2_gptp_profile_t>(result.value());
+        return icsneoc2_error_success;
+    }
+    return icsneoc2_error_get_settings_failure;
+}
+
+icsneoc2_error_t icsneoc2_settings_gptp_profile_set(icsneoc2_device_t* device, icsneoc2_gptp_profile_t value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(value >= icsneoc2_gptp_profile_maxsize) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(!device->device->settings->setGPTPProfile(static_cast<RADGPTPProfile>(value))) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_gptp_role_get(icsneoc2_device_t* device, icsneoc2_gptp_role_t* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(auto result = device->device->settings->getGPTPRole(); result.has_value()) {
+        *value = static_cast<icsneoc2_gptp_role_t>(result.value());
+        return icsneoc2_error_success;
+    }
+    return icsneoc2_error_get_settings_failure;
+}
+
+icsneoc2_error_t icsneoc2_settings_gptp_role_set(icsneoc2_device_t* device, icsneoc2_gptp_role_t value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(value >= icsneoc2_gptp_role_maxsize) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(!device->device->settings->setGPTPRole(static_cast<RADGPTPRole>(value))) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_gptp_enabled_port_get(icsneoc2_device_t* device, uint8_t* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(auto result = device->device->settings->getGPTPEnabledPort(); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    }
+    return icsneoc2_error_get_settings_failure;
+}
+
+icsneoc2_error_t icsneoc2_settings_gptp_enabled_port_set(icsneoc2_device_t* device, uint8_t value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!device->device->settings->setGPTPEnabledPort(value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_gptp_clock_syntonization_enabled_get(icsneoc2_device_t* device, bool* value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(auto result = device->device->settings->isGPTPClockSyntonizationEnabled(); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    }
+    return icsneoc2_error_get_settings_failure;
+}
+
+icsneoc2_error_t icsneoc2_settings_gptp_clock_syntonization_enabled_set(icsneoc2_device_t* device, bool value) {
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!device->device->settings->setGPTPClockSyntonizationEnabled(value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}

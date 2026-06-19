@@ -299,6 +299,22 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_disabled_get(NULL, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_readonly_get(NULL, &placeholderBool));
 
+	// gPTP settings NULL parameter checks
+	icsneoc2_gptp_profile_t placeholderGptpProfile = 0;
+	icsneoc2_gptp_role_t placeholderGptpRole = 0;
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_profile_get(NULL, &placeholderGptpProfile));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_profile_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_profile_set(NULL, placeholderGptpProfile));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_role_get(NULL, &placeholderGptpRole));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_role_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_role_set(NULL, placeholderGptpRole));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_enabled_port_get(NULL, &placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_enabled_port_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_enabled_port_set(NULL, 0));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_clock_syntonization_enabled_get(NULL, &placeholderBool));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_clock_syntonization_enabled_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_gptp_clock_syntonization_enabled_set(NULL, false));
+
 	// Disk formatting functions
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_disk_count_get(NULL, &placeholderSizeT));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_supports_disk_formatting(NULL, &placeholderBool));
@@ -1763,4 +1779,29 @@ TEST(icsneoc2, test_icsneoc2_eth_invalid_type)
 	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_free(can_msg));
 }
 
+TEST(icsneoc2, test_gptp_enum_values)
+{
+	ASSERT_EQ(icsneoc2_gptp_profile_standard,   0);
+	ASSERT_EQ(icsneoc2_gptp_profile_automotive, 1);
+	ASSERT_EQ(sizeof(icsneoc2_gptp_profile_t), sizeof(uint8_t));
+
+	ASSERT_EQ(icsneoc2_gptp_role_disabled, 0);
+	ASSERT_EQ(icsneoc2_gptp_role_passive,  1);
+	ASSERT_EQ(icsneoc2_gptp_role_master,   2);
+	ASSERT_EQ(icsneoc2_gptp_role_slave,    3);
+	ASSERT_EQ(sizeof(icsneoc2_gptp_role_t), sizeof(uint8_t));
+}
+
+TEST(icsneoc2, test_gptp_enum_alignment)
+{
+	ASSERT_EQ(RADGPTPProfile::RAD_GPTP_PROFILE_STANDARD,   icsneoc2_gptp_profile_standard);
+	ASSERT_EQ(RADGPTPProfile::RAD_GPTP_PROFILE_AUTOMOTIVE, icsneoc2_gptp_profile_automotive);
+	ASSERT_EQ(sizeof(RADGPTPProfile), sizeof(icsneoc2_gptp_profile_t));
+
+	ASSERT_EQ(RADGPTPRole::RAD_GPTP_ROLE_DISABLED, icsneoc2_gptp_role_disabled);
+	ASSERT_EQ(RADGPTPRole::RAD_GPTP_ROLE_PASSIVE,  icsneoc2_gptp_role_passive);
+	ASSERT_EQ(RADGPTPRole::RAD_GPTP_ROLE_MASTER,   icsneoc2_gptp_role_master);
+	ASSERT_EQ(RADGPTPRole::RAD_GPTP_ROLE_SLAVE,    icsneoc2_gptp_role_slave);
+	ASSERT_EQ(sizeof(RADGPTPRole), sizeof(icsneoc2_gptp_role_t));
+}
 

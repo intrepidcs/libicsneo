@@ -352,6 +352,41 @@ typedef enum _icsneoc2_misc_io_analog_voltage_t {
 
 typedef uint8_t icsneoc2_misc_io_analog_voltage_t;
 
+typedef enum _icsneoc2_gptp_profile_t {
+	icsneoc2_gptp_profile_standard   = 0, // IEEE 802.1AS standard profile
+	icsneoc2_gptp_profile_automotive = 1, // Automotive gPTP profile
+
+	// Must be last entry. Don't use as a gPTP profile.
+	icsneoc2_gptp_profile_maxsize
+} _icsneoc2_gptp_profile_t;
+
+typedef uint8_t icsneoc2_gptp_profile_t;
+
+typedef enum _icsneoc2_gptp_role_t {
+	icsneoc2_gptp_role_disabled = 0, // gPTP disabled on this port
+	icsneoc2_gptp_role_passive  = 1, // Passive role
+	icsneoc2_gptp_role_master   = 2, // Master role
+	icsneoc2_gptp_role_slave    = 3, // Slave role
+
+	// Must be last entry. Don't use as a gPTP role.
+	icsneoc2_gptp_role_maxsize
+} _icsneoc2_gptp_role_t;
+
+typedef uint8_t icsneoc2_gptp_role_t;
+
+typedef struct icsneoc2_gptp_status_t {
+	uint64_t current_time_seconds;      // Current PTP time (seconds portion)
+	uint32_t current_time_nanoseconds;  // Current PTP time (nanoseconds portion)
+	int64_t  ms_offset_ns;              // Master-slave clock offset in nanoseconds
+	uint8_t  is_sync;                   // Non-zero if the clock is synchronized
+	uint8_t  link_status;               // Non-zero if the link is up
+	int64_t  link_delay_ns;             // One-way propagation delay in nanoseconds
+	uint8_t  selected_role;             // Negotiated port role (see icsneoc2_gptp_role_t)
+	uint8_t  as_capable;                // Non-zero if the port is AS-capable (802.1AS)
+	uint8_t  is_syntonized;             // Non-zero if frequency is locked to grandmaster
+	uint8_t  short_format;              // Non-zero if firmware returned a partial response
+} icsneoc2_gptp_status_t;
+
 typedef struct icsneoc2_disk_details_t icsneoc2_disk_details_t;
 
 typedef enum _icsneoc2_disk_layout_t {

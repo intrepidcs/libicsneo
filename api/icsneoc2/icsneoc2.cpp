@@ -12,6 +12,7 @@
 #include <map>
 #include <algorithm>
 #include <optional>
+#include <chrono>
 #include <sstream>
 #include <fstream>
 #include <cstring>
@@ -784,6 +785,43 @@ icsneoc2_error_t icsneoc2_device_tc10_status_get(const icsneoc2_device_t* device
 	if(wake_status) {
 		*wake_status = static_cast<icsneoc2_tc10_wake_status_t>(cpp_status->wakeStatus);
 	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_device_supports_gptp(const icsneoc2_device_t* device, bool* supported) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!supported) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	*supported = device->device->supportsGPTP();
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_device_gptp_status_get(const icsneoc2_device_t* device, uint32_t timeout_ms, icsneoc2_gptp_status_t* status) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!status) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto cpp_status = device->device->getGPTPStatus(std::chrono::milliseconds(timeout_ms));
+	if(!cpp_status.has_value()) {
+		return icsneoc2_error_get_settings_failure;
+	}
+	status->current_time_seconds     = cpp_status->currentTime.seconds;
+	status->current_time_nanoseconds = cpp_status->currentTime.nanoseconds;
+	status->ms_offset_ns             = cpp_status->msOffsetNs;
+	status->is_sync                  = cpp_status->isSync;
+	status->link_status              = cpp_status->linkStatus;
+	status->link_delay_ns            = cpp_status->linkDelayNS;
+	status->selected_role            = cpp_status->selectedRole;
+	status->as_capable               = cpp_status->asCapable;
+	status->is_syntonized            = cpp_status->isSyntonized;
+	status->short_format             = cpp_status->shortFormat;
 	return icsneoc2_error_success;
 }
 

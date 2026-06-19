@@ -43,6 +43,15 @@ static_assert(sizeof(radmoon2_settings_t) == 170, "RADMoon2 settings size mismat
 class RADMoon2Settings : public IDeviceSettings {
 public:
 	RADMoon2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radmoon2_settings_t)) {}
+
+	const RAD_GPTP_SETTINGS* getGPTPSettings() const override {
+		auto cfg = getStructurePointer<radmoon2_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
+	RAD_GPTP_SETTINGS* getMutableGPTPSettings() override {
+		auto cfg = getMutableStructurePointer<radmoon2_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
 };
 
 }

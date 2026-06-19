@@ -728,6 +728,15 @@ private:
 				return nullptr;
 		}
 	}
+
+	const RAD_GPTP_SETTINGS* getGPTPSettings() const override {
+		auto cfg = getStructurePointer<radcomet3_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
+	RAD_GPTP_SETTINGS* getMutableGPTPSettings() override {
+		auto cfg = getMutableStructurePointer<radcomet3_settings_t>();
+		return cfg ? &cfg->gPTP : nullptr;
+	}
 };
 
 }
