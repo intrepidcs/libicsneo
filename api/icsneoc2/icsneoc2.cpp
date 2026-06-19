@@ -825,6 +825,30 @@ icsneoc2_error_t icsneoc2_device_gptp_status_get(const icsneoc2_device_t* device
 	return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_device_supports_reboot(const icsneoc2_device_t* device, bool* supported) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!supported) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	*supported = device->device->supportsReboot();
+
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_device_reboot(const icsneoc2_device_t* device, bool safe) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!device->device->reboot(safe)) {
+		return icsneoc2_error_transmit_message_failed;
+	}
+	return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_device_digital_io_get(const icsneoc2_device_t* device, icsneoc2_io_type_t type, uint32_t number, bool* value) {
 	auto res = icsneoc2_device_is_valid(device);
 	if(res != icsneoc2_error_success) {

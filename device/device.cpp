@@ -3735,6 +3735,15 @@ bool Device::requestTC10Sleep(Network::NetID network) {
 	return typed->response == ExtendedResponse::OK;
 }
 
+bool Device::reboot(bool safe) {
+	if(!supportsReboot()) {
+		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+	// The device reboots in response to this command, so no reply is expected.
+	return com->sendCommand(ExtendedCommand::Reboot, { uint8_t(safe ? 1 : 0) });
+}
+
 std::optional<TC10StatusMessage> Device::getTC10Status(Network::NetID network) {
 	if(!supportsTC10()) {
 		report(APIEvent::Type::NotSupported, APIEvent::Severity::Error);

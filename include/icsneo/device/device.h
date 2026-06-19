@@ -862,9 +862,16 @@ public:
 
 	virtual bool supportsGPTP() const { return false; }
 
+	virtual bool supportsReboot() const { return false; }
+
 	bool requestTC10Wake(Network::NetID network);
 
 	bool requestTC10Sleep(Network::NetID network);
+
+	// Reboot the device. When safe is true the device boots the Linux rescue image and does not
+	// load coremini ("safe boot"); otherwise it reboots normally. The device reboots in response,
+	// so no reply is expected. Only supported on devices where supportsReboot() is true.
+	bool reboot(bool safe = false);
 
 	std::optional<TC10StatusMessage> getTC10Status(Network::NetID network);
 	std::optional<GPTPStatus> getGPTPStatus(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));

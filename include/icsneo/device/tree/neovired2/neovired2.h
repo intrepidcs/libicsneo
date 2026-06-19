@@ -39,6 +39,8 @@ public:
 
 	bool supportsGPTP() const override { return true; }
 
+	bool supportsReboot() const override { return true; }
+
 	ProductID getProductID() const override {
 		return ProductID::neoVIFIRE3;
 	}

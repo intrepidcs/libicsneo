@@ -602,6 +602,29 @@ icsneoc2_error_t icsneoc2_device_supports_gptp(const icsneoc2_device_t* device, 
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
  */
 icsneoc2_error_t icsneoc2_device_gptp_status_get(const icsneoc2_device_t* device, uint32_t timeout_ms, icsneoc2_gptp_status_t* status);
+
+/**
+ * Check if the device supports rebooting.
+ *
+ * @param[in] device The device to check against.
+ * @param[out] supported Pointer to a bool to copy the value into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_supports_reboot(const icsneoc2_device_t* device, bool* supported);
+
+/**
+ * Reboot the device. When safe is true the device boots the Linux rescue image and does not load
+ * coremini ("safe boot"); otherwise it reboots normally. The device reboots in response, so no reply
+ * is expected. Only supported on devices where icsneoc2_device_supports_reboot() reports true.
+ *
+ * @param[in] device The device to reboot.
+ * @param[in] safe true to reboot into safe boot mode, false to reboot normally.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_transmit_message_failed otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_reboot(const icsneoc2_device_t* device, bool safe);
+
 /**
  * Get the current state of a digital I/O pin.
  *

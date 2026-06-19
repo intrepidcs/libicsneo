@@ -53,6 +53,8 @@ public:
 	}
 	size_t getEthernetActivationLineCount() const override { return 2; }
 
+	bool supportsReboot() const override { return true; }
+
 	ProductID getProductID() const override {
 		return ProductID::neoVIFIRE3;
 	}

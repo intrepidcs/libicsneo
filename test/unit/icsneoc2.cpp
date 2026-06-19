@@ -228,6 +228,8 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_tc10_status_get(NULL, icsneoc2_netid_dwcan_01, &sleep_s, &wake_s));
 		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_tc10_status_get(NULL, icsneoc2_netid_dwcan_01, NULL, NULL));
 	}
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_supports_reboot(NULL, &placeholderBool));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_reboot(NULL, false));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_netid_network_type_get(icsneoc2_netid_dwcan_01, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_timestamp_resolution_get(NULL, &placeholderInteger32));
 

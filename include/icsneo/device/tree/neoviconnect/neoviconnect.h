@@ -34,6 +34,8 @@ public:
 		return supportedNetworks;
 	}
 
+	bool supportsReboot() const override { return true; }
+
 	ProductID getProductID() const override {
 		return ProductID::Connect;
 	}
