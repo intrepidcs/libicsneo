@@ -214,6 +214,7 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_rtc_get(NULL, (int64_t *)&placeholderUnsignedInteger64));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_rtc_set(NULL, 0));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_serial_get(NULL, placeholderStr, &placeholderSizeT));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_product_name_get(NULL, placeholderStr, &placeholderSizeT));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_pcb_serial_get(NULL, &placeholderInteger8, &placeholderSizeT));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_mac_addresses_enumerate(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_mac_network_id_get(NULL, NULL));

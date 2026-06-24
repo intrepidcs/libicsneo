@@ -439,6 +439,16 @@ icsneoc2_error_t icsneoc2_device_serial_get(const icsneoc2_device_t* device, cha
 	return safe_str_copy(value, value_length, dev->getSerial()) ? icsneoc2_error_success : icsneoc2_error_string_copy_failed;
 }
 
+icsneoc2_error_t icsneoc2_device_product_name_get(const icsneoc2_device_t* device, char* value, size_t* value_length) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	auto dev = device->device;
+	// Copy the string into value
+	return safe_str_copy(value, value_length, dev->getProductName()) ? icsneoc2_error_success : icsneoc2_error_string_copy_failed;
+}
+
 icsneoc2_error_t icsneoc2_device_pcb_serial_get(const icsneoc2_device_t* device, uint8_t* value, size_t* value_length) {
 	auto res = icsneoc2_device_is_valid(device);
 	if(res != icsneoc2_error_success) {

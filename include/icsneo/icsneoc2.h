@@ -332,6 +332,20 @@ icsneoc2_error_t icsneoc2_device_type_get(const icsneoc2_device_t* device, icsne
 icsneoc2_error_t icsneoc2_device_serial_get(const icsneoc2_device_t* device, char* value, size_t* value_length);
 
 /**
+ * Get the product name of a device.
+ *
+ * This is the device-specific marketing/product name (e.g. "neoVI FIRE 3"), which may differ from the
+ * generic device-type name. Prefer this where a human-readable product name is needed.
+ *
+ * @param[in] device The device to get the product name of.
+ * @param[out] value Pointer to a buffer to copy the product name into. Null terminated.
+ * @param[in,out] value_length Size of the value buffer. Modified with the length of the product name.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_product_name_get(const icsneoc2_device_t* device, char* value, size_t* value_length);
+
+/**
  * Get the PCB serial of a device.
  *
  * @param[in] device The device to get the PCB serial of.
