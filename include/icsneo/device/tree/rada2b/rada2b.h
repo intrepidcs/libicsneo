@@ -96,10 +96,6 @@ protected:
 		return 15*1024*1024;
 	}
 
-	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
-		return 0;
-	}
-
 };
 
 }

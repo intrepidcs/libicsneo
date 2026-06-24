@@ -69,7 +69,7 @@ public:
 
 protected:
 	RADComet2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<RADComet2Settings>(makeDriver);
+		initialize<RADComet2Settings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {

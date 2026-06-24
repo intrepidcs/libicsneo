@@ -55,7 +55,7 @@ public:
 	}
 protected:
 	RADMoonT1S(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<RADMoonT1SSettings>(makeDriver);
+		initialize<RADMoonT1SSettings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {
@@ -82,6 +82,10 @@ protected:
 	// The supported TX networks are the same as the supported RX networks for this device
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override {
 		setupSupportedRXNetworks(txNetworks);
+	}
+	
+	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
+		return 32*1024*1024;
 	}
 };
 

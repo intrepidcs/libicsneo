@@ -737,15 +737,17 @@ bool Device::uploadCoremini(std::istream& stream, Disk::MemoryType memType) {
 		return false;
 	}
 
-	auto connected = isLogicalDiskConnected();
-	
-	if(!connected) {
-		return false; // Already added an API error
-	}
-	
-	if(!(*connected)) {
-		report(APIEvent::Type::DiskNotConnected, APIEvent::Severity::Error);
-		return false;
+	if (memType == Disk::MemoryType::SD) {
+		auto connected = isLogicalDiskConnected();
+		
+		if(!connected) {
+			return false; // Already added an API error
+		}
+		
+		if(!(*connected)) {
+			report(APIEvent::Type::DiskNotConnected, APIEvent::Severity::Error);
+			return false;
+		}
 	}
 
 	if(!stopScript()) {
@@ -755,7 +757,6 @@ bool Device::uploadCoremini(std::istream& stream, Disk::MemoryType memType) {
 	if(!clearScript(memType)) {
 		return false;
 	}
-
 
 	if(!eraseScriptMemory(memType, static_cast<uint64_t>(bin.size()))) {
 		return false;
@@ -846,10 +847,12 @@ std::optional<CoreminiHeader> Device::readCoreminiHeader(Disk::MemoryType memTyp
 		return std::nullopt;
 	}
 
-	auto connected = isLogicalDiskConnected();
-	
-	if(!connected) {
-		return std::nullopt; // Already added an API error
+	if (memType == Disk::MemoryType::SD) {
+		auto connected = isLogicalDiskConnected();
+
+		if(!connected) {
+			return std::nullopt; // Already added an API error
+		}
 	}
 
 	#pragma pack(push, 2)

@@ -52,7 +52,7 @@ public:
 	}
 protected:
 	RADStar2(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<RADStar2Settings>(makeDriver);
+		initialize<RADStar2Settings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}
 
 	virtual void setupPacketizer(Packetizer& packetizer) override {
@@ -80,11 +80,7 @@ protected:
 	void setupSupportedTXNetworks(std::vector<Network>& txNetworks) override { setupSupportedRXNetworks(txNetworks); }
 
 	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
-		return 512*4;
-	}
-
-	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
-		return 0;
+		return 14*1024*1024;
 	}
 
 	bool supportsGetAllMACAddresses() const override {

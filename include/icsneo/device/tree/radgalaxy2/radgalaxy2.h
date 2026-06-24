@@ -131,7 +131,7 @@ protected:
 	}
 
 	std::optional<MemoryAddress> getCoreminiStartAddressFlash() const override {
-		return 512*4;
+		return 92*1024*1024;
 	}
 
 	std::optional<MemoryAddress> getCoreminiStartAddressSD() const override {
