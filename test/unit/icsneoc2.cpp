@@ -303,6 +303,8 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_linux_boot_enabled_set(NULL, false));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_external_wifi_antenna_enabled_get(NULL, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_external_wifi_antenna_enabled_set(NULL, false));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_perf_test_enabled_get(NULL, &placeholderBool));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_perf_test_enabled_set(NULL, false));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_linux_configuration_port_get(NULL, &placeholderLinuxConfigPort));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_linux_configuration_port_set(NULL, placeholderLinuxConfigPort));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_disabled_get(NULL, &placeholderBool));

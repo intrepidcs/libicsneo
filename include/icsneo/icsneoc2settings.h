@@ -697,6 +697,26 @@ icsneoc2_error_t icsneoc2_settings_external_wifi_antenna_enabled_get(icsneoc2_de
 icsneoc2_error_t icsneoc2_settings_external_wifi_antenna_enabled_set(icsneoc2_device_t* device, bool value);
 
 /**
+ * Get whether the performance/throughput test mode is enabled.
+ *
+ * @param[in] device The device to query.
+ * @param[out] value Pointer to a bool to copy the value into (true if PerfTest is enabled).
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_get_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_perf_test_enabled_get(icsneoc2_device_t* device, bool* value);
+
+/**
+ * Set whether the performance/throughput test mode is enabled.
+ *
+ * @param[in] device The device to configure.
+ * @param[in] value true to enable PerfTest, false to disable it.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_perf_test_enabled_set(icsneoc2_device_t* device, bool value);
+
+/**
  * Get which Ethernet port(s) are reserved for the Linux configuration interface (Fire3 family devices).
  *
  * @param[in] device The device to query.

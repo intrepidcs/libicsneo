@@ -90,3 +90,19 @@ TC10
 .. literalinclude:: ../../examples/c2/tc10/src/main.c
    :language: c
 
+gPTP
+====
+
+:download:`Download example <../../examples/c2/gptp/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/gptp/src/main.c
+   :language: c
+
+PerfTest
+========
+
+:download:`Download example <../../examples/c2/perf_test/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/perf_test/src/main.c
+   :language: c
+

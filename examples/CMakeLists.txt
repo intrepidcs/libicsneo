@@ -15,6 +15,7 @@ option(LIBICSNEO_BUILD_C2_ETHERNET_RECEIVE_EXAMPLE "Build the C2 ethernet receiv
 option(LIBICSNEO_BUILD_C2_T1S_LOOPBACK_EXAMPLE "Build the C2 RAD-Comet3 T1S loopback example." ON)
 option(LIBICSNEO_BUILD_C2_TC10_EXAMPLE "Build the C2 TC10 example." ON)
 option(LIBICSNEO_BUILD_C2_GPTP_EXAMPLE "Build the C2 gPTP settings example." ON)
+option(LIBICSNEO_BUILD_C2_PERF_TEST_EXAMPLE "Build the C2 PerfTest setting example." ON)
 option(LIBICSNEO_BUILD_CPP_SIMPLE_EXAMPLE "Build the simple C++ example." ON)
 option(LIBICSNEO_BUILD_CPP_DEVICE_INFO_EXAMPLE "Build the C++ device info example." ON)
 option(LIBICSNEO_BUILD_CPP_INTERACTIVE_EXAMPLE "Build the command-line interactive C++ example." ON)
@@ -102,6 +103,10 @@ endif()
 
 if(LIBICSNEO_BUILD_C2_GPTP_EXAMPLE)
 	add_subdirectory(c2/gptp)
+endif()
+
+if(LIBICSNEO_BUILD_C2_PERF_TEST_EXAMPLE)
+	add_subdirectory(c2/perf_test)
 endif()
 
 if(LIBICSNEO_BUILD_CPP_SIMPLE_EXAMPLE)

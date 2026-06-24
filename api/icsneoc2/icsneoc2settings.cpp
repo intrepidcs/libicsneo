@@ -923,6 +923,36 @@ icsneoc2_error_t icsneoc2_settings_external_wifi_antenna_enabled_set(icsneoc2_de
     return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_settings_perf_test_enabled_get(icsneoc2_device_t* device, bool* value) {
+    // Make sure the device is valid
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!value) {
+        return icsneoc2_error_invalid_parameters;
+    }
+    if(auto result = device->device->settings->isPerfTestEnabled(); result.has_value()) {
+        *value = result.value();
+        return icsneoc2_error_success;
+    } else {
+        *value = false;
+        return icsneoc2_error_get_settings_failure;
+    }
+}
+
+icsneoc2_error_t icsneoc2_settings_perf_test_enabled_set(icsneoc2_device_t* device, bool value) {
+    // Make sure the device is valid
+    auto res = icsneoc2_device_is_valid(device);
+    if(res != icsneoc2_error_success) {
+        return res;
+    }
+    if(!device->device->settings->setPerfTestEnable(value)) {
+        return icsneoc2_error_set_settings_failure;
+    }
+    return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_settings_linux_configuration_port_get(icsneoc2_device_t* device, icsneoc2_linux_configuration_port_t* value) {
     // Make sure the device is valid
     auto res = icsneoc2_device_is_valid(device);
