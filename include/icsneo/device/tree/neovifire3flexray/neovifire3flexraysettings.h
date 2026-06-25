@@ -213,18 +213,28 @@ public:
 	}
 
 	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
+		// FIRE3 FlexRay has two physical termination banks: DW CAN 01-08 and
+		// DW CAN 09-15 (DW CAN 16 is used by FlexRay). Termination within a bank is
+		// actually independent (any number may be enabled at once).
 		return {
 			{
 				Network(Network::NetID::DWCAN_01),
+				Network(Network::NetID::DWCAN_02),
 				Network(Network::NetID::DWCAN_03),
+				Network(Network::NetID::DWCAN_04),
 				Network(Network::NetID::DWCAN_05),
-				Network(Network::NetID::DWCAN_07)
+				Network(Network::NetID::DWCAN_06),
+				Network(Network::NetID::DWCAN_07),
+				Network(Network::NetID::DWCAN_08)
 			},
 			{
-				Network(Network::NetID::DWCAN_08),
-				Network(Network::NetID::DWCAN_02),
-				Network(Network::NetID::DWCAN_04),
-				Network(Network::NetID::DWCAN_06)
+				Network(Network::NetID::DWCAN_09),
+				Network(Network::NetID::DWCAN_10),
+				Network(Network::NetID::DWCAN_11),
+				Network(Network::NetID::DWCAN_12),
+				Network(Network::NetID::DWCAN_13),
+				Network(Network::NetID::DWCAN_14),
+				Network(Network::NetID::DWCAN_15)
 			}
 		};
 	}

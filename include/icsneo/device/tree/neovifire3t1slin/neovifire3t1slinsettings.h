@@ -222,18 +222,19 @@ public:
 	}
 
 	virtual std::vector<TerminationGroup> getTerminationGroups() const override {
+		// FIRE3 T1S-LIN has a single physical termination bank: DW CAN 01-08.
+		// Termination within the bank is actually independent (any number may be
+		// enabled at once).
 		return {
 			{
 				Network(Network::NetID::DWCAN_01),
-				Network(Network::NetID::DWCAN_03),
-				Network(Network::NetID::DWCAN_05),
-				Network(Network::NetID::DWCAN_07)
-			},
-			{
-				Network(Network::NetID::DWCAN_08),
 				Network(Network::NetID::DWCAN_02),
+				Network(Network::NetID::DWCAN_03),
 				Network(Network::NetID::DWCAN_04),
-				Network(Network::NetID::DWCAN_06)
+				Network(Network::NetID::DWCAN_05),
+				Network(Network::NetID::DWCAN_06),
+				Network(Network::NetID::DWCAN_07),
+				Network(Network::NetID::DWCAN_08)
 			}
 		};
 	}
