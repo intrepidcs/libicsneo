@@ -59,6 +59,9 @@ public:
 
 	bool getEthPhyRegControlSupported() const override { return true; }
 
+	// Covers RADMoon2 and RADMoon2ZL; firmware reboots and ignores the safe flag
+	bool supportsReboot() const override { return true; }
+
 	virtual uint8_t getPhyAddrOrPort() const = 0;
 
 protected:

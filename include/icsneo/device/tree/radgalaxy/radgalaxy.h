@@ -63,6 +63,7 @@ public:
 	size_t getEthernetActivationLineCount() const override { return 1; }
 	bool supportsGPTP() const override { return true; }
 
+	bool supportsReboot() const override { return true; }
 
 	ProductID getProductID() const override {
 		return ProductID::RADGalaxy;

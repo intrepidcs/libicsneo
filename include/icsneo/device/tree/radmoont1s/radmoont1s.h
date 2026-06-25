@@ -34,6 +34,8 @@ public:
 
 	bool supportsTC10() const override { return true; }
 
+	bool supportsReboot() const override { return true; }
+
 	ProductID getProductID() const override {
 		return ProductID::RADMoonT1S;
 	}
