@@ -359,6 +359,7 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 	// Print the type and bus type of each message
 	size_t tx_count = 0;
 	size_t can_error_count = 0;
+	size_t app_error_count = 0;
 	for(size_t i = 0; i < messages_count; i++) {
 		icsneoc2_message_t* message = messages[i];
 
@@ -389,6 +390,27 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 				(error_flags & ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_PASSIVE) ? " [ErrorPassive]" : "",
 				(error_flags & ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_WARN) ? " [ErrorWarn]" : "");
 			can_error_count++;
+			continue;
+		}
+
+		// Check for application error messages
+		bool is_app_error = false;
+		res = icsneoc2_message_is_app_error(message, &is_app_error);
+		if(res != icsneoc2_error_success) {
+			return print_error_code("\tFailed to check if message is an app error", res);
+		}
+		if(is_app_error) {
+			icsneoc2_app_error_type_t error_type = icsneoc2_app_error_type_no_error;
+			icsneoc2_netid_t error_netid = 0;
+			char description[256] = {0};
+			size_t description_length = sizeof(description);
+			res = icsneoc2_message_app_error_props_get(message, &error_type, &error_netid);
+			res += icsneoc2_message_app_error_string_get(message, description, &description_length);
+			if(res != icsneoc2_error_success) {
+				return print_error_code("\tFailed to get app error properties", res);
+			}
+			printf("\t%zd) App Error (type %u) on netid 0x%x: %s\n", i, error_type, error_netid, description);
+			app_error_count++;
 			continue;
 		}
 
@@ -472,7 +494,7 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 			printf(" ]\n");
 		}
 	}
-	printf("\tReceived %zu messages total, %zu were TX messages, %zu were CAN errors\n", messages_count, tx_count, can_error_count);
+	printf("\tReceived %zu messages total, %zu were TX messages, %zu were CAN errors, %zu were app errors\n", messages_count, tx_count, can_error_count, app_error_count);
 
 	return icsneoc2_error_success;
 }

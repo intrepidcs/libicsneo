@@ -465,6 +465,61 @@ typedef uint8_t icsneoc2_can_error_code_t;
 #define ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_PASSIVE 0x02 // Error passive state
 #define ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_WARN    0x04 // Error warning state
 
+typedef enum _icsneoc2_app_error_type_t {
+	icsneoc2_app_error_type_rx_messages_full = 0,
+	icsneoc2_app_error_type_tx_messages_full = 1,
+	icsneoc2_app_error_type_tx_report_messages_full = 2,
+	icsneoc2_app_error_type_bad_comm_with_dsp_ic = 3,
+	icsneoc2_app_error_type_driver_overflow = 4,
+	icsneoc2_app_error_type_pc_buff_overflow = 5,
+	icsneoc2_app_error_type_pc_chksum_error = 6,
+	icsneoc2_app_error_type_pc_missed_byte = 7,
+	icsneoc2_app_error_type_pc_overrun_error = 8,
+	icsneoc2_app_error_type_setting_failure = 9,
+	icsneoc2_app_error_type_too_many_selected_networks = 10,
+	icsneoc2_app_error_type_network_not_enabled = 11,
+	icsneoc2_app_error_type_rtc_not_correct = 12,
+	icsneoc2_app_error_type_loaded_default_settings = 13,
+	icsneoc2_app_error_type_feature_not_unlocked = 14,
+	icsneoc2_app_error_type_feature_rtc_cmd_dropped = 15,
+	icsneoc2_app_error_type_tx_messages_flushed = 16,
+	icsneoc2_app_error_type_tx_messages_half_full = 17,
+	icsneoc2_app_error_type_network_not_valid = 18,
+	icsneoc2_app_error_type_tx_interface_not_implemented = 19,
+	icsneoc2_app_error_type_tx_messages_comm_enable_is_off = 20,
+	icsneoc2_app_error_type_rx_filter_match_count_exceeded = 21,
+	icsneoc2_app_error_type_eth_preemption_not_enabled = 22,
+	icsneoc2_app_error_type_tx_not_supported_in_mode = 23,
+	icsneoc2_app_error_type_jumbo_frames_not_supported = 24,
+	icsneoc2_app_error_type_ethernet_ip_fragment = 25,
+	icsneoc2_app_error_type_tx_messages_underrun = 26,
+	icsneoc2_app_error_type_device_fan_failure = 27,
+	icsneoc2_app_error_type_device_overtemperature = 28,
+	icsneoc2_app_error_type_tx_message_index_out_of_range = 29,
+	icsneoc2_app_error_type_undersized_frame_dropped = 30,
+	icsneoc2_app_error_type_oversized_frame_dropped = 31,
+	icsneoc2_app_error_type_watchdog_event = 32,
+	icsneoc2_app_error_type_system_clock_failure = 33,
+	icsneoc2_app_error_type_system_clock_recovered = 34,
+	icsneoc2_app_error_type_system_peripheral_reset = 35,
+	icsneoc2_app_error_type_system_communication_failure = 36,
+	icsneoc2_app_error_type_tx_messages_unsupported_source_or_packet_id = 37,
+	icsneoc2_app_error_type_wbms_manager_connect_failed = 38,
+	icsneoc2_app_error_type_wbms_manager_connect_bad_state = 39,
+	icsneoc2_app_error_type_wbms_manager_connect_timeout = 40,
+	icsneoc2_app_error_type_failed_to_initialize_logger_disk = 41,
+	icsneoc2_app_error_type_invalid_setting = 42,
+	icsneoc2_app_error_type_system_failure_requested_reset = 43,
+	icsneoc2_app_error_type_port_key_mistmatch = 45,
+	icsneoc2_app_error_type_bus_failure = 46,
+	icsneoc2_app_error_type_tap_overflow = 47,
+	icsneoc2_app_error_type_eth_tx_no_link = 48,
+	icsneoc2_app_error_type_error_buffer_overflow = 254,
+	icsneoc2_app_error_type_no_error = 255
+} _icsneoc2_app_error_type_t;
+
+typedef uint16_t icsneoc2_app_error_type_t;
+
 typedef uint64_t icsneoc2_message_can_error_flags_t;
 
 typedef enum _icsneoc2_tc10_wake_status_t {

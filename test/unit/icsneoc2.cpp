@@ -9,6 +9,7 @@
 #include <icsneo/communication/message/linmessage.h>
 #include <icsneo/communication/message/canmessage.h>
 #include <icsneo/communication/message/canerrormessage.h>
+#include <icsneo/communication/message/apperrormessage.h>
 
 
 #include <vector>
@@ -174,6 +175,9 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_valid(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_can_error(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_can_error_props_get(NULL, NULL, NULL, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_app_error(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_app_error_props_get(NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_app_error_string_get(NULL, NULL, NULL));
 
 	// LIN message NULL parameter checks
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_lin(NULL, NULL));
@@ -1223,6 +1227,51 @@ TEST(icsneoc2, test_icsneoc2_message_can_error_props_get_invalid_type_for_can_me
 		icsneoc2_message_can_error_props_get(&message, &tx_err_count, &rx_err_count, &error_code, &data_error_code, &flags));
 }
 
+TEST(icsneoc2, test_icsneoc2_message_app_error_props_get_invalid_type_for_can_message)
+{
+	icsneoc2_message_t message;
+	message.message = std::make_shared<CANMessage>();
+
+	bool is_app_error = true;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_app_error(&message, &is_app_error));
+	ASSERT_FALSE(is_app_error);
+
+	icsneoc2_app_error_type_t error_type = icsneoc2_app_error_type_no_error;
+	icsneoc2_netid_t error_netid = 0;
+	ASSERT_EQ(icsneoc2_error_invalid_type,
+		icsneoc2_message_app_error_props_get(&message, &error_type, &error_netid));
+}
+
+TEST(icsneoc2, test_icsneoc2_message_app_error_props_get)
+{
+	auto app_err = std::make_shared<icsneo::AppErrorMessage>();
+	app_err->errorType = icsneoc2_app_error_type_pc_buff_overflow;
+	app_err->errorNetID = icsneo::Network::NetID::DWCAN_01;
+
+	icsneoc2_message_t message;
+	message.message = app_err;
+
+	bool is_app_error = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_app_error(&message, &is_app_error));
+	ASSERT_TRUE(is_app_error);
+
+	icsneoc2_app_error_type_t error_type = icsneoc2_app_error_type_no_error;
+	icsneoc2_netid_t error_netid = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_app_error_props_get(&message, &error_type, &error_netid));
+	ASSERT_EQ(error_type, icsneoc2_app_error_type_pc_buff_overflow);
+	ASSERT_EQ(error_netid, static_cast<icsneoc2_netid_t>(icsneo::Network::NetID::DWCAN_01));
+
+	// NULL out-params are ignored
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_app_error_props_get(&message, NULL, NULL));
+
+	// String getter returns the human-readable description
+	char buf[128] = {0};
+	size_t buf_len = sizeof(buf);
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_app_error_string_get(&message, buf, &buf_len));
+	ASSERT_STREQ(buf, "PC buffer overflow");
+	ASSERT_EQ(buf_len, sizeof("PC buffer overflow") - 1);
+}
+
 TEST(icsneoc2, test_icsneoc2_disk_format_enums)
 {
 	// Disk layout enum values
@@ -1299,6 +1348,114 @@ TEST(icsneoc2, test_icsneoc2_can_error_code_t)
 	ASSERT_EQ(ICSNEOC2_MESSAGE_CAN_ERROR_FLAGS_ERROR_WARN, 0x04);
 
 	ASSERT_EQ(sizeof(icsneoc2_message_can_error_flags_t), sizeof(uint64_t));
+}
+
+TEST(icsneoc2, test_icsneoc2_app_error_type_t)
+{
+	ASSERT_EQ(sizeof(icsneoc2_app_error_type_t), sizeof(uint16_t));
+
+	ASSERT_EQ(icsneoc2_app_error_type_rx_messages_full, 0);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_messages_full, 1);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_report_messages_full, 2);
+	ASSERT_EQ(icsneoc2_app_error_type_bad_comm_with_dsp_ic, 3);
+	ASSERT_EQ(icsneoc2_app_error_type_driver_overflow, 4);
+	ASSERT_EQ(icsneoc2_app_error_type_pc_buff_overflow, 5);
+	ASSERT_EQ(icsneoc2_app_error_type_pc_chksum_error, 6);
+	ASSERT_EQ(icsneoc2_app_error_type_pc_missed_byte, 7);
+	ASSERT_EQ(icsneoc2_app_error_type_pc_overrun_error, 8);
+	ASSERT_EQ(icsneoc2_app_error_type_setting_failure, 9);
+	ASSERT_EQ(icsneoc2_app_error_type_too_many_selected_networks, 10);
+	ASSERT_EQ(icsneoc2_app_error_type_network_not_enabled, 11);
+	ASSERT_EQ(icsneoc2_app_error_type_rtc_not_correct, 12);
+	ASSERT_EQ(icsneoc2_app_error_type_loaded_default_settings, 13);
+	ASSERT_EQ(icsneoc2_app_error_type_feature_not_unlocked, 14);
+	ASSERT_EQ(icsneoc2_app_error_type_feature_rtc_cmd_dropped, 15);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_messages_flushed, 16);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_messages_half_full, 17);
+	ASSERT_EQ(icsneoc2_app_error_type_network_not_valid, 18);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_interface_not_implemented, 19);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_messages_comm_enable_is_off, 20);
+	ASSERT_EQ(icsneoc2_app_error_type_rx_filter_match_count_exceeded, 21);
+	ASSERT_EQ(icsneoc2_app_error_type_eth_preemption_not_enabled, 22);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_not_supported_in_mode, 23);
+	ASSERT_EQ(icsneoc2_app_error_type_jumbo_frames_not_supported, 24);
+	ASSERT_EQ(icsneoc2_app_error_type_ethernet_ip_fragment, 25);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_messages_underrun, 26);
+	ASSERT_EQ(icsneoc2_app_error_type_device_fan_failure, 27);
+	ASSERT_EQ(icsneoc2_app_error_type_device_overtemperature, 28);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_message_index_out_of_range, 29);
+	ASSERT_EQ(icsneoc2_app_error_type_undersized_frame_dropped, 30);
+	ASSERT_EQ(icsneoc2_app_error_type_oversized_frame_dropped, 31);
+	ASSERT_EQ(icsneoc2_app_error_type_watchdog_event, 32);
+	ASSERT_EQ(icsneoc2_app_error_type_system_clock_failure, 33);
+	ASSERT_EQ(icsneoc2_app_error_type_system_clock_recovered, 34);
+	ASSERT_EQ(icsneoc2_app_error_type_system_peripheral_reset, 35);
+	ASSERT_EQ(icsneoc2_app_error_type_system_communication_failure, 36);
+	ASSERT_EQ(icsneoc2_app_error_type_tx_messages_unsupported_source_or_packet_id, 37);
+	ASSERT_EQ(icsneoc2_app_error_type_wbms_manager_connect_failed, 38);
+	ASSERT_EQ(icsneoc2_app_error_type_wbms_manager_connect_bad_state, 39);
+	ASSERT_EQ(icsneoc2_app_error_type_wbms_manager_connect_timeout, 40);
+	ASSERT_EQ(icsneoc2_app_error_type_failed_to_initialize_logger_disk, 41);
+	ASSERT_EQ(icsneoc2_app_error_type_invalid_setting, 42);
+	ASSERT_EQ(icsneoc2_app_error_type_system_failure_requested_reset, 43);
+	ASSERT_EQ(icsneoc2_app_error_type_port_key_mistmatch, 45);
+	ASSERT_EQ(icsneoc2_app_error_type_bus_failure, 46);
+	ASSERT_EQ(icsneoc2_app_error_type_tap_overflow, 47);
+	ASSERT_EQ(icsneoc2_app_error_type_eth_tx_no_link, 48);
+	ASSERT_EQ(icsneoc2_app_error_type_error_buffer_overflow, 254);
+	ASSERT_EQ(icsneoc2_app_error_type_no_error, 255);
+
+	using _T = icsneo::AppErrorType;
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorRxMessagesFull), icsneoc2_app_error_type_rx_messages_full);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxMessagesFull), icsneoc2_app_error_type_tx_messages_full);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxReportMessagesFull), icsneoc2_app_error_type_tx_report_messages_full);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorBadCommWithDspIC), icsneoc2_app_error_type_bad_comm_with_dsp_ic);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorDriverOverflow), icsneoc2_app_error_type_driver_overflow);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorPCBuffOverflow), icsneoc2_app_error_type_pc_buff_overflow);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorPCChksumError), icsneoc2_app_error_type_pc_chksum_error);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorPCMissedByte), icsneoc2_app_error_type_pc_missed_byte);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorPCOverrunError), icsneoc2_app_error_type_pc_overrun_error);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorSettingFailure), icsneoc2_app_error_type_setting_failure);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTooManySelectedNetworks), icsneoc2_app_error_type_too_many_selected_networks);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorNetworkNotEnabled), icsneoc2_app_error_type_network_not_enabled);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorRtcNotCorrect), icsneoc2_app_error_type_rtc_not_correct);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorLoadedDefaultSettings), icsneoc2_app_error_type_loaded_default_settings);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorFeatureNotUnlocked), icsneoc2_app_error_type_feature_not_unlocked);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorFeatureRtcCmdDropped), icsneoc2_app_error_type_feature_rtc_cmd_dropped);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxMessagesFlushed), icsneoc2_app_error_type_tx_messages_flushed);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxMessagesHalfFull), icsneoc2_app_error_type_tx_messages_half_full);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorNetworkNotValid), icsneoc2_app_error_type_network_not_valid);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxInterfaceNotImplemented), icsneoc2_app_error_type_tx_interface_not_implemented);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxMessagesCommEnableIsOff), icsneoc2_app_error_type_tx_messages_comm_enable_is_off);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorRxFilterMatchCountExceeded), icsneoc2_app_error_type_rx_filter_match_count_exceeded);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorEthPreemptionNotEnabled), icsneoc2_app_error_type_eth_preemption_not_enabled);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxNotSupportedInMode), icsneoc2_app_error_type_tx_not_supported_in_mode);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorJumboFramesNotSupported), icsneoc2_app_error_type_jumbo_frames_not_supported);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorEthernetIpFragment), icsneoc2_app_error_type_ethernet_ip_fragment);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxMessagesUnderrun), icsneoc2_app_error_type_tx_messages_underrun);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorDeviceFanFailure), icsneoc2_app_error_type_device_fan_failure);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorDeviceOvertemperature), icsneoc2_app_error_type_device_overtemperature);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxMessageIndexOutOfRange), icsneoc2_app_error_type_tx_message_index_out_of_range);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorUndersizedFrameDropped), icsneoc2_app_error_type_undersized_frame_dropped);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorOversizedFrameDropped), icsneoc2_app_error_type_oversized_frame_dropped);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorWatchdogEvent), icsneoc2_app_error_type_watchdog_event);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorSystemClockFailure), icsneoc2_app_error_type_system_clock_failure);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorSystemClockRecovered), icsneoc2_app_error_type_system_clock_recovered);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorSystemPeripheralReset), icsneoc2_app_error_type_system_peripheral_reset);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorSystemCommunicationFailure), icsneoc2_app_error_type_system_communication_failure);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTxMessagesUnsupportedSourceOrPacketId), icsneoc2_app_error_type_tx_messages_unsupported_source_or_packet_id);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorWbmsManagerConnectFailed), icsneoc2_app_error_type_wbms_manager_connect_failed);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorWbmsManagerConnectBadState), icsneoc2_app_error_type_wbms_manager_connect_bad_state);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorWbmsManagerConnectTimeout), icsneoc2_app_error_type_wbms_manager_connect_timeout);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorFailedToInitializeLoggerDisk), icsneoc2_app_error_type_failed_to_initialize_logger_disk);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorInvalidSetting), icsneoc2_app_error_type_invalid_setting);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorSystemFailureRequestedReset), icsneoc2_app_error_type_system_failure_requested_reset);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorPortKeyMistmatch), icsneoc2_app_error_type_port_key_mistmatch);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorBusFailure), icsneoc2_app_error_type_bus_failure);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorTapOverflow), icsneoc2_app_error_type_tap_overflow);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorEthTxNoLink), icsneoc2_app_error_type_eth_tx_no_link);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppErrorErrorBufferOverflow), icsneoc2_app_error_type_error_buffer_overflow);
+	ASSERT_EQ(static_cast<icsneoc2_app_error_type_t>(_T::AppNoError), icsneoc2_app_error_type_no_error);
 }
 
 TEST(icsneoc2, test_icsneoc2_message_can_flags_t)

@@ -516,6 +516,42 @@ icsneoc2_error_t icsneoc2_message_can_error_props_get(
     icsneoc2_can_error_code_t *data_error_code,
     icsneoc2_message_can_error_flags_t *flags);
 
+/**
+ * Check if a message is an application error message
+ *
+ * @param[in] message The message to check.
+ * @param[out] is_app_error Pointer to a bool to copy the app error status of the message into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_is_app_error(icsneoc2_message_t* message, bool* is_app_error);
+
+/**
+ * Get the application error specific properties of a message
+ *
+ * @param[in] message The message to check.
+ * @param[out] error_type Pointer to a icsneoc2_app_error_type_t to copy the error type into. If NULL, it's ignored.
+ * @param[out] error_netid Pointer to a icsneoc2_netid_t to copy the associated network ID into. If NULL, it's ignored.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ *
+ * @see icsneoc2_app_error_type_t, icsneoc2_message_app_error_string_get
+ */
+icsneoc2_error_t icsneoc2_message_app_error_props_get(icsneoc2_message_t* message,
+    icsneoc2_app_error_type_t* error_type, icsneoc2_netid_t* error_netid);
+
+/**
+ * Get a human-readable description string for an application error message
+ *
+ * @param[in] message The message to check.
+ * @param[out] value Pointer to a char buffer to copy the description into.
+ * @param[in,out] value_length On input, the size of the value buffer; on output, the length of the copied string.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters, icsneoc2_error_invalid_type, or icsneoc2_error_string_copy_failed otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_app_error_string_get(icsneoc2_message_t* message,
+    char* value, size_t* value_length);
+
 #ifdef __cplusplus
 }
 #endif

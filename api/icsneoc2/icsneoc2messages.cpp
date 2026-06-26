@@ -7,6 +7,7 @@
 #include "icsneo/communication/message/message.h"
 #include "icsneo/communication/message/canmessage.h"
 #include "icsneo/communication/message/canerrormessage.h"
+#include "icsneo/communication/message/apperrormessage.h"
 #include "icsneo/communication/message/linmessage.h"
 #include "icsneo/communication/message/ethernetmessage.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -314,6 +315,44 @@ icsneoc2_error_t icsneoc2_message_can_error_props_get(
 		}
 	}
 	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_is_app_error(icsneoc2_message_t* message, bool* is_app_error) {
+	if(!message || !is_app_error) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	*is_app_error = std::dynamic_pointer_cast<AppErrorMessage>(message->message) != nullptr;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_app_error_props_get(icsneoc2_message_t* message,
+    icsneoc2_app_error_type_t* error_type, icsneoc2_netid_t* error_netid) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto app_err = std::dynamic_pointer_cast<AppErrorMessage>(message->message);
+	if(!app_err) {
+		return icsneoc2_error_invalid_type;
+	}
+	if(error_type) {
+		*error_type = static_cast<icsneoc2_app_error_type_t>(app_err->getAppErrorType());
+	}
+	if(error_netid) {
+		*error_netid = static_cast<icsneoc2_netid_t>(app_err->errorNetID);
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_app_error_string_get(icsneoc2_message_t* message,
+    char* value, size_t* value_length) {
+	if(!message || !value_length) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto app_err = std::dynamic_pointer_cast<AppErrorMessage>(message->message);
+	if(!app_err) {
+		return icsneoc2_error_invalid_type;
+	}
+	return safe_str_copy(value, value_length, app_err->getAppErrorString()) ? icsneoc2_error_success : icsneoc2_error_string_copy_failed;
 }
 
 icsneoc2_error_t icsneoc2_message_is_lin(icsneoc2_message_t* message, bool* is_lin) {
