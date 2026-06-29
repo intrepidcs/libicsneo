@@ -71,6 +71,7 @@ public:
 
 	BootloaderPipeline getBootloader() override {
 		return BootloaderPipeline()
+			.add<EnterBootloaderPhase>()
 			.add<FlashPhase>(ChipID::neoVIFIRE3_ZCHIP, BootloaderCommunication::Application, true, false)
 			.add<FlashPhase>(ChipID::neoVIFIRE3_SCHIP, BootloaderCommunication::Application, false, true)
 			.add<FlashPhase>(ChipID::neoVIFIRE3_LINUX, BootloaderCommunication::Application, false, false, false)
