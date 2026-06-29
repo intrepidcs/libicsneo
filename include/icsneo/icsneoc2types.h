@@ -683,6 +683,34 @@ typedef enum _icsneoc2_chip_id_t {
 
 typedef uint8_t icsneoc2_chip_id_t;
 
+typedef enum _icsneoc2_link_speed_t {
+	icsneoc2_link_speed_auto = 0,
+	icsneoc2_link_speed_10mbps,
+	icsneoc2_link_speed_100mbps,
+	icsneoc2_link_speed_1000mbps,
+	icsneoc2_link_speed_2500mbps,
+	icsneoc2_link_speed_5000mbps,
+	icsneoc2_link_speed_10000mbps,
+
+	// Must be last entry.
+	icsneoc2_link_speed_maxsize
+} _icsneoc2_link_speed_t;
+
+typedef uint8_t icsneoc2_link_speed_t;
+
+typedef enum _icsneoc2_link_mode_t {
+	icsneoc2_link_mode_auto = 0,
+	icsneoc2_link_mode_master,
+	icsneoc2_link_mode_slave,
+	icsneoc2_link_mode_invalid,
+	icsneoc2_link_mode_none,
+
+	// Must be last entry.
+	icsneoc2_link_mode_maxsize
+} _icsneoc2_link_mode_t;
+
+typedef uint8_t icsneoc2_link_mode_t;
+
 typedef struct icsneoc2_mac_addr_entry_t icsneoc2_mac_addr_entry_t;
 
 #ifdef __cplusplus

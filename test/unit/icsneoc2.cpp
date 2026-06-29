@@ -10,6 +10,8 @@
 #include <icsneo/communication/message/canmessage.h>
 #include <icsneo/communication/message/canerrormessage.h>
 #include <icsneo/communication/message/apperrormessage.h>
+#include <icsneo/communication/message/ethernetstatusmessage.h>
+#include <icsneo/communication/message/filter/messagefilter.h>
 
 
 #include <vector>
@@ -407,6 +409,8 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_t1s_props_set(NULL, NULL, NULL, NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_t1s_props_get(NULL, NULL, NULL, NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_ethernet(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_is_ethernet_status(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_eth_status_props_get(NULL, NULL, NULL, NULL, NULL));
 }
 
 TEST(icsneoc2, test_icsneoc2_devicetype_t)
@@ -1142,6 +1146,83 @@ TEST(icsneoc2, test_icsneoc2_open_options_default)
 {
 	icsneoc2_open_options_t expected = ICSNEOC2_OPEN_OPTIONS_GO_ONLINE | ICSNEOC2_OPEN_OPTIONS_SYNC_RTC | ICSNEOC2_OPEN_OPTIONS_ENABLE_AUTO_UPDATE;
 	ASSERT_EQ(icsneoc2_open_options_default, expected);
+}
+
+TEST(icsneoc2, test_message_filter_c2_includes_internal_messages)
+{
+	ASSERT_EQ(static_cast<neomessagetype_t>(icsneo::Message::Type::EthernetStatus), 0x8014);
+
+	auto ethernetStatus = std::make_shared<icsneo::EthernetStatusMessage>(
+		icsneo::Network::NetID::ETHERNET_01,
+		true,
+		icsneo::EthernetStatusMessage::LinkSpeed::LinkSpeed1000,
+		true,
+		icsneo::EthernetStatusMessage::LinkMode::LinkModeMaster
+	);
+	auto deviceMessage = std::make_shared<icsneo::RawMessage>(icsneo::Network::NetID::Device);
+	auto deviceStatusMessage = std::make_shared<icsneo::RawMessage>(icsneo::Network::NetID::DeviceStatus);
+	auto internalStatusMessage = std::make_shared<icsneo::Message>(icsneo::Message::Type::TC10Status);
+	auto canMessage = std::make_shared<icsneo::CANMessage>();
+
+	icsneo::MessageFilter defaultFilter;
+	ASSERT_FALSE(defaultFilter.match(ethernetStatus));
+	ASSERT_FALSE(defaultFilter.match(deviceMessage));
+	ASSERT_FALSE(defaultFilter.match(deviceStatusMessage));
+	ASSERT_FALSE(defaultFilter.match(internalStatusMessage));
+	ASSERT_TRUE(defaultFilter.match(canMessage));
+
+	icsneo::MessageFilter c2Filter;
+	c2Filter.includeInternalInAny = true;
+	ASSERT_TRUE(c2Filter.match(ethernetStatus));
+	ASSERT_TRUE(c2Filter.match(deviceMessage));
+	ASSERT_TRUE(c2Filter.match(deviceStatusMessage));
+	ASSERT_TRUE(c2Filter.match(internalStatusMessage));
+	ASSERT_TRUE(c2Filter.match(canMessage));
+}
+
+TEST(icsneoc2, test_icsneoc2_ethernet_status_props_get)
+{
+	icsneoc2_message_t message;
+	message.message = std::make_shared<icsneo::EthernetStatusMessage>(
+		icsneo::Network::NetID::ETHERNET_01,
+		true,
+		icsneo::EthernetStatusMessage::LinkSpeed::LinkSpeed1000,
+		false,
+		icsneo::EthernetStatusMessage::LinkMode::LinkModeMaster
+	);
+
+	bool isEthernetStatus = false;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_ethernet_status(&message, &isEthernetStatus));
+	ASSERT_TRUE(isEthernetStatus);
+
+	bool linkState = false;
+	bool duplex = true;
+	icsneoc2_link_speed_t linkSpeed = icsneoc2_link_speed_auto;
+	icsneoc2_link_mode_t linkMode = icsneoc2_link_mode_auto;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_eth_status_props_get(&message, &linkState, &duplex, &linkSpeed, &linkMode));
+	ASSERT_TRUE(linkState);
+	ASSERT_FALSE(duplex);
+	ASSERT_EQ(linkSpeed, icsneoc2_link_speed_1000mbps);
+	ASSERT_EQ(linkMode, icsneoc2_link_mode_master);
+
+	icsneoc2_netid_t netid = icsneoc2_netid_invalid;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_netid_get(&message, &netid));
+	ASSERT_EQ(netid, icsneoc2_netid_ethernet_01);
+
+	size_t dataLength = 1;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_data_get(&message, nullptr, &dataLength));
+	ASSERT_EQ(dataLength, 0);
+
+	// A non-Ethernet-status message must be rejected by the props getter and
+	// reported as not-an-Ethernet-status by the predicate.
+	icsneoc2_message_t can_message;
+	can_message.message = std::make_shared<CANMessage>();
+
+	bool isEthernetStatusWrongType = true;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_is_ethernet_status(&can_message, &isEthernetStatusWrongType));
+	ASSERT_FALSE(isEthernetStatusWrongType);
+
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_eth_status_props_get(&can_message, &linkState, &duplex, &linkSpeed, &linkMode));
 }
 
 TEST(icsneoc2, test_icsneoc2_message_is_error)

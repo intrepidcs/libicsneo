@@ -10,6 +10,7 @@
 #include "icsneo/communication/message/apperrormessage.h"
 #include "icsneo/communication/message/linmessage.h"
 #include "icsneo/communication/message/ethernetmessage.h"
+#include "icsneo/communication/message/ethernetstatusmessage.h"
 #include "icsneo/communication/packet/canpacket.h"
 
 icsneoc2_error_t icsneoc2_message_is_valid(icsneoc2_message_t* message, bool* is_valid) {
@@ -670,9 +671,40 @@ icsneoc2_error_t icsneoc2_message_eth_t1s_props_get(icsneoc2_message_t* message,
 }
 
 icsneoc2_error_t icsneoc2_message_is_ethernet(icsneoc2_message_t* message, bool* is_ethernet) {
-	if(!message) {
+	if(!message || !is_ethernet) {
 		return icsneoc2_error_invalid_parameters;
 	}
 	*is_ethernet = std::dynamic_pointer_cast<EthernetMessage>(message->message) != nullptr;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_is_ethernet_status(icsneoc2_message_t* message, bool* is_ethernet_status) {
+	if(!message || !is_ethernet_status) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	*is_ethernet_status = std::dynamic_pointer_cast<EthernetStatusMessage>(message->message) != nullptr;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_eth_status_props_get(icsneoc2_message_t* message, bool* link_state, bool* duplex, icsneoc2_link_speed_t* link_speed, icsneoc2_link_mode_t* link_mode) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto msg = std::dynamic_pointer_cast<EthernetStatusMessage>(message->message);
+	if(!msg) {
+		return icsneoc2_error_invalid_type;
+	}
+	if(link_state) {
+		*link_state = msg->state;
+	}
+	if(duplex) {
+		*duplex = msg->duplex;
+	}
+	if(link_speed) {
+		*link_speed = static_cast<icsneoc2_link_speed_t>(msg->speed);
+	}
+	if(link_mode) {
+		*link_mode = static_cast<icsneoc2_link_mode_t>(msg->mode);
+	}
 	return icsneoc2_error_success;
 }

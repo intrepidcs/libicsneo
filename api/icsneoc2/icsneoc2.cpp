@@ -271,7 +271,9 @@ static icsneoc2_error_t open_device_with_options(std::shared_ptr<Device> dev, ic
 	if(!dev) {
 		return icsneoc2_error_invalid_device;
 	}
-	if(!dev->enableMessagePolling(std::make_optional<MessageFilter>())) {
+	MessageFilter filter;
+	filter.includeInternalInAny = true;
+	if(!dev->enableMessagePolling(std::make_optional(filter))) {
 		return icsneoc2_error_enable_message_polling_failed;
 	}
 	if(!dev->isOpen() && !dev->open()) {

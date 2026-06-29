@@ -299,9 +299,31 @@ icsneoc2_error_t icsneoc2_message_eth_t1s_props_get(icsneoc2_message_t* message,
 icsneoc2_error_t icsneoc2_message_is_ethernet(icsneoc2_message_t* message, bool* is_ethernet);
 
 /**
+ * Check if a message is an Ethernet status message
+ *
+ * @param[in] message The message to check.
+ * @param[out] is_ethernet_status Pointer to a bool to copy the Ethernet status of the message into.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_is_ethernet_status(icsneoc2_message_t* message, bool* is_ethernet_status);
+
+/**
+ * Get the Ethernet status properties from an Ethernet status message
+ * 
+ * @param[in] message The message to check.
+ * @param[out] link_state Pointer to a bool to copy the link state into. True if the link is up, false if it's down. If NULL, it's ignored.
+ * @param[out] duplex Pointer to a bool to copy the duplex state into. True if the link is full duplex, false if it's half duplex. If NULL, it's ignored.
+ * @param[out] link_speed Pointer to a icsneoc2_link_speed_t to copy the link speed into. If NULL, it's ignored.
+ * @param[out] link_mode Pointer to a icsneoc2_link_mode_t to copy the link mode into. If NULL, it's ignored.
+ * 
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters, icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_message_eth_status_props_get(icsneoc2_message_t* message, bool* link_state, bool* duplex, icsneoc2_link_speed_t* link_speed, icsneoc2_link_mode_t* link_mode);
+
+/**
  * Check if a message is valid
  *
- * @param[in] device The device to check against.
  * @param[in] message The message to check.
  * @param[out] is_valid Pointer to a bool to copy the validity of the message into.
  *
@@ -312,7 +334,6 @@ icsneoc2_error_t icsneoc2_message_is_valid(icsneoc2_message_t* message, bool* is
 /**
  * Check if a message is a raw message (message with data)
  *
- * @param[in] device The device to check against.
  * @param[in] message The message to check.
  * @param[out] is_raw Pointer to a bool to copy the raw status of the message into.
  *
@@ -323,7 +344,6 @@ icsneoc2_error_t icsneoc2_message_is_raw(icsneoc2_message_t* message, bool* is_r
 /**
  * Check if a message is a frame message (message with data)
  *
- * @param[in] device The device to check against.
  * @param[in] message The message to check.
  * @param[out] is_frame Pointer to a bool to copy the frame status of the message into.
  *
@@ -333,8 +353,7 @@ icsneoc2_error_t icsneoc2_message_is_frame(icsneoc2_message_t* message, bool* is
 
 /**
  * Check if a message is a CAN message
- *
- * @param[in] device The device to check against.
+ * 
  * @param[in] message The message to check.
  * @param[out] is_can Pointer to a bool to copy the CAN status of the message into.
  *

@@ -74,6 +74,14 @@ Ethernet Receive
 .. literalinclude:: ../../examples/c2/ethernet_receive/src/main.c
    :language: c
 
+Ethernet Status
+===============
+
+:download:`Download example <../../examples/c2/ethernet_status/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/ethernet_status/src/main.c
+   :language: c
+
 T1S Loopback
 ============
 

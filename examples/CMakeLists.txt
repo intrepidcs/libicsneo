@@ -12,6 +12,7 @@ option(LIBICSNEO_BUILD_C2_LIN_EXAMPLE "Build the C2 LIN example." ON)
 option(LIBICSNEO_BUILD_C2_LIN_TRANSMIT_EXAMPLE "Build the C2 LIN transmit example." ON)
 option(LIBICSNEO_BUILD_C2_ETHERNET_TRANSMIT_EXAMPLE "Build the C2 ethernet transmit example." ON)
 option(LIBICSNEO_BUILD_C2_ETHERNET_RECEIVE_EXAMPLE "Build the C2 ethernet receive example." ON)
+option(LIBICSNEO_BUILD_C2_ETHERNET_STATUS_EXAMPLE "Build the C2 ethernet status example." ON)
 option(LIBICSNEO_BUILD_C2_T1S_LOOPBACK_EXAMPLE "Build the C2 RAD-Comet3 T1S loopback example." ON)
 option(LIBICSNEO_BUILD_C2_TC10_EXAMPLE "Build the C2 TC10 example." ON)
 option(LIBICSNEO_BUILD_C2_GPTP_EXAMPLE "Build the C2 gPTP settings example." ON)
@@ -91,6 +92,10 @@ endif()
 
 if(LIBICSNEO_BUILD_C2_ETHERNET_RECEIVE_EXAMPLE)
 	add_subdirectory(c2/ethernet_receive)
+endif()
+
+if(LIBICSNEO_BUILD_C2_ETHERNET_STATUS_EXAMPLE)
+	add_subdirectory(c2/ethernet_status)
 endif()
 
 if(LIBICSNEO_BUILD_C2_T1S_LOOPBACK_EXAMPLE)

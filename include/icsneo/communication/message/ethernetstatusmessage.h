@@ -4,37 +4,41 @@
 #ifdef __cplusplus
 
 #include "icsneo/communication/message/message.h"
+#include "icsneo/icsneoc2types.h"
 
 #include <memory>
 
 namespace icsneo {
 
-class EthernetStatusMessage : public Message {
+class EthernetStatusMessage : public RawMessage {
 public:
-	enum class LinkSpeed {
-		LinkSpeedAuto,
-		LinkSpeed10,
-		LinkSpeed100,
-		LinkSpeed1000,
-		LinkSpeed2500,
-		LinkSpeed5000,
-		LinkSpeed10000,
+	enum class LinkSpeed: icsneoc2_link_speed_t {
+		LinkSpeedAuto = icsneoc2_link_speed_auto,
+		LinkSpeed10 = icsneoc2_link_speed_10mbps,
+		LinkSpeed100 = icsneoc2_link_speed_100mbps,
+		LinkSpeed1000 = icsneoc2_link_speed_1000mbps,
+		LinkSpeed2500 = icsneoc2_link_speed_2500mbps,
+		LinkSpeed5000 = icsneoc2_link_speed_5000mbps,
+		LinkSpeed10000 = icsneoc2_link_speed_10000mbps,
 	};
-	enum class LinkMode {
-		LinkModeAuto,
-		LinkModeMaster,
-		LinkModeSlave,
-		LinkModeInvalid,
-		LinkModeNone,
+	enum class LinkMode: icsneoc2_link_mode_t {
+		LinkModeAuto = icsneoc2_link_mode_auto,
+		LinkModeMaster = icsneoc2_link_mode_master,
+		LinkModeSlave = icsneoc2_link_mode_slave,
+		LinkModeInvalid = icsneoc2_link_mode_invalid,
+		LinkModeNone = icsneoc2_link_mode_none,
 	};
-	EthernetStatusMessage(Network net, bool state, LinkSpeed speed, bool duplex, LinkMode mode) : Message(Type::EthernetStatus),
-		network(net), state(state), speed(speed), duplex(duplex), mode(mode) {}
-	Network network;
+
+	EthernetStatusMessage(Network net, bool state, LinkSpeed speed, bool duplex, LinkMode mode) : RawMessage(Type::EthernetStatus, net),
+		state(state), speed(speed), duplex(duplex), mode(mode) {}
+	// Link State: False = Link Down, True = Link Up
 	bool state;
 	LinkSpeed speed;
+	// Duplex: False = Half, True = Full
 	bool duplex;
 	LinkMode mode;
-	static std::shared_ptr<Message> DecodeToMessage(const std::vector<uint8_t>& bytestream);
+	
+	static std::shared_ptr<RawMessage> DecodeToMessage(const std::vector<uint8_t>& bytestream);
 };
 
 }; // namespace icsneo

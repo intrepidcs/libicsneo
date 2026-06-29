@@ -360,6 +360,7 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 	size_t tx_count = 0;
 	size_t can_error_count = 0;
 	size_t app_error_count = 0;
+	size_t internal_count = 0;
 	for(size_t i = 0; i < messages_count; i++) {
 		icsneoc2_message_t* message = messages[i];
 
@@ -414,13 +415,21 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 			continue;
 		}
 
+		// This example only cares about bus traffic, so skip internal
+		// device/status messages.
+		icsneoc2_network_type_t internal_check = icsneoc2_network_type_invalid;
+		res = icsneoc2_message_network_type_get(message, &internal_check);
+		if(res == icsneoc2_error_success && internal_check == icsneoc2_network_type_internal) {
+			internal_count++;
+			continue;
+		}
+
 		bool is_frame = false;
 		res = icsneoc2_message_is_frame(message, &is_frame);
 		if(res != icsneoc2_error_success) {
 			return print_error_code("\tFailed to check if message is a frame", res);
 		}
 		if(!is_frame) {
-			printf("Ignoring non-frame message at index %zu\n", i);
 			continue;
 		}
 		icsneoc2_network_type_t network_type;
@@ -494,7 +503,7 @@ int process_messages(icsneoc2_message_t** messages, size_t messages_count) {
 			printf(" ]\n");
 		}
 	}
-	printf("\tReceived %zu messages total, %zu were TX messages, %zu were CAN errors, %zu were app errors\n", messages_count, tx_count, can_error_count, app_error_count);
+	printf("\tReceived %zu messages total, %zu were TX messages, %zu were CAN errors, %zu were app errors, %zu internal (skipped)\n", messages_count, tx_count, can_error_count, app_error_count, internal_count);
 
 	return icsneoc2_error_success;
 }

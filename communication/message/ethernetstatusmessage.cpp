@@ -37,7 +37,7 @@ struct Packet {
 };
 #pragma pack(pop)
 
-std::shared_ptr<Message> EthernetStatusMessage::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
+std::shared_ptr<RawMessage> EthernetStatusMessage::DecodeToMessage(const std::vector<uint8_t>& bytestream) {
 	if(bytestream.size() < sizeof(Packet)) {
 		return nullptr;
 	}
@@ -76,5 +76,5 @@ std::shared_ptr<Message> EthernetStatusMessage::DecodeToMessage(const std::vecto
 			break;
 		default: return nullptr;
 	}
-	return std::make_shared<EthernetStatusMessage>(packet->network, packet->state, speed, packet->duplex, mode);
+	return std::make_shared<EthernetStatusMessage>(packet->network, packet->state != 0, speed, packet->duplex != 0, mode);
 }
