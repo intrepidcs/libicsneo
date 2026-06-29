@@ -231,9 +231,18 @@ public:
 	enum class OpenStatusType {
 		QuestionContinueSkipCancel,
 		QuestionContinueCancel,
-		Progress
+		Progress,
+		Failed
 	};
 
+	/**
+	 * @brief Alias of callback function for progress of a bootloader pipeline task
+	 * 
+	 * The progress value passed into the callback function indicates the following:
+	 * 1) If the value is std::nullopt, this implies the status message is for an asynchronous task or a task in which the current progress is unknown.
+	 * 2) If the value is between 0 and 1 (i.e., 0 <= progress <= 1), this implies the actual progress of the current task as a percentage.
+	 * 3) Values not between 0 and 1 (i.e., progress < 0 or progress > 1) are undefined.
+	 */
 	using OpenStatusHandler = std::function<Device::OpenDirective(OpenStatusType type, const std::string& status, std::optional<double> progress)>;
 
 	bool open(OpenFlags flags = {}, OpenStatusHandler handler =
