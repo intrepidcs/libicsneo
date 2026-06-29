@@ -413,7 +413,7 @@ typedef uint8_t icsneoc2_disk_layout_t;
 
 #define ICSNEOC2_DISK_FORMAT_FLAGS_PRESENT     0x1 // Indicates that the disk is present
 #define ICSNEOC2_DISK_FORMAT_FLAGS_INITIALIZED 0x2 // Indicates that the disk is initialized
-#define ICSNEOC2_DISK_FORMAT_FLAGS_FORMATTED   0x4 // Indicates that the disk is already formatted
+#define ICSNEOC2_DISK_FORMAT_FLAGS_FORMATTED   0x4 // disk_details_get: disk is formatted | format_disk: disk to format | force_disk_config_update: disk enabled in layout (also reported as formatted)
 
 typedef uint32_t icsneoc2_disk_format_flags_t;
 

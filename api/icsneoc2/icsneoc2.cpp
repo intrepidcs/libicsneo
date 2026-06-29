@@ -71,6 +71,7 @@ icsneoc2_error_t icsneoc2_error_code_get(icsneoc2_error_t error_code, char* valu
 		"Close failed",                     // icsneoc2_error_close_failed
 		"Reconnect failed",                 // icsneoc2_error_reconnect_failed
 		"Invalid data",                     // icsneoc2_error_invalid_data
+		"Force disk config update failed",  // icsneoc2_error_force_disk_config_update_failed
 	};
 	static_assert(std::size(error_strings) == icsneoc2_error_maxsize,
 		"error_strings is out of sync with _icsneoc2_error_t enum - update both together");
@@ -1093,6 +1094,21 @@ icsneoc2_error_t icsneoc2_device_format_disk(const icsneoc2_device_t* device, ic
 
 	if(!device->device->formatDisk(*disk_details->details, handler)) {
 		return icsneoc2_error_format_disk_failed;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_device_force_disk_config_update(const icsneoc2_device_t* device, icsneoc2_disk_details_t* disk_details) {
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!disk_details || !disk_details->details) {
+		return icsneoc2_error_invalid_parameters;
+	}
+
+	if(!device->device->forceDiskConfigUpdate(*disk_details->details)) {
+		return icsneoc2_error_force_disk_config_update_failed;
 	}
 	return icsneoc2_error_success;
 }

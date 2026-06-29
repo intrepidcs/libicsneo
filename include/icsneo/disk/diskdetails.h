@@ -18,7 +18,8 @@ enum class DiskLayout : uint8_t {
 struct DiskInfo {
 	bool present; // Disk is connected
 	bool initialized; // Disk is initialized
-	bool formatted; // Disk is formatted
+	// getDiskDetails: disk is formatted | formatDisk: disk to format | forceDiskConfigUpdate: disk enabled in layout (also reported as formatted)
+	bool formatted;
 
 	uint64_t sectors;
 	uint32_t bytesPerSector;

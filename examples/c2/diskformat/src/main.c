@@ -109,6 +109,85 @@ int main() {
 		}
 	}
 
+	/* Choose operation */
+	printf("\n\tChoose operation:\n");
+	printf("\t  [f] Format the disk(s)\n");
+	printf("\t  [u] Update the disk configuration without formatting\n");
+	printf("\t  [q] Quit\n");
+	printf("\tSelection [f/u/q]: ");
+	char choice[8] = {0};
+	if(scanf("%7s", choice) != 1) {
+		choice[0] = 'q';
+	}
+
+	if(choice[0] == 'u' || choice[0] == 'U') {
+		/* Force a disk config update (e.g. changing the disk layout) without formatting.
+		 * Unlike a format, this preserves the existing data on the disk(s). */
+		printf("\n\tChoose disk layout:\n");
+		printf("\t  [s] Spanned\n");
+		printf("\t  [r] RAID0\n");
+		printf("\tSelection [s/r] (current: %s): ", layout == icsneoc2_disk_layout_raid0 ? "RAID0" : "Spanned");
+		char layout_choice[8] = {0};
+		if(scanf("%7s", layout_choice) != 1) {
+			layout_choice[0] = '\0';
+		}
+		if(layout_choice[0] == 'r' || layout_choice[0] == 'R') {
+			icsneoc2_disk_details_layout_set(details, icsneoc2_disk_layout_raid0);
+		} else if(layout_choice[0] == 's' || layout_choice[0] == 'S') {
+			icsneoc2_disk_details_layout_set(details, icsneoc2_disk_layout_spanned);
+		} else {
+			printf("\tKeeping current layout.\n");
+		}
+
+		/* Enable/disable individual disks in the configuration. A disk's enabled
+		 * state is carried by the FORMATTED flag; only present disks can be enabled. */
+		for(size_t i = 0; i < detail_count; i++) {
+			icsneoc2_disk_format_flags_t flags = 0;
+			icsneoc2_disk_details_flags_get(details, i, &flags);
+			if(!(flags & ICSNEOC2_DISK_FORMAT_FLAGS_PRESENT)) {
+				continue; /* Can't enable a disk that isn't present */
+			}
+			printf("\tEnable disk [%zu]? [y/N] (currently %s): ", i,
+				(flags & ICSNEOC2_DISK_FORMAT_FLAGS_FORMATTED) ? "enabled" : "disabled");
+			char disk_choice[8] = {0};
+			if(scanf("%7s", disk_choice) != 1) {
+				disk_choice[0] = '\0';
+			}
+			if(disk_choice[0] == 'y' || disk_choice[0] == 'Y') {
+				flags |= ICSNEOC2_DISK_FORMAT_FLAGS_FORMATTED;
+			} else {
+				flags &= ~(icsneoc2_disk_format_flags_t)ICSNEOC2_DISK_FORMAT_FLAGS_FORMATTED;
+			}
+			icsneoc2_disk_details_flags_set(details, i, flags);
+		}
+
+		icsneoc2_disk_layout_t new_layout = 0;
+		icsneoc2_disk_details_layout_get(details, &new_layout);
+		printf("\n\tForcing disk config update on %s to %s layout (no data will be erased)...\n",
+			description, new_layout == icsneoc2_disk_layout_raid0 ? "RAID0" : "Spanned");
+		res = icsneoc2_device_force_disk_config_update(device, details);
+		if(res != icsneoc2_error_success) {
+			print_error_code("\tForce disk config update failed", res);
+			icsneoc2_disk_details_free(details);
+			icsneoc2_device_close(device);
+			icsneoc2_device_free(device);
+			return -1;
+		}
+		printf("\tDisk config update complete!\n");
+		icsneoc2_disk_details_free(details);
+		icsneoc2_device_close(device);
+		icsneoc2_device_free(device);
+		return 0;
+	}
+
+	if(choice[0] != 'f' && choice[0] != 'F') {
+		printf("\tAborted.\n");
+		icsneoc2_disk_details_free(details);
+		icsneoc2_device_close(device);
+		icsneoc2_device_free(device);
+		return 0;
+	}
+
 	/* Build format config: mark present disks for formatting */
 	bool any_present = false;
 	for(size_t i = 0; i < detail_count; i++) {

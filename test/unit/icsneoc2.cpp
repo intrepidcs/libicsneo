@@ -338,6 +338,7 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_supports_disk_formatting(NULL, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_disk_details_get(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_format_disk(NULL, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_force_disk_config_update(NULL, NULL));
 
 	// Disk details accessors with NULL details
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_disk_details_count_get(NULL, &placeholderSizeT));
@@ -1389,6 +1390,16 @@ TEST(icsneoc2, test_icsneoc2_format_disk_error_code)
 	ASSERT_EQ(icsneoc2_error_success, icsneoc2_error_code_get(icsneoc2_error_format_disk_failed, error_str, &error_str_len));
 	ASSERT_GT(error_str_len, 0u);
 	ASSERT_STREQ(error_str, "Disk format failed");
+}
+
+TEST(icsneoc2, test_icsneoc2_force_disk_config_update_error_code)
+{
+	// Verify the new error code exists and has a valid string
+	char error_str[64] = {0};
+	size_t error_str_len = sizeof(error_str);
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_error_code_get(icsneoc2_error_force_disk_config_update_failed, error_str, &error_str_len));
+	ASSERT_GT(error_str_len, 0u);
+	ASSERT_STREQ(error_str, "Force disk config update failed");
 }
 
 TEST(icsneoc2, test_icsneoc2_memory_type_enums)

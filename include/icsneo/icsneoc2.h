@@ -47,6 +47,7 @@ typedef enum _icsneoc2_error_t {
 	icsneoc2_error_close_failed, // Failed to close device
 	icsneoc2_error_reconnect_failed, // Failed to reconnect to device
 	icsneoc2_error_invalid_data, // Failed to get/set data due to invalid data pointer or size
+	icsneoc2_error_force_disk_config_update_failed, // Failed to force a disk config update
 	// NOTE: Any new values added here should be updated in icsneoc2_error_code_get
 	icsneoc2_error_maxsize
 } _icsneoc2_error_t;
@@ -845,6 +846,24 @@ icsneoc2_error_t icsneoc2_disk_details_full_format_set(const icsneoc2_disk_detai
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_format_disk_failed otherwise.
  */
 icsneoc2_error_t icsneoc2_device_format_disk(const icsneoc2_device_t* device, icsneoc2_disk_details_t* disk_details, icsneoc2_disk_format_progress_fn progress_callback, void* user_data);
+
+/**
+ * Force a disk layout/configuration change on a device without formatting.
+ *
+ * Unlike icsneoc2_device_format_disk(), this applies the configuration described by the
+ * disk details handle (such as the disk layout) and enables the change without erasing data.
+ *
+ * @param[in] device The device whose disk configuration should be updated.
+ * @param[in] disk_details A disk details handle describing the desired configuration.
+ *            Use icsneoc2_device_disk_details_get() to obtain a handle, then modify it
+ *            (e.g. set the layout with icsneoc2_disk_details_layout_set()).
+ *            In this context the per-disk ICSNEOC2_DISK_FORMAT_FLAGS_FORMATTED flag
+ *            selects whether that disk is enabled in the layout (no formatting occurs).
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful,
+ *         icsneoc2_error_force_disk_config_update_failed otherwise.
+ */
+icsneoc2_error_t icsneoc2_device_force_disk_config_update(const icsneoc2_device_t* device, icsneoc2_disk_details_t* disk_details);
 
 /**
  * Get the list of networks this device supports for receiving.
