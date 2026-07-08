@@ -546,6 +546,8 @@ typedef uint8_t icsneoc2_tc10_sleep_status_t;
 
 typedef struct icsneoc2_chip_versions_t icsneoc2_chip_versions_t;
 
+typedef struct icsneoc2_termination_group_t icsneoc2_termination_group_t;
+
 typedef enum _icsneoc2_chip_id_t {
 	icsneoc2_chip_id_neovifire_mchip = 0,
 	icsneoc2_chip_id_neovifire_lchip = 1,

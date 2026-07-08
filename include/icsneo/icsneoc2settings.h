@@ -140,7 +140,61 @@ icsneoc2_error_t icsneoc2_settings_termination_is_enabled(icsneoc2_device_t* dev
  */
 icsneoc2_error_t icsneoc2_settings_termination_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool enable);
 
-// TODO: getTerminationGroups
+/**
+ * Enumerate the termination groups for a device.
+ *
+ * Some devices have groupings of networks where software switchable termination
+ * can only be applied to one network in the group at a time. This enumerates
+ * those groups. Use icsneoc2_termination_group_next() to walk the list and
+ * icsneoc2_termination_group_networks_get() to read each group's networks.
+ *
+ * These groups apply to the CAN termination controlled by the
+ * icsneoc2_settings_termination_* functions. 10BASE-T1S termination
+ * (icsneoc2_settings_t1s_*) is per-network and is never grouped.
+ *
+ * If the device does not support software switchable termination, the list is
+ * empty (*groups is set to NULL and *count, if provided, is set to 0).
+ *
+ * @param[in] device The device to query.
+ * @param[out] groups Receives a newly allocated termination group handle, or NULL if there are no groups. The caller owns this handle and must free it with icsneoc2_settings_termination_groups_free() when done.
+ * @param[out] count Receives the number of termination groups. May be NULL if not needed.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_out_of_memory otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_termination_groups_enumerate(icsneoc2_device_t* device, icsneoc2_termination_group_t** groups, size_t* count);
+
+/**
+ * Advance to the next termination group in an enumeration list.
+ *
+ * @param[in] group The current termination group handle.
+ *
+ * @return The next termination group handle, or NULL at the end of the list.
+ */
+icsneoc2_termination_group_t* icsneoc2_termination_group_next(const icsneoc2_termination_group_t* group);
+
+/**
+ * Get the networks belonging to a termination group.
+ *
+ * Call with networks set to NULL to query the number of networks in the group;
+ * *count will be set to the required size. Then call again with a buffer of at
+ * least that size. On success *count is updated with the number of netids written.
+ *
+ * @param[in] group The termination group handle to query.
+ * @param[out] networks Pointer to a buffer to copy the group's netids into. May be NULL to query the required size.
+ * @param[in,out] count On input, the capacity of the networks buffer. On output, the number of netids written (or required, if networks is NULL).
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_termination_group_networks_get(const icsneoc2_termination_group_t* group, icsneoc2_netid_t* networks, size_t* count);
+
+/**
+ * Free a termination group list returned by icsneoc2_settings_termination_groups_enumerate().
+ *
+ * @param[in] groups The termination group handle to free. Passing NULL returns icsneoc2_error_invalid_parameters.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_termination_groups_free(icsneoc2_termination_group_t* groups);
 
 /**
  * Check if the commander resistor is currently enabled for a network.

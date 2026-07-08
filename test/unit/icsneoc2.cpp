@@ -261,6 +261,13 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_termination_can_enable(NULL, 0, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_termination_is_enabled(NULL, 0, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_termination_set(NULL, 0, false));
+	{
+		icsneoc2_termination_group_t* placeholderGroups = nullptr;
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_termination_groups_enumerate(NULL, &placeholderGroups, &placeholderSizeT));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_termination_group_networks_get(NULL, NULL, &placeholderSizeT));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_termination_groups_free(NULL));
+		ASSERT_EQ(nullptr, icsneoc2_termination_group_next(NULL));
+	}
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_commander_resistor_enabled(NULL, 0, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_commander_resistor_set(NULL, 0, false));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_lin_mode_get(NULL, 0, &placeholderLinMode));
@@ -1141,6 +1148,64 @@ TEST(icsneoc2, test_icsneoc2_chip_versions_free_list)
 	head->next->next = nullptr;
 
 	ASSERT_EQ(icsneoc2_error_success, icsneoc2_chip_versions_free(head));
+}
+
+TEST(icsneoc2, test_icsneoc2_termination_group_walk_and_networks)
+{
+	// Build an in-memory list of two termination groups:
+	//   group A: { DWCAN_01, DWCAN_02 }
+	//   group B: { DWCAN_03 }
+	icsneoc2_termination_group_t second{};
+	second.netids = { icsneoc2_netid_dwcan_03 };
+	second.next = nullptr;
+
+	icsneoc2_termination_group_t first{};
+	first.netids = { icsneoc2_netid_dwcan_01, icsneoc2_netid_dwcan_02 };
+	first.next = &second;
+
+	// next() walks the list
+	ASSERT_EQ(&second, icsneoc2_termination_group_next(&first));
+	ASSERT_EQ(nullptr, icsneoc2_termination_group_next(&second));
+
+	// networks_get with NULL buffer reports the required count
+	size_t count = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_termination_group_networks_get(&first, NULL, &count));
+	ASSERT_EQ(count, 2u);
+
+	// networks_get fills the buffer and updates count
+	icsneoc2_netid_t netids[2] = {0, 0};
+	count = 2;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_termination_group_networks_get(&first, netids, &count));
+	ASSERT_EQ(count, 2u);
+	ASSERT_EQ(netids[0], icsneoc2_netid_dwcan_01);
+	ASSERT_EQ(netids[1], icsneoc2_netid_dwcan_02);
+
+	// second group has a single network
+	count = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_termination_group_networks_get(&second, NULL, &count));
+	ASSERT_EQ(count, 1u);
+
+	// a buffer smaller than the group truncates to capacity
+	icsneoc2_netid_t one[1] = {0};
+	count = 1;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_termination_group_networks_get(&first, one, &count));
+	ASSERT_EQ(count, 1u);
+	ASSERT_EQ(one[0], icsneoc2_netid_dwcan_01);
+}
+
+TEST(icsneoc2, test_icsneoc2_termination_groups_free_list)
+{
+	// Allocate a two-node list the same way the API does, so free() walks and deletes it.
+	auto* head = new icsneoc2_termination_group_t{};
+	head->netids = { icsneoc2_netid_dwcan_01 };
+	head->next = new icsneoc2_termination_group_t{};
+	head->next->netids = { icsneoc2_netid_dwcan_02 };
+	head->next->next = nullptr;
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_settings_termination_groups_free(head));
+
+	// Freeing an empty (NULL) list returns invalid_parameters, matching chip_versions_free.
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_termination_groups_free(nullptr));
 }
 
 TEST(icsneoc2, test_icsneoc2_open_options_default)

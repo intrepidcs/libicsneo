@@ -48,6 +48,11 @@ typedef struct icsneoc2_chip_versions_t {
 	icsneoc2_chip_versions_t* next;
 } icsneoc2_chip_versions_t;
 
+typedef struct icsneoc2_termination_group_t {
+	std::vector<icsneoc2_netid_t> netids;
+	icsneoc2_termination_group_t* next;
+} icsneoc2_termination_group_t;
+
 typedef struct icsneoc2_mac_addr_entry_t {
 	uint16_t network_id;
 	uint8_t address[ICSNEO_MAC_ADDRESS_LEN];

@@ -114,3 +114,11 @@ PerfTest
 .. literalinclude:: ../../examples/c2/perf_test/src/main.c
    :language: c
 
+Termination Groups
+==================
+
+:download:`Download example <../../examples/c2/termination/src/main.c>`
+
+.. literalinclude:: ../../examples/c2/termination/src/main.c
+   :language: c
+

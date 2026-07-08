@@ -179,6 +179,82 @@ icsneoc2_error_t icsneoc2_settings_termination_set(icsneoc2_device_t* device, ic
 	return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_settings_termination_groups_enumerate(icsneoc2_device_t* device, icsneoc2_termination_group_t** groups, size_t* count) {
+	// Make sure the device is valid
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!groups) {
+		return icsneoc2_error_invalid_parameters;
+	}
+
+	auto termination_groups = device->device->settings->getTerminationGroups();
+
+	icsneoc2_termination_group_t* head = nullptr;
+	icsneoc2_termination_group_t* tail = nullptr;
+	for(const auto& group : termination_groups) {
+		auto* node = new (std::nothrow) icsneoc2_termination_group_t;
+		if(!node) {
+			icsneoc2_settings_termination_groups_free(head);
+			return icsneoc2_error_out_of_memory;
+		}
+		node->netids.reserve(group.size());
+		for(const auto& network : group) {
+			node->netids.push_back(static_cast<icsneoc2_netid_t>(network.getNetID()));
+		}
+		node->next = nullptr;
+		if(!head) {
+			head = node;
+		} else {
+			tail->next = node;
+		}
+		tail = node;
+	}
+
+	*groups = head;
+	if(count) {
+		*count = termination_groups.size();
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_termination_group_t* icsneoc2_termination_group_next(const icsneoc2_termination_group_t* group) {
+	if(!group) {
+		return nullptr;
+	}
+	return group->next;
+}
+
+icsneoc2_error_t icsneoc2_termination_group_networks_get(const icsneoc2_termination_group_t* group, icsneoc2_netid_t* networks, size_t* count) {
+	if(!group || !count) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	if(!networks) {
+		*count = group->netids.size();
+		return icsneoc2_error_success;
+	}
+	size_t to_copy = std::min<size_t>(*count, group->netids.size());
+	for(size_t i = 0; i < to_copy; i++) {
+		networks[i] = group->netids[i];
+	}
+	*count = to_copy;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_termination_groups_free(icsneoc2_termination_group_t* groups) {
+	if(!groups) {
+		return icsneoc2_error_invalid_parameters;
+	}
+
+	while(groups) {
+		auto* next = groups->next;
+		delete groups;
+		groups = next;
+	}
+	return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_settings_commander_resistor_enabled(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool* enabled) {
     // Make sure the device is valid
     auto res = icsneoc2_device_is_valid(device);
