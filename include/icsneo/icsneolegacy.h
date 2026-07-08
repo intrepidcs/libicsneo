@@ -9,6 +9,27 @@
 typedef uint8_t byte; // Typedef helper for the following include
 #include "icsneo/icsnVC40.h" // Definitions for structs
 
+// Vehicle Spy 3.26.3.9 removed these legacy settings structure definitions from
+// icsnVC40.h. The corresponding functions only ever treat them as opaque
+// buffers, so forward declarations keep the existing API/ABI intact.
+typedef struct _SFireSettings SFireSettings;
+typedef struct _SVCAN3Settings SVCAN3Settings;
+typedef struct _SVCANRFSettings SVCANRFSettings;
+
+// Vehicle Spy 3.26.3.9 moved icsSpyTime out of icsnVC40.h; icsneoGetRTC and
+// icsneoSetRTC access its members, so the definition (identical layout, 6
+// bytes) is carried here.
+typedef struct
+{
+	uint8_t sec; // --- Seconds (00-59)
+	uint8_t min; // --- (00-59)
+	uint8_t hour; // --- (00-23)
+	uint8_t day; // --- (01-31)
+	uint8_t month; // --- (01-12)
+	uint8_t year; // --- (00-99)
+} icsSpyTime;
+#define icsSpyTime_SIZE 6
+
 // From coremini.h
 #define MAX_BIT_SMASH_ARBIDS (4)
 #define BIT_SMASH_OPTION_EXTENDED (1)

@@ -1035,10 +1035,10 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void* hObject, EPlasmaIonVnetCha
 	case NEODEVICE_ION:
 		*pDeviceSettingsType = DeviceFire2SettingsType; //defaults to FIRE2 vnets with libicsneo - no firevnets!
 		break;
-	case NEODEVICE_VCAN3:
-		*pDeviceSettingsType = DeviceVCAN3SettingsType;
+	case NEODEVICE_VCAN3_DEPRECATED:
+		*pDeviceSettingsType = DeviceVCAN3SettingsTypeDeprecated;
 		break;
-	case NEODEVICE_FIRE:
+	case NEODEVICE_FIRE_DEPRECATED:
 		*pDeviceSettingsType = DeviceFireSettingsType;
 		break;
 	case NEODEVICE_FIRE2:
@@ -1061,17 +1061,17 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void* hObject, EPlasmaIonVnetCha
 	case NEODEVICE_VIVIDCAN:
 		*pDeviceSettingsType = DeviceVividCANSettingsType;
 		break;
-	case NEODEVICE_ECU_AVB:
-		*pDeviceSettingsType = DeviceECU_AVBSettingsType;
+	case NEODEVICE_ECU_AVB_DEPRECATED:
+		*pDeviceSettingsType = DeviceECU_AVBSettingsTypeDeprecated;
 		break;
-	case NEODEVICE_RADSUPERMOON:
-		*pDeviceSettingsType = DeviceRADSuperMoonSettingsType;
+	case NEODEVICE_RADSUPERMOON_DEPRECATED:
+		*pDeviceSettingsType = DeviceRADSuperMoonSettingsTypeDeprecated;
 		break;
 	case NEODEVICE_RADMOON2:
 		*pDeviceSettingsType = DeviceRADMoon2SettingsType;
 		break;
-	case NEODEVICE_RADGIGALOG:
-		*pDeviceSettingsType = DeviceRADGigalogSettingsType;
+	case NEODEVICE_RADGIGALOG_DEPRECATED:
+		*pDeviceSettingsType = DeviceRADGigalogSettingsTypeDeprecated;
 		break;
 	case NEODEVICE_RADMOON3:
 		*pDeviceSettingsType = DeviceRADMoon3SettingsType;

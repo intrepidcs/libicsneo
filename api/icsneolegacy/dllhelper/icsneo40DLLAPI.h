@@ -5,6 +5,13 @@
 #include <windows.h>
 #include "icsneo/icsnVC40.h"
 
+// Vehicle Spy 3.26.3.9 removed these legacy settings structure definitions from
+// icsnVC40.h. The corresponding functions only ever treat them as opaque
+// buffers, so forward declarations keep the existing API/ABI intact.
+typedef struct _SFireSettings SFireSettings;
+typedef struct _SVCAN3Settings SVCAN3Settings;
+typedef struct _SVCANRFSettings SVCANRFSettings;
+
 
 
 bool LoadDLLAPI(HINSTANCE &hAPIDLL);
