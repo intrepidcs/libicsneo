@@ -6,6 +6,22 @@
 namespace icsneo {
 
 enum class Command : uint8_t {
+	// Device-originated Main51 event/error notifications (device -> host)
+	Main51RxBufferOverflow = 0x01,
+	Main51StartCmd = 0x02,
+	Main51TxFifoOverflow = 0x03,
+	Main51BulkInNoData = 0x04,
+	Main51SetModeComplete = 0x05,
+	Main51ReadEeprom = 0x06,
+	// 0x07, 0x08, 0x09 reserved for host->device commands below
+	Main51CmdDone = 0x0A,
+	Main51ErrStatus = 0x0B,
+	Main51ReadSectorBuff = 0x0C,
+	Main51WriteSectorBuff = 0x0D,
+	Main51MmcProcessDone = 0x0E,
+	Main51ReInitDone = 0x0F,
+
+	// Host-originated commands (host -> device)
 	EnableNetworkCommunication = 0x07,
 	EnableNetworkCommunicationEx = 0x08,
 	KeepAlive = 0x09,
