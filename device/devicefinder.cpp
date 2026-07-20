@@ -241,6 +241,10 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		makeIfSerialMatches<RADSupermoon>(dev, newFoundDevices);
 		#endif
 
+		#ifdef __RADWBMS_H_
+		makeIfSerialMatches<RADwBMS>(dev, newFoundDevices);
+		#endif
+
 		#ifdef __VALUECAN3_H_
 		makeIfSerialRangeMatches<ValueCAN3>(dev, newFoundDevices);
 		#endif
@@ -402,6 +406,10 @@ const std::vector<DeviceType>& DeviceFinder::GetSupportedDevices() {
 
 		#ifdef __RADSUPERMOON_H_
 		RADSupermoon::DEVICE_TYPE,
+		#endif
+
+		#ifdef __RADWBMS_H_
+		RADwBMS::DEVICE_TYPE,
 		#endif
 
 		#ifdef __VALUECAN3_H_

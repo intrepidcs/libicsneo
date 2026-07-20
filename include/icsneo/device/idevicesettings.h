@@ -753,6 +753,61 @@ typedef struct
 	uint16_t cmp_device_id;
 } CMP_GLOBAL_DATA;
 
+/* wBMS Structs */
+
+typedef union
+{
+	uint8_t byte;
+	struct
+	{
+		uint8_t onboard_external : 1;
+		uint8_t type : 1;
+		uint8_t mode: 3;
+		uint8_t reserved : 3;
+	} config;
+} sSPI_PORT_SETTING;
+
+typedef struct
+{
+	sSPI_PORT_SETTING port_a; //1
+	sSPI_PORT_SETTING port_b; //1
+} sSPI_PORT_SETTINGS;
+
+#define WBMS_GATEWAY_NETWORK_NONE			(0)
+#define WBMS_GATEWAY_NETWORK_DWCAN_01		(1)
+#define WBMS_GATEWAY_NETWORK_DWCAN_02		(2)
+#define WBMS_GATEWAY_NETWORK_UDP_MULTICAST	(3)
+
+typedef struct
+{
+	uint8_t wbms1_network;
+	uint8_t wbms1_canfd_enable;
+	uint8_t wbms2_network;
+	uint8_t wbms2_canfd_enable;
+	uint16_t reserved[6];
+} WBMSGatewaySettings;
+
+typedef struct
+{
+	uint8_t wBMSDeviceID;
+	uint8_t enabled;
+} sWIL_FAULT_SERVICING_SETTINGS;
+
+typedef struct
+{
+	uint8_t enabled;
+} sWIL_NETWORK_DATA_CAPTURE_SETTINGS;
+
+typedef struct
+{
+	uint8_t using_port_a;
+	uint8_t using_port_b;
+	uint8_t attemptConnect;
+	sWIL_FAULT_SERVICING_SETTINGS fault_servicing_config;
+	sWIL_NETWORK_DATA_CAPTURE_SETTINGS network_data_capture_config;
+	uint16_t sensor_buffer_size;
+} sWIL_CONNECTION_SETTINGS;
+
 #pragma pack(pop)
 
 #ifdef __cplusplus

@@ -1088,6 +1088,8 @@ int LegacyDLLExport icsneoGetDeviceSettingsType(void* hObject, EPlasmaIonVnetCha
 	case NEODEVICE_FIRE3_FLEXRAY:
 		*pDeviceSettingsType = DeviceFire3FlexraySettingsType;
 		break;
+	case NEODEVICE_RAD_BMS:
+		*pDeviceSettingsType = DeviceRADBMSSettingsType;
 	default:
 		return 0;
 	}

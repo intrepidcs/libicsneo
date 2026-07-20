@@ -33,6 +33,7 @@
 #include "icsneo/device/tree/radpluto/radpluto.h"
 #include "icsneo/device/tree/radstar2/radstar2.h"
 #include "icsneo/device/tree/radsupermoon/radsupermoon.h"
+#include "icsneo/device/tree/radwbms/radwbms.h"
 #include "icsneo/device/tree/valuecan3/valuecan3.h"
 #include "icsneo/device/tree/valuecan4/valuecan4-1.h"
 #include "icsneo/device/tree/valuecan4/valuecan4-2.h"

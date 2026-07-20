@@ -52,6 +52,7 @@ public:
 		RADEpsilon = icsneoc2_devicetype_rad_epsilon,
 		RADEpsilonXL = icsneoc2_devicetype_rad_epsilon_xl,
 		RADGalaxy2 = icsneoc2_devicetype_rad_galaxy2,
+		RADwBMS = icsneoc2_devicetype_rad_wbms,
 		RADMoon3 = icsneoc2_devicetype_rad_moon3,
 		RADComet2 = icsneoc2_devicetype_rad_comet2,
 		FIRE3_FlexRay = icsneoc2_devicetype_fire3_flexray,
@@ -216,6 +217,8 @@ public:
 				return "neoVI Connect";
 			case RADGigastar2:
 				return "RAD-Gigastar 2";
+			case RADwBMS:
+				return "RAD-wBMS";
 			case DONT_REUSE0:
 			case DONT_REUSE1:
 			case DONT_REUSE2:
@@ -268,6 +271,7 @@ private:
 #define ICSNEO_DEVICETYPE_RADEPSILON ((devicetype_t)icsneoc2_devicetype_rad_epsilon)
 #define ICSNEO_DEVICETYPE_RADEPSILONXL ((devicetype_t)icsneoc2_devicetype_rad_epsilon_xl)
 #define ICSNEO_DEVICETYPE_RADGALAXY2 ((devicetype_t)icsneoc2_devicetype_rad_galaxy2)
+#define ICSNEO_DEVICETYPE_RADWBMS ((devicetype_t)icsneoc2_devicetype_rad_wbms)
 #define ICSNEO_DEVICETYPE_RADMoon3 ((devicetype_t)icsneoc2_devicetype_rad_moon3)
 #define ICSNEO_DEVICETYPE_RADCOMET2 ((devicetype_t)icsneoc2_devicetype_rad_comet2)
 #define ICSNEO_DEVICETYPE_FIRE3FLEXRAY ((devicetype_t)icsneoc2_devicetype_fire3_flexray)

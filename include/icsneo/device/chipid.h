@@ -126,6 +126,7 @@ enum class ChipID : icsneoc2_chip_id_t {
 	RADA2B_REVB_ZCHIP = icsneoc2_chip_id_rada2b_revb_zchip,
 	RADGigastar_FFG_ZYNQ = icsneoc2_chip_id_radgigastar_ffg_zynq,
 	VEM_02_FR_FCHIP = icsneoc2_chip_id_vem_02_fr_fchip,
+	RADBMS_WIL = icsneoc2_chip_id_radbms_wil,
 	Connect_ZCHIP = icsneoc2_chip_id_connect_zchip,
 	SFPModule_88q2221_MCHIP = icsneoc2_chip_id_sfpmodule_88q2221_mchip,
 	RADGALAXY2_SYSMON_CHIP = icsneoc2_chip_id_radgalaxy2_sysmon_chip,
