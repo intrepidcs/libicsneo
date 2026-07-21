@@ -465,11 +465,13 @@ icsneoc2_error_t icsneoc2_device_pcb_serial_get(const icsneoc2_device_t* device,
 		return icsneoc2_error_invalid_type;
 	}
 	const auto& data = *pcbSerial;
-	if(value) {
-		size_t copyLen = std::min(*value_length, data.size());
-		std::copy(data.begin(), data.begin() + copyLen, value);
+	if(!value) {
+		*value_length = data.size();
+		return icsneoc2_error_success;
 	}
-	*value_length = data.size();
+	size_t copyLen = std::min(*value_length, data.size());
+	std::copy(data.begin(), data.begin() + copyLen, value);
+	*value_length = copyLen;
 	return icsneoc2_error_success;
 }
 
@@ -515,14 +517,16 @@ icsneoc2_error_t icsneoc2_mac_network_id_get(const icsneoc2_mac_addr_entry_t* ma
 }
 
 icsneoc2_error_t icsneoc2_mac_address_get(const icsneoc2_mac_addr_entry_t* mac_address, uint8_t* value, size_t* value_length) {
-	if(!mac_address || !value || !value_length) {
+	if(!mac_address || !value_length) {
 		return icsneoc2_error_invalid_parameters;
 	}
-	if(value) {
-		size_t copyLen = std::min(*value_length, static_cast<size_t>(ICSNEO_MAC_ADDRESS_LEN));
-		std::copy(mac_address->address, mac_address->address + copyLen, value);
+	if(!value) {
+		*value_length = static_cast<size_t>(ICSNEO_MAC_ADDRESS_LEN);
+		return icsneoc2_error_success;
 	}
-	*value_length = static_cast<size_t>(ICSNEO_MAC_ADDRESS_LEN);
+	size_t copyLen = std::min(*value_length, static_cast<size_t>(ICSNEO_MAC_ADDRESS_LEN));
+	std::copy(mac_address->address, mac_address->address + copyLen, value);
+	*value_length = copyLen;
 	return icsneoc2_error_success;
 }
 

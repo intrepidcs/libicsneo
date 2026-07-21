@@ -127,6 +127,28 @@ TEST(icsneoc2, test_icsneoc2_device_is_valid)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_is_valid(NULL));
 }
 
+TEST(icsneoc2, test_icsneoc2_mac_address_get_query_length)
+{
+	icsneoc2_mac_addr_entry_t mac_address = {};
+	size_t value_length = 0;
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_mac_address_get(&mac_address, NULL, &value_length));
+	ASSERT_EQ(ICSNEO_MAC_ADDRESS_LEN, value_length);
+}
+
+TEST(icsneoc2, test_icsneoc2_mac_address_get_truncated_length)
+{
+	icsneoc2_mac_addr_entry_t mac_address = {};
+	const uint8_t expected[ICSNEO_MAC_ADDRESS_LEN] = {0x00, 0xFC, 0x70, 0x1E, 0x18, 0x70};
+	std::copy(std::begin(expected), std::end(expected), mac_address.address);
+
+	uint8_t value[3] = {};
+	size_t value_length = sizeof(value);
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_mac_address_get(&mac_address, value, &value_length));
+	ASSERT_EQ(sizeof(value), value_length);
+	ASSERT_EQ(0, memcmp(expected, value, sizeof(value)));
+}
+
 TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 {
 	bool placeholderBool = false;
