@@ -372,10 +372,11 @@ icsneoc2_error_t icsneoc2_device_mac_addresses_enumerate(const icsneoc2_device_t
  * 
  * @param[in] mac_address The MAC address object to get the network ID of.
  * @param[out] network_id Pointer to an icsneoc2_netid_t to copy the network ID into.
+ * Unrecognized values are normalized to icsneoc2_netid_invalid.
  * 
  * @return icsneoc2_error_t icsneoc2_error success if successful, icsneoc2_error_invalid_parameters on failure.
  */
-icsneoc2_error_t icsneoc2_mac_network_id_get(const icsneoc2_mac_addr_entry_t* mac_address, _icsneoc2_netid_t* network_id);
+icsneoc2_error_t icsneoc2_mac_network_id_get(const icsneoc2_mac_addr_entry_t* mac_address, icsneoc2_netid_t* network_id);
 
 /**
  * Get the MAC Address bytes of a MAC address.

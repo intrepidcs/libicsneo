@@ -5,6 +5,7 @@
 #include "icsneo/device/devicefinder.h"
 #include "icsneo/icsneocpp.h"
 #include "icsneo/communication/io.h"
+#include "icsneo/communication/network.h"
 
 #include <string>
 #include <vector>
@@ -505,14 +506,18 @@ icsneoc2_error_t icsneoc2_device_mac_addresses_enumerate(const icsneoc2_device_t
 		}
 		tail = node;
 	}
+	*mac_entries = head;
 	return icsneoc2_error_success;
 }
 
-icsneoc2_error_t icsneoc2_mac_network_id_get(const icsneoc2_mac_addr_entry_t* mac_address, _icsneoc2_netid_t* network_id) {
+icsneoc2_error_t icsneoc2_mac_network_id_get(const icsneoc2_mac_addr_entry_t* mac_address, icsneoc2_netid_t* network_id) {
 	if(!mac_address || !network_id) {
 		return icsneoc2_error_invalid_parameters;
 	}
-	*network_id = static_cast<_icsneoc2_netid_t>(mac_address->network_id);
+	const auto netid = static_cast<Network::NetID>(mac_address->network_id);
+	*network_id = Network::GetCoreMiniNetworkFromNetID(netid).has_value()
+		? mac_address->network_id
+		: static_cast<icsneoc2_netid_t>(icsneoc2_netid_invalid);
 	return icsneoc2_error_success;
 }
 

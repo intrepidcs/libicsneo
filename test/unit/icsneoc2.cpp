@@ -2153,3 +2153,28 @@ TEST(icsneoc2, test_gptp_enum_alignment)
 	ASSERT_EQ(sizeof(RADGPTPRole), sizeof(icsneoc2_gptp_role_t));
 }
 
+TEST(icsneoc2, test_mac_network_id_get)
+{
+	icsneoc2_mac_addr_entry_t entry {};
+	icsneoc2_netid_t network_id = 0;
+
+	entry.network_id = icsneoc2_netid_ethernet_01;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_mac_network_id_get(&entry, &network_id));
+	ASSERT_EQ(icsneoc2_netid_ethernet_01, network_id);
+
+	entry.network_id = 43;
+	network_id = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_mac_network_id_get(&entry, &network_id));
+	ASSERT_EQ(icsneoc2_netid_invalid, network_id);
+
+	entry.network_id = icsneoc2_netid_invalid;
+	network_id = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_mac_network_id_get(&entry, &network_id));
+	ASSERT_EQ(icsneoc2_netid_invalid, network_id);
+
+	ASSERT_EQ(icsneoc2_error_invalid_parameters,
+		icsneoc2_mac_network_id_get(nullptr, &network_id));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters,
+		icsneoc2_mac_network_id_get(&entry, nullptr));
+}
+

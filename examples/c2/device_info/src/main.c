@@ -112,7 +112,7 @@ int main() {
 		}
 		printf("MACs:       %u entr%s\n", mac_count, mac_count == 1 ? "y" : "ies");
 		for(icsneoc2_mac_addr_entry_t* cur = macs; cur; cur = icsneoc2_mac_addresses_next(cur)) {
-			_icsneoc2_netid_t network_id;
+			icsneoc2_netid_t network_id;
 			icsneoc2_mac_network_id_get(cur, &network_id);
 			printf("  Network %-5u  ", (unsigned)network_id);
 			uint8_t address[6];
