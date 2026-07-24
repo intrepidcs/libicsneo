@@ -563,6 +563,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 			}
 			break;
 		}
+		default:
+			report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+			return false;
 	}
 
 	// For the moment other types of messages will automatically be decoded as raw messages

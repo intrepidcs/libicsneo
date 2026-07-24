@@ -234,7 +234,9 @@ bool Encoder::encode(const Packetizer& packetizer, std::vector<uint8_t>& result,
 			result = packetizer.packetWrap(result, false);
 			return true;
 		}
-		break;
+		default:
+			report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+			return false; // The message was not a properly formed Message
 	}
 
 	// Early returns may mean we don't reach this far, check the type you're concerned with

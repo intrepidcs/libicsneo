@@ -126,6 +126,8 @@ public:
 				static std::vector<ChipInfo> chips = {{ChipID::RADBMS_MCHIP, true, "MCHIP", "rad_bms_mchip_WIL_3_3_0_27_ief", 0, FirmwareType::IEF}};
 				return chips;
 			}
+			case FirmwareVariant::Invalid:
+				break; // invalid will be handled below
 		}
 		// Return empty chip information if the WIL version is not set
 		static std::vector<ChipInfo> chips =  {};

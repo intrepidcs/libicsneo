@@ -82,7 +82,7 @@ if(MSVC)
 	add_definitions(-D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
 	add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
 else() #if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-	set(LIBICSNEO_COMPILER_WARNINGS -Wall -Wno-switch -Wno-unknown-pragmas)
+	set(LIBICSNEO_COMPILER_WARNINGS -Wall -Wno-unknown-pragmas)
 endif()
 
 find_package(Threads REQUIRED)

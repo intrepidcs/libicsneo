@@ -6,7 +6,6 @@
 #include "icsneo/communication/packet/ethphyregpacket.h"
 #include "icsneo/communication/message/message.h"
 #include "icsneo/communication/packet.h"
-#include "icsneo/api/eventmanager.h"
 #include <vector>
 #include <memory>
 

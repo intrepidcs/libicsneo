@@ -575,12 +575,16 @@ bool Device::goOnline() {
 						case NetworkMutexEvent::Acquired:
 							lockedNetworks.emplace(*netMutexMsg->networks.begin());
 							break;
+						case NetworkMutexEvent::Expired:
+						case NetworkMutexEvent::Preempted:
 						case NetworkMutexEvent::Released: {
 							auto it = lockedNetworks.find(*netMutexMsg->networks.begin());
 							if (it != lockedNetworks.end())
 								lockedNetworks.erase(it);
 							break;
 						}
+						case NetworkMutexEvent::Queued:
+							break;
 					}
 				}
 			});
@@ -3297,11 +3301,12 @@ bool Device::findVSAOffsetFromTimepoint(ICSClock::time_point point, uint64_t& vs
 		std::shared_ptr<VSA> midRecord;
 		auto midRecordStatus = parser.getRecordFromBytes(buffer.data(), Disk::SectorSize, midRecord);
 		switch(midRecordStatus) {
-			case VSAParser::RecordParseStatus::NotARecordStart:
+			case VSAParser::RecordParseStatus::NotARecordStart: {
 				// This part of the buffer does not contain records
 				rightIndex = midIndex - 1;
 				continue;
-			case VSAParser::RecordParseStatus::ConsecutiveExtended:
+			}
+			case VSAParser::RecordParseStatus::ConsecutiveExtended: {
 				// We dropped in the middle of an extended message record
 				auto extendedRecord = std::dynamic_pointer_cast<VSAExtendedMessage>(midRecord); 
 				uint64_t pos = readPos;
@@ -3315,6 +3320,9 @@ bool Device::findVSAOffsetFromTimepoint(ICSClock::time_point point, uint64_t& vs
 				}
 				midIndex = (pos - firstOffset) / Disk::SectorSize;
 				midRecord = extendedRecord;
+				break;
+			}
+			default:
 				break;
 		}
 		if(midIndex <= leftIndex) {

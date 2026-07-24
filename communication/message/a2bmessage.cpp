@@ -163,6 +163,8 @@ void A2BMessage::setChannelSample(Direction dir, uint8_t channel, size_t frame, 
 		case PCMType::L24:
 			sampleToSet = sampleToSet << 8;
 			break;
+		case PCMType::L32:
+			break;
 	}
 
 	if(channelSize16) {

@@ -44,7 +44,10 @@ typedef unsigned __int64 uint64_t;
 #include "cicsSpyStatusBits.h"
 
 #if defined(_MSC_VER)
-#pragma warning(disable : 4200)
+#pragma warning(push)
+#pragma warning(disable : 4200) // zero-sized array in struct/union
+#pragma warning(disable : 4201) // nameless struct/union
+#pragma warning(disable : 4121) // member alignment sensitive to packing
 #endif
 
 // MSVC++ 10.0 _MSC_VER == 1600 64-bit version doesn't allow multi-line #if directives...
@@ -5439,5 +5442,9 @@ CHECK_STRUCT_SIZE(SNeoVIConnectSettings);
 CHECK_STRUCT_SIZE(FlashAccessoryFirmwareParams);
 #undef CHECK_STRUCT_SIZE
 #endif /* INTREPID_NO_CHECK_STRUCT_SIZE */
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 #endif /* _ICSNVC40_H */

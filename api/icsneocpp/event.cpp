@@ -462,6 +462,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return TOO_MANY_EVENTS;
 		case Type::Unknown:
 			return UNKNOWN;
+		case Type::Any:
+			break;
 	}
 	return INVALID;
 }

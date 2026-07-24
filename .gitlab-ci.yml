@@ -35,30 +35,6 @@ unit_test windows/x64:
     - libicsneo-win-x64
   timeout: 5m
 
-build windows/x86:
-  stage: build
-  script:
-    - cmd /C ci\build-windows32.bat
-  artifacts:
-    when: always
-    paths:
-      - build
-    expire_in: 3 days
-  tags:
-    - libicsneo-win-x64
-
-unit_test windows/x86:
-  stage: unit_test
-  script:
-    - build\libicsneo-unit-tests.exe
-  dependencies:
-    - build windows/x86
-  needs:
-    - build windows/x86
-  tags:
-    - libicsneo-win-x64
-  timeout: 5m
-
 #-------------------------------------------------------------------------------
 # Ubuntu
 #-------------------------------------------------------------------------------

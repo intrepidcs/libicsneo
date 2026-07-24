@@ -35,7 +35,7 @@ bool EthPhyMessage::appendPhyMessage(bool writeEnable, bool clause45, uint8_t ph
 
 bool EthPhyMessage::appendPhyMessage(std::shared_ptr<PhyMessage> message)
 {
-	if(message != nullptr)
+	if(message)
 	{
 		messages.push_back(message);
 		return true;

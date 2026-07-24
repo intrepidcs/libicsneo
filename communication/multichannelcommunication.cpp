@@ -142,6 +142,8 @@ void MultiChannelCommunication::hidReadTask() {
 							dispatchMessage(msg);
 							break;
 						}
+						default:
+							break;
 					}
 
 					if(currentQueue == nullptr) {
