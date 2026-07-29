@@ -243,6 +243,7 @@ bool Servd::enableCommunication(bool enable, bool& sendMsg) {
 }
 
 void Servd::read() {
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	std::vector<uint8_t> buf(2 * 1024 * 1024);
 	while(!isDisconnected() && !isClosing()) {
 		bool hasData;
@@ -260,11 +261,14 @@ void Servd::read() {
 			setIsDisconnected(true);
 			return;
 		}
-		pushRx(buf.data(), bufSize);
+		if(!pushRx(buf.data(), bufSize)) {
+			EventManager::GetInstance().add(APIEvent::Type::FailedToRead, APIEvent::Severity::Error);
+		}
 	}
 }
 
 void Servd::write() {
+	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 	WriteOperation writeOp;
 	while(!isDisconnected() && !isClosing()) {
 		if(!writeQueue.wait_dequeue_timed(writeOp, std::chrono::milliseconds(100))) {
