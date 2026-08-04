@@ -77,6 +77,7 @@ enum class ExtendedCommand : uint16_t {
 	TransmitCoreminiMessage = 0x0028,
 	GenericBinaryInfo = 0x0030,
 	LiveData = 0x0035,
+	ExecuteSPIPortKeyOperation = 0x003C,
 	RequestTC10Wake = 0x003D,
 	RequestTC10Sleep = 0x003E,
 	GetTC10Status = 0x003F,

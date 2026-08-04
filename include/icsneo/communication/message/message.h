@@ -48,6 +48,7 @@ public:
 		NetworkMutex = 0x8016,
 		ClientId = 0x8017,
 		AllMACAddresses = 0x8018,
+		SPIPortKeyOperation = 0x8019,
 	};
 
 	Message(Type t) : type(t) {}

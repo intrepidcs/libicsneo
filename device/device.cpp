@@ -2132,6 +2132,18 @@ std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message,
 	return std::make_optional<EthPhyMessage>(*retMsg);
 }
 
+bool Device::sendSPIPortKeyOperation(uint8_t portIndex, SPIPortKeyMessage::Operation op, std::array<uint8_t, 16> key) {
+	std::vector<uint8_t> args(sizeof(SPIPortKeyMessage::SPIPortKeyPacket));
+	auto& params = *reinterpret_cast<SPIPortKeyMessage::SPIPortKeyPacket*>(args.data());
+	params.op = op;
+	params.portIndex = portIndex;
+	std::copy(key.begin(), key.end(), params.key);
+	if(!com->sendCommand(ExtendedCommand::ExecuteSPIPortKeyOperation, args)) {
+		return false;
+	}
+	return true;
+}
+
 std::optional<bool> Device::SetRootDirectoryEntryFlags(uint8_t mask, uint8_t values, uint32_t collectionEntryByteAddress)
 {
 	if(!supportsWiVI())

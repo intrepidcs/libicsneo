@@ -46,6 +46,7 @@
 #include "icsneo/communication/message/extendeddatamessage.h"
 #include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/message/tc10statusmessage.h"
+#include "icsneo/communication/message/spiportkeymessage.h"
 #include "icsneo/core/macseccfg.h"
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
 #include "icsneo/communication/packet/livedatapacket.h"
@@ -726,6 +727,8 @@ public:
 
 	std::optional<EthPhyMessage> sendEthPhyMsg(const EthPhyMessage& message, std::chrono::milliseconds timeout = std::chrono::milliseconds(50));
 
+	
+	bool sendSPIPortKeyOperation(uint8_t portIndex, SPIPortKeyMessage::Operation op, std::array<uint8_t, 16> key = {});
 
 	/**
 	 * Set the flags of the root directory entry specified at given address

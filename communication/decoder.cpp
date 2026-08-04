@@ -26,6 +26,7 @@
 #include "icsneo/communication/message/ethernetstatusmessage.h"
 #include "icsneo/communication/message/networkmutexmessage.h"
 #include "icsneo/communication/message/clientidmessage.h"
+#include "icsneo/communication/message/spiportkeymessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -340,6 +341,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 						}
 						case ExtendedCommand::LiveData:
 							result = HardwareLiveDataPacket::DecodeToMessage(packet->data, report);
+							return true;
+						case ExtendedCommand::ExecuteSPIPortKeyOperation:
+							result = SPIPortKeyMessage::DecodeToMessage(packet->data);
 							return true;
 						case ExtendedCommand::GetTC10Status:
 							result = TC10StatusMessage::DecodeToMessage(packet->data);

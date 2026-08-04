@@ -235,6 +235,7 @@ set(SRC_FILES
 	communication/message/networkmutexmessage.cpp
 	communication/message/clientidmessage.cpp
 	communication/message/transmitmessage.cpp
+	communication/message/spiportkeymessage.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/a2bpacket.cpp
