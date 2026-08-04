@@ -4,6 +4,7 @@
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
 #include "icsneo/device/tree/radwbms/radwbmssettings.h"
+#include "icsneo/disk/neomemorydiskdriver.h"
 
 namespace icsneo {
 
