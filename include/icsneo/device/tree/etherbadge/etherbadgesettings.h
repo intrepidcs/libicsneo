@@ -69,7 +69,7 @@ static_assert(sizeof(etherbadge_settings_t) == 316, "EtherBadge settings size mi
 
 class EtherBADGESettings : public IDeviceSettings {
 public:
-	EtherBADGESettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(etherbadge_settings_t)) {}
+	EtherBADGESettings(Device* device) : IDeviceSettings(device, sizeof(etherbadge_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<etherbadge_settings_t>();
 		if(cfg == nullptr)

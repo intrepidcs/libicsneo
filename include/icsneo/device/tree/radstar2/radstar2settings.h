@@ -75,7 +75,7 @@ static_assert(sizeof(radstar2_settings_t) == 422, "RADStar2 settings size mismat
 
 class RADStar2Settings : public IDeviceSettings {
 public:
-	RADStar2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radstar2_settings_t)) {
+	RADStar2Settings(Device* device) : IDeviceSettings(device, sizeof(radstar2_settings_t)) {
 	}
 	
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {

@@ -38,7 +38,7 @@ typedef struct {
 
 class RADSupermoonSettings : public IDeviceSettings {
 public:
-	RADSupermoonSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radsupermoon_settings_t)) {}
+	RADSupermoonSettings(Device* device) : IDeviceSettings(device, sizeof(radsupermoon_settings_t)) {}
 };
 
 }

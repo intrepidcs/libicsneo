@@ -92,10 +92,6 @@ Device::~Device() {
 		disableMessagePolling();
 	if(isOpen())
 		close();
-	if(heartbeatThread.joinable()) {
-		stopHeartbeatThread = true;		
-		heartbeatThread.join();
-	}
 }
 
 uint16_t Device::getTimestampResolution() const {
@@ -288,6 +284,8 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		return false;
 	}
 
+	startHeartbeat();
+
 	APIEvent::Type attemptErr = attemptToBeginCommunication();
 	if(attemptErr != APIEvent::Type::NoErrorFound) {
 		// We could not communicate with the device, let's see if an extension can
@@ -333,79 +331,6 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 		if(!downgrading)
 			EventManager::GetInstance().cancelErrorDowngradingOnCurrentThread();
 	}
-
-	MessageFilter filter;
-	filter.includeInternalInAny = true;
-	internalHandlerCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [this](std::shared_ptr<Message> message) {
-		handleInternalMessage(message);
-	}));
-
-	// Clear the previous heartbeat thread, in case open() was called on this instance more than once
-	if(heartbeatThread.joinable())
-		heartbeatThread.join();
-
-	stopHeartbeatThread = false;
-
-	heartbeatThread = std::thread([this]() {
-		EventManager::GetInstance().downgradeErrorsOnCurrentThread();
-
-		MessageFilter filter;
-		filter.includeInternalInAny = true;
-
-		std::condition_variable heartbeatCV;
-		std::mutex receivedMessageMutex;
-		bool receivedMessage = false;
-		auto messageReceivedCallbackID = com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&](std::shared_ptr<Message>) {
-			{
-				std::scoped_lock<std::mutex> lk(receivedMessageMutex);
-				receivedMessage = true;
-			}
-			heartbeatCV.notify_all();
-		}));
-
-		// Give the device time to get situated
-		auto i = 150;
-		while(!stopHeartbeatThread && i != 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
-			i--;
-		}
-
-		while(!stopHeartbeatThread) {
-			std::unique_lock<std::mutex> recvLk(receivedMessageMutex);
-			// Wait for 110ms for a possible heartbeat
-			if(heartbeatCV.wait_for(recvLk, std::chrono::milliseconds(110), [&]() { return receivedMessage; })) {
-				receivedMessage = false;
-			} else if(!stopHeartbeatThread) { // Add this condition here in case the thread was stopped while waiting for the last message
-
-				// Some communication, such as the bootloader and extractor interfaces, must
-				// redirect the input stream from the device as it will no longer be in the
-				// packet format we expect here. As a result, status updates will not reach
-				// us here and suppressDisconnects() must be used. We don't want to request
-				// a status and then redirect the stream, as we'll then be polluting an
-				// otherwise quiet stream. This lock makes sure suppressDisconnects() will
-				// block until we've either gotten our status update or disconnected from
-				// the device.
-				std::unique_lock<std::mutex> lk(heartbeatMutex);
-				if(heartbeatSuppressed()) continue;
-
-				// No heartbeat received, request a status
-				com->sendCommand(Command::RequestStatusUpdate);
-
-				// Check if we got a message, and if not, if settings are being applied
-				if(heartbeatCV.wait_for(recvLk, std::chrono::milliseconds(3500), [&](){ return receivedMessage; })) {
-					receivedMessage = false;
-				} else {
-					if(!stopHeartbeatThread) {
-						close();
-						report(APIEvent::Type::DeviceDisconnected, APIEvent::Severity::Error);
-					}
-					break;
-				}
-			}
-		}
-
-		com->removeMessageCallback(messageReceivedCallbackID);
-	});
 
 	if(supportsLiveData())
 		clearAllLiveData();
@@ -503,7 +428,7 @@ bool Device::close() {
 		return false;
 	}
 
-	stopHeartbeatThread = true;
+	stopHeartbeat();
 
 	if (isMessagePollingEnabled()) {
 		disableMessagePolling();
@@ -534,31 +459,15 @@ bool Device::goOnline() {
 	if(!enableNetworkCommunication(true, onlineTimeoutMs))
 		return false;
 
-	auto startTime = std::chrono::system_clock::now();
-
 	ledState = LEDState::Online;
 
 	updateLEDState();
 
-	std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::Reset_Status);
-	filter->includeInternalInAny = true;
-
-	// Wait until communication is enabled or 5 seconds, whichever comes first
-	while((std::chrono::system_clock::now() - startTime) < std::chrono::seconds(5)) {
-		if(latestResetStatus && latestResetStatus->comEnabled)
-			break;
-
-		bool failOut = false;
-		com->waitForMessageSync([this, &failOut]() {
-			if(!com->sendCommand(Command::RequestStatusUpdate)) {
-				failOut = true;
-				return false;
-			}
-			return true;
-		}, filter, std::chrono::milliseconds(100));
-		if(failOut)
-			return false;
-	}
+	// (re)start the keeponline
+	keeponline = std::make_unique<Periodic>([this] {
+		static std::vector<uint8_t> timeoutBytes = std::vector<uint8_t>((uint8_t*)&onlineTimeoutMs, (uint8_t*)&onlineTimeoutMs + sizeof(onlineTimeoutMs));
+		return com->sendCommand(Command::KeepAlive, timeoutBytes);
+	}, std::chrono::milliseconds(onlineTimeoutMs / 4));
 
 	if(supportsNetworkMutex) {
 		assignedClientId = com->getClientIDSync();
@@ -591,13 +500,10 @@ bool Device::goOnline() {
 		}
 	}
 
-	// (re)start the keeponline
-	keeponline = std::make_unique<Periodic>([this] {
-		static std::vector<uint8_t> timeoutBytes = std::vector<uint8_t>((uint8_t*)&onlineTimeoutMs, (uint8_t*)&onlineTimeoutMs + sizeof(onlineTimeoutMs));
-		return com->sendCommand(Command::KeepAlive, timeoutBytes);
-	}, std::chrono::milliseconds(onlineTimeoutMs / 4));
-
 	online = true;
+
+	// restart the heartbeat in online mode
+	restartHeartbeat();
 
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOnline(); return true; });
 
@@ -605,7 +511,12 @@ bool Device::goOnline() {
 }
 
 bool Device::goOffline() {
+	online = false;
+
 	keeponline.reset();
+
+	// restart the heartbeat in offline mode
+	restartHeartbeat();
 
 	if(networkMutexCallbackHandle)
 		removeMessageCallback(*networkMutexCallbackHandle);
@@ -613,7 +524,6 @@ bool Device::goOffline() {
 	forEachExtension([](const std::shared_ptr<DeviceExtension>& ext) { ext->onGoOffline(); return true; });
 
 	if(isDisconnected()) {
-		online = false;
 		return true;
 	}
 
@@ -628,8 +538,6 @@ bool Device::goOffline() {
 	ledState = (latestResetStatus && latestResetStatus->cmRunning) ? LEDState::CoreMiniRunning : LEDState::Offline;
 
 	updateLEDState();
-
-	online = false;
 
 	return true;
 }
@@ -1992,11 +1900,9 @@ void Device::stopScriptStatusThreadIfNecessary(std::unique_lock<std::mutex> lk)
 }
 
 Lifetime Device::suppressDisconnects() {
-	std::lock_guard<std::mutex> lk(heartbeatMutex);
-	heartbeatSuppressedByUser++;
+	stopHeartbeat();
 	return Lifetime([this] { 
-		std::lock_guard<std::mutex> lk2(heartbeatMutex);
-		heartbeatSuppressedByUser--;
+		startHeartbeat();
 	});
 }
 
@@ -4175,4 +4081,18 @@ bool Device::unlockAllNetworks()
 	}
 
 	return true;
+}
+
+void Device::startHeartbeat() {
+	if(!heartbeat)
+		heartbeat = std::make_unique<Heartbeat>(*this);
+}
+
+void Device::stopHeartbeat() {
+	heartbeat.reset();
+}
+
+void Device::restartHeartbeat() {
+	stopHeartbeat();
+	startHeartbeat();
 }

@@ -125,7 +125,7 @@ static_assert(sizeof(radgalaxy2_settings_t) == 960, "RADGalaxy2 settings size mi
 
 class RADGalaxy2Settings : public IDeviceSettings {
 public:
-	RADGalaxy2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radgalaxy2_settings_t)) {}
+	RADGalaxy2Settings(Device* device) : IDeviceSettings(device, sizeof(radgalaxy2_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radgalaxy2_settings_t>();
 		if(cfg == nullptr)

@@ -100,7 +100,7 @@ public:
 		Node
 	};
 
-	RADA2BSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(rada2b_settings_t)) {}
+	RADA2BSettings(Device* device) : IDeviceSettings(device, sizeof(rada2b_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<rada2b_settings_t>();
 		if(cfg == nullptr)
@@ -141,27 +141,27 @@ public:
 		}
 	}
 
-	TDMMode getTDMMode(RADA2BDevice device) const {
+	TDMMode getTDMMode(RADA2BDevice a2bDevice) const {
 		auto cfg = getStructurePointer<rada2b_settings_t>();
-		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+		auto &deviceSettings = a2bDevice == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
 		return static_cast<TDMMode>(deviceSettings.tdmMode);
 	}
 
-	uint8_t getNumChannels(RADA2BDevice device) const {
-		return tdmModeToChannelNum(getTDMMode(device));
+	uint8_t getNumChannels(RADA2BDevice a2bDevice) const {
+		return tdmModeToChannelNum(getTDMMode(a2bDevice));
 	}
 
-	ChannelSize getChannelSize(RADA2BDevice device) const {
+	ChannelSize getChannelSize(RADA2BDevice a2bDevice) const {
 		auto cfg = getStructurePointer<rada2b_settings_t>();
-		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+		auto &deviceSettings = a2bDevice == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
 		return static_cast<ChannelSize>(deviceSettings.flags & a2bSettingsFlag16bit);
 	}
 
-	uint8_t getChannelOffset(RADA2BDevice device, A2BMessage::Direction dir) const {
+	uint8_t getChannelOffset(RADA2BDevice a2bDevice, A2BMessage::Direction dir) const {
 		auto cfg = getStructurePointer<rada2b_settings_t>();
-		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+		auto &deviceSettings = a2bDevice == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
 		if(dir == A2BMessage::Direction::Upstream) {
 			return deviceSettings.upstreamChannelOffset;
@@ -170,30 +170,30 @@ public:
 		return deviceSettings.downstreamChannelOffset;
 	}
 
-	NodeType getNodeType(RADA2BDevice device) const {
+	NodeType getNodeType(RADA2BDevice a2bDevice) const {
 		auto cfg = getStructurePointer<rada2b_settings_t>();
-		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+		auto &deviceSettings = a2bDevice == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
 		return static_cast<NodeType>(deviceSettings.nodeType);		
 	}
 
-	void setNodeType(RADA2BDevice device, NodeType newType) {
+	void setNodeType(RADA2BDevice a2bDevice, NodeType newType) {
 		auto cfg = getMutableStructurePointer<rada2b_settings_t>();
-		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+		auto &deviceSettings = a2bDevice == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
 		deviceSettings.nodeType = static_cast<uint8_t>(newType);
 	}
 
-	void setTDMMode(RADA2BDevice device, TDMMode newMode) {
+	void setTDMMode(RADA2BDevice a2bDevice, TDMMode newMode) {
 		auto cfg = getMutableStructurePointer<rada2b_settings_t>();
-		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+		auto &deviceSettings = a2bDevice == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
 		deviceSettings.tdmMode = static_cast<uint8_t>(newMode);
 	}
 
-	void setChannelOffset(RADA2BDevice device, A2BMessage::Direction dir, uint8_t newOffset) {
+	void setChannelOffset(RADA2BDevice a2bDevice, A2BMessage::Direction dir, uint8_t newOffset) {
 		auto cfg = getMutableStructurePointer<rada2b_settings_t>();
-		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+		auto &deviceSettings = a2bDevice == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
 		if(dir == A2BMessage::Direction::Upstream) {
 			deviceSettings.upstreamChannelOffset = newOffset;
@@ -203,9 +203,9 @@ public:
 		}
 	}
 
-	void setChannelSize(RADA2BDevice device, ChannelSize newChannelSize) {
+	void setChannelSize(RADA2BDevice a2bDevice, ChannelSize newChannelSize) {
 		auto cfg = getMutableStructurePointer<rada2b_settings_t>();
-		auto &deviceSettings = device == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
+		auto &deviceSettings = a2bDevice == RADA2BDevice::Monitor ? cfg->a2b_monitor : cfg->a2b_node;
 
 		if(newChannelSize == ChannelSize::chSize16) {
 			deviceSettings.flags |= a2bSettingsFlag16bit;

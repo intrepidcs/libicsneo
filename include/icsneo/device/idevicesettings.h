@@ -811,12 +811,16 @@ typedef struct
 #pragma pack(pop)
 
 #ifdef __cplusplus
-#include "icsneo/communication/communication.h"
+#include "icsneo/communication/network.h"
+#include "icsneo/api/event.h"
+#include "icsneo/api/eventmanager.h"
 #include <optional>
 #include <iostream>
 #include <atomic>
 
 namespace icsneo {
+
+class Device;
 
 enum class MiscIOAnalogVoltage : uint8_t
 {
@@ -845,7 +849,7 @@ public:
 	static int64_t GetBaudrateValueForEnum(CANBaudrate enumValue);
 	static bool ValidateLINBaudrate(int64_t baudrate);
 
-	IDeviceSettings(std::shared_ptr<Communication> com, size_t size) : com(com), report(com->report), structSize(size) {}
+	IDeviceSettings(Device* device, size_t size);
 	virtual ~IDeviceSettings() {}
 	bool ok() const { return !disabled && settingsLoaded; }
 
@@ -1392,10 +1396,8 @@ public:
 	bool disabled = false;
 
 	bool readonly = false;
-
-	std::atomic<bool> applyingSettings{false};
 protected:
-	std::shared_ptr<Communication> com;
+	Device* device;
 	device_eventhandler_t report;
 	size_t structSize;
 
@@ -1407,8 +1409,7 @@ protected:
 
 	// Parameter createInoperableSettings exists because it is serving as a warning that you probably don't want to do this
 	typedef void* warn_t;
-	IDeviceSettings(warn_t createInoperableSettings, std::shared_ptr<Communication> com)
-		: disabled(true), readonly(true), report(com->report), structSize(0) { (void)createInoperableSettings; }
+	IDeviceSettings(warn_t createInoperableSettings, Device* device);
 
 	// Devices that embed a Fire3LinuxSettings block in their settings structure override these to
 	// expose it; all other devices report not-available (nullptr / nullopt) and the Linux accessors

@@ -1,8 +1,15 @@
+#include "icsneo/device/device.h"
 #include "icsneo/device/idevicesettings.h"
 #include "icsneo/communication/message/filter/main51messagefilter.h"
 #include <cstring>
 
 using namespace icsneo;
+
+IDeviceSettings::IDeviceSettings(Device* device, size_t size)
+	: device(device), report(device->report), structSize(size) {}
+
+IDeviceSettings::IDeviceSettings(warn_t createInoperableSettings, Device* device)
+	: disabled(true), readonly(true), report(device->report), structSize(0) { (void)createInoperableSettings; }
 
 std::optional<uint16_t> IDeviceSettings::CalculateGSChecksum(const std::vector<uint8_t>& settings) {
 	const uint16_t* p = reinterpret_cast<const uint16_t*>(settings.data());
@@ -166,7 +173,7 @@ bool IDeviceSettings::refresh() {
 	}
 
 	std::vector<uint8_t> rxSettings;
-	bool ret = com->getSettingsSync(rxSettings);
+	bool ret = device->com->getSettingsSync(rxSettings);
 	if(!ret) {
 		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
 		return false;
@@ -231,10 +238,10 @@ bool IDeviceSettings::apply(bool temporary) {
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
 	// Pause I/O with the device while the settings are applied
-	applyingSettings = true;
+	device->stopHeartbeat();
 
-	std::shared_ptr<Main51Message> msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
-		return com->sendCommand(Command::SetSettings, bytestream);
+	std::shared_ptr<Main51Message> msg = std::dynamic_pointer_cast<Main51Message>(device->com->waitForMessageSync([this, &bytestream]() {
+		return device->com->sendCommand(Command::SetSettings, bytestream);
 	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(5000)));
 
 	if(!msg || msg->data[0] != 1) { // We did not receive a response
@@ -259,8 +266,8 @@ bool IDeviceSettings::apply(bool temporary) {
 	bytestream[6] = (uint8_t)(*gsChecksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
-	msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
-		return com->sendCommand(Command::SetSettings, bytestream);
+	msg = std::dynamic_pointer_cast<Main51Message>(device->com->waitForMessageSync([this, &bytestream]() {
+		return device->com->sendCommand(Command::SetSettings, bytestream);
 	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(5000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
@@ -272,12 +279,12 @@ bool IDeviceSettings::apply(bool temporary) {
 	}
 
 	if(!temporary) {
-		msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this]() {
-			return com->sendCommand(Command::SaveSettings);
+		msg = std::dynamic_pointer_cast<Main51Message>(device->com->waitForMessageSync([this]() {
+			return device->com->sendCommand(Command::SaveSettings);
 		}, std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000)));
 	}
 
-	applyingSettings = false;
+	device->startHeartbeat();
 
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 
@@ -299,10 +306,10 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 		return false;
 	}
 
-	applyingSettings = true;
+	device->stopHeartbeat();
 
-	std::shared_ptr<Main51Message> msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this]() {
-		return com->sendCommand(Command::SetDefaultSettings);
+	std::shared_ptr<Main51Message> msg = std::dynamic_pointer_cast<Main51Message>(device->com->waitForMessageSync([this]() {
+		return device->com->sendCommand(Command::SetDefaultSettings);
 	}, std::make_shared<Main51MessageFilter>(Command::SetDefaultSettings), std::chrono::milliseconds(5000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
@@ -336,8 +343,8 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	bytestream[6] = (uint8_t)(*gsChecksum >> 8);
 	memcpy(bytestream.data() + 7, getMutableRawStructurePointer(), settings.size());
 
-	msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this, &bytestream]() {
-		return com->sendCommand(Command::SetSettings, bytestream);
+	msg = std::dynamic_pointer_cast<Main51Message>(device->com->waitForMessageSync([this, &bytestream]() {
+		return device->com->sendCommand(Command::SetSettings, bytestream);
 	}, std::make_shared<Main51MessageFilter>(Command::SetSettings), std::chrono::milliseconds(5000)));
 	if(!msg || msg->data[0] != 1) {
 		// Attempt to get the settings from the device so we're up to date if possible
@@ -349,12 +356,12 @@ bool IDeviceSettings::applyDefaults(bool temporary) {
 	}
 
 	if(!temporary) {
-		msg = std::dynamic_pointer_cast<Main51Message>(com->waitForMessageSync([this]() {
-			return com->sendCommand(Command::SaveSettings);
+		msg = std::dynamic_pointer_cast<Main51Message>(device->com->waitForMessageSync([this]() {
+			return device->com->sendCommand(Command::SaveSettings);
 		}, std::make_shared<Main51MessageFilter>(Command::SaveSettings), std::chrono::milliseconds(5000)));
 	}
 
-	applyingSettings = false;
+	device->startHeartbeat();
 
 	refresh(); // Refresh our buffer with what the device has, whether we were successful or not
 

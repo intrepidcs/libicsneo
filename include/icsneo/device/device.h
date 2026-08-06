@@ -743,6 +743,7 @@ public:
 	 */
 	std::optional<bool> SetRootDirectoryEntryFlags(uint8_t mask, uint8_t values, uint32_t collectionEntryByteAddress);
 
+	device_eventhandler_t report;
 	std::shared_ptr<Communication> com;
 	std::shared_ptr<IDeviceSettings> settings;
 
@@ -900,11 +901,14 @@ public:
 	bool unlockAllNetworks();
 	std::shared_ptr<NetworkMutexMessage> getNetworkMutexStatus(Network::NetID network);
 
+	void startHeartbeat();
+	void stopHeartbeat();
+	void restartHeartbeat();
+
 protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;
-	device_eventhandler_t report;
 
 	std::mutex ioMutex;
 	std::optional<bool> ethActivationStatus;
@@ -937,7 +941,7 @@ protected:
 			std::move(decoder)
 		);
 		setupCommunication(*com);
-		settings = makeSettings<Settings>(com);
+		settings = makeSettings<Settings>(this);
 		setupSettings(*settings);
 		diskReadDriver = std::unique_ptr<DiskRead>(new DiskRead());
 		diskWriteDriver = std::unique_ptr<DiskWrite>(new DiskWrite());
@@ -973,8 +977,8 @@ protected:
 	}
 
 	template<typename Settings>
-	std::shared_ptr<IDeviceSettings> makeSettings(std::shared_ptr<Communication> comm) {
-		return std::make_shared<Settings>(comm);
+	std::shared_ptr<IDeviceSettings> makeSettings(Device* device) {
+		return std::make_shared<Settings>(device);
 	}
 	virtual void setupSettings(IDeviceSettings&) {}
 
@@ -1039,10 +1043,6 @@ private:
 	
 	APIEvent::Type attemptToBeginCommunication();
 
-	// Use heartbeatSuppressed instead when reading
-	std::atomic<int> heartbeatSuppressedByUser{0};
-	bool heartbeatSuppressed() const { return heartbeatSuppressedByUser > 0 || (settings && settings->applyingSettings); }
-
 	void handleNeoVIMessage(std::shared_ptr<CANMessage> message);
 
 	bool firmwareUpdateSupported();
@@ -1052,10 +1052,6 @@ private:
 	size_t pollingMessageLimit = 20000;
 	moodycamel::BlockingConcurrentQueue<std::shared_ptr<Message>> pollingContainer;
 	void enforcePollingMessageLimit();
-
-	std::atomic<bool> stopHeartbeatThread{false};
-	std::mutex heartbeatMutex;
-	std::thread heartbeatThread;
 
 	std::mutex diskMutex;
 
@@ -1179,6 +1175,7 @@ private:
 
 	// Keeponline (keepalive for online)
 	std::unique_ptr<Periodic> keeponline;
+	std::unique_ptr<Heartbeat> heartbeat;
 
 	std::optional<uint32_t> assignedClientId;
 	std::unordered_set<icsneo::Network::NetID> lockedNetworks;

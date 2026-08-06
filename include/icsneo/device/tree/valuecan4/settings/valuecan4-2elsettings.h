@@ -10,7 +10,7 @@ namespace icsneo {
 
 class ValueCAN4_2ELSettings : public ValueCAN4_4_2ELSettings {
 public:
-	ValueCAN4_2ELSettings(std::shared_ptr<Communication> com) : ValueCAN4_4_2ELSettings(com) {}
+	ValueCAN4_2ELSettings(Device* device) : ValueCAN4_4_2ELSettings(device) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<valuecan4_4_2el_settings_t>();
 		if(cfg == nullptr)

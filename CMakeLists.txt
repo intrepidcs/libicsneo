@@ -346,6 +346,7 @@ add_library(icsneocpp
 	api/icsneocpp/icsneocpp.cpp
 	api/icsneocpp/event.cpp
 	api/icsneocpp/eventmanager.cpp
+	api/icsneocpp/heartbeat.cpp
 	api/icsneocpp/version.cpp
 	${SRC_FILES}
 )

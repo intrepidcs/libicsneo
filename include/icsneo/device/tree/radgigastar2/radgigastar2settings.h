@@ -156,7 +156,7 @@ namespace icsneo
 	class RADGigastar2Settings : public IDeviceSettings
 	{
 	public:
-		RADGigastar2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radgigastar2_settings_t)) {}
+		RADGigastar2Settings(Device* device) : IDeviceSettings(device, sizeof(radgigastar2_settings_t)) {}
 		const CAN_SETTINGS *getCANSettingsFor(Network net) const override
 		{
 			auto cfg = getStructurePointer<radgigastar2_settings_t>();

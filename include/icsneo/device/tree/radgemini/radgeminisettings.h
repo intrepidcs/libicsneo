@@ -42,7 +42,7 @@ static_assert(sizeof(radgemini_settings_t) == 86, "RADGemini settings size misma
 
 class RADGeminiSettings : public IDeviceSettings {
 public:
-	RADGeminiSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radgemini_settings_t)) {}
+	RADGeminiSettings(Device* device) : IDeviceSettings(device, sizeof(radgemini_settings_t)) {}
 };
 
 }

@@ -74,7 +74,7 @@ static_assert(sizeof(radpluto_settings_t) == 322, "RAD-Pluto Settings are not pa
 
 class RADPlutoSettings : public IDeviceSettings {
 public:
-	RADPlutoSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radpluto_settings_t)) {
+	RADPlutoSettings(Device* device) : IDeviceSettings(device, sizeof(radpluto_settings_t)) {
 	}
 
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {

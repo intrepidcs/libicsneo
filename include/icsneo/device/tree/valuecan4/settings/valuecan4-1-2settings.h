@@ -10,7 +10,7 @@ namespace icsneo {
 
 class ValueCAN4_1_2Settings : public IDeviceSettings {
 public:
-	ValueCAN4_1_2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(valuecan4_1_2_settings_t)) {}
+	ValueCAN4_1_2Settings(Device* device) : IDeviceSettings(device, sizeof(valuecan4_1_2_settings_t)) {}
 	// We do not override getCANSettingsFor or getCANFDSettingsFor here because they will be device specific
 };
 

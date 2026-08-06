@@ -111,7 +111,7 @@ static_assert(sizeof(neovired2_settings_t) == 918, "NeoVIRED2 settings size mism
 
 class NeoVIRED2Settings : public IDeviceSettings {
 public:
-	NeoVIRED2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovired2_settings_t)) {}
+	NeoVIRED2Settings(Device* device) : IDeviceSettings(device, sizeof(neovired2_settings_t)) {}
 	const Fire3LinuxSettings* getLinuxSettings() const override {
 		auto cfg = getStructurePointer<neovired2_settings_t>();
 		return cfg ? &cfg->os_settings : nullptr;

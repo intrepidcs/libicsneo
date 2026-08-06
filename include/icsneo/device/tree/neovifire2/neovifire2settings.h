@@ -125,7 +125,7 @@ static_assert(sizeof(neovifire2_settings_t) == 936, "NeoVIFire2 settings size mi
 
 class NeoVIFIRE2Settings : public IDeviceSettings {
 public:
-	NeoVIFIRE2Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire2_settings_t)) {}
+	NeoVIFIRE2Settings(Device* device) : IDeviceSettings(device, sizeof(neovifire2_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<neovifire2_settings_t>();
 		if(cfg == nullptr)

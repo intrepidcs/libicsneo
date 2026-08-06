@@ -86,7 +86,7 @@ static_assert(sizeof(radcomet3_settings_t) == 674, "RADComet3 settings size mism
 
 class RADComet3Settings : public IDeviceSettings {
 public:
-	RADComet3Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radcomet3_settings_t)) {}
+	RADComet3Settings(Device* device) : IDeviceSettings(device, sizeof(radcomet3_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radcomet3_settings_t>();
 		if(cfg == nullptr)

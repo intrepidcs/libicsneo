@@ -86,7 +86,7 @@ static_assert(sizeof(radepsilon_settings_t) == 400, "RADEpsilon settings size mi
 
 class RADEpsilonSettings : public IDeviceSettings {
 public:
-	RADEpsilonSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radepsilon_settings_t)) {}
+	RADEpsilonSettings(Device* device) : IDeviceSettings(device, sizeof(radepsilon_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radepsilon_settings_t>();
 		if(cfg == nullptr)

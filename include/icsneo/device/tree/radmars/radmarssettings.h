@@ -101,7 +101,7 @@ static_assert(sizeof(radmars_settings_t) == 666, "RAD-Mars settings size mismatc
 
 class RADMarsSettings : public IDeviceSettings {
 public:
-	RADMarsSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radmars_settings_t)) {}
+	RADMarsSettings(Device* device) : IDeviceSettings(device, sizeof(radmars_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radmars_settings_t>();
 		if(cfg == nullptr)

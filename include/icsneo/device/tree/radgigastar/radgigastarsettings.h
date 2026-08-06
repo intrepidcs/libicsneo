@@ -107,7 +107,7 @@ static_assert(sizeof(radgigastar_settings_t) == 1026, "RADGigastar settings size
 
 class RADGigastarSettings : public IDeviceSettings {
 public:
-	RADGigastarSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radgigastar_settings_t)) {}
+	RADGigastarSettings(Device* device) : IDeviceSettings(device, sizeof(radgigastar_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radgigastar_settings_t>();
 		if(cfg == nullptr)

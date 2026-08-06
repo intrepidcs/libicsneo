@@ -14,6 +14,7 @@
 #include "icsneo/communication/message/extendedresponsemessage.h"
 #include "icsneo/device/deviceversion.h"
 #include "icsneo/api/eventmanager.h"
+#include "icsneo/api/heartbeat.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/communication/encoder.h"
 #include "icsneo/communication/decoder.h"

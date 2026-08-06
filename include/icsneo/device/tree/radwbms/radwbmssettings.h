@@ -70,7 +70,7 @@ static_assert(sizeof(radwbms_settings_t) == 156, "RAD-wBMS settings size mismatc
 
 class RADwBMSSettings : public IDeviceSettings {
 public:
-	RADwBMSSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radwbms_settings_t)) {}
+	RADwBMSSettings(Device* device) : IDeviceSettings(device, sizeof(radwbms_settings_t)) {}
 };
 
 }

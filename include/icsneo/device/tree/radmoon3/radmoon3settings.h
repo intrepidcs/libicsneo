@@ -39,7 +39,7 @@ static_assert(sizeof(radmoon3_settings_t) == 68, "RADMoon3 settings size mismatc
 
 class RADMoon3Settings : public IDeviceSettings {
 public:
-	RADMoon3Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radmoon3_settings_t)) {}
+	RADMoon3Settings(Device* device) : IDeviceSettings(device, sizeof(radmoon3_settings_t)) {}
 };
 
 }

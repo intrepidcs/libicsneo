@@ -31,6 +31,7 @@ public:
 	virtual driver_finder_t getFinder() = 0;
 
 	inline bool isDisconnected() const { return disconnected; };
+	inline void setIsDisconnected(bool isDisconnected) { disconnected = isDisconnected; }
 	inline bool isClosing() const { return closing; }
 
 	bool waitForRx(size_t limit, std::chrono::milliseconds timeout);
@@ -62,7 +63,6 @@ protected:
 	};
 
 	inline void setIsClosing(bool isClosing) { closing = isClosing; }
-	inline void setIsDisconnected(bool isDisconnected) { disconnected = isDisconnected; }
 
 	// Overridable in case the driver doesn't want to use writeTask and writeQueue
 	virtual bool writeQueueFull() { return writeQueue.size_approx() > writeQueueSize; }

@@ -55,7 +55,7 @@ static_assert(sizeof(radmoonduo_settings_t) == 38, "RAD-Moon Duo settings size e
 
 class RADMoonDuoSettings : public IDeviceSettings {
 public:
-	RADMoonDuoSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radmoonduo_settings_t)) {}
+	RADMoonDuoSettings(Device* device) : IDeviceSettings(device, sizeof(radmoonduo_settings_t)) {}
 };
 
 }

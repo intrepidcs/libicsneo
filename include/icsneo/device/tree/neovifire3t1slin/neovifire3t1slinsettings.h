@@ -158,7 +158,7 @@ static_assert(sizeof(neovifire3t1slin_settings_t) == 1594, "NeoVIFire3T1SLIN set
 
 class NeoVIFIRE3T1SLINSettings : public IDeviceSettings {
 public:
-	NeoVIFIRE3T1SLINSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neovifire3t1slin_settings_t)) {}
+	NeoVIFIRE3T1SLINSettings(Device* device) : IDeviceSettings(device, sizeof(neovifire3t1slin_settings_t)) {}
 	const Fire3LinuxSettings* getLinuxSettings() const override {
 		auto cfg = getStructurePointer<neovifire3t1slin_settings_t>();
 		return cfg ? &cfg->os_settings : nullptr;

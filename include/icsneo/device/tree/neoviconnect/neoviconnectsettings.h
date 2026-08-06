@@ -88,7 +88,7 @@ static_assert(sizeof(neoviconnect_settings_t) == 628, "NeoVIConnect settings siz
 
 class NeoVIConnectSettings : public IDeviceSettings {
 public:
-	NeoVIConnectSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(neoviconnect_settings_t)) {}
+	NeoVIConnectSettings(Device* device) : IDeviceSettings(device, sizeof(neoviconnect_settings_t)) {}
 	const Fire3LinuxSettings* getLinuxSettings() const override {
 		auto cfg = getStructurePointer<neoviconnect_settings_t>();
 		return cfg ? &cfg->os_settings : nullptr;

@@ -46,7 +46,7 @@ static_assert(sizeof(radmoont1s_settings_t) == 160, "RADMoonT1S settings size mi
 
 class RADMoonT1SSettings : public IDeviceSettings {
 public:
-	RADMoonT1SSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radmoont1s_settings_t)) {}
+	RADMoonT1SSettings(Device* device) : IDeviceSettings(device, sizeof(radmoont1s_settings_t)) {}
 
 	std::optional<bool> isT1SPLCAEnabledFor(Network net) const override {
 		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);

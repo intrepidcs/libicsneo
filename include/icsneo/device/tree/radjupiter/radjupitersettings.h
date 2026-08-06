@@ -90,7 +90,7 @@ static_assert(sizeof(radjupiter_settings_t) == 348, "RAD-Jupiter Settings are no
 
 class RADJupiterSettings : public IDeviceSettings {
 public:
-	RADJupiterSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(radjupiter_settings_t)) {}
+	RADJupiterSettings(Device* device) : IDeviceSettings(device, sizeof(radjupiter_settings_t)) {}
 
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radjupiter_settings_t>();

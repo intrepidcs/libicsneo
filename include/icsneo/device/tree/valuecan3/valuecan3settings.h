@@ -37,7 +37,7 @@ static_assert(sizeof(valuecan3_settings_t) == 40, "ValueCAN3 settings size misma
 
 class ValueCAN3Settings : public IDeviceSettings {
 public:
-	ValueCAN3Settings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(valuecan3_settings_t)) {}
+	ValueCAN3Settings(Device* device) : IDeviceSettings(device, sizeof(valuecan3_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<valuecan3_settings_t>();
 		if(cfg == nullptr)

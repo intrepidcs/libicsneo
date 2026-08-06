@@ -48,7 +48,7 @@ static_assert(sizeof(vividcan_settings_t) == 64, "VividCAN settings size mismatc
 
 class VividCANSettings : public IDeviceSettings {
 public:
-	VividCANSettings(std::shared_ptr<Communication> com) : IDeviceSettings(com, sizeof(vividcan_settings_t)) {}
+	VividCANSettings(Device* device) : IDeviceSettings(device, sizeof(vividcan_settings_t)) {}
 	const CAN_SETTINGS* getCANSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<vividcan_settings_t>();
 		if(cfg == nullptr)
