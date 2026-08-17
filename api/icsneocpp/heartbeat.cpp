@@ -20,9 +20,16 @@ Heartbeat::~Heartbeat() {
 void Heartbeat::run() {
 	EventManager::GetInstance().downgradeErrorsOnCurrentThread();
 
-	auto filter = std::make_shared<MessageFilter>(Message::Type::ResetStatus);
+	auto filter = std::make_shared<MessageFilter>();
+	filter->includeInternalInAny = true;
 	bool status = false;
-	auto cbHandle = device.com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&](std::shared_ptr<Message>) {
+	auto cbHandle = device.com->addMessageCallback(std::make_shared<MessageCallback>(filter, [&](std::shared_ptr<Message> msg) {
+		// TODO: remove DeviceStatus after 2027-08-17, as ResetStatus should be widely supported
+		const bool isHeartbeat =
+			(msg->type == Message::Type::ResetStatus) ||
+			(msg->type == Message::Type::RawMessage && std::static_pointer_cast<RawMessage>(msg)->network == Network::NetID::DeviceStatus);
+		if(!isHeartbeat)
+			return;
 		{
 			std::lock_guard lk(mutex);
 			status = true;
