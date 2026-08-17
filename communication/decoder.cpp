@@ -27,6 +27,8 @@
 #include "icsneo/communication/message/networkmutexmessage.h"
 #include "icsneo/communication/message/clientidmessage.h"
 #include "icsneo/communication/message/spiportkeymessage.h"
+#include "icsneo/communication/message/genericapidatamessage.h"
+#include "icsneo/communication/message/genericapistatusmessage.h"
 #include "icsneo/communication/command.h"
 #include "icsneo/device/device.h"
 #include "icsneo/communication/packet/canpacket.h"
@@ -344,6 +346,12 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							return true;
 						case ExtendedCommand::ExecuteSPIPortKeyOperation:
 							result = SPIPortKeyMessage::DecodeToMessage(packet->data);
+							return true;
+						case ExtendedCommand::ReadGenericAPIData:
+							result = GenericAPIDataMessage::DecodeToMessage(packet->data);
+							return true;
+						case ExtendedCommand::ReadGenericAPIStatus:
+							result = GenericAPIStatusMessage::DecodeToMessage(packet->data);
 							return true;
 						case ExtendedCommand::GetTC10Status:
 							result = TC10StatusMessage::DecodeToMessage(packet->data);

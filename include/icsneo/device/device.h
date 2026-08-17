@@ -47,6 +47,8 @@
 #include "icsneo/communication/message/livedatamessage.h"
 #include "icsneo/communication/message/tc10statusmessage.h"
 #include "icsneo/communication/message/spiportkeymessage.h"
+#include "icsneo/communication/message/genericapidatamessage.h"
+#include "icsneo/communication/message/genericapistatusmessage.h"
 #include "icsneo/core/macseccfg.h"
 #include "icsneo/communication/packet/genericbinarystatuspacket.h"
 #include "icsneo/communication/packet/livedatapacket.h"

@@ -49,6 +49,8 @@ public:
 		ClientId = 0x8017,
 		AllMACAddresses = 0x8018,
 		SPIPortKeyOperation = 0x8019,
+		GenericAPIData = 0x8020,
+		GenericAPIStatus = 0x8021,
 	};
 
 	Message(Type t) : type(t) {}
