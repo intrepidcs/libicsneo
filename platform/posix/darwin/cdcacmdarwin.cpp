@@ -86,7 +86,7 @@ void CDCACM::Find(std::vector<FoundDevice>& found) {
 	if(ref == nullptr)
 		return;
 	io_iterator_t matchingServices = 0;
-	kern_return_t kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, ref, &matchingServices);
+	kern_return_t kernResult = IOServiceGetMatchingServices(kIOMainPortDefault, ref, &matchingServices);
 	if(KERN_SUCCESS != kernResult || matchingServices == 0)
 		return;
 	IOReleaser matchingServicesReleaser(matchingServices);
