@@ -9,6 +9,7 @@
 #include <common/v1/proto_header.pb.h>
 #include <commands/generic/v1/client_id.pb.h>
 #include <commands/network/v1/mutex.pb.h>
+#include <settings/manufacturing/v1/mfg_config.pb.h>
 #ifdef _WIN32
 #pragma warning(pop)
 #endif
@@ -34,6 +35,11 @@ enum class Id : uint32_t {
 template <typename T>
 struct IDLookup {
 	constexpr static common::v1::ProtoId value = common::v1::ProtoId::PROTO_ID_UNSPECIFIED;
+};
+
+template <>
+struct IDLookup<settings::manufacturing::v1::MfgConfig> {
+	constexpr static common::v1::ProtoId value = common::v1::ProtoId::PROTO_ID_MFG_CONFIG;
 };
 
 template <>

@@ -8,6 +8,7 @@
 #include "icsneo/disk/fat.h"
 #include "icsneo/communication/message/filter/extendedresponsefilter.h"
 #include "icsneo/communication/message/networkmutexmessage.h"
+#include "icsneo/communication/message/mfgconfigmessage.h"
 #include "icsneo/communication/message/transmitmessage.h"
 
 #ifdef _MSC_VER
@@ -921,6 +922,36 @@ std::shared_ptr<HardwareInfo> Device::getHardwareInfo(std::chrono::milliseconds 
 	}
 
 	return hardwareInfo;
+}
+
+std::shared_ptr<MfgConfigMessage> Device::getMfgConfig() {
+	if(!isOpen()) {
+		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	std::vector<uint8_t> payload = MfgConfigMessage::EncodeArgumentsForGet();
+
+	auto response = com->waitForMessageSync(
+		[this, payload]() {
+			return com->sendCommand(ExtendedCommand::ProtobufAPI, payload);
+		},
+		std::make_shared<MessageFilter>(Message::Type::MfgConfig),
+		std::chrono::milliseconds(250)
+	);
+
+	if(!response) {
+		report(APIEvent::Type::Timeout, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	auto mfgConfig = std::dynamic_pointer_cast<MfgConfigMessage>(response);
+	if(!mfgConfig) {
+		report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+		return nullptr;
+	}
+
+	return mfgConfig;
 }
 
 

@@ -51,6 +51,7 @@ public:
 		SPIPortKeyOperation = 0x8019,
 		GenericAPIData = 0x8020,
 		GenericAPIStatus = 0x8021,
+		MfgConfig = 0x8022,
 	};
 
 	Message(Type t) : type(t) {}

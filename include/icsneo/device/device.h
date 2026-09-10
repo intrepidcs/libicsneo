@@ -63,6 +63,7 @@
 #include "icsneo/communication/message/gptpstatusmessage.h"
 #include "icsneo/communication/message/networkmutexmessage.h"
 #include "icsneo/communication/message/allmacaddressesmessage.h"
+#include "icsneo/communication/message/mfgconfigmessage.h"
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
 	static constexpr DeviceType::Enum DEVICE_TYPE = type; \
@@ -345,6 +346,7 @@ public:
 	virtual Network getNetworkByNumber(Network::Type, size_t) const;
 
 	std::shared_ptr<HardwareInfo> getHardwareInfo(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
+	std::shared_ptr<MfgConfigMessage> getMfgConfig();
 
 
 	/**

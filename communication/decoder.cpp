@@ -26,6 +26,7 @@
 #include "icsneo/communication/message/ethernetstatusmessage.h"
 #include "icsneo/communication/message/networkmutexmessage.h"
 #include "icsneo/communication/message/clientidmessage.h"
+#include "icsneo/communication/message/mfgconfigmessage.h"
 #include "icsneo/communication/message/spiportkeymessage.h"
 #include "icsneo/communication/message/genericapidatamessage.h"
 #include "icsneo/communication/message/genericapistatusmessage.h"
@@ -371,6 +372,9 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 							);
 							protoapi::Id protoId = protoapi::getProtoId(responseBody.data(), responseBody.size());
 							switch(protoId) {
+								case protoapi::Id::MfgConfig:
+									result = MfgConfigMessage::DecodeToMessage(responseBody);
+									return true;
 								case protoapi::Id::NetworkMutex:
 									result = NetworkMutexMessage::DecodeToMessage(responseBody);
 									return true;

@@ -234,6 +234,7 @@ set(SRC_FILES
 	communication/message/ethernetstatusmessage.cpp
 	communication/message/networkmutexmessage.cpp
 	communication/message/clientidmessage.cpp
+	communication/message/mfgconfigmessage.cpp
 	communication/message/transmitmessage.cpp
 	communication/message/spiportkeymessage.cpp
 	communication/message/genericapidatamessage.cpp
