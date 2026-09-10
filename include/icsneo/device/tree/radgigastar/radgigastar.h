@@ -183,6 +183,7 @@ protected:
 
 			Network::NetID::LIN_01,
 
+			Network::NetID::FLEXRAY_01,
 			Network::NetID::FLEXRAY_01A,
 			Network::NetID::FLEXRAY_01B,
 
