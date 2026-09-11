@@ -43,6 +43,7 @@ enum class Command : uint8_t {
 	GetLogicalDiskInfo = 0xBB, // Previously known as RED_CMD_GET_SDCARD_INFO
 	RequestStatusUpdate = 0xBC,
 	ReadSettings = 0xC7, // Previously known as 3G_READ_SETTINGS_EX
+	J2534Command = 0xD7, // Previously known as RED_CMD_J2534_EXTENSION
 	SetVBattMonitor = 0xDB, // Previously known as RED_CMD_CM_VBATT_MONITOR
 	RequestBitSmash = 0xDC, // Previously known as RED_CMD_CM_BITSMASH
 	WiVICommand = 0xDD, // Previously known as RED_CMD_WIVI_COMM

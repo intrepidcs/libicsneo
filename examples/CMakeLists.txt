@@ -36,6 +36,7 @@ option(LIBICSNEO_BUILD_CPP_ANALOG_OUT_EXAMPLE "Build the analog output example."
 option(LIBICSNEO_BUILD_CPP_DISKFORMAT_EXAMPLE "Build the disk format example." ON)
 option(LIBICSNEO_BUILD_CPP_T1S_EXAMPLE "Build the T1S example." ON)
 option(LIBICSNEO_BUILD_CPP_GPTP_EXAMPLE "Build the C++ gPTP settings example." ON)
+option(LIBICSNEO_BUILD_CPP_ISO15765_LOOPBACK_EXAMPLE "Build the C++ ISO15765 two-device CAN1 loopback example." ON)
 
 add_compile_options(${LIBICSNEO_COMPILER_WARNINGS})
 
@@ -189,4 +190,8 @@ endif()
 
 if(LIBICSNEO_BUILD_CPP_GPTP_EXAMPLE)
 	add_subdirectory(cpp/gptp)
+endif()
+
+if(LIBICSNEO_BUILD_CPP_ISO15765_LOOPBACK_EXAMPLE)
+	add_subdirectory(cpp/iso15765_loopback)
 endif()

@@ -64,6 +64,8 @@
 #include "icsneo/communication/message/networkmutexmessage.h"
 #include "icsneo/communication/message/allmacaddressesmessage.h"
 #include "icsneo/communication/message/mfgconfigmessage.h"
+#include "icsneo/communication/message/iso15765message.h"
+#include "icsneo/J2534.h"
 
 #define ICSNEO_FINDABLE_DEVICE_BASE(className, type) \
 	static constexpr DeviceType::Enum DEVICE_TYPE = type; \
@@ -909,6 +911,11 @@ public:
 	void stopHeartbeat();
 	void restartHeartbeat();
 
+	bool iso15765Enable(const Network& network);
+	bool iso15765DisableAll(void);
+	bool iso15765TransmitMessage(const Network& network, const Iso15765MessageArgs& msg, const std::chrono::milliseconds& timeout);
+	bool iso15765SetupRxFlowControl(const Network& network, const Iso15765MessageArgs& msg);
+
 protected:
 	bool online = false;
 	int messagePollingCallbackID = 0;
@@ -1176,6 +1183,23 @@ private:
 	std::optional<uint64_t> getVSADiskSize();
 
 	bool enableNetworkCommunication(bool enable, uint32_t timeout = 0);
+
+	bool J2534_Transaction(const Network& network, J2534CommandMessage&& msg, const std::chrono::milliseconds& timeout);
+	bool J2534_ClearRxFilters(const Network& network);
+	bool J2534_SetupCanRxFilter(const Network& network, const J2534_RxCanFilter& rxCanFilter);
+	bool J2534_EnableFiltering(const Network& network, const bool enable);
+
+	bool J2534_EnableIso15765(const Network& network, const bool enable);
+	bool J2534_ClearRxFilter(const Network& network, unsigned int iIndex);
+	bool J2534_EnableFirmwareUsbPassFilters(const Network& network, const bool enable);
+
+	struct NetworkHash {
+		size_t operator()(const Network& x) const {
+			return (size_t)x.getNetID();
+		}
+	};
+	std::unordered_map<Network, bool, NetworkHash> iso15765FirmwareEnabled;
+
 
 	// Keeponline (keepalive for online)
 	std::unique_ptr<Periodic> keeponline;

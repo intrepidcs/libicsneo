@@ -236,9 +236,12 @@ set(SRC_FILES
 	communication/message/clientidmessage.cpp
 	communication/message/mfgconfigmessage.cpp
 	communication/message/transmitmessage.cpp
+
+
 	communication/message/spiportkeymessage.cpp
 	communication/message/genericapidatamessage.cpp
 	communication/message/genericapistatusmessage.cpp
+	communication/message/iso15765message.cpp
 	communication/packet/flexraypacket.cpp
 	communication/packet/canpacket.cpp
 	communication/packet/a2bpacket.cpp

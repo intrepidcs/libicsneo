@@ -44,6 +44,7 @@
 #include "icsneo/communication/packet/i2cpacket.h"
 #include "icsneo/communication/packet/scriptstatuspacket.h"
 #include "icsneo/communication/packet/linpacket.h"
+#include "icsneo/communication/message/iso15765message.h"
 #include "icsneo/communication/packet/componentversionpacket.h"
 #include "icsneo/communication/packet/supportedfeaturespacket.h"
 #include "icsneo/communication/packet/mdiopacket.h"
@@ -477,6 +478,14 @@ bool Decoder::decode(std::shared_ptr<Message>& result, const std::shared_ptr<Pac
 								return false;
 							}
 
+							return true;
+						}
+						case Command::J2534Command: {
+							result = J2534CommandMessage::decodeToMessage(packet->data);
+							if(!result) {
+								report(APIEvent::Type::PacketDecodingError, APIEvent::Severity::Error);
+								return false;
+							}
 							return true;
 						}
 						default:

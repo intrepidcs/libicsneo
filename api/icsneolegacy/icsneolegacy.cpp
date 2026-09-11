@@ -545,15 +545,13 @@ int LegacyDLLExport icsneoGetTimeStampForMsg(void* hObject, icsSpyMessage* pMsg,
 void LegacyDLLExport icsneoGetISO15765Status(void* hObject, int lNetwork, int lClearTxStatus, int lClearRxStatus,
 	int* lTxStatus, int* lRxStatus)
 {
-	// TODO Implement
-	return;
+	// Not supported
 }
 
 void LegacyDLLExport icsneoSetISO15765RxParameters(void* hObject, int lNetwork, int lEnable, spyFilterLong* pFF_CFMsgFilter,
 	icsSpyMessage* pTxMsg, int lCFTimeOutMs, int lFlowCBlockSize, int lUsesExtendedAddressing, int lUseHardwareIfPresent)
 {
-	// TODO Implement
-	return;
+	// Not supported
 }
 
 int LegacyDLLExport icsneoGetRTC(void* hObject, icsSpyTime* time)
@@ -835,26 +833,25 @@ int LegacyDLLExport icsneoGetErrorInfo(int lErrorNumber, char* szErrorDescriptio
 //ISO15765-2 Functions
 int LegacyDLLExport icsneoISO15765_EnableNetworks(void* hObject, unsigned long ulNetworks)
 {
-	// TODO Implement
+	// Not supported
 	return false;
 }
 
 int LegacyDLLExport icsneoISO15765_DisableNetworks(void* hObject)
 {
-	// TODO Implement
+	// Not supported
 	return false;
 }
 
-int LegacyDLLExport icsneoISO15765_TransmitMessage(void* hObject, unsigned long ulNetworkID, stCM_ISO157652_TxMessage* pMsg,
-	unsigned long ulBlockingTimeout)
+int LegacyDLLExport icsneoISO15765_TransmitMessage(void* hObject, unsigned long ulNetworkID, stCM_ISO157652_TxMessage* pMsg, unsigned long ulBlockingTimeout)
 {
-	// TODO Implement
+	// Not supported
 	return false;
 }
 
 int LegacyDLLExport icsneoISO15765_ReceiveMessage(void* hObject, int ulNetworkID, stCM_ISO157652_RxMessage* pMsg)
 {
-	// TODO Implement
+	// Not supported
 	return false;
 }
 
@@ -1285,10 +1282,11 @@ int LegacyDLLExport icsneoJ2534Cmd(void* hObject, unsigned char* CmdBuf, short L
 		return false;
 
 	neodevice_t* device = reinterpret_cast<neodevice_t*>(hObject);
+    const auto& cmd = static_cast<icsneo::J2534Command>(*CmdBuf);
 
-	switch (*CmdBuf)
+	switch (cmd)
 	{
-	case J2534NVCMD_SetNetworkBaudRate:
+	case icsneo::J2534Command::SetNetworkBaudRate:
 
 		pTmp = (uint64_t *)&CmdBuf[1];
 		NetworkID = (uint16_t)*pTmp;
@@ -1298,7 +1296,7 @@ int LegacyDLLExport icsneoJ2534Cmd(void* hObject, unsigned char* CmdBuf, short L
 			iRetVal = 0;
 		break;
 
-	case J2534NVCMD_GetNetworkBaudRate:
+	case icsneo::J2534Command::GetNetworkBaudRate:
 	{
 		pTmp = (uint64_t *)&CmdBuf[1];
 		NetworkID = (uint16_t)*pTmp;
@@ -1311,7 +1309,7 @@ int LegacyDLLExport icsneoJ2534Cmd(void* hObject, unsigned char* CmdBuf, short L
 		*pTmp = static_cast<uint64_t>(ret);
 		break;
 	}
-	case J2534NVCMD_SetCANFDRate:
+	case icsneo::J2534Command::SetCANFDRate:
 
 		pTmp = (uint64_t *)&CmdBuf[1];
 		NetworkID = (uint16_t)*pTmp;
@@ -1322,7 +1320,7 @@ int LegacyDLLExport icsneoJ2534Cmd(void* hObject, unsigned char* CmdBuf, short L
 			iRetVal = 0;
 		break;
 
-	case J2534NVCMD_GetCANFDRate:
+	case icsneo::J2534Command::GetCANFDRate:
 
 		pTmp = (uint64_t *)&CmdBuf[1];
 		NetworkID = (uint16_t)*pTmp;
@@ -1332,7 +1330,7 @@ int LegacyDLLExport icsneoJ2534Cmd(void* hObject, unsigned char* CmdBuf, short L
 		*pTmp = icsneo_getFDBaudrate(device, NetworkID);
 		break;
 
-	case J2534NVCMD_GetCANFDTermination:
+	case icsneo::J2534Command::GetCANFDTermination:
 
 		pTmp = (uint64_t *)&CmdBuf[1];
 		NetworkID = (uint16_t)*pTmp;
@@ -1368,7 +1366,7 @@ int LegacyDLLExport icsneoJ2534Cmd(void* hObject, unsigned char* CmdBuf, short L
 		}
 		break;
 
-	case J2534NVCMD_SetCANFDTermination:
+	case icsneo::J2534Command::SetCANFDTermination:
 
 		pTmp = (uint64_t *)&CmdBuf[1];
 		NetworkID = (uint16_t)*pTmp;
@@ -1422,11 +1420,9 @@ int LegacyDLLExport icsneoEnableBusVoltageMonitor(void* hObject, unsigned int en
 	return false;
 }
 
-int LegacyDLLExport icsneoISO15765_TransmitMessageEx(void* hObject,
-	unsigned long ulNetworkID,
-	ISO15765_2015_TxMessage* pMsg,
-	unsigned long ulBlockingTimeout)
+int LegacyDLLExport icsneoISO15765_TransmitMessageEx(void* hObject, unsigned long ulNetworkID, ISO15765_2015_TxMessage* pMsg, unsigned long ulBlockingTimeout)
 {
+	// Not supported
 	return false;
 }
 

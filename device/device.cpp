@@ -239,12 +239,12 @@ std::vector<VersionReport> Device::getChipVersions(bool refreshComponents) {
 					auto& version = chipVersions.back();
 
 					auto disectedVersion = disectVersion(component.dotVersion);
-					version.id          = chipInfo.id;
-					version.name        = chipInfo.name;
-					version.major       = disectedVersion[0];
-					version.minor       = disectedVersion[1];
+					version.id		  = chipInfo.id;
+					version.name		= chipInfo.name;
+					version.major	   = disectedVersion[0];
+					version.minor	   = disectedVersion[1];
 					version.maintenance = disectedVersion[2];
-					version.build       = disectedVersion[3];
+					version.build	   = disectedVersion[3];
 				}
 			}
 		}
@@ -264,12 +264,12 @@ std::vector<VersionReport> Device::getChipVersions(bool refreshComponents) {
 			chipVersions.emplace_back();
 			auto& version = chipVersions.back();
 
-			version.id          = chipInfo.id;
-			version.name        = chipInfo.name;
-			version.major       = appVer->major;
-			version.minor       = appVer->minor;
+			version.id		  = chipInfo.id;
+			version.name		= chipInfo.name;
+			version.major	   = appVer->major;
+			version.minor	   = appVer->minor;
 			version.maintenance = 0;
-			version.build       = 0;
+			version.build	   = 0;
 		}			
 	}
 	return chipVersions;
@@ -4126,4 +4126,257 @@ void Device::stopHeartbeat() {
 void Device::restartHeartbeat() {
 	stopHeartbeat();
 	startHeartbeat();
+}
+
+bool Device::iso15765Enable(const Network& network) {
+	return J2534_EnableIso15765(network, true);
+}
+
+bool Device::iso15765DisableAll(void) {
+	bool ok = true;
+	for(const auto& slot : iso15765FirmwareEnabled)
+	{
+        if (slot.second)
+        {
+            if (!J2534_EnableIso15765(slot.first, false))
+                ok = false;
+        }
+	}
+	return ok;
+}
+
+bool Device::iso15765TransmitMessage(const Network& network, const Iso15765MessageArgs& msg, const std::chrono::milliseconds& timeout) {
+	if (!isOnline())
+		return false;
+
+	if(iso15765FirmwareEnabled.find(network) == iso15765FirmwareEnabled.end() || !iso15765FirmwareEnabled[network])
+		return false;
+
+	bool result;
+	Iso15765TxSetupMessage setupMsg;
+
+	//Set the network ID to use
+	if(const auto& coreMiniId = network.getCoreMini())
+		setupMsg.setCoreMiniId((uint16_t)*coreMiniId);
+
+	const uint8_t txIndex = msg.getTxIndex();
+	setupMsg.setIdx(txIndex);
+
+	setupMsg.setId(msg.getArbId().Id);
+	setupMsg.setFcId(msg.getFlowControlArbId().Id);
+	setupMsg.setFcIdMask(msg.getFlowControlArbIdMask());
+
+	setupMsg.setFsTimeout(msg.getFsTimeout());
+	setupMsg.setFsWait(msg.getFsWaitTimeout());
+
+	const uint32_t messageLength = (uint32_t)msg.getData().size();
+	setupMsg.setMessageLength(messageLength);
+	setupMsg.setIs29BitEnabled(msg.getArbId().Is29Bit);
+	setupMsg.setIsFc29BitEnabled(msg.getFlowControlArbId().Is29Bit);
+	if(const auto& extAddress = msg.getExtendedAddress())
+	{
+		setupMsg.setExtAddressEnabled(true);
+		setupMsg.setExtendedAddress(*extAddress);
+	}
+	if(const auto& extFcAddress = msg.getFlowControlExtendedAddress())
+	{
+		setupMsg.setFcExtAddressEnabled(true);
+		setupMsg.setFlowControlExtendedAddress(*extFcAddress);
+	}
+	if(const auto& stMin = msg.getStMin())
+	{
+		setupMsg.setOverrideStMin(true);
+		setupMsg.setStMin(*stMin);
+	}
+	if(const auto& blockSize = msg.getBlockSize())
+	{
+		setupMsg.setOverrideBlockSize(true);
+		setupMsg.setBlockSize(*blockSize);
+	}
+	if(const auto& padding = msg.getPaddingValue())
+	{
+		setupMsg.setPaddingEnabled(true);
+		setupMsg.setPadding(*padding);
+	}
+	setupMsg.setIsBrsEnabled(msg.getIsBrsEnabled());
+	setupMsg.setIsCanFd(msg.getIsCanFd());
+	setupMsg.setTxDl(msg.getTxDl());
+
+	{
+		uint32_t octetsToSend = messageLength;
+		const uint8_t* payload = msg.getData().data();
+		uint32_t offset = 0;
+
+		result = J2534_Transaction(network, std::move(setupMsg), timeout);
+		while(result && octetsToSend)
+		{
+			const uint16_t chunkSize = (uint16_t)std::min((uint32_t)Iso15765TxDataMessage::MaxDataLength, octetsToSend);
+
+			Iso15765TxDataMessage dataMsg;
+			dataMsg.setIdx(txIndex);
+			dataMsg.setOffset(offset);
+			dataMsg.setData(&payload[offset], chunkSize);
+
+			result = J2534_Transaction(network, std::move(dataMsg), timeout);
+
+			offset += chunkSize;
+			octetsToSend -= chunkSize;
+		}
+	}
+
+	return result;
+}
+
+bool Device::iso15765SetupRxFlowControl(const Network& network, const Iso15765MessageArgs& msg) {
+	if (!isOnline())
+		return false;
+
+	if(iso15765FirmwareEnabled.find(network) == iso15765FirmwareEnabled.end() || !iso15765FirmwareEnabled[network])
+		return false;
+
+	J2534SetupIso15765FlowControlMessage rxFlowControl;
+
+	rxFlowControl.setIsBrsEnabled(msg.getIsBrsEnabled());
+	rxFlowControl.setIsCanFd(msg.getIsCanFd());
+	rxFlowControl.setIdx(msg.getTxIndex());
+	if(const auto& coreMiniId = network.getCoreMini())
+		rxFlowControl.setCoreMiniId((uint16_t)*coreMiniId);
+	rxFlowControl.setEnable(true);
+	if(const auto& blockSize = msg.getBlockSize())
+	{
+		rxFlowControl.setBlockSize(*blockSize);
+	}
+	rxFlowControl.setCfTimeout(msg.getCfTimeout());
+	rxFlowControl.setFlowControlTransmissionEnabled(msg.getIsFlowControlEnabled());
+	if(const auto& extAddress = msg.getExtendedAddress())
+	{
+		rxFlowControl.setExtendedAddress(*extAddress);
+		rxFlowControl.setExtAddressEnabled(true);
+	}
+	if(const auto& fcExtAddress = msg.getFlowControlExtendedAddress())
+	{
+		rxFlowControl.setFlowControlExtendedAddress(*fcExtAddress);
+		rxFlowControl.setFcExtAddressEnabled(true);
+	}
+	rxFlowControl.setFcId(msg.getFlowControlArbId().Id);
+	rxFlowControl.setIsFc29BitEnabled(msg.getFlowControlArbId().Is29Bit);
+	rxFlowControl.setIs29BitEnabled(msg.getArbId().Is29Bit);
+	rxFlowControl.setId(msg.getArbId().Id);
+	rxFlowControl.setIdMask(msg.getFlowControlArbIdMask());
+	if(const auto& padding = msg.getPaddingValue())
+	{
+		rxFlowControl.setPadding(*padding);
+		rxFlowControl.setPaddingEnabled(true);
+	}
+	if(const auto& stMin = msg.getStMin())
+	{
+		rxFlowControl.setStMin(*stMin);
+	}
+
+	return J2534_Transaction(network, std::move(rxFlowControl), std::chrono::milliseconds(0));
+}
+
+bool Device::J2534_Transaction(const Network& network, J2534CommandMessage&& msg, const std::chrono::milliseconds& timeout) {
+	msg.network = network;
+	if (timeout.count())
+	{
+		static std::shared_ptr<MessageFilter> filter = std::make_shared<Main51MessageFilter>(Command::J2534Command);
+		const auto& response = com->waitForMessageSync([&](void)
+			{
+				return com->sendCommand(msg.command, msg.getArgumentData());
+			}, filter, timeout);
+
+		if (!response)
+		{
+			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+			return false;
+		}
+
+		auto responseMsg = std::dynamic_pointer_cast<Main51Message>(response);
+		if (!responseMsg || responseMsg->command != Command::J2534Command)
+		{
+			report(APIEvent::Type::MessageFormattingError, APIEvent::Severity::Error);
+			return false;
+		}
+	}
+	else
+	{
+		return com->sendCommand(msg.command, msg.getArgumentData());
+	}
+
+	// NOTE: responseMsg->data.front()
+
+	return true;
+}
+
+
+bool Device::J2534_ClearRxFilters(const Network& network)
+{
+	return J2534_Transaction(network, J2534CommandMessage(J2534CommandMessage::J2534Command::SetupClearCanRxFilters, { (uint8_t)0 /* is this necessary? */}), std::chrono::milliseconds(0));
+}
+
+bool Device::J2534_SetupCanRxFilter(const Network& network, const J2534_RxCanFilter& rxCanFilter)
+{
+	return J2534_Transaction(network, J2534SetupCanRxFilteringMessage(rxCanFilter), std::chrono::milliseconds(0));
+}
+
+bool Device::J2534_EnableFiltering(const Network& network, const bool enable)
+{
+	return J2534_Transaction(network, J2534EnableFilteringMessage(enable), std::chrono::milliseconds(0));
+}
+
+
+
+bool Device::J2534_EnableIso15765(const Network& network, const bool enable)
+{
+	if (iso15765FirmwareEnabled[network] == enable)
+		return true;
+
+	if (!J2534_Transaction(network, J2534EnableMessage(enable), std::chrono::milliseconds(0)))
+		return false;
+
+	iso15765FirmwareEnabled[network] = enable;
+
+	if (enable)
+	{
+		// Turn OFF filtering of CAN messages in the firmware
+		return J2534_EnableFirmwareUsbPassFilters(network, false);
+	}
+	return true;
+}
+
+bool Device::J2534_ClearRxFilter(const Network& network, unsigned int iIndex)
+{
+	if (const auto& slot = iso15765FirmwareEnabled.find(network); slot != iso15765FirmwareEnabled.end() && slot->second)
+	{
+		J2534_RxCanFilter rxFilter;
+		memset(&rxFilter, 0, sizeof(rxFilter));
+		rxFilter.idx = (uint16_t)iIndex;
+		return J2534_SetupCanRxFilter(network, rxFilter);
+	}
+	return false;
+}
+
+bool Device::J2534_EnableFirmwareUsbPassFilters(const Network& network, const bool enable)
+{
+	const auto& slot = iso15765FirmwareEnabled.find(network);
+	if (slot == iso15765FirmwareEnabled.end())
+		return false;
+	//check for disconnect here!
+	if (!slot->second)
+	{
+		// Tried to shut-off Rx table message filtering but FW ISO15765 was not enabled
+		return true; //just ignore it, no filtering can occur anyway
+	}
+
+	if (enable) //turning ON filtering in the Firmware based on the rx table
+	{
+		//Rx table message filtering is on by default in the firmware when m_bISO15765_FW_Enabled is true
+		//need to check here to see if we set index 0 to a PASS all filter (i.e. turned off USB filtering)
+		if (!J2534_ClearRxFilters(network))
+			return false;
+	}
+
+	// New "filtering enable" mechanism - old firmware ignores this frame
+	return J2534_EnableFiltering(network, enable);
 }
