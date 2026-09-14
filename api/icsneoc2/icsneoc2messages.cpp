@@ -471,6 +471,7 @@ icsneoc2_error_t icsneoc2_message_lin_status_flags_get(const icsneoc2_message_t*
 	if(lin_msg->statusFlags.HasUpdatedResponderOnce) *status_flags |= ICSNEOC2_LIN_STATUS_HAS_UPDATED_RESPONDER_ONCE;
 	if(lin_msg->statusFlags.BusRecovered) *status_flags |= ICSNEOC2_LIN_STATUS_BUS_RECOVERED;
 	if(lin_msg->statusFlags.BreakOnly) *status_flags |= ICSNEOC2_LIN_STATUS_BREAK_ONLY;
+	if(lin_msg->statusFlags.WakeupRequest) *status_flags |= ICSNEOC2_LIN_STATUS_WAKEUP_REQUEST;
 	return icsneoc2_error_success;
 }
 

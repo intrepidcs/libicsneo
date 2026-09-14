@@ -381,6 +381,7 @@ typedef enum _icsneoc2_lin_msg_type_t {
 	icsneoc2_lin_msg_type_sync_only = 4,
 	icsneoc2_lin_msg_type_update_responder = 5,
 	icsneoc2_lin_msg_type_error = 6,
+	icsneoc2_lin_msg_type_wakeup_request = 7,
 } _icsneoc2_lin_msg_type_t;
 
 typedef uint8_t icsneoc2_lin_msg_type_t;
@@ -409,6 +410,7 @@ typedef uint32_t icsneoc2_lin_err_flags_t;
 #define ICSNEOC2_LIN_STATUS_HAS_UPDATED_RESPONDER_ONCE 0x20
 #define ICSNEOC2_LIN_STATUS_BUS_RECOVERED             0x40
 #define ICSNEOC2_LIN_STATUS_BREAK_ONLY                0x80
+#define ICSNEOC2_LIN_STATUS_WAKEUP_REQUEST            0x100
 
 typedef uint32_t icsneoc2_lin_status_flags_t;
 

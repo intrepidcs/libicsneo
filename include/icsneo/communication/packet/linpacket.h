@@ -47,7 +47,8 @@ struct HardwareLINPacket {
 		uint16_t ResponderByteFerr : 1; //Framing error in one of our responder bytes.
 		uint16_t TxAborted : 1;//!< This transmit was aborted.
 		uint16_t BreakOnly : 1;
-		uint16_t : 2;
+		uint16_t WakeupRequest : 1; //!< LIN wakeup pulse.
+		uint16_t : 1;
 	} CoreMiniBitsLIN;
 
 	uint8_t data[8];

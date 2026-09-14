@@ -28,7 +28,8 @@ void init_linmessage(pybind11::module_& m) {
 		.def_readwrite("UpdateResponderOnce", &LINStatusFlags::UpdateResponderOnce)
 		.def_readwrite("HasUpdatedResponderOnce", &LINStatusFlags::HasUpdatedResponderOnce)
 		.def_readwrite("BusRecovered", &LINStatusFlags::BusRecovered)
-		.def_readwrite("BreakOnly", &LINStatusFlags::BreakOnly);
+		.def_readwrite("BreakOnly", &LINStatusFlags::BreakOnly)
+		.def_readwrite("WakeupRequest", &LINStatusFlags::WakeupRequest);
 
 	pybind11::classh<LINMessage, Frame> linMessage(m, "LINMessage");
 
@@ -39,7 +40,8 @@ void init_linmessage(pybind11::module_& m) {
 		.value("LIN_BREAK_ONLY", LINMessage::Type::LIN_BREAK_ONLY)
 		.value("LIN_SYNC_ONLY", LINMessage::Type::LIN_SYNC_ONLY)
 		.value("LIN_UPDATE_RESPONDER", LINMessage::Type::LIN_UPDATE_RESPONDER)
-		.value("LIN_ERROR", LINMessage::Type::LIN_ERROR);
+		.value("LIN_ERROR", LINMessage::Type::LIN_ERROR)
+		.value("LIN_WAKEUP_REQUEST", LINMessage::Type::LIN_WAKEUP_REQUEST);
 
 	linMessage
 		.def(pybind11::init<>())

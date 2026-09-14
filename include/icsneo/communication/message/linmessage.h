@@ -34,6 +34,7 @@ struct LINStatusFlags {
 	bool HasUpdatedResponderOnce = false;
 	bool BusRecovered = false;
 	bool BreakOnly = false;
+	bool WakeupRequest = false;
 };
 
 class LINMessage : public Frame {
@@ -45,7 +46,8 @@ public:
 		LIN_BREAK_ONLY = icsneoc2_lin_msg_type_break_only,
 		LIN_SYNC_ONLY = icsneoc2_lin_msg_type_sync_only,
 		LIN_UPDATE_RESPONDER = icsneoc2_lin_msg_type_update_responder,
-		LIN_ERROR = icsneoc2_lin_msg_type_error
+		LIN_ERROR = icsneoc2_lin_msg_type_error,
+		LIN_WAKEUP_REQUEST = icsneoc2_lin_msg_type_wakeup_request
 	};
 
 	static void calcChecksum(LINMessage& message);

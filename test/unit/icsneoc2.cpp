@@ -1862,6 +1862,7 @@ TEST(icsneoc2, test_lin_msg_type_enum_values)
 	ASSERT_EQ(icsneoc2_lin_msg_type_sync_only, 4);
 	ASSERT_EQ(icsneoc2_lin_msg_type_update_responder, 5);
 	ASSERT_EQ(icsneoc2_lin_msg_type_error, 6);
+	ASSERT_EQ(icsneoc2_lin_msg_type_wakeup_request, 7);
 	ASSERT_EQ(sizeof(icsneoc2_lin_msg_type_t), sizeof(uint8_t));
 }
 
@@ -1875,6 +1876,7 @@ TEST(icsneoc2, test_lin_msg_type_cpp_enum_sync)
 	ASSERT_EQ(static_cast<uint8_t>(T::LIN_SYNC_ONLY), icsneoc2_lin_msg_type_sync_only);
 	ASSERT_EQ(static_cast<uint8_t>(T::LIN_UPDATE_RESPONDER), icsneoc2_lin_msg_type_update_responder);
 	ASSERT_EQ(static_cast<uint8_t>(T::LIN_ERROR), icsneoc2_lin_msg_type_error);
+	ASSERT_EQ(static_cast<uint8_t>(T::LIN_WAKEUP_REQUEST), icsneoc2_lin_msg_type_wakeup_request);
 }
 
 TEST(icsneoc2, test_lin_flag_bitmask_values)
@@ -1901,6 +1903,7 @@ TEST(icsneoc2, test_lin_flag_bitmask_values)
 	ASSERT_EQ(ICSNEOC2_LIN_STATUS_HAS_UPDATED_RESPONDER_ONCE, 0x20);
 	ASSERT_EQ(ICSNEOC2_LIN_STATUS_BUS_RECOVERED, 0x40);
 	ASSERT_EQ(ICSNEOC2_LIN_STATUS_BREAK_ONLY, 0x80);
+	ASSERT_EQ(ICSNEOC2_LIN_STATUS_WAKEUP_REQUEST, 0x100);
 }
 
 TEST(icsneoc2, test_icsneoc2_eth_create)

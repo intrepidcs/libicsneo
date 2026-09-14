@@ -137,6 +137,7 @@ static std::vector<uint8_t> EncodeFromMessageLIN(std::shared_ptr<Frame> frame, c
 			linpacket->CoreMiniBitsLIN.TXResponder = 1;
 			break;
 		case LINMessage::Type::LIN_BREAK_ONLY:
+			linpacket->CoreMiniBitsLIN.TXCommander = 1;
 			linpacket->CoreMiniBitsLIN.BreakOnly = 1;
 			break;
 		default:

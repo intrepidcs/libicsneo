@@ -115,6 +115,18 @@ public:
 		}
 	}
 
+	const LIN_SETTINGS* getLINSettingsFor(Network net) const override {
+		auto cfg = getStructurePointer<radcomet3_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
+		switch(net.getNetID()) {
+			case Network::NetID::LIN_01:
+				return &(cfg->lin1);
+			default:
+				return nullptr;
+		}
+	}
+
 	const ETHERNET_SETTINGS2* getEthernetSettingsFor(Network net) const override {
 		auto cfg = getStructurePointer<radcomet3_settings_t>();
 		if(cfg == nullptr)

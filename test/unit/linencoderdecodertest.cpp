@@ -2,12 +2,14 @@
 #include "icsneo/communication/encoder.h"
 #include "icsneo/communication/packet/linpacket.h"
 #include "icsneo/communication/message/linmessage.h"
+#include "icsneo/communication/message/transmitmessage.h"
 #include "icsneo/communication/packetizer.h"
 #include "icsneo/core/ringbuffer.h"
 #include "icsneo/api/eventmanager.h"
 #include "gtest/gtest.h"
 #include <vector>
 #include <iostream>
+#include <cstring>
 
 using namespace icsneo;
 
@@ -54,6 +56,16 @@ protected:
 	 0x00, 0x83,
 	 0x00, 0x00,
 	 0xE2, 0x41};
+
+	// Break-only LIN 1: commander (0x80) | break-only (0x20) | len 3 => 0xa3
+	// ID 0x00 pID 0x80
+	std::vector<uint8_t> testControllerBreakOnly =
+	{0xaa, 0x0c,
+	 0x0d, 0x00,
+	 0x10, 0x00,
+	 0x00, 0xa3,
+	 0x00, 0x00,
+	 0x80, 0x41};
 
 	std::vector<uint8_t> recvBytes = 
 	{0xaa, 0x0c, 0x22, 0x00,
@@ -139,6 +151,29 @@ TEST_F(LINEncoderDecoderTest, PacketEncoderControllerHeaderTest) {
 	EXPECT_EQ(bytestream, testControllerHeaderOnly);
 }
 
+TEST_F(LINEncoderDecoderTest, PacketEncoderControllerBreakOnlyTest) {
+	std::vector<uint8_t> bytestream;
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x00u));
+	message->network = icsneo::Network::NetID::LIN_01;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_BREAK_ONLY;
+	message->isEnhancedChecksum = false;
+	packetEncoder->encode(*packetizer, bytestream, message);
+	EXPECT_EQ(bytestream, testControllerBreakOnly);
+}
+
+TEST_F(LINEncoderDecoderTest, TransmitMessageBreakOnlySetsCommander) {
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x00u));
+	message->network = icsneo::Network::NetID::LIN_01;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_BREAK_ONLY;
+	auto bytes = TransmitMessage::EncodeFromMessage(message, 1, report);
+	ASSERT_FALSE(bytes.empty());
+	ASSERT_GE(bytes.size(), sizeof(TransmitMessage));
+	auto* tx = reinterpret_cast<TransmitMessage*>(bytes.data());
+	auto* lin = reinterpret_cast<HardwareLINPacket*>(tx->commonHeader);
+	EXPECT_EQ(lin->CoreMiniBitsLIN.TXCommander, 1);
+	EXPECT_EQ(lin->CoreMiniBitsLIN.BreakOnly, 1);
+}
+
 TEST_F(LINEncoderDecoderTest, PacketEncoderControllerWithDataTest) {
 	std::vector<uint8_t> bytestream;
 	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x11u));
@@ -192,4 +227,46 @@ TEST_F(LINEncoderDecoderTest, PacketDecoderTest) {
 	EXPECT_EQ(msg2->isEnhancedChecksum, testMessage2->isEnhancedChecksum);
 	EXPECT_EQ(msg2->data, testMessage2->data);
 	EXPECT_EQ(msg2->checksum, testMessage2->checksum);
+}
+
+static std::shared_ptr<LINMessage> decodeLinPacket(const HardwareLINPacket& pkt) {
+	std::vector<uint8_t> bytes(sizeof(pkt));
+	std::memcpy(bytes.data(), &pkt, sizeof(pkt));
+	return std::dynamic_pointer_cast<LINMessage>(HardwareLINPacket::DecodeToMessage(bytes));
+}
+
+TEST_F(LINEncoderDecoderTest, WakeupPulseDecodeTest) {
+	HardwareLINPacket pkt{};
+	pkt.CoreMiniBitsLIN.WakeupRequest = 1;
+	auto msg = decodeLinPacket(pkt);
+	ASSERT_NE(msg, nullptr);
+	EXPECT_EQ(msg->linMsgType, LINMessage::Type::LIN_WAKEUP_REQUEST);
+	EXPECT_TRUE(msg->statusFlags.WakeupRequest);
+}
+
+TEST_F(LINEncoderDecoderTest, WakeupFlagOnUartBreakStaysError) {
+	HardwareLINPacket pkt{};
+	pkt.CoreMiniBitsLIN.WakeupRequest = 1;
+	pkt.CoreMiniBitsLIN.ErrRxOnlyBreak = 1;
+	auto msg = decodeLinPacket(pkt);
+	ASSERT_NE(msg, nullptr);
+	EXPECT_EQ(msg->linMsgType, LINMessage::Type::LIN_ERROR);
+	EXPECT_TRUE(msg->statusFlags.WakeupRequest);
+	EXPECT_TRUE(msg->errFlags.ErrRxBreakOnly);
+}
+
+TEST_F(LINEncoderDecoderTest, WakeupFlagOnCompleteFrameKeepsCommander) {
+	HardwareLINPacket pkt{};
+	pkt.CoreMiniBitsLIN.WakeupRequest = 1;
+	pkt.CoreMiniBitsLIN.TXCommander = 1;
+	pkt.CoreMiniBitsLIN.ID = 0x10;
+	pkt.CoreMiniBitsLIN.len = 3; // two responder bytes plus the checksum
+	pkt.data[0] = 0xaa;
+	pkt.data[1] = 0xbb;
+	pkt.data[2] = 0x99; // classic checksum, otherwise the frame decodes as LIN_ERROR
+	auto msg = decodeLinPacket(pkt);
+	ASSERT_NE(msg, nullptr);
+	EXPECT_EQ(msg->linMsgType, LINMessage::Type::LIN_COMMANDER_MSG);
+	EXPECT_TRUE(msg->statusFlags.WakeupRequest);
+	EXPECT_EQ(msg->ID, 0x10);
 }

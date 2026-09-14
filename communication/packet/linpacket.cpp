@@ -72,18 +72,30 @@ std::shared_ptr<Message> HardwareLINPacket::DecodeToMessage(const std::vector<ui
 		static_cast<bool>(packet->CoreMiniBitsLIN.UpdateResponderOnce),
 		static_cast<bool>(packet->CoreMiniBitsLIN.HasUpdatedResponderOnce),
 		static_cast<bool>(packet->CoreMiniBitsLIN.BusRecovered),
-		static_cast<bool>(packet->CoreMiniBitsLIN.BreakOnly)
+		static_cast<bool>(packet->CoreMiniBitsLIN.BreakOnly),
+		static_cast<bool>(packet->CoreMiniBitsLIN.WakeupRequest)
 	};
-	if(msg->statusFlags.TxCommander || msg->statusFlags.TxResponder)
+	// Wake type only for a wake-only pulse. A UART/LIN break or a complete
+	// frame may also carry WakeupRequest; those keep their existing type.
+	const bool wakeupPulse = msg->statusFlags.WakeupRequest &&
+		packet->CoreMiniBitsLIN.len == 0 &&
+		packet->CoreMiniBitsLIN.ID == 0 &&
+		!msg->statusFlags.BreakOnly &&
+		!msg->errFlags.ErrRxBreakOnly &&
+		!msg->errFlags.ErrRxBreakSyncOnly;
+	if(wakeupPulse)
+		msg->linMsgType = LINMessage::Type::LIN_WAKEUP_REQUEST;
+	else if(msg->statusFlags.TxCommander || msg->statusFlags.TxResponder)
 		msg->linMsgType = LINMessage::Type::LIN_COMMANDER_MSG;
 	else if(msg->statusFlags.BreakOnly)
 		msg->linMsgType = LINMessage::Type::LIN_BREAK_ONLY;
-	if( msg->errFlags.ErrRxBreakOnly     || msg->errFlags.ErrRxBreakSyncOnly ||
+	if( !wakeupPulse &&
+		(msg->errFlags.ErrRxBreakOnly     || msg->errFlags.ErrRxBreakSyncOnly ||
 		msg->errFlags.ErrTxRxMismatch    || msg->errFlags.ErrRxBreakNotZero  ||
 		msg->errFlags.ErrRxBreakTooShort || msg->errFlags.ErrRxSyncNot55     ||
 		msg->errFlags.ErrRxDataLenOver8  || msg->errFlags.ErrFrameSync       ||
 		msg->errFlags.ErrFrameMessageID  || msg->errFlags.ErrChecksumMatch   ||
-		msg->errFlags.ErrFrameResponderData )
+		msg->errFlags.ErrFrameResponderData) )
 		{ msg->linMsgType = LINMessage::Type::LIN_ERROR; }
 
 	msg->timestamp = packet->timestamp;
@@ -103,7 +115,7 @@ bool HardwareLINPacket::EncodeFromMessage(LINMessage& message, std::vector<uint8
 		}
 		case LINMessage::Type::LIN_BREAK_ONLY:
 		{
-			size |= 0x20u;
+			size |= 0x80u | 0x20u;
 			break;
 		}
 		case LINMessage::Type::NOT_SET:
