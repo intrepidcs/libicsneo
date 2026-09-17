@@ -57,7 +57,14 @@ install(TARGETS icsneopy LIBRARY DESTINATION icsneopy)
 
 find_program(STUBGEN_EXE stubgen)
 if(STUBGEN_EXE)
-    add_custom_command(TARGET icsneopy POST_BUILD COMMAND stubgen -v -p icsneopy -o .)
+    # Multi-config generators put the extension in Release/ or Debug/. Import
+    # that freshly built module, not a globally installed older icsneopy.
+    add_custom_command(TARGET icsneopy POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E rm -f "${CMAKE_CURRENT_BINARY_DIR}/icsneopy.pyi"
+        COMMAND "${STUBGEN_EXE}" -v -p icsneopy -o "${CMAKE_CURRENT_BINARY_DIR}"
+        WORKING_DIRECTORY "$<TARGET_FILE_DIR:icsneopy>"
+        VERBATIM
+    )
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/icsneopy.pyi py.typed DESTINATION icsneopy)
 endif()
 
