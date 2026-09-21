@@ -40,6 +40,9 @@ pybind11_add_module(icsneopy
     icsneopy/communication/message/livedatamessage.cpp
     icsneopy/communication/message/callback/messagecallback.cpp
     icsneopy/communication/message/filter/messagefilter.cpp
+    icsneopy/communication/message/filter/main51messagefilter.cpp
+    icsneopy/communication/message/main51message.cpp
+    icsneopy/communication/command.cpp
     icsneopy/core/macseccfg.cpp
     icsneopy/flexray/flexray.cpp
     icsneopy/disk/diskdriver.cpp
