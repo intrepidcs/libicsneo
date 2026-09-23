@@ -132,9 +132,8 @@ protected:
     virtual void setupExtensions() override {
 		std::vector<Network> flexRayControllers;
 		flexRayControllers.push_back(Network::NetID::FLEXRAY_01);
-		flexRayControllers.push_back(Network::NetID::FLEXRAY_01);
+		flexRayControllers.push_back(Network::NetID::FLEXRAY_02);
 		addExtension(std::make_shared<FlexRay::Extension>(*this, flexRayControllers));
-
 	}
 
     virtual std::vector<std::shared_ptr<FlexRay::Controller>> getFlexRayControllers() const override {
