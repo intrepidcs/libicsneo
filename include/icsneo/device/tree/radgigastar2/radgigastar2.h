@@ -217,6 +217,14 @@ public:
 		return chipVersions;
 	}
 protected:
+	const MACsecNetworkMap& getMACsecNetworkMap() const override {
+		static const MACsecNetworkMap networks = {
+			{Network::NetID::AE_01, 0},
+			{Network::NetID::AE_02, 1},
+		};
+		return networks;
+	}
+
 	RADGigastar2(neodevice_t neodevice, const driver_factory_t &makeDriver) : Device(neodevice)
 	{
 		initialize<RADGigastar2Settings, Disk::ExtExtractorDiskReadDriver, Disk::NeoMemoryDiskDriver>(makeDriver);

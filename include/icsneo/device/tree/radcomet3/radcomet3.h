@@ -77,6 +77,13 @@ public:
 	}
 
 protected:
+	const MACsecNetworkMap& getMACsecNetworkMap() const override {
+		static const MACsecNetworkMap networks = {
+			{Network::NetID::AE_01, 0},
+		};
+		return networks;
+	}
+
 	RADComet3(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
 		initialize<RADComet3Settings, Disk::NeoMemoryDiskDriver, Disk::NeoMemoryDiskDriver>(makeDriver);
 	}

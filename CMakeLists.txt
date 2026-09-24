@@ -570,6 +570,7 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/a2bencoderdecodertest.cpp
 		test/unit/mdioencoderdecodertest.cpp
 		test/unit/livedataencoderdecodertest.cpp
+		test/unit/macsectest.cpp
 		test/unit/ringbuffertest.cpp
 		test/unit/apperrordecodertest.cpp
 		test/unit/icsneoc2.cpp

@@ -231,16 +231,16 @@ MACsecConfig::MACsecConfig(const DeviceType& deviceType) : type(deviceType) {
 		case icsneo::DeviceType::Enum::RADMoon3:
 		case icsneo::DeviceType::Enum::RADEpsilon:
 		case icsneo::DeviceType::Enum::RADGigastar2:
+		case icsneo::DeviceType::Enum::RADComet2:
+		case icsneo::DeviceType::Enum::RADComet3:
 			maxSecY = 2;
 			maxRule = 2;
 			maxSa = 4;
-			binIndex = 0;
 			break;
 		default:
 			maxSecY = 0;
 			maxSa = 0;
 			maxRule = 0;
-			binIndex = 0;
 			ReportEvent(APIEvent::Type::MACsecNotSupported, APIEvent::Severity::Error);
 			return;
 	}
@@ -513,10 +513,6 @@ void MACsecConfig::clear() {
 
 MACsecConfig::operator bool() const {
 	return (maxSa != 0) || (maxSecY != 0) || (maxRule != 0);
-}
-
-uint16_t MACsecConfig::getBinIndex() const {
-	return binIndex;
 }
 
 DeviceType MACsecConfig::getType() const {

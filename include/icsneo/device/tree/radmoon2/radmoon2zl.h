@@ -38,6 +38,13 @@ public:
 			.add<ReconnectPhase>();
 	}
 protected:
+	const MACsecNetworkMap& getMACsecNetworkMap() const override {
+		static const MACsecNetworkMap networks = {
+			{Network::NetID::AE_01, 0},
+		};
+		return networks;
+	}
+
 	RADMoon2ZL(neodevice_t neodevice, const driver_factory_t& makeDriver) : RADMoon2Base(neodevice) {
 		initialize<RADMoon2Settings>(makeDriver);
 	}

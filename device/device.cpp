@@ -3761,7 +3761,15 @@ std::optional<GPTPStatus> Device::getGPTPStatus(std::chrono::milliseconds timeou
 	return *retMsg;
 }
 
-bool Device::writeMACsecConfig(const MACsecConfig& cfg) {
+std::vector<Network> Device::getMACsecNetworks() const {
+	std::vector<Network> networks;
+	for(const auto& network : getMACsecNetworkMap()) {
+		networks.emplace_back(network.first);
+	}
+	return networks;
+}
+
+bool Device::writeMACsecConfig(const MACsecConfig& cfg, Network::NetID network) {
 	if(!cfg) {
 		report(APIEvent::Type::MACsecNotSupported, APIEvent::Severity::Error);
 		return false;
@@ -3772,8 +3780,15 @@ bool Device::writeMACsecConfig(const MACsecConfig& cfg) {
 		return false;
 	}
 
+	const auto& networks = getMACsecNetworkMap();
+	const auto binaryIndex = networks.find(network);
+	if(binaryIndex == networks.end()) {
+		report(APIEvent::Type::MACsecNotSupported, APIEvent::Severity::Error);
+		return false;
+	}
+
 	std::vector<uint8_t> raw = cfg.serialize();
-	return writeBinaryFile(raw, cfg.getBinIndex());
+	return writeBinaryFile(raw, binaryIndex->second);
 }
 
 bool Device::enableNetworkCommunication(bool enable, uint32_t timeout) {

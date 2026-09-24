@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <optional>
 #include <unordered_map>
+#include <map>
 #include <set>
 #include <unordered_set>
 #include <chrono>
@@ -897,7 +898,8 @@ public:
 	std::optional<GPTPStatus> getGPTPStatus(std::chrono::milliseconds timeout = std::chrono::milliseconds(100));
 
 	/* MACsec support */
-	virtual bool writeMACsecConfig(const MACsecConfig& cfg);
+	std::vector<Network> getMACsecNetworks() const;
+	bool writeMACsecConfig(const MACsecConfig& cfg, Network::NetID network);
 
 	std::shared_ptr<DeviceExtension> getExtension(const std::string& name) const;
 	
@@ -917,6 +919,13 @@ public:
 	bool iso15765SetupRxFlowControl(const Network& network, const Iso15765MessageArgs& msg);
 
 protected:
+	using MACsecNetworkMap = std::map<Network::NetID, uint16_t>;
+
+	virtual const MACsecNetworkMap& getMACsecNetworkMap() const {
+		static const MACsecNetworkMap networks;
+		return networks;
+	}
+
 	bool online = false;
 	int messagePollingCallbackID = 0;
 	int internalHandlerCallbackID = 0;

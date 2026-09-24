@@ -77,7 +77,7 @@ int main(int, char**) {
 	cfg.setTxEnable(true);
 
 	// Write config to the device
-	if(!device->writeMACsecConfig(cfg)) {
+	if(!device->writeMACsecConfig(cfg, icsneo::Network::NetID::AE_01)) {
 		std::cout << "Failed to write MACsec config" << std::endl;
 		std::cout << icsneo::GetLastError() << std::endl;
 		return -1;

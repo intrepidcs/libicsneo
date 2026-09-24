@@ -150,7 +150,6 @@ private:
 	uint8_t maxSecY;
 	uint8_t maxSa;
 	uint8_t maxRule;
-	uint16_t binIndex;
 	DeviceType type;
 
 	std::vector<MACsecRxRule> rxRule;
@@ -205,7 +204,6 @@ public:
 	void clear();
 	std::vector<uint8_t> serialize() const;
 	operator bool() const;
-	uint16_t getBinIndex() const;
 	DeviceType getType() const;
 	uint8_t getMaxNumRule() const;
 	uint8_t getMaxNumSecY() const;
