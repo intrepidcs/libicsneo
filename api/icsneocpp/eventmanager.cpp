@@ -65,7 +65,6 @@ void EventManager::add(APIEvent event) {
 				std::lock_guard<std::mutex> eventsLock(eventsMutex);
 				addEventInternal(event);
 			} // free the lock so that callbacks may modify events
-			runCallbacks(event);
 		} else {
 			std::lock_guard<std::mutex> errorsLock(errorsMutex);
 			lastUserErrors[std::this_thread::get_id()] = event;
@@ -75,8 +74,8 @@ void EventManager::add(APIEvent event) {
 			std::lock_guard<std::mutex> eventsLock(eventsMutex);
 			addEventInternal(event);
 		} // free the lock so that callbacks may modify events
-		runCallbacks(event);
 	}
+	runCallbacks(event);
 }
 
 void EventManager::addEventInternal(APIEvent event) {
