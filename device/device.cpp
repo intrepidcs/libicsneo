@@ -2053,7 +2053,12 @@ std::optional<EthPhyMessage> Device::sendEthPhyMsg(const EthPhyMessage& message,
 	}
 
 	std::vector<uint8_t> bytes;
-	HardwareEthernetPhyRegisterPacket::EncodeFromMessage(message, bytes, report);
+	if(timeout.count() <= 0) {
+		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	if(!HardwareEthernetPhyRegisterPacket::EncodeFromMessage(message, bytes, report))
+		return std::nullopt;
 	std::shared_ptr<Message> response = com->waitForMessageSync(
 		[this, bytes](){ return com->sendCommand(Command::PHYControlRegisters, bytes); },
 		std::make_shared<MessageFilter>(Message::Type::EthernetPhyRegister), timeout);

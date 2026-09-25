@@ -17,13 +17,13 @@ namespace icsneo {
 #endif
 
 struct PhyMessage {
-	bool Enabled;
-	bool WriteEnable;
-	bool Clause45Enable;
-	uint8_t BusIndex;
-	uint8_t Version;
+	bool Enabled = false;
+	bool WriteEnable = false;
+	bool Clause45Enable = false;
+	uint8_t BusIndex = 0;
+	uint8_t Version = PhyPacketVersion;
 	union {
-		Clause22Message Clause22;
+		Clause22Message Clause22{};
 		Clause45Message Clause45;
 	};
 };

@@ -65,7 +65,7 @@ struct PhyRegisterPacket_t {
 #pragma pack(pop)
 
 static constexpr size_t MaxPhyEntries = 128u;
-static constexpr size_t MaxBytesPhyEntries = MaxPhyEntries * sizeof(PhyRegisterHeader_t);
+static constexpr size_t MaxBytesPhyEntries = MaxPhyEntries * sizeof(PhyRegisterPacket_t);
 static constexpr uint8_t PhyPacketVersion = 1u;
 static constexpr uint8_t FiveBits = 0x1Fu;
 

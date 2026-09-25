@@ -20,7 +20,7 @@ std::shared_ptr<EthPhyMessage> HardwareEthernetPhyRegisterPacket::DecodeToMessag
 	if(
 		(PhyPacketVersion == pHeader->version) &&
 		(sizeof(PhyRegisterPacket_t) == pHeader->entryBytes) &&
-		(numEntries <= MaxPhyEntries) &&
+		(numEntries > 0 && numEntries <= MaxPhyEntries) &&
 		((bytestream.size() - sizeof(PhyRegisterHeader_t))
 			== (sizeof(PhyRegisterPacket_t) * numEntries))
 	)
@@ -30,6 +30,10 @@ std::shared_ptr<EthPhyMessage> HardwareEthernetPhyRegisterPacket::DecodeToMessag
 		for(size_t entryIdx{0}; entryIdx < numEntries; ++entryIdx)
 		{
 			const PhyRegisterPacket_t* pEntry = (pFirstEntry + entryIdx);
+			if(pEntry->version != PhyPacketVersion) {
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return nullptr;
+			}
 			auto phyMessage = std::make_shared<PhyMessage>();
 			phyMessage->Enabled = (pEntry->Enabled != 0u);
 			phyMessage->WriteEnable = (pEntry->WriteEnable != 0u);
@@ -42,6 +46,10 @@ std::shared_ptr<EthPhyMessage> HardwareEthernetPhyRegisterPacket::DecodeToMessag
 				phyMessage->Clause22 = pEntry->clause22;
 			msg->messages.push_back(phyMessage);
 		}
+	}
+	else {
+		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+		return nullptr;
 	}
 	return msg;
 }
@@ -59,7 +67,20 @@ bool HardwareEthernetPhyRegisterPacket::EncodeFromMessage(const EthPhyMessage& m
 		report(APIEvent::Type::MessageMaxLengthExceeded, APIEvent::Severity::Error);
 		return false;
 	}
-	auto byteSize = (messageCount * sizeof(PhyRegisterPacket_t)) + sizeof(PhyRegisterHeader_t);
+	// Validate every entry before touching the caller's output or submitting a command.
+	for(const auto& entry : message.messages) {
+		if(!entry) {
+			report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
+			return false;
+		}
+		if(entry->BusIndex > 15 || entry->Version != PhyPacketVersion ||
+			(entry->Clause45Enable ? (entry->Clause45.port > FiveBits || entry->Clause45.device > FiveBits) :
+			(entry->Clause22.phyAddr > FiveBits || entry->Clause22.regAddr > FiveBits))) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return false;
+		}
+	}
+	auto byteSize = bytestream.size() + (messageCount * sizeof(PhyRegisterPacket_t)) + sizeof(PhyRegisterHeader_t);
 	bytestream.reserve(byteSize);
 	bytestream.push_back(static_cast<uint8_t>(messageCount & 0xFF));
 	bytestream.push_back(static_cast<uint8_t>((messageCount >> 8) & 0xFF));
@@ -67,7 +88,7 @@ bool HardwareEthernetPhyRegisterPacket::EncodeFromMessage(const EthPhyMessage& m
 	bytestream.push_back(static_cast<uint8_t>(sizeof(PhyRegisterPacket_t)));
 	for(auto& phyMessage : message.messages)
 	{
-		PhyRegisterPacket_t tempPacket;
+		PhyRegisterPacket_t tempPacket{};
 		tempPacket.Enabled = phyMessage->Enabled ? 0x1u : 0x0u;
 		tempPacket.WriteEnable = phyMessage->WriteEnable ? 0x1u : 0x0u;
 		tempPacket.BusIndex = (phyMessage->BusIndex & 0xF);
