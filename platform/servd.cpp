@@ -6,9 +6,21 @@
 
 using namespace icsneo;
 
-#define SERVD_VERSION 2
+#define SERVD_VERSION 3
 
-static const Address SERVD_ADDRESS = Address("127.0.0.1", 26741);
+static const Address SERVD_ADDRESS = [] {
+	#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable : 4996)
+	#endif
+	const auto envip = std::getenv("LIBICSNEO_SERVD_IP");
+	const auto envport = std::getenv("LIBICSNEO_SERVD_PORT");
+	#ifdef _MSC_VER
+	#pragma warning(pop)
+	#endif
+	return Address(envip ? envip : "127.0.0.1", envport ? static_cast<uint16_t>(std::stoi(envport)) : 26741);
+}();
+
 static const std::string SERVD_VERSION_STR = std::to_string(SERVD_VERSION);
 
 bool Servd::Enabled() {
@@ -56,8 +68,13 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 		return;
 	}
 
-	if(std::stoll(response) < SERVD_VERSION) {
-		EventManager::GetInstance().add(APIEvent::Type::ServdOutdatedError, APIEvent::Severity::Error);
+	try {
+		if(std::stoll(response) < SERVD_VERSION) {
+			EventManager::GetInstance().add(APIEvent::Type::ServdOutdatedError, APIEvent::Severity::Error);
+			return;
+		}
+	} catch (const std::exception&) {
+		EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
 		return;
 	}
 
@@ -70,22 +87,25 @@ void Servd::Find(std::vector<FoundDevice>& found) {
 	const auto lines = split(response, '\n');
 	for(auto&& line : lines) {
 		const auto cols = split(line, ' ');
-		if(cols.size() < 3) {
+		if(cols.size() < 2) {
 			if(!line.empty()) {
 				EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
 			}
 			continue;
 		}
 		const auto& serial = cols[0];
-		const auto& ip = cols[1];
+		if(serial.empty() || serial.size() >= sizeof(FoundDevice::serial)) {
+			EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
+			continue;
+		}
 		uint16_t port = 0;
 		try {
-			port = static_cast<uint16_t>(std::stoi(cols[2]));
+			port = static_cast<uint16_t>(std::stoi(cols[1]));
 		} catch (const std::exception&) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
 			continue;
 		}
-		Address address(ip.c_str(), port);
+		Address address(SERVD_ADDRESS.ip().c_str(), port);
 		auto& newFound = found.emplace_back();
 		std::copy(serial.begin(), serial.end(), newFound.serial);
 		newFound.makeDriver = [=](device_eventhandler_t err, neodevice_t& forDevice) {
@@ -130,16 +150,19 @@ bool Servd::open() {
 		EventManager::GetInstance().add(APIEvent::Type::SyscallError, APIEvent::Severity::Error);
 		return false;
 	}
-	const auto& ip = tokens[0];
 	uint16_t port = 0;
 	try {
-		port = static_cast<uint16_t>(std::stoi(tokens[1]));
+		port = static_cast<uint16_t>(std::stoi(tokens[0]));
 	} catch (const std::exception&) {
 		EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
 		return false;
 	}
-	Address address(ip.c_str(), port);
-	dataSocket->connect(address);
+	token = tokens[1];
+	Address address(SERVD_ADDRESS.ip().c_str(), port);
+	if(!dataSocket->connect(address)) {
+		EventManager::GetInstance().add(APIEvent::Type::SyscallError, APIEvent::Severity::Error);
+		return false;
+	}
 	readThread = std::thread(&Servd::read, this);
 	writeThread = std::thread(&Servd::write, this);
 	opened = true;
@@ -159,15 +182,14 @@ bool Servd::close() {
 		writeThread.join();
 	}
 	if(isOpen()) {
-		Address localAddress;
-		dataSocket->address(localAddress);
-		const std::string request = SERVD_VERSION_STR + " close " + localAddress.ip() + " " + std::to_string(localAddress.port());
+		const std::string request = SERVD_VERSION_STR + " close " + token;
 		std::string response;
 		response.resize(1);
 		if(!messageSocket.transceive(request, response, std::chrono::milliseconds(5000))) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
 			return false;
 		}
+		token.clear();
 		dataSocket.reset();
 	}
 	opened = false;
@@ -207,7 +229,12 @@ bool Servd::enableCommunication(bool enable, bool& sendMsg) {
 			EventManager::GetInstance().add(APIEvent::Type::ServdTransceiveError, APIEvent::Severity::Error);
 			return false;
 		}
-		com = response.empty() ? 0 : std::stoll(response);
+		try {
+			com = response.empty() ? 0 : std::stoll(response);
+		} catch (const std::exception&) {
+			EventManager::GetInstance().add(APIEvent::Type::ServdInvalidResponseError, APIEvent::Severity::Error);
+			return false;
+		}
 	}
 	sendMsg = false;
 	if(enable) {

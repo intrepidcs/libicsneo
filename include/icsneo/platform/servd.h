@@ -35,6 +35,7 @@ private:
 	Socket messageSocket;
 	bool opened = false;
 	bool comEnabled = false;
+	std::string token;
 	std::unique_ptr<Socket> dataSocket;
 };
 
