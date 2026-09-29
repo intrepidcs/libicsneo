@@ -39,6 +39,7 @@ std::shared_ptr<EthPhyMessage> HardwareEthernetPhyRegisterPacket::DecodeToMessag
 			phyMessage->WriteEnable = (pEntry->WriteEnable != 0u);
 			phyMessage->Clause45Enable = (pEntry->Clause45Enable != 0u);
 			phyMessage->BusIndex = static_cast<uint8_t>(pEntry->BusIndex);
+			phyMessage->Status = static_cast<uint8_t>(pEntry->status);
 			phyMessage->Version = static_cast<uint8_t>(pEntry->version);
 			if(phyMessage->Clause45Enable)
 				phyMessage->Clause45 = pEntry->clause45;

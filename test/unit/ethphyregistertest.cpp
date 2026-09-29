@@ -17,13 +17,21 @@ std::vector<uint8_t> encode(const EthPhyMessage& msg) {
 	return bytes;
 }
 }
-TEST(EthPhyRegister, KnownWireBytes) {
+TEST(EthPhyRegister, KnownWireBytesAndStatus) {
 	for(bool clause45 : {false, true}) {
 		auto msg = request(clause45, true);
+		EXPECT_FALSE(msg.messages[0]->Status.has_value());
 		auto bytes = encode(msg);
 		EXPECT_EQ(bytes, (std::vector<uint8_t>{1, 0, 1, 8, static_cast<uint8_t>(clause45 ? 7 : 3), 0x1f,
 			31, static_cast<uint8_t>(clause45 ? 31 : 255), static_cast<uint8_t>(clause45 ? 255 : 31),
 			static_cast<uint8_t>(clause45 ? 255 : 0), 0x34, 0x12}));
+		for(uint8_t status = 0; status < 8; ++status) {
+			bytes[4] = static_cast<uint8_t>((clause45 ? 7 : 3) | (status << 3));
+			auto decoded = HardwareEthernetPhyRegisterPacket::DecodeToMessage(bytes, ignore);
+			ASSERT_NE(decoded, nullptr);
+			EXPECT_EQ(decoded->messages[0]->Status, status);
+			EXPECT_EQ(encode(*decoded)[4], clause45 ? 7 : 3); // never retransmit response status
+		}
 	}
 }
 TEST(EthPhyRegister, InvalidRequestsLeaveOutputUntouched) {

@@ -8,6 +8,7 @@
 #include "icsneo/communication/packet.h"
 #include <vector>
 #include <memory>
+#include <optional>
 
 namespace icsneo {
 
@@ -22,6 +23,9 @@ struct PhyMessage {
 	bool Clause45Enable = false;
 	uint8_t BusIndex = 0;
 	uint8_t Version = PhyPacketVersion;
+	// Unset on locally constructed messages; every decoded response sets the raw wire status.
+	// Ignored when sending. A value does not establish firmware error coverage.
+	std::optional<uint8_t> Status;
 	union {
 		Clause22Message Clause22{};
 		Clause45Message Clause45;
