@@ -92,6 +92,7 @@ void init_event(pybind11::module_& m) {
 		.value("SettingNotAvaiableDevice", APIEvent::Type::SettingNotAvaiableDevice)
 		.value("DiskFormatNotSupported", APIEvent::Type::DiskFormatNotSupported)
 		.value("DiskFormatInvalidCount", APIEvent::Type::DiskFormatInvalidCount)
+		.value("TC10RequestFailed", APIEvent::Type::TC10RequestFailed)
 		.value("FailedToRead", APIEvent::Type::FailedToRead)
 		.value("FailedToWrite", APIEvent::Type::FailedToWrite)
 		.value("DriverFailedToOpen", APIEvent::Type::DriverFailedToOpen)

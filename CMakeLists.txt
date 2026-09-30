@@ -575,6 +575,7 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/apperrordecodertest.cpp
 		test/unit/icsneoc2.cpp
 		test/unit/ethphyregistertest.cpp
+		test/unit/tc10test.cpp
 		test/unit/windowsstrings.cpp
 		test/unit/periodictest.cpp
 	)

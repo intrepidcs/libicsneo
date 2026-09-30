@@ -3659,7 +3659,7 @@ bool Device::requestTC10Wake(Network::NetID network) {
 	*(Network::NetID*)args.data() = network;
 	auto msg = com->waitForMessageSync([&] {
 		return com->sendCommand(ExtendedCommand::RequestTC10Wake, args);
-	}, std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), std::chrono::milliseconds(1000));
+	}, std::make_shared<ExtendedResponseFilter>(ExtendedCommand::RequestTC10Wake), std::chrono::milliseconds(1000));
 
 	if(!msg) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
@@ -3672,7 +3672,11 @@ bool Device::requestTC10Wake(Network::NetID network) {
 		return false;
 	}
 
-	return resp->response == ExtendedResponse::OK;
+	if(resp->response != ExtendedResponse::OK) {
+		report(APIEvent::Type::TC10RequestFailed, APIEvent::Severity::Error);
+		return false;
+	}
+	return true;
 }
 
 bool Device::requestTC10Sleep(Network::NetID network) {
@@ -3684,7 +3688,7 @@ bool Device::requestTC10Sleep(Network::NetID network) {
 	*(Network::NetID*)args.data() = network;
 	auto msg = com->waitForMessageSync([&] {
 		return com->sendCommand(ExtendedCommand::RequestTC10Sleep, args);
-	}, std::make_shared<MessageFilter>(Message::Type::ExtendedResponse), std::chrono::milliseconds(1000));
+	}, std::make_shared<ExtendedResponseFilter>(ExtendedCommand::RequestTC10Sleep), std::chrono::milliseconds(1000));
 
 	if(!msg) {
 		report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
@@ -3697,7 +3701,11 @@ bool Device::requestTC10Sleep(Network::NetID network) {
 		return false;
 	}
 
-	return typed->response == ExtendedResponse::OK;
+	if(typed->response != ExtendedResponse::OK) {
+		report(APIEvent::Type::TC10RequestFailed, APIEvent::Severity::Error);
+		return false;
+	}
+	return true;
 }
 
 bool Device::reboot(bool safe) {

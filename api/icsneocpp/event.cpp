@@ -117,6 +117,7 @@ static constexpr const char* GPTP_NOT_SUPPORTED = "GPTP clock synchronization is
 static constexpr const char* SETTING_NOT_AVAILABLE = "Requested a setting that is not available on this device";
 static constexpr const char* DISK_FORMAT_NOT_SUPPORTED = "Disk formatting is not supported on this device.";
 static constexpr const char* DISK_FORMAT_INVALID_COUNT = "Disk format config disk count is mismatched with device disk count.";
+static constexpr const char* TC10_REQUEST_FAILED = "The device rejected the TC10 request.";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -381,6 +382,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return DISK_FORMAT_NOT_SUPPORTED;
 		case Type::DiskFormatInvalidCount:
 			return DISK_FORMAT_INVALID_COUNT;
+		case Type::TC10RequestFailed:
+			return TC10_REQUEST_FAILED;
 
 		// VSA
 		case Type::VSABufferCorrupted:
