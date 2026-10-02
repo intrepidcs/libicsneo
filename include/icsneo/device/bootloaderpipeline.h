@@ -91,9 +91,10 @@ struct FlashPhase : public BootloaderPhase {
 	bool authenticate = true;
 	bool encrypt = true;
 	bool checkOutOfDate = true;
+	uint8_t slot = UINT8_MAX;
 
-	FlashPhase(ChipID chip, BootloaderCommunication comm, bool authenticate = true, bool encrypt = true, bool checkOutOfDate = true) 
-		: chip(chip), comm(comm), authenticate(authenticate), encrypt(encrypt), checkOutOfDate(checkOutOfDate) {}
+	FlashPhase(ChipID chip, BootloaderCommunication comm, bool authenticate = true, bool encrypt = true, bool checkOutOfDate = true, uint8_t slot = UINT8_MAX) 
+		: chip(chip), comm(comm), authenticate(authenticate), encrypt(encrypt), checkOutOfDate(checkOutOfDate), slot(slot) {}
 };
 
 enum class BootloaderSetting {

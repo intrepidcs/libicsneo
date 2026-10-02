@@ -171,9 +171,32 @@ public:
 		}
 
 		BootloaderPipeline pipeline;
+		auto compVersions = getComponentVersions();
 		for(size_t i = 0; i < chipVersions.size(); i++) {
 			const auto& version = chipVersions[i];
-			pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip, i == 0);
+			auto it = compVersions.begin();
+			std::vector<ComponentVersion> sameIdComponents;
+			while(it != compVersions.end()) {
+				it = std::find_if(it, compVersions.end(), [&version](const auto& component) { 
+					return (ChipID)component.identifier == version.id; 
+				});
+				if (it != compVersions.end()) {
+					sameIdComponents.push_back(*it);
+					it++;
+				}
+			}
+			if (sameIdComponents.size() > 1) {
+				std::vector<ComponentVersion> tempCompVersions;
+				for (const auto& component : compVersions) {
+					if ((ChipID)component.identifier != version.id || component.expansionSlot != sameIdComponents[0].expansionSlot) {
+						tempCompVersions.push_back(component);
+					}
+				}
+				compVersions = std::move(tempCompVersions);
+			}
+			if (!sameIdComponents.empty()) {
+				pipeline.add<FlashPhase>(version.id, BootloaderCommunication::RADMultiChip, i == 0, true, true, sameIdComponents[0].expansionSlot);
+			}
 		}
 		pipeline.add<EnterApplicationPhase>(mainChipID);
 		pipeline.add<WaitPhase>(std::chrono::milliseconds(3000));
