@@ -99,9 +99,13 @@ void EventManager::addEventInternal(APIEvent event) {
 }
 
 void EventManager::runCallbacks(APIEvent event) {
-	std::lock_guard<std::mutex> lk(callbacksMutex);
-	for(auto& i : callbacks)
-		i.second.callIfMatch(std::make_shared<APIEvent>(event));
+    std::map<int, icsneo::EventCallback> tempCallbacks;
+    {
+        std::lock_guard<std::mutex> lk(callbacksMutex);
+        tempCallbacks = callbacks;
+    }
+    for(auto& i : tempCallbacks)
+        i.second.callIfMatch(std::make_shared<APIEvent>(event));
 }
 
 void EventManager::setEventLimit(size_t newLimit) {
