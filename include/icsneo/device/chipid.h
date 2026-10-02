@@ -138,7 +138,7 @@ enum class ChipID : icsneoc2_chip_id_t {
 	RADMOONT1S_ZCHIP = icsneoc2_chip_id_radmoont1s_zchip,
 	RADGigastar2_ZYNQ = icsneoc2_chip_id_radgigastar2_zynq,
 	SFPModule_ent11100_MCHIP = icsneoc2_chip_id_sfpmodule_ent11100_mchip,
-	RADGemini_MCHIP = icsneoc2_chip_id_radgemini_mchip,
+	RADArgos_MCHIP = icsneoc2_chip_id_radargos_mchip,
 	Invalid = icsneoc2_chip_id_invalid
 };
 

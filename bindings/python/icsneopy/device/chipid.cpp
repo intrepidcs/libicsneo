@@ -134,7 +134,7 @@ void init_chipid(pybind11::module_& m) {
 		.value("SFPModule_lan8670_MCHIP", ChipID::SFPModule_lan8670_MCHIP)
 		.value("RADGigastar2_ZYNQ", ChipID::RADGigastar2_ZYNQ)
 		.value("SFPModule_ent11100_MCHIP", ChipID::SFPModule_ent11100_MCHIP)
-		.value("RADGemini_MCHIP", ChipID::RADGemini_MCHIP)
+		.value("RADArgos_MCHIP", ChipID::RADArgos_MCHIP)
 		.value("Invalid", ChipID::Invalid)
 		.finalize();
 }

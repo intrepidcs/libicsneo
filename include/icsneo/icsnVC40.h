@@ -280,7 +280,7 @@ typedef unsigned __int64 uint64_t;
 #define NEODEVICE_GIGASTAR2 (0x00000029)
 #define NEODEVICE_FIRE3_T1S_LIN (0x0000002A)
 #define NEODEVICE_FIRE3_T1S_SENT (0x0000002B)
-#define NEODEVICE_RADGEMINI (0x0000002C)
+#define NEODEVICE_RADARGOS (0x0000002C)
 
 #define NEODEVICE_RED_DEPRECATED (0x00000040)
 #define NEODEVICE_ECU_DEPRECATED (0x00000080)
@@ -975,7 +975,7 @@ typedef union _stChipVersions
 	{
 		uint8_t mchip_major;
 		uint8_t mchip_minor;
-	} radgemini_versions;
+	} radargos_versions;
 
 	struct
 	{
@@ -2794,7 +2794,7 @@ typedef struct _SRADMoon3Settings
 
 #define SRADMoon3Settings_SIZE 68
 
-typedef struct _SRADGeminiSettings
+typedef struct _SRADArgosSettings
 {
 	uint16_t perf_en; // 2
 
@@ -2815,9 +2815,9 @@ typedef struct _SRADGeminiSettings
 		uint16_t enableLatencyTest : 1;
 		uint16_t reserved : 15;
 	} flags; // 2
-} SRADGeminiSettings;
+} SRADArgosSettings;
 
-#define SRADGeminiSettings_SIZE 86
+#define SRADArgosSettings_SIZE 86
 
 typedef struct _SRADGigastarSettings
 {
@@ -4450,7 +4450,7 @@ typedef struct _GLOBAL_SETTINGS
 		SRADEpsilonSettings epsilon;
 		SRADBMSSettings rad_bms;
 		SRADMoon3Settings radmoon3;
-		SRADGeminiSettings radgemini;
+		SRADArgosSettings radargos;
 		SRADCometSettings radcomet;
 		SRADComet3Settings radcomet3;
 		SRADGigastar2Settings radgigastar2;
@@ -4509,7 +4509,7 @@ typedef enum _EDeviceSettingsType
 	DeviceRADGalaxy2SettingsType,
 	DeviceRADGigastar2SettingsType,
 	DeviceRADMoonT1SSettingsType,
-	DeviceRADGeminiSettingsType,
+	DeviceRADArgosSettingsType,
 	DeviceFire3T1sLinSettingsType,
 	// add new settings type here
 	// Also add to map inside cicsneoVI::Init()
@@ -4545,7 +4545,7 @@ typedef struct _SDeviceSettings
 		SRADEpsilonSettings epsilon;
 		SRADBMSSettings rad_bms;
 		SRADMoon3Settings radmoon3;
-		SRADGeminiSettings radgemini;
+		SRADArgosSettings radargos;
 		SFire3FlexraySettings fire3Flexray;
 		SFire3T1sLinSettings fire3t1slin;
 		SRADCometSettings radcomet;
@@ -5430,7 +5430,7 @@ CHECK_STRUCT_SIZE(SRADEpsilonSettings);
 CHECK_STRUCT_SIZE(RAD_GPTP_SETTINGS);
 CHECK_STRUCT_SIZE(SRADBMSSettings);
 CHECK_STRUCT_SIZE(SRADMoon3Settings);
-CHECK_STRUCT_SIZE(SRADGeminiSettings);
+CHECK_STRUCT_SIZE(SRADArgosSettings);
 CHECK_STRUCT_SIZE(SFire3FlexraySettings);
 CHECK_STRUCT_SIZE(SFire3T1sLinSettings);
 CHECK_STRUCT_SIZE(CANHubSettings);

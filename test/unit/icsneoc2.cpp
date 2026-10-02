@@ -480,7 +480,7 @@ TEST(icsneoc2, test_icsneoc2_devicetype_t)
 	ASSERT_EQ(icsneoc2_devicetype_rad_gigastar2, 0x00000029);
 	ASSERT_EQ(icsneoc2_devicetype_fire3_t1s_lin, 0x0000002a);
 	ASSERT_EQ(icsneoc2_devicetype_fire3_t1s_sent, 0x0000002b);
-	ASSERT_EQ(icsneoc2_devicetype_rad_gemini, 0x0000002c);
+	ASSERT_EQ(icsneoc2_devicetype_rad_argos, 0x0000002c);
 	ASSERT_EQ(icsneoc2_devicetype_red, 0x00000040);
 	ASSERT_EQ(icsneoc2_devicetype_ecu, 0x00000080);
 	ASSERT_EQ(icsneoc2_devicetype_ievb, 0x00000100);
@@ -543,7 +543,7 @@ TEST(icsneoc2, test_devicetype_enum_alignment)
 	ASSERT_EQ(icsneo::DeviceType::RADGigastar2, icsneoc2_devicetype_rad_gigastar2);
 	ASSERT_EQ(icsneo::DeviceType::FIRE3_T1S_LIN, icsneoc2_devicetype_fire3_t1s_lin);
 	ASSERT_EQ(icsneo::DeviceType::FIRE3_T1S_SENT, icsneoc2_devicetype_fire3_t1s_sent);
-	ASSERT_EQ(icsneo::DeviceType::RADGemini, icsneoc2_devicetype_rad_gemini);
+	ASSERT_EQ(icsneo::DeviceType::RADArgos, icsneoc2_devicetype_rad_argos);
 	ASSERT_EQ(icsneo::DeviceType::RED, icsneoc2_devicetype_red);
 	ASSERT_EQ(icsneo::DeviceType::ECU, icsneoc2_devicetype_ecu);
 	ASSERT_EQ(icsneo::DeviceType::IEVB, icsneoc2_devicetype_ievb);
@@ -947,7 +947,7 @@ TEST(icsneoc2, test_icsneoc2_chip_id_t)
 	ASSERT_EQ(icsneoc2_chip_id_radmoont1s_zchip, 130);
 	ASSERT_EQ(icsneoc2_chip_id_radgigastar2_zynq, 131);
 	ASSERT_EQ(icsneoc2_chip_id_sfpmodule_ent11100_mchip, 132);
-	ASSERT_EQ(icsneoc2_chip_id_radgemini_mchip, 135);
+	ASSERT_EQ(icsneoc2_chip_id_radargos_mchip, 135);
 	ASSERT_EQ(icsneoc2_chip_id_maxsize, 136);
 	
 	ASSERT_EQ(icsneoc2_chip_id_invalid, 255);
@@ -1084,7 +1084,7 @@ TEST(icsneoc2, test_chip_id_enum_alignment)
 	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADMOONT1S_ZCHIP), icsneoc2_chip_id_radmoont1s_zchip);
 	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGigastar2_ZYNQ), icsneoc2_chip_id_radgigastar2_zynq);
 	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::SFPModule_ent11100_MCHIP), icsneoc2_chip_id_sfpmodule_ent11100_mchip);
-	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGemini_MCHIP), icsneoc2_chip_id_radgemini_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADArgos_MCHIP), icsneoc2_chip_id_radargos_mchip);
 	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::Invalid), icsneoc2_chip_id_invalid);
 }
 
@@ -1113,7 +1113,7 @@ TEST(icsneoc2, test_icsneoc2_chip_versions_props_get)
 {
 	// Build an in-memory list of two chip_versions nodes
 	icsneoc2_chip_versions_t second{};
-	second.version_report.id = icsneo::ChipID::RADGemini_MCHIP;
+	second.version_report.id = icsneo::ChipID::RADArgos_MCHIP;
 	second.version_report.name = "second";
 	second.version_report.major = 9;
 	second.version_report.minor = 8;

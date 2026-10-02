@@ -1,19 +1,19 @@
-#ifndef __RADGEMINI_H_
-#define __RADGEMINI_H_
+#ifndef __RADARGOS_H_
+#define __RADARGOS_H_
 
 #ifdef __cplusplus
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/device/tree/radgemini/radgeminisettings.h"
+#include "icsneo/device/tree/radargos/radargossettings.h"
 
 namespace icsneo {
 
-class RADGemini : public Device {
+class RADArgos : public Device {
 public:
 	// Serial numbers start with GE
 	// USB PID is 0x110E, standard driver is CDCACM
-	ICSNEO_FINDABLE_DEVICE(RADGemini, DeviceType::RADGemini, "GE");
+	ICSNEO_FINDABLE_DEVICE(RADArgos, DeviceType::RADArgos, "GE");
 
 	static const std::vector<Network>& GetSupportedNetworks() {
 		static std::vector<Network> supportedNetworks = {
@@ -28,11 +28,11 @@ public:
 
 	bool supportsTC10() const override { return true; }
 
-	ProductID getProductID() const override { return ProductID::RADGemini; }
+	ProductID getProductID() const override { return ProductID::RADArgos; }
 
 	const std::vector<ChipInfo>& getChipInfo() const override {
 		static std::vector<ChipInfo> chips = {
-			{ChipID::RADGemini_MCHIP, true, "MCHIP", "radgemini_mchip_ief", 0, FirmwareType::IEF},
+			{ChipID::RADArgos_MCHIP, true, "MCHIP", "radargos_mchip_ief", 0, FirmwareType::IEF},
 		};
 		return chips;
 	}
@@ -40,15 +40,15 @@ public:
 	BootloaderPipeline getBootloader() override {
 		return BootloaderPipeline()
 			.add<EnterBootloaderPhase>()
-			.add<FlashPhase>(ChipID::RADGemini_MCHIP, BootloaderCommunication::RED)
-			.add<EnterApplicationPhase>(ChipID::RADGemini_MCHIP)
+			.add<FlashPhase>(ChipID::RADArgos_MCHIP, BootloaderCommunication::RED)
+			.add<EnterApplicationPhase>(ChipID::RADArgos_MCHIP)
 			.add<ReconnectPhase>()
 			.add<WaitPhase>(std::chrono::milliseconds(3000));
 	}
 
 protected:
-	RADGemini(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
-		initialize<RADGeminiSettings>(makeDriver);
+	RADArgos(neodevice_t neodevice, const driver_factory_t& makeDriver) : Device(neodevice) {
+		initialize<RADArgosSettings>(makeDriver);
 	}
 
 	void setupPacketizer(Packetizer& packetizer) override {
@@ -74,4 +74,4 @@ protected:
 
 #endif // __cplusplus
 
-#endif // __RADGEMINI_H_
+#endif // __RADARGOS_H_

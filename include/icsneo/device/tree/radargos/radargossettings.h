@@ -1,5 +1,5 @@
-#ifndef LIBICSNEO_RADGEMINISETTINGS_H
-#define LIBICSNEO_RADGEMINISETTINGS_H
+#ifndef LIBICSNEO_RADARGOSSETTINGS_H
+#define LIBICSNEO_RADARGOSSETTINGS_H
 
 #include <stdint.h>
 #include "icsneo/device/idevicesettings.h"
@@ -31,18 +31,18 @@ typedef struct {
 		uint16_t enableLatencyTest : 1;
 		uint16_t reserved : 15;
 	} flags; // 2
-} radgemini_settings_t;
+} radargos_settings_t;
 #pragma pack(pop)
 
 #ifdef __cplusplus
 
-static_assert(sizeof(radgemini_settings_t) == 86, "RADGemini settings size mismatch");
+static_assert(sizeof(radargos_settings_t) == 86, "RADArgos settings size mismatch");
 
 #include <iostream>
 
-class RADGeminiSettings : public IDeviceSettings {
+class RADArgosSettings : public IDeviceSettings {
 public:
-	RADGeminiSettings(Device* device) : IDeviceSettings(device, sizeof(radgemini_settings_t)) {}
+	RADArgosSettings(Device* device) : IDeviceSettings(device, sizeof(radargos_settings_t)) {}
 };
 
 }
@@ -50,4 +50,4 @@ public:
 #endif // __cplusplus
 
 
-#endif // LIBICSNEO_RADGEMINISETTINGS_H
+#endif // LIBICSNEO_RADARGOSSETTINGS_H

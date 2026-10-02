@@ -62,7 +62,7 @@ public:
 		RADGigastar2 = icsneoc2_devicetype_rad_gigastar2,
 		FIRE3_T1S_LIN = icsneoc2_devicetype_fire3_t1s_lin,
 		FIRE3_T1S_SENT = icsneoc2_devicetype_fire3_t1s_sent,
-		RADGemini = icsneoc2_devicetype_rad_gemini,
+		RADArgos = icsneoc2_devicetype_rad_argos,
 		RED = icsneoc2_devicetype_red,
 		ECU = icsneoc2_devicetype_ecu,
 		IEVB = icsneoc2_devicetype_ievb,
@@ -153,8 +153,8 @@ public:
 				return "RAD-EpsilonXL";
 			case RADMoon3:
 				return "RAD-Moon 3";
-			case RADGemini:
-				return "RAD-Gemini";
+			case RADArgos:
+				return "RAD-Argos";
 			case RADComet2:
 				return "RAD-Comet 2";
 			case RED:
@@ -281,7 +281,7 @@ private:
 #define ICSNEO_DEVICETYPE_RADGIGASTAR2 ((devicetype_t)icsneoc2_devicetype_rad_gigastar2)
 #define ICSNEO_DEVICETYPE_FIRE3_T1S_LIN ((devicetype_t)icsneoc2_devicetype_fire3_t1s_lin)
 #define ICSNEO_DEVICETYPE_FIRE3_T1S_SENT ((devicetype_t)icsneoc2_devicetype_fire3_t1s_sent)
-#define ICSNEO_DEVICETYPE_RADGEMINI ((devicetype_t)icsneoc2_devicetype_rad_gemini)
+#define ICSNEO_DEVICETYPE_RADARGOS ((devicetype_t)icsneoc2_devicetype_rad_argos)
 #define ICSNEO_DEVICETYPE_RED ((devicetype_t)icsneoc2_devicetype_red)
 #define ICSNEO_DEVICETYPE_ECU ((devicetype_t)icsneoc2_devicetype_ecu)
 #define ICSNEO_DEVICETYPE_IEVB ((devicetype_t)icsneoc2_devicetype_ievb)

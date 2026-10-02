@@ -30,13 +30,13 @@ Instructions for installing each API can be found in its respective documentatio
 - neoVI PLASMA
 - neoVI RED 2
 - RAD-A2B
+- RAD-Argos
 - RAD-Comet 2
 - RAD-Comet 3
 - RAD-Epsilon
 - RAD-EpsilonXL
 - RAD-Galaxy
 - RAD-Galaxy 2
-- RAD-Gemini
 - RAD-Gigastar
 - RAD-Gigastar 2
 - RAD-Moon 2

@@ -151,7 +151,7 @@ public:
 		RADMoonT1S = 56,
 		RADGigastar2 = 57,
 		SFPModule_ent11100 = 58,
-		RADGemini = 60,
+		RADArgos = 60,
 	};
 
 	virtual ProductID getProductID() const = 0;

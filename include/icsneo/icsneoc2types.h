@@ -52,7 +52,7 @@ typedef enum _icsneoc2_devicetype_t {
 	icsneoc2_devicetype_rad_gigastar2 = 0x00000029,
 	icsneoc2_devicetype_fire3_t1s_lin = 0x0000002a,
 	icsneoc2_devicetype_fire3_t1s_sent = 0x0000002b,
-	icsneoc2_devicetype_rad_gemini = 0x0000002c,
+	icsneoc2_devicetype_rad_argos = 0x0000002c,
 	icsneoc2_devicetype_red = 0x00000040,
 	icsneoc2_devicetype_ecu = 0x00000080,
 	icsneoc2_devicetype_ievb = 0x00000100,
@@ -678,7 +678,7 @@ typedef enum _icsneoc2_chip_id_t {
 	icsneoc2_chip_id_radmoont1s_zchip = 130,
 	icsneoc2_chip_id_radgigastar2_zynq = 131,
 	icsneoc2_chip_id_sfpmodule_ent11100_mchip = 132,
-	icsneoc2_chip_id_radgemini_mchip = 135,
+	icsneoc2_chip_id_radargos_mchip = 135,
 	icsneoc2_chip_id_maxsize, // Must be last entry, Don't use as a chip ID.
 
 	// Used for unknown or invalid chip ID
