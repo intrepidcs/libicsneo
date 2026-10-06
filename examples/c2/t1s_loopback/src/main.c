@@ -378,7 +378,7 @@ static int configure_t1s_port(icsneoc2_device_t* device, icsneoc2_netid_t netid,
 	if(res != icsneoc2_error_success) return print_error_code("Failed to set T1S TX opportunity timer", res);
 	res = icsneoc2_settings_t1s_burst_timer_set(device, netid, T1S_BURST_TIMER);
 	if(res != icsneoc2_error_success) return print_error_code("Failed to set T1S burst timer", res);
-	res = icsneoc2_settings_t1s_max_burst_timer_for_set(device, netid, T1S_MAX_BURST);
+	res = icsneoc2_settings_t1s_max_burst_set(device, netid, T1S_MAX_BURST);
 	if(res != icsneoc2_error_success) return print_error_code("Failed to set T1S max burst", res);
 
 	res = icsneoc2_settings_t1s_is_termination_enabled_for(device, netid, &termination);

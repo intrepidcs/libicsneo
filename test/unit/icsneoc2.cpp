@@ -317,8 +317,8 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_max_nodes_set(NULL, 0, placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_tx_opp_timer_get(NULL, 0, &placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_tx_opp_timer_set(NULL, 0, placeholderInteger8));
-	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_max_burst_timer_for_get(NULL, 0, &placeholderInteger8));
-	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_max_burst_timer_for_set(NULL, 0, placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_max_burst_get(NULL, 0, &placeholderInteger8));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_max_burst_set(NULL, 0, placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_burst_timer_get(NULL, 0, &placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_burst_timer_set(NULL, 0, placeholderInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_t1s_local_id_alternate_get(NULL, 0, &placeholderInteger8));

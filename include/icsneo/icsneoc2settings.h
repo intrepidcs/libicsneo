@@ -533,26 +533,26 @@ icsneoc2_error_t icsneoc2_settings_t1s_burst_timer_get(icsneoc2_device_t* device
 icsneoc2_error_t icsneoc2_settings_t1s_burst_timer_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value);
 
 /**
- * Get the Max burst timer for a network that supports 10BASE-T1S.
+ * Get the maximum PLCA burst count for a network that supports 10BASE-T1S.
  *
  * @param[in] device The device to check.
  * @param[in] netid The network ID to check.
- * @param[out] value Pointer to store the Max burst timer value.
+ * @param[out] value Pointer to store the maximum burst count.
  *
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
  */
-icsneoc2_error_t icsneoc2_settings_t1s_max_burst_timer_for_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value);
+icsneoc2_error_t icsneoc2_settings_t1s_max_burst_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value);
 
 /**
- * Set the Max burst timer for a network that supports 10BASE-T1S.
+ * Set the maximum PLCA burst count for a network that supports 10BASE-T1S.
  *
  * @param[in] device The device to configure.
  * @param[in] netid The network ID to configure.
- * @param[in] value The Max burst timer value to set.
+ * @param[in] value The maximum burst count to set.
  *
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters otherwise.
  */
-icsneoc2_error_t icsneoc2_settings_t1s_max_burst_timer_for_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value);
+icsneoc2_error_t icsneoc2_settings_t1s_max_burst_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value);
 
 /**
  * Get the alternate local ID for a network that supports 10BASE-T1S.

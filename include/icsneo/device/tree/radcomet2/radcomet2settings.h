@@ -130,133 +130,6 @@ public:
 		}
 	}
 
-	std::optional<bool> isT1SPLCAEnabledFor(Network net) const override {
-		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return std::nullopt;
-		
-		return std::make_optional((t1s->flags & ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA) != 0);
-	}
-
-	bool setT1SPLCAFor(Network net, bool enable) override {
-		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return false;
-		
-		if(enable)
-			t1s->flags |= ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA;
-		else
-			t1s->flags &= ~ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA;
-		
-		return true;
-	}
-
-	std::optional<uint8_t> getT1SLocalIDFor(Network net) const override {
-		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return std::nullopt;
-		
-		return std::make_optional(t1s->local_id);
-	}
-
-	bool setT1SLocalIDFor(Network net, uint8_t id) override {
-		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return false;
-		
-		t1s->local_id = id;
-		return true;
-	}
-
-	std::optional<uint8_t> getT1SMaxNodesFor(Network net) const override {
-		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return std::nullopt;
-		
-		return std::make_optional(t1s->max_num_nodes);
-	}
-
-	bool setT1SMaxNodesFor(Network net, uint8_t nodes) override {
-		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return false;
-		
-		t1s->max_num_nodes = nodes;
-		return true;
-	}
-
-	std::optional<uint8_t> getT1STxOppTimerFor(Network net) const override {
-		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return std::nullopt;
-		
-		return std::make_optional(t1s->to_timer);
-	}
-
-	bool setT1STxOppTimerFor(Network net, uint8_t timer) override {
-		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return false;
-		
-		t1s->to_timer = timer;
-		return true;
-	}
-
-	std::optional<uint8_t> getT1SMaxBurstFor(Network net) const override {
-		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return std::nullopt;
-		
-		return std::make_optional(t1s->max_burst_count);
-	}
-
-	bool setT1SMaxBurstFor(Network net, uint8_t burst) override {
-		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return false;
-		
-		t1s->max_burst_count = burst;
-		return true;
-	}
-
-	std::optional<uint8_t> getT1SBurstTimerFor(Network net) const override {
-		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return std::nullopt;
-		
-		return std::make_optional(t1s->burst_timer);
-	}
-
-	bool setT1SBurstTimerFor(Network net, uint8_t timer) override {
-		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return false;
-		
-		t1s->burst_timer = timer;
-		return true;
-	}
-
-	std::optional<bool> isT1STerminationEnabledFor(Network net) const override {
-		const ETHERNET10T1S_SETTINGS* t1s = getT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return std::nullopt;
-		
-		return std::make_optional<bool>((t1s->flags & ETHERNET10T1S_SETTINGS_FLAG_TERMINATION) != 0);
-	}
-
-	bool setT1STerminationFor(Network net, bool enable) override {
-		ETHERNET10T1S_SETTINGS* t1s = getMutableT1SSettingsFor(net);
-		if(t1s == nullptr)
-			return false;
-		
-		if(enable)
-			t1s->flags |= ETHERNET10T1S_SETTINGS_FLAG_TERMINATION;
-		else
-			t1s->flags &= ~ETHERNET10T1S_SETTINGS_FLAG_TERMINATION;
-		
-		return true;
-	}
-
 	std::optional<bool> isPerfTestEnabled() const override {
 		auto cfg = getStructurePointer<radcomet2_settings_t>();
 		if(cfg == nullptr)
@@ -274,32 +147,41 @@ public:
 		return true;
 	}
 
-private:
-	const ETHERNET10T1S_SETTINGS* getT1SSettingsFor(Network net) const {
+	std::vector<TerminationGroup> getTerminationGroups() const override {
+		return {
+			{ Network(Network::NetID::DWCAN_01) },
+			{ Network(Network::NetID::DWCAN_02) }
+		};
+	}
+
+protected:
+	ICSNEO_UNALIGNED(const uint64_t*) getTerminationEnables() const override {
 		auto cfg = getStructurePointer<radcomet2_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
-		
+		return &cfg->termination_enables;
+	}
+
+private:
+	const ETHERNET10T1S_SETTINGS* getT1SSettingsFor(Network net) const override {
+		auto cfg = getStructurePointer<radcomet2_settings_t>();
+		if(cfg == nullptr)
+			return nullptr;
 		switch(net.getNetID()) {
 			case Network::NetID::AE_02: return &(cfg->t1s1);
 			case Network::NetID::AE_03: return &(cfg->t1s2);
-			default:
-				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
-				return nullptr;
+			default: return nullptr;
 		}
 	}
 
-	ETHERNET10T1S_SETTINGS* getMutableT1SSettingsFor(Network net) {
-		auto cfg = getMutableStructurePointer<radcomet2_settings_t>();
+	const ETHERNET10T1S_SETTINGS_EXT* getT1SSettingsExtFor(Network net) const override {
+		auto cfg = getStructurePointer<radcomet2_settings_t>();
 		if(cfg == nullptr)
 			return nullptr;
-		
 		switch(net.getNetID()) {
-			case Network::NetID::AE_02: return &(cfg->t1s1);
-			case Network::NetID::AE_03: return &(cfg->t1s2);
-			default:
-				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
-				return nullptr;
+			case Network::NetID::AE_02: return &(cfg->t1s1Ext);
+			case Network::NetID::AE_03: return &(cfg->t1s2Ext);
+			default: return nullptr;
 		}
 	}
 

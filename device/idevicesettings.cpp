@@ -1113,3 +1113,177 @@ bool IDeviceSettings::setLinuxConfigurationPort(LinuxConfigurationPort port) {
 	(*os)->ethConfigurationPort = static_cast<uint8_t>(port);
 	return true;
 }
+
+namespace {
+
+void reportT1SUnavailable(const icsneo::device_eventhandler_t& report) {
+	report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
+}
+
+std::optional<bool> t1sFlag(const ETHERNET10T1S_SETTINGS* t1s, uint8_t flag, const icsneo::device_eventhandler_t& report) {
+	if(t1s == nullptr) {
+		reportT1SUnavailable(report);
+		return std::nullopt;
+	}
+	return (t1s->flags & flag) != 0;
+}
+
+bool setT1SFlag(ETHERNET10T1S_SETTINGS* t1s, uint8_t flag, bool enable, const icsneo::device_eventhandler_t& report) {
+	if(t1s == nullptr) {
+		reportT1SUnavailable(report);
+		return false;
+	}
+	if(enable)
+		t1s->flags |= flag;
+	else
+		t1s->flags = static_cast<uint8_t>(t1s->flags & ~flag);
+	return true;
+}
+
+std::optional<uint8_t> t1sByte(const uint8_t* field, const icsneo::device_eventhandler_t& report) {
+	if(field == nullptr) {
+		reportT1SUnavailable(report);
+		return std::nullopt;
+	}
+	return *field;
+}
+
+bool setT1SByte(uint8_t* field, uint8_t value, const icsneo::device_eventhandler_t& report) {
+	if(field == nullptr) {
+		reportT1SUnavailable(report);
+		return false;
+	}
+	*field = value;
+	return true;
+}
+
+} // namespace
+
+std::optional<bool> IDeviceSettings::isT1SPLCAEnabledFor(Network net) const {
+	return t1sFlag(getT1SSettingsFor(net), ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA, report);
+}
+
+bool IDeviceSettings::setT1SPLCAFor(Network net, bool enable) {
+	return setT1SFlag(getMutableT1SSettingsFor(net), ETHERNET10T1S_SETTINGS_FLAG_ENABLE_PLCA, enable, report);
+}
+
+std::optional<uint8_t> IDeviceSettings::getT1SLocalIDFor(Network net) const {
+	const auto* t1s = getT1SSettingsFor(net);
+	return t1sByte(t1s == nullptr ? nullptr : &t1s->local_id, report);
+}
+
+bool IDeviceSettings::setT1SLocalIDFor(Network net, uint8_t id) {
+	auto* t1s = getMutableT1SSettingsFor(net);
+	return setT1SByte(t1s == nullptr ? nullptr : &t1s->local_id, id, report);
+}
+
+std::optional<uint8_t> IDeviceSettings::getT1SMaxNodesFor(Network net) const {
+	const auto* t1s = getT1SSettingsFor(net);
+	return t1sByte(t1s == nullptr ? nullptr : &t1s->max_num_nodes, report);
+}
+
+bool IDeviceSettings::setT1SMaxNodesFor(Network net, uint8_t nodes) {
+	auto* t1s = getMutableT1SSettingsFor(net);
+	return setT1SByte(t1s == nullptr ? nullptr : &t1s->max_num_nodes, nodes, report);
+}
+
+std::optional<uint8_t> IDeviceSettings::getT1STxOppTimerFor(Network net) const {
+	const auto* t1s = getT1SSettingsFor(net);
+	return t1sByte(t1s == nullptr ? nullptr : &t1s->to_timer, report);
+}
+
+bool IDeviceSettings::setT1STxOppTimerFor(Network net, uint8_t timer) {
+	auto* t1s = getMutableT1SSettingsFor(net);
+	return setT1SByte(t1s == nullptr ? nullptr : &t1s->to_timer, timer, report);
+}
+
+std::optional<uint8_t> IDeviceSettings::getT1SMaxBurstFor(Network net) const {
+	const auto* t1s = getT1SSettingsFor(net);
+	return t1sByte(t1s == nullptr ? nullptr : &t1s->max_burst_count, report);
+}
+
+bool IDeviceSettings::setT1SMaxBurstFor(Network net, uint8_t burst) {
+	auto* t1s = getMutableT1SSettingsFor(net);
+	return setT1SByte(t1s == nullptr ? nullptr : &t1s->max_burst_count, burst, report);
+}
+
+std::optional<uint8_t> IDeviceSettings::getT1SBurstTimerFor(Network net) const {
+	const auto* t1s = getT1SSettingsFor(net);
+	return t1sByte(t1s == nullptr ? nullptr : &t1s->burst_timer, report);
+}
+
+bool IDeviceSettings::setT1SBurstTimerFor(Network net, uint8_t timer) {
+	auto* t1s = getMutableT1SSettingsFor(net);
+	return setT1SByte(t1s == nullptr ? nullptr : &t1s->burst_timer, timer, report);
+}
+
+std::optional<uint8_t> IDeviceSettings::getT1SLocalIDAlternateFor(Network net) const {
+	const auto* t1s = getT1SSettingsFor(net);
+	return t1sByte(t1s == nullptr ? nullptr : &t1s->local_id_alternate, report);
+}
+
+bool IDeviceSettings::setT1SLocalIDAlternateFor(Network net, uint8_t id) {
+	auto* t1s = getMutableT1SSettingsFor(net);
+	return setT1SByte(t1s == nullptr ? nullptr : &t1s->local_id_alternate, id, report);
+}
+
+std::optional<bool> IDeviceSettings::isT1STerminationEnabledFor(Network net) const {
+	return t1sFlag(getT1SSettingsFor(net), ETHERNET10T1S_SETTINGS_FLAG_TERMINATION, report);
+}
+
+bool IDeviceSettings::setT1STerminationFor(Network net, bool enable) {
+	return setT1SFlag(getMutableT1SSettingsFor(net), ETHERNET10T1S_SETTINGS_FLAG_TERMINATION, enable, report);
+}
+
+std::optional<bool> IDeviceSettings::isT1SBusDecodingBeaconsEnabledFor(Network net) const {
+	return t1sFlag(getT1SSettingsFor(net), ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_BEACONS, report);
+}
+
+bool IDeviceSettings::setT1SBusDecodingBeaconsFor(Network net, bool enable) {
+	return setT1SFlag(getMutableT1SSettingsFor(net), ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_BEACONS, enable, report);
+}
+
+std::optional<bool> IDeviceSettings::isT1SBusDecodingAllEnabledFor(Network net) const {
+	return t1sFlag(getT1SSettingsFor(net), ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_ALL, report);
+}
+
+bool IDeviceSettings::setT1SBusDecodingAllFor(Network net, bool enable) {
+	return setT1SFlag(getMutableT1SSettingsFor(net), ETHERNET10T1S_SETTINGS_FLAG_BUS_DECODING_ALL, enable, report);
+}
+
+std::optional<uint8_t> IDeviceSettings::getT1SMultiIDEnableMaskFor(Network net) const {
+	const auto* ext = getT1SSettingsExtFor(net);
+	return t1sByte(ext == nullptr ? nullptr : &ext->enable_multi_id, report);
+}
+
+bool IDeviceSettings::setT1SMultiIDEnableMaskFor(Network net, uint8_t mask) {
+	auto* ext = getMutableT1SSettingsExtFor(net);
+	return setT1SByte(ext == nullptr ? nullptr : &ext->enable_multi_id, mask, report);
+}
+
+std::optional<uint8_t> IDeviceSettings::getT1SMultiIDFor(Network net, uint8_t index) const {
+	const auto* ext = getT1SSettingsExtFor(net);
+	if(ext == nullptr) {
+		reportT1SUnavailable(report);
+		return std::nullopt;
+	}
+	if(index >= sizeof(ext->multi_id)) {
+		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	return ext->multi_id[index];
+}
+
+bool IDeviceSettings::setT1SMultiIDFor(Network net, uint8_t index, uint8_t id) {
+	auto* ext = getMutableT1SSettingsExtFor(net);
+	if(ext == nullptr) {
+		reportT1SUnavailable(report);
+		return false;
+	}
+	if(index >= sizeof(ext->multi_id)) {
+		report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+		return false;
+	}
+	ext->multi_id[index] = id;
+	return true;
+}

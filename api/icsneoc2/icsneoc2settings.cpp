@@ -706,7 +706,7 @@ icsneoc2_error_t icsneoc2_settings_t1s_burst_timer_set(icsneoc2_device_t* device
     return icsneoc2_error_success;
 }
 
-icsneoc2_error_t icsneoc2_settings_t1s_max_burst_timer_for_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value) {
+icsneoc2_error_t icsneoc2_settings_t1s_max_burst_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t* value) {
     // Make sure the device is valid
     auto res = icsneoc2_device_is_valid(device);
     if(res != icsneoc2_error_success) {
@@ -725,7 +725,7 @@ icsneoc2_error_t icsneoc2_settings_t1s_max_burst_timer_for_get(icsneoc2_device_t
     }
 }
 
-icsneoc2_error_t icsneoc2_settings_t1s_max_burst_timer_for_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value) {
+icsneoc2_error_t icsneoc2_settings_t1s_max_burst_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, uint8_t value) {
     // Make sure the device is valid
     auto res = icsneoc2_device_is_valid(device);
     if(res != icsneoc2_error_success) {

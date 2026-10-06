@@ -1205,143 +1205,32 @@ public:
 		return std::nullopt;
 	}
 
-	virtual std::optional<bool> isT1SPLCAEnabledFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SPLCAFor(Network net, bool enable) {
-		(void)net; (void)enable;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return false;
-	}
-
-	virtual std::optional<uint8_t> getT1SLocalIDFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SLocalIDFor(Network net, uint8_t id) {
-		(void)net; (void)id;
-		return false;
-	}
-
-	virtual std::optional<uint8_t> getT1SMaxNodesFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SMaxNodesFor(Network net, uint8_t nodes) {
-		(void)net; (void)nodes;
-		return false;
-	}
-
-	virtual std::optional<uint8_t> getT1STxOppTimerFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1STxOppTimerFor(Network net, uint8_t timer) {
-		(void)net; (void)timer;
-		return false;
-	}
-
-	virtual std::optional<uint8_t> getT1SMaxBurstFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SMaxBurstFor(Network net, uint8_t burst) {
-		(void)net; (void)burst;
-		return false;
-	}
-
-	virtual std::optional<uint8_t> getT1SBurstTimerFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SBurstTimerFor(Network net, uint8_t timer) {
-		(void)net; (void)timer;
-		return false;
-	}
-
-	virtual std::optional<uint8_t> getT1SLocalIDAlternateFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SLocalIDAlternateFor(Network net, uint8_t id) {
-		(void)net; (void)id;
-		return false;
-	}
-
-	virtual std::optional<bool> isT1STerminationEnabledFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1STerminationFor(Network net, bool enable) {
-		(void)net; (void)enable;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return false;
-	}
-
-	virtual std::optional<bool> isT1SBusDecodingBeaconsEnabledFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SBusDecodingBeaconsFor(Network net, bool enable) {
-		(void)net; (void)enable;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return false;
-	}
-
-	virtual std::optional<bool> isT1SBusDecodingAllEnabledFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SBusDecodingAllFor(Network net, bool enable) {
-		(void)net; (void)enable;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return false;
-	}
-
-	virtual std::optional<uint8_t> getT1SMultiIDEnableMaskFor(Network net) const {
-		(void)net;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SMultiIDEnableMaskFor(Network net, uint8_t mask) {
-		(void)net; (void)mask;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return false;
-	}
-
-	virtual std::optional<uint8_t> getT1SMultiIDFor(Network net, uint8_t index) const {
-		(void)net; (void)index;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return std::nullopt;
-	}
-
-	virtual bool setT1SMultiIDFor(Network net, uint8_t index, uint8_t id) {
-		(void)net; (void)index; (void)id;
-		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
-		return false;
-	}
+	// 10BASE-T1S. Devices expose a network by overriding getT1SSettingsFor / getT1SSettingsExtFor.
+	// Every field in the mapped struct is readable; a null accessor means the network has no T1S block.
+	std::optional<bool> isT1SPLCAEnabledFor(Network net) const;
+	bool setT1SPLCAFor(Network net, bool enable);
+	std::optional<uint8_t> getT1SLocalIDFor(Network net) const;
+	bool setT1SLocalIDFor(Network net, uint8_t id);
+	std::optional<uint8_t> getT1SMaxNodesFor(Network net) const;
+	bool setT1SMaxNodesFor(Network net, uint8_t nodes);
+	std::optional<uint8_t> getT1STxOppTimerFor(Network net) const;
+	bool setT1STxOppTimerFor(Network net, uint8_t timer);
+	std::optional<uint8_t> getT1SMaxBurstFor(Network net) const;
+	bool setT1SMaxBurstFor(Network net, uint8_t burst);
+	std::optional<uint8_t> getT1SBurstTimerFor(Network net) const;
+	bool setT1SBurstTimerFor(Network net, uint8_t timer);
+	std::optional<uint8_t> getT1SLocalIDAlternateFor(Network net) const;
+	bool setT1SLocalIDAlternateFor(Network net, uint8_t id);
+	std::optional<bool> isT1STerminationEnabledFor(Network net) const;
+	bool setT1STerminationFor(Network net, bool enable);
+	std::optional<bool> isT1SBusDecodingBeaconsEnabledFor(Network net) const;
+	bool setT1SBusDecodingBeaconsFor(Network net, bool enable);
+	std::optional<bool> isT1SBusDecodingAllEnabledFor(Network net) const;
+	bool setT1SBusDecodingAllFor(Network net, bool enable);
+	std::optional<uint8_t> getT1SMultiIDEnableMaskFor(Network net) const;
+	bool setT1SMultiIDEnableMaskFor(Network net, uint8_t mask);
+	std::optional<uint8_t> getT1SMultiIDFor(Network net, uint8_t index) const;
+	bool setT1SMultiIDFor(Network net, uint8_t index, uint8_t id);
 
 	virtual std::optional<bool> isPerfTestEnabled() const {
 		report(APIEvent::Type::SettingNotAvaiableDevice, APIEvent::Severity::EventWarning);
@@ -1425,6 +1314,28 @@ protected:
 		if(offset == nullptr)
 			return nullptr;
 		return reinterpret_cast<ICSNEO_UNALIGNED(uint64_t*)>((void*)(settings.data() + (offset - settingsInDeviceRAM.data())));
+	}
+
+	// Pointer into the device RAM image. Override per device. Unknown networks return nullptr
+	// and do not report; the public T1S methods report SettingNotAvaiableDevice.
+	virtual const ETHERNET10T1S_SETTINGS* getT1SSettingsFor(Network net) const { (void)net; return nullptr; }
+	ETHERNET10T1S_SETTINGS* getMutableT1SSettingsFor(Network net) {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = reinterpret_cast<const uint8_t*>(getT1SSettingsFor(net));
+		if(offset == nullptr)
+			return nullptr;
+		return reinterpret_cast<ETHERNET10T1S_SETTINGS*>(settings.data() + (offset - settingsInDeviceRAM.data()));
+	}
+
+	virtual const ETHERNET10T1S_SETTINGS_EXT* getT1SSettingsExtFor(Network net) const { (void)net; return nullptr; }
+	ETHERNET10T1S_SETTINGS_EXT* getMutableT1SSettingsExtFor(Network net) {
+		if(disabled || readonly)
+			return nullptr;
+		const uint8_t* offset = reinterpret_cast<const uint8_t*>(getT1SSettingsExtFor(net));
+		if(offset == nullptr)
+			return nullptr;
+		return reinterpret_cast<ETHERNET10T1S_SETTINGS_EXT*>(settings.data() + (offset - settingsInDeviceRAM.data()));
 	}
 
 	static bool SetNetworkEnabled(uint64_t* bitfields, size_t count, uint64_t networkID) {
