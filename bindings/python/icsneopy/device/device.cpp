@@ -2,6 +2,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 #include <pybind11/chrono.h>
+#include <pybind11/native_enum.h>
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/extensions/deviceextension.h"
@@ -12,7 +13,22 @@
 namespace icsneo {
 
 void init_device(pybind11::module_& m) {
-	pybind11::classh<Device>(m, "Device")
+	pybind11::classh<Device> device(m, "Device");
+
+	pybind11::native_enum<Device::OpenDirective>(device, "OpenDirective", "enum.IntEnum")
+		.value("Continue", Device::OpenDirective::Continue)
+		.value("Cancel", Device::OpenDirective::Cancel)
+		.value("Skip", Device::OpenDirective::Skip)
+		.finalize();
+
+	pybind11::native_enum<Device::OpenStatusType>(device, "OpenStatusType", "enum.IntEnum")
+		.value("QuestionContinueSkipCancel", Device::OpenStatusType::QuestionContinueSkipCancel)
+		.value("QuestionContinueCancel", Device::OpenStatusType::QuestionContinueCancel)
+		.value("Progress", Device::OpenStatusType::Progress)
+		.value("Failed", Device::OpenStatusType::Failed)
+		.finalize();
+
+	device
 		.def("__repr__", &Device::describe)
 		.def("add_message_callback", &Device::addMessageCallback, pybind11::call_guard<pybind11::gil_scoped_release>())
 		.def("clear_script", &Device::clearScript, pybind11::call_guard<pybind11::gil_scoped_release>())

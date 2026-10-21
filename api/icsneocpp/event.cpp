@@ -118,6 +118,8 @@ static constexpr const char* SETTING_NOT_AVAILABLE = "Requested a setting that i
 static constexpr const char* DISK_FORMAT_NOT_SUPPORTED = "Disk formatting is not supported on this device.";
 static constexpr const char* DISK_FORMAT_INVALID_COUNT = "Disk format config disk count is mismatched with device disk count.";
 static constexpr const char* TC10_REQUEST_FAILED = "The device rejected the TC10 request.";
+static constexpr const char* FIRMWARE_UPDATE_NOT_SUPPORTED = "Firmware updates are not supported for this device.";
+static constexpr const char* FIRMWARE_UPDATE_FAILED = "The firmware update failed.";
 
 // Transport Errors
 static constexpr const char* FAILED_TO_READ = "A read operation failed.";
@@ -384,6 +386,10 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return DISK_FORMAT_INVALID_COUNT;
 		case Type::TC10RequestFailed:
 			return TC10_REQUEST_FAILED;
+		case Type::FirmwareUpdateNotSupported:
+			return FIRMWARE_UPDATE_NOT_SUPPORTED;
+		case Type::FirmwareUpdateFailed:
+			return FIRMWARE_UPDATE_FAILED;
 
 		// VSA
 		case Type::VSABufferCorrupted:

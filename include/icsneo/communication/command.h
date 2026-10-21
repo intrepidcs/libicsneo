@@ -31,7 +31,10 @@ enum class Command : uint8_t {
 	LoadCoreMini = 0x43,
 	GetRTC = 0x49,
 	SetRTC = 0x50,
+	PeripheralBootloader = 0x83,
+	EnterBootloader = 0xA0,
 	RequestSerialNumber = 0xA1,
+	ValidateDevice = 0xA2,
 	GetMainVersion = 0xA3, // Previously known as RED_CMD_APP_VERSION_REQ
 	SetSettings = 0xA4, // Previously known as RED_CMD_SET_BAUD_REQ, follow up with SaveSettings to write to EEPROM
 	//GetSettings = 0xA5, // Previously known as RED_CMD_READ_BAUD_REQ, now unused

@@ -51,4 +51,7 @@ CMAKE_MSVC_RUNTIME_LIBRARY = "MultiThreaded"
 
 [tool.cibuildwheel]
 skip = "pp*"
-environment-pass = ["ICS_IPA_CA_CRT", "LIBICSNEO_ICSPB_REPO", "SKBUILD_CMAKE_DEFINE"]
+environment-pass = ["ICS_IPA_CA_CRT", "LIBICSNEO_ICSPB_REPO", "SKBUILD_CMAKE_DEFINE", "LIBICSNEO_LIBICSBL_ZIP_URL", "LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX", "LIBICSNEO_LIBICSBL_VERSION"]
+
+[tool.cibuildwheel.macos]
+repair-wheel-command = "DYLD_LIBRARY_PATH=$REPAIR_LIBRARY_PATH delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"

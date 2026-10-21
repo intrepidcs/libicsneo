@@ -1,0 +1,10 @@
+#!/bin/sh
+
+export CIBW_BEFORE_ALL="sh ci/bootstrap-libpcap.sh"
+export CIBW_ARCHS="arm64"
+export CIBW_ENVIRONMENT="PCAP_ROOT=$PWD/libpcap/install"
+export SKBUILD_CMAKE_DEFINE="LIBICSNEO_ENABLE_BOOTLOADER=ON;ICSPB_BOOTSTRAP_DIR=$PWD/icspb;FETCHCONTENT_BASE_DIR=$PWD/fc"
+export REPAIR_LIBRARY_PATH="$PWD/fc/libicsbl-src/lib"
+export MACOSX_DEPLOYMENT_TARGET="10.14"
+
+sh ci/build-wheel-posix.sh

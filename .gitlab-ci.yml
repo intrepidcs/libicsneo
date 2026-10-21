@@ -279,13 +279,9 @@ build python/linux/amd64:
   tags:
     - linux-native-amd64
   variables:
-    CIBW_BEFORE_ALL: sh ci/bootstrap-cibuildwheel.sh && sh ci/bootstrap-libpcap.sh
-    CIBW_BUILD: "*manylinux*" # no musl
     CIBW_ARCHS: x86_64
-    CIBW_ENVIRONMENT: PCAP_ROOT=/project/libpcap/install
-    SKBUILD_CMAKE_DEFINE: ICSPB_BOOTSTRAP_DIR=/project/icspb
   script:
-    - sh ci/build-wheel-posix.sh
+    - sh ci/build-wheel-linux.sh
   artifacts:
     paths:
       - wheelhouse
@@ -295,13 +291,9 @@ build python/linux/arm64:
   tags:
     - arm64-linux-build
   variables:
-    CIBW_BEFORE_ALL: sh ci/bootstrap-cibuildwheel.sh && sh ci/bootstrap-libpcap.sh
-    CIBW_BUILD: "*manylinux*" # no musl
     CIBW_ARCHS: aarch64
-    CIBW_ENVIRONMENT: PCAP_ROOT=/project/libpcap/install
-    SKBUILD_CMAKE_DEFINE: ICSPB_BOOTSTRAP_DIR=/project/icspb
   script:
-    - sh ci/build-wheel-posix.sh
+    - sh ci/build-wheel-linux.sh
   artifacts:
     paths:
       - wheelhouse
@@ -310,14 +302,8 @@ build python/macos:
   stage: build
   tags:
     - macos-arm64
-  variables:
-    CIBW_BEFORE_ALL: sh ci/bootstrap-libpcap.sh
-    CIBW_ARCHS: arm64
-    CIBW_ENVIRONMENT: PCAP_ROOT=$CI_PROJECT_DIR/libpcap/install
-    SKBUILD_CMAKE_DEFINE: ICSPB_BOOTSTRAP_DIR=$CI_PROJECT_DIR/icspb
-    MACOSX_DEPLOYMENT_TARGET: 10.14
   script:
-    - sh ci/build-wheel-posix.sh
+    - sh ci/build-wheel-macos.sh
   artifacts:
     paths:
       - wheelhouse

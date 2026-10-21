@@ -118,3 +118,14 @@ firmware single frame, ``--both`` sends a segmented payload with firmware flow c
 
 .. literalinclude:: ../../examples/python/iso15765/iso15765_loopback.py
    :language: python
+
+Firmware Update
+===============
+
+Updates the first device found from a ``fw.bin`` or firmware bundle, see
+:doc:`firmware_update`.
+
+:download:`Download example <../../examples/python/bootloader/update.py>`
+
+.. literalinclude:: ../../examples/python/bootloader/update.py
+   :language: python

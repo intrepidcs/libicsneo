@@ -127,6 +127,8 @@ public:
 		DiskFormatNotSupported = 0x2058,
 		DiskFormatInvalidCount = 0x2059,
 		TC10RequestFailed = 0x205A,
+		FirmwareUpdateNotSupported = 0x205B,
+		FirmwareUpdateFailed = 0x205C,
 
 		// Transport Events
 		FailedToRead = 0x3000,

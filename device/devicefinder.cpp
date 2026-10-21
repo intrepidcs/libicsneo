@@ -1,7 +1,6 @@
 #include "icsneo/device/devicefinder.h"
 #include "icsneo/platform/devices.h"
 #include "icsneo/device/founddevice.h"
-#include "generated/extensions/builtin.h"
 #include "icsneo/platform/servd.h"
 
 #ifdef ICSNEO_ENABLE_FIRMIO
@@ -272,10 +271,6 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 		#ifdef __VIVIDCAN_H_
 		makeIfSerialMatches<VividCAN>(dev, newFoundDevices);
 		#endif
-	}
-
-	for(auto& device : newFoundDevices) {
-		AddBuiltInExtensionsTo(device);
 	}
 
 	// Grab a weak pointer from the new devices

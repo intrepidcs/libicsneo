@@ -57,6 +57,18 @@ pybind11_add_module(icsneopy
 )
 target_link_libraries(icsneopy PRIVATE icsneocpp)
 
+if(LIBICSNEO_ENABLE_BOOTLOADER)
+    target_sources(icsneopy PRIVATE icsneopy/bootloader/bootloader.cpp)
+    target_compile_definitions(icsneopy PRIVATE ICSNEO_ENABLE_BOOTLOADER)
+    if(WIN32)
+        # Windows has no build RPATH; the .pyd only finds DLLs in its own directory
+        add_custom_command(TARGET icsneopy POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:libicsbl::icsbl>" "$<TARGET_FILE_DIR:icsneopy>"
+            VERBATIM
+        )
+    endif()
+endif()
+
 install(TARGETS icsneopy LIBRARY DESTINATION icsneopy)
 
 find_program(STUBGEN_EXE stubgen)

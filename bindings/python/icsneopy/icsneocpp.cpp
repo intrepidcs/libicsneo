@@ -44,6 +44,9 @@ void init_idevicesettings(pybind11::module_&);
 void init_ethphymessage(pybind11::module_&);
 void init_livedata(pybind11::module_&);
 void init_livedatamessage(pybind11::module_&);
+#ifdef ICSNEO_ENABLE_BOOTLOADER
+void init_bootloader(pybind11::module_&);
+#endif
 
 PYBIND11_MODULE(icsneopy, m) {
 	pybind11::options options;
@@ -88,6 +91,9 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_device(m);
     init_deviceextension(m);
 	init_idevicesettings(m);
+#ifdef ICSNEO_ENABLE_BOOTLOADER
+	init_bootloader(m);
+#endif
 
 	m.def("find_all_devices", &FindAllDevices);
 	m.def("get_supported_devices", &GetSupportedDevices);

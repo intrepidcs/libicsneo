@@ -67,8 +67,11 @@ option(LIBICSNEO_ENABLE_DXX "Enable devices which communicate over D2XX/D3XX via
 
 option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" OFF)
 
+option(LIBICSNEO_ENABLE_BOOTLOADER "Enable bootloader firmware update support" OFF)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(GNUInstallDirs)
 
@@ -210,14 +213,6 @@ if(LIBICSNEO_ENABLE_TCP)
 	)
 endif()
 
-# Extensions
-set(LIBICSNEO_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-foreach(EXT_PATH ${LIBICSNEO_EXTENSION_DIRS})
-	get_filename_component(EXT_DIR ${EXT_PATH} NAME)
-	message("Adding extension " ${EXT_DIR})
-	add_subdirectory(${EXT_PATH} ${CMAKE_CURRENT_BINARY_DIR}/${EXT_DIR})
-endforeach()
-
 set(SRC_FILES
 	communication/message/flexray/control/flexraycontrolmessage.cpp
 	communication/message/callback/streamoutput/a2bwavoutput.cpp
@@ -306,6 +301,28 @@ set(SRC_FILES
 	${PLATFORM_SRC}
 )
 
+if(LIBICSNEO_ENABLE_BOOTLOADER)
+	list(APPEND SRC_FILES
+		device/extensions/bootloader/api.cpp
+		device/extensions/bootloader/version.cpp
+		device/extensions/bootloader/platform/logging.cpp
+		device/extensions/bootloader/parser/ief.cpp
+		device/extensions/bootloader/parser/fwzip.cpp
+		device/extensions/bootloader/parser/fwbin.cpp
+		device/extensions/bootloader/parser/fwbundle.cpp
+		device/extensions/bootloader/parser/fwloader.cpp
+		device/extensions/bootloader/communication/red.cpp
+		device/extensions/bootloader/communication/radmultichipcommunication.cpp
+		device/extensions/bootloader/communication/communication.cpp
+		device/extensions/bootloader/communication/radperiphcommunication.cpp
+		device/extensions/bootloader/communication/radcommunication.cpp
+		device/extensions/bootloader/communication/redpacketizer.cpp
+		device/extensions/bootloader/communication/redcore.cpp
+		device/extensions/bootloader/communication/application.cpp
+		device/extensions/bootloader/communication/redbase.cpp
+	)
+endif()
+
 # Generate build info header
 execute_process(
 	COMMAND git rev-parse --abbrev-ref HEAD
@@ -335,17 +352,6 @@ configure_file(api/icsneocpp/buildinfo.h.template ${CMAKE_CURRENT_BINARY_DIR}/ge
 configure_file(api/icsneoc/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
 configure_file(api/icsneoc2/version.rc.template ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc2/version.rc)
 
-foreach(EXTINC ${LIBICSNEO_EXTENSION_INCLUDES})
-	message("Including " ${EXTINC})
-	list(APPEND LIBICSNEO_EXT_CODE_INCS_LIST "#include \"${EXTINC}\"")
-endforeach()
-list(JOIN LIBICSNEO_EXT_CODE_INCS_LIST "\n" LIBICSNEO_EXT_CODE_INCS)
-foreach(EXTCLASS ${LIBICSNEO_EXTENSION_CLASSES})
-	list(APPEND LIBICSNEO_EXT_CODE_LIST "device->addExtension(std::make_shared<${EXTCLASS}>(*device))\;")
-endforeach()
-list(JOIN LIBICSNEO_EXT_CODE_LIST "\n\t" LIBICSNEO_EXT_CODE)
-configure_file(include/icsneo/device/extensions/builtin.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated/extensions/builtin.h)
-
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(icsneocpp
@@ -356,21 +362,16 @@ add_library(icsneocpp
 	api/icsneocpp/version.cpp
 	${SRC_FILES}
 )
-message("Include paths " ${LIBICSNEO_EXTENSION_INCLUDE_PATHS})
 target_include_directories(icsneocpp
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:>
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/include
-		${LIBICSNEO_EXTENSION_INCLUDE_PATHS}
 )
 target_link_libraries(icsneocpp PUBLIC Threads::Threads $<$<BOOL:${WIN32}>:ws2_32 iphlpapi>)
-set_property(TARGET icsneocpp PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(icsneocpp PUBLIC cxx_auto_type cxx_constexpr cxx_lambdas cxx_nullptr cxx_range_for cxx_rvalue_references cxx_sizeof_member cxx_strong_enums)
 target_compile_options(icsneocpp PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
-message("Loaded extensions: " ${LIBICSNEO_EXTENSION_TARGETS})
-target_link_libraries(icsneocpp PUBLIC ${LIBICSNEO_EXTENSION_TARGETS})
 if(LIBICSNEO_ENABLE_FIRMIO)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FIRMIO)
 endif()
@@ -398,7 +399,6 @@ endif()
 
 # fatfs
 add_subdirectory(third-party/fatfs)
-set_property(TARGET fatfs PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(icsneocpp PRIVATE fatfs)
 
 # dxx
@@ -442,6 +442,59 @@ FetchContent_Declare(icspb
 )
 FetchContent_MakeAvailable(icspb)
 target_link_libraries(icsneocpp PRIVATE icspb::icspb)
+
+# libicsbl
+if(LIBICSNEO_ENABLE_BOOTLOADER)
+	if(NOT LIBICSNEO_LIBICSBL_ZIP_URL)
+		if(DEFINED ENV{LIBICSNEO_LIBICSBL_ZIP_URL})
+			set(LIBICSNEO_LIBICSBL_ZIP_URL "$ENV{LIBICSNEO_LIBICSBL_ZIP_URL}")
+		else()
+			if(NOT LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX)
+				if(DEFINED ENV{LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX})
+					set(LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX "$ENV{LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX}")
+				else()
+					set(LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX "https://cdn.intrepidcs.net/libicsbl/5ce699ada0ccaadb92cabda6e3537c09b333020e")
+				endif()
+			endif()
+			if(NOT LIBICSNEO_LIBICSBL_VERSION)
+				if(DEFINED ENV{LIBICSNEO_LIBICSBL_VERSION})
+					set(LIBICSNEO_LIBICSBL_VERSION "$ENV{LIBICSNEO_LIBICSBL_VERSION}")
+				else()
+					set(LIBICSNEO_LIBICSBL_VERSION "26.4.0")
+				endif()
+			endif()
+			if(WIN32)
+				if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8 OR CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES "ARM")
+					message(FATAL_ERROR "Unsupported bootloader architecture: ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
+				endif()
+				set(LIBICSNEO_LIBICSBL_ZIP_URL "${LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX}/libicsbl-${LIBICSNEO_LIBICSBL_VERSION}-windows-amd64.zip")
+			elseif(APPLE)
+				set(LIBICSNEO_LIBICSBL_ZIP_URL "${LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX}/libicsbl-${LIBICSNEO_LIBICSBL_VERSION}-macos-universal.zip")
+			else()
+				if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+					set(LIBICSNEO_LIBICSBL_ZIP_URL "${LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX}/libicsbl-${LIBICSNEO_LIBICSBL_VERSION}-linux-x86_64-glibc.zip")
+				elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+					set(LIBICSNEO_LIBICSBL_ZIP_URL "${LIBICSNEO_LIBICSBL_ZIP_URL_PREFIX}/libicsbl-${LIBICSNEO_LIBICSBL_VERSION}-linux-aarch64-glibc.zip")
+				else()
+					message(FATAL_ERROR "Unsupported CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
+				endif()
+			endif()
+		endif()
+	endif()
+
+	FetchContent_Declare(
+		libicsbl
+		URL "${LIBICSNEO_LIBICSBL_ZIP_URL}"
+	)
+	FetchContent_MakeAvailable(libicsbl)
+	set(libicsbl_ROOT "${libicsbl_SOURCE_DIR}")
+	find_package(libicsbl CONFIG REQUIRED)
+	target_link_libraries(icsneocpp PUBLIC libicsbl::icsbl)
+
+	# miniz
+	add_subdirectory(third-party/miniz)
+	target_link_libraries(icsneocpp PRIVATE miniz)
+endif()
 
 if(LIBICSNEO_BUILD_ICSNEOC)
 	add_library(icsneoc SHARED api/icsneoc/icsneoc.cpp ${CMAKE_CURRENT_BINARY_DIR}/generated/icsneoc/version.rc)
