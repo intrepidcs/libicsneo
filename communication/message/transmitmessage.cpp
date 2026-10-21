@@ -152,6 +152,7 @@ static std::vector<uint8_t> EncodeFromMessageLIN(std::shared_ptr<Frame> frame, c
 	                linmsg->linMsgType == LINMessage::Type::LIN_UPDATE_RESPONDER) && dataLen > 0;
 
 	if(hasData) {
+		LINMessage::calcChecksum(*linmsg);
 		// len includes data bytes + 1 checksum byte
 		linpacket->CoreMiniBitsLIN.len = static_cast<uint16_t>(dataLen + 1);
 		std::copy(linmsg->data.begin(), linmsg->data.begin() + dataLen, linpacket->data);

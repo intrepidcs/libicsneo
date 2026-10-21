@@ -174,6 +174,19 @@ TEST_F(LINEncoderDecoderTest, TransmitMessageBreakOnlySetsCommander) {
 	EXPECT_EQ(lin->CoreMiniBitsLIN.BreakOnly, 1);
 }
 
+TEST_F(LINEncoderDecoderTest, TransmitMessageCalculatesChecksum) {
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x22u));
+	message->network = icsneo::Network::NetID::LIN_02;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_UPDATE_RESPONDER;
+	message->isEnhancedChecksum = true;
+	message->data = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
+	auto bytes = TransmitMessage::EncodeFromMessage(message, 1, report);
+	ASSERT_GE(bytes.size(), sizeof(TransmitMessage));
+	auto* tx = reinterpret_cast<TransmitMessage*>(bytes.data());
+	auto* lin = reinterpret_cast<HardwareLINPacket*>(tx->commonHeader);
+	EXPECT_EQ(lin->CoreMiniBitsLIN.LINByte9, 0xB6);
+}
+
 TEST_F(LINEncoderDecoderTest, PacketEncoderControllerWithDataTest) {
 	std::vector<uint8_t> bytestream;
 	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x11u));
