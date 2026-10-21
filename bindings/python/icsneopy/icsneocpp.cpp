@@ -15,6 +15,7 @@ void init_devicetype(pybind11::module_&);
 void init_message(pybind11::module_&);
 void init_canmessage(pybind11::module_&);
 void init_canerrormessage(pybind11::module_&);
+void init_iso15765message(pybind11::module_&);
 void init_ethernetmessage(pybind11::module_&);
 void init_linmessage(pybind11::module_&);
 void init_tc10statusmessage(pybind11::module_&);
@@ -60,6 +61,7 @@ PYBIND11_MODULE(icsneopy, m) {
 	init_message(m);
 	init_canmessage(m);
 	init_canerrormessage(m);
+	init_iso15765message(m);
 	init_ethernetmessage(m);
 	init_linmessage(m);
 	init_tc10statusmessage(m);

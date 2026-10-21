@@ -26,6 +26,7 @@ pybind11_add_module(icsneopy
     icsneopy/communication/message/message.cpp
     icsneopy/communication/message/canmessage.cpp
     icsneopy/communication/message/canerrormessage.cpp
+    icsneopy/communication/message/iso15765message.cpp
     icsneopy/communication/message/ethernetmessage.cpp
     icsneopy/communication/message/linmessage.cpp
     icsneopy/communication/message/tc10statusmessage.cpp

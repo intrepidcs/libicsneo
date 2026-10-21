@@ -107,3 +107,14 @@ Analog Output Control
 
 .. literalinclude:: ../../examples/python/analog_out/analog_out_basic.py
    :language: python
+
+ISO-TP CAN1 Loopback
+====================
+
+Two devices, CAN1 wired together. ``--raw`` checks the cable, ``--sf`` sends one
+firmware single frame, ``--both`` sends a segmented payload with firmware flow control.
+
+:download:`Download example <../../examples/python/iso15765/iso15765_loopback.py>`
+
+.. literalinclude:: ../../examples/python/iso15765/iso15765_loopback.py
+   :language: python
