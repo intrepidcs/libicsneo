@@ -108,8 +108,9 @@ void CDCACM::Find(std::vector<FoundDevice>& found) {
 			releasers.emplace_back(parent);
 			current = parent;
 			// On old macOSes, IOUSBDevice is the type of the class we want
-			// On newer macOSes, IOUSBDevice may further be subclassed as IOUSBHostDevice
-			if(IOObjectConformsTo(parent, kIOUSBDeviceClassName)) {
+			// On macOS 12+, IOUSBHostDevice is the main USB device class (separate hierarchy from IOUSBDevice)
+			if(IOObjectConformsTo(parent, kIOUSBDeviceClassName) ||
+			   IOObjectConformsTo(parent, "IOUSBHostDevice")) {
 				usb = parent;
 				break;
 			}
