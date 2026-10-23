@@ -679,6 +679,7 @@ typedef enum _icsneoc2_chip_id_t {
 	icsneoc2_chip_id_radgigastar2_zynq = 131,
 	icsneoc2_chip_id_sfpmodule_ent11100_mchip = 132,
 	icsneoc2_chip_id_radargos_mchip = 135,
+	icsneoc2_chip_id_sfpmodule_ad1101_mchip = 136,
 	icsneoc2_chip_id_maxsize, // Must be last entry, Don't use as a chip ID.
 
 	// Used for unknown or invalid chip ID

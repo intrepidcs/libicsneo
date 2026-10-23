@@ -948,7 +948,8 @@ TEST(icsneoc2, test_icsneoc2_chip_id_t)
 	ASSERT_EQ(icsneoc2_chip_id_radgigastar2_zynq, 131);
 	ASSERT_EQ(icsneoc2_chip_id_sfpmodule_ent11100_mchip, 132);
 	ASSERT_EQ(icsneoc2_chip_id_radargos_mchip, 135);
-	ASSERT_EQ(icsneoc2_chip_id_maxsize, 136);
+	ASSERT_EQ(icsneoc2_chip_id_sfpmodule_ad1101_mchip, 136);
+	ASSERT_EQ(icsneoc2_chip_id_maxsize, 137);
 	
 	ASSERT_EQ(icsneoc2_chip_id_invalid, 255);
 
@@ -1085,6 +1086,7 @@ TEST(icsneoc2, test_chip_id_enum_alignment)
 	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADGigastar2_ZYNQ), icsneoc2_chip_id_radgigastar2_zynq);
 	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::SFPModule_ent11100_MCHIP), icsneoc2_chip_id_sfpmodule_ent11100_mchip);
 	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::RADArgos_MCHIP), icsneoc2_chip_id_radargos_mchip);
+	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::SFPModule_ad1101_MCHIP), icsneoc2_chip_id_sfpmodule_ad1101_mchip);
 	ASSERT_EQ(static_cast<icsneoc2_chip_id_t>(icsneo::ChipID::Invalid), icsneoc2_chip_id_invalid);
 }
 

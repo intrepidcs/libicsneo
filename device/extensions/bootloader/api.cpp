@@ -348,6 +348,7 @@ bool Bootloader::isSFPChip(const icsneo::Bootloader::Chip& chip) {
 		icsneo::ChipID::SFPModule_88q3244_MCHIP,
 		icsneo::ChipID::SFPModule_ent11100_MCHIP,
 		icsneo::ChipID::SFPModule_lan8670_MCHIP,
+		icsneo::ChipID::SFPModule_ad1101_MCHIP,
 	};
 	return sfpChipIDs.find(chip.getID()) != sfpChipIDs.end();
 }
@@ -359,6 +360,7 @@ bool Bootloader::isSFPIEF(const icsneo::Bootloader::IEF& ief) {
 		icsneo::Device::ProductID::SFPModule_88q4364,
 		icsneo::Device::ProductID::SFPModule_ent11100,
 		icsneo::Device::ProductID::SFPModule_lan8670,
+		icsneo::Device::ProductID::SFPModule_ad1101,
 	};
 	return sfpProductIDs.find(static_cast<icsneo::Device::ProductID>(ief.getVersion().prodId)) != sfpProductIDs.end();
 }

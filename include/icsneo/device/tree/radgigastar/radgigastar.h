@@ -41,7 +41,8 @@ public:
 			{ChipID::SFPModule_88q2221_MCHIP, true, "SFP-MV2221M", "sfp_mv2221m_b2_mchip_ief", 3, FirmwareType::IEF},
 			{ChipID::SFPModule_lan8670_MCHIP, true, "SFP-MC8670", "sfp_module_lan8670_ief", 3, FirmwareType::IEF},
 			{ChipID::SFPModule_88q3244_MCHIP, true, "SFP-MV3244", "sfp_module_88q3244_ief", 3, FirmwareType::IEF},
-			{ChipID::SFPModule_ent11100_MCHIP, true, "SFP-EN11100", "sfp_module_ent11100_ief", 3, FirmwareType::IEF}
+			{ChipID::SFPModule_ent11100_MCHIP, true, "SFP-EN11100", "sfp_module_ent11100_ief", 3, FirmwareType::IEF},
+			{ChipID::SFPModule_ad1101_MCHIP, true, "SFP-AD1101", "sfp_module_adi1101_ief", 3, FirmwareType::IEF},
 		};
 		return chips;
 	}

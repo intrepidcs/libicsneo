@@ -152,6 +152,7 @@ public:
 		RADGigastar2 = 57,
 		SFPModule_ent11100 = 58,
 		RADArgos = 60,
+		SFPModule_ad1101 = 61,
 	};
 
 	virtual ProductID getProductID() const = 0;
