@@ -170,6 +170,7 @@ public:
 		ServdNoDataError = ServdBindError + 9,
 		ServdJoinMulticastError = ServdBindError + 10,
 		ServdNotReachable = ServdBindError + 11,
+		ServdDisabled = ServdBindError + 12,
 
 		// DXX
 		DXXErrorSys = 0x6100,

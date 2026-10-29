@@ -25,14 +25,3 @@ To upgrade an existing installation:
 .. code-block:: bash
 
    pip install --pre --upgrade icsneopy
-
-Linux udev Rules
-================
-
-Linux users may want to install the included udev rules to run icsneopy-based
-applications without root. The rules file can be found in the libicsneo source
-repository at https://github.com/intrepidcs/libicsneo/.
-
-.. code-block:: bash
-
-   sudo cp 99-intrepidcs.rules /etc/udev/rules.d/

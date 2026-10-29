@@ -53,17 +53,12 @@ option(LIBICSNEO_BUILD_ICSNEOC2 "Build dynamic C2 library" ON)
 option(LIBICSNEO_BUILD_ICSNEOC2_STATIC "Build static C2 library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY "Build icsnVC40 compatibility library" ON)
 option(LIBICSNEO_BUILD_ICSNEOLEGACY_STATIC "Build static icsnVC40 compatibility library" ON)
-set(LIBICSNEO_NPCAP_INCLUDE_DIR "" CACHE STRING "Npcap include directory; set to build with Npcap")
 
 # Device Drivers
 # You almost certainly don't want firmio for your build,
 # it is only relevant for communication between Linux and
 # CoreMini from the onboard processor of the device.
 option(LIBICSNEO_ENABLE_FIRMIO "Enable communication between Linux and CoreMini within the same device" OFF)
-option(LIBICSNEO_ENABLE_RAW_ETHERNET "Enable devices which communicate over raw ethernet" ON)
-option(LIBICSNEO_ENABLE_CDCACM "Enable devices which communicate over USB CDC ACM" ON)
-option(LIBICSNEO_ENABLE_TCP "Enable devices which communicate over TCP" OFF)
-option(LIBICSNEO_ENABLE_DXX "Enable devices which communicate over D2XX/D3XX via libredxx" ON)
 
 option(LIBICSNEO_ENABLE_BINDINGS_PYTHON "Enable Python library" OFF)
 
@@ -145,72 +140,8 @@ if(LIBICSNEO_BUILD_DOCS)
 	endif()
 endif()
 
-if(WIN32)
-	set(PLATFORM_SRC
-		platform/windows/strings.cpp
-		platform/windows/registry.cpp
-	)
-
-	if(LIBICSNEO_ENABLE_RAW_ETHERNET)
-		list(APPEND PLATFORM_SRC
-			platform/windows/pcap.cpp
-			platform/windows/internal/pcapdll.cpp
-		)
-	endif()
-
-	if(LIBICSNEO_ENABLE_CDCACM)
-		list(APPEND PLATFORM_SRC
-			platform/windows/cdcacm.cpp
-		)
-	endif()
-else() # Darwin or Linux
-	set(PLATFORM_SRC)
-
-	if(LIBICSNEO_ENABLE_FIRMIO)
-		list(APPEND PLATFORM_SRC
-			platform/posix/firmio.cpp
-		)
-	endif()
-
-	if(LIBICSNEO_ENABLE_RAW_ETHERNET)
-		list(APPEND PLATFORM_SRC
-			platform/posix/pcap.cpp
-		)
-	endif()
-
-	if(LIBICSNEO_ENABLE_CDCACM)
-		list(APPEND PLATFORM_SRC
-			platform/posix/cdcacm.cpp
-		)
-
-		if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-			list(APPEND PLATFORM_SRC
-				platform/posix/darwin/cdcacmdarwin.cpp
-			)
-		else() # Linux or other
-			list(APPEND PLATFORM_SRC
-				platform/posix/linux/cdcacmlinux.cpp
-			)
-			if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-				message(WARNING
-					"There is no CDCACM platform port defined for ${CMAKE_SYSTEM_NAME}!\n"
-					"The Linux platform code will be used, as it will generally allow building, but some devices may not enumerate properly."
-				)
-			endif()
-		endif()
-	endif()
-endif()
-
-if(LIBICSNEO_ENABLE_DXX)
-	list(APPEND PLATFORM_SRC
-		platform/dxx.cpp
-	)
-endif()
-
-if(LIBICSNEO_ENABLE_TCP)
-	list(APPEND PLATFORM_SRC
-		platform/tcp.cpp
-	)
+if(LIBICSNEO_ENABLE_FIRMIO AND NOT WIN32)
+	set(PLATFORM_SRC platform/posix/firmio.cpp)
 endif()
 
 set(SRC_FILES
@@ -375,58 +306,10 @@ target_compile_options(icsneocpp PRIVATE ${LIBICSNEO_COMPILER_WARNINGS})
 if(LIBICSNEO_ENABLE_FIRMIO)
 	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_FIRMIO)
 endif()
-if(LIBICSNEO_ENABLE_RAW_ETHERNET)
-	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_RAW_ETHERNET)
-endif()
-if(LIBICSNEO_ENABLE_CDCACM)
-	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_CDCACM)
-	if(APPLE)
-		find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation REQUIRED)
-		find_library(IO_KIT_FRAMEWORK IOKit REQUIRED)
-		target_link_libraries(icsneocpp PRIVATE ${CORE_FOUNDATION_FRAMEWORK} ${IO_KIT_FRAMEWORK})
-	endif()
-endif()
-if(LIBICSNEO_ENABLE_DXX)
-	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_DXX)
-	target_link_libraries(icsneocpp PRIVATE libredxx::libredxx)
-endif()
-if(LIBICSNEO_ENABLE_TCP)
-	target_compile_definitions(icsneocpp PRIVATE ICSNEO_ENABLE_TCP)
-	if(WIN32)
-		target_link_libraries(icsneocpp PRIVATE ws2_32 iphlpapi)
-	endif()
-endif()
 
 # fatfs
 add_subdirectory(third-party/fatfs)
 target_link_libraries(icsneocpp PRIVATE fatfs)
-
-# dxx
-if(LIBICSNEO_ENABLE_DXX)
-	include(FetchContent)
-	FetchContent_Declare(libredxx
-		GIT_REPOSITORY https://github.com/Zeranoe/libredxx.git
-		GIT_TAG e823a96c39a64ab41b7d1632dbe8f86bb854df83
-	)
-	set(LIBREDXX_DISABLE_INSTALL ON)
-	FetchContent_MakeAvailable(libredxx)
-endif()
-
-# pcap
-if(LIBICSNEO_ENABLE_RAW_ETHERNET)
-	if(WIN32)
-		if(LIBICSNEO_NPCAP_INCLUDE_DIR STREQUAL "")
-			target_include_directories(icsneocpp PUBLIC AFTER third-party/winpcap/include)
-			add_definitions(-DWPCAP -DHAVE_REMOTE)
-		else()
-			target_include_directories(icsneocpp PUBLIC AFTER ${LIBICSNEO_NPCAP_INCLUDE_DIR})
-		endif()
-	else()
-		find_package(PCAP REQUIRED)
-		target_include_directories(icsneocpp PUBLIC ${PCAP_INCLUDE_DIR})
-		target_link_libraries(icsneocpp PUBLIC ${PCAP_LIBRARY})
-	endif(WIN32)
-endif(LIBICSNEO_ENABLE_RAW_ETHERNET)
 
 # protobuf
 if(DEFINED ENV{LIBICSNEO_ICSPB_REPO})
@@ -629,7 +512,6 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/icsneoc2.cpp
 		test/unit/ethphyregistertest.cpp
 		test/unit/tc10test.cpp
-		test/unit/windowsstrings.cpp
 		test/unit/periodictest.cpp
 	)
 

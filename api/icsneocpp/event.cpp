@@ -171,6 +171,7 @@ static constexpr const char* SERVD_POLL_ERROR = "Error polling on Servd socket";
 static constexpr const char* SERVD_NODATA_ERROR = "No data received from Servd";
 static constexpr const char* SERVD_JOIN_MULTICAST_ERROR = "Error joining Servd multicast group";
 static constexpr const char* SERVD_NOT_REACHABLE = "Could not reach Servd; ensure it is installed and running";
+static constexpr const char* SERVD_DISABLED = "Servd is disabled via LIBICSNEO_USE_SERVD; no devices will be found";
 
 // DXX
 static constexpr const char* DXX_ERROR_SYS = "System error, check errno/GetLastError()";
@@ -451,6 +452,8 @@ const char* APIEvent::DescriptionForType(Type type) {
 			return SERVD_JOIN_MULTICAST_ERROR;
 		case Type::ServdNotReachable:
 			return SERVD_NOT_REACHABLE;
+		case Type::ServdDisabled:
+			return SERVD_DISABLED;
 
 		// DXX
 		case Type::DXXErrorSys:

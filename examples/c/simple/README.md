@@ -52,7 +52,7 @@ Although the example program will build without successfully completing the step
 
 First, we are going to build the icsneoc library into a .so file that we can later use in order to access the library functions.
 
-1. Install dependencies with `sudo apt update` then `sudo apt install build-essential cmake libpcap0.8-dev`
+1. Install dependencies with `sudo apt update` then `sudo apt install build-essential cmake`
 2. Change directories to `libicsneo-examples/third-party/libicsneo` and create a build directory by running `mkdir -p build`
 3. Enter the build directory with `cd build`
 4. Run `cmake ..` to generate your Makefile.
@@ -72,8 +72,7 @@ Although the example program will build without successfully completing the step
     * Hint! Running `cmake -DCMAKE_BUILD_TYPE=Debug ..` will generate the proper scripts to build debug, and `cmake -DCMAKE_BUILD_TYPE=Release ..` will generate the proper scripts to build with all optimizations on.
 5. Run `make` to build the library.
     * Hint! Speed up your build by using multiple processors! Use `make -j#` where `#` is the number of cores/threads your system has plus one. For instance, on a standard 8 thread Intel i7, you might use `-j9` for an ~8x speedup.
-6. Run `sudo ./libicsneoc-example` to run the example.
-    * Hint! In order to run without sudo, you will need to set up the udev rules. Copy `libicsneo-examples/third-party/libicsneo/99-intrepidcs.rules` to `/etc/udev/rules.d`, then run `udevadm control --reload-rules && udevadm trigger` afterwards. While the program will still run without setting up these rules, it will fail to open any devices.
+6. Run `./libicsneoc-example` to run the example.
 
 ## macOS
 

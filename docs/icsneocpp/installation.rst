@@ -8,7 +8,6 @@ Dependencies
 The minimum requirements to build libicsneo are:
 - CMake version 3.12 or newer
 - A C++17 compiler
-- libpcap on Linux and macOS
 
 
 Building library & examples
@@ -30,10 +29,3 @@ libicsneo supports being added as a sub-projects with CMake's
 #. Clone libicsneo into the desired location within the project
 #. Add ``add_subdirectory(path/to/libicsneo)`` to ``CMakeLists.txt``
 #. Link the project to libicsneo with ``target_link_libraries(app icsneocpp)``
-
-Linux udev Rules
-================
-
-Linux users may want to install the included udev rules to run libicsneo based
-applications without root, this can be done with:
-``cp 99-intrepidcs.rules /etc/udev/rules.d/``

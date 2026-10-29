@@ -5,7 +5,6 @@
 
 #include "icsneo/device/device.h"
 #include "icsneo/device/devicetype.h"
-#include "icsneo/platform/cdcacm.h"
 #include "icsneo/device/tree/vividcan/vividcansettings.h"
 
 namespace icsneo {

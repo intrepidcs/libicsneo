@@ -7,22 +7,6 @@
 #include "icsneo/platform/firmio.h"
 #endif
 
-#ifdef ICSNEO_ENABLE_RAW_ETHERNET
-#include "icsneo/platform/pcap.h"
-#endif
-
-#ifdef ICSNEO_ENABLE_CDCACM
-#include "icsneo/platform/cdcacm.h"
-#endif
-
-#ifdef ICSNEO_ENABLE_DXX
-#include "icsneo/platform/dxx.h"
-#endif
-
-#ifdef ICSNEO_ENABLE_TCP
-#include "icsneo/platform/tcp.h"
-#endif
-
 using namespace icsneo;
 
 template<typename T>
@@ -55,22 +39,8 @@ std::vector<std::shared_ptr<Device>> DeviceFinder::FindAll() {
 	} else {
 		#ifdef ICSNEO_ENABLE_FIRMIO
 		FirmIO::Find(newDriverFoundDevices);
-		#endif
-	
-		#ifdef ICSNEO_ENABLE_TCP
-		TCP::Find(newDriverFoundDevices);
-		#endif
-	
-		#ifdef ICSNEO_ENABLE_RAW_ETHERNET
-		PCAP::Find(newDriverFoundDevices);
-		#endif
-	
-		#ifdef ICSNEO_ENABLE_CDCACM
-		CDCACM::Find(newDriverFoundDevices);
-		#endif
-	
-		#ifdef ICSNEO_ENABLE_DXX
-		DXX::Find(newDriverFoundDevices);
+		#else
+		EventManager::GetInstance().add(APIEvent::Type::ServdDisabled, APIEvent::Severity::EventWarning);
 		#endif
 	}
 

@@ -47,7 +47,7 @@ unit_test windows/x64:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y g++ ninja-build cmake libpcap-dev git ca-certificates
+    - apt install -y g++ ninja-build cmake git ca-certificates
     - echo "$ICS_IPA_CA_CRT" >/usr/local/share/ca-certificates/ica-ipa-ca.crt
     - update-ca-certificates --fresh
     - sh ci/build-posix.sh
@@ -64,7 +64,6 @@ unit_test windows/x64:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y libpcap-dev
     - build/libicsneo-unit-tests
   tags:
     - linux-build
@@ -75,7 +74,7 @@ unit_test windows/x64:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y clang lld ninja-build cmake libpcap-dev git ca-certificates
+    - apt install -y clang lld ninja-build cmake git ca-certificates
     - echo "$ICS_IPA_CA_CRT" >/usr/local/share/ca-certificates/ica-ipa-ca.crt
     - update-ca-certificates --fresh
     - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
@@ -92,7 +91,6 @@ unit_test windows/x64:
   script:
     - apt update -y
     - apt upgrade -y
-    - apt install -y libpcap-dev
     - build/libicsneo-unit-tests
   tags:
     - linux-build
@@ -159,7 +157,7 @@ unit_test linux/ubuntu/2604/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y g++ libpcap-devel cmake ninja-build git ca-certificates
+    - dnf install -y g++ cmake ninja-build git ca-certificates
     - echo "$ICS_IPA_CA_CRT" >/etc/pki/ca-trust/source/anchors/ica-ipa-ca.crt
     - update-ca-trust
     - sh ci/build-posix.sh
@@ -180,7 +178,6 @@ unit_test linux/ubuntu/2604/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y libpcap-devel
     - build/libicsneo-unit-tests
   tags:
     - linux-build
@@ -195,7 +192,7 @@ unit_test linux/ubuntu/2604/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y clang lld libpcap-devel cmake ninja-build git ca-certificates
+    - dnf install -y clang lld cmake ninja-build git ca-certificates
     - echo "$ICS_IPA_CA_CRT" >/etc/pki/ca-trust/source/anchors/ica-ipa-ca.crt
     - update-ca-trust
     - CC=clang CXX=clang++ LDFLAGS=-fuse-ld=lld sh ci/build-posix.sh
@@ -216,7 +213,6 @@ unit_test linux/ubuntu/2604/amd64/clang:
     - echo max_parallel_downloads=10 >>/etc/dnf/dnf.conf
     - echo fastestmirror=True >>/etc/dnf/dnf.conf
     - dnf upgrade -y
-    - dnf install -y libpcap-devel
     - build/libicsneo-unit-tests
   tags:
     - linux-build
