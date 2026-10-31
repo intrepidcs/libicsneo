@@ -329,9 +329,10 @@ deploy python/pypi:
   image: python:3.13
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
   script:
     - python3 -m pip install -U twine
-    - twine upload wheelhouse/*
+    - twine upload --skip-existing wheelhouse/*
   dependencies:
     - build python/linux/amd64
     - build python/linux/arm64
@@ -349,14 +350,23 @@ push github:
   tags:
     - linux-build
   image: alpine:latest
+  variables:
+    GIT_DEPTH: 0
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: delayed
       start_in: 10 minutes
+      variables:
+        REFSPEC: HEAD:master
+    - if: $CI_COMMIT_TAG
+      when: delayed
+      start_in: 10 minutes
+      variables:
+        REFSPEC: $CI_COMMIT_TAG
   dependencies:
     - deploy python/pypi
   needs:
     - deploy python/pypi
   script:
     - apk add git
-    - git push https://$LIBICSNEO_GITHUB_USERNAME:$LIBICSNEO_GITHUB_TOKEN@github.com/intrepidcs/libicsneo.git HEAD:master
+    - git push https://$LIBICSNEO_GITHUB_USERNAME:$LIBICSNEO_GITHUB_TOKEN@github.com/intrepidcs/libicsneo.git $REFSPEC
