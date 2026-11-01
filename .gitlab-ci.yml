@@ -332,7 +332,7 @@ deploy python/pypi:
     - if: $CI_COMMIT_TAG
   script:
     - python3 -m pip install -U twine
-    - twine upload --skip-existing wheelhouse/*
+    - twine upload --verbose wheelhouse/*
   dependencies:
     - build python/linux/amd64
     - build python/linux/arm64
