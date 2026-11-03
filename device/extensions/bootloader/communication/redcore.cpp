@@ -9,7 +9,7 @@ namespace icsneo {
 
 namespace Bootloader {
 
-bool REDCoreCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) {
+bool REDCoreCommunication::flash(const FWRepo& fw, const icsneo::Bootloader::StatusHandler& handler) {
 	constexpr const size_t MaxSectorSize = 0x600;
 
 	std::vector<uint8_t> bin;
@@ -31,7 +31,7 @@ bool REDCoreCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenSta
 	std::vector<uint8_t> sector;
 	for(size_t i = 0; i < fileSize; i += MaxSectorSize) {
 		Log::Trace(__func__, "Sending sector " + std::to_string(sectorsFlashed));
-		handler(icsneo::Device::OpenStatusType::Progress, message, double(sectorsFlashed++) / sectorCount);
+		handler(StatusType::Progress, message, double(sectorsFlashed++) / sectorCount);
 
 		sector.assign(bin.begin() + i, bin.begin() + i + std::min<size_t>(MaxSectorSize, fileSize - i));
 		if(!sendCommand(uint8_t(Command::SendFirmware), sector)) {
@@ -42,7 +42,7 @@ bool REDCoreCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenSta
 
 	// Then flash it
 	Log::Debug(__func__, "Starting core flash for " + targetChip.getName());
-	handler(icsneo::Device::OpenStatusType::Progress, message, std::nullopt);
+	handler(StatusType::Progress, message, std::nullopt);
 
 	// There is a long timeout on the StartFirmwareFlash because the bootloader may block here,
 	// potentially for the entire duration of the flash
@@ -92,7 +92,7 @@ bool REDCoreCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenSta
 		Log::Trace(__func__, "Flashed " + std::to_string(flashed) + " of " + std::to_string(fileSize));
 
 		if(flashed != oldFlashed)
-			handler(icsneo::Device::OpenStatusType::Progress, message, std::min(double(flashed) / fileSize, 1.0));
+			handler(StatusType::Progress, message, std::min(double(flashed) / fileSize, 1.0));
 	}
 
 	return flashed == fileSize;

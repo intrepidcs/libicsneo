@@ -79,7 +79,7 @@ public:
 	RADPeriphCommunication(icsneo::Device& dev, const ChipInfo& chipToFlash);
 	~RADPeriphCommunication();
 
-	bool flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) override;
+	bool flash(const FWRepo& fw, const StatusHandler& handler) override;
 	bool open() override;
 	bool close() override;
 	bool enterApplication() override;

@@ -180,7 +180,7 @@ bool RADPeriphCommunication::flashSector(const IEF::Sector& sector) {
 	return sendRequest(Request::FlashSector, std::move(args), std::chrono::milliseconds(3000));
 }
 
-bool RADPeriphCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) {
+bool RADPeriphCommunication::flash(const FWRepo& fw, const icsneo::Bootloader::StatusHandler& handler) {
 	// Validate the firmware before touching the device so a bad file can not leave it erased
 	std::vector<uint8_t> bin;
 	if(!fw.getFW(targetChip.getIEFName(), bin)) {
@@ -228,7 +228,7 @@ bool RADPeriphCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenS
 	}
 
 	handler(
-		icsneo::Device::OpenStatusType::Progress,
+		StatusType::Progress,
 		"Flashing " + targetChip.getName() + "...",
 		std::nullopt
 	);
@@ -242,7 +242,7 @@ bool RADPeriphCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenS
 
 		sizeFlashed += static_cast<uint32_t>(sector.second.size());
 		handler(
-			icsneo::Device::OpenStatusType::Progress,
+			StatusType::Progress,
 			"Flashing " + targetChip.getName() + "...",
 			(double)sizeFlashed / (double)totalSize
 		);

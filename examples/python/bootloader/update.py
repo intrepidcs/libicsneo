@@ -30,7 +30,6 @@ def update(firmware_path):
 			print()
 		last_status = status
 		print(f"\r{status}" + (f" ({progress * 100:.1f}%)" if progress is not None else ""), end="", flush=True)
-		return icsneopy.Device.OpenDirective.Continue
 
 	# force_flash updates every chip, even those already at the version in the firmware file
 	ok = icsneopy.Bootloader.update(device, fw, logger, force_flash=True)

@@ -111,7 +111,7 @@ static bool runPipeline(
 	icsneo::Device& device,
 	const BootloaderPipeline& pipeline,
 	const FWRepo& fw,
-	const Logger& logger,
+	const StatusHandler& statusHandler,
 	bool alreadyInBootloader,
 	bool forceFlash
 ) {
@@ -167,7 +167,7 @@ static bool runPipeline(
 
 				auto com = getCommunication(device, flashPhase, info);
 				if(!withCommunication(com.get(), info, "FlashPhase", [&](Bootloader::Communication& opened) {
-					if(!opened.flash(fw, logger)) {
+					if(!opened.flash(fw, statusHandler)) {
 						Log::Error("FlashPhase", "failed to flash " + chipString(flashPhase.chip));
 						return false;
 					}
@@ -257,13 +257,13 @@ static bool runPipeline(
 			}
 		}
 	}
-	return exitBootloader(device, logger, !chipsFlashed.empty());
+	return exitBootloader(device, statusHandler, !chipsFlashed.empty());
 }
 
 bool Bootloader::update(
 	icsneo::Device& device,
 	const FWRepo& fw,
-	Logger logger,
+	StatusHandler statusHandler,
 	bool alreadyInBootloader,
 	bool forceFlash
 ) {
@@ -273,7 +273,7 @@ bool Bootloader::update(
 		return false;
 	}
 
-	if(!runPipeline(device, pipeline, fw, logger, alreadyInBootloader, forceFlash)) {
+	if(!runPipeline(device, pipeline, fw, statusHandler, alreadyInBootloader, forceFlash)) {
 		device.getEventHandler()(APIEvent::Type::FirmwareUpdateFailed, APIEvent::Severity::Error);
 		return false;
 	}
@@ -287,19 +287,19 @@ bool Bootloader::enterBootloader(icsneo::Device& device) {
 	return device.reconnect(std::chrono::milliseconds(30000));
 }
 
-bool Bootloader::exitBootloader(icsneo::Device& device, Logger logger, bool updatedChips) {
+bool Bootloader::exitBootloader(icsneo::Device& device, StatusHandler statusHandler, bool updatedChips) {
 	if(!updatedChips) {
 		return true;
 	}
-	logger(icsneo::Device::OpenStatusType::Progress, "Connecting to the device...", std::nullopt);
-	return verifyConnection(device, logger);
+	statusHandler(StatusType::Progress, "Connecting to the device...", std::nullopt);
+	return verifyConnection(device, statusHandler);
 }
 
 /**
  * Toggle network communication and wait up to 5 seconds for a reset status confirming the change.
  * Like icsneo::Device::goOnline(), a timeout is not an error.
  */
-static bool setCommunicationEnabled(icsneo::Device& device, const Logger& logger, bool enable, double progressStart) {
+static bool setCommunicationEnabled(icsneo::Device& device, const StatusHandler& statusHandler, bool enable, double progressStart) {
 	static constexpr std::chrono::seconds Timeout(5);
 	const auto filter = std::make_shared<MessageFilter>(Message::Type::ResetStatus);
 
@@ -329,16 +329,16 @@ static bool setCommunicationEnabled(icsneo::Device& device, const Logger& logger
 		}
 
 		// Each call covers half of the overall progress
-		logger(icsneo::Device::OpenStatusType::Progress, "Connecting to the device...", progressStart + (elapsedTime / Timeout) / 2.0);
+		statusHandler(StatusType::Progress, "Connecting to the device...", progressStart + (elapsedTime / Timeout) / 2.0);
 		elapsedTime = std::chrono::steady_clock::now() - startTime;
 	}
-	logger(icsneo::Device::OpenStatusType::Progress, "Connecting to the device...", progressStart + 0.5);
+	statusHandler(StatusType::Progress, "Connecting to the device...", progressStart + 0.5);
 	return true;
 }
 
-bool Bootloader::verifyConnection(icsneo::Device& device, Logger logger) {
+bool Bootloader::verifyConnection(icsneo::Device& device, StatusHandler statusHandler) {
 	// Firmware needs to confirm the update by verifying that it can enable/disable the connection on the device
-	return setCommunicationEnabled(device, logger, true, 0.0) && setCommunicationEnabled(device, logger, false, 0.5);
+	return setCommunicationEnabled(device, statusHandler, true, 0.0) && setCommunicationEnabled(device, statusHandler, false, 0.5);
 }
 
 bool Bootloader::isSFPChip(const icsneo::Bootloader::Chip& chip) {

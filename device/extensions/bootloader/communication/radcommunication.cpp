@@ -323,8 +323,8 @@ bool RADCommunication::sendSoftware(const std::vector<uint8_t>& chipSoftware) {
 	size_t remainingBytes = chipSoftware.size();
 	size_t currentlyReading = 0;
 
-	logger(
-		icsneo::Device::OpenStatusType::Progress,
+	statusHandler(
+		StatusType::Progress,
 		"Flashing " + targetChip.getName() + "...",
 		std::nullopt
 	);
@@ -332,8 +332,8 @@ bool RADCommunication::sendSoftware(const std::vector<uint8_t>& chipSoftware) {
 	while(remainingBytes > 0) {
 		const double progress = static_cast<double>(currentlyReading) / static_cast<double>(chipSoftware.size());
 
-		logger(
-			icsneo::Device::OpenStatusType::Progress,
+		statusHandler(
+			StatusType::Progress,
 			"Flashing " + targetChip.getName() + "...",
 			progress
 		);
@@ -407,8 +407,8 @@ bool RADCommunication::sendSoftware(const std::vector<uint8_t>& chipSoftware) {
 		}
 	}
 
-	logger(
-		icsneo::Device::OpenStatusType::Progress,
+	statusHandler(
+		StatusType::Progress,
 		"Flashing " + targetChip.getName() + "...",
 		1.0
 	);
@@ -431,8 +431,8 @@ bool RADCommunication::getProgrammingStatus(size_t sizeToValidate) {
 	uint32_t status = 0;
 	const auto beginTime = std::chrono::steady_clock::now();
 
-	logger(
-		icsneo::Device::OpenStatusType::Progress,
+	statusHandler(
+		StatusType::Progress,
 		"Programming " + targetChip.getName() + "...",
 		std::nullopt
 	);
@@ -440,8 +440,8 @@ bool RADCommunication::getProgrammingStatus(size_t sizeToValidate) {
 	while(status < static_cast<uint32_t>(sizeToValidate)) {
 		const double progress = static_cast<double>(status) / static_cast<double>(sizeToValidate);
 
-		logger(
-			icsneo::Device::OpenStatusType::Progress,
+		statusHandler(
+			StatusType::Progress,
 			"Programming " + targetChip.getName() + "...",
 			progress
 		);
@@ -457,8 +457,8 @@ bool RADCommunication::getProgrammingStatus(size_t sizeToValidate) {
 		}
 	}
 
-	logger(
-		icsneo::Device::OpenStatusType::Progress,
+	statusHandler(
+		StatusType::Progress,
 		"Programming " + targetChip.getName() + "...",
 		1.0
 	);
@@ -510,7 +510,7 @@ bool RADCommunication::loadZips(const FWRepo& fw, std::vector<uint8_t>& chipSoft
 	return false;
 }
 
-bool RADCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) {
+bool RADCommunication::flash(const FWRepo& fw, const icsneo::Bootloader::StatusHandler& handler) {
 	Log::Info(__func__, "starting flash for " + targetChip.getName());
 	auto chipSrcVer = fw.getChipVersion(targetChip.getIEFName());
 	if(!chipSrcVer) {
@@ -524,7 +524,7 @@ bool RADCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenStatusH
 		return false;
 	}
 
-	logger = handler;
+	statusHandler = handler;
 	if(!validateChipVersion(*chipSrcVer)) {
 		Log::Error(__func__, "validateChipVersion failed for " + targetChip.getName());
 		return false;

@@ -5,6 +5,7 @@
 
 #include "icsneo/device/extensions/bootloader/chip.h"
 #include "icsneo/device/device.h"
+#include "icsneo/device/extensions/bootloader/api.h"
 
 #include <cstdint>
 
@@ -29,7 +30,7 @@ public:
 	virtual bool enterApplication() = 0;
 	virtual bool hasFinalizationStep() const = 0;
 	virtual bool finalize() = 0;
-	virtual bool flash(const FWRepo& repo, const icsneo::Device::OpenStatusHandler& handler) = 0;
+	virtual bool flash(const FWRepo& repo, const StatusHandler& handler) = 0;
 
 	virtual bool open() = 0;
 	virtual bool close() = 0;

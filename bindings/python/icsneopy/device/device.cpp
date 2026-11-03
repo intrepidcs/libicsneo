@@ -15,19 +15,6 @@ namespace icsneo {
 void init_device(pybind11::module_& m) {
 	pybind11::classh<Device> device(m, "Device");
 
-	pybind11::native_enum<Device::OpenDirective>(device, "OpenDirective", "enum.IntEnum")
-		.value("Continue", Device::OpenDirective::Continue)
-		.value("Cancel", Device::OpenDirective::Cancel)
-		.value("Skip", Device::OpenDirective::Skip)
-		.finalize();
-
-	pybind11::native_enum<Device::OpenStatusType>(device, "OpenStatusType", "enum.IntEnum")
-		.value("QuestionContinueSkipCancel", Device::OpenStatusType::QuestionContinueSkipCancel)
-		.value("QuestionContinueCancel", Device::OpenStatusType::QuestionContinueCancel)
-		.value("Progress", Device::OpenStatusType::Progress)
-		.value("Failed", Device::OpenStatusType::Failed)
-		.finalize();
-
 	device
 		.def("__repr__", &Device::describe)
 		.def("add_message_callback", &Device::addMessageCallback, pybind11::call_guard<pybind11::gil_scoped_release>())

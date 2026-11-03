@@ -206,21 +206,10 @@ public:
 	public:
 		enum Enum {
 			/**
-			 * Even if the firmware does not match the current firmware version,
-			 * the device will not be updated.
-			 * 
-			 * Note: The device may still be flashed if the device has no firmware
-			 * 
-			 * This has no effect if the DFU extension is not present
+			 * Skip refreshing the device state. Instead, only open com
+			 * and start the heartbeat thread.
 			 */
-			SuppressAutoUpdate = 1 << 0,
-
-			/**
-			 * Force reflash the device.
-			 * 
-			 * This has no effect if the DFU extension is not present
-			 */
-			ForceReflash = 1 << 1
+			SkipRefreshDeviceState = 1 << 0,
 		};
 		using EnumType = std::underlying_type<Enum>::type;
 
@@ -231,31 +220,8 @@ public:
 		const Enum val;
 	};
 
-	enum class OpenDirective {
-		Continue,
-		Cancel,
-		Skip
-	};
-
-	enum class OpenStatusType {
-		QuestionContinueSkipCancel,
-		QuestionContinueCancel,
-		Progress,
-		Failed
-	};
-
-	/**
-	 * @brief Alias of callback function for progress of a bootloader pipeline task
-	 * 
-	 * The progress value passed into the callback function indicates the following:
-	 * 1) If the value is std::nullopt, this implies the status message is for an asynchronous task or a task in which the current progress is unknown.
-	 * 2) If the value is between 0 and 1 (i.e., 0 <= progress <= 1), this implies the actual progress of the current task as a percentage.
-	 * 3) Values not between 0 and 1 (i.e., progress < 0 or progress > 1) are undefined.
-	 */
-	using OpenStatusHandler = std::function<Device::OpenDirective(OpenStatusType type, const std::string& status, std::optional<double> progress)>;
-
-	bool open(OpenFlags flags = {}, OpenStatusHandler handler =
-		[](OpenStatusType, const std::string&, std::optional<double>) { return Device::OpenDirective::Continue; });
+	bool open(OpenFlags flags = {});
+	APIEvent::Type refreshDeviceState();
 	virtual bool close();
 	virtual bool isOnline() const { return online; }
 	virtual bool isOpen() const { return com->isOpen(); }

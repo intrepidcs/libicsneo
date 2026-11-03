@@ -41,7 +41,7 @@ bool RADMultiChipCommunication::authenticate() {
 	return true;
 }
 
-bool RADMultiChipCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) {
+bool RADMultiChipCommunication::flash(const FWRepo& fw, const icsneo::Bootloader::StatusHandler& handler) {
 	Log::Info(__func__, "starting flash for " + targetChip.getName());
 	auto chipSrcVer = fw.getChipVersion(targetChip.getIEFName());
 	if(!chipSrcVer) {
@@ -56,7 +56,7 @@ bool RADMultiChipCommunication::flash(const FWRepo& fw, const icsneo::Device::Op
 
 	if(!standardComm->validateFirmware(*chipSrcVer)) {
 		Log::Error(__func__, "firmware validation failed for " + targetChip.getName());
-		handler(icsneo::Device::OpenStatusType::Failed, "Failed to validate firmware", std::nullopt);
+		handler(StatusType::Failed, "Failed to validate firmware", std::nullopt);
 		return false;
 	}
 
@@ -103,7 +103,7 @@ bool RADMultiChipCommunication::flash(const FWRepo& fw, const icsneo::Device::Op
 		return false;
 	}
 	Log::Debug(__func__, "finalize successful, proceeding to reboot");
-	handler(icsneo::Device::OpenStatusType::Progress, "Rebooting device...", std::nullopt);
+	handler(StatusType::Progress, "Rebooting device...", std::nullopt);
 	return true;
 }
 

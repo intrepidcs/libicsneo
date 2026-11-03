@@ -38,7 +38,7 @@ bool Application::finalize() {
 	return ok;
 }
 
-bool Application::flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) {
+bool Application::flash(const FWRepo& fw, const icsneo::Bootloader::StatusHandler& handler) {
 	Log::Info(__func__, "starting flash for " + targetChip.getName());
 	const auto& srcVer = fw.getVersion();
 
@@ -55,7 +55,7 @@ bool Application::flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandle
 	}
 
 	auto currentString = "Preparing to update " + targetChip.getName() + "...";
-	handler(icsneo::Device::OpenStatusType::Progress, currentString, std::nullopt);
+	handler(StatusType::Progress, currentString, std::nullopt);
 
 	// The supplied IEF is not for this product
 	if(ief.getVersion().prodId != static_cast<uint8_t>(device.getProductID())) {
@@ -132,10 +132,10 @@ bool Application::validateFirmware(const DeviceAppVersion& chipSrcVer) {
 	return sendCommand(Update::CheckComponentVersion, [](double) {}, 0, {chipSrcVer.major, chipSrcVer.minor});
 }
 
-bool Application::sendSoftware(const std::vector<uint8_t>& bin, const icsneo::Device::OpenStatusHandler& handler) {
+bool Application::sendSoftware(const std::vector<uint8_t>& bin, const icsneo::Bootloader::StatusHandler& handler) {
 	Log::Debug(__func__, "starting for " + targetChip.getName() + " (" + std::to_string(bin.size()) + " bytes)");
 	auto currentString = "Preparing to update " + targetChip.getName() + "...";
-	handler(icsneo::Device::OpenStatusType::Progress, currentString, std::nullopt);
+	handler(StatusType::Progress, currentString, std::nullopt);
 	if(bin.empty() || bin.size() > std::numeric_limits<uint32_t>::max()) {
 		Log::Error(__func__, "invalid firmware size for " + targetChip.getName());
 		return false;
@@ -144,14 +144,14 @@ bool Application::sendSoftware(const std::vector<uint8_t>& bin, const icsneo::De
 
 	Log::Debug(__func__, "erasing " + targetChip.getName());
 	if(!sendCommand(Update::Erase, 0, totalSize, [&](double progress) {
-		handler(icsneo::Device::OpenStatusType::Progress, currentString, progress);
+		handler(StatusType::Progress, currentString, progress);
 	}, std::chrono::milliseconds(45000))) {
 		Log::Error(__func__, "erase failed for " + targetChip.getName());
 		return false;
 	}
 
 	currentString = "Updating " + targetChip.getName() + "...";
-	handler(icsneo::Device::OpenStatusType::Progress, currentString, std::nullopt);
+	handler(StatusType::Progress, currentString, std::nullopt);
 
 	const uint32_t stepSize = std::min<uint32_t>(totalSize, 2048);
 	uint32_t bytesTransferred = 0;
@@ -163,7 +163,7 @@ bool Application::sendSoftware(const std::vector<uint8_t>& bin, const icsneo::De
 		}
 
 		bytesTransferred += bytesToSend;
-		handler(icsneo::Device::OpenStatusType::Progress, currentString, double(bytesTransferred) / totalSize);
+		handler(StatusType::Progress, currentString, double(bytesTransferred) / totalSize);
 	}
 	Log::Debug(__func__, "write complete, validating " + targetChip.getName());
 	if(!validateComponent()) {
@@ -174,7 +174,7 @@ bool Application::sendSoftware(const std::vector<uint8_t>& bin, const icsneo::De
 	return true;
 }
 
-bool Application::sendSoftware(const std::vector<IEF::Sector>& sectorPairs, uint32_t blockSize, const icsneo::Device::OpenStatusHandler& handler) {
+bool Application::sendSoftware(const std::vector<IEF::Sector>& sectorPairs, uint32_t blockSize, const icsneo::Bootloader::StatusHandler& handler) {
 	if(sectorPairs.empty()) {
 		Log::Error(__func__, "no sectors to flash for " + targetChip.getName());
 		return false;
@@ -182,7 +182,7 @@ bool Application::sendSoftware(const std::vector<IEF::Sector>& sectorPairs, uint
 
 	Log::Debug(__func__, "starting for " + targetChip.getName() + " (" + std::to_string(sectorPairs.size()) + " sectors)");
 	auto currentString = "Preparing to update " + targetChip.getName() + "...";
-	handler(icsneo::Device::OpenStatusType::Progress, currentString, std::nullopt);
+	handler(StatusType::Progress, currentString, std::nullopt);
 	uint64_t totalSize = 0;
 	for(const auto& sector : sectorPairs) {
 		totalSize += sector.second.size();
@@ -199,7 +199,7 @@ bool Application::sendSoftware(const std::vector<IEF::Sector>& sectorPairs, uint
 
 	Log::Debug(__func__, "erasing " + targetChip.getName() + " (" + std::to_string(totalSize) + " bytes)");
 	if(!sendCommand(Update::Erase, 0, static_cast<uint32_t>(totalSize), [&](double progress) {
-		handler(icsneo::Device::OpenStatusType::Progress, currentString, progress);
+		handler(StatusType::Progress, currentString, progress);
 	}, std::chrono::milliseconds(45000))) {
 		Log::Error(__func__, "erase failed for " + targetChip.getName());
 		return false;
@@ -212,7 +212,7 @@ bool Application::sendSoftware(const std::vector<IEF::Sector>& sectorPairs, uint
 	}
 
 	currentString = "Updating " + targetChip.getName() + "...";
-	handler(icsneo::Device::OpenStatusType::Progress, currentString, std::nullopt);
+	handler(StatusType::Progress, currentString, std::nullopt);
 
 	uint32_t bytesTransferred = 0;
 	for(const auto& pair : sectorPairs) {
@@ -233,7 +233,7 @@ bool Application::sendSoftware(const std::vector<IEF::Sector>& sectorPairs, uint
 		}
 
 		bytesTransferred += static_cast<uint32_t>(rawData.size());
-		handler(icsneo::Device::OpenStatusType::Progress, currentString, double(bytesTransferred) / double(totalSize));
+		handler(StatusType::Progress, currentString, double(bytesTransferred) / double(totalSize));
 	}
 	Log::Debug(__func__, "write complete, validating " + targetChip.getName());
 	bool ok = validateComponent();
@@ -264,7 +264,7 @@ bool Application::validateComponent() {
  * passes. Progress replies are OperationPending with a SoftwareUpdateCommandHeader whose
  * commandSizeOrProgress holds the progress so far, or a GenericReturn with no progress.
  */
-bool Application::sendCommand(Update command, uint32_t offset, uint32_t length, const StatusHandler& handler, std::chrono::milliseconds timeout, std::vector<uint8_t> args) {
+bool Application::sendCommand(Update command, uint32_t offset, uint32_t length, const CommandStatusHandler& handler, std::chrono::milliseconds timeout, std::vector<uint8_t> args) {
 	bool finishedResponse = false;
 	std::condition_variable finishedResponseCV;
 	std::mutex finishedResponseMutex;

@@ -113,7 +113,7 @@ bool REDCommunication::getVersion() {
 	return true;
 }
 
-bool REDCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) {
+bool REDCommunication::flash(const FWRepo& fw, const icsneo::Bootloader::StatusHandler& handler) {
 	const auto& srcVer = fw.getVersion();
 
 	std::vector<uint8_t> bin;
@@ -152,7 +152,7 @@ bool REDCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenStatusH
 		}
 	}
 
-	handler(icsneo::Device::OpenStatusType::Progress,
+	handler(StatusType::Progress,
 		"Preparing to update " + targetChip.getName() + "...", std::nullopt);
 	Log::Debug(__func__, "Erasing " + targetChip.getName());
 	if(!sendCommand(uint8_t(Command::Erase), std::chrono::seconds(45))) {
@@ -164,7 +164,7 @@ bool REDCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenStatusH
 	size_t sectorsFlashed = 0;
 	for(const auto& [id, sector] : sectorPairs) {
 		Log::Trace(__func__, "Flashing sector " + std::to_string(id));
-		handler(icsneo::Device::OpenStatusType::Progress,
+		handler(StatusType::Progress,
 			"Updating " + targetChip.getName() + "...",
 			double(sectorsFlashed++) / sectorPairs.size());
 
@@ -205,11 +205,11 @@ bool REDCommunication::flash(const FWRepo& fw, const icsneo::Device::OpenStatusH
 	}
 
 	// Tell the application that we flashed 100%
-	handler(icsneo::Device::OpenStatusType::Progress,
+	handler(StatusType::Progress,
 		"Updating " + targetChip.getName() + "...",
 		1.0);
 
-	handler(icsneo::Device::OpenStatusType::Progress, "Finalizing update...", std::nullopt);
+	handler(StatusType::Progress, "Finalizing update...", std::nullopt);
 	if(!sendCommand(uint8_t(Command::ValidateFirmware))) {
 		Log::Error(__func__, "Firmware validation failed for " + targetChip.getName());
 		return false;

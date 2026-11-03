@@ -22,7 +22,7 @@ private:
 public:
 	RADMultiChipCommunication(icsneo::Device& dev, const ChipInfo& chipToFlash, bool auth, uint8_t slot = UINT8_MAX);
 
-	bool flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) override;
+	bool flash(const FWRepo& fw, const StatusHandler& handler) override;
 	bool open() override;
 	bool close() override;
 	bool enterApplication() override;

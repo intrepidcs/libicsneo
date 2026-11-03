@@ -275,7 +275,7 @@ std::vector<VersionReport> Device::getChipVersions(bool refreshComponents) {
 	return chipVersions;
 }
 
-bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
+bool Device::open(OpenFlags flags) {
 	if(!com) {
 		report(APIEvent::Type::Unknown, APIEvent::Severity::Error);
 		return false;
@@ -287,38 +287,31 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 
 	startHeartbeat();
 
-	APIEvent::Type attemptErr = attemptToBeginCommunication();
-	if(attemptErr != APIEvent::Type::NoErrorFound) {
-		// We could not communicate with the device, let's see if an extension can
-		bool tryAgain = false;
-		forEachExtension([&tryAgain, &flags, &handler](const std::shared_ptr<DeviceExtension>& ext) -> bool {
-			if(ext->onDeviceCommunicationDead(flags, handler))
-				tryAgain = true;
-			return true;
-		});
-
-		if(!tryAgain) {
+	if((flags & OpenFlags::SkipRefreshDeviceState) == 0) {
+		auto refreshErr = refreshDeviceState();
+		if(refreshErr != APIEvent::Type::NoErrorFound) {
 			com->close();
-			report(attemptErr, APIEvent::Severity::Error);
-			return false; // Extensions couldn't save us
-		}
-		attemptErr = attemptToBeginCommunication();
-		if(attemptErr != APIEvent::Type::NoErrorFound) {
-			com->close();
-			report(attemptErr, APIEvent::Severity::Error);
+			stopHeartbeat();
+			report(refreshErr, APIEvent::Severity::Error);
 			return false;
 		}
 	}
 
-	bool block = false;
-	forEachExtension([&block, &flags, &handler](const std::shared_ptr<DeviceExtension>& ext) {
-		if(ext->onDeviceOpen(flags, handler))
-			return true;
-		block = true;
-		return false;
-	});
-	if(block) // Extensions say no
-		return false;
+	return true;
+}
+
+APIEvent::Type Device::refreshDeviceState() {
+	if(isOnline()) {
+		return APIEvent::Type::DeviceCurrentlyOnline;
+	}
+
+	if(!com || !com->isOpen()) {
+		return APIEvent::Type::Unknown;
+	}
+	APIEvent::Type attemptErr = attemptToBeginCommunication();
+	if(attemptErr != APIEvent::Type::NoErrorFound) {
+		return attemptErr;
+	}
 
 	refreshComponentVersions();
 	if(!settings->disabled) {
@@ -336,7 +329,7 @@ bool Device::open(OpenFlags flags, OpenStatusHandler handler) {
 	if(supportsLiveData())
 		clearAllLiveData();
 
-	return true;
+	return APIEvent::Type::NoErrorFound;
 }
 
 bool Device::reconnect(std::chrono::milliseconds timeout, std::chrono::milliseconds interval) {
@@ -412,7 +405,6 @@ APIEvent::Type Device::attemptToBeginCommunication() {
 	else
 		versions = std::move(*maybeVersions);
 
-	// Get component versions before the extension "onDeviceOpen" hooks so that we can properly check verisons
 	if(supportsComponentVersions()) {
 		if(auto compVersions = com->getComponentVersionsSync())
 			componentVersions = std::move(*compVersions);

@@ -27,7 +27,7 @@ public:
 	using REDCommunicationBase::REDCommunicationBase;
 
 	bool enterApplication() override { return false; }
-	bool flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) override;
+	bool flash(const FWRepo& fw, const StatusHandler& handler) override;
 private:
 	/**
 	 * Core flasher commands are tunneled through a RED request using CoreFlasherCommand,

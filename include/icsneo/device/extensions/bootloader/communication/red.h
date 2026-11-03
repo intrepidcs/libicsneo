@@ -23,7 +23,7 @@ class REDCommunication : public REDCommunicationBase {
 public:
 	REDCommunication(icsneo::Device& dev, const ChipInfo& chip, bool auth, bool encryptWithDeviceKey = true);
 	bool enterApplication() override { return sendCommand(uint8_t(Command::EnterApplication)); }
-	bool flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) override;
+	bool flash(const FWRepo& fw, const StatusHandler& handler) override;
 	bool open() override;
 
 private:

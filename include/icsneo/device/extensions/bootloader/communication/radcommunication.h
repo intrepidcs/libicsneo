@@ -69,7 +69,7 @@ protected:
 	Response& sendRequest(const Request& request, std::chrono::milliseconds timeout = std::chrono::milliseconds(2000));
 	bool sendRequestNoResponse();
 
-	icsneo::Device::OpenStatusHandler logger; // Progress updates, set in flash()
+	StatusHandler statusHandler; // Progress updates, set in flash()
 	Response lastResponse; // Last response received from sendRequest
 	bool supportsZynqBinaryFlasher = false; // Dictates how messages are formatted, this gets set in initialize()
 
@@ -92,7 +92,7 @@ public:
 
 	bool enterApplication() override;
 	bool finalize() override;
-	bool flash(const FWRepo& fw, const icsneo::Device::OpenStatusHandler& handler) override;
+	bool flash(const FWRepo& fw, const StatusHandler& handler) override;
 
 	bool open() override;
 	bool close() override;

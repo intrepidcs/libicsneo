@@ -31,7 +31,7 @@ public:
 		return true;
 	}
 	bool finalize() override;
-	bool flash(const FWRepo& repo, const icsneo::Device::OpenStatusHandler& handler) override;
+	bool flash(const FWRepo& repo, const StatusHandler& handler) override;
 
 	bool open() override {
 		return true;
@@ -42,8 +42,8 @@ public:
 	}
 
 	bool authenticate();
-	bool sendSoftware(const std::vector<uint8_t>& bin, const icsneo::Device::OpenStatusHandler& handler);
-	bool sendSoftware(const std::vector<IEF::Sector>& sectors, uint32_t blockSize, const icsneo::Device::OpenStatusHandler& handler);
+	bool sendSoftware(const std::vector<uint8_t>& bin, const StatusHandler& handler);
+	bool sendSoftware(const std::vector<IEF::Sector>& sectors, uint32_t blockSize, const StatusHandler& handler);
 	bool validateFirmware(const DeviceAppVersion& chipSrcVer);
 	bool validateComponent();
 
@@ -74,12 +74,12 @@ private:
 	const bool doAuthChecks;
 	const bool encrypted;
 
-	using StatusHandler = std::function<void(double progress)>;
-	bool sendCommand(Update command, const StatusHandler& handler, uint32_t offset = 0,
+	using CommandStatusHandler = std::function<void(double progress)>;
+	bool sendCommand(Update command, const CommandStatusHandler& handler, uint32_t offset = 0,
 		const std::vector<uint8_t>& args = {}, std::chrono::milliseconds timeout = std::chrono::milliseconds(3000)) {
 		return sendCommand(command, offset, static_cast<uint32_t>(args.size()), handler, timeout, args);
 	}
-	bool sendCommand(Update command, uint32_t offset, uint32_t length, const StatusHandler& handler,
+	bool sendCommand(Update command, uint32_t offset, uint32_t length, const CommandStatusHandler& handler,
 		std::chrono::milliseconds timeout = std::chrono::milliseconds(3000), std::vector<uint8_t> args = {});
 };
 
