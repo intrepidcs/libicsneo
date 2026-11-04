@@ -36,6 +36,8 @@ bool Communication::open() {
 		return false;
 	}
 
+	// A heartbeat timeout marks the driver disconnected and leaves the cleanup to the user, a new open starts connected
+	driver->setIsDisconnected(false);
 	if(!driver->open())
 		return false;
 	spawnThreads();

@@ -512,6 +512,7 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 		test/unit/icsneoc2.cpp
 		test/unit/ethphyregistertest.cpp
 		test/unit/tc10test.cpp
+		test/unit/communicationtest.cpp
 		test/unit/periodictest.cpp
 	)
 
