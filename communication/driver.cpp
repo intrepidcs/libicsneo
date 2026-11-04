@@ -9,7 +9,13 @@
 using namespace icsneo;
 
 bool Driver::pushRx(const uint8_t* buf, size_t numReceived) {
-	bool ret = readBuffer.write(buf, numReceived);
+	bool ret;
+	{
+		// Write under the lock waitForRx checks its predicate with, or a notify between that check and
+		// the wait is lost and the reader sleeps the full timeout (1s for the read task) with data ready
+		std::lock_guard<std::mutex> lk(rxWaitMutex);
+		ret = readBuffer.write(buf, numReceived);
+	}
 
 	rxWaitCv.notify_all();
 
