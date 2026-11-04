@@ -208,6 +208,8 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_create(NULL, 0));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_props_get(NULL, NULL, NULL, NULL, NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_props_set(NULL, NULL, NULL, NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_wakeup_width_get(NULL, NULL));
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_wakeup_width_set(NULL, 0));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_err_flags_get(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_status_flags_get(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_message_lin_calc_checksum(NULL));
@@ -1763,6 +1765,28 @@ TEST(icsneoc2, test_lin_message_props_set)
 	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_can_create(&can_msg));
 	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_lin_props_set(can_msg, &new_id, NULL, NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_lin_props_get(can_msg, &read_id, NULL, NULL, NULL, NULL));
+	icsneoc2_message_free(can_msg);
+
+	icsneoc2_message_free(msg);
+}
+
+TEST(icsneoc2, test_lin_message_wakeup_width)
+{
+	icsneoc2_message_t* msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_create(&msg, 0x00));
+
+	uint16_t width_us = 0;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_wakeup_width_get(msg, &width_us));
+	ASSERT_EQ(width_us, 300);
+
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_wakeup_width_set(msg, 2500));
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_lin_wakeup_width_get(msg, &width_us));
+	ASSERT_EQ(width_us, 2500);
+
+	icsneoc2_message_t* can_msg = nullptr;
+	ASSERT_EQ(icsneoc2_error_success, icsneoc2_message_can_create(&can_msg));
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_lin_wakeup_width_set(can_msg, 300));
+	ASSERT_EQ(icsneoc2_error_invalid_type, icsneoc2_message_lin_wakeup_width_get(can_msg, &width_us));
 	icsneoc2_message_free(can_msg);
 
 	icsneoc2_message_free(msg);

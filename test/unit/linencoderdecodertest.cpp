@@ -67,6 +67,24 @@ protected:
 	 0x00, 0x00,
 	 0x80, 0x41};
 
+	// Wakeup LIN 1: commander (0x80) | wakeup (0x10) | len 3 => 0x93, description 0x1234
+	std::vector<uint8_t> testControllerWakeup =
+	{0xaa, 0x0c,
+	 0x0d, 0x00,
+	 0x10, 0x00,
+	 0x00, 0x94,
+	 0x12, 0x34,
+	 0x80, 0x06};
+
+	// Wakeup LIN 1 with a 5000 us pulse: len 4 => 0x94, data byte 0 is 100 steps of 50 us
+	std::vector<uint8_t> testControllerWakeupWidth =
+	{0xaa, 0x0c,
+	 0x0d, 0x00,
+	 0x10, 0x00,
+	 0x00, 0x94,
+	 0x12, 0x34,
+	 0x80, 0x64};
+
 	std::vector<uint8_t> recvBytes = 
 	{0xaa, 0x0c, 0x22, 0x00,
 	 0x10, 0x00, 0x88, 0x03,
@@ -172,6 +190,97 @@ TEST_F(LINEncoderDecoderTest, TransmitMessageBreakOnlySetsCommander) {
 	auto* lin = reinterpret_cast<HardwareLINPacket*>(tx->commonHeader);
 	EXPECT_EQ(lin->CoreMiniBitsLIN.TXCommander, 1);
 	EXPECT_EQ(lin->CoreMiniBitsLIN.BreakOnly, 1);
+}
+
+TEST_F(LINEncoderDecoderTest, PacketEncoderControllerWakeupTest) {
+	std::vector<uint8_t> bytestream;
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x00u));
+	message->network = icsneo::Network::NetID::LIN_01;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_WAKEUP_REQUEST;
+	message->isEnhancedChecksum = false;
+	message->description = 0x1234;
+	message->data = {0x55}; // ignored, a wakeup never carries data
+	packetEncoder->encode(*packetizer, bytestream, message);
+	EXPECT_EQ(bytestream, testControllerWakeup);
+}
+
+TEST_F(LINEncoderDecoderTest, TransmitMessageWakeupSetsCommander) {
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x00u));
+	message->network = icsneo::Network::NetID::LIN_01;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_WAKEUP_REQUEST;
+	message->description = 0x1234;
+	message->data = {0x55};
+	auto bytes = TransmitMessage::EncodeFromMessage(message, 1, report);
+	ASSERT_FALSE(bytes.empty());
+	ASSERT_GE(bytes.size(), sizeof(TransmitMessage));
+	auto* tx = reinterpret_cast<TransmitMessage*>(bytes.data());
+	auto* lin = reinterpret_cast<HardwareLINPacket*>(tx->commonHeader);
+	EXPECT_EQ(lin->CoreMiniBitsLIN.TXCommander, 1);
+	EXPECT_EQ(lin->CoreMiniBitsLIN.WakeupRequest, 1);
+	EXPECT_EQ(lin->CoreMiniBitsLIN.BreakOnly, 0);
+	EXPECT_EQ(lin->CoreMiniBitsLIN.len, 1);
+	EXPECT_EQ(lin->data[0], 6); // default 300 us
+	EXPECT_EQ(lin->stats, 0x1234);
+}
+
+TEST_F(LINEncoderDecoderTest, PacketEncoderControllerWakeupWidthTest) {
+	std::vector<uint8_t> bytestream;
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x00u));
+	message->network = icsneo::Network::NetID::LIN_01;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_WAKEUP_REQUEST;
+	message->description = 0x1234;
+	message->wakeupPulseWidthUs = 5000;
+	packetEncoder->encode(*packetizer, bytestream, message);
+	EXPECT_EQ(bytestream, testControllerWakeupWidth);
+}
+
+TEST_F(LINEncoderDecoderTest, TransmitMessageWakeupWidth) {
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x00u));
+	message->network = icsneo::Network::NetID::LIN_01;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_WAKEUP_REQUEST;
+	message->wakeupPulseWidthUs = 250;
+	auto bytes = TransmitMessage::EncodeFromMessage(message, 1, report);
+	ASSERT_GE(bytes.size(), sizeof(TransmitMessage));
+	auto* tx = reinterpret_cast<TransmitMessage*>(bytes.data());
+	auto* lin = reinterpret_cast<HardwareLINPacket*>(tx->commonHeader);
+	EXPECT_EQ(lin->CoreMiniBitsLIN.WakeupRequest, 1);
+	EXPECT_EQ(lin->CoreMiniBitsLIN.len, 1);
+	EXPECT_EQ(lin->data[0], 5);
+	EXPECT_EQ(lin->data[1], 0);
+}
+
+TEST_F(LINEncoderDecoderTest, WakeupWidthRounds) {
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x00u));
+	message->network = icsneo::Network::NetID::LIN_01;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_WAKEUP_REQUEST;
+	const std::pair<uint16_t, uint8_t> widths[] = {
+		{250, 5}, {274, 5}, {275, 6}, {326, 7}, {4975, 100}, {5000, 100}};
+	for(const auto& [widthUs, steps] : widths) {
+		message->wakeupPulseWidthUs = widthUs;
+		auto bytes = TransmitMessage::EncodeFromMessage(message, 1, report);
+		ASSERT_GE(bytes.size(), sizeof(TransmitMessage));
+		auto* tx = reinterpret_cast<TransmitMessage*>(bytes.data());
+		auto* lin = reinterpret_cast<HardwareLINPacket*>(tx->commonHeader);
+		EXPECT_EQ(lin->data[0], steps) << widthUs << " us";
+	}
+}
+
+TEST_F(LINEncoderDecoderTest, WakeupWidthOutOfRangeIsRejected) {
+	int errors = 0;
+	report = [&errors](APIEvent::Type type, APIEvent::Severity) {
+		EXPECT_EQ(type, APIEvent::Type::ParameterOutOfRange);
+		++errors;
+	};
+	auto message = std::make_shared<icsneo::LINMessage>(static_cast<uint8_t>(0x00u));
+	message->network = icsneo::Network::NetID::LIN_01;
+	message->linMsgType = icsneo::LINMessage::Type::LIN_WAKEUP_REQUEST;
+	for(uint16_t widthUs : {uint16_t(0), uint16_t(1), uint16_t(249), uint16_t(5001), uint16_t(60000)}) {
+		message->wakeupPulseWidthUs = widthUs;
+		std::vector<uint8_t> bytestream;
+		EXPECT_FALSE(packetEncoder->encode(*packetizer, bytestream, message));
+		EXPECT_TRUE(TransmitMessage::EncodeFromMessage(message, 1, report).empty());
+	}
+	EXPECT_EQ(errors, 10);
 }
 
 TEST_F(LINEncoderDecoderTest, TransmitMessageCalculatesChecksum) {

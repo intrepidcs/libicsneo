@@ -140,6 +140,10 @@ static std::vector<uint8_t> EncodeFromMessageLIN(std::shared_ptr<Frame> frame, c
 			linpacket->CoreMiniBitsLIN.TXCommander = 1;
 			linpacket->CoreMiniBitsLIN.BreakOnly = 1;
 			break;
+		case LINMessage::Type::LIN_WAKEUP_REQUEST:
+			linpacket->CoreMiniBitsLIN.TXCommander = 1;
+			linpacket->CoreMiniBitsLIN.WakeupRequest = 1;
+			break;
 		default:
 			break;
 	}
@@ -163,6 +167,18 @@ static std::vector<uint8_t> EncodeFromMessageLIN(std::shared_ptr<Frame> frame, c
 			linpacket->CoreMiniBitsLIN.LINByte9 = linmsg->checksum;
 	} else {
 		linpacket->CoreMiniBitsLIN.len = 0;
+	}
+
+	if(linmsg->linMsgType == LINMessage::Type::LIN_WAKEUP_REQUEST) {
+		const int steps = LINMessage::wakeupPulseWidthSteps(*linmsg);
+		if(!steps) {
+			report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+			return {};
+		}
+		// data[0] is the pulse width in 50 us steps
+		// data[1] to data[7]: future bits reserved for more LIN wake features
+		linpacket->CoreMiniBitsLIN.len = 1;
+		linpacket->data[0] = static_cast<uint8_t>(steps);
 	}
 
 	// Description/stats and network

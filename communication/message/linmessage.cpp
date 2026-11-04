@@ -27,4 +27,11 @@ uint8_t LINMessage::calcProtectedID(uint8_t& id) {
 	return protID;
 }
 
+int LINMessage::wakeupPulseWidthSteps(const LINMessage& message) {
+	const uint16_t widthUs = message.wakeupPulseWidthUs;
+	if(widthUs < 250 || widthUs > 5000)
+		return 0;
+	return (widthUs + 25) / 50;
+}
+
 } //namespace icsneo

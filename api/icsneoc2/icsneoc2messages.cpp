@@ -431,6 +431,30 @@ icsneoc2_error_t icsneoc2_message_lin_props_set(icsneoc2_message_t* message,
 	return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_message_lin_wakeup_width_get(const icsneoc2_message_t* message, uint16_t* width_us) {
+	if(!message || !width_us) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto lin_msg = std::dynamic_pointer_cast<LINMessage>(message->message);
+	if(!lin_msg) {
+		return icsneoc2_error_invalid_type;
+	}
+	*width_us = lin_msg->wakeupPulseWidthUs;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_message_lin_wakeup_width_set(icsneoc2_message_t* message, uint16_t width_us) {
+	if(!message) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto lin_msg = std::dynamic_pointer_cast<LINMessage>(message->message);
+	if(!lin_msg) {
+		return icsneoc2_error_invalid_type;
+	}
+	lin_msg->wakeupPulseWidthUs = width_us;
+	return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_message_lin_err_flags_get(const icsneoc2_message_t* message, icsneoc2_lin_err_flags_t* err_flags) {
 	if(!message || !err_flags) {
 		return icsneoc2_error_invalid_parameters;

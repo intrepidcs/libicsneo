@@ -47,11 +47,14 @@ public:
 		LIN_SYNC_ONLY = icsneoc2_lin_msg_type_sync_only,
 		LIN_UPDATE_RESPONDER = icsneoc2_lin_msg_type_update_responder,
 		LIN_ERROR = icsneoc2_lin_msg_type_error,
+		// needs firmware with LIN wakeup transmit; older firmware sends a commander header (break, sync, ID) instead
 		LIN_WAKEUP_REQUEST = icsneoc2_lin_msg_type_wakeup_request
 	};
 
 	static void calcChecksum(LINMessage& message);
 	uint8_t calcProtectedID(uint8_t& id);
+	// wakeupPulseWidthUs in 50 us steps, 0 if it is outside 250 to 5000 us
+	static int wakeupPulseWidthSteps(const LINMessage& message);
 
 	LINMessage() {};
 	LINMessage(uint8_t id) : ID(id & 0x3Fu), protectedID(calcProtectedID(ID)) {};
@@ -61,6 +64,9 @@ public:
 	uint8_t checksum = 0;
 	LINMessage::Type linMsgType = Type::NOT_SET;
 	bool isEnhancedChecksum = false;
+	// LIN_WAKEUP_REQUEST only, the same as the Vehicle Spy LIN Send Wake Width property: 250 to 5000 us,
+	// rounded to the nearest 50 us. Outside that range the transmit fails.
+	uint16_t wakeupPulseWidthUs = 300;
 	LINErrorFlags errFlags;
 	LINStatusFlags statusFlags;
 };

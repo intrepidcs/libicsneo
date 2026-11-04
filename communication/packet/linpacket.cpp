@@ -118,6 +118,16 @@ bool HardwareLINPacket::EncodeFromMessage(LINMessage& message, std::vector<uint8
 			size |= 0x80u | 0x20u;
 			break;
 		}
+		case LINMessage::Type::LIN_WAKEUP_REQUEST:
+		{
+			if(!LINMessage::wakeupPulseWidthSteps(message)) {
+				report(APIEvent::Type::ParameterOutOfRange, APIEvent::Severity::Error);
+				return false;
+			}
+			// wakeup pulse only, one data byte for the pulse width
+			size = 0x04u | 0x80u | 0x10u;
+			break;
+		}
 		case LINMessage::Type::NOT_SET:
 		{
 			report(APIEvent::Type::RequiredParameterNull, APIEvent::Severity::Error);
@@ -143,6 +153,13 @@ bool HardwareLINPacket::EncodeFromMessage(LINMessage& message, std::vector<uint8
 			std::copy(message.data.begin(), message.data.end(), std::back_inserter(bytestream));
 			LINMessage::calcChecksum(message);
 			bytestream.push_back(message.checksum);
+			break;
+		}
+		case(LINMessage::Type::LIN_WAKEUP_REQUEST):
+		{
+			// data byte 0 is the pulse width in 50 us steps
+			// data bytes 1 to 7: future bits reserved for more LIN wake features
+			bytestream.push_back(static_cast<uint8_t>(LINMessage::wakeupPulseWidthSteps(message)));
 			break;
 		}
 		default:

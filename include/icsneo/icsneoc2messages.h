@@ -381,6 +381,7 @@ typedef enum _icsneoc2_lin_msg_type_t {
 	icsneoc2_lin_msg_type_sync_only = 4,
 	icsneoc2_lin_msg_type_update_responder = 5,
 	icsneoc2_lin_msg_type_error = 6,
+	// needs firmware with LIN wakeup transmit; older firmware sends a commander header (break, sync, ID) instead
 	icsneoc2_lin_msg_type_wakeup_request = 7,
 } _icsneoc2_lin_msg_type_t;
 
@@ -460,6 +461,29 @@ icsneoc2_error_t icsneoc2_message_lin_props_get(const icsneoc2_message_t* messag
 icsneoc2_error_t icsneoc2_message_lin_props_set(icsneoc2_message_t* message,
 	const uint8_t* id, const uint8_t* checksum,
 	const icsneoc2_lin_msg_type_t* msg_type, const bool* is_enhanced_checksum);
+
+/**
+ * Get the wakeup pulse width of a LIN message.
+ *
+ * @param[in] message The message to query (must be a LIN message).
+ * @param[out] width_us Pointer to receive the pulse width in microseconds. The default is 300 us.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if not a LIN message.
+ */
+icsneoc2_error_t icsneoc2_message_lin_wakeup_width_get(const icsneoc2_message_t* message, uint16_t* width_us);
+
+/**
+ * Set the wakeup pulse width of a LIN message. Only used by icsneoc2_lin_msg_type_wakeup_request.
+ *
+ * The same as the Vehicle Spy LIN Send Wake Width property: 250 to 5000 us, rounded to the nearest 50 us.
+ * Outside that range the transmit fails.
+ *
+ * @param[in] message The message to modify (must be a LIN message).
+ * @param[in] width_us The pulse width in microseconds.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_type if not a LIN message.
+ */
+icsneoc2_error_t icsneoc2_message_lin_wakeup_width_set(icsneoc2_message_t* message, uint16_t width_us);
 
 /**
  * Get the LIN error flags of a message.

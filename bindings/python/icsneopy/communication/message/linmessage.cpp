@@ -53,6 +53,7 @@ void init_linmessage(pybind11::module_& m) {
 		.def_readwrite("checksum", &LINMessage::checksum)
 		.def_readwrite("linMsgType", &LINMessage::linMsgType)
 		.def_readwrite("isEnhancedChecksum", &LINMessage::isEnhancedChecksum)
+		.def_readwrite("wakeupPulseWidthUs", &LINMessage::wakeupPulseWidthUs)
 		.def_readwrite("errFlags", &LINMessage::errFlags)
 		.def_readwrite("statusFlags", &LINMessage::statusFlags);
 }
