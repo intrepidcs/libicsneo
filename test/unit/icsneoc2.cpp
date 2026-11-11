@@ -399,8 +399,8 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_script_start(NULL, icsneoc2_memory_type_sd));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_script_stop(NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_script_clear(NULL, icsneoc2_memory_type_sd));
-	int8_t placeholderSignedInteger8 = 0;
-	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_script_prepare_load(NULL, &placeholderSignedInteger8));
+	uint8_t placeholderUnsignedInteger8 = 0;
+	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_script_prepare_load(NULL, &placeholderUnsignedInteger8));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_script_prepare_load(NULL, NULL));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_coremini_upload_file(NULL, "test.bin", icsneoc2_memory_type_sd));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_device_coremini_upload_file(NULL, NULL, icsneoc2_memory_type_sd));

@@ -1,5 +1,7 @@
 #include <sstream>
 #include <iomanip>
+#include <mutex>
+#include <condition_variable>
 #include "icsneo/api/eventmanager.h"
 #include "icsneo/communication/message/filter/main51messagefilter.h"
 #include "icsneo/communication/message/extendedresponsemessage.h"
@@ -535,32 +537,52 @@ bool Device::goOffline() {
 	return true;
 }
 
-int8_t Device::prepareScriptLoad() {
+std::optional<Device::PreloadReturn> Device::prepareScriptLoad() {
 	if(!isOpen()) {
 		report(APIEvent::Type::DeviceCurrentlyClosed, APIEvent::Severity::Error);
-		return false;
+		return std::nullopt;
 	}
 
-	static std::shared_ptr<MessageFilter> filter = std::make_shared<MessageFilter>(Network::NetID::CoreMiniPreLoad);
+	std::mutex mutex;
+	std::condition_variable cv;
+	std::optional<uint8_t> status; // latest status from the device, consumed by the wait loop below
+
+	const int handle = com->addMessageCallback(std::make_shared<MessageCallback>(
+		[&](std::shared_ptr<Message> message) {
+			const auto raw = std::dynamic_pointer_cast<RawMessage>(message);
+			if(!raw || raw->data.empty()) {
+				report(APIEvent::Type::UnexpectedResponse, APIEvent::Severity::Error);
+				return;
+			}
+			std::lock_guard<std::mutex> lk(mutex);
+			// int8_t status, the periodic updates sign-extend it to 16 bits so only the low byte is meaningful
+			status = raw->data[0];
+			cv.notify_one();
+		},
+		std::make_shared<MessageFilter>(Network::NetID::CoreMiniPreLoad)
+	));
+	// declared before the lock so the lock is released first, the callback can't be mid-dispatch once removed
+	Lifetime callbackLifetime([this, handle]() { com->removeMessageCallback(handle); });
 
 	if(!com->sendCommand(Command::CoreMiniPreload))
-		return false;
+		return std::nullopt;
 
-	int8_t retVal = 0;
-	while(retVal == 0)
-	{
-		auto generic = com->waitForMessageSync(filter, std::chrono::milliseconds(1000));
-
-		if(!generic) {
-			report(APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
-			return false;
+	// The device replies immediately, then sends Pending every 500ms while copying. Every update either
+	// makes progress or counts toward its own StallTimeout (~3s), so the copy always finishes and a
+	// longer silence means the device or link is gone.
+	constexpr auto timeout = std::chrono::seconds(5);
+	std::unique_lock<std::mutex> lock(mutex);
+	PreloadReturn result = PreloadReturn::Pending;
+	do {
+		if(!cv.wait_for(lock, timeout, [&] { return status.has_value(); })) {
+			report(isDisconnected() ? APIEvent::Type::DeviceDisconnected : APIEvent::Type::NoDeviceResponse, APIEvent::Severity::Error);
+			return std::nullopt;
 		}
+		result = static_cast<PreloadReturn>(*status);
+		status.reset();
+	} while(result == PreloadReturn::Pending);
 
-		const auto resp = std::static_pointer_cast<RawMessage>(generic);
-		retVal = (int8_t)resp->data[0];
-	}
-
-	return retVal;
+	return result;
 }
 
 bool Device::startScript(Disk::MemoryType memType)

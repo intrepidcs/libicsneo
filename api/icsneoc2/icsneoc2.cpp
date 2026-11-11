@@ -1216,7 +1216,7 @@ icsneoc2_error_t icsneoc2_device_script_clear(const icsneoc2_device_t* device, i
 	return icsneoc2_error_success;
 }
 
-icsneoc2_error_t icsneoc2_device_script_prepare_load(const icsneoc2_device_t* device, int8_t* status) {
+icsneoc2_error_t icsneoc2_device_script_prepare_load(const icsneoc2_device_t* device, uint8_t* status) {
 	auto res = icsneoc2_device_is_valid(device);
 	if(res != icsneoc2_error_success) {
 		return res;
@@ -1224,7 +1224,11 @@ icsneoc2_error_t icsneoc2_device_script_prepare_load(const icsneoc2_device_t* de
 	if(!status) {
 		return icsneoc2_error_invalid_parameters;
 	}
-	*status = device->device->prepareScriptLoad();
+	const auto ret = device->device->prepareScriptLoad();
+	if(!ret) {
+		return icsneoc2_error_script_load_prepare_failed;
+	}
+	*status = (uint8_t)*ret;
 	return icsneoc2_error_success;
 }
 

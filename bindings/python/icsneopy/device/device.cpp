@@ -15,6 +15,18 @@ namespace icsneo {
 void init_device(pybind11::module_& m) {
 	pybind11::classh<Device> device(m, "Device");
 
+	pybind11::native_enum<Device::PreloadReturn>(device, "PreloadReturn", "enum.IntEnum")
+		.value("Pending", Device::PreloadReturn::Pending)
+		.value("Ok", Device::PreloadReturn::Ok)
+		.value("OkEncrypted", Device::PreloadReturn::OkEncrypted)
+		.value("NoScript", Device::PreloadReturn::NoScript)
+		.value("StallTimeout", Device::PreloadReturn::StallTimeout)
+		.value("DiskRemoved", Device::PreloadReturn::DiskRemoved)
+		.value("NoDisk", Device::PreloadReturn::NoDisk)
+		.value("MultipleCaptureBuffers", Device::PreloadReturn::MultipleCaptureBuffers)
+		.value("AlreadyInProgress", Device::PreloadReturn::AlreadyInProgress)
+		.finalize();
+
 	device
 		.def("__repr__", &Device::describe)
 		.def("add_message_callback", &Device::addMessageCallback, pybind11::call_guard<pybind11::gil_scoped_release>())

@@ -234,15 +234,19 @@ public:
 
 	enum class PreloadReturn : uint8_t
 	{
-		Pending,
-		Ok,
-		OKEncrypted,
-		NoScript,
+		Pending = 0,
+		Ok = 1,
+		OkEncrypted = 2,
+		NoScript = 3,
+		// failures, sent by the device as negative int8_t
+		StallTimeout = 0xFB, // -5: no progress, the device gave up
+		DiskRemoved = 0xFC, // -4: SD card removed while copying
+		NoDisk = 0xFD, // -3: SD card not connected
+		MultipleCaptureBuffers = 0xFE, // -2: script uses partitions, unsupported
+		AlreadyInProgress = 0xFF, // -1: a preload is already running
 	};
 
-
-
-	int8_t prepareScriptLoad();
+	std::optional<PreloadReturn> prepareScriptLoad();
 	bool startScript(Disk::MemoryType memType = Disk::MemoryType::SD);
 	bool stopScript();
 	bool clearScript(Disk::MemoryType memType = Disk::MemoryType::SD);

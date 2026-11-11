@@ -939,11 +939,22 @@ icsneoc2_error_t icsneoc2_device_script_clear(const icsneoc2_device_t* device, i
  * Prepare the device for a script load operation.
  *
  * @param[in] device The device to prepare.
- * @param[out] status Receives the prepare status code from the device.
+ * @param[out] status Receives the prepare status code from the device:
+ *   - 0x01 Ok: the script was prepared
+ *   - 0x02 Ok (encrypted): prepared, the previous script was encrypted so the same key must be used
+ *   - 0x03 No script: there was no script to prepare
+ *   - 0xFB Stall timeout: the device made no progress and gave up
+ *   - 0xFC Disk removed: the SD card was removed while copying
+ *   - 0xFD No disk: the SD card is not connected
+ *   - 0xFE Multiple capture buffers: the script uses partitions, which is unsupported
+ *   - 0xFF Already in progress: a prepare is already running
+ *
+ * This blocks until the device reports a final status. The device sends updates while
+ * copying; if no update arrives for 5 seconds the call fails.
  *
  * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_script_load_prepare_failed otherwise.
  */
-icsneoc2_error_t icsneoc2_device_script_prepare_load(const icsneoc2_device_t* device, int8_t* status);
+icsneoc2_error_t icsneoc2_device_script_prepare_load(const icsneoc2_device_t* device, uint8_t* status);
 
 /**
  * Upload a CoreMini script to the device from a file path.
