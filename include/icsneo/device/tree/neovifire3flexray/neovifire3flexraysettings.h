@@ -181,6 +181,20 @@ public:
 				return &(cfg->can7);
 			case Network::NetID::DWCAN_07:
 				return &(cfg->can8);
+			case Network::NetID::DWCAN_09:
+				return &(cfg->can9);
+			case Network::NetID::DWCAN_10:
+				return &(cfg->can10);
+			case Network::NetID::DWCAN_11:
+				return &(cfg->can11);
+			case Network::NetID::DWCAN_12:
+				return &(cfg->can12);
+			case Network::NetID::DWCAN_13:
+				return &(cfg->can13);
+			case Network::NetID::DWCAN_14:
+				return &(cfg->can14);
+			case Network::NetID::DWCAN_15:
+				return &(cfg->can15);
 			default:
 				return nullptr;
 		}
@@ -207,6 +221,20 @@ public:
 				return &(cfg->canfd7);
 			case Network::NetID::DWCAN_07:
 				return &(cfg->canfd8);
+			case Network::NetID::DWCAN_09:
+				return &(cfg->canfd9);
+			case Network::NetID::DWCAN_10:
+				return &(cfg->canfd10);
+			case Network::NetID::DWCAN_11:
+				return &(cfg->canfd11);
+			case Network::NetID::DWCAN_12:
+				return &(cfg->canfd12);
+			case Network::NetID::DWCAN_13:
+				return &(cfg->canfd13);
+			case Network::NetID::DWCAN_14:
+				return &(cfg->canfd14);
+			case Network::NetID::DWCAN_15:
+				return &(cfg->canfd15);
 			default:
 				return nullptr;
 		}

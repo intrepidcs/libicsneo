@@ -62,6 +62,14 @@ void init_idevicesettings(pybind11::module_& m) {
         .value("USB", LinuxConfigurationPort::USB)
         .value("ETH01", LinuxConfigurationPort::ETH01);
 
+    pybind11::class_<CANTiming>(settings, "CANTiming")
+        .def(pybind11::init<>())
+        .def_readwrite("tq_seg1", &CANTiming::tq_seg1)
+        .def_readwrite("tq_seg2", &CANTiming::tq_seg2)
+        .def_readwrite("tq_prop", &CANTiming::tq_prop)
+        .def_readwrite("tq_sync", &CANTiming::tq_sync)
+        .def_readwrite("brp", &CANTiming::brp);
+
     pybind11::classh<IDeviceSettings>(m, "IDeviceSettings")
         .def("apply", &IDeviceSettings::apply, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("apply_defaults", &IDeviceSettings::applyDefaults, pybind11::arg("temporary") = 0, pybind11::call_guard<pybind11::gil_scoped_release>())
@@ -72,6 +80,10 @@ void init_idevicesettings(pybind11::module_& m) {
         .def("set_baudrate", &IDeviceSettings::setBaudrateFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("get_fd_baudrate", &IDeviceSettings::getFDBaudrateFor, pybind11::call_guard<pybind11::gil_scoped_release>())
         .def("set_fd_baudrate", &IDeviceSettings::setFDBaudrateFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_can_timing", &IDeviceSettings::getCANTimingFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_can_timing", &IDeviceSettings::setCANTimingFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("get_fd_timing", &IDeviceSettings::getFDTimingFor, pybind11::call_guard<pybind11::gil_scoped_release>())
+        .def("set_fd_timing", &IDeviceSettings::setFDTimingFor, pybind11::call_guard<pybind11::gil_scoped_release>())
 
         // Termination methods
         .def("is_termination_supported", &IDeviceSettings::isTerminationSupportedFor, pybind11::call_guard<pybind11::gil_scoped_release>())

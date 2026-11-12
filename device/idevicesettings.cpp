@@ -606,6 +606,123 @@ bool IDeviceSettings::setFDBaudrateFor(Network net, int64_t baudrate) {
 	}
 }
 
+namespace {
+
+bool settingsReadable(bool disabled, bool loaded, const device_eventhandler_t& report) {
+	if(disabled) {
+		report(APIEvent::Type::SettingsNotAvailable, APIEvent::Severity::Error);
+		return false;
+	}
+	if(!loaded) {
+		report(APIEvent::Type::SettingsReadError, APIEvent::Severity::Error);
+		return false;
+	}
+	return true;
+}
+
+bool settingsWritable(bool disabled, bool loaded, bool readonly, const device_eventhandler_t& report) {
+	if(!settingsReadable(disabled, loaded, report))
+		return false;
+	if(readonly) {
+		report(APIEvent::Type::SettingsReadOnly, APIEvent::Severity::Error);
+		return false;
+	}
+	return true;
+}
+
+bool requireCAN(Network net, const device_eventhandler_t& report) {
+	if(net.getType() == Network::Type::CAN)
+		return true;
+	report(APIEvent::Type::UnexpectedNetworkType, APIEvent::Severity::Error);
+	return false;
+}
+
+CANTiming readClassicalTiming(const CAN_SETTINGS* cfg) {
+	return CANTiming{cfg->TqSeg1, cfg->TqSeg2, cfg->TqProp, cfg->TqSync, cfg->BRP};
+}
+
+CANTiming readFDTiming(const CANFD_SETTINGS* cfg) {
+	return CANTiming{cfg->FDTqSeg1, cfg->FDTqSeg2, cfg->FDTqProp, cfg->FDTqSync, cfg->FDBRP};
+}
+
+void writeClassicalTiming(CAN_SETTINGS* cfg, CANTiming timing) {
+	cfg->TqSeg1 = timing.tq_seg1;
+	cfg->TqSeg2 = timing.tq_seg2;
+	cfg->TqProp = timing.tq_prop;
+	cfg->TqSync = timing.tq_sync;
+	cfg->BRP = timing.brp;
+	cfg->auto_baud = 0;
+	cfg->SetBaudrate = USE_TQ;
+}
+
+void writeFDTiming(CANFD_SETTINGS* cfg, CANTiming timing) {
+	cfg->FDTqSeg1 = timing.tq_seg1;
+	cfg->FDTqSeg2 = timing.tq_seg2;
+	cfg->FDTqProp = timing.tq_prop;
+	cfg->FDTqSync = timing.tq_sync;
+	cfg->FDBRP = timing.brp;
+}
+
+} // namespace
+
+std::optional<CANTiming> IDeviceSettings::getCANTimingFor(Network net) const {
+	if(!settingsReadable(disabled, settingsLoaded, report) || !requireCAN(net, report))
+		return std::nullopt;
+
+	const CAN_SETTINGS* cfg = getCANSettingsFor(net);
+	if(cfg == nullptr) {
+		report(APIEvent::Type::CANSettingsNotAvailable, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	return readClassicalTiming(cfg);
+}
+
+bool IDeviceSettings::setCANTimingFor(Network net, CANTiming timing) {
+	if(!settingsWritable(disabled, settingsLoaded, readonly, report) || !requireCAN(net, report))
+		return false;
+
+	CAN_SETTINGS* cfg = getMutableCANSettingsFor(net);
+	if(cfg == nullptr) {
+		report(APIEvent::Type::CANSettingsNotAvailable, APIEvent::Severity::Error);
+		return false;
+	}
+	writeClassicalTiming(cfg, timing);
+	return true;
+}
+
+std::optional<CANTiming> IDeviceSettings::getFDTimingFor(Network net) const {
+	if(!settingsReadable(disabled, settingsLoaded, report) || !requireCAN(net, report))
+		return std::nullopt;
+
+	const CANFD_SETTINGS* cfg = getCANFDSettingsFor(net);
+	if(cfg == nullptr) {
+		report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
+		return std::nullopt;
+	}
+	return readFDTiming(cfg);
+}
+
+bool IDeviceSettings::setFDTimingFor(Network net, CANTiming timing) {
+	if(!settingsWritable(disabled, settingsLoaded, readonly, report) || !requireCAN(net, report))
+		return false;
+
+	CANFD_SETTINGS* fd = getMutableCANFDSettingsFor(net);
+	CAN_SETTINGS* classical = getMutableCANSettingsFor(net);
+	if(fd == nullptr) {
+		report(APIEvent::Type::CANFDSettingsNotAvailable, APIEvent::Severity::Error);
+		return false;
+	}
+	if(classical == nullptr) {
+		report(APIEvent::Type::CANSettingsNotAvailable, APIEvent::Severity::Error);
+		return false;
+	}
+	writeFDTiming(fd, timing);
+	// Classical and FD timing share SetBaudrate. TQ values are ignored while it stays AUTO.
+	classical->auto_baud = 0;
+	classical->SetBaudrate = USE_TQ;
+	return true;
+}
+
 bool IDeviceSettings::isTerminationSupportedFor(Network net) const {
 	for(const auto& group : getTerminationGroups()) {
 		for(const auto& supportedNet : group) {

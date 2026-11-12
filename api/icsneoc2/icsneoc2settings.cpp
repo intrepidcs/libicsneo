@@ -124,6 +124,66 @@ icsneoc2_error_t icsneoc2_settings_canfd_baudrate_set(icsneoc2_device_t* device,
 	return icsneoc2_error_success;
 }
 
+icsneoc2_error_t icsneoc2_settings_can_tq_timing_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, icsneoc2_can_tq_timing_t* timing) {
+	if(!timing) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	auto value = device->device->settings->getCANTimingFor(Network(netid));
+	if(!value) {
+		return icsneoc2_error_invalid_type;
+	}
+	*timing = *value;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_can_tq_timing_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, const icsneoc2_can_tq_timing_t* timing) {
+	if(!timing) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!device->device->settings->setCANTimingFor(Network(netid), *timing)) {
+		return icsneoc2_error_set_settings_failure;
+	}
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_canfd_tq_timing_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, icsneoc2_can_tq_timing_t* timing) {
+	if(!timing) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	auto value = device->device->settings->getFDTimingFor(Network(netid));
+	if(!value) {
+		return icsneoc2_error_invalid_type;
+	}
+	*timing = *value;
+	return icsneoc2_error_success;
+}
+
+icsneoc2_error_t icsneoc2_settings_canfd_tq_timing_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, const icsneoc2_can_tq_timing_t* timing) {
+	if(!timing) {
+		return icsneoc2_error_invalid_parameters;
+	}
+	auto res = icsneoc2_device_is_valid(device);
+	if(res != icsneoc2_error_success) {
+		return res;
+	}
+	if(!device->device->settings->setFDTimingFor(Network(netid), *timing)) {
+		return icsneoc2_error_set_settings_failure;
+	}
+	return icsneoc2_error_success;
+}
+
 icsneoc2_error_t icsneoc2_settings_termination_is_supported(icsneoc2_device_t* device, icsneoc2_netid_t netid, bool* supported) {
 	// Make sure the device is valid
 	auto res = icsneoc2_device_is_valid(device);

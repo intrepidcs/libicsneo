@@ -281,6 +281,17 @@ TEST(icsneoc2, test_icsneoc2_error_invalid_parameters_and_invalid_device)
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_baudrate_set(NULL, 0, placeholderInteger64));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_canfd_baudrate_get(NULL, 0, &placeholderInteger64));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_canfd_baudrate_set(NULL, 0, placeholderInteger64));
+	{
+		icsneoc2_can_tq_timing_t timing = {};
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_can_tq_timing_get(NULL, 0, &timing));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_can_tq_timing_get(NULL, 0, NULL));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_can_tq_timing_set(NULL, 0, &timing));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_can_tq_timing_set(NULL, 0, NULL));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_canfd_tq_timing_get(NULL, 0, &timing));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_canfd_tq_timing_get(NULL, 0, NULL));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_canfd_tq_timing_set(NULL, 0, &timing));
+		ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_canfd_tq_timing_set(NULL, 0, NULL));
+	}
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_termination_is_supported(NULL, 0, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_termination_can_enable(NULL, 0, &placeholderBool));
 	ASSERT_EQ(icsneoc2_error_invalid_parameters, icsneoc2_settings_termination_is_enabled(NULL, 0, &placeholderBool));

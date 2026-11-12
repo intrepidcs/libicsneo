@@ -95,6 +95,54 @@ icsneoc2_error_t icsneoc2_settings_canfd_baudrate_get(icsneoc2_device_t* device,
 icsneoc2_error_t icsneoc2_settings_canfd_baudrate_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, int64_t baudrate);
 
 /**
+ * Get the classical TQ timing for a DW CAN network.
+ *
+ * @param[in] device The device to read.
+ * @param[in] netid The DW CAN network to read.
+ * @param[out] timing Receives the stored TQ fields.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_can_tq_timing_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, icsneoc2_can_tq_timing_t* timing);
+
+/**
+ * Set the classical TQ timing for a DW CAN network.
+ *
+ * This selects TQ timing for the network. The device then uses these fields, and the CAN FD TQ fields, instead of the baud enums.
+ *
+ * @param[in] device The device to update.
+ * @param[in] netid The DW CAN network to update.
+ * @param[in] timing The TQ fields to store.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_can_tq_timing_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, const icsneoc2_can_tq_timing_t* timing);
+
+/**
+ * Get the CAN FD TQ timing for a DW CAN network.
+ *
+ * @param[in] device The device to read.
+ * @param[in] netid The DW CAN network to read.
+ * @param[out] timing Receives the stored CAN FD TQ fields.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_invalid_type otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_canfd_tq_timing_get(icsneoc2_device_t* device, icsneoc2_netid_t netid, icsneoc2_can_tq_timing_t* timing);
+
+/**
+ * Set the CAN FD TQ timing for a DW CAN network.
+ *
+ * This selects TQ timing for the network, same as icsneoc2_settings_can_tq_timing_set().
+ *
+ * @param[in] device The device to update.
+ * @param[in] netid The DW CAN network to update.
+ * @param[in] timing The CAN FD TQ fields to store.
+ *
+ * @return icsneoc2_error_t icsneoc2_error_success if successful, icsneoc2_error_invalid_parameters or icsneoc2_error_set_settings_failure otherwise.
+ */
+icsneoc2_error_t icsneoc2_settings_canfd_tq_timing_set(icsneoc2_device_t* device, icsneoc2_netid_t netid, const icsneoc2_can_tq_timing_t* timing);
+
+/**
  * Check if termination is supported for a network.
  *
  * @param[in] device The device to check.

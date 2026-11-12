@@ -839,6 +839,10 @@ enum class LinuxConfigurationPort : icsneoc2_linux_configuration_port_t
 	ETH01 = icsneoc2_linux_configuration_port_eth01 // ETH 01 reserved for Linux configuration
 };
 
+// Time-quanta fields stored in CAN_SETTINGS / CANFD_SETTINGS.
+// A set selects TQ timing for the network, so the device uses these fields instead of the baud enum.
+using CANTiming = icsneoc2_can_tq_timing_t;
+
 class IDeviceSettings {
 public:
 	using TerminationGroup = std::vector<Network>;
@@ -864,6 +868,11 @@ public:
 
 	virtual int64_t getFDBaudrateFor(Network net) const;
 	virtual bool setFDBaudrateFor(Network net, int64_t baudrate);
+
+	std::optional<CANTiming> getCANTimingFor(Network net) const;
+	bool setCANTimingFor(Network net, CANTiming timing);
+	std::optional<CANTiming> getFDTimingFor(Network net) const;
+	bool setFDTimingFor(Network net, CANTiming timing);
 
 	virtual const CAN_SETTINGS* getCANSettingsFor(Network net) const { (void)net; return nullptr; }
 	CAN_SETTINGS* getMutableCANSettingsFor(Network net) {

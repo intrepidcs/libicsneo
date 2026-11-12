@@ -446,6 +446,14 @@ typedef enum _icsneoc2_memory_type_t {
 
 typedef uint8_t icsneoc2_memory_type_t;
 
+typedef struct icsneoc2_can_tq_timing_t {
+	uint8_t tq_seg1; // Time quanta in segment 1
+	uint8_t tq_seg2; // Time quanta in segment 2
+	uint8_t tq_prop; // Propagation segment time quanta
+	uint8_t tq_sync; // Synchronization segment time quanta
+	uint16_t brp;    // Bit-rate prescaler register value
+} icsneoc2_can_tq_timing_t;
+
 typedef enum _icsneoc2_can_error_code_t {
 	icsneoc2_can_error_code_no_error = 0, // No error
 	icsneoc2_can_error_code_stuff_error,  // Stuff error

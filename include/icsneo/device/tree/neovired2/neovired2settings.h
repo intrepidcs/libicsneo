@@ -129,19 +129,19 @@ public:
 		switch(net.getNetID()) {
 			case Network::NetID::DWCAN_01:
 				return &(cfg->can1);
-			case Network::NetID::DWCAN_02:
-				return &(cfg->can2);
-			case Network::NetID::DWCAN_03:
-				return &(cfg->can3);
-			case Network::NetID::DWCAN_04:
-				return &(cfg->can4);
-			case Network::NetID::DWCAN_05:
-				return &(cfg->can5);
-			case Network::NetID::DWCAN_06:
-				return &(cfg->can6);
-			case Network::NetID::DWCAN_07:
-				return &(cfg->can7);
 			case Network::NetID::DWCAN_08:
+				return &(cfg->can2);
+			case Network::NetID::DWCAN_02:
+				return &(cfg->can3);
+			case Network::NetID::DWCAN_03:
+				return &(cfg->can4);
+			case Network::NetID::DWCAN_04:
+				return &(cfg->can5);
+			case Network::NetID::DWCAN_05:
+				return &(cfg->can6);
+			case Network::NetID::DWCAN_06:
+				return &(cfg->can7);
+			case Network::NetID::DWCAN_07:
 				return &(cfg->can8);
 			default:
 				return nullptr;
@@ -155,19 +155,19 @@ public:
 		switch(net.getNetID()) {
 			case Network::NetID::DWCAN_01:
 				return &(cfg->canfd1);
-			case Network::NetID::DWCAN_02:
-				return &(cfg->canfd2);
-			case Network::NetID::DWCAN_03:
-				return &(cfg->canfd3);
-			case Network::NetID::DWCAN_04:
-				return &(cfg->canfd4);
-			case Network::NetID::DWCAN_05:
-				return &(cfg->canfd5);
-			case Network::NetID::DWCAN_06:
-				return &(cfg->canfd6);
-			case Network::NetID::DWCAN_07:
-				return &(cfg->canfd7);
 			case Network::NetID::DWCAN_08:
+				return &(cfg->canfd2);
+			case Network::NetID::DWCAN_02:
+				return &(cfg->canfd3);
+			case Network::NetID::DWCAN_03:
+				return &(cfg->canfd4);
+			case Network::NetID::DWCAN_04:
+				return &(cfg->canfd5);
+			case Network::NetID::DWCAN_05:
+				return &(cfg->canfd6);
+			case Network::NetID::DWCAN_06:
+				return &(cfg->canfd7);
+			case Network::NetID::DWCAN_07:
 				return &(cfg->canfd8);
 			default:
 				return nullptr;
