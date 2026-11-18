@@ -36,7 +36,7 @@ VSA0DFirst::VSA0DFirst(uint8_t* const recordBytes, uint32_t& runningChecksum)
 	vNetInfo = *reinterpret_cast<VNet*>(recordBytes + 28);
 	checksum = *reinterpret_cast<uint16_t*>(recordBytes + 30);
 	doChecksum(recordBytes);
-	uint32_t* const timestampDWords = reinterpret_cast<uint32_t*>(timestamp);
+	uint32_t* const timestampDWords = reinterpret_cast<uint32_t*>(&timestamp);
 	runningChecksum += timestampDWords[0];
 	runningChecksum += timestampDWords[1];
 }
