@@ -7,12 +7,13 @@ VSA09::VSA09(uint8_t* const recordBytes)
 {
 	setType(VSA::Type::AA09);
 	serialNumber = *reinterpret_cast<uint32_t*>(recordBytes + 2);
-	firmwareMajorVersion = recordBytes[6];
-	firmwareMinorVersion = recordBytes[7];
-	manufactureMajorRevision = recordBytes[8];
-	manufactureMinorRevision = recordBytes[9];
-	bootloaderMajorVersion = recordBytes[10];
-	bootloaderMinorVersion = recordBytes[11];
+	// Each version is a little-endian uint16_t (major << 8 | minor), so the minor byte comes first
+	firmwareMinorVersion = recordBytes[6];
+	firmwareMajorVersion = recordBytes[7];
+	manufactureMinorRevision = recordBytes[8];
+	manufactureMajorRevision = recordBytes[9];
+	bootloaderMinorVersion = recordBytes[10];
+	bootloaderMajorVersion = recordBytes[11];
 	reserved0.insert(reserved0.end(), recordBytes + 12, recordBytes + 18);
 	hardwareID = static_cast<HardwareID>(recordBytes[18]);
 	reserved1.insert(reserved1.end(), recordBytes + 19, recordBytes + 22);
