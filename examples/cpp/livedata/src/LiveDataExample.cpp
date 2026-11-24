@@ -45,6 +45,14 @@ int main() {
 		msg->appendSignalArg(icsneo::LiveDataValueType::DAQ_ENABLE);
 		msg->appendSignalArg(icsneo::LiveDataValueType::MANUAL_TRIGGER);
 		msg->appendSignalArg(icsneo::LiveDataValueType::TIME_SINCE_MSG);
+		// Logger sleep/boot history, raw 64-bit integers: times in nanoseconds since 1970, cursors in card sectors
+		// (0 on firmware that does not support them)
+		msg->appendSignalArg(icsneo::LiveDataValueType::LOGGER_CREATE_TIME);
+		msg->appendSignalArg(icsneo::LiveDataValueType::LOGGER_INSTALL_TIME);
+		msg->appendSignalArg(icsneo::LiveDataValueType::LOGGER_LAST_SLEEP_TIME);
+		msg->appendSignalArg(icsneo::LiveDataValueType::LOGGER_LAST_BOOT_TIME);
+		msg->appendSignalArg(icsneo::LiveDataValueType::LOGGER_LAST_SLEEP_LOGGER_CURSOR);
+		msg->appendSignalArg(icsneo::LiveDataValueType::LOGGER_LAST_SLEEP_ROOT_DIR_CURSOR);
 		msg->cmd = icsneo::LiveDataCommand::SUBSCRIBE;
 		msg->handle = icsneo::LiveDataUtil::getNewHandle();
 		msg->updatePeriod = std::chrono::milliseconds(100);
@@ -79,8 +87,19 @@ int main() {
 						std::cout << "  Number of Values: " << valueMsg->numArgs << std::endl;
 						for(uint32_t i = 0; i < valueMsg->numArgs; ++i) {
 							std::cout << "  [" << msg->args[i]->valueType << "] ";
-							auto scaledValue = icsneo::LiveDataUtil::liveDataValueToDouble(*valueMsg->values[i]);
-							std::cout << scaledValue << std::endl;
+							const auto& value = *valueMsg->values[i];
+							switch(value.header.format) {
+								case icsneo::LiveDataValueFormat::UNSIGNED_64:
+									// An integer (the logger values), not 32.32 fixed point: print it exactly
+									std::cout << *icsneo::LiveDataUtil::liveDataValueToUInt64(value) << std::endl;
+									break;
+								case icsneo::LiveDataValueFormat::FIXED_32_32:
+									std::cout << *icsneo::LiveDataUtil::liveDataValueToDouble(value) << std::endl;
+									break;
+								default:
+									std::cout << "unknown format " << static_cast<int>(value.header.format) << std::endl;
+									break;
+							}
 						}
 						std::cout << std::endl;
 					}

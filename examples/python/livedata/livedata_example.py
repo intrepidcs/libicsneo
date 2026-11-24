@@ -41,6 +41,19 @@ def livedata_example():
 		msg.append_signal_arg(icsneopy.LiveDataValueType.MANUAL_TRIGGER)
 		msg.append_signal_arg(icsneopy.LiveDataValueType.TIME_SINCE_MSG)
 
+		# Logger sleep/boot history, raw 64-bit integers: times in nanoseconds since 1970, cursors in card sectors
+		# (0 on firmware that does not support them)
+		logger_signals = [
+			("LOG_CREATE", icsneopy.LiveDataValueType.LOGGER_CREATE_TIME),
+			("LOG_INSTALL", icsneopy.LiveDataValueType.LOGGER_INSTALL_TIME),
+			("LOG_SLEEP", icsneopy.LiveDataValueType.LOGGER_LAST_SLEEP_TIME),
+			("LOG_BOOT", icsneopy.LiveDataValueType.LOGGER_LAST_BOOT_TIME),
+			("LOG_SLP_CUR", icsneopy.LiveDataValueType.LOGGER_LAST_SLEEP_LOGGER_CURSOR),
+			("LOG_SLP_ROOT", icsneopy.LiveDataValueType.LOGGER_LAST_SLEEP_ROOT_DIR_CURSOR),
+		]
+		for _, value_type in logger_signals:
+			msg.append_signal_arg(value_type)
+
 		print("\nSubscribing to LiveData signals...")
 		if not device.subscribe_live_data(msg):
 			raise RuntimeError(f"Subscription failed: {icsneopy.get_last_error()}")
@@ -66,10 +79,15 @@ def livedata_example():
 						print(f"\n[Response #{response_count}]")
 						signal_names = ["GPS_LAT", "GPS_LON", "GPS_ACC", 
 									   "DAQ_EN", "MAN_TRIG", "TIME_SINCE"]
+						names = signal_names + [name for name, _ in logger_signals]
 						for idx, val in enumerate(m.values):
-							value = icsneopy.livedata_value_to_double(val)
-							name = signal_names[idx] if idx < len(signal_names) else f"Signal_{idx}"
-							print(f"  {name:12s}: {value:10.2f}")
+							if val.header.format == icsneopy.LiveDataValueFormat.UNSIGNED_64:
+								# An integer (the logger values), not 32.32 fixed point
+								print(f"  {names[idx]:12s}: {icsneopy.livedata_value_to_uint64(val)}")
+							elif val.header.format == icsneopy.LiveDataValueFormat.FIXED_32_32:
+								print(f"  {names[idx]:12s}: {icsneopy.livedata_value_to_double(val):10.2f}")
+							else:
+								print(f"  {names[idx]:12s}: unknown format {val.header.format}")
 
 			time.sleep(0.1)
 

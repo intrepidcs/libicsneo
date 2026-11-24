@@ -107,7 +107,8 @@ protected:
 		0x01, 0x00, 0x00, 0x00, //handle
 		0x01, 0x00, 0x00, 0x00, //numArgs
 		0x08, 0x00, //value 1 header (length)
-		0x00, 0x00, //value 1 reserved
+		0x00, //value 1 format
+		0x00, //value 1 reserved
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //value large
 		0x08, 0x00, 0x00, 0x00, 0x00, 0x00,
 	};
@@ -127,6 +128,60 @@ protected:
 		0x00, 0x00, 0x00, 0x00, //error
 		0x00, 0x00, 0x00, 0x00, //padding
 		0x00, 0x00,
+	};
+
+	const std::vector<uint8_t> testBytesSetValue =
+	{
+		0xaa, //start AA
+		0x0B, //netid main51
+		0x4E, 0x00, //size little end 16
+		0xF0, //extended header command
+		0x35, 0x00, //Live data subcommand little 16
+		0x44, 0x00, //extended subcommand size, little 16
+		0x01, 0x00, 0x00, 0x00, //LiveDataUtil::LiveDataVersion
+		0x05, 0x00, 0x00, 0x00, //LiveDataCommand::SET_VALUE
+		0x01, 0x00, 0x00, 0x00, //handle
+		0x02, 0x00, 0x00, 0x00, //numSetValues
+		0x08, 0x00, //lObjectType eCoreMiniObjectTypeMisc
+		0x00, 0x00, 0x00, 0x00, //lObjectIndex
+		0x00, 0x00, 0x00, 0x00, //lSignalIndex
+		0x6C, 0x00, 0x00, 0x00, //enumCoreMiniMiscManualTrigger
+		0x08, 0x00, //value 1 header (length)
+		0x00, //value 1 format (FIXED_32_32)
+		0x00, //value 1 reserved
+		0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, //value large (7.0)
+		0x08, 0x00, //lObjectType eCoreMiniObjectTypeMisc
+		0x00, 0x00, 0x00, 0x00, //lObjectIndex
+		0x00, 0x00, 0x00, 0x00, //lSignalIndex
+		0x85, 0x00, 0x00, 0x00, //enumCoreMiniMiscCmCreateTime
+		0x08, 0x00, //value 2 header (length)
+		0x01, //value 2 format (UNSIGNED_64)
+		0x00, //value 2 reserved
+		0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, //value large (0x8000000000000001)
+		0x41 //padding byte
+	};
+
+	const std::vector<uint8_t> testBytesResponseFormats =
+	{
+		0xaa, //start AA
+		0x0C, //netid RED
+		0x38, 0x00, //size little end 16
+		0xF0, 0x00, //extended header command
+		0x35, 0x00, //Live data subcommand little 16
+		0x28, 0x00, //extended subcommand size, little 16
+		0x01, 0x00, 0x00, 0x00, //version
+		0x03, 0x00, 0x00, 0x00, //cmd
+		0x01, 0x00, 0x00, 0x00, //handle
+		0x02, 0x00, 0x00, 0x00, //numArgs
+		0x08, 0x00, //value 1 header (length)
+		0x01, //value 1 format (UNSIGNED_64)
+		0x00, //value 1 reserved
+		0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, //value large (0x8000000000000001)
+		0x08, 0x00, //value 2 header (length)
+		0x00, //value 2 format (FIXED_32_32)
+		0x00, //value 2 reserved
+		0x00, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0x00, //value large (1.5)
+		0x08, 0x00, 0x00, 0x00, 0x00, 0x00,
 	};
 
 	std::shared_ptr<icsneo::LiveDataCommandMessage> msg;
@@ -191,4 +246,58 @@ TEST_F(LiveDataEncoderDecoderTest, DecoderResponseTest) {
 	EXPECT_EQ(response->cmd, LiveDataCommand::RESPONSE);
 	EXPECT_EQ(response->numArgs, static_cast<uint32_t>(1u));
 	EXPECT_EQ(icsneo::LiveDataUtil::liveDataValueToDouble(*response->values[0]), 0.0);
+}
+
+TEST_F(LiveDataEncoderDecoderTest, EncodeSetValueCommandTest) {
+	std::vector<uint8_t> bytestream;
+	auto setValMsg = std::make_shared<icsneo::LiveDataSetValueMessage>();
+	setValMsg->cmd = icsneo::LiveDataCommand::SET_VALUE;
+	setValMsg->handle = msg->handle;
+	auto fixed = icsneo::LiveDataUtil::liveDataDoubleToValue(7.0);
+	ASSERT_TRUE(fixed.has_value());
+	auto integer = icsneo::LiveDataUtil::liveDataUInt64ToValue(0x8000000000000001ull);
+	setValMsg->appendSetValue(icsneo::LiveDataValueType::MANUAL_TRIGGER, *fixed);
+	setValMsg->appendSetValue(icsneo::LiveDataValueType::LOGGER_CREATE_TIME, integer);
+	packetEncoder->encode(*packetizer, bytestream, setValMsg);
+	EXPECT_EQ(bytestream, testBytesSetValue);
+}
+
+TEST_F(LiveDataEncoderDecoderTest, DecoderResponseFormatsTest) {
+	std::shared_ptr<Message> result;
+	ringBuffer.clear();
+	ringBuffer.write(testBytesResponseFormats);
+	if (packetizer->input(ringBuffer)) {
+		for (const auto& packet : packetizer->output()) {
+			if (!packetDecoder->decode(result, packet))
+				continue;
+		}
+	}
+	EXPECT_TRUE(result != nullptr);
+	auto response = std::dynamic_pointer_cast<LiveDataValueMessage>(result);
+	EXPECT_EQ(response->handle, static_cast<uint32_t>(1u));
+	EXPECT_EQ(response->cmd, LiveDataCommand::RESPONSE);
+	EXPECT_EQ(response->numArgs, static_cast<uint32_t>(2u));
+	ASSERT_EQ(response->values.size(), static_cast<size_t>(2u));
+	EXPECT_EQ(response->values[0]->header.format, LiveDataValueFormat::UNSIGNED_64);
+	EXPECT_EQ(icsneo::LiveDataUtil::liveDataValueToUInt64(*response->values[0]), 0x8000000000000001ull);
+	EXPECT_FALSE(icsneo::LiveDataUtil::liveDataValueToDouble(*response->values[0]).has_value());
+	EXPECT_EQ(response->values[1]->header.format, LiveDataValueFormat::FIXED_32_32);
+	EXPECT_EQ(icsneo::LiveDataUtil::liveDataValueToDouble(*response->values[1]), 1.5);
+	EXPECT_FALSE(icsneo::LiveDataUtil::liveDataValueToUInt64(*response->values[1]).has_value());
+}
+
+TEST(LiveDataUtilTest, ConversionsMatchTheValueFormat) {
+	auto fixed = LiveDataUtil::liveDataDoubleToValue(1.5);
+	ASSERT_TRUE(fixed.has_value());
+	EXPECT_EQ(fixed->header.format, LiveDataValueFormat::FIXED_32_32);
+	EXPECT_EQ(LiveDataUtil::liveDataValueToDouble(*fixed), 1.5);
+	EXPECT_FALSE(LiveDataUtil::liveDataValueToUInt64(*fixed).has_value());
+
+	// above 2^63, so read signed it would be negative, and above 2^53, so a double would round it
+	const uint64_t big = 0x8000000000000001ull;
+	auto integer = LiveDataUtil::liveDataUInt64ToValue(big);
+	EXPECT_EQ(integer.header.format, LiveDataValueFormat::UNSIGNED_64);
+	EXPECT_EQ(integer.header.length, sizeof(integer.value));
+	EXPECT_EQ(LiveDataUtil::liveDataValueToUInt64(integer), big);
+	EXPECT_FALSE(LiveDataUtil::liveDataValueToDouble(integer).has_value());
 }

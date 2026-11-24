@@ -119,6 +119,7 @@ bool HardwareLiveDataPacket::EncodeFromMessage(LiveDataMessage& message, std::ve
 					out->values[i].arg.valueType = setValMsg->args[i]->valueType;
 					out->values[i].value.value = setValMsg->values[i]->value;
 					out->values[i].value.header.length = sizeof(LiveDataValue::value);
+					out->values[i].value.header.format = setValMsg->values[i]->header.format;
 				}
 			} else {
 				report(APIEvent::Type::LiveDataInvalidArgument, APIEvent::Severity::Error);

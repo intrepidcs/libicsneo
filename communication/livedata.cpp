@@ -14,13 +14,22 @@ LiveDataHandle getNewHandle() {
 	return currentHandle;
 }
 
-double liveDataValueToDouble(const LiveDataValue& val) {
+std::optional<double> liveDataValueToDouble(const LiveDataValue& val) {
+	if(val.header.format != LiveDataValueFormat::FIXED_32_32)
+		return std::nullopt;
 	constexpr double liveDataFixedPointToDouble = 0.00000000023283064365386962890625;
-	return val.value * liveDataFixedPointToDouble; 
-} 
+	return val.value * liveDataFixedPointToDouble;
+}
 
-std::optional<LiveDataValue> liveDataDoubleToValue(const double& dFloat) {
-	LiveDataValue value;
+std::optional<uint64_t> liveDataValueToUInt64(const LiveDataValue& val) {
+	if(val.header.format != LiveDataValueFormat::UNSIGNED_64)
+		return std::nullopt;
+	return static_cast<uint64_t>(val.value);
+}
+
+std::optional<LiveDataValue> liveDataDoubleToValue(const double dFloat) {
+	LiveDataValue value = {}; // header zeroed: FIXED_32_32
+	value.header.length = sizeof(value.value);
 	union {
 		struct
 		{
@@ -74,6 +83,14 @@ std::optional<LiveDataValue> liveDataDoubleToValue(const double& dFloat) {
 	}
 
 	return value;
+}
+
+LiveDataValue liveDataUInt64ToValue(uint64_t value) {
+	LiveDataValue out = {};
+	out.header.length = sizeof(out.value);
+	out.header.format = LiveDataValueFormat::UNSIGNED_64;
+	out.value = static_cast<int64_t>(value);
+	return out;
 }
 
 } // namespace LiveDataUtil

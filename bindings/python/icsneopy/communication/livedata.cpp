@@ -8,10 +8,23 @@
 namespace icsneo {
 
 void init_livedata(pybind11::module_& m) {
+	// LiveDataValueFormat enum
+	pybind11::native_enum<LiveDataValueFormat>(m, "LiveDataValueFormat", "enum.IntEnum")
+		.value("FIXED_32_32", LiveDataValueFormat::FIXED_32_32)
+		.value("UNSIGNED_64", LiveDataValueFormat::UNSIGNED_64)
+		.finalize();
+
+	pybind11::classh<LiveDataValueHeader>(m, "LiveDataValueHeader")
+		.def(pybind11::init<>())
+		.def_readwrite("length", &LiveDataValueHeader::length)
+		.def_readwrite("format", &LiveDataValueHeader::format)
+		.def_readwrite("reserved", &LiveDataValueHeader::reserved);
+
 	// LiveDataValue struct
 	pybind11::classh<LiveDataValue>(m, "LiveDataValue")
 		.def(pybind11::init<>())
-		.def_readwrite("value", &LiveDataValue::value);
+		.def_readwrite("value", &LiveDataValue::value)
+		.def_readwrite("header", &LiveDataValue::header);
 
 	// LiveDataArgument struct
 	pybind11::classh<LiveDataArgument>(m, "LiveDataArgument")
@@ -61,6 +74,12 @@ void init_livedata(pybind11::module_& m) {
 		.value("GPS_TIME", LiveDataValueType::GPS_TIME)
 		.value("GPS_TIME_VALID", LiveDataValueType::GPS_TIME_VALID)
 		.value("DAQ_ENABLE", LiveDataValueType::DAQ_ENABLE)
+		.value("LOGGER_CREATE_TIME", LiveDataValueType::LOGGER_CREATE_TIME)
+		.value("LOGGER_INSTALL_TIME", LiveDataValueType::LOGGER_INSTALL_TIME)
+		.value("LOGGER_LAST_SLEEP_TIME", LiveDataValueType::LOGGER_LAST_SLEEP_TIME)
+		.value("LOGGER_LAST_BOOT_TIME", LiveDataValueType::LOGGER_LAST_BOOT_TIME)
+		.value("LOGGER_LAST_SLEEP_LOGGER_CURSOR", LiveDataValueType::LOGGER_LAST_SLEEP_LOGGER_CURSOR)
+		.value("LOGGER_LAST_SLEEP_ROOT_DIR_CURSOR", LiveDataValueType::LOGGER_LAST_SLEEP_ROOT_DIR_CURSOR)
 		.finalize();
 
 	// LiveDataUtil namespace functions
@@ -69,11 +88,19 @@ void init_livedata(pybind11::module_& m) {
 
 	m.def("livedata_value_to_double", &LiveDataUtil::liveDataValueToDouble,
 		pybind11::arg("val"),
-		"Convert LiveDataValue to double (32.32 fixed-point to floating-point)");
+		"Convert LiveDataValue to double: Use with LiveDataValueFormat.FIXED_32_32. Returns None for any other format.");
+
+	m.def("livedata_value_to_uint64", &LiveDataUtil::liveDataValueToUInt64,
+		pybind11::arg("val"),
+		"Convert LiveDataValue to uint64: Use with LiveDataValueFormat.UNSIGNED_64. Returns None for any other format.");
 
 	m.def("livedata_double_to_value", &LiveDataUtil::liveDataDoubleToValue,
 		pybind11::arg("d"),
 		"Convert double to LiveDataValue (32.32 fixed-point format). Returns LiveDataValue or None on failure.");
+
+	m.def("livedata_uint64_to_value", &LiveDataUtil::liveDataUInt64ToValue,
+		pybind11::arg("value"),
+		"Convert uint64 to LiveDataValue (LiveDataValueFormat.UNSIGNED_64). Returns LiveDataValue.");
 }
 
 } // namespace icsneo
