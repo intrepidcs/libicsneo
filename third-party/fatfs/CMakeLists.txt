@@ -1,4 +1,4 @@
-project(fatfs VERSION 0.14.1) # R0.14b
+project(fatfs VERSION 0.16.0) # R0.16
 
 add_library(fatfs
 	source/ff.c

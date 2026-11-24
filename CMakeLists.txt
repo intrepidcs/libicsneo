@@ -490,7 +490,7 @@ if(LIBICSNEO_BUILD_UNIT_TESTS)
 	include(FetchContent)
 	FetchContent_Declare(googletest
 		GIT_REPOSITORY https://github.com/google/googletest.git
-		GIT_TAG 6986c2b575f77135401a4e1c65a7a42f20e18fef
+		GIT_TAG 063de7e9578f82b369302001269680b4b1553359 # v1.18.0
 	)
 	FetchContent_MakeAvailable(googletest)
 	include(GoogleTest)
