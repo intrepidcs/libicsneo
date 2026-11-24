@@ -321,7 +321,7 @@ endif()
 include(FetchContent)
 FetchContent_Declare(icspb
 	GIT_REPOSITORY ${LIBICSNEO_ICSPB_REPO}
-	GIT_TAG 3339fa6b83a6b3e7704d41f5c2f2175cfc761a1f
+	GIT_TAG daebe3eb5377029b78b72703e91a6858d1a9f2de
 )
 FetchContent_MakeAvailable(icspb)
 target_link_libraries(icsneocpp PRIVATE icspb::icspb)

@@ -84,11 +84,15 @@ std::vector<uint8_t> getPayload(Command command, const T& msg) {
 	uint8_t* target = payload.data();
 
 	target = writeVarint32(static_cast<uint32_t>(header_size), target);
-	hdr.SerializeToArray(target, static_cast<int>(header_size));
+	if(!hdr.SerializeToArray(target, static_cast<int>(header_size))) {
+		return {};
+	}
 	target += header_size;
 	if(msg_size) {
 		target = writeVarint32(static_cast<uint32_t>(msg_size), target);
-		msg.SerializeToArray(target, static_cast<int>(msg_size));
+		if(!msg.SerializeToArray(target, static_cast<int>(msg_size))) {
+			return {};
+		}
 		target += msg_size;
 	}
 	payload.resize(target - payload.data());
